@@ -33,7 +33,7 @@ final class AuthSessionsAdmin {
       await session.db.unsafeQuery(
         'DELETE FROM ${AuthSession.t.tableName} WHERE '
         '"${AuthSession.t.expireAfterUnusedFor.columnName}" IS NOT NULL AND '
-        '"${AuthSession.t.lastUsed.columnName}" + ("${AuthSession.t.expireAfterUnusedFor.columnName}" * INTERVAL \'1 millisecond\') < \'${SerializationManager.encode(clock.now())}\'',
+        '"${AuthSession.t.lastUsedAt.columnName}" + ("${AuthSession.t.expireAfterUnusedFor.columnName}" * INTERVAL \'1 millisecond\') < \'${SerializationManager.encode(clock.now())}\'',
         transaction: transaction,
       );
     }
@@ -70,8 +70,8 @@ final class AuthSessionsAdmin {
           id: authSession.id!,
           authUserId: authSession.authUserId,
           scopeNames: authSession.scopeNames,
-          created: authSession.created,
-          lastUsed: authSession.lastUsed,
+          created: authSession.createdAt,
+          lastUsed: authSession.lastUsedAt,
           expiresAt: authSession.expiresAt,
           expireAfterUnusedFor: authSession.expireAfterUnusedFor,
           method: authSession.method,

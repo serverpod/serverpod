@@ -20,13 +20,13 @@ fields:
   refreshTokenRequestedWithBundleIdentifier: bool
 
   ### Time when the account data was last received from Apple's servers.
-  lastRefreshed: DateTime, default=now
+  lastRefreshedAt: DateTime, default=now
 
   ### The [AuthUser] this profile belongs to
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
 
   ### The time when this authentication was created.
-  created: DateTime, defaultModel=now
+  createdAt: DateTime, defaultModel=now
 
   ### The email of the user.
   ###

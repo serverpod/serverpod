@@ -20,7 +20,7 @@ final class AuthenticationTokensAdmin {
 
     await RefreshToken.db.deleteWhere(
       session,
-      where: (final t) => t.lastUpdated < oldestValidRefreshTokenDate,
+      where: (final t) => t.lastUpdatedAt < oldestValidRefreshTokenDate,
       transaction: transaction,
     );
   }
@@ -65,8 +65,8 @@ final class AuthenticationTokensAdmin {
           id: refreshToken.id!,
           authUserId: refreshToken.authUserId,
           scopeNames: refreshToken.scopeNames,
-          created: refreshToken.created,
-          lastUpdated: refreshToken.lastUpdated,
+          createdAt: refreshToken.createdAt,
+          lastUpdatedAt: refreshToken.lastUpdatedAt,
           extraClaimsJSON: refreshToken.extraClaims,
         ),
     ];

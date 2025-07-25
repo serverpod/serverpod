@@ -39,7 +39,8 @@ final class AppleAccountsAdmin {
       final appleAccounts = await AppleAccount.db.find(
         session,
         where: (final t) =>
-            t.lastRefreshed < DateTime.now().subtract(const Duration(days: 1)),
+            t.lastRefreshedAt <
+            DateTime.now().subtract(const Duration(days: 1)),
         limit: 10,
         transaction: transaction,
       );
@@ -61,7 +62,7 @@ final class AppleAccountsAdmin {
 
         await AppleAccount.db.updateRow(
           session,
-          appleAccount.copyWith(lastRefreshed: clock.now()),
+          appleAccount.copyWith(lastRefreshedAt: clock.now()),
         );
       }
     }

@@ -10,7 +10,7 @@ fields:
   id: UuidValue?, defaultPersist=random
 
   ### The time when this authentication was created.
-  created: DateTime, default=now
+  createdAt: DateTime, default=now
 
   ### The email of the user.
   ###

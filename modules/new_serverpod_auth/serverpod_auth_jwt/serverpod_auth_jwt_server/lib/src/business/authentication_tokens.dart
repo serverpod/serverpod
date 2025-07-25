@@ -83,8 +83,8 @@ abstract final class AuthenticationTokens {
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
         extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
-        created: clock.now(),
-        lastUpdated: clock.now(),
+        createdAt: clock.now(),
+        lastUpdatedAt: clock.now(),
       ),
       transaction: transaction,
     );
@@ -172,7 +172,7 @@ abstract final class AuthenticationTokens {
       refreshTokenRow.copyWith(
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
-        lastUpdated: clock.now(),
+        lastUpdatedAt: clock.now(),
       ),
       transaction: transaction,
     );
@@ -290,6 +290,6 @@ extension on RefreshToken {
     final oldestAcceptedRefreshTokenDate =
         clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
 
-    return lastUpdated.isBefore(oldestAcceptedRefreshTokenDate);
+    return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }
 }
