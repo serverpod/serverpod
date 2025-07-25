@@ -5,7 +5,7 @@ fields:
   id: UuidValue?, defaultPersist=random
 
   ### The time when this user was created.
-  created: DateTime, defaultModel=now
+  createdAt: DateTime, defaultModel=now
 
   ### Set of scopes that this user can access.
   scopeNames: Set<String>

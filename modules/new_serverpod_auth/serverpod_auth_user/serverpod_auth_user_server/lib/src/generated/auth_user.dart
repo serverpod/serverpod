@@ -16,15 +16,15 @@ abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   AuthUser._({
     this.id,
-    DateTime? created,
+    DateTime? createdAt,
     required this.scopeNames,
     bool? blocked,
-  })  : created = created ?? DateTime.now(),
+  })  : createdAt = createdAt ?? DateTime.now(),
         blocked = blocked ?? false;
 
   factory AuthUser({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
   }) = _AuthUserImpl;
@@ -34,7 +34,8 @@ abstract class AuthUser
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
@@ -50,7 +51,7 @@ abstract class AuthUser
   _i1.UuidValue? id;
 
   /// The time when this user was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// Set of scopes that this user can access.
   Set<String> scopeNames;
@@ -66,7 +67,7 @@ abstract class AuthUser
   @_i1.useResult
   AuthUser copyWith({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
   });
@@ -74,7 +75,7 @@ abstract class AuthUser
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
@@ -120,12 +121,12 @@ class _Undefined {}
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
   }) : super._(
           id: id,
-          created: created,
+          createdAt: createdAt,
           scopeNames: scopeNames,
           blocked: blocked,
         );
@@ -136,13 +137,13 @@ class _AuthUserImpl extends AuthUser {
   @override
   AuthUser copyWith({
     Object? id = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
   }) {
     return AuthUser(
       id: id is _i1.UuidValue? ? id : this.id,
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,
     );
@@ -152,8 +153,8 @@ class _AuthUserImpl extends AuthUser {
 class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_user') {
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
     );
     scopeNames = _i1.ColumnSerializable(
@@ -167,7 +168,7 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   }
 
   /// The time when this user was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// Set of scopes that this user can access.
   late final _i1.ColumnSerializable scopeNames;
@@ -178,7 +179,7 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   @override
   List<_i1.Column> get columns => [
         id,
-        created,
+        createdAt,
         scopeNames,
         blocked,
       ];

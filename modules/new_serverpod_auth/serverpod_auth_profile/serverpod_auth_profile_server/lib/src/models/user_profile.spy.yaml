@@ -22,7 +22,7 @@ fields:
   email: String?
 
   ### The time when this user was created.
-  created: DateTime, default=now
+  createdAt: DateTime, default=now
 
   ### The user's profile image.
   image: UserProfileImage?, relation(optional)

@@ -48,11 +48,11 @@ fields:
   rotatingSecretSalt: ByteData
 
   ### The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
-  lastUpdated: DateTime, default=now
+  lastUpdatedAt: DateTime, default=now
 
   ### The time when the first refresh token was created.
-  created: DateTime, default=now
+  createdAt: DateTime, default=now
 
 indexes:
-  serverpod_auth_jwt_refresh_token_last_updated:
-    fields: lastUpdated
+  serverpod_auth_jwt_refresh_token_last_updated_at:
+    fields: lastUpdatedAt

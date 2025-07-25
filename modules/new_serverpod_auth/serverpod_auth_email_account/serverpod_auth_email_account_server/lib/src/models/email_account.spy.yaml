@@ -9,7 +9,7 @@ fields:
   authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
 
   ### The time when this authentication was created.
-  created: DateTime, defaultModel=now
+  createdAt: DateTime, defaultModel=now
 
   ### The email of the user.
   ###

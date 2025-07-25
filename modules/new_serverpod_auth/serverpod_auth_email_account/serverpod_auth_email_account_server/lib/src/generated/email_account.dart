@@ -24,17 +24,17 @@ abstract class EmailAccount
     this.id,
     required this.authUserId,
     this.authUser,
-    DateTime? created,
+    DateTime? createdAt,
     required this.email,
     required this.passwordHash,
     required this.passwordSalt,
-  }) : created = created ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccount({
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     required String email,
     required _i3.ByteData passwordHash,
     required _i3.ByteData passwordSalt,
@@ -51,7 +51,8 @@ abstract class EmailAccount
           ? null
           : _i2.AuthUser.fromJson(
               (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String,
       passwordHash:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
@@ -73,7 +74,7 @@ abstract class EmailAccount
   _i2.AuthUser? authUser;
 
   /// The time when this authentication was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// The email of the user.
   ///
@@ -98,7 +99,7 @@ abstract class EmailAccount
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     _i3.ByteData? passwordHash,
     _i3.ByteData? passwordSalt,
@@ -109,7 +110,7 @@ abstract class EmailAccount
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'email': email,
       'passwordHash': passwordHash.toJson(),
       'passwordSalt': passwordSalt.toJson(),
@@ -158,7 +159,7 @@ class _EmailAccountImpl extends EmailAccount {
     _i1.UuidValue? id,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     required String email,
     required _i3.ByteData passwordHash,
     required _i3.ByteData passwordSalt,
@@ -166,7 +167,7 @@ class _EmailAccountImpl extends EmailAccount {
           id: id,
           authUserId: authUserId,
           authUser: authUser,
-          created: created,
+          createdAt: createdAt,
           email: email,
           passwordHash: passwordHash,
           passwordSalt: passwordSalt,
@@ -180,7 +181,7 @@ class _EmailAccountImpl extends EmailAccount {
     Object? id = _Undefined,
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     _i3.ByteData? passwordHash,
     _i3.ByteData? passwordSalt,
@@ -190,7 +191,7 @@ class _EmailAccountImpl extends EmailAccount {
       authUserId: authUserId ?? this.authUserId,
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash.clone(),
       passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
@@ -205,8 +206,8 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
       'authUserId',
       this,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
     );
     email = _i1.ColumnString(
@@ -229,7 +230,7 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   _i2.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// The email of the user.
   ///
@@ -261,7 +262,7 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   List<_i1.Column> get columns => [
         id,
         authUserId,
-        created,
+        createdAt,
         email,
         passwordHash,
         passwordSalt,

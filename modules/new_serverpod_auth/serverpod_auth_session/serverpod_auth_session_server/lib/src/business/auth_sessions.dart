@@ -89,7 +89,9 @@ abstract final class AuthSessions {
 
     final expireAfterUnusedFor = authSession.expireAfterUnusedFor;
     if (expireAfterUnusedFor != null &&
-        authSession.lastUsed.add(expireAfterUnusedFor).isBefore(clock.now())) {
+        authSession.lastUsedAt
+            .add(expireAfterUnusedFor)
+            .isBefore(clock.now())) {
       session.log(
         'Got session which expired due to inactivity.',
         level: LogLevel.debug,
@@ -111,11 +113,11 @@ abstract final class AuthSessions {
       return null;
     }
 
-    if (authSession.lastUsed
+    if (authSession.lastUsedAt
         .isBefore(clock.now().subtract(const Duration(minutes: 1)))) {
       authSession = await AuthSession.db.updateRow(
         session,
-        authSession.copyWith(lastUsed: clock.now()),
+        authSession.copyWith(lastUsedAt: clock.now()),
       );
     }
 
@@ -191,8 +193,8 @@ abstract final class AuthSessions {
       session,
       AuthSession(
         authUserId: authUserId,
-        created: clock.now(),
-        lastUsed: clock.now(),
+        createdAt: clock.now(),
+        lastUsedAt: clock.now(),
         expiresAt: expiresAt,
         expireAfterUnusedFor: expireAfterUnusedFor,
         scopeNames: scopeNames,

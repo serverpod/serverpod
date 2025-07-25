@@ -8,7 +8,7 @@ fields:
   userProfile: UserProfile?, relation(onDelete=Cascade)
 
   ### The time when this profile image was created.
-  created: DateTime, default=now
+  createdAt: DateTime, default=now
 
   ### Storage in which the image is stored.
   storageId: String

@@ -24,27 +24,27 @@ abstract class AppleAccount
     required this.userIdentifier,
     required this.refreshToken,
     required this.refreshTokenRequestedWithBundleIdentifier,
-    DateTime? lastRefreshed,
+    DateTime? lastRefreshedAt,
     required this.authUserId,
     this.authUser,
-    DateTime? created,
+    DateTime? createdAt,
     this.email,
     this.isEmailVerified,
     this.isPrivateEmail,
     this.firstName,
     this.lastName,
-  })  : lastRefreshed = lastRefreshed ?? DateTime.now(),
-        created = created ?? DateTime.now();
+  })  : lastRefreshedAt = lastRefreshedAt ?? DateTime.now(),
+        createdAt = createdAt ?? DateTime.now();
 
   factory AppleAccount({
     _i1.UuidValue? id,
     required String userIdentifier,
     required String refreshToken,
     required bool refreshTokenRequestedWithBundleIdentifier,
-    DateTime? lastRefreshed,
+    DateTime? lastRefreshedAt,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     bool? isEmailVerified,
     bool? isPrivateEmail,
@@ -62,15 +62,16 @@ abstract class AppleAccount
       refreshTokenRequestedWithBundleIdentifier:
           jsonSerialization['refreshTokenRequestedWithBundleIdentifier']
               as bool,
-      lastRefreshed: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['lastRefreshed']),
+      lastRefreshedAt: _i1.DateTimeJsonExtension.fromJson(
+          jsonSerialization['lastRefreshedAt']),
       authUserId:
           _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
       authUser: jsonSerialization['authUser'] == null
           ? null
           : _i2.AuthUser.fromJson(
               (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String?,
       isEmailVerified: jsonSerialization['isEmailVerified'] as bool?,
       isPrivateEmail: jsonSerialization['isPrivateEmail'] as bool?,
@@ -101,7 +102,7 @@ abstract class AppleAccount
   bool refreshTokenRequestedWithBundleIdentifier;
 
   /// Time when the account data was last received from Apple's servers.
-  DateTime lastRefreshed;
+  DateTime lastRefreshedAt;
 
   _i1.UuidValue authUserId;
 
@@ -109,7 +110,7 @@ abstract class AppleAccount
   _i2.AuthUser? authUser;
 
   /// The time when this authentication was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// The email of the user.
   ///
@@ -149,10 +150,10 @@ abstract class AppleAccount
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
-    DateTime? lastRefreshed,
+    DateTime? lastRefreshedAt,
     _i1.UuidValue? authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     bool? isEmailVerified,
     bool? isPrivateEmail,
@@ -167,10 +168,10 @@ abstract class AppleAccount
       'refreshToken': refreshToken,
       'refreshTokenRequestedWithBundleIdentifier':
           refreshTokenRequestedWithBundleIdentifier,
-      'lastRefreshed': lastRefreshed.toJson(),
+      'lastRefreshedAt': lastRefreshedAt.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       if (email != null) 'email': email,
       if (isEmailVerified != null) 'isEmailVerified': isEmailVerified,
       if (isPrivateEmail != null) 'isPrivateEmail': isPrivateEmail,
@@ -222,10 +223,10 @@ class _AppleAccountImpl extends AppleAccount {
     required String userIdentifier,
     required String refreshToken,
     required bool refreshTokenRequestedWithBundleIdentifier,
-    DateTime? lastRefreshed,
+    DateTime? lastRefreshedAt,
     required _i1.UuidValue authUserId,
     _i2.AuthUser? authUser,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     bool? isEmailVerified,
     bool? isPrivateEmail,
@@ -237,10 +238,10 @@ class _AppleAccountImpl extends AppleAccount {
           refreshToken: refreshToken,
           refreshTokenRequestedWithBundleIdentifier:
               refreshTokenRequestedWithBundleIdentifier,
-          lastRefreshed: lastRefreshed,
+          lastRefreshedAt: lastRefreshedAt,
           authUserId: authUserId,
           authUser: authUser,
-          created: created,
+          createdAt: createdAt,
           email: email,
           isEmailVerified: isEmailVerified,
           isPrivateEmail: isPrivateEmail,
@@ -257,10 +258,10 @@ class _AppleAccountImpl extends AppleAccount {
     String? userIdentifier,
     String? refreshToken,
     bool? refreshTokenRequestedWithBundleIdentifier,
-    DateTime? lastRefreshed,
+    DateTime? lastRefreshedAt,
     _i1.UuidValue? authUserId,
     Object? authUser = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     Object? email = _Undefined,
     Object? isEmailVerified = _Undefined,
     Object? isPrivateEmail = _Undefined,
@@ -274,11 +275,11 @@ class _AppleAccountImpl extends AppleAccount {
       refreshTokenRequestedWithBundleIdentifier:
           refreshTokenRequestedWithBundleIdentifier ??
               this.refreshTokenRequestedWithBundleIdentifier,
-      lastRefreshed: lastRefreshed ?? this.lastRefreshed,
+      lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
       authUserId: authUserId ?? this.authUserId,
       authUser:
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       email: email is String? ? email : this.email,
       isEmailVerified:
           isEmailVerified is bool? ? isEmailVerified : this.isEmailVerified,
@@ -305,8 +306,8 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
       'refreshTokenRequestedWithBundleIdentifier',
       this,
     );
-    lastRefreshed = _i1.ColumnDateTime(
-      'lastRefreshed',
+    lastRefreshedAt = _i1.ColumnDateTime(
+      'lastRefreshedAt',
       this,
       hasDefault: true,
     );
@@ -314,8 +315,8 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
       'authUserId',
       this,
     );
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
     );
     email = _i1.ColumnString(
@@ -355,7 +356,7 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnBool refreshTokenRequestedWithBundleIdentifier;
 
   /// Time when the account data was last received from Apple's servers.
-  late final _i1.ColumnDateTime lastRefreshed;
+  late final _i1.ColumnDateTime lastRefreshedAt;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -363,7 +364,7 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
   _i2.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// The email of the user.
   ///
@@ -411,9 +412,9 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
         userIdentifier,
         refreshToken,
         refreshTokenRequestedWithBundleIdentifier,
-        lastRefreshed,
+        lastRefreshedAt,
         authUserId,
-        created,
+        createdAt,
         email,
         isEmailVerified,
         isPrivateEmail,

@@ -3,7 +3,7 @@ fields:
   id: UuidValue
 
   ### The time when this user was created.
-  created: DateTime
+  createdAt: DateTime
 
   ### Set of scopes that this user can access.
   scopeNames: Set<String>

@@ -90,7 +90,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'UuidValue',
         ),
         _i2.ColumnDefinition(
-          name: 'created',
+          name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -341,7 +341,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'UuidValue',
         ),
         _i2.ColumnDefinition(
-          name: 'created',
+          name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -495,7 +495,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'gen_random_uuid()',
         ),
         _i2.ColumnDefinition(
-          name: 'created',
+          name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',

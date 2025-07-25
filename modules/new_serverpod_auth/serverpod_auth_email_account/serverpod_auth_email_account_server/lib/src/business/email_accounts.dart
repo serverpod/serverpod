@@ -134,7 +134,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
         if (pendingAccountRequest != null) {
-          if (pendingAccountRequest.created.isBefore(clock.now().subtract(
+          if (pendingAccountRequest.createdAt.isBefore(clock.now().subtract(
                 EmailAccounts.config.registrationVerificationCodeLifetime,
               ))) {
             await EmailAccountRequest.db.deleteRow(
@@ -659,7 +659,7 @@ enum PasswordResetResult {
 
 extension on EmailAccountRequest {
   bool get isExpired {
-    final requestExpiresAt = created.add(
+    final requestExpiresAt = createdAt.add(
       EmailAccounts.config.registrationVerificationCodeLifetime,
     );
 
@@ -669,7 +669,7 @@ extension on EmailAccountRequest {
 
 extension on EmailAccountPasswordResetRequest {
   bool get isExpired {
-    final resetExpiresAt = created.add(
+    final resetExpiresAt = createdAt.add(
       EmailAccounts.config.passwordResetVerificationCodeLifetime,
     );
 

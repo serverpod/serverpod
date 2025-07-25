@@ -42,7 +42,7 @@ final class EmailAccountsAdmin {
 
     await EmailAccountPasswordResetRequest.db.deleteWhere(
       session,
-      where: (final t) => t.created < lastValidDateTime,
+      where: (final t) => t.createdAt < lastValidDateTime,
       transaction: transaction,
     );
   }
@@ -58,7 +58,7 @@ final class EmailAccountsAdmin {
 
     await EmailAccountRequest.db.deleteWhere(
       session,
-      where: (final t) => t.created < lastValidDateTime,
+      where: (final t) => t.createdAt < lastValidDateTime,
       transaction: transaction,
     );
   }

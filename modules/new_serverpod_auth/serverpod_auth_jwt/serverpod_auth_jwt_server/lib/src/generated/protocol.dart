@@ -87,14 +87,14 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'dart:typed_data:ByteData',
         ),
         _i2.ColumnDefinition(
-          name: 'lastUpdated',
+          name: 'lastUpdatedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
         _i2.ColumnDefinition(
-          name: 'created',
+          name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
@@ -128,12 +128,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_jwt_refresh_token_last_updated',
+          indexName: 'serverpod_auth_jwt_refresh_token_last_updated_at',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'lastUpdated',
+              definition: 'lastUpdatedAt',
             )
           ],
           type: 'btree',

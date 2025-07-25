@@ -15,14 +15,14 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class AuthUserModel implements _i1.SerializableModel {
   AuthUserModel._({
     required this.id,
-    required this.created,
+    required this.createdAt,
     required this.scopeNames,
     required this.blocked,
   });
 
   factory AuthUserModel({
     required _i1.UuidValue id,
-    required DateTime created,
+    required DateTime createdAt,
     required Set<String> scopeNames,
     required bool blocked,
   }) = _AuthUserModelImpl;
@@ -30,7 +30,8 @@ abstract class AuthUserModel implements _i1.SerializableModel {
   factory AuthUserModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUserModel(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       scopeNames: _i1.SetJsonExtension.fromJson(
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
@@ -41,7 +42,7 @@ abstract class AuthUserModel implements _i1.SerializableModel {
   _i1.UuidValue id;
 
   /// The time when this user was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// Set of scopes that this user can access.
   Set<String> scopeNames;
@@ -54,7 +55,7 @@ abstract class AuthUserModel implements _i1.SerializableModel {
   @_i1.useResult
   AuthUserModel copyWith({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
   });
@@ -62,7 +63,7 @@ abstract class AuthUserModel implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
@@ -77,12 +78,12 @@ abstract class AuthUserModel implements _i1.SerializableModel {
 class _AuthUserModelImpl extends AuthUserModel {
   _AuthUserModelImpl({
     required _i1.UuidValue id,
-    required DateTime created,
+    required DateTime createdAt,
     required Set<String> scopeNames,
     required bool blocked,
   }) : super._(
           id: id,
-          created: created,
+          createdAt: createdAt,
           scopeNames: scopeNames,
           blocked: blocked,
         );
@@ -93,13 +94,13 @@ class _AuthUserModelImpl extends AuthUserModel {
   @override
   AuthUserModel copyWith({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
   }) {
     return AuthUserModel(
       id: id ?? this.id,
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,
     );

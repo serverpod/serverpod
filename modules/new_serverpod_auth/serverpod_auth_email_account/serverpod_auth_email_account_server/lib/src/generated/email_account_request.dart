@@ -22,18 +22,18 @@ abstract class EmailAccountRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountRequest._({
     this.id,
-    DateTime? created,
+    DateTime? createdAt,
     required this.email,
     required this.passwordHash,
     required this.passwordSalt,
     required this.verificationCodeHash,
     required this.verificationCodeSalt,
     this.verifiedAt,
-  }) : created = created ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccountRequest({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
@@ -47,7 +47,8 @@ abstract class EmailAccountRequest
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      createdAt:
+          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String,
       passwordHash:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
@@ -71,7 +72,7 @@ abstract class EmailAccountRequest
   _i1.UuidValue? id;
 
   /// The time when this authentication was created.
-  DateTime created;
+  DateTime createdAt;
 
   /// The email of the user.
   ///
@@ -105,7 +106,7 @@ abstract class EmailAccountRequest
   @_i1.useResult
   EmailAccountRequest copyWith({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
@@ -117,7 +118,7 @@ abstract class EmailAccountRequest
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id?.toJson(),
-      'created': created.toJson(),
+      'createdAt': createdAt.toJson(),
       'email': email,
       'passwordHash': passwordHash.toJson(),
       'passwordSalt': passwordSalt.toJson(),
@@ -167,7 +168,7 @@ class _Undefined {}
 class _EmailAccountRequestImpl extends EmailAccountRequest {
   _EmailAccountRequestImpl({
     _i1.UuidValue? id,
-    DateTime? created,
+    DateTime? createdAt,
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
@@ -176,7 +177,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     DateTime? verifiedAt,
   }) : super._(
           id: id,
-          created: created,
+          createdAt: createdAt,
           email: email,
           passwordHash: passwordHash,
           passwordSalt: passwordSalt,
@@ -191,7 +192,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   @override
   EmailAccountRequest copyWith({
     Object? id = _Undefined,
-    DateTime? created,
+    DateTime? createdAt,
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
@@ -201,7 +202,7 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   }) {
     return EmailAccountRequest(
       id: id is _i1.UuidValue? ? id : this.id,
-      created: created ?? this.created,
+      createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash.clone(),
       passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
@@ -217,8 +218,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
 class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_email_account_request') {
-    created = _i1.ColumnDateTime(
-      'created',
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
       this,
       hasDefault: true,
     );
@@ -249,7 +250,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   }
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _i1.ColumnDateTime createdAt;
 
   /// The email of the user.
   ///
@@ -278,7 +279,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   @override
   List<_i1.Column> get columns => [
         id,
-        created,
+        createdAt,
         email,
         passwordHash,
         passwordSalt,
