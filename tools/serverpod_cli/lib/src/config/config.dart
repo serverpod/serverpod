@@ -303,13 +303,34 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    var packageConfig = await findPackageConfig(Directory(serverRootDir));
+    // Check if we're in a workspace by looking for resolution: workspace in pubspec
+    var isWorkspace = false;
+    try {
+      var pubspecFile = File(p.join(serverRootDir, 'pubspec.yaml'));
+      var pubspecContent = pubspecFile.readAsStringSync();
+      var pubspec = Pubspec.parse(pubspecContent);
+      isWorkspace = pubspec.resolution == 'workspace';
+    } catch (e) {
+      throw const ServerpodProjectNotFoundException(
+        'Failed to read server pubspec.yaml. The server directory must contain '
+        'a valid pubspec.yaml file.',
+      );
+    }
+
+    // If we're in a workspace, look for package config from parent directory
+    var searchDir = isWorkspace && serverRootDir.isNotEmpty
+        ? Directory(p.dirname(serverRootDir))
+        : Directory(serverRootDir);
+
+    var packageConfig = await findPackageConfig(searchDir);
 
     if (packageConfig == null) {
-      throw const ServerpodProjectNotFoundException(
-        'Failed to read your server\'s package configuration. Have you run '
-        '`dart pub get` in your server directory?',
-      );
+      var errorMessage = isWorkspace
+          ? 'Failed to read your server\'s package configuration. Have you run '
+              '`dart pub get` in your workspace root directory?'
+          : 'Failed to read your server\'s package configuration. Have you run '
+              '`dart pub get` in your server directory?';
+      throw ServerpodProjectNotFoundException(errorMessage);
     }
 
     if (relativeServerTestToolsPathParts != null &&

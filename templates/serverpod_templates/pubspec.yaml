@@ -7,4 +7,11 @@ description: Templates for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
+
+workspace:
+  - modulename_server
+  - modulename_client
+  - projectname_server
+  - projectname_client
+  - projectname_flutter

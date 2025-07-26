@@ -31,7 +31,10 @@ class Copier {
   void _copyDirectory(Directory dir, String relativePath) {
     for (var model in dir.listSync()) {
       var modelName = p.basename(model.path);
-      if (ignoreFileNames.contains(modelName)) continue;
+      if (ignoreFileNames.contains(modelName)) {
+        log.debug('Ignoring file: $modelName');
+        continue;
+      }
       if (modelName.startsWith('.')) continue;
 
       if (model is File) {
