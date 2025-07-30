@@ -16,7 +16,7 @@ import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_bac
     as _i3;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i4;
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart'
     as _i5;
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i6;
@@ -198,7 +198,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_email.$className';
+      return 'serverpod_auth_google_account.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -240,8 +240,8 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(29);
       return _i4.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_email.')) {
-      data['className'] = dataClassName.substring(21);
+    if (dataClassName.startsWith('serverpod_auth_google_account.')) {
+      data['className'] = dataClassName.substring(30);
       return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_profile.')) {

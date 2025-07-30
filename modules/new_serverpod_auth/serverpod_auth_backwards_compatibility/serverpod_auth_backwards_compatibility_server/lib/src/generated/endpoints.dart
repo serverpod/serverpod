@@ -14,10 +14,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/session_migration_endpoint.dart' as _i2;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as _i3;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart'
     as _i4;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i5;
+import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i6;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -57,9 +59,11 @@ class Endpoints extends _i1.EndpointDispatch {
     );
     modules['serverpod_auth_email_account'] = _i3.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i4.Endpoints()
+    modules['serverpod_auth_google_account'] = _i4.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i5.Endpoints()
+    modules['serverpod_auth_session'] = _i5.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_user'] = _i6.Endpoints()
       ..initializeEndpoints(server);
   }
 }

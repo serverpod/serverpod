@@ -23,13 +23,17 @@ import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_bac
     as _i8;
 import 'package:serverpod_auth_email_client/serverpod_auth_email_client.dart'
     as _i9;
-import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
+import 'package:serverpod_auth_google_client/serverpod_auth_google_client.dart'
     as _i10;
-import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
+import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i11;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
     as _i12;
-import 'protocol.dart' as _i13;
+import 'package:serverpod_auth_google_account_client/serverpod_auth_google_account_client.dart'
+    as _i13;
+import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+    as _i14;
+import 'protocol.dart' as _i15;
 
 /// {@category Endpoint}
 class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
@@ -243,6 +247,40 @@ class EndpointEmailAccount extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for Google-based authentication, which automatically imports legacy
+/// accounts.
+/// {@category Endpoint}
+class EndpointGoogleAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
+  EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'googleAccountBackwardsCompatibilityTest';
+
+  _i2.Future<_i5.AuthSuccess> authenticate({required String idToken}) =>
+      caller.callServerEndpoint<_i5.AuthSuccess>(
+        'googleAccountBackwardsCompatibilityTest',
+        'authenticate',
+        {'idToken': idToken},
+      );
+}
+
+/// Endpoint for Google-based authentication.
+/// {@category Endpoint}
+class EndpointGoogleAccount extends _i1.EndpointRef {
+  EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'googleAccount';
+
+  _i2.Future<_i5.AuthSuccess> authenticate({required String idToken}) =>
+      caller.callServerEndpoint<_i5.AuthSuccess>(
+        'googleAccount',
+        'authenticate',
+        {'idToken': idToken},
+      );
+}
+
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
 class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
@@ -443,29 +481,35 @@ class Modules {
   Modules(Client client) {
     serverpod_auth_backwards_compatibility = _i8.Caller(client);
     serverpod_auth_email = _i9.Caller(client);
-    serverpod_auth_migration = _i10.Caller(client);
+    serverpod_auth_google = _i10.Caller(client);
+    serverpod_auth_migration = _i11.Caller(client);
     serverpod_auth_profile = _i6.Caller(client);
     auth = _i3.Caller(client);
-    serverpod_auth_email_account = _i11.Caller(client);
+    serverpod_auth_email_account = _i12.Caller(client);
+    serverpod_auth_google_account = _i13.Caller(client);
     serverpod_auth_session = _i5.Caller(client);
-    serverpod_auth_user = _i12.Caller(client);
+    serverpod_auth_user = _i14.Caller(client);
   }
 
   late final _i8.Caller serverpod_auth_backwards_compatibility;
 
   late final _i9.Caller serverpod_auth_email;
 
-  late final _i10.Caller serverpod_auth_migration;
+  late final _i10.Caller serverpod_auth_google;
+
+  late final _i11.Caller serverpod_auth_migration;
 
   late final _i6.Caller serverpod_auth_profile;
 
   late final _i3.Caller auth;
 
-  late final _i11.Caller serverpod_auth_email_account;
+  late final _i12.Caller serverpod_auth_email_account;
+
+  late final _i13.Caller serverpod_auth_google_account;
 
   late final _i5.Caller serverpod_auth_session;
 
-  late final _i12.Caller serverpod_auth_user;
+  late final _i14.Caller serverpod_auth_user;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -484,7 +528,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i13.Protocol(),
+          _i15.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -497,6 +541,9 @@ class Client extends _i1.ServerpodClientShared {
     emailAccountBackwardsCompatibilityTest =
         EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
+    googleAccountBackwardsCompatibilityTest =
+        EndpointGoogleAccountBackwardsCompatibilityTest(this);
+    googleAccount = EndpointGoogleAccount(this);
     passwordImportingEmailAccount = EndpointPasswordImportingEmailAccount(this);
     sessionTest = EndpointSessionTest(this);
     userProfile = EndpointUserProfile(this);
@@ -507,6 +554,11 @@ class Client extends _i1.ServerpodClientShared {
       emailAccountBackwardsCompatibilityTest;
 
   late final EndpointEmailAccount emailAccount;
+
+  late final EndpointGoogleAccountBackwardsCompatibilityTest
+      googleAccountBackwardsCompatibilityTest;
+
+  late final EndpointGoogleAccount googleAccount;
 
   late final EndpointPasswordImportingEmailAccount
       passwordImportingEmailAccount;
@@ -522,6 +574,9 @@ class Client extends _i1.ServerpodClientShared {
         'emailAccountBackwardsCompatibilityTest':
             emailAccountBackwardsCompatibilityTest,
         'emailAccount': emailAccount,
+        'googleAccountBackwardsCompatibilityTest':
+            googleAccountBackwardsCompatibilityTest,
+        'googleAccount': googleAccount,
         'passwordImportingEmailAccount': passwordImportingEmailAccount,
         'sessionTest': sessionTest,
         'userProfile': userProfile,
@@ -532,10 +587,12 @@ class Client extends _i1.ServerpodClientShared {
         'serverpod_auth_backwards_compatibility':
             modules.serverpod_auth_backwards_compatibility,
         'serverpod_auth_email': modules.serverpod_auth_email,
+        'serverpod_auth_google': modules.serverpod_auth_google,
         'serverpod_auth_migration': modules.serverpod_auth_migration,
         'serverpod_auth_profile': modules.serverpod_auth_profile,
         'auth': modules.auth,
         'serverpod_auth_email_account': modules.serverpod_auth_email_account,
+        'serverpod_auth_google_account': modules.serverpod_auth_google_account,
         'serverpod_auth_session': modules.serverpod_auth_session,
         'serverpod_auth_user': modules.serverpod_auth_user,
       };

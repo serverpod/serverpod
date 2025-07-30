@@ -14,26 +14,33 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/email_account_backwards_compatibility_endpoint.dart'
     as _i2;
 import '../endpoints/email_account_endpoint.dart' as _i3;
-import '../endpoints/password_importing_email_account_endpoint.dart' as _i4;
-import '../endpoints/session_test_endpoint.dart' as _i5;
-import '../endpoints/user_profile_endpoint.dart' as _i6;
-import 'package:uuid/uuid_value.dart' as _i7;
-import 'dart:typed_data' as _i8;
+import '../endpoints/google_account_backwards_compatibility_test_endpoint.dart'
+    as _i4;
+import '../endpoints/google_account_endpoint.dart' as _i5;
+import '../endpoints/password_importing_email_account_endpoint.dart' as _i6;
+import '../endpoints/session_test_endpoint.dart' as _i7;
+import '../endpoints/user_profile_endpoint.dart' as _i8;
+import 'package:uuid/uuid_value.dart' as _i9;
+import 'dart:typed_data' as _i10;
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
-    as _i9;
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    as _i10;
-import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i11;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
     as _i12;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i13;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+import 'package:serverpod_auth_google_server/serverpod_auth_google_server.dart'
+    as _i13;
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i14;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i15;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i16;
+import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+    as _i17;
+import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart'
+    as _i18;
+import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+    as _i19;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i16;
+    as _i20;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -52,20 +59,33 @@ class Endpoints extends _i1.EndpointDispatch {
           'emailAccount',
           null,
         ),
+      'googleAccountBackwardsCompatibilityTest':
+          _i4.GoogleAccountBackwardsCompatibilityTestEndpoint()
+            ..initialize(
+              server,
+              'googleAccountBackwardsCompatibilityTest',
+              null,
+            ),
+      'googleAccount': _i5.GoogleAccountEndpoint()
+        ..initialize(
+          server,
+          'googleAccount',
+          null,
+        ),
       'passwordImportingEmailAccount':
-          _i4.PasswordImportingEmailAccountEndpoint()
+          _i6.PasswordImportingEmailAccountEndpoint()
             ..initialize(
               server,
               'passwordImportingEmailAccount',
               null,
             ),
-      'sessionTest': _i5.SessionTestEndpoint()
+      'sessionTest': _i7.SessionTestEndpoint()
         ..initialize(
           server,
           'sessionTest',
           null,
         ),
-      'userProfile': _i6.UserProfileEndpoint()
+      'userProfile': _i8.UserProfileEndpoint()
         ..initialize(
           server,
           'userProfile',
@@ -292,7 +312,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'accountRequestId': _i1.ParameterDescription(
               name: 'accountRequestId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -336,7 +356,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -362,6 +382,58 @@ class Endpoints extends _i1.EndpointDispatch {
             newPassword: params['newPassword'],
           ),
         ),
+      },
+    );
+    connectors['googleAccountBackwardsCompatibilityTest'] =
+        _i1.EndpointConnector(
+      name: 'googleAccountBackwardsCompatibilityTest',
+      endpoint: endpoints['googleAccountBackwardsCompatibilityTest']!,
+      methodConnectors: {
+        'authenticate': _i1.MethodConnector(
+          name: 'authenticate',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['googleAccountBackwardsCompatibilityTest']
+                      as _i4.GoogleAccountBackwardsCompatibilityTestEndpoint)
+                  .authenticate(
+            session,
+            idToken: params['idToken'],
+          ),
+        )
+      },
+    );
+    connectors['googleAccount'] = _i1.EndpointConnector(
+      name: 'googleAccount',
+      endpoint: endpoints['googleAccount']!,
+      methodConnectors: {
+        'authenticate': _i1.MethodConnector(
+          name: 'authenticate',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['googleAccount'] as _i5.GoogleAccountEndpoint)
+                  .authenticate(
+            session,
+            idToken: params['idToken'],
+          ),
+        )
       },
     );
     connectors['passwordImportingEmailAccount'] = _i1.EndpointConnector(
@@ -387,7 +459,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i4.PasswordImportingEmailAccountEndpoint)
+                      as _i6.PasswordImportingEmailAccountEndpoint)
                   .login(
             session,
             email: params['email'],
@@ -413,7 +485,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i4.PasswordImportingEmailAccountEndpoint)
+                      as _i6.PasswordImportingEmailAccountEndpoint)
                   .startRegistration(
             session,
             email: params['email'],
@@ -425,7 +497,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'accountRequestId': _i1.ParameterDescription(
               name: 'accountRequestId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -439,7 +511,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i4.PasswordImportingEmailAccountEndpoint)
+                      as _i6.PasswordImportingEmailAccountEndpoint)
                   .finishRegistration(
             session,
             accountRequestId: params['accountRequestId'],
@@ -460,7 +532,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i4.PasswordImportingEmailAccountEndpoint)
+                      as _i6.PasswordImportingEmailAccountEndpoint)
                   .startPasswordReset(
             session,
             email: params['email'],
@@ -471,7 +543,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             ),
             'verificationCode': _i1.ParameterDescription(
@@ -490,7 +562,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i4.PasswordImportingEmailAccountEndpoint)
+                      as _i6.PasswordImportingEmailAccountEndpoint)
                   .finishPasswordReset(
             session,
             passwordResetRequestId: params['passwordResetRequestId'],
@@ -511,7 +583,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i5.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i7.SessionTestEndpoint)
                   .createTestUser(session),
         ),
         'createSession': _i1.MethodConnector(
@@ -519,7 +591,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authUserId': _i1.ParameterDescription(
               name: 'authUserId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             )
           },
@@ -527,7 +599,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i5.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i7.SessionTestEndpoint)
                   .createSession(
             session,
             params['authUserId'],
@@ -538,7 +610,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'authUserId': _i1.ParameterDescription(
               name: 'authUserId',
-              type: _i1.getType<_i7.UuidValue>(),
+              type: _i1.getType<_i9.UuidValue>(),
               nullable: false,
             )
           },
@@ -546,7 +618,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['sessionTest'] as _i5.SessionTestEndpoint)
+              (endpoints['sessionTest'] as _i7.SessionTestEndpoint)
                   .checkSession(
             session,
             params['authUserId'],
@@ -565,7 +637,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i6.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
                   .get(session),
         ),
         'removeUserImage': _i1.MethodConnector(
@@ -575,7 +647,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i6.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
                   .removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
@@ -583,7 +655,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i8.ByteData>(),
+              type: _i1.getType<_i10.ByteData>(),
               nullable: false,
             )
           },
@@ -591,7 +663,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i6.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
                   .setUserImage(
             session,
             params['image'],
@@ -610,7 +682,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i6.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
                   .changeUserName(
             session,
             params['userName'],
@@ -629,7 +701,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i6.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
                   .changeFullName(
             session,
             params['fullName'],
@@ -637,20 +709,24 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_backwards_compatibility'] = _i9.Endpoints()
+    modules['serverpod_auth_backwards_compatibility'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_email'] = _i10.Endpoints()
+    modules['serverpod_auth_email'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _i11.Endpoints()
+    modules['serverpod_auth_google'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i12.Endpoints()
+    modules['serverpod_auth_migration'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i13.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_email_account'] = _i14.Endpoints()
+    modules['serverpod_auth_profile'] = _i15.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i15.Endpoints()
+    modules['serverpod_auth'] = _i16.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_email_account'] = _i17.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i16.Endpoints()
+    modules['serverpod_auth_google_account'] = _i18.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_session'] = _i19.Endpoints()
+      ..initializeEndpoints(server);
+    modules['serverpod_auth_user'] = _i20.Endpoints()
       ..initializeEndpoints(server);
   }
 }

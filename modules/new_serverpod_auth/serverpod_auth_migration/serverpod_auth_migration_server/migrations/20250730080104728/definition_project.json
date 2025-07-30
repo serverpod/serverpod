@@ -110,8 +110,8 @@
       "version": "20250725091333105"
     },
     {
-      "module": "serverpod_auth_email",
-      "version": "20250725091237135"
+      "module": "serverpod_auth_google_account",
+      "version": "20250725091956340"
     },
     {
       "module": "serverpod_auth_profile",

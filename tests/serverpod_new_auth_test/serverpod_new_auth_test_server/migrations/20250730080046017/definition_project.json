@@ -15,8 +15,12 @@
       "version": "20250725091237135"
     },
     {
+      "module": "serverpod_auth_google",
+      "version": "20250710121011974"
+    },
+    {
       "module": "serverpod_auth_migration",
-      "version": "20250725091412673"
+      "version": "20250730075807526"
     },
     {
       "module": "serverpod_auth_profile",
@@ -29,6 +33,10 @@
     {
       "module": "serverpod_auth_email_account",
       "version": "20250725091333105"
+    },
+    {
+      "module": "serverpod_auth_google_account",
+      "version": "20250725091956340"
     },
     {
       "module": "serverpod_auth_session",

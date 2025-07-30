@@ -12,6 +12,10 @@ emailAccount:
   - finishRegistration:
   - startPasswordReset:
   - finishPasswordReset:
+googleAccountBackwardsCompatibilityTest:
+  - authenticate:
+googleAccount:
+  - authenticate:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:
