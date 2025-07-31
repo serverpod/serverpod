@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
@@ -7,6 +6,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
+import 'package:serverpod_auth_session_server/src/business/session_key.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
@@ -34,34 +34,12 @@ abstract final class AuthSessions {
     final Session session,
     final String key,
   ) async {
-    if (!key.startsWith('$_sessionKeyPrefix:')) {
+    final sessionKeyParts = tryParseSessionKey(session, key);
+    if (sessionKeyParts == null) {
       return null;
     }
 
-    final parts = key.split(':');
-    if (parts.length != 3) {
-      session.log(
-        'Unexpected key format',
-        level: LogLevel.debug,
-      );
-
-      return null;
-    }
-
-    final UuidValue authSessionId;
-    try {
-      authSessionId = UuidValue.fromByteList(base64Decode(parts[1]));
-    } catch (e, stackTrace) {
-      session.log(
-        'Failed to parse auth session ID',
-        level: LogLevel.debug,
-        exception: e,
-        stackTrace: stackTrace,
-      );
-
-      return null;
-    }
-    final secret = base64Decode(parts[2]);
+    final (:authSessionId, :secret) = sessionKeyParts;
 
     var authSession = await AuthSession.db.findById(
       session,
@@ -206,7 +184,7 @@ abstract final class AuthSessions {
     );
 
     return AuthSuccess(
-      sessionKey: _buildSessionKey(
+      sessionKey: buildSessionKey(
         secret: secret,
         authSessionId: authSession.id!,
       ),
@@ -283,17 +261,6 @@ abstract final class AuthSessions {
       authSession.authUserId,
       RevokedAuthenticationAuthId(authId: authSessionId.toString()),
     );
-  }
-
-  /// Prefix for sessions keys
-  /// "sas" being abbreviated of "serverpod_auth_session"
-  static const _sessionKeyPrefix = 'sas';
-
-  static String _buildSessionKey({
-    required final UuidValue authSessionId,
-    required final Uint8List secret,
-  }) {
-    return '$_sessionKeyPrefix:${base64Encode(authSessionId.toBytes())}:${base64Encode(secret)}';
   }
 
   /// The secrets configuration.
