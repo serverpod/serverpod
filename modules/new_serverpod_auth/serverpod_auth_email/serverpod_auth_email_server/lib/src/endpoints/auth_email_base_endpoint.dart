@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
+import 'package:serverpod_auth_email_server/src/business/auth_email.dart';
 
 /// Base endpoint for email-based accounts.
 ///
@@ -12,19 +13,23 @@ import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [AuthEmail].
-abstract class AuthEmailBaseEndpoint extends Endpoint {
+abstract class AuthEmailBaseEndpoint<SessionType extends SerializableModel>
+    extends Endpoint {
+  ///
+  AuthEmail<SessionType> get authEmail;
+
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a
   /// [EmailAccountLoginException].
   /// {@endtemplate}
-  Future<AuthSuccess> login(
+  Future<SessionType> login(
     final Session session, {
     required final String email,
     required final String password,
   }) async {
-    return AuthEmail.login(
+    return authEmail.login(
       session,
       email: email,
       password: password,
@@ -44,7 +49,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return AuthEmail.startRegistration(
+    return authEmail.startRegistration(
       session,
       email: email,
       password: password,
@@ -66,12 +71,12 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
-  Future<AuthSuccess> finishRegistration(
+  Future<SessionType> finishRegistration(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
-    return AuthEmail.finishRegistration(
+    return authEmail.finishRegistration(
       session,
       accountRequestId: accountRequestId,
       verificationCode: verificationCode,
@@ -91,7 +96,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    return AuthEmail.startPasswordReset(session, email: email);
+    return authEmail.startPasswordReset(session, email: email);
   }
 
   /// {@template email_account_base_endpoint.finish_password_reset}
@@ -109,13 +114,13 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// If the reset was successful, a new session is returned and
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
-  Future<AuthSuccess> finishPasswordReset(
+  Future<SessionType> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
     required final String newPassword,
   }) async {
-    return AuthEmail.finishPasswordReset(
+    return authEmail.finishPasswordReset(
       session,
       passwordResetRequestId: passwordResetRequestId,
       verificationCode: verificationCode,
@@ -123,3 +128,13 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     );
   }
 }
+
+///
+abstract class AuthEmailDatabaseSessionBaseEndpoint
+    extends AuthEmailBaseEndpoint<AuthSuccess> {
+  ///
+  @override
+  AuthEmail<AuthSuccess> get authEmail => AuthEmailDatabaseSession();
+}
+
+// class ProjectEmailEndpoint extends AuthEmailDatabaseSessionBaseEndpoint {}

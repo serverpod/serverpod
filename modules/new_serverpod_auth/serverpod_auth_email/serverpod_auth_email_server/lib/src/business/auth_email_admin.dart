@@ -3,10 +3,12 @@ part of 'auth_email.dart';
 /// Admin operations complementing the end-user [AuthEmail] functionality.
 ///
 /// An instance of this class is available at [AuthEmail.admin].
-final class AuthEmailAdmin {
+abstract class AuthEmailAdmin<SessionType extends SerializableModel> {
   AuthEmailAdmin._();
 
-  static const String _method = 'email';
+  ///
+  @protected
+  final String method = 'email';
 
   /// Creates a user with an email-based authentication and the associated
   /// profile.
@@ -57,6 +59,21 @@ final class AuthEmailAdmin {
   /// Create a session for the given auth user.
   ///
   /// The session is marked as originating from the `email` provider.
+  Future<SessionType> createSession(
+    final Session session,
+    final UuidValue authUserId, {
+    required final Transaction? transaction,
+  });
+}
+
+///
+class AuthEmailAdminDatabaseSession extends AuthEmailAdmin<AuthSuccess> {
+  AuthEmailAdminDatabaseSession._() : super._();
+
+  /// Create a session for the given auth user.
+  ///
+  /// The session is marked as originating from the `email` provider.
+  @override
   Future<AuthSuccess> createSession(
     final Session session,
     final UuidValue authUserId, {
@@ -65,7 +82,7 @@ final class AuthEmailAdmin {
     return AuthSessions.createSession(
       session,
       authUserId: authUserId,
-      method: _method,
+      method: method,
       transaction: transaction,
     );
   }
