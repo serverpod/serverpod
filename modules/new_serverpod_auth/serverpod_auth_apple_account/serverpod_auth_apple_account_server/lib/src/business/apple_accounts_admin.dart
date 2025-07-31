@@ -6,12 +6,11 @@ import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 /// Administrative Apple account management functions.
 final class AppleAccountsAdmin {
-  final AppleAccountConfig _config;
   final SignInWithApple _siwa;
 
   /// Creates a new instance of the admin utilities.
   @internal
-  AppleAccountsAdmin(this._config, this._siwa);
+  AppleAccountsAdmin(this._siwa);
 
   /// Checks whether all accounts are in good standing with Apple and that the
   /// authorization has not been revoked.
@@ -24,24 +23,22 @@ final class AppleAccountsAdmin {
   /// revoked.
   Future<void> checkAccountStatus(
     final Session session, {
+    /// Callback to be invoked when an Apple authentication has been revoked.
+    ///
+    /// In this case all sessions associated with this sign-in method should be
+    /// removed.
+    required final void Function(UuidValue authUserId)
+        onExpiredUserAuthentication,
     final Transaction? transaction,
     final int databaseBatchSize = 100,
   }) async {
-    final expiredUserAuthenticationCallback =
-        _config.expiredUserAuthenticationCallback;
-    if (expiredUserAuthenticationCallback == null) {
-      throw StateError(
-        'No `expiredUserAuthenticationCallback` is configured in the `AppleAccountConfig`.',
-      );
-    }
-
     while (true) {
       final appleAccounts = await AppleAccount.db.find(
         session,
         where: (final t) =>
             t.lastRefreshedAt <
             DateTime.now().subtract(const Duration(days: 1)),
-        limit: 10,
+        limit: databaseBatchSize,
         transaction: transaction,
       );
 
@@ -57,7 +54,7 @@ final class AppleAccountsAdmin {
                 appleAccount.refreshTokenRequestedWithBundleIdentifier,
           );
         } on RevokedTokenException catch (_) {
-          expiredUserAuthenticationCallback(appleAccount.authUserId);
+          onExpiredUserAuthentication(appleAccount.authUserId);
         }
 
         await AppleAccount.db.updateRow(
