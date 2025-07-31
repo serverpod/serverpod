@@ -79,7 +79,7 @@ class JwtUtil {
 
     final UuidValue refreshTokenId;
     try {
-      refreshTokenId = UuidValue.fromString(jwt.jwtId!);
+      refreshTokenId = UuidValue.withValidation(jwt.jwtId!);
     } catch (e) {
       throw ArgumentError(
         'The refresh token ID could not be read from the JWT\'s `id` claim: "${jwt.jwtId}"',
@@ -89,7 +89,7 @@ class JwtUtil {
 
     final UuidValue authUserId;
     try {
-      authUserId = UuidValue.fromString(jwt.subject!);
+      authUserId = UuidValue.withValidation(jwt.subject!);
     } catch (e) {
       throw ArgumentError(
         'The auth user ID could not be read from the JWT\'s `subject` claim: "${jwt.subject}"',
