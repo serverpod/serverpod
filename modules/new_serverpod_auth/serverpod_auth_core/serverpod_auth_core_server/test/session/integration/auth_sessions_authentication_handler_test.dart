@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/src/session/business/session_key.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -37,7 +38,11 @@ void main() {
         expect(
           await authSessions.authenticationHandler(
             session,
-            'sat:noguid64:nosecret64',
+            base64Url.encode([
+              ...utf8.encode('sat'),
+              ...const Uuid().v4obj().toBytes(),
+              ...utf8.encode('nosecret64'),
+            ]),
           ),
           isNull,
         );
@@ -83,9 +88,11 @@ void main() {
     test(
       'when calling `authenticationHandler` with the wrong secret in the session key, then it returns `null`.',
       () async {
-        final sessionKeyParts = sessionKey.split(':');
-        sessionKeyParts[2] = base64Encode(utf8.encode('some other secret'));
-        final sessionKeyWithInvalidSecret = sessionKeyParts.join(':');
+        final sessionData = tryParseSessionKey(session, sessionKey)!;
+        final sessionKeyWithInvalidSecret = buildSessionKey(
+          authSessionId: sessionData.authSessionId,
+          secret: utf8.encode('some other secret'),
+        );
 
         final authInfo = await authSessions.authenticationHandler(
           session,
