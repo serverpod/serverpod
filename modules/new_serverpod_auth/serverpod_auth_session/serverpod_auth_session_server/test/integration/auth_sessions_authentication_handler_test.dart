@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
 import '../test_utils.dart';

@@ -17,7 +17,7 @@ import 'refresh_token_invalid_secret_exception.dart' as _i4;
 import 'refresh_token_malformed_exception.dart' as _i5;
 import 'refresh_token_not_found_exception.dart' as _i6;
 import 'token_pair.dart' as _i7;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i8;
 export 'authentication_token_info.dart';
 export 'refresh_token_expired_exception.dart';

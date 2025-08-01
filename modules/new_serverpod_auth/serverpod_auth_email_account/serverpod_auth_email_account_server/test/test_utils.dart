@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_email_account_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 Future<AuthUserModel> createAuthUser(final Session session) {
   return AuthUsers.create(session);

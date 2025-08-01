@@ -22,7 +22,7 @@ import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
     as _i7;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i8;
 export 'client.dart';
 

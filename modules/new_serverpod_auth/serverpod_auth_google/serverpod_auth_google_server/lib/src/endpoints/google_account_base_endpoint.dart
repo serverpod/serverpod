@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 abstract class GoogleAccountBaseEndpoint extends Endpoint {
   static const String _method = 'google';

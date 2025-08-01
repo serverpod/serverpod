@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Base endpoint for user profile management.
 ///

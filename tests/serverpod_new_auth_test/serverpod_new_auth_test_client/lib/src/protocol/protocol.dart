@@ -28,7 +28,7 @@ import 'package:serverpod_auth_google_account_client/serverpod_auth_google_accou
     as _i9;
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
     as _i10;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i11;
 export 'client.dart';
 

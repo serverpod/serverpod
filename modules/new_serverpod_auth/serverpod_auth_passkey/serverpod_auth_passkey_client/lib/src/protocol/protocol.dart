@@ -13,7 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_passkey_account_client/serverpod_auth_passkey_account_client.dart'
     as _i2;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i3;
 export 'client.dart';
 

@@ -4,12 +4,12 @@ import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
 import 'package:serverpod_auth_session_server/src/business/auth_session_secrets.dart';
 import 'package:serverpod_auth_session_server/src/business/session_key.dart';
 import 'package:serverpod_auth_session_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_session_server/src/util/session_key_hash.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Management functions for [AuthSession]s.

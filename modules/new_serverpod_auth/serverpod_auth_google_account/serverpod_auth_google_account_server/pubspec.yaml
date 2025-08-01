@@ -15,7 +15,7 @@ dependencies:
   http: ">=1.1.0 <2.0.0"
   meta: ^1.11.0
   serverpod: 2.9.1
-  serverpod_auth_user_server: 2.9.1
+  serverpod_auth_core_server: 2.9.1
   serverpod_shared: 2.9.1
 
 dev_dependencies:
@@ -26,8 +26,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
-  serverpod_auth_user_server:
-    path: ../../serverpod_auth_user/serverpod_auth_user_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

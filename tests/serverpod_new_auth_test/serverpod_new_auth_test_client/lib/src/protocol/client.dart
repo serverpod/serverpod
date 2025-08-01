@@ -31,7 +31,7 @@ import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account
     as _i12;
 import 'package:serverpod_auth_google_account_client/serverpod_auth_google_account_client.dart'
     as _i13;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i14;
 import 'protocol.dart' as _i15;
 

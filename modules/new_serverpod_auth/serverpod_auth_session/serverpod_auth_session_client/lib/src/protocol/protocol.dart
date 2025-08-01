@@ -13,7 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'auth_session_info.dart' as _i2;
 import 'auth_success.dart' as _i3;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 export 'auth_session_info.dart';
 export 'auth_success.dart';
