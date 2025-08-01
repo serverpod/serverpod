@@ -28,7 +28,7 @@ abstract final class AppleAccounts {
       ),
     );
 
-    admin = AppleAccountsAdmin(_config, _siwa);
+    admin = AppleAccountsAdmin(_siwa);
   }
 
   /// Returns the current configuration.
