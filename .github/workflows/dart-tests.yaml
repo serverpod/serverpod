@@ -256,7 +256,6 @@ jobs:
             'modules/new_serverpod_auth/serverpod_auth_apple_account/serverpod_auth_apple_account_server',
             'modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server',
             'modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server',
-            'modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_server',
             'modules/new_serverpod_auth/serverpod_auth_jwt/serverpod_auth_jwt_server',
             'modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server',
             'modules/new_serverpod_auth/serverpod_auth_profile/serverpod_auth_profile_server',

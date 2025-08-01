@@ -82,11 +82,6 @@ cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_e
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_apple/serverpod_auth_apple_client/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_apple/serverpod_auth_apple_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_server/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_flutter/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_client/CHANGELOG.md
-cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_server/CHANGELOG.md
 
 cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_server/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_chat/serverpod_chat_client/CHANGELOG.md
@@ -151,11 +146,6 @@ cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_apple/serverpo
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_apple/serverpod_auth_apple_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_email/serverpod_auth_email_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_server/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_passkey/serverpod_auth_passkey_flutter/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_client/README.md
-cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_passkey_account/serverpod_auth_passkey_account_server/README.md
 
 cp README_subpackage.md modules/serverpod_chat/serverpod_chat_server/README.md
 cp README_subpackage.md modules/serverpod_chat/serverpod_chat_client/README.md
