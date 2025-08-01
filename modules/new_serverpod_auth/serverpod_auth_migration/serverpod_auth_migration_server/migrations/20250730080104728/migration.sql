@@ -357,6 +357,20 @@ CREATE INDEX "serverpod_auth_email_account_request_completion_attempt_at" ON "se
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_google_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "created" timestamp without time zone NOT NULL,
+    "email" text NOT NULL,
+    "userIdentifier" text NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_google_account_user_identifier" ON "serverpod_auth_google_account" USING btree ("userIdentifier");
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_auth_profile_user_profile" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "authUserId" uuid NOT NULL,
@@ -639,6 +653,16 @@ ALTER TABLE ONLY "serverpod_auth_email_account_request_completion_attempt"
 --
 -- ACTION CREATE FOREIGN KEY
 --
+ALTER TABLE ONLY "serverpod_auth_google_account"
+    ADD CONSTRAINT "serverpod_auth_google_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
 ALTER TABLE ONLY "serverpod_auth_profile_user_profile"
     ADD CONSTRAINT "serverpod_auth_profile_user_profile_fk_0"
     FOREIGN KEY("authUserId")
@@ -677,9 +701,9 @@ ALTER TABLE ONLY "serverpod_auth_session"
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20250725091412673', now())
+    VALUES ('serverpod_auth_migration', '20250730080104728', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250725091412673', "timestamp" = now();
+    DO UPDATE SET "version" = '20250730080104728', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -706,12 +730,12 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20250725091333105', "timestamp" = now();
 
 --
--- MIGRATION VERSION FOR serverpod_auth_email
+-- MIGRATION VERSION FOR serverpod_auth_google_account
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_email', '20250725091237135', now())
+    VALUES ('serverpod_auth_google_account', '20250725091956340', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250725091237135', "timestamp" = now();
+    DO UPDATE SET "version" = '20250725091956340', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_profile
