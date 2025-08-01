@@ -18,7 +18,7 @@ import 'package:serverpod_auth_google_account_server/serverpod_auth_google_accou
     as _i4;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i5;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i6;
 import 'legacy_email_password.dart' as _i7;
 import 'legacy_external_user_identifier.dart' as _i8;
@@ -329,7 +329,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -365,7 +365,7 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(23);
       return _i5.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i6.Protocol().deserializeByClassName(data);
     }

@@ -65,7 +65,7 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -82,7 +82,7 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'AuthSuccess') {
       return deserialize<_i3.AuthSuccess>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i4.Protocol().deserializeByClassName(data);
     }

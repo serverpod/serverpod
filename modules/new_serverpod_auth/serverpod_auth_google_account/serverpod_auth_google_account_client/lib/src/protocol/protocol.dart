@@ -54,7 +54,7 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -68,7 +68,7 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'GoogleIdTokenVerificationException') {
       return deserialize<_i2.GoogleIdTokenVerificationException>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i3.Protocol().deserializeByClassName(data);
     }

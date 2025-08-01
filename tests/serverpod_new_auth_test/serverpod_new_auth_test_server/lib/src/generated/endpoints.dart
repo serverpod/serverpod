@@ -39,7 +39,7 @@ import 'package:serverpod_auth_google_account_server/serverpod_auth_google_accou
     as _i18;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i19;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i20;
 
 class Endpoints extends _i1.EndpointDispatch {
@@ -726,7 +726,7 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_session'] = _i19.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i20.Endpoints()
+    modules['serverpod_auth_core'] = _i20.Endpoints()
       ..initializeEndpoints(server);
   }
 }
