@@ -79,9 +79,8 @@ void main() async {
       expect(reflectedHeader, isNotNull);
       expect(reflectedHeader!, isNotEmpty);
       expect(isValidAuthHeaderValue(reflectedHeader.first), isTrue);
-      expect(isWrappedBasicAuthHeaderValue(reflectedHeader.first), isTrue);
       var scheme = reflectedHeader.first.split(' ')[0];
-      expect(scheme, 'Basic');
+      expect(scheme, bearerAuthSchemeName);
     });
 
     test(

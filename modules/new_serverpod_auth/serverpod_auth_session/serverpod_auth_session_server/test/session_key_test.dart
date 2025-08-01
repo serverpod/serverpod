@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
@@ -12,14 +11,12 @@ void main() {
     'Given a session key based on a session secret which would result in `+` when base64 encoded,',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      final secret = Uint8List.fromList([250]);
+      final secret = Uint8List.fromList([0, 0, 250]);
       final authSessionId = const Uuid().v4obj();
       late String sessionKey;
 
       setUp(() {
         session = sessionBuilder.build();
-
-        assert(base64Encode(secret) == '+g==');
 
         sessionKey = buildSessionKey(
           authSessionId: authSessionId,
@@ -35,16 +32,10 @@ void main() {
       );
 
       test(
-        'when inspecting the key, then it does at least one ":" to be usable as a Basic auth header.',
-        () {
-          expect(sessionKey, contains(':'));
-        },
-      );
-
-      test(
         'when inspecting the key, then contains the secret in the expected format.',
         () {
-          expect(sessionKey, endsWith(':-g=='));
+          // In non-URL-safe base64 this would end in `+g==`
+          expect(sessionKey, endsWith('-g=='));
         },
       );
 

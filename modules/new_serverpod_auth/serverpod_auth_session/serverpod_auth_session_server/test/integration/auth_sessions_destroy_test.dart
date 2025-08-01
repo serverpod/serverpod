@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
@@ -127,7 +128,8 @@ void main() {
           .sessionKey;
 
       final sessionToDestroy = UuidValue.fromByteList(
-          base64Decode(destroyedSessionKey.split(':')[1]));
+        Uint8List.sublistView(base64Decode(destroyedSessionKey), 3, 19),
+      );
       await AuthSessions.destroySession(
         session,
         authSessionId: sessionToDestroy,
