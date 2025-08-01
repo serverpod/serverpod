@@ -5,6 +5,10 @@ import 'dart:convert';
 
 /// The name of the default Serverpod scheme for HTTP "authorization" headers.
 /// Note, the scheme name is case-insensitive and should be compared in a case-insensitive manner.
+const bearerAuthSchemeName = 'Bearer';
+
+/// The name of the legacy Serverpod scheme for HTTP "authorization" headers.
+/// Note, the scheme name is case-insensitive and should be compared in a case-insensitive manner.
 const basicAuthSchemeName = 'Basic';
 
 /// Regexp for a string adhering to the RFC 4648 base64 encoding alphabet.
@@ -54,12 +58,23 @@ String wrapAsBasicAuthHeaderValue(String key) {
   return '$basicAuthSchemeName $encodedKey';
 }
 
+/// Returns a value that is compliant with the HTTP auth header format
+/// by setting the provided auth key as a `Bearer` auth value.
+String wrapAsBearerTokenAuthHeaderValue(String key) {
+  return '$bearerAuthSchemeName $key';
+}
+
 /// Returns the auth key from an auth value that has potentially been wrapped.
-/// This operation is the inverse of [wrapAsBasicAuthHeaderValue].
+///
+/// For a `Bearer` auth header, the token is returned verbatim.
+/// This operation supports the inverse of the legacy `wrapAsBasicAuthHeaderValue`.
+///
 /// If null is provided, null is returned.
 String? unwrapAuthHeaderValue(String? authValue) {
   if (authValue == null) return null;
-  if (isWrappedBasicAuthHeaderValue(authValue)) {
+  if (authValue.startsWith(bearerAuthSchemeName)) {
+    return authValue.replaceFirst(bearerAuthSchemeName, '').trim();
+  } else if (isWrappedBasicAuthHeaderValue(authValue)) {
     // auth value was wrapped, unbake
     var parts = authValue.split(' ');
     return utf8.decode(base64.decode(parts[1]));

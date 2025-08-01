@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
-import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
+import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
@@ -475,8 +475,14 @@ class Server {
     String? authenticationHeaderValue;
 
     try {
-      authenticationHeaderValue = request.headers.authorization?.headerValue;
-      authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
+      if (request.headers.authorization
+          case BearerAuthorizationHeader authorizationHeader) {
+        authenticationKey = authorizationHeader.token;
+      } else {
+        authenticationHeaderValue = request.headers.authorization?.headerValue;
+
+        authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
+      }
     } on InvalidHeaderException catch (_) {
       // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
       return ResultStatusCode(
