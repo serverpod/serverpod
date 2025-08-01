@@ -2,9 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/business/legacy_email_password_validator.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
-    as new_email_account;
-import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Collections of helper functions to work with legacy authentication data.
 abstract final class AuthBackwardsCompatibility {
@@ -14,7 +12,7 @@ abstract final class AuthBackwardsCompatibility {
   static var config = AuthBackwardsCompatibilityConfig();
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
-  /// for a `serverpod_auth_email_account` `EmailAccount`.
+  /// for a `EmailAccount`.
   ///
   /// In case the latter doesn't have a password set, it can look up the
   /// previous one as a fallback here using [isLegacyPasswordValid].
@@ -74,8 +72,7 @@ abstract final class AuthBackwardsCompatibility {
       session.db,
       transaction,
       (final transaction) async {
-        final emailAccountInfo =
-            await new_email_account.EmailAccounts.admin.findAccount(
+        final emailAccountInfo = await EmailAccounts.admin.findAccount(
           session,
           email: email,
           transaction: transaction,
@@ -106,7 +103,7 @@ abstract final class AuthBackwardsCompatibility {
 
         // The account was already migrated without a password, and now we need to
         // set the password to the correct one from the old system.
-        await new_email_account.EmailAccounts.admin.setPassword(
+        await EmailAccounts.admin.setPassword(
           session,
           email: email,
           password: password,

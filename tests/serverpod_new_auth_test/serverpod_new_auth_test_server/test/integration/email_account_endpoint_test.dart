@@ -1,10 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/email_account_failed_login_attempt.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/email_account_password_reset_attempt.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/email_account_password_reset_request_attempt.dart';
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 
 import '../util/test_tags.dart';

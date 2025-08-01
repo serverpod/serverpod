@@ -1,0 +1,49 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_idp_server
+description: Next version of the Serverpod authentication module.
+version: 2.9.1
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod: 2.9.1
+  serverpod_shared: 2.9.1
+  serverpod_auth_profile_server: 2.9.1
+  serverpod_auth_session_server: 2.9.1
+  serverpod_auth_user_server: 2.9.1
+
+  googleapis: ">=11.0.0 <15.0.0"
+  googleapis_auth: ">=1.6.0 <3.0.0"
+  http: ">=1.1.0 <2.0.0"
+  meta: ^1.11.0
+  clock: ^1.1.1
+  sign_in_with_apple_server: ^0.3.0
+  email_validator: ">=2.1.17 <4.0.0"
+  pointycastle: ^3.7.4
+
+dev_dependencies:
+  serverpod_lints: 2.9.1
+  serverpod_test: 2.9.1
+  test: "^1.24.2"
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_profile_server:
+    path: ../../serverpod_auth_profile/serverpod_auth_profile_server
+  serverpod_auth_session_server:
+    path: ../../serverpod_auth_session/serverpod_auth_session_server
+  serverpod_auth_user_server:
+    path: ../../serverpod_auth_user/serverpod_auth_user_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

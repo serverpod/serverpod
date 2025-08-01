@@ -54,18 +54,8 @@ cd $BASE/modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migr
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 
-echo "\nserverpod_auth_google_account_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_google_account/serverpod_auth_google_account_server
-rm -r $MIGRATION_DIR
-dart $CLI create-migration --no-analytics
-
-echo "\nserverpod_auth_apple_account_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_apple_account/serverpod_auth_apple_account_server
-rm -r $MIGRATION_DIR
-dart $CLI create-migration --no-analytics
-
-echo "\nserverpod_auth_email_account_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_email_account/serverpod_auth_email_account_server
+echo "\nserverpod_auth_idp"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp
 rm -r $MIGRATION_DIR
 dart $CLI create-migration --no-analytics
 

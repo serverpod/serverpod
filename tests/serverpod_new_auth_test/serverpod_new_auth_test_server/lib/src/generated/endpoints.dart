@@ -24,23 +24,17 @@ import 'package:uuid/uuid_value.dart' as _i9;
 import 'dart:typed_data' as _i10;
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
     as _i11;
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i12;
-import 'package:serverpod_auth_google_server/serverpod_auth_google_server.dart'
-    as _i13;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
-    as _i14;
+    as _i13;
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
-    as _i15;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i16;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
-    as _i17;
-import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart'
-    as _i18;
+    as _i14;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i15;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i19;
+    as _i16;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i20;
+    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -711,22 +705,16 @@ class Endpoints extends _i1.EndpointDispatch {
     );
     modules['serverpod_auth_backwards_compatibility'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_email'] = _i12.Endpoints()
+    modules['serverpod_auth_idp'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_google'] = _i13.Endpoints()
+    modules['serverpod_auth_migration'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _i14.Endpoints()
+    modules['serverpod_auth_profile'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i15.Endpoints()
+    modules['serverpod_auth'] = _i15.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_session'] = _i16.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i16.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_email_account'] = _i17.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_google_account'] = _i18.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i19.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i20.Endpoints()
+    modules['serverpod_auth_user'] = _i17.Endpoints()
       ..initializeEndpoints(server);
   }
 }

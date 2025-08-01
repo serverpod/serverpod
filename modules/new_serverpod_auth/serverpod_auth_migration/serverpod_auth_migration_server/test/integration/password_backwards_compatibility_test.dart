@@ -1,8 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
-    as new_email_account;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as auth_next;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
 import 'package:test/test.dart';
@@ -54,17 +54,16 @@ void main() {
         'when calling `EmailAccounts.authenticate`, then it fails due to no password being set.',
         () async {
           await expectLater(
-            new_email_account.EmailAccounts.authenticate(
+            auth_next.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
             ),
             throwsA(
-              isA<new_email_account.EmailAccountLoginException>().having(
+              isA<auth_next.EmailAccountLoginException>().having(
                 (final e) => e.reason,
                 'reason',
-                new_email_account
-                    .EmailAccountLoginFailureReason.invalidCredentials,
+                auth_next.EmailAccountLoginFailureReason.invalidCredentials,
               ),
             ),
           );
@@ -81,7 +80,7 @@ void main() {
           );
 
           expect(
-            await new_email_account.EmailAccounts.authenticate(
+            await auth_next.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
