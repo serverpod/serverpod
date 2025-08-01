@@ -56,6 +56,8 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_apple_flutter/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_google_flutter/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_firebase_flutter/CHANGELOG.md
 
+cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/CHANGELOG.md
+cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server/CHANGELOG.md
 cp CHANGELOG.md modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_client/CHANGELOG.md
@@ -125,6 +127,8 @@ cp README_subpackage.md modules/serverpod_auth/serverpod_auth_apple_flutter/READ
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_google_flutter/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_firebase_flutter/README.md
 
+cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server/README.md
+cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_client/README.md
 cp README_subpackage.md modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server/README.md
