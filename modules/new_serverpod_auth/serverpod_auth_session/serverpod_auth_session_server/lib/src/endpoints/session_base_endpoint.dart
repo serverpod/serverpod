@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Base endpoint for auth sessions.
 ///

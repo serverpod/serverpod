@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_jwt_server/serverpod_auth_jwt_server.dart';
 import 'package:serverpod_auth_jwt_server/src/generated/refresh_token.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:test/test.dart';
 
 import '../utils/authentication_token_secrets_mock.dart';

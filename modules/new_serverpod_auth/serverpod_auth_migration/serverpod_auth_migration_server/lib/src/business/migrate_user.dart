@@ -1,6 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as new_auth;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -8,8 +10,6 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
     as new_profile;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as new_auth_user;
 
 /// Migrates a user with all their authentication methods, if it hasn't already
 /// been migrated.
@@ -36,7 +36,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     return (migratedUser, false);
   }
 
-  final authUser = await new_auth_user.AuthUsers.create(
+  final authUser = await new_auth.AuthUsers.create(
     session,
     blocked: userInfo.blocked,
     scopes: userInfo.scopes,

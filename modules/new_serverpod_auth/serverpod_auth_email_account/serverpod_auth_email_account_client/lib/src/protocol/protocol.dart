@@ -31,7 +31,7 @@ import 'exceptions/email_account_request_not_verified_exception.dart' as _i12;
 import 'exceptions/email_account_request_too_many_attempts_exception.dart'
     as _i13;
 import 'exceptions/email_account_request_unauthorized_exception.dart' as _i14;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i15;
 export 'exceptions/email_account_login_exception.dart';
 export 'exceptions/email_account_login_failure_reason.dart';
@@ -221,7 +221,7 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i15.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -286,7 +286,7 @@ class Protocol extends _i1.SerializationManager {
       return deserialize<_i14.EmailAccountRequestUnauthorizedException>(
           data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i15.Protocol().deserializeByClassName(data);
     }

@@ -77,9 +77,9 @@ dart $CLI generate --no-analytics
 
 # New auth modules
 
-echo "\nserverpod_auth_user_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_user/serverpod_auth_user_server
-dart $CLI generate --no-analytics --experimental-features=all
+echo "\nserverpod_auth_core_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+dart $CLI generate --no-analytics
 
 echo "\nserverpod_auth_session_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_session/serverpod_auth_session_server

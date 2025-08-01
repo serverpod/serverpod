@@ -31,7 +31,7 @@ import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account
     as _i12;
 import 'package:serverpod_auth_google_account_client/serverpod_auth_google_account_client.dart'
     as _i13;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i14;
 import 'protocol.dart' as _i15;
 
@@ -488,7 +488,7 @@ class Modules {
     serverpod_auth_email_account = _i12.Caller(client);
     serverpod_auth_google_account = _i13.Caller(client);
     serverpod_auth_session = _i5.Caller(client);
-    serverpod_auth_user = _i14.Caller(client);
+    serverpod_auth_core = _i14.Caller(client);
   }
 
   late final _i8.Caller serverpod_auth_backwards_compatibility;
@@ -509,7 +509,7 @@ class Modules {
 
   late final _i5.Caller serverpod_auth_session;
 
-  late final _i14.Caller serverpod_auth_user;
+  late final _i14.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -594,6 +594,6 @@ class Client extends _i1.ServerpodClientShared {
         'serverpod_auth_email_account': modules.serverpod_auth_email_account,
         'serverpod_auth_google_account': modules.serverpod_auth_google_account,
         'serverpod_auth_session': modules.serverpod_auth_session,
-        'serverpod_auth_user': modules.serverpod_auth_user,
+        'serverpod_auth_core': modules.serverpod_auth_core,
       };
 }

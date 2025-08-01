@@ -23,7 +23,7 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
     as _i8;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i9;
 import 'migrated_user.dart' as _i10;
 export 'migrated_user.dart';
@@ -214,7 +214,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i9.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -256,7 +256,7 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(23);
       return _i8.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i9.Protocol().deserializeByClassName(data);
     }

@@ -1,8 +1,8 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 part 'auth_email_admin.dart';
 

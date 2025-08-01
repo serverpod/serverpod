@@ -1,0 +1,18 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_core_client
+description: Serverpod authentication core client module.
+version: 2.9.1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod_client: 2.9.1
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization

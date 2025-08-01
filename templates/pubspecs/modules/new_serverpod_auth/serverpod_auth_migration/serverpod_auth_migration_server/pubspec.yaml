@@ -17,7 +17,7 @@ dependencies:
   serverpod_auth_profile_server: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
   serverpod_auth_session_server: SERVERPOD_VERSION
-  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
 
 dev_dependencies:
@@ -40,8 +40,8 @@ dependency_overrides:
     path: ../../../serverpod_auth/serverpod_auth_server
   serverpod_auth_session_server:
     path: ../../serverpod_auth_session/serverpod_auth_session_server
-  serverpod_auth_user_server:
-    path: ../../serverpod_auth_user/serverpod_auth_user_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

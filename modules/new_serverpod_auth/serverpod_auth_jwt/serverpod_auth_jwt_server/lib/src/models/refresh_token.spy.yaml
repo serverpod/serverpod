@@ -5,7 +5,7 @@ fields:
   id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this refresh token belongs to.
-  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+  authUser: module:auth_core:AuthUser?, relation(onDelete=Cascade)
 
   ### The scopes given to this session.
   ###

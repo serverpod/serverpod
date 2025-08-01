@@ -7,7 +7,7 @@ environment:
 dependencies:
   serverpod_auth_email_account_client: 2.9.1
   serverpod_auth_session_client: 2.9.1
-  serverpod_auth_user_client: 2.9.1
+  serverpod_auth_core_client: 2.9.1
   serverpod_client: 2.9.1
 
 dependency_overrides:
@@ -15,8 +15,8 @@ dependency_overrides:
     path: ../../serverpod_auth_email_account/serverpod_auth_email_account_client
   serverpod_auth_session_client:
     path: ../../serverpod_auth_session/serverpod_auth_session_client
-  serverpod_auth_user_client:
-    path: ../../serverpod_auth_user/serverpod_auth_user_client
+  serverpod_auth_core_client:
+    path: ../../serverpod_auth_core/serverpod_auth_core_client
   serverpod_client:
     path: ../../../../packages/serverpod_client
   serverpod_serialization:

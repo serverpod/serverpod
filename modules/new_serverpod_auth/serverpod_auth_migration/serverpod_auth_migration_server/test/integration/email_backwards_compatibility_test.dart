@@ -1,5 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as new_auth;
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
     as new_email_account;
 import 'package:serverpod_auth_email_account_server/src/generated/email_account.dart'
@@ -9,8 +11,6 @@ import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart
     as new_profile;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as new_auth_user;
 import 'package:test/test.dart';
 
 import './test_tools/serverpod_test_tools.dart';
@@ -176,7 +176,7 @@ void main() {
             throwsUnimplementedError,
           );
 
-          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+          expect(await new_auth.AuthUser.db.find(session), isEmpty);
         },
       );
     },

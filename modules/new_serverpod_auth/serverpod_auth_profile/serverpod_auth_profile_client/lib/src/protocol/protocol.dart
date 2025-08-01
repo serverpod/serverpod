@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'user_profile_model.dart' as _i2;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i3;
 export 'user_profile_model.dart';
 export 'client.dart';
@@ -52,7 +52,7 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -66,7 +66,7 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'UserProfileModel') {
       return deserialize<_i2.UserProfileModel>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
       return _i3.Protocol().deserializeByClassName(data);
     }

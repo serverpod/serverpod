@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart';
 import 'package:serverpod_auth_google_account_server/src/business/google_auth.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
 /// Management functions to work with Google-backed accounts.
 abstract final class GoogleAccounts {
