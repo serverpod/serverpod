@@ -6,7 +6,7 @@ import 'test_serverpod.dart';
 abstract class AuthenticationOverride {
   /// Sets the session to be authenticated with the provided [userIdentifier] and [scopes].
   static AuthenticationOverride authenticationInfo(
-    Object userIdentifier,
+    String userIdentifier,
     Set<Scope> scopes, {
     String? authId,
   }) =>
@@ -109,7 +109,7 @@ class _AuthenticationInfoOverride extends AuthenticationOverride {
 
   /// Creates a new AuthenticationInfoOverride with the provided authentication info.
   _AuthenticationInfoOverride(
-    Object userIdentifier,
+    String userIdentifier,
     Set<Scope> scopes, {
     String? authId,
   }) : _authenticationInfo = AuthenticationInfo(

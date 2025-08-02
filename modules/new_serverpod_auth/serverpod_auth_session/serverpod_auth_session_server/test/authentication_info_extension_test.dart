@@ -9,7 +9,7 @@ void main() {
     final authId = const Uuid().v4obj();
 
     final authenticationInfo = AuthenticationInfo(
-      authUserId,
+      authUserId.uuid,
       {},
       authId: authId.uuid,
     );
@@ -22,7 +22,7 @@ void main() {
 
   group('Given an `AuthenticationInfo` with a `null` `authId`', () {
     final authenticationInfo = AuthenticationInfo(
-      authUserId,
+      authUserId.uuid,
       {},
       authId: null,
     );
@@ -37,7 +37,7 @@ void main() {
 
   group('Given an `AuthenticationInfo` with a non-UUID `authId`', () {
     final authenticationInfo = AuthenticationInfo(
-      123,
+      '123',
       {},
       authId: 'foo-bar',
     );

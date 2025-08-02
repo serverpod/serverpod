@@ -9,7 +9,7 @@ abstract class MessageCentralServerpodChannels {
   /// [RevokedAuthenticationAuthId] or [RevokedAuthenticationScope].
   /// The [userIdentifier] should be the [AuthenticationInfo.userIdentifier] for the concerned
   /// user.
-  static String revokedAuthentication(Object userIdentifier) =>
+  static String revokedAuthentication(String userIdentifier) =>
       '_serverpod_revoked_authentication_$userIdentifier';
 }
 

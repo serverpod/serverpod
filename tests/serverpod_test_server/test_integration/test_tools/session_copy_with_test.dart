@@ -11,7 +11,7 @@ void main() {
       group('when setting a new shared session builder on the group level', () {
         TestSessionBuilder modifiedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            123,
+            '123',
             {},
           ),
         );
@@ -52,7 +52,7 @@ void main() {
         test('then the first test can change it', () async {
           modifiedSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              123,
+              '123',
               {},
             ),
           );

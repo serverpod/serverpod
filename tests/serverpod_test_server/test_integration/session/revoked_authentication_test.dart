@@ -25,7 +25,7 @@ void main() async {
         'and a non valid message type when broadcasting revoked authentication event then exception is thrown',
         () {
       expect(
-        () => session.messages.authenticationRevoked(1, EmptyModel()),
+        () => session.messages.authenticationRevoked('1', EmptyModel()),
         throwsA(isA<ArgumentError>()),
       );
     });
@@ -36,13 +36,13 @@ void main() async {
       var eventCompleter = Completer<RevokedAuthenticationUser>();
       session.messages
           .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication(1))
+              MessageCentralServerpodChannels.revokedAuthentication('1'))
           .listen(
             (event) => eventCompleter.complete(event),
           );
 
       var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked(1, message);
+      var event = await session.messages.authenticationRevoked('1', message);
 
       expect(event, isTrue);
       await expectLater(
@@ -80,13 +80,13 @@ void main() async {
       var eventCompleter = Completer<RevokedAuthenticationUser>();
       session.messages
           .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication(1))
+              MessageCentralServerpodChannels.revokedAuthentication('1'))
           .listen(
             (event) => eventCompleter.complete(event),
           );
 
       var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked(1, message);
+      var event = await session.messages.authenticationRevoked('1', message);
 
       expect(event, isTrue);
       await expectLater(

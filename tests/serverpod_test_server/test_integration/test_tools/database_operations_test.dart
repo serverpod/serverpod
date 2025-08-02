@@ -29,13 +29,13 @@ void main() {
         setUp(() async {
           firstSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              111,
+              '111',
               {},
             ),
           );
           secondSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              222,
+              '222',
               {},
             ),
           );

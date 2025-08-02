@@ -13,7 +13,7 @@ extension AuthenticationInfoFromJwt on AuthenticationInfo {
     final VerifiedJwtData result,
   ) {
     final authInfo = AuthenticationInfo(
-      result.authUserId,
+      result.authUserId.uuid,
       result.scopes,
       authId: result.refreshTokenId.toString(),
     );

@@ -27,7 +27,7 @@ void main() {
           'when not having sufficient access scopes and calling returnsString then throws ServerpodInsufficientAccessException',
           () async {
         sessionBuilder = sessionBuilder.copyWith(
-          authentication: AuthenticationOverride.authenticationInfo(1234, {}),
+          authentication: AuthenticationOverride.authenticationInfo('1234', {}),
         );
 
         final result = endpoints.authenticatedTestTools
@@ -40,7 +40,7 @@ void main() {
           () async {
         sessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            1234,
+            '1234',
             {Scope('user')},
           ),
         );
@@ -68,7 +68,7 @@ void main() {
           () async {
         sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-          1234,
+          '1234',
           {},
         ));
 
@@ -83,7 +83,7 @@ void main() {
           () async {
         sessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            1234,
+            '1234',
             {Scope('user')},
           ),
         );
@@ -99,7 +99,7 @@ void main() {
         late Completer<int> valueReceivedCompleter;
         late StreamController<int> inStream;
 
-        var authenticatedUserId = 1;
+        var authenticatedUserId = '1';
         var authenticatedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
               authenticatedUserId, {Scope('user')}),
@@ -190,7 +190,7 @@ void main() {
         late Completer<int> valueReceivedCompleter2;
         late StreamController<int> inStream2;
 
-        var authenticatedUserId = 1;
+        var authenticatedUserId = '1';
         var authenticatedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
               authenticatedUserId, {Scope('user')}),

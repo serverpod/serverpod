@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given an `AuthenticationInfo` with an integer `userIdentifier`', () {
-    final authInfo = AuthenticationInfo(123, {});
+    final authInfo = AuthenticationInfo('123', {});
 
     test('when calling the `userId` helper, then `int` value is returned.', () {
       expect(authInfo.userId, 123);

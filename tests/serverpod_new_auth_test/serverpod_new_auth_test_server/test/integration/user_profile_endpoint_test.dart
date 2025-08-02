@@ -21,7 +21,7 @@ void main() {
         () async {
       final session = sessionBuilder.copyWith(
         authentication: AuthenticationOverride.authenticationInfo(
-          const Uuid().v4obj(),
+          const Uuid().v4obj().uuid,
           {},
         ),
       );
@@ -44,7 +44,7 @@ void main() {
 
         session = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            authUserId,
+            authUserId.uuid,
             {},
           ),
         );
@@ -82,7 +82,7 @@ void main() {
 
         session = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            authUserId,
+            authUserId.uuid,
             {},
           ),
         );

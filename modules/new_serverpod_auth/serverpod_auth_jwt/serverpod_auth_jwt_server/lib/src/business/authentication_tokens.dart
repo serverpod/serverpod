@@ -203,7 +203,7 @@ abstract final class AuthenticationTokens {
     if (auths.isEmpty) return;
 
     await session.messages.authenticationRevoked(
-      authUserId,
+      authUserId.uuid,
       RevokedAuthenticationUser(),
     );
   }
@@ -233,7 +233,7 @@ abstract final class AuthenticationTokens {
     // Notify the client about the revoked authentication for the specific
     // refresh token.
     await session.messages.authenticationRevoked(
-      refreshToken.authUserId,
+      refreshToken.authUserId.uuid,
       RevokedAuthenticationAuthId(authId: refreshTokenId.toString()),
     );
   }
