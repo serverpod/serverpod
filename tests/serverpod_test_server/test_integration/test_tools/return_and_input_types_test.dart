@@ -71,13 +71,13 @@ void main() {
           () async {
         var userSession1 = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            1,
+            '1',
             {},
           ),
         );
         var userSession2 = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
-            2,
+            '2',
             {},
           ),
         );

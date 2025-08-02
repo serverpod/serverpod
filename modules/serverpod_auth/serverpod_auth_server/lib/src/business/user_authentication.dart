@@ -42,7 +42,7 @@ class UserAuthentication {
     if (updateSession) {
       session.updateAuthenticated(
         AuthenticationInfo(
-          userId,
+          userId.toString(),
           scopes,
           authId: '${result.id}',
         ),
@@ -74,7 +74,7 @@ class UserAuthentication {
     if (auths.isEmpty) return;
 
     await session.messages.authenticationRevoked(
-      userId,
+      userId.toString(),
       RevokedAuthenticationUser(),
     );
 
@@ -112,7 +112,7 @@ class UserAuthentication {
     // Notify the client about the revoked authentication for the specific
     // auth key
     await session.messages.authenticationRevoked(
-      auth.userId,
+      auth.userId.toString(),
       RevokedAuthenticationAuthId(authId: authKeyId),
     );
 

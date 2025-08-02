@@ -42,7 +42,7 @@ Future<AuthenticationInfo?> authenticationHandler(
       scopes.add(Scope(scopeName));
     }
     return AuthenticationInfo(
-      authKey.userId,
+      authKey.userId.toString(),
       scopes,
       authId: keyIdStr,
     );

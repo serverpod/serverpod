@@ -13,7 +13,7 @@ void main() async {
     String token,
   ) {
     tokenInspectionCompleter.complete(token);
-    return Future.value(AuthenticationInfo(1, {}));
+    return Future.value(AuthenticationInfo('1', {}));
   }
 
   group('Given auth key in valid HTTP header format', () {
