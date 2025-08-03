@@ -1588,7 +1588,7 @@ class Restrictions {
 
     var definition = documentDefinition;
     if (definition is ModelClassDefinition) {
-      var indexFields = definition.fieldsIncludingInherited.where(
+      var indexFields = definition.allFields.where(
         (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
       );
 
