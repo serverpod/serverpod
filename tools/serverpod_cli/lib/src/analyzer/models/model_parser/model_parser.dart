@@ -112,6 +112,10 @@ class ModelParser {
     YamlDocumentationExtractor docsExtractor,
     List<TypeDefinition> extraClasses,
   ) {
+    final requiresTable =
+        _parseBool(documentContents.nodes[Keyword.requiresTable]?.value) ??
+            false;
+
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
       protocolSource: protocolSource,
@@ -138,6 +142,7 @@ class ModelParser {
         subDirParts: protocolSource.subDirPathParts,
         documentation: classDocumentation,
         isImplementing: isImplementing,
+        requiresTable: requiresTable,
       ),
     );
   }

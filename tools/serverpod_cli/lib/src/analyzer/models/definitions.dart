@@ -245,10 +245,13 @@ final class InterfaceClassDefinition extends ClassDefinition {
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
+    required this.requiresTable,
     super.isImplementing,
     super.documentation,
     super.subDirParts,
   });
+
+  final bool requiresTable;
 }
 
 /// Describes a single field of a [ClassDefinition].

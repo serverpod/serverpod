@@ -836,77 +836,107 @@ class Restrictions {
   ) {
     if (fieldName is! String) return [];
 
-    var classDefinition = documentDefinition;
-    if (classDefinition is! ModelClassDefinition) return [];
+    var definition = documentDefinition;
+    var errors = <SourceSpanSeverityException>[];
+    String modelTypeString = 'model';
 
-    var foreignKeyField = classDefinition.findField(fieldName);
+    SerializableModelFieldDefinition? currentDefiningField;
+
+    if (definition is ModelClassDefinition) {
+      modelTypeString = 'class';
+      currentDefiningField = definition.findField(parentNodeName);
+    } else if (definition is InterfaceClassDefinition) {
+      modelTypeString = 'interface';
+      currentDefiningField = definition.findField(parentNodeName);
+    } else {
+      return errors;
+    }
+
+    SerializableModelFieldDefinition? foreignKeyField;
+    if (definition is ClassDefinition) {
+      foreignKeyField = definition.findField(fieldName);
+    } else if (definition is InterfaceClassDefinition) {
+      foreignKeyField = definition.findField(fieldName);
+    }
+
     if (foreignKeyField == null) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
-          'The field "$fieldName" was not found in the class.',
+          'The field "$fieldName" was not found in the $modelTypeString.',
           span,
-        )
-      ];
+        ),
+      );
+      return errors;
     }
 
     if (!foreignKeyField.shouldPersist) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The field "$fieldName" is not persisted and cannot be used in a relation.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    var foreignKeyRelation = foreignKeyField.relation;
-    if (foreignKeyRelation is! ForeignRelationDefinition) return [];
-
-    var field = classDefinition.findField(parentNodeName);
-    var relation = field?.relation;
-    if (relation is UnresolvableObjectRelationDefinition &&
-        relation.reason == UnresolvableReason.relationAlreadyDefinedForField) {
-      return [
+    if (foreignKeyField.relation is ObjectRelationDefinition) {
+      errors.add(
         SourceSpanSeverityException(
           'The field "${foreignKeyField.name}" already has a relation and cannot be used as relation field.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    var parentClasses = parsedModels.tableNames[foreignKeyRelation.parentTable];
+    var fkFieldOwnRelation = foreignKeyField.relation;
+    if (fkFieldOwnRelation is ForeignRelationDefinition) {
+      var parentClasses =
+          parsedModels.tableNames[fkFieldOwnRelation.parentTable];
+      if (parentClasses != null && parentClasses.isNotEmpty) {
+        var parentTableDefinition = parentClasses.first;
+        SerializableModelFieldDefinition? referenceFieldInParentTable;
 
-    if (parentClasses == null || parentClasses.isEmpty) return [];
+        if (parentTableDefinition is ClassDefinition) {
+          referenceFieldInParentTable = parentTableDefinition
+              .findField(fkFieldOwnRelation.foreignFieldName);
+        } else if (parentTableDefinition is InterfaceClassDefinition) {
+          if (parentTableDefinition.requiresTable) {
+            referenceFieldInParentTable = parentTableDefinition
+                .findField(fkFieldOwnRelation.foreignFieldName);
+          }
+        }
 
-    var parentClass = parentClasses.first;
-    if (parentClass is! ClassDefinition) return [];
-
-    var referenceField =
-        parentClass.findField(foreignKeyRelation.foreignFieldName);
-
-    if (foreignKeyField.type.className != referenceField?.type.className) {
-      return [
-        SourceSpanSeverityException(
-          'The field "$fieldName" is of type "${foreignKeyField.type.className}" but reference field "${foreignKeyRelation.foreignFieldName}" is of type "${referenceField?.type.className}".',
-          span,
-        )
-      ];
+        if (foreignKeyField.type.className !=
+            referenceFieldInParentTable?.type.className) {
+          errors.add(
+            SourceSpanSeverityException(
+              'The field "$fieldName" is of type "${foreignKeyField.type.className}" but reference field "${fkFieldOwnRelation.foreignFieldName}" is of type "${referenceFieldInParentTable?.type.className}".',
+              span,
+            ),
+          );
+        }
+      }
     }
 
     var isLocalFieldForeignKeyOrigin =
-        field?.relation?.isForeignKeyOrigin == true;
+        currentDefiningField?.relation?.isForeignKeyOrigin == true;
+
+    bool isOneToOne = false;
+    if (currentDefiningField != null && definition is ModelClassDefinition) {
+      isOneToOne = _isOneToOneObjectRelation(currentDefiningField, definition);
+    }
 
     if (isLocalFieldForeignKeyOrigin &&
-        _isOneToOneObjectRelation(field, classDefinition) &&
+        isOneToOne &&
         !_hasUniqueFieldIndex(foreignKeyField)) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The field "${foreignKeyField.name}" does not have a unique index which is required to be used in a one-to-one relation.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    return [];
+    return errors;
   }
 
   bool _isOneToOneObjectRelation(
@@ -1596,39 +1626,65 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
+    var errors = <SourceSpanSeverityException>[];
 
-    if (definition is! ModelClassDefinition) return [];
-
-    if (definition.tableName == null) {
-      return [
-        SourceSpanSeverityException(
-          'The "table" property must be defined in the class to set a relation on a field.',
-          span,
-        )
-      ];
-    }
-
-    var field = definition.findField(parentNodeName);
-
-    if (field == null) return [];
-
-    if (field.type.isListType) {
-      var referenceClass = parsedModels
-          .findAllByClassName(field.type.generics.first.className)
-          .firstOrNull;
-
-      if (referenceClass != null &&
-          referenceClass.type.moduleAlias != definition.type.moduleAlias) {
-        return [
+    if (definition is InterfaceClassDefinition) {
+      if (!definition.requiresTable) {
+        errors.add(
           SourceSpanSeverityException(
-            'A List relation is not allowed on module tables.',
+            'The "${Keyword.relation}" keyword can only be used if the "${Keyword.requiresTable}" property is set to true for the interface.',
             span,
-          )
-        ];
+          ),
+        );
       }
-    }
+      return errors;
+    } else if (definition is ModelClassDefinition) {
+      if (definition.tableName == null) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The "table" property must be defined in the class to set a relation on a field.',
+            span,
+          ),
+        );
+        return errors;
+      }
 
-    return [];
+      var field = definition.findField(parentNodeName);
+      if (field == null) {
+        return errors;
+      }
+
+      if (field.type.isListType && field.type.generics.isNotEmpty) {
+        var listItemType = field.type.generics.first;
+
+        SerializableModelDefinition? listItemDefinition;
+        var potentialDefs = parsedModels.classNames[listItemType.className];
+        if (potentialDefs != null) {
+          for (var def in potentialDefs) {
+            if (def.type.moduleAlias == listItemType.moduleAlias) {
+              listItemDefinition = def;
+              break;
+            }
+          }
+        }
+
+        if (listItemDefinition != null &&
+            listItemDefinition.type.moduleAlias !=
+                definition.type.moduleAlias &&
+            (listItemDefinition is ModelClassDefinition ||
+                listItemDefinition is InterfaceClassDefinition)) {
+          errors.add(
+            SourceSpanSeverityException(
+              'A List relation from a module table to a class in a different module is not allowed.',
+              span,
+            ),
+          );
+        }
+      }
+      return errors;
+    } else {
+      return errors;
+    }
   }
 
   List<SourceSpanSeverityException> validateScopeKey(

@@ -18,6 +18,8 @@ class Keyword {
   static const String indexes = 'indexes';
   static const String values = 'values';
 
+  static const String requiresTable = 'requiresTable';
+
   static const String type = 'type';
   static const String unique = 'unique';
   static const String distanceFunction = 'distanceFunction';

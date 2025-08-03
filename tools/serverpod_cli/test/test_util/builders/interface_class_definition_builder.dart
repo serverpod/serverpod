@@ -35,6 +35,7 @@ class InterfaceClassDefinitionBuilder {
       documentation: _documentation,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
       isImplementing: _isImplementing,
+      requiresTable: false,
     );
   }
 

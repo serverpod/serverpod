@@ -27,6 +27,10 @@ class InterfaceYamlDefinition {
             .isExperimentalFeatureEnabled(ExperimentalFeature.interfaces),
       ),
       ValidateNode(
+        Keyword.requiresTable,
+        valueRestriction: BooleanValueRestriction().validate,
+      ),
+      ValidateNode(
         Keyword.fields,
         isRequired: false,
         nested: {
