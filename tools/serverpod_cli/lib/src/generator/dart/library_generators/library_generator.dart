@@ -47,7 +47,8 @@ class LibraryGenerator {
     var serializableModels = allModels
         .where((model) => !(model is ModelClassDefinition && model.isSealed))
         .where((model) => model is! InterfaceClassDefinition)
-        .toList()..sort(_byChildClassesBeforeParents);
+        .toList()
+      ..sort(_byChildClassesBeforeParents);
 
     // exports
     library.directives.addAll([
@@ -206,7 +207,8 @@ class LibraryGenerator {
             'String? className = super.getClassNameForObject(data);'
             'if(className != null) return className;',
           ),
-          if (serializableModels.isNotEmpty || config.extraClasses.isNotEmpty) ...[
+          if (serializableModels.isNotEmpty ||
+              config.extraClasses.isNotEmpty) ...[
             const Code('switch (data) {'),
             for (var extraClass in config.extraClasses)
               Code.scope((a) =>
