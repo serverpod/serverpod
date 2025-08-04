@@ -238,7 +238,7 @@ enum RouteMethod {
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
-/// [ComponentRoute] to create your own custom routes in your server.
+/// [WidgetRoute] to create your own custom routes in your server.
 abstract class Route {
   /// The method this route will respond to, i.e. HTTP get or post.
   final RouteMethod method;
@@ -277,28 +277,28 @@ abstract class Route {
   }
 }
 
-/// A [ComponentRoute] is the most convenient way to create routes in your server.
-/// Override the [build] method and return an appropriate [Component].
-abstract class ComponentRoute extends Route {
-  /// Override this method to build your web [Component] from the current [session]
+/// A [WidgetRoute] is the most convenient way to create routes in your server.
+/// Override the [build] method and return an appropriate widget.
+abstract class WidgetRoute extends Route {
+  /// Override this method to build your web widget from the current [session]
   /// and [request].
-  Future<AbstractComponent> build(Session session, Request request);
+  Future<WebWidget> build(Session session, Request request);
 
   @override
   FutureOr<HandledContext> handleCall(
     Session session,
     NewContext context,
   ) async {
-    var component = await build(session, context.request);
+    var widget = await build(session, context.request);
 
-    if (component is RedirectComponent) {
-      var uri = Uri.parse(component.url);
+    if (widget is RedirectWidget) {
+      var uri = Uri.parse(widget.url);
       return context.withResponse(Response.seeOther(uri));
     }
 
-    final mimeType = component is JsonComponent ? MimeType.json : MimeType.html;
+    final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
     return context.withResponse(Response.ok(
-      body: Body.fromString(component.toString(), mimeType: mimeType),
+      body: Body.fromString(widget.toString(), mimeType: mimeType),
     ));
   }
 }
