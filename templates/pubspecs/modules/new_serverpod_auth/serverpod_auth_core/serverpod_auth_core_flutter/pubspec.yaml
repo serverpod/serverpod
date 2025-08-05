@@ -1,0 +1,34 @@
+# TEMPLATE
+
+name: serverpod_auth_core_flutter
+description: Serverpod core authentication Flutter module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.11.0
+  serverpod_auth_core_client: SERVERPOD_VERSION
+  shared_preferences: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_auth_core_client:
+    path: ../serverpod_auth_core_client
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
