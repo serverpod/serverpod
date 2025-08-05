@@ -1,0 +1,40 @@
+### A fully configured passkey to be used for logins.
+class: PasskeyAccount
+serverOnly: true
+table: serverpod_auth_passkey_account
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, defaultModel=now
+
+  ## Description strings
+
+  keyId: ByteDate
+  clientDataJSON: ByteDate
+  publicKey: ByteDate
+  publicKeyAlgorithm: int
+  attestationObject: ByteDate
+  authenticatorData: ByteDate
+  originalChallenge: ByteDate
+
+  # ### The email of the user.
+  # ###
+  # ### Stored in lower-case.
+  # email: String
+
+  # ### The hashed password of the user.
+  # ###
+  # ### Obtained in conjunction with [passwordSalt].
+  # passwordHash: ByteData
+
+  # ### The salt used for creating the [passwordHash].
+  # passwordSalt: ByteData
+
+indexes:
+  # serverpod_auth_email_account_email:
+  #   fields: email
+  #   unique: true
