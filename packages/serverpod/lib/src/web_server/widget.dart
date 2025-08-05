@@ -3,6 +3,13 @@ import 'package:serverpod/serverpod.dart';
 // Deprecated aliases for migration support from the old Widget API
 // These help users migrate from the original Widget names to the new naming structure
 
+/// Deprecated alias for [WebWidget].
+/// AbstractWidget was the base class for all widgets in the old API.
+@Deprecated('Use WebWidget instead. '
+    'AbstractWidget has been renamed to WebWidget for better clarity. '
+    'This class will be removed in a future version.')
+abstract class AbstractWidget extends WebWidget {}
+
 /// Deprecated alias for [TemplateWidget].
 /// The base Widget class has been renamed to TemplateWidget for clarity.
 @Deprecated('Use TemplateWidget instead. '
@@ -42,3 +49,5 @@ class WidgetRedirect extends RedirectWidget {
   /// Creates a new [WidgetRedirect].
   WidgetRedirect({required super.url});
 }
+
+// Note: WidgetRoute remains unchanged, so no deprecation needed
