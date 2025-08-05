@@ -1222,14 +1222,9 @@ class SerializableModelLibraryGenerator {
         serverpodUrl(serverCode),
       );
 
-      var toJsonForProtocolExpression = switch (nullableField) {
-        true => fieldExpression
-            .asA(protocolSerialization)
-            .nullSafeProperty(_toJsonForProtocolMethodName),
-        false => fieldExpression
-            .asA(protocolSerialization)
-            .property(_toJsonForProtocolMethodName),
-      };
+      var toJsonForProtocolExpression = fieldExpression
+          .asA(protocolSerialization)
+          .property(_toJsonForProtocolMethodName);
 
       var toJsonExpression = switch (nullableField) {
         true => fieldExpression.nullSafeProperty(_toJsonMethodName),
