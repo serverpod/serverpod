@@ -278,7 +278,7 @@ abstract class Route {
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
-/// Override the [build] method and return an appropriate widget.
+/// Override the [build] method and return an appropriate [WebWidget].
 abstract class WidgetRoute extends Route {
   /// Override this method to build your web widget from the current [session]
   /// and [request].

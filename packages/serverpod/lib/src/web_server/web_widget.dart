@@ -7,7 +7,7 @@ import 'dart:convert';
 /// cases.
 abstract class WebWidget {}
 
-/// A widget based on a HTML template. The [name] of the template should
+/// A [WebWidget] based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
 /// Set the custom values of the template by populating the [values] field. If
 /// values are set that aren't [String]s, the `toString` method will be called
@@ -18,7 +18,7 @@ class TemplateWidget extends WebWidget {
   /// The name of the template used by this [TemplateWidget].
   final String name;
 
-  /// The template used by this widget.
+  /// The template used by this [TemplateWidget].
   late final Template template;
 
   /// Key/value pairs passed to the template. The values will be converted to
@@ -42,12 +42,12 @@ class TemplateWidget extends WebWidget {
   }
 }
 
-/// Combines a List of widgets into a single widget.
+/// Combines a List of [WebWidget]s into a single [WebWidget].
 class ListWidget extends WebWidget {
   /// List of original widgets.
   final List<WebWidget> widgets;
 
-  /// Creates a new list widget.
+  /// Creates a new [ListWidget].
   ListWidget({required this.widgets});
 
   @override
@@ -60,7 +60,7 @@ class ListWidget extends WebWidget {
   }
 }
 
-/// A widget that renders JSON output. The output will be the result of passing
+/// A [WebWidget] that renders JSON output. The output will be the result of passing
 /// the provided [object] to [jsonEncode].
 class JsonWidget extends WebWidget {
   /// The original object to be rendered as JSON.
@@ -75,12 +75,12 @@ class JsonWidget extends WebWidget {
   }
 }
 
-/// A widget that renders a HTTP redirect to the provided [url].
+/// A [WebWidget] that renders a HTTP redirect to the provided [url].
 class RedirectWidget extends WebWidget {
   /// The [url] to redirect to.
   final String url;
 
-  /// Creates a new widget that renders a redirect.
+  /// Creates a new [RedirectWidget] that renders a redirect.
   RedirectWidget({required this.url});
 
   @override
