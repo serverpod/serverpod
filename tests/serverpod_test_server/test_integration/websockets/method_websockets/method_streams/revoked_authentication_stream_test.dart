@@ -14,7 +14,7 @@ void main() {
   late Session session;
   late c.Client client;
   late TestAuthKeyManager authKeyManager;
-  var authenticatedUserId = 1;
+  var authenticatedUserId = '1';
   var tokenCounter = 0;
 
   setUp(() async {

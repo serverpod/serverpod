@@ -74,7 +74,7 @@ void main() {
       () async {
         final channelName =
             MessageCentralServerpodChannels.revokedAuthentication(
-          authUserId,
+          authUserId.uuid,
         );
 
         final revocationMessages = <SerializableModel>[];

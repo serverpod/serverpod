@@ -651,8 +651,7 @@ class MessageCentralAccess {
   /// [RevokedAuthenticationScope] is used to communicate that a specific
   /// scope or scopes have been revoked for the user.
   Future<bool> authenticationRevoked(
-    // Uses `Object` to avoid breaking change, but should switch to `String` (mirroring `AuthenticationInfo.userIdentifier`) in the future
-    Object userIdentifier,
+    String userIdentifier,
     SerializableModel message,
   ) async {
     if (message is! RevokedAuthenticationUser &&
@@ -666,8 +665,7 @@ class MessageCentralAccess {
 
     try {
       return await _session.server.messageCentral.postMessage(
-        MessageCentralServerpodChannels.revokedAuthentication(
-            userIdentifier.toString()),
+        MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
         message,
         global: true,
       );
@@ -677,8 +675,7 @@ class MessageCentralAccess {
 
     // If Redis is not enabled, send the message locally.
     return _session.server.messageCentral.postMessage(
-      MessageCentralServerpodChannels.revokedAuthentication(
-          userIdentifier.toString()),
+      MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
       message,
       global: false,
     );

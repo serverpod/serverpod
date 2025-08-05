@@ -28,8 +28,15 @@ class AuthenticationInfo {
 
   /// Creates a new [AuthenticationInfo].
   AuthenticationInfo(
-    Object userIdentifier,
+    this.userIdentifier,
     this.scopes, {
     this.authId,
-  }) : userIdentifier = userIdentifier.toString();
+  }) {
+    if (userIdentifier.isEmpty) {
+      throw ArgumentError(
+        'The user identifier must not be empty.',
+        'userIdentifier',
+      );
+    }
+  }
 }

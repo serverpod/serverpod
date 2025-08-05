@@ -100,7 +100,7 @@ abstract final class AuthSessions {
     }
 
     return AuthenticationInfo(
-      authSession.authUserId,
+      authSession.authUserId.uuid,
       authSession.scopeNames.map(Scope.new).toSet(),
       authId: authSessionId.toString(),
     );
@@ -227,7 +227,7 @@ abstract final class AuthSessions {
     if (auths.isEmpty) return;
 
     await session.messages.authenticationRevoked(
-      authUserId,
+      authUserId.uuid,
       RevokedAuthenticationUser(),
     );
   }
@@ -258,7 +258,7 @@ abstract final class AuthSessions {
     // Notify the client about the revoked authentication for the specific
     // user session
     await session.messages.authenticationRevoked(
-      authSession.authUserId,
+      authSession.authUserId.uuid,
       RevokedAuthenticationAuthId(authId: authSessionId.toString()),
     );
   }

@@ -14,7 +14,7 @@ void main() {
         final session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
-                123,
+                '123',
                 {},
               ),
             )
@@ -46,12 +46,10 @@ void main() {
       late AuthenticationInfo? authenticationInfo;
 
       setUp(() async {
-        final uuid = UuidValue.fromString(uuidString);
-
         final session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
-                uuid,
+                uuidString,
                 {},
               ),
             )

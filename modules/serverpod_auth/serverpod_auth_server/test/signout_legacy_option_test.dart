@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:test/test.dart';
+
 import 'integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -21,7 +22,7 @@ void main() {
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              authKeys.first.userId,
+              authKeys.first.userId.toString(),
               {},
               authId: '${authKeys.first.id}',
             ),
@@ -60,7 +61,7 @@ void main() {
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              authKeys.first.userId,
+              authKeys.first.userId.toString(),
               {},
               authId: '${authKeys.first.id}',
             ),
@@ -98,7 +99,7 @@ void main() {
         () async {
           sessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
-              authKeys.first.userId,
+              authKeys.first.userId.toString(),
               {},
               authId: '${authKeys.first.id}',
             ),

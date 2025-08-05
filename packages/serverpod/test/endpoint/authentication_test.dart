@@ -79,7 +79,7 @@ void main() {
   group('Given authenticated user with no scopes', () {
     Future<AuthenticationInfo?> authenticatedUserWithNoScopesProvider() async =>
         AuthenticationInfo(
-          1,
+          '1',
           {},
         );
 
@@ -151,7 +151,7 @@ void main() {
   group('Given authenticated user with "admin" scope', () {
     Future<AuthenticationInfo?> authenticatedUserWithNoScopesProvider() async =>
         AuthenticationInfo(
-          1,
+          '1',
           {Scope.admin},
         );
 
