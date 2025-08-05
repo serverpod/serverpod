@@ -792,7 +792,7 @@ class Serverpod {
 
     if (!verified) {
       logVerbose('Database integrity verification failed.');
-      if (config.runMode != ServerpodRunMode.production) {
+      if (config.runMode == ServerpodRunMode.development) {
         throw ExitException(1);
       }
     }
