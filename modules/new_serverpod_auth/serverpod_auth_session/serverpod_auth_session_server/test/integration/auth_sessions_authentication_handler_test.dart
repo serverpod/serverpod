@@ -81,9 +81,9 @@ void main() {
     test(
       'when calling `authenticationHandler` with the wrong secret in the session key, then it returns `null`.',
       () async {
-        final sessionKeyParts = sessionKey.split(':');
-        sessionKeyParts[2] = base64Encode(utf8.encode('some other secret'));
-        final sessionKeyWithInvalidSecret = sessionKeyParts.join(':');
+        final sessionKeyWithInvalidSecret = base64Url.encode(
+          [...base64Url.decode(sessionKey), 1, 2, 3, 4],
+        );
 
         final authInfo = await AuthSessions.authenticationHandler(
           session,

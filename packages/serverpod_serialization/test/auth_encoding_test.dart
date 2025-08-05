@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:test/test.dart';
 import 'package:serverpod_serialization/src/auth_encoding.dart';
+import 'package:test/test.dart';
 
 void main() {
   /// conventional serverpod auth key format user:pwd
@@ -176,6 +176,7 @@ void main() {
           'when wrapping it '
           'then it should result in an HTTP "authorization" compliant value format',
           () {
+        // ignore: deprecated_member_use_from_same_package
         var wrapped = wrapAsBasicAuthHeaderValue(key);
         expect(isValidAuthHeaderValue(wrapped), isTrue);
       });
@@ -184,6 +185,7 @@ void main() {
           'Given auth key "${_stripControlCharacters(key)}" ($descr) '
           'when wrapping and unwrapping it '
           'then it should result in the same value', () {
+        // ignore: deprecated_member_use_from_same_package
         var wrapped = wrapAsBasicAuthHeaderValue(key);
         var unwrapped = unwrapAuthHeaderValue(wrapped);
         expect(unwrapped, key);
