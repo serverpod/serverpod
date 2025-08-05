@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -41,6 +42,9 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  /// If set to a List of [ImplementsDefinitions] the class implements one or more interfaces and stores the [ClassDefinition] of the implemented interfaces.
+  List<ImplementsDefinition> interfaceImplementations;
+
   /// Create a new [ClassDefinition].
   ClassDefinition({
     required super.fileName,
@@ -51,11 +55,34 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required super.type,
     super.subDirParts,
     this.documentation,
-  });
+    List<ImplementsDefinition>? isImplementing,
+  }) : interfaceImplementations = isImplementing ?? <ImplementsDefinition>[];
 
   SerializableModelFieldDefinition? findField(String name) {
     return fields.where((element) => element.name == name).firstOrNull;
   }
+
+  /// Returns a list of fields from all implemented interfaces.
+  List<SerializableModelFieldDefinition> get implementedFields {
+    return implementedInterfaces
+        .expand((interfaceClass) => [
+              ...interfaceClass.implementedFields,
+              ...interfaceClass.fields,
+            ])
+        .toList();
+  }
+
+  /// Returns a list of all implemented fields that are not redefined
+  /// in this class.
+  List<SerializableModelFieldDefinition> get nonOverriddenImplementedFields {
+    return implementedFields
+        .where((f) => !fields.any((field) => field.name == f.name))
+        .toList();
+  }
+
+  /// Returns a list of all (unique) implemented fields and the fields of this class.
+  List<SerializableModelFieldDefinition> get fieldsIncludingImplemented =>
+      [...nonOverriddenImplementedFields, ...fields];
 }
 
 /// A [ClassDefinition] specialization that represents a model class.
@@ -94,6 +121,7 @@ final class ModelClassDefinition extends ClassDefinition {
     required super.type,
     required this.isSealed,
     List<InheritanceDefinition>? childClasses,
+    super.isImplementing,
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
@@ -118,16 +146,20 @@ final class ModelClassDefinition extends ClassDefinition {
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
   List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited ?? [];
+      parentClass?.allFields ?? [];
 
-  /// Returns a list of all fields in this class, including inherited fields.
-  /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
-  List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
+  /// Returns a list of all fields this class has.
+  /// This includes:
+  /// - Fields from parent class
+  /// - Fields from interfaces
+  /// - Fields from the class itself
+  List<SerializableModelFieldDefinition> get allFields {
     bool hasIdField = fields.any((element) => element.name == 'id');
 
     return [
       if (hasIdField) fields.firstWhere((element) => element.name == 'id'),
       ...inheritedFields,
+      ...nonOverriddenImplementedFields,
       ...fields.where((element) => element.name != 'id'),
     ];
   }
@@ -197,9 +229,29 @@ final class ExceptionClassDefinition extends ClassDefinition {
     required super.serverOnly,
     required super.sourceFileName,
     required super.type,
+    super.isImplementing,
     super.documentation,
     super.subDirParts,
   });
+}
+
+/// A [ClassDefinition] specialization that represents an interface.
+final class InterfaceClassDefinition extends ClassDefinition {
+  /// Create a new [InterfaceClassDefinition].
+  InterfaceClassDefinition({
+    required super.className,
+    required super.fields,
+    required super.fileName,
+    required super.serverOnly,
+    required super.sourceFileName,
+    required super.type,
+    required this.requiresTable,
+    super.isImplementing,
+    super.documentation,
+    super.subDirParts,
+  });
+
+  final bool requiresTable;
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -391,18 +443,77 @@ class ProtocolEnumValueDefinition {
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
 }
 
+/// A base class for all inheritance definitions.
+///
+/// This is used to store the information about a class
+/// that is extended by another via the `extends` keyword.
+///
+/// See also:
+/// - [ResolvedInheritanceDefinition]
+/// - [UnresolvedInheritanceDefinition]
 abstract class InheritanceDefinition {}
 
+/// A representation of an unresolved inheritance definition.
+///
+/// This is returned by the [ModelParser] when an extends clause is found.
+/// It contains the name of the class that is being extended.
+///
+/// See also:
+/// - [ResolvedInheritanceDefinition]
 class UnresolvedInheritanceDefinition extends InheritanceDefinition {
   final String className;
 
   UnresolvedInheritanceDefinition(this.className);
 }
 
+/// A representation of a resolved inheritance definition.
+///
+/// This is returned by the [EntityDependencyResolver] when the class has been
+/// validated and parsed.
+/// It contains the [ModelClassDefinition] of the class that is being extended.
+///
+/// See also:
+/// - [UnresolvedInheritanceDefinition]
 class ResolvedInheritanceDefinition extends InheritanceDefinition {
   final ModelClassDefinition classDefinition;
 
   ResolvedInheritanceDefinition(this.classDefinition);
+}
+
+/// A base class for all implements definitions.
+///
+/// This is used to store the information about a interface class
+/// that is implemented another class via the `implements` keyword.
+///
+/// See also:
+/// - [ResolvedImplementsDefinition]
+/// - [UnresolvedImplementsDefinition]
+abstract class ImplementsDefinition {}
+
+/// A representation of an unresolved implements definition.
+///
+/// This is returned by the [ModelParser] when one or multiple implements clauses
+/// are found. It contains the name of a single interface class that is being implemented.
+///
+/// See also:
+/// - [ResolvedImplementsDefinition]
+class UnresolvedImplementsDefinition extends ImplementsDefinition {
+  final String className;
+
+  UnresolvedImplementsDefinition(this.className);
+}
+
+/// A representation of a resolved implements definition.
+///
+/// This is returned by the [EntityDependencyResolver] when the interface classes
+/// have been validated and parsed.
+///
+/// See also:
+/// - [UnresolvedImplementsDefinition]
+class ResolvedImplementsDefinition extends ImplementsDefinition {
+  final InterfaceClassDefinition interfaceDefinition;
+
+  ResolvedImplementsDefinition(this.interfaceDefinition);
 }
 
 sealed class RelationDefinition {

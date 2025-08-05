@@ -2,11 +2,14 @@ class Keyword {
   static const String classType = 'class';
   static const String exceptionType = 'exception';
   static const String enumType = 'enum';
+  static const String interfaceType = 'interface';
 
   static const String serialized = 'serialized';
 
   static const String isSealed = 'sealed';
   static const String extendsClass = 'extends';
+
+  static const String isImplementing = 'implements';
 
   static const String serverOnly = 'serverOnly';
   static const String table = 'table';
@@ -14,6 +17,8 @@ class Keyword {
   static const String fields = 'fields';
   static const String indexes = 'indexes';
   static const String values = 'values';
+
+  static const String requiresTable = 'requiresTable';
 
   static const String type = 'type';
   static const String unique = 'unique';

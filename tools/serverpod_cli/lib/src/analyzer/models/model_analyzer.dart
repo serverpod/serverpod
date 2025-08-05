@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart'
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/interface_yaml_definition.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -34,6 +35,7 @@ class SerializableModelAnalyzer {
     Keyword.classType,
     Keyword.exceptionType,
     Keyword.enumType,
+    Keyword.interfaceType,
   };
 
   /// Best effort attempt to extract a model definition from a yaml file.
@@ -70,6 +72,15 @@ class SerializableModelAnalyzer {
       case Keyword.exceptionType:
         return ModelParser.serializeExceptionClassFile(
           Keyword.exceptionType,
+          modelSource,
+          outFileName,
+          documentContents,
+          docsExtractor,
+          extraClasses,
+        );
+      case Keyword.interfaceType:
+        return ModelParser.serializeInterfaceClassFile(
+          Keyword.interfaceType,
           modelSource,
           outFileName,
           documentContents,
@@ -160,6 +171,11 @@ class SerializableModelAnalyzer {
           restrictions,
         ).documentStructure;
         break;
+      case Keyword.interfaceType:
+        documentStructure = InterfaceYamlDefinition(
+          restrictions,
+        ).documentStructure;
+        break;
       case Keyword.enumType:
         documentStructure = EnumYamlDefinition(restrictions).documentStructure;
         break;
@@ -208,6 +224,10 @@ class SerializableModelAnalyzer {
 
     if (documentContents.nodes[Keyword.exceptionType] != null) {
       return Keyword.exceptionType;
+    }
+
+    if (documentContents.nodes[Keyword.interfaceType] != null) {
+      return Keyword.interfaceType;
     }
 
     if (documentContents.nodes[Keyword.enumType] != null) {

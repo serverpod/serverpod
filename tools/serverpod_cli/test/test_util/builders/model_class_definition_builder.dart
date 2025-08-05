@@ -25,6 +25,7 @@ class ModelClassDefinitionBuilder {
   bool _isSealed;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  List<ImplementsDefinition> _isImplementing;
 
   ModelClassDefinitionBuilder()
       : _fileName = 'example',
@@ -38,6 +39,7 @@ class ModelClassDefinitionBuilder {
         _serverOnly = false,
         _indexes = [],
         _childClasses = [],
+        _isImplementing = [],
         _isSealed = false;
 
   ModelClassDefinition build() {
@@ -65,6 +67,7 @@ class ModelClassDefinitionBuilder {
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
+      isImplementing: _isImplementing,
       isSealed: _isSealed,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
@@ -383,6 +386,16 @@ class ModelClassDefinitionBuilder {
   ) {
     _childClasses = [
       for (var child in childClasses) ResolvedInheritanceDefinition(child),
+    ];
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withImplementedInterfaces(
+    List<InterfaceClassDefinition> interfaces,
+  ) {
+    _isImplementing = [
+      for (var implementedInterface in interfaces)
+        ResolvedImplementsDefinition(implementedInterface)
     ];
     return this;
   }

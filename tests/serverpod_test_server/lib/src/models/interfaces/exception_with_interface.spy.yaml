@@ -1,0 +1,4 @@
+exception: ExceptionWithInterface
+implements: ExampleInterface
+fields:
+  exceptionField: String

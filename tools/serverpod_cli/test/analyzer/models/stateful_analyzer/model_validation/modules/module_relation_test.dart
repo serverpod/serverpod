@@ -94,7 +94,7 @@ void main() {
 
     expect(
       errors.first.message,
-      'A List relation is not allowed on module tables.',
+      'A List relation from a module table to a class in a different module is not allowed.',
     );
   });
 

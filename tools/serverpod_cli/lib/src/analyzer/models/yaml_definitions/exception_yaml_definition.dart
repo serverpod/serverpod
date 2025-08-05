@@ -26,6 +26,10 @@ class ExceptionYamlDefinition {
         valueRestriction: BooleanValueRestriction().validate,
       ),
       ValidateNode(
+        Keyword.isImplementing,
+        valueRestriction: restrictions.validateImplementedInterfaceNames,
+      ),
+      ValidateNode(
         Keyword.fields,
         isRequired: false,
         nested: {

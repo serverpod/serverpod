@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -343,6 +344,177 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateImplementedInterfaceNames(
+    String parentNodeName,
+    dynamic implementedInterfaceNames,
+    SourceSpan? span,
+  ) {
+    if (implementedInterfaceNames is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "implements" property must be a comma separated list of class names.',
+          span,
+        )
+      ];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var implementedInterfacesList =
+        convertCommaSeparatedList(implementedInterfaceNames);
+
+    var duplicates = _findDuplicateNames(implementedInterfacesList);
+    errors.addAll(
+      duplicates.map(
+        (interfaceClass) => SourceSpanSeverityException(
+          'The interface name "$interfaceClass" is duplicated.',
+          span,
+        ),
+      ),
+    );
+
+    var validInterfaces = <InterfaceClassDefinition>[];
+
+    for (var implementedInterface in implementedInterfacesList) {
+      if (!StringValidators.isValidClassName(implementedInterface)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The interface name "$implementedInterface" must be a valid class name (e.g. PascalCaseString).',
+            span,
+          ),
+        );
+      }
+
+      var interfaceClass = parsedModels.findByClassName(implementedInterface);
+
+      if (interfaceClass == null) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The implemented interface name "$implementedInterface" was not found in any model.',
+            span,
+          ),
+        );
+        continue;
+      }
+
+      if (interfaceClass is! InterfaceClassDefinition) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The referenced class "$implementedInterface" is not an interface. Only interfaces can be implemented.',
+            span,
+          ),
+        );
+        continue;
+      }
+
+      validInterfaces.add(interfaceClass);
+    }
+
+    var definition = documentDefinition;
+    if (definition is InterfaceClassDefinition && validInterfaces.isNotEmpty) {
+      final interfaceDefinition = definition;
+      var circularPath = _detectCircularInterfaceDependency(
+        interfaceDefinition,
+        [],
+        {},
+      );
+
+      if (circularPath.isNotEmpty) {
+        errors.add(SourceSpanSeverityException(
+          'Circular interface dependency detected: ${circularPath.join(' → ')}',
+          span,
+        ));
+      }
+    }
+
+    if (validInterfaces.length > 1) {
+      errors
+          .addAll(_validateInterfaceFieldTypeConflicts(validInterfaces, span));
+    }
+
+    return errors;
+  }
+
+  List<String> _findDuplicateNames(List<String> list) {
+    var seen = <String>{};
+    var duplicates = <String>{};
+
+    for (var item in list) {
+      if (!seen.add(item)) {
+        duplicates.add(item);
+      }
+    }
+
+    return duplicates.toList();
+  }
+
+  List<String> _detectCircularInterfaceDependency(
+      InterfaceClassDefinition current,
+      List<String> path,
+      Set<String> visited) {
+    var className = current.className;
+
+    if (path.contains(className)) {
+      return [...path.sublist(path.indexOf(className)), className];
+    }
+
+    if (visited.contains(className)) {
+      return [];
+    }
+
+    path.add(className);
+    visited.add(className);
+
+    for (var interfaceImpl in current.implementedInterfaces) {
+      if (interfaceImpl is! InterfaceClassDefinition) {
+        continue;
+      }
+
+      var result = _detectCircularInterfaceDependency(
+          interfaceImpl, List.from(path), visited);
+      if (result.isNotEmpty) {
+        return result;
+      }
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> _validateInterfaceFieldTypeConflicts(
+    List<InterfaceClassDefinition> implementedInterfaces,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var fieldsByName = <String, List<SerializableModelFieldDefinition>>{};
+
+    // Group fields by name across all interfaces
+    for (var interfaceClass in implementedInterfaces) {
+      for (var field in interfaceClass.fields) {
+        fieldsByName.putIfAbsent(field.name, () => []).add(field);
+      }
+    }
+
+    // Check for type conflicts in fields with the same name
+    for (var entry in fieldsByName.entries) {
+      var fields = entry.value;
+      if (fields.length > 1) {
+        var type = fields.first.type.className;
+        for (var field in fields) {
+          if (field.type.className != type) {
+            errors.add(
+              SourceSpanSeverityException(
+                'Conflicting types for field "${entry.key}" in implemented interfaces: $type vs ${field.type.className}',
+                span,
+              ),
+            );
+          }
+        }
+      }
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
@@ -526,6 +698,40 @@ class Restrictions {
       }
     }
 
+    if (def is ClassDefinition && def.implementedInterfaces.isNotEmpty) {
+      for (var interfaceClass in def.implementedInterfaces) {
+        if (interfaceClass is! InterfaceClassDefinition) {
+          continue;
+        }
+
+        var duplicateInterfaceField = interfaceClass.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
+
+        if (duplicateInterfaceField == null) {
+          continue;
+        }
+
+        var duplicateClassField =
+            def.fields.where((field) => field.name == fieldName).firstOrNull;
+
+        if (duplicateClassField != null &&
+            // If ANY property is different, it's a valid redefinition
+            duplicateClassField.hasDefaults ==
+                duplicateInterfaceField.hasDefaults &&
+            duplicateClassField.scope == duplicateInterfaceField.scope &&
+            duplicateClassField.relation == duplicateInterfaceField.relation) {
+          return [
+            SourceSpanSeverityException(
+              'Field "$fieldName" is already defined by interface "${interfaceClass.className}" and does not modify any properties (defaults, scope, or relations). This definition is redundant and can be removed.',
+              span,
+              severity: SourceSpanSeverity.hint,
+            )
+          ];
+        }
+      }
+    }
+
     return [];
   }
 
@@ -630,77 +836,107 @@ class Restrictions {
   ) {
     if (fieldName is! String) return [];
 
-    var classDefinition = documentDefinition;
-    if (classDefinition is! ModelClassDefinition) return [];
+    var definition = documentDefinition;
+    var errors = <SourceSpanSeverityException>[];
+    String modelTypeString = 'model';
 
-    var foreignKeyField = classDefinition.findField(fieldName);
+    SerializableModelFieldDefinition? currentDefiningField;
+
+    if (definition is ModelClassDefinition) {
+      modelTypeString = 'class';
+      currentDefiningField = definition.findField(parentNodeName);
+    } else if (definition is InterfaceClassDefinition) {
+      modelTypeString = 'interface';
+      currentDefiningField = definition.findField(parentNodeName);
+    } else {
+      return errors;
+    }
+
+    SerializableModelFieldDefinition? foreignKeyField;
+    if (definition is ClassDefinition) {
+      foreignKeyField = definition.findField(fieldName);
+    } else if (definition is InterfaceClassDefinition) {
+      foreignKeyField = definition.findField(fieldName);
+    }
+
     if (foreignKeyField == null) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
-          'The field "$fieldName" was not found in the class.',
+          'The field "$fieldName" was not found in the $modelTypeString.',
           span,
-        )
-      ];
+        ),
+      );
+      return errors;
     }
 
     if (!foreignKeyField.shouldPersist) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The field "$fieldName" is not persisted and cannot be used in a relation.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    var foreignKeyRelation = foreignKeyField.relation;
-    if (foreignKeyRelation is! ForeignRelationDefinition) return [];
-
-    var field = classDefinition.findField(parentNodeName);
-    var relation = field?.relation;
-    if (relation is UnresolvableObjectRelationDefinition &&
-        relation.reason == UnresolvableReason.relationAlreadyDefinedForField) {
-      return [
+    if (foreignKeyField.relation is ObjectRelationDefinition) {
+      errors.add(
         SourceSpanSeverityException(
           'The field "${foreignKeyField.name}" already has a relation and cannot be used as relation field.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    var parentClasses = parsedModels.tableNames[foreignKeyRelation.parentTable];
+    var fkFieldOwnRelation = foreignKeyField.relation;
+    if (fkFieldOwnRelation is ForeignRelationDefinition) {
+      var parentClasses =
+          parsedModels.tableNames[fkFieldOwnRelation.parentTable];
+      if (parentClasses != null && parentClasses.isNotEmpty) {
+        var parentTableDefinition = parentClasses.first;
+        SerializableModelFieldDefinition? referenceFieldInParentTable;
 
-    if (parentClasses == null || parentClasses.isEmpty) return [];
+        if (parentTableDefinition is ClassDefinition) {
+          referenceFieldInParentTable = parentTableDefinition
+              .findField(fkFieldOwnRelation.foreignFieldName);
+        } else if (parentTableDefinition is InterfaceClassDefinition) {
+          if (parentTableDefinition.requiresTable) {
+            referenceFieldInParentTable = parentTableDefinition
+                .findField(fkFieldOwnRelation.foreignFieldName);
+          }
+        }
 
-    var parentClass = parentClasses.first;
-    if (parentClass is! ClassDefinition) return [];
-
-    var referenceField =
-        parentClass.findField(foreignKeyRelation.foreignFieldName);
-
-    if (foreignKeyField.type.className != referenceField?.type.className) {
-      return [
-        SourceSpanSeverityException(
-          'The field "$fieldName" is of type "${foreignKeyField.type.className}" but reference field "${foreignKeyRelation.foreignFieldName}" is of type "${referenceField?.type.className}".',
-          span,
-        )
-      ];
+        if (foreignKeyField.type.className !=
+            referenceFieldInParentTable?.type.className) {
+          errors.add(
+            SourceSpanSeverityException(
+              'The field "$fieldName" is of type "${foreignKeyField.type.className}" but reference field "${fkFieldOwnRelation.foreignFieldName}" is of type "${referenceFieldInParentTable?.type.className}".',
+              span,
+            ),
+          );
+        }
+      }
     }
 
     var isLocalFieldForeignKeyOrigin =
-        field?.relation?.isForeignKeyOrigin == true;
+        currentDefiningField?.relation?.isForeignKeyOrigin == true;
+
+    bool isOneToOne = false;
+    if (currentDefiningField != null && definition is ModelClassDefinition) {
+      isOneToOne = _isOneToOneObjectRelation(currentDefiningField, definition);
+    }
 
     if (isLocalFieldForeignKeyOrigin &&
-        _isOneToOneObjectRelation(field, classDefinition) &&
+        isOneToOne &&
         !_hasUniqueFieldIndex(foreignKeyField)) {
-      return [
+      errors.add(
         SourceSpanSeverityException(
           'The field "${foreignKeyField.name}" does not have a unique index which is required to be used in a one-to-one relation.',
           span,
-        )
-      ];
+        ),
+      );
     }
 
-    return [];
+    return errors;
   }
 
   bool _isOneToOneObjectRelation(
@@ -1153,8 +1389,8 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
-    var fields = definition.fieldsIncludingInherited;
-    var indexFields = convertIndexList(content);
+    var fields = definition.allFields;
+    var indexFields = convertCommaSeparatedList(content);
 
     var validDatabaseFieldNames = fields
         .where((field) => field.shouldPersist)
@@ -1352,7 +1588,7 @@ class Restrictions {
 
     var definition = documentDefinition;
     if (definition is ModelClassDefinition) {
-      var indexFields = definition.fieldsIncludingInherited.where(
+      var indexFields = definition.allFields.where(
         (f) => f.indexes.where((e) => e.name == parentNodeName).isNotEmpty,
       );
 
@@ -1390,39 +1626,65 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
+    var errors = <SourceSpanSeverityException>[];
 
-    if (definition is! ModelClassDefinition) return [];
-
-    if (definition.tableName == null) {
-      return [
-        SourceSpanSeverityException(
-          'The "table" property must be defined in the class to set a relation on a field.',
-          span,
-        )
-      ];
-    }
-
-    var field = definition.findField(parentNodeName);
-
-    if (field == null) return [];
-
-    if (field.type.isListType) {
-      var referenceClass = parsedModels
-          .findAllByClassName(field.type.generics.first.className)
-          .firstOrNull;
-
-      if (referenceClass != null &&
-          referenceClass.type.moduleAlias != definition.type.moduleAlias) {
-        return [
+    if (definition is InterfaceClassDefinition) {
+      if (!definition.requiresTable) {
+        errors.add(
           SourceSpanSeverityException(
-            'A List relation is not allowed on module tables.',
+            'The "${Keyword.relation}" keyword can only be used if the "${Keyword.requiresTable}" property is set to true for the interface.',
             span,
-          )
-        ];
+          ),
+        );
       }
-    }
+      return errors;
+    } else if (definition is ModelClassDefinition) {
+      if (definition.tableName == null) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The "table" property must be defined in the class to set a relation on a field.',
+            span,
+          ),
+        );
+        return errors;
+      }
 
-    return [];
+      var field = definition.findField(parentNodeName);
+      if (field == null) {
+        return errors;
+      }
+
+      if (field.type.isListType && field.type.generics.isNotEmpty) {
+        var listItemType = field.type.generics.first;
+
+        SerializableModelDefinition? listItemDefinition;
+        var potentialDefs = parsedModels.classNames[listItemType.className];
+        if (potentialDefs != null) {
+          for (var def in potentialDefs) {
+            if (def.type.moduleAlias == listItemType.moduleAlias) {
+              listItemDefinition = def;
+              break;
+            }
+          }
+        }
+
+        if (listItemDefinition != null &&
+            listItemDefinition.type.moduleAlias !=
+                definition.type.moduleAlias &&
+            (listItemDefinition is ModelClassDefinition ||
+                listItemDefinition is InterfaceClassDefinition)) {
+          errors.add(
+            SourceSpanSeverityException(
+              'A List relation from a module table to a class in a different module is not allowed.',
+              span,
+            ),
+          );
+        }
+      }
+      return errors;
+    } else {
+      return errors;
+    }
   }
 
   List<SourceSpanSeverityException> validateScopeKey(

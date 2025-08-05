@@ -48,11 +48,21 @@ class SerializableModelLibraryGenerator {
         return _generateExceptionLibrary(classDefinition);
       case ModelClassDefinition():
         return _generateModelClassLibrary(classDefinition);
+      case InterfaceClassDefinition():
+        return _generateInterfaceLibrary(classDefinition);
     }
   }
 
+  Library _generateInterfaceLibrary(InterfaceClassDefinition definition) {
+    return Library((libraryBuilder) {
+      libraryBuilder.body.addAll([
+        _buildInterfaceClass(definition),
+      ]);
+    });
+  }
+
   Library _generateExceptionLibrary(ExceptionClassDefinition definition) {
-    var fields = definition.fields;
+    var fields = definition.fieldsIncludingImplemented;
     var className = definition.className;
     var nonNullableField = fields
         .where((field) => field.shouldIncludeField(serverCode))
@@ -87,7 +97,7 @@ class SerializableModelLibraryGenerator {
   ) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
-    var fields = classDefinition.fieldsIncludingInherited;
+    var fields = classDefinition.allFields;
     var sealedTopNode = classDefinition.sealedTopNode;
 
     var buildRepository = BuildRepositoryClass(
@@ -214,6 +224,35 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Class _buildInterfaceClass(InterfaceClassDefinition definition) {
+    return Class((classBuilder) {
+      classBuilder
+        ..abstract = true
+        ..modifier = ClassModifier.interface
+        ..name = definition.className
+        ..docs.addAll(definition.documentation ?? []);
+
+      classBuilder.implements.addAll(_buildImplementClauses(definition));
+
+      classBuilder.fields.addAll(_buildModelClassFields(
+        definition.fields,
+        null,
+        definition.subDirParts,
+        definition.implementedFields,
+      ));
+
+      classBuilder.constructors.add(
+        _buildModelClassConstructor(
+          definition.fields,
+          null,
+          privateConstructor: false,
+          subDirParts: definition.subDirParts,
+          inheritedFields: [],
+        ),
+      );
+    });
+  }
+
   Class _buildExceptionClass(
     String className,
     ExceptionClassDefinition classDefinition,
@@ -232,22 +271,25 @@ class SerializableModelLibraryGenerator {
       classBuilder.implements
           .add(refer('SerializableModel', serverpodUrl(serverCode)));
 
+      classBuilder.implements.addAll(_buildImplementClauses(classDefinition));
+
       if (serverCode) {
         classBuilder.implements
             .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
       }
 
       classBuilder.fields.addAll(_buildModelClassFields(
-        classDefinition.fields,
+        fields,
         null,
         classDefinition.subDirParts,
+        classDefinition.implementedFields,
       ));
 
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
           fields,
           null,
-          isParentClass: false,
+          privateConstructor: true,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: [],
         ),
@@ -361,17 +403,20 @@ class SerializableModelLibraryGenerator {
             .add(refer('ProtocolSerialization', serverpodUrl(serverCode)));
       }
 
+      classBuilder.implements.addAll(_buildImplementClauses(classDefinition));
+
       classBuilder.fields.addAll(_buildModelClassFields(
-        classDefinition.fields,
+        classDefinition.fieldsIncludingImplemented,
         tableName,
         classDefinition.subDirParts,
+        classDefinition.implementedFields,
       ));
 
       classBuilder.constructors.addAll([
         _buildModelClassConstructor(
           fields,
           tableName,
-          isParentClass: classDefinition.isParentClass,
+          privateConstructor: !classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
         ),
@@ -442,6 +487,22 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildToStringMethod(serverCode));
       }
     });
+  }
+
+  List<Reference> _buildImplementClauses(ClassDefinition classDefinition) {
+    if (classDefinition.implementedInterfaces.isEmpty) {
+      return [];
+    }
+
+    return classDefinition.implementedInterfaces
+        .map(
+          (e) => e.type.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          ),
+        )
+        .toList();
   }
 
   bool _shouldCreateUndefinedClass(
@@ -1394,12 +1455,12 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
-    required bool isParentClass,
+    required bool privateConstructor,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
     return Constructor((c) {
-      if (!isParentClass) {
+      if (privateConstructor) {
         c.name = '_';
       }
       c.optionalParameters.addAll(_buildModelClassConstructorParameters(
@@ -1641,9 +1702,11 @@ class SerializableModelLibraryGenerator {
   }
 
   List<Field> _buildModelClassFields(
-      List<SerializableModelFieldDefinition> fields,
-      String? tableName,
-      List<String> subDirParts) {
+    List<SerializableModelFieldDefinition> fields,
+    String? tableName,
+    List<String> subDirParts,
+    List<SerializableModelFieldDefinition> overriddenFields,
+  ) {
     List<Field> modelClassFields = [];
     var classFields = fields
         .where((f) =>
@@ -1662,8 +1725,16 @@ class SerializableModelLibraryGenerator {
           ..name =
               _createSerializableFieldNameReference(serverCode, field).symbol
           ..docs.addAll(field.documentation ?? []);
+
         if (field.hiddenSerializableField(serverCode)) {
           f.modifier = FieldModifier.final$;
+        }
+
+        var overriddenField =
+            overriddenFields.any((element) => element.name == field.name);
+
+        if (overriddenField) {
+          f.annotations.add(refer('override'));
         }
       }));
     }

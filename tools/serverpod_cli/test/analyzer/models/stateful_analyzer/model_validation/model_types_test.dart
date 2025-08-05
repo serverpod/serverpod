@@ -444,7 +444,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'No {class, exception, enum} type is defined.',
+          'No {class, exception, enum, interface} type is defined.',
         );
       },
     );
