@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
@@ -12,12 +13,12 @@ part 'auth_email_admin.dart';
 ///
 /// Uses `serverpod_auth_session` for session management and
 /// `serverpod_auth_profile` for user profiles.
-abstract class AuthEmail {
+abstract class AuthEmail<SessionType extends SerializableModel> {
   /// Collection of admin-related functions.
-  static final AuthEmailAdmin admin = AuthEmailAdmin._();
+  AuthEmailAdmin<SessionType> get admin;
 
   /// {@macro email_account_base_endpoint.login}
-  static Future<AuthSuccess> login(
+  Future<SessionType> login(
     final Session session, {
     required final String email,
     required final String password,
@@ -44,7 +45,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.start_registration}
-  static Future<void> startRegistration(
+  Future<void> startRegistration(
     final Session session, {
     required final String email,
     required final String password,
@@ -69,7 +70,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.finish_registration}
-  static Future<AuthSuccess> finishRegistration(
+  Future<SessionType> finishRegistration(
     final Session session, {
     required final UuidValue accountRequestId,
     required final String verificationCode,
@@ -118,7 +119,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.start_password_reset}
-  static Future<void> startPasswordReset(
+  Future<void> startPasswordReset(
     final Session session, {
     required final String email,
     final Transaction? transaction,
@@ -140,7 +141,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
-  static Future<AuthSuccess> finishPasswordReset(
+  Future<SessionType> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -173,4 +174,10 @@ abstract class AuthEmail {
       },
     );
   }
+}
+
+///
+class AuthEmailDatabaseSession extends AuthEmail<AuthSuccess> {
+  @override
+  AuthEmailAdmin<AuthSuccess> get admin => AuthEmailAdminDatabaseSession._();
 }

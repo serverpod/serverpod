@@ -3,7 +3,8 @@ import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_bac
 import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart';
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
-class PasswordImportingEmailAccountEndpoint extends AuthEmailBaseEndpoint {
+class PasswordImportingEmailAccountEndpoint
+    extends AuthEmailDatabaseSessionBaseEndpoint {
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
