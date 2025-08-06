@@ -245,6 +245,7 @@ jobs:
     name: Module integration tests in ${{ matrix.module }} with Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         flutter-version: ['3.24.0', '3.32.1']
         module:
