@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
 import 'package:serverpod_auth_core_server/profile.dart' as new_profile;
 import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;

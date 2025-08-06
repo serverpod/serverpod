@@ -1,0 +1,19 @@
+class: LegacyExternalUserIdentifier
+serverOnly: true
+table: serverpod_auth_bridge_external_user_id
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this session belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The user identifier as imported from `serverpod_auth`.
+  ###
+  ### This could be an external user ID for e.g. "Sign in with Apple", or an
+  ### email address (in the Google Sign-In case).
+  userIdentifier: String
+
+indexes:
+  serverpod_auth_bridge_external_user_id_id:
+    fields: userIdentifier
+    unique: true
