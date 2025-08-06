@@ -1,13 +1,12 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
-import 'package:serverpod_auth_idp_server/core.dart' as auth_next;
+import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
+import 'package:serverpod_auth_core_server/profile.dart' as new_auth_profile;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
-    as auth_next_email;
+    as new_auth_email;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as new_auth_user;
 import 'package:test/test.dart';
 
 import './test_tools/serverpod_test_tools.dart';
@@ -127,7 +126,7 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await auth_next_email.EmailAccount.db.find(session))
+          (await new_auth_email.EmailAccount.db.find(session))
               .single
               .passwordHash
               .lengthInBytes,
@@ -218,7 +217,7 @@ void main() {
           password: password,
         );
 
-        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
+        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -268,7 +267,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await auth_next_email.EmailAccounts.authenticate(
+            await new_auth_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -281,7 +280,8 @@ void main() {
 
       test('when reading the profile, then it matches the original user info.',
           () async {
-        final profile = await auth_next.UserProfiles.findUserProfileByUserId(
+        final profile =
+            await new_auth_profile.UserProfiles.findUserProfileByUserId(
           session,
           authUserId,
         );
@@ -323,7 +323,7 @@ void main() {
 
         AuthMigrations.config = AuthMigrationConfig();
 
-        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
+        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -334,11 +334,11 @@ void main() {
         'when reading the profile, then it throws because none has been created.',
         () async {
           await expectLater(
-            () => auth_next.UserProfiles.findUserProfileByUserId(
+            () => new_auth_profile.UserProfiles.findUserProfileByUserId(
               session,
               authUserId,
             ),
-            throwsA(isA<auth_next.UserProfileNotFoundException>()),
+            throwsA(isA<new_auth_profile.UserProfileNotFoundException>()),
           );
         },
       );
@@ -378,7 +378,7 @@ void main() {
           },
         );
 
-        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
+        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -460,7 +460,7 @@ void main() {
           );
 
           expect(
-            await auth_next_email.EmailAccounts.authenticate(
+            await new_auth_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -483,13 +483,13 @@ void main() {
           );
 
           await expectLater(
-            () => auth_next_email.EmailAccounts.authenticate(
+            () => new_auth_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<auth_next_email.EmailAccountLoginException>()),
+            throwsA(isA<new_auth_email.EmailAccountLoginException>()),
           );
         },
       );
@@ -498,7 +498,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => auth_next_email.EmailAccounts.authenticate(
+            () => new_auth_email.EmailAccounts.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,
@@ -506,14 +506,15 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<auth_next_email.EmailAccountLoginException>()),
+            throwsA(isA<new_auth_email.EmailAccountLoginException>()),
           );
         },
       );
 
       test('when reading the profile, then it matches the original user info.',
           () async {
-        final profile = await auth_next.UserProfiles.findUserProfileByUserId(
+        final profile =
+            await new_auth_profile.UserProfiles.findUserProfileByUserId(
           session,
           authUserId,
         );

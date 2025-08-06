@@ -5,7 +5,7 @@ fields:
   id: UuidValue?, defaultPersist=random
 
   ### The [AuthUser] this session belongs to
-  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
 
   ### The user identifier as imported from `serverpod_auth`.
   ###

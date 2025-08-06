@@ -15,7 +15,7 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/src/generated/endpoints.dart';

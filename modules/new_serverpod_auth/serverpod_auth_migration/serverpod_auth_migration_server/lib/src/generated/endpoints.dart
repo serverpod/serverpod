@@ -15,13 +15,9 @@ import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_bac
     as _i2;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i3;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i6;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i7;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -30,12 +26,8 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_idp'] = _i3.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i4.Endpoints()
+    modules['serverpod_auth_core'] = _i4.Endpoints()
       ..initializeEndpoints(server);
     modules['serverpod_auth'] = _i5.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i6.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i7.Endpoints()
-      ..initializeEndpoints(server);
   }
 }

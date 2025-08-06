@@ -1,3 +1,5 @@
-export '../src/providers/apple/apple.dart';
+/// This library contains the Apple authentication provider for the
+/// Serverpod IDP module.
+library;
 
-export '../src/generated/protocol.dart' show AppleAccount;
+export '../src/providers/apple/apple.dart';

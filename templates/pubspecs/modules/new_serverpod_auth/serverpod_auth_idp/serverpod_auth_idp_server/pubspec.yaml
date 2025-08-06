@@ -11,9 +11,7 @@ environment:
 dependencies:
   serverpod: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
-  serverpod_auth_profile_server: SERVERPOD_VERSION
-  serverpod_auth_session_server: SERVERPOD_VERSION
-  serverpod_auth_user_server: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
 
   googleapis: ">=11.0.0 <15.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
@@ -32,12 +30,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
-  serverpod_auth_profile_server:
-    path: ../../serverpod_auth_profile/serverpod_auth_profile_server
-  serverpod_auth_session_server:
-    path: ../../serverpod_auth_session/serverpod_auth_session_server
-  serverpod_auth_user_server:
-    path: ../../serverpod_auth_user/serverpod_auth_user_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

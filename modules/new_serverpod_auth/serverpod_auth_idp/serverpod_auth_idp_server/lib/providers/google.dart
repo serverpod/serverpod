@@ -1,4 +1,5 @@
-export '../src/providers/google/google.dart';
+/// This library contains the Google authentication provider for the
+/// Serverpod IDP module.
+library;
 
-export '../src/generated/protocol.dart'
-    show GoogleAccount, GoogleIdTokenVerificationException;
+export '../src/providers/google/google.dart';

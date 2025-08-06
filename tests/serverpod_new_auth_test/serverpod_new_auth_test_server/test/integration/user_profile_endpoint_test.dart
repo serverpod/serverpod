@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:test/test.dart';
 
 import 'test_tools/serverpod_test_tools.dart';

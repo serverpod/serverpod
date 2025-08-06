@@ -1,24 +1,5 @@
-export '../src/providers/email/email.dart';
+/// This library contains the email authentication provider for the
+/// Serverpod IDP module.
+library;
 
-export '../src/generated/protocol.dart'
-    show
-        EmailAccount,
-        EmailAccountFailedLoginAttempt,
-        EmailAccountPasswordResetAttempt,
-        EmailAccountPasswordResetRequest,
-        EmailAccountPasswordResetRequestAttempt,
-        EmailAccountRequest,
-        EmailAccountRequestCompletionAttempt,
-        EmailAccountLoginException,
-        EmailAccountLoginFailureReason,
-        EmailAccountPasswordPolicyViolationException,
-        EmailAccountPasswordResetRequestExpiredException,
-        EmailAccountPasswordResetRequestNotFoundException,
-        EmailAccountPasswordResetRequestTooManyAttemptsException,
-        EmailAccountPasswordResetRequestUnauthorizedException,
-        EmailAccountPasswordResetTooManyAttemptsException,
-        EmailAccountRequestExpiredException,
-        EmailAccountRequestNotFoundException,
-        EmailAccountRequestNotVerifiedException,
-        EmailAccountRequestTooManyAttemptsException,
-        EmailAccountRequestUnauthorizedException;
+export '../src/providers/email/email.dart';
