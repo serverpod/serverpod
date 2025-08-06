@@ -1,8 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
 import 'package:test/test.dart';

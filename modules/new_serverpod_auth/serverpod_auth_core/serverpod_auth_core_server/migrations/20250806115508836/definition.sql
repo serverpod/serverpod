@@ -388,9 +388,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_core', '20250805104420829', now())
+    VALUES ('serverpod_auth_core', '20250806115508836', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250805104420829', "timestamp" = now();
+    DO UPDATE SET "version" = '20250806115508836', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

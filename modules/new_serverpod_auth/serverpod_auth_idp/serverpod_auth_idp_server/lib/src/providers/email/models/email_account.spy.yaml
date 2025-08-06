@@ -6,7 +6,7 @@ fields:
   id: UuidValue?, defaultPersist=random
 
   ### The [AuthUser] this profile belongs to
-  authUser: module:auth_user:AuthUser?, relation(onDelete=Cascade)
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
 
   ### The time when this authentication was created.
   createdAt: DateTime, defaultModel=now

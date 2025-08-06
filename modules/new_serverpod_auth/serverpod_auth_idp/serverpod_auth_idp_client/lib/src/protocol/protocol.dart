@@ -39,12 +39,8 @@ import 'providers/email/models/exceptions/email_account_request_unauthorized_exc
     as _i14;
 import 'providers/google/models/google_id_token_verification_exception.dart'
     as _i15;
-import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart'
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i16;
-import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
-    as _i17;
-import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
-    as _i18;
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
 export 'providers/email/models/exceptions/email_account_login_failure_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_policy_violation_exception.dart';
@@ -205,12 +201,6 @@ class Protocol extends _i1.SerializationManager {
     try {
       return _i16.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i17.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i18.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -250,15 +240,7 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i16.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_profile.$className';
-    }
-    className = _i17.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth_session.$className';
-    }
-    className = _i18.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_core.$className';
     }
     return null;
   }
@@ -326,17 +308,9 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'GoogleIdTokenVerificationException') {
       return deserialize<_i15.GoogleIdTokenVerificationException>(data['data']);
     }
-    if (dataClassName.startsWith('serverpod_auth_profile.')) {
-      data['className'] = dataClassName.substring(23);
-      return _i16.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_session.')) {
-      data['className'] = dataClassName.substring(23);
-      return _i17.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_user.')) {
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i18.Protocol().deserializeByClassName(data);
+      return _i16.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

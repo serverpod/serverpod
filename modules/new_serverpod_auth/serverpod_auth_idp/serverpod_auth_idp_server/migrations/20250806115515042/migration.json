@@ -89,7 +89,7 @@
             "columns": [
               "authUserId"
             ],
-            "referenceTable": "serverpod_auth_user",
+            "referenceTable": "serverpod_auth_core_user",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -179,7 +179,7 @@
             "columns": [
               "authUserId"
             ],
-            "referenceTable": "serverpod_auth_user",
+            "referenceTable": "serverpod_auth_core_user",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -769,7 +769,7 @@
             "columns": [
               "authUserId"
             ],
-            "referenceTable": "serverpod_auth_user",
+            "referenceTable": "serverpod_auth_core_user",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -1986,9 +1986,119 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "serverpod_auth_profile_user_profile",
+        "name": "serverpod_auth_core_jwt_refresh_token",
+        "dartName": "RefreshToken",
+        "module": "serverpod_auth_core",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid_v7()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "authUserId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "scopeNames",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Set<String>"
+          },
+          {
+            "name": "extraClaims",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          },
+          {
+            "name": "fixedSecret",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "rotatingSecretHash",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "rotatingSecretSalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "lastUpdatedAt",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "serverpod_auth_core_jwt_refresh_token_fk_0",
+            "columns": [
+              "authUserId"
+            ],
+            "referenceTable": "serverpod_auth_core_user",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_core_jwt_refresh_token_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "serverpod_auth_core_jwt_refresh_token_last_updated_at",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "lastUpdatedAt"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "serverpod_auth_core_profile",
         "dartName": "UserProfile",
-        "module": "serverpod_auth_profile",
+        "module": "serverpod_auth_core",
         "schema": "public",
         "columns": [
           {
@@ -2038,11 +2148,11 @@
         ],
         "foreignKeys": [
           {
-            "constraintName": "serverpod_auth_profile_user_profile_fk_0",
+            "constraintName": "serverpod_auth_core_profile_fk_0",
             "columns": [
               "authUserId"
             ],
-            "referenceTable": "serverpod_auth_user",
+            "referenceTable": "serverpod_auth_core_user",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -2051,11 +2161,11 @@
             "onDelete": 4
           },
           {
-            "constraintName": "serverpod_auth_profile_user_profile_fk_1",
+            "constraintName": "serverpod_auth_core_profile_fk_1",
             "columns": [
               "imageId"
             ],
-            "referenceTable": "serverpod_auth_profile_user_profile_image",
+            "referenceTable": "serverpod_auth_core_profile_image",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -2066,7 +2176,7 @@
         ],
         "indexes": [
           {
-            "indexName": "serverpod_auth_profile_user_profile_pkey",
+            "indexName": "serverpod_auth_core_profile_pkey",
             "elements": [
               {
                 "type": 0,
@@ -2096,9 +2206,9 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "serverpod_auth_profile_user_profile_image",
+        "name": "serverpod_auth_core_profile_image",
         "dartName": "UserProfileImage",
-        "module": "serverpod_auth_profile",
+        "module": "serverpod_auth_core",
         "schema": "public",
         "columns": [
           {
@@ -2142,11 +2252,11 @@
         ],
         "foreignKeys": [
           {
-            "constraintName": "serverpod_auth_profile_user_profile_image_fk_0",
+            "constraintName": "serverpod_auth_core_profile_image_fk_0",
             "columns": [
               "userProfileId"
             ],
-            "referenceTable": "serverpod_auth_profile_user_profile",
+            "referenceTable": "serverpod_auth_core_profile",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -2157,7 +2267,7 @@
         ],
         "indexes": [
           {
-            "indexName": "serverpod_auth_profile_user_profile_image_pkey",
+            "indexName": "serverpod_auth_core_profile_image_pkey",
             "elements": [
               {
                 "type": 0,
@@ -2175,9 +2285,9 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "serverpod_auth_session",
+        "name": "serverpod_auth_core_session",
         "dartName": "AuthSession",
-        "module": "serverpod_auth_session",
+        "module": "serverpod_auth_core",
         "schema": "public",
         "columns": [
           {
@@ -2246,11 +2356,11 @@
         ],
         "foreignKeys": [
           {
-            "constraintName": "serverpod_auth_session_fk_0",
+            "constraintName": "serverpod_auth_core_session_fk_0",
             "columns": [
               "authUserId"
             ],
-            "referenceTable": "serverpod_auth_user",
+            "referenceTable": "serverpod_auth_core_user",
             "referenceTableSchema": "public",
             "referenceColumns": [
               "id"
@@ -2261,7 +2371,7 @@
         ],
         "indexes": [
           {
-            "indexName": "serverpod_auth_session_pkey",
+            "indexName": "serverpod_auth_core_session_pkey",
             "elements": [
               {
                 "type": 0,
@@ -2279,9 +2389,9 @@
     {
       "type": "createTable",
       "createTable": {
-        "name": "serverpod_auth_user",
+        "name": "serverpod_auth_core_user",
         "dartName": "AuthUser",
-        "module": "serverpod_auth_user",
+        "module": "serverpod_auth_core",
         "schema": "public",
         "columns": [
           {
@@ -2313,7 +2423,7 @@
         "foreignKeys": [],
         "indexes": [
           {
-            "indexName": "serverpod_auth_user_pkey",
+            "indexName": "serverpod_auth_core_user_pkey",
             "elements": [
               {
                 "type": 0,

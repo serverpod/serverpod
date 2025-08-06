@@ -83,7 +83,7 @@ dart $CLI generate --no-analytics
 
 echo "\nserverpod_auth_migration_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
-dart $CLI generate --no-analytics --experimental-features=all
+dart $CLI generate --no-analytics
 
 echo "\nserverpod_auth_idp"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
@@ -91,7 +91,7 @@ dart $CLI generate --no-analytics
 
 echo "\nserverpod_auth_backwards_compatibility_server"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
-dart $CLI generate --no-analytics --experimental-features=all
+dart $CLI generate --no-analytics
 
 # Chat module
 
@@ -116,4 +116,4 @@ dart $CLI generate --no-analytics --experimental-features=all
 
 echo "\nserverpod_new_auth_test_server "
 cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
-dart $CLI generate --no-analytics --experimental-features=all
+dart $CLI generate --no-analytics

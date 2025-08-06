@@ -1582,7 +1582,7 @@
   "installedModules": [
     {
       "module": "serverpod_auth_core",
-      "version": "20250805104420829"
+      "version": "20250806115508836"
     },
     {
       "module": "serverpod",

@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
+import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';

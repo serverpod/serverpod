@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart';
+import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 class TestStorage extends KeyValueStorage {
   final values = <String, String>{};

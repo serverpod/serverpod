@@ -1,10 +1,10 @@
 import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_backwards_compatibility_client.dart'
     as backward_compatibility_client;
-import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart'
-    as auth_session_flutter;
+import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart'
+    as auth_flutter;
 import 'package:shared_preferences/shared_preferences.dart';
 
-extension SessionManagerLegacyImport on auth_session_flutter.SessionManager {
+extension SessionManagerLegacyImport on auth_flutter.SessionManager {
   static const _prefsKey = 'serverpod_authentication_key_production';
 
   Future<void> initAndImportLegacySessionIfNeeded(

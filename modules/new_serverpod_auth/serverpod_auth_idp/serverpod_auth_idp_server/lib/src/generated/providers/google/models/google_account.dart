@@ -13,7 +13,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
 
 /// A fully configured Google account to be used for logins.

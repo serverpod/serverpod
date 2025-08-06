@@ -28,13 +28,9 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i12;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i13;
-import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i14;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i15;
-import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i16;
-import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
-    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -709,12 +705,8 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_migration'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_profile'] = _i14.Endpoints()
+    modules['serverpod_auth_core'] = _i14.Endpoints()
       ..initializeEndpoints(server);
     modules['serverpod_auth'] = _i15.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_session'] = _i16.Endpoints()
-      ..initializeEndpoints(server);
-    modules['serverpod_auth_user'] = _i17.Endpoints()
-      ..initializeEndpoints(server);
   }
 }

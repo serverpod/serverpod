@@ -102,7 +102,7 @@
           "columns": [
             "authUserId"
           ],
-          "referenceTable": "serverpod_auth_user",
+          "referenceTable": "serverpod_auth_core_user",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -183,7 +183,7 @@
           "columns": [
             "authUserId"
           ],
-          "referenceTable": "serverpod_auth_user",
+          "referenceTable": "serverpod_auth_core_user",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -216,19 +216,11 @@
     },
     {
       "module": "serverpod_auth_idp",
-      "version": "20250805070920169"
+      "version": "20250806115515042"
     },
     {
-      "module": "serverpod_auth_session",
-      "version": "20250725091354637"
-    },
-    {
-      "module": "serverpod_auth_user",
-      "version": "20250725084305744"
-    },
-    {
-      "module": "serverpod_auth_profile",
-      "version": "20250725084419386"
+      "module": "serverpod_auth_core",
+      "version": "20250806115508836"
     }
   ],
   "migrationApiVersion": 1
