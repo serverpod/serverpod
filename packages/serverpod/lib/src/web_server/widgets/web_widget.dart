@@ -5,28 +5,28 @@ import 'dart:convert';
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
 /// cases.
-abstract class AbstractComponent {}
+abstract class WebWidget {}
 
-/// A component based on a HTML template. The [name] of the template should
+/// A [WebWidget] based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
 /// Set the custom values of the template by populating the [values] field. If
 /// values are set that aren't [String]s, the `toString` method will be called
 /// on the value. The templates are loaded when the server starts. If you add
 /// new templates or modify existing templates, you will need to restart the
 /// server for them to take effect.
-class Component extends AbstractComponent {
-  /// The name of the template used by this [Component].
+class TemplateWidget extends WebWidget {
+  /// The name of the template used by this [TemplateWidget].
   final String name;
 
-  /// The template used by this component.
+  /// The template used by this [TemplateWidget].
   late final Template template;
 
   /// Key/value pairs passed to the template. The values will be converted to
   /// strings using the toString method of the values.
   Map<String, dynamic> values = {};
 
-  /// Creates a new [Component].
-  Component({
+  /// Creates a new [TemplateWidget].
+  TemplateWidget({
     required this.name,
   }) {
     var cachedTemplate = templates[name];
@@ -42,13 +42,13 @@ class Component extends AbstractComponent {
   }
 }
 
-/// Combines a List of [Component]s into a single component.
-class ListComponent extends AbstractComponent {
+/// Combines a List of [WebWidget]s into a single [WebWidget].
+class ListWidget extends WebWidget {
   /// List of original widgets.
-  final List<Component> widgets;
+  final List<WebWidget> widgets;
 
-  /// Creates a new list component.
-  ListComponent({required this.widgets});
+  /// Creates a new [ListWidget].
+  ListWidget({required this.widgets});
 
   @override
   String toString() {
@@ -60,14 +60,14 @@ class ListComponent extends AbstractComponent {
   }
 }
 
-/// A component that renders JSON output. The output will be the result of passing
+/// A [WebWidget] that renders JSON output. The output will be the result of passing
 /// the provided [object] to [jsonEncode].
-class JsonComponent extends AbstractComponent {
+class JsonWidget extends WebWidget {
   /// The original object to be rendered as JSON.
   final dynamic object;
 
-  /// Creates a new [JsonComponent].
-  JsonComponent({required this.object});
+  /// Creates a new [JsonWidget].
+  JsonWidget({required this.object});
 
   @override
   String toString() {
@@ -75,13 +75,13 @@ class JsonComponent extends AbstractComponent {
   }
 }
 
-/// A component that renders a HTTP redirect to the provided [url].
-class RedirectComponent extends AbstractComponent {
+/// A [WebWidget] that renders a HTTP redirect to the provided [url].
+class RedirectWidget extends WebWidget {
   /// The [url] to redirect to.
   final String url;
 
-  /// Creates a new component that renders a redirect.
-  RedirectComponent({required this.url});
+  /// Creates a new [RedirectWidget] that renders a redirect.
+  RedirectWidget({required this.url});
 
   @override
   String toString() {

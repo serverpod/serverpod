@@ -12,9 +12,9 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
 import 'test_exception_handler.dart';
 
-class ExceptionRoute extends ComponentRoute {
+class ExceptionRoute extends WidgetRoute {
   @override
-  Future<Component> build(Session session, Request request) async {
+  Future<TemplateWidget> build(Session session, Request request) async {
     throw UnimplementedError('ExceptionRoute not implemented');
   }
 }
