@@ -1,0 +1,6 @@
+class: ObjectWithNullableCustomClass
+fields:
+    nullableCustomClassWithoutProtocolSerialization: CustomClassWithoutProtocolSerialization?
+    nullableCustomClassWithProtocolSerialization: CustomClassWithProtocolSerialization?
+    nullableCustomClassWithProtocolSerializationMethod: CustomClassWithProtocolSerializationMethod?
+    nonNullableCustomClass: CustomClassWithProtocolSerialization
