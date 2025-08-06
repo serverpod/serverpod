@@ -89,8 +89,8 @@ echo "\nserverpod_auth_idp"
 cd $BASE/modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
 dart $CLI generate --no-analytics
 
-echo "\nserverpod_auth_backwards_compatibility_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
+echo "\nserverpod_auth_bridge_server"
+cd $BASE/modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
 dart $CLI generate --no-analytics
 
 # Chat module

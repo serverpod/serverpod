@@ -1,0 +1,40 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_bridge_server
+description: Serverpod authentication backwards compatibility server module.
+version: 2.9.1
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  crypto: ^3.0.2
+  meta: ^1.11.0
+  pointycastle: ^3.7.4
+  serverpod: 2.9.1
+  serverpod_auth_idp_server: 2.9.1
+  serverpod_auth_core_server: 2.9.1
+  serverpod_shared: 2.9.1
+
+dev_dependencies:
+  serverpod_lints: 2.9.1
+  serverpod_test: 2.9.1
+  test: ^1.24.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_idp_server:
+    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

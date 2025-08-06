@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -10,62 +10,53 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'Given a legacy `serverpod_auth` email-based user account,',
-    (final sessionBuilder, final endpoints) {
-      const email = 'User@serverpod.DEV';
-      const password = 'Somepassword123!';
+  withServerpod('Given a legacy `serverpod_auth` email-based user account,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    const email = 'User@serverpod.DEV';
+    const password = 'Somepassword123!';
 
-      late Session session;
-      late legacy_auth.UserInfo userInfo;
+    late Session session;
+    late legacy_auth.UserInfo userInfo;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        userInfo = (await legacy_auth.Emails.createUser(
+      userInfo = (await legacy_auth.Emails.createUser(
+        session,
+        'user name',
+        // at this point `Emails` already expect lower-case addresses
+        email.toLowerCase(),
+        password,
+      ))!;
+    });
+
+    test('when calling `isUserMigrated`, then it returns `false`.', () async {
+      expect(
+        await AuthMigrations.isUserMigrated(session, userInfo.id!),
+        isFalse,
+      );
+    });
+
+    test('when calling `getNewAuthUserId`, then it returns `null`.', () async {
+      expect(
+        await AuthMigrations.getNewAuthUserId(session, userInfo.id!),
+        isNull,
+      );
+    });
+
+    test('when calling `migrateUsers`, then it completes.', () async {
+      await expectLater(
+        AuthMigrations.migrateUsers(
           session,
-          'user name',
-          // at this point `Emails` already expect lower-case addresses
-          email.toLowerCase(),
-          password,
-        ))!;
-      });
-
-      test(
-        'when calling `isUserMigrated`, then it returns `false`.',
-        () async {
-          expect(
-            await AuthMigrations.isUserMigrated(session, userInfo.id!),
-            isFalse,
-          );
-        },
+          userMigration: null,
+          transaction: session.transaction,
+        ),
+        completes,
       );
-
-      test(
-        'when calling `getNewAuthUserId`, then it returns `null`.',
-        () async {
-          expect(
-            await AuthMigrations.getNewAuthUserId(session, userInfo.id!),
-            isNull,
-          );
-        },
-      );
-
-      test(
-        'when calling `migrateUsers`, then it completes.',
-        () async {
-          await expectLater(
-            AuthMigrations.migrateUsers(
-              session,
-              userMigration: null,
-              transaction: session.transaction,
-            ),
-            completes,
-          );
-        },
-      );
-    },
-  );
+    });
+  });
 
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with `migrateUsers`,',
@@ -108,37 +99,28 @@ void main() {
         migratedUsers.clear();
       });
 
-      test(
-        'when calling `migrateUsers` again, then it completes.',
-        () async {
-          await expectLater(
-            AuthMigrations.migrateUsers(
-              session,
-              userMigration: null,
-              transaction: session.transaction,
-            ),
-            completes,
-          );
-        },
-      );
+      test('when calling `migrateUsers` again, then it completes.', () async {
+        await expectLater(
+          AuthMigrations.migrateUsers(
+            session,
+            userMigration: null,
+            transaction: session.transaction,
+          ),
+          completes,
+        );
+      });
 
-      test(
-        'when calling `isUserMigrated`, then it returns `true`.',
-        () async {
-          expect(
-            await AuthMigrations.isUserMigrated(session, userInfo.id!),
-            isTrue,
-          );
-        },
-      );
+      test('when calling `isUserMigrated`, then it returns `true`.', () async {
+        expect(
+          await AuthMigrations.isUserMigrated(session, userInfo.id!),
+          isTrue,
+        );
+      });
 
       test(
         'when checking the custom migration hook, then it has been called for the user.',
         () async {
-          expect(
-            migratedUsers[userInfo.id!],
-            isNotNull,
-          );
+          expect(migratedUsers[userInfo.id!], isNotNull);
         },
       );
 
@@ -157,19 +139,12 @@ void main() {
         () async {
           final emailAccount = await auth_next.EmailAccount.db.findFirstRow(
             session,
-            where: (final t) => t.authUserId.equals(
-              migratedUsers.values.single,
-            ),
+            where: (final t) =>
+                t.authUserId.equals(migratedUsers.values.single),
           );
 
-          expect(
-            emailAccount,
-            isNotNull,
-          );
-          expect(
-            emailAccount?.email,
-            email.toLowerCase(),
-          );
+          expect(emailAccount, isNotNull);
+          expect(emailAccount?.email, email.toLowerCase());
         },
       );
 
@@ -186,91 +161,89 @@ void main() {
         },
       );
 
-      test(
-        'when fetching the `UserProfile`, then it exists.',
-        () async {
-          expect(
-            await UserProfiles.findUserProfileByUserId(
-              session,
-              migratedUsers.values.single,
-            ),
-            isNotNull,
-          );
-        },
-      );
+      test('when fetching the `UserProfile`, then it exists.', () async {
+        expect(
+          await UserProfiles.findUserProfileByUserId(
+            session,
+            migratedUsers.values.single,
+          ),
+          isNotNull,
+        );
+      });
     },
   );
 
-  withServerpod(
-    'Given five legacy `serverpod_auth` email-based user accounts,',
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late UserMigrationFunction userMigration;
+  withServerpod('Given five legacy `serverpod_auth` email-based user accounts,',
+      (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late UserMigrationFunction userMigration;
 
-      final migratedUsers = <int, UuidValue>{};
+    final migratedUsers = <int, UuidValue>{};
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        userMigration = (
-          final session, {
-          required final newAuthUserId,
-          required final oldUserId,
-          final transaction,
-        }) async {
-          migratedUsers[oldUserId] = newAuthUserId;
-        };
+      userMigration = (
+        final session, {
+        required final newAuthUserId,
+        required final oldUserId,
+        final transaction,
+      }) async {
+        migratedUsers[oldUserId] = newAuthUserId;
+      };
 
-        for (var i = 0; i < 5; i++) {
-          await legacy_auth.Emails.createUser(
-            session,
-            'user name',
-            'test_$i@serverpod.dev',
-            'Somepassword123!',
-          );
-        }
-      });
+      for (var i = 0; i < 5; i++) {
+        await legacy_auth.Emails.createUser(
+          session,
+          'user name',
+          'test_$i@serverpod.dev',
+          'Somepassword123!',
+        );
+      }
+    });
 
-      tearDown(() {
-        migratedUsers.clear();
-      });
+    tearDown(() {
+      migratedUsers.clear();
+    });
 
-      test(
-        'when calling `migrateUsers` successively, then accounts are migrated in the desired batch size.',
-        () async {
-          final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
-            session,
-            userMigration: userMigration,
-            maxUsers: 2,
-            transaction: session.transaction,
-          );
-          expect(migratedAccountsStep1, 2);
-          expect(migratedUsers, hasLength(2));
-          expect(await MigratedUser.db.count(session), 2);
+    test(
+      'when calling `migrateUsers` successively, then accounts are migrated in the desired batch size.',
+      () async {
+        final migratedAccountsStep1 = await AuthMigrations.migrateUsers(
+          session,
+          userMigration: userMigration,
+          maxUsers: 2,
+          transaction: session.transaction,
+        );
+        expect(migratedAccountsStep1, 2);
+        expect(migratedUsers, hasLength(2));
+        expect(await MigratedUser.db.count(session), 2);
 
-          final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
-            session,
-            userMigration: userMigration,
-            maxUsers: 2,
-            transaction: session.transaction,
-          );
-          expect(migratedAccountsStep2, 2);
-          expect(migratedUsers, hasLength(4));
-          expect(await MigratedUser.db.count(session), 4);
+        final migratedAccountsStep2 = await AuthMigrations.migrateUsers(
+          session,
+          userMigration: userMigration,
+          maxUsers: 2,
+          transaction: session.transaction,
+        );
+        expect(migratedAccountsStep2, 2);
+        expect(migratedUsers, hasLength(4));
+        expect(await MigratedUser.db.count(session), 4);
 
-          final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
-            session,
-            userMigration: userMigration,
-            maxUsers: 2,
-            transaction: session.transaction,
-          );
-          expect(migratedAccountsStep3, 1);
-          expect(migratedUsers, hasLength(5));
-          expect(await MigratedUser.db.count(session), 5);
-        },
-      );
-    },
-  );
+        final migratedAccountsStep3 = await AuthMigrations.migrateUsers(
+          session,
+          userMigration: userMigration,
+          maxUsers: 2,
+          transaction: session.transaction,
+        );
+        expect(migratedAccountsStep3, 1);
+        expect(migratedUsers, hasLength(5));
+        expect(await MigratedUser.db.count(session), 5);
+      },
+    );
+  });
 
   withServerpod(
     'Given a legacy `serverpod_auth` social-login-based user account migrated with `migrateUsers`,',
@@ -320,23 +293,17 @@ void main() {
         migratedUsers.clear();
       });
 
-      test(
-        'when calling `isUserMigrated`, then it returns `true`.',
-        () async {
-          expect(
-            await AuthMigrations.isUserMigrated(session, userInfo.id!),
-            isTrue,
-          );
-        },
-      );
+      test('when calling `isUserMigrated`, then it returns `true`.', () async {
+        expect(
+          await AuthMigrations.isUserMigrated(session, userInfo.id!),
+          isTrue,
+        );
+      });
 
       test(
         'when checking the custom migration hook, then it has been called for the user.',
         () async {
-          expect(
-            migratedUsers[userInfo.id!],
-            isNotNull,
-          );
+          expect(migratedUsers[userInfo.id!], isNotNull);
         },
       );
 
@@ -353,10 +320,7 @@ void main() {
       test(
         'when checking the `EmailAccount`, then no entry has been created for the social-backed account.',
         () async {
-          expect(
-            await auth_next.EmailAccount.db.find(session),
-            isEmpty,
-          );
+          expect(await auth_next.EmailAccount.db.find(session), isEmpty);
         },
       );
 
@@ -373,18 +337,15 @@ void main() {
         },
       );
 
-      test(
-        'when fetching the `UserProfile`, then it exists.',
-        () async {
-          expect(
-            await UserProfiles.findUserProfileByUserId(
-              session,
-              migratedUsers.values.single,
-            ),
-            isNotNull,
-          );
-        },
-      );
+      test('when fetching the `UserProfile`, then it exists.', () async {
+        expect(
+          await UserProfiles.findUserProfileByUserId(
+            session,
+            migratedUsers.values.single,
+          ),
+          isNotNull,
+        );
+      });
     },
   );
 }

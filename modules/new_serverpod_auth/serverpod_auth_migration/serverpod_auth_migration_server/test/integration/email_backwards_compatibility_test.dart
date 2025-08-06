@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
 import 'package:serverpod_auth_core_server/profile.dart' as new_auth_profile;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
@@ -126,7 +126,9 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await new_auth_email.EmailAccount.db.find(session))
+          (await new_auth_email.EmailAccount.db.find(
+            session,
+          ))
               .single
               .passwordHash
               .lengthInBytes,
@@ -147,11 +149,7 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        await _createLegacyUser(
-          session,
-          email: email,
-          password: password,
-        );
+        await _createLegacyUser(session, email: email, password: password);
       });
 
       test(
@@ -231,25 +229,16 @@ void main() {
       test(
         'when the migration is done, then no session has been created in the legacy system.',
         () async {
-          expect(
-            await legacy_auth.AuthKey.db.find(session),
-            isEmpty,
-          );
+          expect(await legacy_auth.AuthKey.db.find(session), isEmpty);
         },
       );
 
       test(
         'when the migration is done, then the migration hook has been invoked.',
         () async {
-          expect(
-            migratedUser?.oldUserId,
-            userInfo.id!,
-          );
+          expect(migratedUser?.oldUserId, userInfo.id!);
 
-          expect(
-            migratedUser?.newAuthUserId,
-            authUserId,
-          );
+          expect(migratedUser?.newAuthUserId, authUserId);
         },
       );
 
@@ -278,19 +267,19 @@ void main() {
         },
       );
 
-      test('when reading the profile, then it matches the original user info.',
-          () async {
-        final profile =
-            await new_auth_profile.UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
+      test(
+        'when reading the profile, then it matches the original user info.',
+        () async {
+          final profile =
+              await new_auth_profile.UserProfiles.findUserProfileByUserId(
+                  session, authUserId);
 
-        expect(profile.email, userInfo.email);
-        expect(profile.userName, userInfo.userName);
-        expect(profile.fullName, userInfo.fullName);
-        expect(profile.email, email.toLowerCase());
-      });
+          expect(profile.email, userInfo.email);
+          expect(profile.userName, userInfo.userName);
+          expect(profile.fullName, userInfo.fullName);
+          expect(profile.email, email.toLowerCase());
+        },
+      );
     },
   );
 
@@ -306,20 +295,11 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        await _createLegacyUser(
-          session,
-          email: email,
-          password: password,
-        );
+        await _createLegacyUser(session, email: email, password: password);
 
-        AuthMigrations.config = AuthMigrationConfig(
-          importProfile: false,
-        );
+        AuthMigrations.config = AuthMigrationConfig(importProfile: false);
 
-        await AuthMigrations.migrateUsers(
-          session,
-          userMigration: null,
-        );
+        await AuthMigrations.migrateUsers(session, userMigration: null);
 
         AuthMigrations.config = AuthMigrationConfig();
 
@@ -388,25 +368,16 @@ void main() {
       test(
         'when the migration is done, then no session has been created in the legacy system.',
         () async {
-          expect(
-            await legacy_auth.AuthKey.db.find(session),
-            isEmpty,
-          );
+          expect(await legacy_auth.AuthKey.db.find(session), isEmpty);
         },
       );
 
       test(
         'when the migration is done, then the migration hook has been invoked.',
         () async {
-          expect(
-            migratedUser?.oldUserId,
-            userInfo.id!,
-          );
+          expect(migratedUser?.oldUserId, userInfo.id!);
 
-          expect(
-            migratedUser?.newAuthUserId,
-            authUserId,
-          );
+          expect(migratedUser?.newAuthUserId, authUserId);
         },
       );
 
@@ -443,10 +414,7 @@ void main() {
             password: password,
           );
 
-          expect(
-            await legacy_auth.AuthKey.db.find(session),
-            isEmpty,
-          );
+          expect(await legacy_auth.AuthKey.db.find(session), isEmpty);
         },
       );
 
@@ -511,19 +479,19 @@ void main() {
         },
       );
 
-      test('when reading the profile, then it matches the original user info.',
-          () async {
-        final profile =
-            await new_auth_profile.UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-        );
+      test(
+        'when reading the profile, then it matches the original user info.',
+        () async {
+          final profile =
+              await new_auth_profile.UserProfiles.findUserProfileByUserId(
+                  session, authUserId);
 
-        expect(profile.email, userInfo.email);
-        expect(profile.userName, userInfo.userName);
-        expect(profile.fullName, userInfo.fullName);
-        expect(profile.email, email.toLowerCase());
-      });
+          expect(profile.email, userInfo.email);
+          expect(profile.userName, userInfo.userName);
+          expect(profile.fullName, userInfo.fullName);
+          expect(profile.email, email.toLowerCase());
+        },
+      );
     },
   );
 }

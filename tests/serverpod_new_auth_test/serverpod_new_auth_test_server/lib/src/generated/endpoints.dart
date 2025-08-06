@@ -22,7 +22,7 @@ import '../endpoints/session_test_endpoint.dart' as _i7;
 import '../endpoints/user_profile_endpoint.dart' as _i8;
 import 'package:uuid/uuid_value.dart' as _i9;
 import 'dart:typed_data' as _i10;
-import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart'
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
     as _i11;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i12;
@@ -699,7 +699,7 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_backwards_compatibility'] = _i11.Endpoints()
+    modules['serverpod_auth_bridge'] = _i11.Endpoints()
       ..initializeEndpoints(server);
     modules['serverpod_auth_idp'] = _i12.Endpoints()
       ..initializeEndpoints(server);

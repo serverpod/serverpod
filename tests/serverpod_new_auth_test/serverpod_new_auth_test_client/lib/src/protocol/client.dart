@@ -17,7 +17,7 @@ import 'package:uuid/uuid_value.dart' as _i4;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i5;
 import 'dart:typed_data' as _i6;
-import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_backwards_compatibility_client.dart'
+import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i7;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i8;
@@ -469,14 +469,14 @@ class EndpointUserProfile extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_backwards_compatibility = _i7.Caller(client);
+    serverpod_auth_bridge = _i7.Caller(client);
     serverpod_auth_idp = _i8.Caller(client);
     serverpod_auth_migration = _i9.Caller(client);
     serverpod_auth_core = _i5.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i7.Caller serverpod_auth_backwards_compatibility;
+  late final _i7.Caller serverpod_auth_bridge;
 
   late final _i8.Caller serverpod_auth_idp;
 
@@ -559,8 +559,7 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
-        'serverpod_auth_backwards_compatibility':
-            modules.serverpod_auth_backwards_compatibility,
+        'serverpod_auth_bridge': modules.serverpod_auth_bridge,
         'serverpod_auth_idp': modules.serverpod_auth_idp,
         'serverpod_auth_migration': modules.serverpod_auth_migration,
         'serverpod_auth_core': modules.serverpod_auth_core,

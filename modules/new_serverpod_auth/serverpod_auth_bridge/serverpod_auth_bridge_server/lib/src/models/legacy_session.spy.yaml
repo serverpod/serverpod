@@ -1,0 +1,19 @@
+class: LegacySession
+serverOnly: true
+table: serverpod_auth_bridge_session
+fields:
+  # Uses `int` IDs to match the legacy behavior, which relies on look up by ID
+
+  ### The [AuthUser] this session belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The scopes this session provides access to.
+  scopeNames: Set<String>
+
+  ### The hashed version of the key (as the legacy `AuthKey`)
+  hash: String
+
+  ### The method through which this session was created.
+  ###
+  ### This can be either an email or social login, a personal access token, service account etc.
+  method: String

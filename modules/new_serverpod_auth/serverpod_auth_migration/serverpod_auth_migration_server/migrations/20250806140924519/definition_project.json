@@ -1,0 +1,122 @@
+{
+  "moduleName": "serverpod_auth_migration",
+  "tables": [
+    {
+      "name": "serverpod_auth_migration_migrated_user",
+      "dartName": "MigratedUser",
+      "module": "serverpod_auth_migration",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('serverpod_auth_migration_migrated_user_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "oldUserId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "name": "newAuthUserId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "serverpod_auth_migration_migrated_user_fk_0",
+          "columns": [
+            "oldUserId"
+          ],
+          "referenceTable": "serverpod_user_info",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        },
+        {
+          "constraintName": "serverpod_auth_migration_migrated_user_fk_1",
+          "columns": [
+            "newAuthUserId"
+          ],
+          "referenceTable": "serverpod_auth_core_user",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "serverpod_auth_migration_migrated_user_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        },
+        {
+          "indexName": "serverpod_auth_migration_migrated_user_old",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "oldUserId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        },
+        {
+          "indexName": "serverpod_auth_migration_migrated_user_new",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "newAuthUserId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    }
+  ],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20240516151843329"
+    },
+    {
+      "module": "serverpod_auth_bridge",
+      "version": "20250806140918738"
+    },
+    {
+      "module": "serverpod_auth_idp",
+      "version": "20250806140913030"
+    },
+    {
+      "module": "serverpod_auth_core",
+      "version": "20250806140907275"
+    },
+    {
+      "module": "serverpod_auth",
+      "version": "20240520102713718"
+    }
+  ],
+  "migrationApiVersion": 1
+}

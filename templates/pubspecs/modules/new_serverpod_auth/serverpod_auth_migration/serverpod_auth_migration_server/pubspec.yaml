@@ -11,7 +11,7 @@ environment:
 dependencies:
   meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
-  serverpod_auth_backwards_compatibility_server: SERVERPOD_VERSION
+  serverpod_auth_bridge_server: SERVERPOD_VERSION
   serverpod_auth_idp_server: SERVERPOD_VERSION
   serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
@@ -25,8 +25,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
-  serverpod_auth_backwards_compatibility_server:
-    path: ../../serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
+  serverpod_auth_bridge_server:
+    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
   serverpod_auth_idp_server:
     path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_core_server:

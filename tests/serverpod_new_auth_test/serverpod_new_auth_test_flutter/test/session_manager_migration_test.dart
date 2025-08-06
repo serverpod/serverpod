@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_backwards_compatibility_flutter/serverpod_auth_backwards_compatibility_flutter.dart';
+import 'package:serverpod_auth_bridge_flutter/serverpod_auth_bridge_flutter.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart'
     as auth_session_flutter;
@@ -99,7 +99,7 @@ void main() {
       );
 
       await newSessionManager.initAndImportLegacySessionIfNeeded(
-        newSessionClient.modules.serverpod_auth_backwards_compatibility,
+        newSessionClient.modules.serverpod_auth_bridge,
         legacyStringGetter: legacyStorage.getString,
       );
 
