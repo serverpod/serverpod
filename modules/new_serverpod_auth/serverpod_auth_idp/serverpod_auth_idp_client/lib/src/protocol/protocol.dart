@@ -11,51 +11,54 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'email/models/exceptions/email_account_login_exception.dart' as _i2;
-import 'email/models/exceptions/email_account_login_failure_reason.dart' as _i3;
-import 'email/models/exceptions/email_account_password_policy_violation_exception.dart'
+import 'providers/email/models/exceptions/email_account_login_exception.dart'
+    as _i2;
+import 'providers/email/models/exceptions/email_account_login_failure_reason.dart'
+    as _i3;
+import 'providers/email/models/exceptions/email_account_password_policy_violation_exception.dart'
     as _i4;
-import 'email/models/exceptions/email_account_password_reset_request_expired_exception.dart'
+import 'providers/email/models/exceptions/email_account_password_reset_request_expired_exception.dart'
     as _i5;
-import 'email/models/exceptions/email_account_password_reset_request_not_found_exception.dart'
+import 'providers/email/models/exceptions/email_account_password_reset_request_not_found_exception.dart'
     as _i6;
-import 'email/models/exceptions/email_account_password_reset_request_too_many_attempts_exception.dart'
+import 'providers/email/models/exceptions/email_account_password_reset_request_too_many_attempts_exception.dart'
     as _i7;
-import 'email/models/exceptions/email_account_password_reset_request_unauthorized_exception.dart'
+import 'providers/email/models/exceptions/email_account_password_reset_request_unauthorized_exception.dart'
     as _i8;
-import 'email/models/exceptions/email_account_password_reset_too_many_attempts_exception.dart'
+import 'providers/email/models/exceptions/email_account_password_reset_too_many_attempts_exception.dart'
     as _i9;
-import 'email/models/exceptions/email_account_request_expired_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_expired_exception.dart'
     as _i10;
-import 'email/models/exceptions/email_account_request_not_found_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_not_found_exception.dart'
     as _i11;
-import 'email/models/exceptions/email_account_request_not_verified_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_not_verified_exception.dart'
     as _i12;
-import 'email/models/exceptions/email_account_request_too_many_attempts_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_too_many_attempts_exception.dart'
     as _i13;
-import 'email/models/exceptions/email_account_request_unauthorized_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_unauthorized_exception.dart'
     as _i14;
-import 'google/models/google_id_token_verification_exception.dart' as _i15;
+import 'providers/google/models/google_id_token_verification_exception.dart'
+    as _i15;
 import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart'
     as _i16;
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
     as _i17;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
     as _i18;
-export 'email/models/exceptions/email_account_login_exception.dart';
-export 'email/models/exceptions/email_account_login_failure_reason.dart';
-export 'email/models/exceptions/email_account_password_policy_violation_exception.dart';
-export 'email/models/exceptions/email_account_password_reset_request_expired_exception.dart';
-export 'email/models/exceptions/email_account_password_reset_request_not_found_exception.dart';
-export 'email/models/exceptions/email_account_password_reset_request_too_many_attempts_exception.dart';
-export 'email/models/exceptions/email_account_password_reset_request_unauthorized_exception.dart';
-export 'email/models/exceptions/email_account_password_reset_too_many_attempts_exception.dart';
-export 'email/models/exceptions/email_account_request_expired_exception.dart';
-export 'email/models/exceptions/email_account_request_not_found_exception.dart';
-export 'email/models/exceptions/email_account_request_not_verified_exception.dart';
-export 'email/models/exceptions/email_account_request_too_many_attempts_exception.dart';
-export 'email/models/exceptions/email_account_request_unauthorized_exception.dart';
-export 'google/models/google_id_token_verification_exception.dart';
+export 'providers/email/models/exceptions/email_account_login_exception.dart';
+export 'providers/email/models/exceptions/email_account_login_failure_reason.dart';
+export 'providers/email/models/exceptions/email_account_password_policy_violation_exception.dart';
+export 'providers/email/models/exceptions/email_account_password_reset_request_expired_exception.dart';
+export 'providers/email/models/exceptions/email_account_password_reset_request_not_found_exception.dart';
+export 'providers/email/models/exceptions/email_account_password_reset_request_too_many_attempts_exception.dart';
+export 'providers/email/models/exceptions/email_account_password_reset_request_unauthorized_exception.dart';
+export 'providers/email/models/exceptions/email_account_password_reset_too_many_attempts_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_expired_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_not_found_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_not_verified_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_too_many_attempts_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_unauthorized_exception.dart';
+export 'providers/google/models/google_id_token_verification_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {

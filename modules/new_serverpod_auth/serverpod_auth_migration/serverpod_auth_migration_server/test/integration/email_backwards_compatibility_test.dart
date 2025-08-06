@@ -1,8 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart' as auth_next;
+import 'package:serverpod_auth_idp_server/providers/email.dart'
+    as auth_next_email;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as auth_next;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
@@ -126,7 +127,7 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await auth_next.EmailAccount.db.find(session))
+          (await auth_next_email.EmailAccount.db.find(session))
               .single
               .passwordHash
               .lengthInBytes,
@@ -217,7 +218,7 @@ void main() {
           password: password,
         );
 
-        authUserId = (await auth_next.EmailAccounts.admin.findAccount(
+        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -267,7 +268,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await auth_next.EmailAccounts.authenticate(
+            await auth_next_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -322,7 +323,7 @@ void main() {
 
         AuthMigrations.config = AuthMigrationConfig();
 
-        authUserId = (await auth_next.EmailAccounts.admin.findAccount(
+        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -377,7 +378,7 @@ void main() {
           },
         );
 
-        authUserId = (await auth_next.EmailAccounts.admin.findAccount(
+        authUserId = (await auth_next_email.EmailAccounts.admin.findAccount(
           session,
           email: email,
         ))!
@@ -459,7 +460,7 @@ void main() {
           );
 
           expect(
-            await auth_next.EmailAccounts.authenticate(
+            await auth_next_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: password,
@@ -482,13 +483,13 @@ void main() {
           );
 
           await expectLater(
-            () => auth_next.EmailAccounts.authenticate(
+            () => auth_next_email.EmailAccounts.authenticate(
               session,
               email: email,
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<auth_next.EmailAccountLoginException>()),
+            throwsA(isA<auth_next_email.EmailAccountLoginException>()),
           );
         },
       );
@@ -497,7 +498,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => auth_next.EmailAccounts.authenticate(
+            () => auth_next_email.EmailAccounts.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,
@@ -505,7 +506,7 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<auth_next.EmailAccountLoginException>()),
+            throwsA(isA<auth_next_email.EmailAccountLoginException>()),
           );
         },
       );

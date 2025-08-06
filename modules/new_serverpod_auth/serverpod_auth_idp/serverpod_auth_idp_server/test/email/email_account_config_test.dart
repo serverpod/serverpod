@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_idp_server/src/email/email.dart';
+import 'package:serverpod_auth_idp_server/src/providers/email/email.dart';
 import 'package:test/test.dart';
 
 void main() {

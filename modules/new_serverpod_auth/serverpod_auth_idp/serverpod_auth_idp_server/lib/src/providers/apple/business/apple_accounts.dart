@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
-import '../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 import 'apple_accounts_admin.dart';
 import 'config.dart';
 

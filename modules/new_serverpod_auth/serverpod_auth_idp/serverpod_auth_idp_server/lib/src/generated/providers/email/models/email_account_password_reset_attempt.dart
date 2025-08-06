@@ -13,7 +13,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../email/models/email_account_password_reset_request.dart' as _i2;
+import '../../../providers/email/models/email_account_password_reset_request.dart'
+    as _i2;
 
 /// Database table for tracking password reset attempts.
 /// A new entry will be created whenever the user tries to complete the password reset.

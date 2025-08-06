@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
-import '../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 
 /// Administrative Apple account management functions.
 final class AppleAccountsAdmin {

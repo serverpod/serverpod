@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart';
 
-import '../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 import 'google_accounts_admin.dart';
 import 'google_auth.dart';
 

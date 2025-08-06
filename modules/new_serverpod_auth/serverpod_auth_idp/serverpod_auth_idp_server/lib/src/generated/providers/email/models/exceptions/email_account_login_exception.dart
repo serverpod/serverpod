@@ -10,8 +10,8 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../email/models/exceptions/email_account_login_failure_reason.dart'
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../../../../providers/email/models/exceptions/email_account_login_failure_reason.dart'
     as _i2;
 
 /// Exception to be thrown if the login via email/password fails.
@@ -19,7 +19,10 @@ import '../../../email/models/exceptions/email_account_login_failure_reason.dart
 /// Inspect the [reason] to determine whether this was due to invalid or unknown
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountLoginException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   EmailAccountLoginException._({required this.reason});
 
   factory EmailAccountLoginException(
@@ -42,6 +45,11 @@ abstract class EmailAccountLoginException
       {_i2.EmailAccountLoginFailureReason? reason});
   @override
   Map<String, dynamic> toJson() {
+    return {'reason': reason.toJson()};
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {'reason': reason.toJson()};
   }
 

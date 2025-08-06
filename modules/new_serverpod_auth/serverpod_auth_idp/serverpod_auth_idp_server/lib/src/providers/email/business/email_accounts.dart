@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
-import '../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 import '../util/byte_data_extension.dart';
 import '../util/uint8list_extension.dart';
 import 'email_account_config.dart';

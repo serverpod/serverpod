@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 
-import '../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 import 'google_accounts.dart';
 
 /// Collection of Google-account admin methods.

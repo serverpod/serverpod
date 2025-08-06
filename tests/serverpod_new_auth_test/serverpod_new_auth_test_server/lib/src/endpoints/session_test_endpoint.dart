@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 class SessionTestEndpoint extends Endpoint {
   Future<UuidValue> createTestUser(final Session session) async {
