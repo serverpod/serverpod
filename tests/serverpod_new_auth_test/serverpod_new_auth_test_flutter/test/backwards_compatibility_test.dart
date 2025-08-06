@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart';
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_auth_session_flutter/serverpod_auth_session_flutter.dart';
 import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_server_client.dart';
 

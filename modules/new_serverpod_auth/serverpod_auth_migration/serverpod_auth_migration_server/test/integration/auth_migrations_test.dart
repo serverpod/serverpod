@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_backwards_compatibility_server/serverpod_auth_backwards_compatibility_server.dart';
-import 'package:serverpod_auth_email_account_server/src/generated/email_account.dart'
-    as new_email_account_db;
+import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -156,8 +155,7 @@ void main() {
       test(
         'when checking the `EmailAccount`, then it has been created with the lower-case email variant.',
         () async {
-          final emailAccount =
-              await new_email_account_db.EmailAccount.db.findFirstRow(
+          final emailAccount = await auth_next.EmailAccount.db.findFirstRow(
             session,
             where: (final t) => t.authUserId.equals(
               migratedUsers.values.single,
@@ -356,7 +354,7 @@ void main() {
         'when checking the `EmailAccount`, then no entry has been created for the social-backed account.',
         () async {
           expect(
-            await new_email_account_db.EmailAccount.db.find(session),
+            await auth_next.EmailAccount.db.find(session),
             isEmpty,
           );
         },

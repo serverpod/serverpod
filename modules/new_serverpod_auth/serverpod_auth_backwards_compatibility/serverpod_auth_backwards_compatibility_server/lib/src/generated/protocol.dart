@@ -12,13 +12,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_email_account_server/serverpod_auth_email_account_server.dart'
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i3;
-import 'package:serverpod_auth_google_account_server/serverpod_auth_google_account_server.dart'
-    as _i4;
 import 'package:serverpod_auth_session_server/serverpod_auth_session_server.dart'
-    as _i5;
+    as _i4;
 import 'package:serverpod_auth_user_server/serverpod_auth_user_server.dart'
+    as _i5;
+import 'package:serverpod_auth_profile_server/serverpod_auth_profile_server.dart'
     as _i6;
 import 'legacy_email_password.dart' as _i7;
 import 'legacy_external_user_identifier.dart' as _i8;
@@ -66,7 +66,7 @@ class Protocol extends _i1.SerializationManagerServer {
           constraintName:
               'serverpod_auth_backwards_compatibility_email_password_fk_0',
           columns: ['emailAccountId'],
-          referenceTable: 'serverpod_auth_email_account',
+          referenceTable: 'serverpod_auth_idp_email_account',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -317,19 +317,19 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_email_account.$className';
+      return 'serverpod_auth_idp.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_google_account.$className';
+      return 'serverpod_auth_session.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_session.$className';
+      return 'serverpod_auth_user.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_user.$className';
+      return 'serverpod_auth_profile.$className';
     }
     return null;
   }
@@ -353,20 +353,20 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_email_account.')) {
-      data['className'] = dataClassName.substring(29);
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
       return _i3.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_google_account.')) {
-      data['className'] = dataClassName.substring(30);
-      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_session.')) {
       data['className'] = dataClassName.substring(23);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
+      return _i5.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_profile.')) {
+      data['className'] = dataClassName.substring(23);
       return _i6.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);

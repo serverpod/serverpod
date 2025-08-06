@@ -13,17 +13,15 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_backwards_compatibility_client.dart'
     as _i2;
-import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i3;
-import 'package:serverpod_auth_google_account_client/serverpod_auth_google_account_client.dart'
-    as _i4;
 import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart'
-    as _i5;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
+    as _i4;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
 import 'package:serverpod_auth_session_client/serverpod_auth_session_client.dart'
-    as _i7;
+    as _i6;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
-    as _i8;
+    as _i7;
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -57,9 +55,6 @@ class Protocol extends _i1.SerializationManager {
     try {
       return _i7.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i8.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -73,25 +68,21 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_email_account.$className';
+      return 'serverpod_auth_idp.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_google_account.$className';
+      return 'serverpod_auth_profile.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_profile.$className';
+      return 'serverpod_auth.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
-    }
-    className = _i7.Protocol().getClassNameForObject(data);
-    if (className != null) {
       return 'serverpod_auth_session.$className';
     }
-    className = _i8.Protocol().getClassNameForObject(data);
+    className = _i7.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_user.$className';
     }
@@ -108,29 +99,25 @@ class Protocol extends _i1.SerializationManager {
       data['className'] = dataClassName.substring(39);
       return _i2.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_email_account.')) {
-      data['className'] = dataClassName.substring(29);
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
       return _i3.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_google_account.')) {
-      data['className'] = dataClassName.substring(30);
-      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_profile.')) {
       data['className'] = dataClassName.substring(23);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i6.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_session.')) {
       data['className'] = dataClassName.substring(23);
-      return _i7.Protocol().deserializeByClassName(data);
+      return _i6.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_user.')) {
       data['className'] = dataClassName.substring(20);
-      return _i8.Protocol().deserializeByClassName(data);
+      return _i7.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

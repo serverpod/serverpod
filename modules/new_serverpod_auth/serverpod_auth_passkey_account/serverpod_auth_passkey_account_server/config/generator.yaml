@@ -1,5 +1,0 @@
-type: module
-nickname: serverpod_auth_passkey_account
-
-client_package_path: ../serverpod_auth_passkey_account_client
-server_test_tools_path: test/integration/test_tools

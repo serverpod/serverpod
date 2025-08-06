@@ -21,19 +21,13 @@ import 'package:serverpod_auth_profile_client/serverpod_auth_profile_client.dart
 import 'dart:typed_data' as _i7;
 import 'package:serverpod_auth_backwards_compatibility_client/serverpod_auth_backwards_compatibility_client.dart'
     as _i8;
-import 'package:serverpod_auth_email_client/serverpod_auth_email_client.dart'
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i9;
-import 'package:serverpod_auth_google_client/serverpod_auth_google_client.dart'
-    as _i10;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
-    as _i11;
-import 'package:serverpod_auth_email_account_client/serverpod_auth_email_account_client.dart'
-    as _i12;
-import 'package:serverpod_auth_google_account_client/serverpod_auth_google_account_client.dart'
-    as _i13;
+    as _i10;
 import 'package:serverpod_auth_user_client/serverpod_auth_user_client.dart'
-    as _i14;
-import 'protocol.dart' as _i15;
+    as _i11;
+import 'protocol.dart' as _i12;
 
 /// {@category Endpoint}
 class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
@@ -480,36 +474,27 @@ class EndpointUserProfile extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_backwards_compatibility = _i8.Caller(client);
-    serverpod_auth_email = _i9.Caller(client);
-    serverpod_auth_google = _i10.Caller(client);
-    serverpod_auth_migration = _i11.Caller(client);
+    serverpod_auth_idp = _i9.Caller(client);
+    serverpod_auth_migration = _i10.Caller(client);
     serverpod_auth_profile = _i6.Caller(client);
     auth = _i3.Caller(client);
-    serverpod_auth_email_account = _i12.Caller(client);
-    serverpod_auth_google_account = _i13.Caller(client);
     serverpod_auth_session = _i5.Caller(client);
-    serverpod_auth_user = _i14.Caller(client);
+    serverpod_auth_user = _i11.Caller(client);
   }
 
   late final _i8.Caller serverpod_auth_backwards_compatibility;
 
-  late final _i9.Caller serverpod_auth_email;
+  late final _i9.Caller serverpod_auth_idp;
 
-  late final _i10.Caller serverpod_auth_google;
-
-  late final _i11.Caller serverpod_auth_migration;
+  late final _i10.Caller serverpod_auth_migration;
 
   late final _i6.Caller serverpod_auth_profile;
 
   late final _i3.Caller auth;
 
-  late final _i12.Caller serverpod_auth_email_account;
-
-  late final _i13.Caller serverpod_auth_google_account;
-
   late final _i5.Caller serverpod_auth_session;
 
-  late final _i14.Caller serverpod_auth_user;
+  late final _i11.Caller serverpod_auth_user;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -528,7 +513,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i15.Protocol(),
+          _i12.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -586,13 +571,10 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
         'serverpod_auth_backwards_compatibility':
             modules.serverpod_auth_backwards_compatibility,
-        'serverpod_auth_email': modules.serverpod_auth_email,
-        'serverpod_auth_google': modules.serverpod_auth_google,
+        'serverpod_auth_idp': modules.serverpod_auth_idp,
         'serverpod_auth_migration': modules.serverpod_auth_migration,
         'serverpod_auth_profile': modules.serverpod_auth_profile,
         'auth': modules.auth,
-        'serverpod_auth_email_account': modules.serverpod_auth_email_account,
-        'serverpod_auth_google_account': modules.serverpod_auth_google_account,
         'serverpod_auth_session': modules.serverpod_auth_session,
         'serverpod_auth_user': modules.serverpod_auth_user,
       };
