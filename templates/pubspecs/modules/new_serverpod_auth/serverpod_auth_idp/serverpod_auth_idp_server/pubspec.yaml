@@ -1,0 +1,42 @@
+# TEMPLATE
+
+name: serverpod_auth_idp_server
+description: Next version of the Serverpod authentication module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
+
+  googleapis: ">=11.0.0 <15.0.0"
+  googleapis_auth: ">=1.6.0 <3.0.0"
+  http: ">=1.1.0 <2.0.0"
+  meta: ^1.11.0
+  clock: ^1.1.1
+  sign_in_with_apple_server: ^0.3.0
+  email_validator: ">=2.1.17 <4.0.0"
+  pointycastle: ^3.7.4
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  serverpod_test: SERVERPOD_VERSION
+  test: "^1.24.2"
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

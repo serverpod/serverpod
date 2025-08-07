@@ -1,0 +1,38 @@
+# TEMPLATE
+
+name: serverpod_auth_core_server
+description: Serverpod core authentication server module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  uuid: ^4.1.0
+  http: ">=1.1.0 <2.0.0"
+  image: ^4.0.15
+  clock: ^1.1.1
+  dart_jsonwebtoken: ^3.1.0
+  crypto: ^3.0.2
+  pointycastle: ^3.7.4
+  meta: ^1.11.0
+  serverpod: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  serverpod_test: SERVERPOD_VERSION
+  test: ^1.24.2
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

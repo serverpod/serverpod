@@ -5,8 +5,8 @@ modules:
   serverpod_auth:
     nickname: auth
 
-  serverpod_auth_user:
-    nickname: auth_user
+  serverpod_auth_core:
+    nickname: auth_next
 
 client_package_path: ../serverpod_auth_migration_client
 server_test_tools_path: test/integration/test_tools

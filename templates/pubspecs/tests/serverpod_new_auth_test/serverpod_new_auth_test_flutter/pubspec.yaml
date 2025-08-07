@@ -1,0 +1,51 @@
+publish_to: none
+
+name: serverpod_new_auth_test_flutter
+description: Auth module client-side tests.
+version: 0.0.1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  serverpod_auth_bridge_flutter: SERVERPOD_VERSION
+  serverpod_auth_idp_client: SERVERPOD_VERSION
+  serverpod_auth_client: SERVERPOD_VERSION
+  serverpod_auth_core_flutter: SERVERPOD_VERSION
+  serverpod_auth_shared_flutter: SERVERPOD_VERSION
+  serverpod_new_auth_test_client: SERVERPOD_VERSION
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: '>=3.0.0 <7.0.0'
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_bridge_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client
+  serverpod_auth_bridge_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter
+  serverpod_auth_migration_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
+  serverpod_auth_core_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
+  serverpod_auth_idp_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_new_auth_test_client:
+    path: ../serverpod_new_auth_test_client
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

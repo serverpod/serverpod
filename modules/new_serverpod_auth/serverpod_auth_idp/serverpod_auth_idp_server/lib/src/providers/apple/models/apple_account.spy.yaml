@@ -1,0 +1,61 @@
+### A fully configured "Sign in with Apple"-based account to be used for logins.
+class: AppleAccount
+serverOnly: true
+table: serverpod_auth_idp_apple_account
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The Apple-provided user identifier
+  userIdentifier: String
+
+  ### Refresh token for this user, to sync the account details with Apple.
+  ###
+  ### Only the first one is stored per user.
+  refreshToken: String
+
+  ### Whether the refresh token was created on an Apple OS.
+  ###
+  ### The source of the initial registration needs to be retained throughout
+  ### the lifecycle of the account.
+  refreshTokenRequestedWithBundleIdentifier: bool
+
+  ### Time when the account data was last received from Apple's servers.
+  lastRefreshedAt: DateTime, default=now
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, defaultModel=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  ###
+  ### Presence depends on whether this was requested with the initial sign-up.
+  email: String?
+
+  ### Whether the email has been verified by Apple.
+  isEmailVerified: bool?
+
+  ### Whether this email address is a private "relay" email address.
+  isPrivateEmail: bool?
+
+  ### The first name given during the initial registration.
+  ###
+  ### Will only be set if it was requested on sign-up.
+  ### The user is free to put in whatever they want here, and this is not
+  ### verified by or known to Apple.
+  firstName: String?
+
+  ### The last name given during the initial registration.
+  ###
+  ### Will only be set if it was requested on sign-up.
+  ### The user is free to put in whatever they want here, and this is not
+  ### verified by or known to Apple.
+  lastName: String?
+
+indexes:
+  serverpod_auth_apple_account_identifier:
+    fields: userIdentifier
+    unique: true

@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_email_server/serverpod_auth_email_server.dart'
-    show AuthSessions;
+import 'package:serverpod_auth_idp_server/core.dart' show AuthSessions;
 import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';

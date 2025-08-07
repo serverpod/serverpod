@@ -11,13 +11,10 @@ environment:
 dependencies:
   meta: ^1.11.0
   serverpod: SERVERPOD_VERSION
-  serverpod_auth_backwards_compatibility_server: SERVERPOD_VERSION
-  serverpod_auth_email_account_server: SERVERPOD_VERSION
-  serverpod_auth_google_account_server: SERVERPOD_VERSION
-  serverpod_auth_profile_server: SERVERPOD_VERSION
+  serverpod_auth_bridge_server: SERVERPOD_VERSION
+  serverpod_auth_idp_server: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
-  serverpod_auth_session_server: SERVERPOD_VERSION
-  serverpod_auth_user_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
 
 dev_dependencies:
@@ -28,20 +25,14 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
-  serverpod_auth_backwards_compatibility_server:
-    path: ../../serverpod_auth_backwards_compatibility/serverpod_auth_backwards_compatibility_server
-  serverpod_auth_email_account_server:
-    path: ../../serverpod_auth_email_account/serverpod_auth_email_account_server
-  serverpod_auth_google_account_server:
-    path: ../../serverpod_auth_google_account/serverpod_auth_google_account_server
-  serverpod_auth_profile_server:
-    path: ../../serverpod_auth_profile/serverpod_auth_profile_server
+  serverpod_auth_bridge_server:
+    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
+  serverpod_auth_idp_server:
+    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
   serverpod_auth_server:
     path: ../../../serverpod_auth/serverpod_auth_server
-  serverpod_auth_session_server:
-    path: ../../serverpod_auth_session/serverpod_auth_session_server
-  serverpod_auth_user_server:
-    path: ../../serverpod_auth_user/serverpod_auth_user_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

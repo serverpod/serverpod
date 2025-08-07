@@ -1,0 +1,9 @@
+type: module
+nickname: serverpod_auth_idp
+
+modules:
+  serverpod_auth_core:
+    nickname: auth
+
+client_package_path: ../serverpod_auth_idp_client
+server_test_tools_path: test/test_tools

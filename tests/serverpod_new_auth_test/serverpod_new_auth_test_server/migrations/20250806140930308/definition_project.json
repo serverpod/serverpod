@@ -1,0 +1,31 @@
+{
+  "moduleName": "serverpod_new_auth_test",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20240516151843329"
+    },
+    {
+      "module": "serverpod_auth_bridge",
+      "version": "20250806140918738"
+    },
+    {
+      "module": "serverpod_auth_idp",
+      "version": "20250806140913030"
+    },
+    {
+      "module": "serverpod_auth_migration",
+      "version": "20250806140924519"
+    },
+    {
+      "module": "serverpod_auth_core",
+      "version": "20250806140907275"
+    },
+    {
+      "module": "serverpod_auth",
+      "version": "20240520102713718"
+    }
+  ],
+  "migrationApiVersion": 1
+}
