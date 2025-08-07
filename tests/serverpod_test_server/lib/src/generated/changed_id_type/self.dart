@@ -587,6 +587,36 @@ class ChangedIdTypeSelfRepository {
     );
   }
 
+  /// Updates a single [ChangedIdTypeSelf] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChangedIdTypeSelf?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<ChangedIdTypeSelfTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChangedIdTypeSelf>(
+      id,
+      columns(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChangedIdTypeSelf]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ChangedIdTypeSelf>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ChangedIdTypeSelfTable> columns, {
+    required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChangedIdTypeSelf>(
+      columns(ChangedIdTypeSelf.t),
+      where: where(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ChangedIdTypeSelf]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

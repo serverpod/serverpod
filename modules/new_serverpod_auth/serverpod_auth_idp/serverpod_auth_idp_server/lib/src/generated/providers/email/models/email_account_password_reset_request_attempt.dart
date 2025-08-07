@@ -389,6 +389,40 @@ class EmailAccountPasswordResetRequestAttemptRepository {
     );
   }
 
+  /// Updates a single [EmailAccountPasswordResetRequestAttempt] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountPasswordResetRequestAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountPasswordResetRequestAttempt>(
+      id,
+      columns(EmailAccountPasswordResetRequestAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountPasswordResetRequestAttempt]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountPasswordResetRequestAttempt>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columns, {
+    required _i1
+        .WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountPasswordResetRequestAttempt>(
+      columns(EmailAccountPasswordResetRequestAttempt.t),
+      where: where(EmailAccountPasswordResetRequestAttempt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountPasswordResetRequestAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

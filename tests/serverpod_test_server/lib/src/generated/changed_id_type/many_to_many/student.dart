@@ -410,6 +410,36 @@ class StudentUuidRepository {
     );
   }
 
+  /// Updates a single [StudentUuid] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<StudentUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<StudentUuidTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<StudentUuid>(
+      id,
+      columns(StudentUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [StudentUuid]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<StudentUuid>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<StudentUuidTable> columns, {
+    required _i1.WhereExpressionBuilder<StudentUuidTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<StudentUuid>(
+      columns(StudentUuid.t),
+      where: where(StudentUuid.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [StudentUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -420,6 +420,36 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Updates a single [UserNoteCollection] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNoteCollection?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<UserNoteCollectionTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNoteCollection>(
+      id,
+      columns(UserNoteCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UserNoteCollection>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UserNoteCollectionTable> columns, {
+    required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNoteCollection>(
+      columns(UserNoteCollection.t),
+      where: where(UserNoteCollection.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserNoteCollection]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

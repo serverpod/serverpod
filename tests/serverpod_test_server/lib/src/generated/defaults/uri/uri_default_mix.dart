@@ -383,6 +383,36 @@ class UriDefaultMixRepository {
     );
   }
 
+  /// Updates a single [UriDefaultMix] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UriDefaultMix?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<UriDefaultMixTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UriDefaultMix>(
+      id,
+      columns(UriDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UriDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UriDefaultMix>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UriDefaultMixTable> columns, {
+    required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UriDefaultMix>(
+      columns(UriDefaultMix.t),
+      where: where(UriDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UriDefaultMix]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

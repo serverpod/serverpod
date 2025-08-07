@@ -333,6 +333,36 @@ class ReadWriteTestEntryRepository {
     );
   }
 
+  /// Updates a single [ReadWriteTestEntry] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ReadWriteTestEntry?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ReadWriteTestEntry>(
+      id,
+      columns(ReadWriteTestEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ReadWriteTestEntry>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columns, {
+    required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ReadWriteTestEntry>(
+      columns(ReadWriteTestEntry.t),
+      where: where(ReadWriteTestEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ReadWriteTestEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

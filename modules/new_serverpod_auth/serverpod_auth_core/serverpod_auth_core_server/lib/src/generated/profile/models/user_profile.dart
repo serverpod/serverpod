@@ -548,6 +548,36 @@ class UserProfileRepository {
     );
   }
 
+  /// Updates a single [UserProfile] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserProfile?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<UserProfileTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserProfile>(
+      id,
+      columns(UserProfile.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserProfile]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UserProfile>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UserProfileTable> columns, {
+    required _i1.WhereExpressionBuilder<UserProfileTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserProfile>(
+      columns(UserProfile.t),
+      where: where(UserProfile.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserProfile]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

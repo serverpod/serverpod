@@ -330,6 +330,36 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  /// Updates a single [ObjectWithSelfParent] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithSelfParent?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ObjectWithSelfParentTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithSelfParent>(
+      id,
+      columns(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithSelfParent]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithSelfParent>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ObjectWithSelfParentTable> columns, {
+    required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithSelfParent>(
+      columns(ObjectWithSelfParent.t),
+      where: where(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithSelfParent]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -475,6 +475,36 @@ class OrderUuidRepository {
     );
   }
 
+  /// Updates a single [OrderUuid] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<OrderUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<OrderUuidTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<OrderUuid>(
+      id,
+      columns(OrderUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [OrderUuid]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<OrderUuid>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<OrderUuidTable> columns, {
+    required _i1.WhereExpressionBuilder<OrderUuidTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<OrderUuid>(
+      columns(OrderUuid.t),
+      where: where(OrderUuid.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [OrderUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

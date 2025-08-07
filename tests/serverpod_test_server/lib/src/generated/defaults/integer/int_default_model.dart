@@ -349,6 +349,36 @@ class IntDefaultModelRepository {
     );
   }
 
+  /// Updates a single [IntDefaultModel] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<IntDefaultModel?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<IntDefaultModelTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<IntDefaultModel>(
+      id,
+      columns(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [IntDefaultModel]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<IntDefaultModel>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<IntDefaultModelTable> columns, {
+    required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<IntDefaultModel>(
+      columns(IntDefaultModel.t),
+      where: where(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [IntDefaultModel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

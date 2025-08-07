@@ -339,6 +339,36 @@ class BigIntDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [BigIntDefaultPersist] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefaultPersist?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<BigIntDefaultPersistTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefaultPersist>(
+      id,
+      columns(BigIntDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefaultPersist>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<BigIntDefaultPersistTable> columns, {
+    required _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefaultPersist>(
+      columns(BigIntDefaultPersist.t),
+      where: where(BigIntDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [BigIntDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

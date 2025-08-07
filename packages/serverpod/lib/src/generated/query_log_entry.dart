@@ -525,6 +525,36 @@ class QueryLogEntryRepository {
     );
   }
 
+  /// Updates a single [QueryLogEntry] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<QueryLogEntry?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<QueryLogEntryTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<QueryLogEntry>(
+      id,
+      columns(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [QueryLogEntry]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<QueryLogEntry>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<QueryLogEntryTable> columns, {
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<QueryLogEntry>(
+      columns(QueryLogEntry.t),
+      where: where(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [QueryLogEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

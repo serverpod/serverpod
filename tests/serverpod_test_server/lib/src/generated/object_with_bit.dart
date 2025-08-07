@@ -439,6 +439,36 @@ class ObjectWithBitRepository {
     );
   }
 
+  /// Updates a single [ObjectWithBit] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithBit?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ObjectWithBitTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithBit>(
+      id,
+      columns(ObjectWithBit.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithBit]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithBit>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ObjectWithBitTable> columns, {
+    required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithBit>(
+      columns(ObjectWithBit.t),
+      where: where(ObjectWithBit.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithBit]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

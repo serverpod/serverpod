@@ -403,6 +403,36 @@ class AddressRepository {
     );
   }
 
+  /// Updates a single [Address] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Address?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<AddressTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Address>(
+      id,
+      columns(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Address]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Address>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<AddressTable> columns, {
+    required _i1.WhereExpressionBuilder<AddressTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Address>(
+      columns(Address.t),
+      where: where(Address.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Address]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

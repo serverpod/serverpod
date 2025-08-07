@@ -449,6 +449,36 @@ class LegacySessionRepository {
     );
   }
 
+  /// Updates a single [LegacySession] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacySession?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<LegacySessionTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacySession>(
+      id,
+      columns(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacySession]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<LegacySession>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<LegacySessionTable> columns, {
+    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacySession>(
+      columns(LegacySession.t),
+      where: where(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LegacySession]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

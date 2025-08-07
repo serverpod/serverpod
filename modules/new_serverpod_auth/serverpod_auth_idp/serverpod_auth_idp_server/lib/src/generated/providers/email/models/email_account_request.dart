@@ -478,6 +478,36 @@ class EmailAccountRequestRepository {
     );
   }
 
+  /// Updates a single [EmailAccountRequest] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountRequest?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<EmailAccountRequestTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountRequest>(
+      id,
+      columns(EmailAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountRequest]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountRequest>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EmailAccountRequestTable> columns, {
+    required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountRequest>(
+      columns(EmailAccountRequest.t),
+      where: where(EmailAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountRequest]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

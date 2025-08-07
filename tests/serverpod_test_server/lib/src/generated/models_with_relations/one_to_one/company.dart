@@ -400,6 +400,36 @@ class CompanyRepository {
     );
   }
 
+  /// Updates a single [Company] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Company?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CompanyTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Company>(
+      id,
+      columns(Company.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Company]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Company>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CompanyTable> columns, {
+    required _i1.WhereExpressionBuilder<CompanyTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Company>(
+      columns(Company.t),
+      where: where(Company.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Company]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
