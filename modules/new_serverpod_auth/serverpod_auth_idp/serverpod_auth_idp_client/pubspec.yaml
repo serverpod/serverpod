@@ -3,15 +3,15 @@
 
 name: serverpod_auth_idp_client
 description: Client version of the next Serverpod authentication module.
-version: 2.9.1
+version: 3.0.0-alpha.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod_auth_core_client: 2.9.1
-  serverpod_client: 2.9.1
+  serverpod_auth_core_client: 3.0.0-alpha.1
+  serverpod_client: 3.0.0-alpha.1
 
 dependency_overrides:
   serverpod_auth_core_client:
