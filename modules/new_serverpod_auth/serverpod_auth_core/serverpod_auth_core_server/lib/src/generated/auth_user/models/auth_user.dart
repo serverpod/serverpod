@@ -374,6 +374,36 @@ class AuthUserRepository {
     );
   }
 
+  /// Updates a single [AuthUser] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AuthUser?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<AuthUserTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AuthUser>(
+      id,
+      columns(AuthUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AuthUser]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<AuthUser>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<AuthUserTable> columns, {
+    required _i1.WhereExpressionBuilder<AuthUserTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AuthUser>(
+      columns(AuthUser.t),
+      where: where(AuthUser.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [AuthUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

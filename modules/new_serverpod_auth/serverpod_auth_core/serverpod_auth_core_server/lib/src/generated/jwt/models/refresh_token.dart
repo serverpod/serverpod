@@ -609,6 +609,36 @@ class RefreshTokenRepository {
     );
   }
 
+  /// Updates a single [RefreshToken] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RefreshToken?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<RefreshTokenTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RefreshToken>(
+      id,
+      columns(RefreshToken.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RefreshToken]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<RefreshToken>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<RefreshTokenTable> columns, {
+    required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RefreshToken>(
+      columns(RefreshToken.t),
+      where: where(RefreshToken.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [RefreshToken]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

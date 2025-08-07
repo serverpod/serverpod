@@ -493,6 +493,36 @@ class ChatMessageRepository {
     );
   }
 
+  /// Updates a single [ChatMessage] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChatMessage?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ChatMessageTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChatMessage>(
+      id,
+      columns(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChatMessage]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ChatMessage>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ChatMessageTable> columns, {
+    required _i1.WhereExpressionBuilder<ChatMessageTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChatMessage>(
+      columns(ChatMessage.t),
+      where: where(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ChatMessage]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -443,6 +443,36 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  /// Updates a single [ServerHealthConnectionInfo] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ServerHealthConnectionInfo?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ServerHealthConnectionInfoTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ServerHealthConnectionInfo>(
+      id,
+      columns(ServerHealthConnectionInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ServerHealthConnectionInfo]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ServerHealthConnectionInfo>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ServerHealthConnectionInfoTable> columns, {
+    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ServerHealthConnectionInfo>(
+      columns(ServerHealthConnectionInfo.t),
+      where: where(ServerHealthConnectionInfo.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ServerHealthConnectionInfo]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

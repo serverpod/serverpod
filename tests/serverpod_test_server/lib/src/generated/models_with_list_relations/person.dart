@@ -457,6 +457,36 @@ class PersonRepository {
     );
   }
 
+  /// Updates a single [Person] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Person?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<PersonTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Person>(
+      id,
+      columns(Person.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Person]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Person>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<PersonTable> columns, {
+    required _i1.WhereExpressionBuilder<PersonTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Person>(
+      columns(Person.t),
+      where: where(Person.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Person]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

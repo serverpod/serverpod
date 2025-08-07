@@ -404,6 +404,36 @@ class PlayerUuidRepository {
     );
   }
 
+  /// Updates a single [PlayerUuid] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<PlayerUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<PlayerUuidTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<PlayerUuid>(
+      id,
+      columns(PlayerUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [PlayerUuid]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<PlayerUuid>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<PlayerUuidTable> columns, {
+    required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<PlayerUuid>(
+      columns(PlayerUuid.t),
+      where: where(PlayerUuid.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [PlayerUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

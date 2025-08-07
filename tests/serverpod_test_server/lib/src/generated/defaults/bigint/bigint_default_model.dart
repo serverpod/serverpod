@@ -361,6 +361,36 @@ class BigIntDefaultModelRepository {
     );
   }
 
+  /// Updates a single [BigIntDefaultModel] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefaultModel?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<BigIntDefaultModelTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefaultModel>(
+      id,
+      columns(BigIntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefaultModel]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefaultModel>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<BigIntDefaultModelTable> columns, {
+    required _i1.WhereExpressionBuilder<BigIntDefaultModelTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefaultModel>(
+      columns(BigIntDefaultModel.t),
+      where: where(BigIntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [BigIntDefaultModel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

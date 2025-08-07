@@ -442,6 +442,36 @@ class ObjectWithVectorRepository {
     );
   }
 
+  /// Updates a single [ObjectWithVector] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithVector?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ObjectWithVectorTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithVector>(
+      id,
+      columns(ObjectWithVector.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithVector]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithVector>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ObjectWithVectorTable> columns, {
+    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithVector>(
+      columns(ObjectWithVector.t),
+      where: where(ObjectWithVector.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithVector]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

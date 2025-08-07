@@ -482,6 +482,36 @@ class CityRepository {
     );
   }
 
+  /// Updates a single [City] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<City?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CityTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<City>(
+      id,
+      columns(City.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [City]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<City>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CityTable> columns, {
+    required _i1.WhereExpressionBuilder<CityTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<City>(
+      columns(City.t),
+      where: where(City.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [City]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

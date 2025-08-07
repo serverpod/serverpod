@@ -410,6 +410,36 @@ class CustomerIntRepository {
     );
   }
 
+  /// Updates a single [CustomerInt] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CustomerInt?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CustomerIntTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CustomerInt>(
+      id,
+      columns(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CustomerInt]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<CustomerInt>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CustomerIntTable> columns, {
+    required _i1.WhereExpressionBuilder<CustomerIntTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CustomerInt>(
+      columns(CustomerInt.t),
+      where: where(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CustomerInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

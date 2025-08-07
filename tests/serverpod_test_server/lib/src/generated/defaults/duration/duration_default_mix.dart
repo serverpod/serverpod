@@ -406,6 +406,36 @@ class DurationDefaultMixRepository {
     );
   }
 
+  /// Updates a single [DurationDefaultMix] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefaultMix?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<DurationDefaultMixTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefaultMix>(
+      id,
+      columns(DurationDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefaultMix>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<DurationDefaultMixTable> columns, {
+    required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefaultMix>(
+      columns(DurationDefaultMix.t),
+      where: where(DurationDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DurationDefaultMix]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

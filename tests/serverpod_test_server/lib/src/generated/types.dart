@@ -758,6 +758,36 @@ class TypesRepository {
     );
   }
 
+  /// Updates a single [Types] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Types?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<TypesTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Types>(
+      id,
+      columns(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Types]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Types>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<TypesTable> columns, {
+    required _i1.WhereExpressionBuilder<TypesTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Types>(
+      columns(Types.t),
+      where: where(Types.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Types]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

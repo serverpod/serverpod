@@ -355,6 +355,36 @@ class UriDefaultRepository {
     );
   }
 
+  /// Updates a single [UriDefault] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UriDefault?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<UriDefaultTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UriDefault>(
+      id,
+      columns(UriDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UriDefault]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UriDefault>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UriDefaultTable> columns, {
+    required _i1.WhereExpressionBuilder<UriDefaultTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UriDefault>(
+      columns(UriDefault.t),
+      where: where(UriDefault.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UriDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

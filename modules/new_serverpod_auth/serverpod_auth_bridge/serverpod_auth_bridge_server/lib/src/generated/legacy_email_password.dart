@@ -411,6 +411,36 @@ class LegacyEmailPasswordRepository {
     );
   }
 
+  /// Updates a single [LegacyEmailPassword] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacyEmailPassword?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<LegacyEmailPasswordTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacyEmailPassword>(
+      id,
+      columns(LegacyEmailPassword.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacyEmailPassword]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<LegacyEmailPassword>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<LegacyEmailPasswordTable> columns, {
+    required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacyEmailPassword>(
+      columns(LegacyEmailPassword.t),
+      where: where(LegacyEmailPassword.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LegacyEmailPassword]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

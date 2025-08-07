@@ -359,6 +359,36 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Updates a single [ObjectFieldScopes] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectFieldScopes?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectFieldScopes>(
+      id,
+      columns(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectFieldScopes]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ObjectFieldScopes>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columns, {
+    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectFieldScopes>(
+      columns(ObjectFieldScopes.t),
+      where: where(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectFieldScopes]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

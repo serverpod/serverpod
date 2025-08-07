@@ -393,6 +393,36 @@ class UuidDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [UuidDefaultPersist] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UuidDefaultPersist?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UuidDefaultPersist>(
+      id,
+      columns(UuidDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UuidDefaultPersist>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columns, {
+    required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UuidDefaultPersist>(
+      columns(UuidDefaultPersist.t),
+      where: where(UuidDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UuidDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -452,6 +452,36 @@ class MigratedUserRepository {
     );
   }
 
+  /// Updates a single [MigratedUser] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<MigratedUser?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<MigratedUserTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<MigratedUser>(
+      id,
+      columns(MigratedUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [MigratedUser]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<MigratedUser>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<MigratedUserTable> columns, {
+    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<MigratedUser>(
+      columns(MigratedUser.t),
+      where: where(MigratedUser.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [MigratedUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -424,6 +424,37 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
+  /// Updates a single [RelationToMultipleMaxFieldName] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RelationToMultipleMaxFieldName?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RelationToMultipleMaxFieldName>(
+      id,
+      columns(RelationToMultipleMaxFieldName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RelationToMultipleMaxFieldName]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<RelationToMultipleMaxFieldName>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable> columns, {
+    required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
+        where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RelationToMultipleMaxFieldName>(
+      columns(RelationToMultipleMaxFieldName.t),
+      where: where(RelationToMultipleMaxFieldName.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [RelationToMultipleMaxFieldName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

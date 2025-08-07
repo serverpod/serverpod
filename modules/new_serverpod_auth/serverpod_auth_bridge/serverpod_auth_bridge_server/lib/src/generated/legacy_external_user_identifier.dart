@@ -413,6 +413,37 @@ class LegacyExternalUserIdentifierRepository {
     );
   }
 
+  /// Updates a single [LegacyExternalUserIdentifier] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacyExternalUserIdentifier?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacyExternalUserIdentifier>(
+      id,
+      columns(LegacyExternalUserIdentifier.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacyExternalUserIdentifier]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<LegacyExternalUserIdentifier>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable> columns, {
+    required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
+        where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacyExternalUserIdentifier>(
+      columns(LegacyExternalUserIdentifier.t),
+      where: where(LegacyExternalUserIdentifier.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LegacyExternalUserIdentifier]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

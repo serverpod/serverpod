@@ -456,6 +456,36 @@ class GoogleAccountRepository {
     );
   }
 
+  /// Updates a single [GoogleAccount] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<GoogleAccount?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<GoogleAccountTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<GoogleAccount>(
+      id,
+      columns(GoogleAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [GoogleAccount]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<GoogleAccount>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<GoogleAccountTable> columns, {
+    required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<GoogleAccount>(
+      columns(GoogleAccount.t),
+      where: where(GoogleAccount.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [GoogleAccount]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

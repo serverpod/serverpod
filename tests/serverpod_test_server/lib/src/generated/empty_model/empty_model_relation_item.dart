@@ -381,6 +381,36 @@ class EmptyModelRelationItemRepository {
     );
   }
 
+  /// Updates a single [EmptyModelRelationItem] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmptyModelRelationItem?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<EmptyModelRelationItemTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmptyModelRelationItem>(
+      id,
+      columns(EmptyModelRelationItem.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmptyModelRelationItem]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EmptyModelRelationItem>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EmptyModelRelationItemTable> columns, {
+    required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmptyModelRelationItem>(
+      columns(EmptyModelRelationItem.t),
+      where: where(EmptyModelRelationItem.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmptyModelRelationItem]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

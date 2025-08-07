@@ -384,6 +384,36 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Updates a single [LongImplicitIdField] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LongImplicitIdField?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LongImplicitIdField>(
+      id,
+      columns(LongImplicitIdField.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LongImplicitIdField]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<LongImplicitIdField>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columns, {
+    required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LongImplicitIdField>(
+      columns(LongImplicitIdField.t),
+      where: where(LongImplicitIdField.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LongImplicitIdField]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

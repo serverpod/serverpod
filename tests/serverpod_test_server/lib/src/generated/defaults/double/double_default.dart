@@ -354,6 +354,36 @@ class DoubleDefaultRepository {
     );
   }
 
+  /// Updates a single [DoubleDefault] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefault?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<DoubleDefaultTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefault>(
+      id,
+      columns(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefault]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefault>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<DoubleDefaultTable> columns, {
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefault>(
+      columns(DoubleDefault.t),
+      where: where(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DoubleDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

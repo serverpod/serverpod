@@ -468,6 +468,36 @@ class UserProfileImageRepository {
     );
   }
 
+  /// Updates a single [UserProfileImage] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserProfileImage?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<UserProfileImageTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserProfileImage>(
+      id,
+      columns(UserProfileImage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UserProfileImage>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UserProfileImageTable> columns, {
+    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserProfileImage>(
+      columns(UserProfileImage.t),
+      where: where(UserProfileImage.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserProfileImage]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
