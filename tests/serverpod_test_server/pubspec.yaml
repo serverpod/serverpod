@@ -13,9 +13,9 @@ environment:
 dependencies:
   http: '>=1.1.0 <2.0.0'
   relic: ^0.4.1
-  serverpod: 2.9.1
-  serverpod_auth_server: 2.9.1
-  serverpod_cloud_storage_s3: 2.9.1
+  serverpod: 3.0.0-alpha.1
+  serverpod_auth_server: 3.0.0-alpha.1
+  serverpod_cloud_storage_s3: 3.0.0-alpha.1
   serverpod_test_shared:
     path: ../serverpod_test_shared
   serverpod_test_module_server:
@@ -28,13 +28,13 @@ dev_dependencies:
   test: ^1.24.2
   path: ^1.8.2
   test_descriptor: ^2.0.2
-  serverpod_cli: 2.9.1
-  serverpod_service_client: 2.9.1
+  serverpod_cli: 3.0.0-alpha.1
+  serverpod_service_client: 3.0.0-alpha.1
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
-  serverpod_test: 2.9.1
+  serverpod_test: 3.0.0-alpha.1
 
 dependency_overrides:
   serverpod:

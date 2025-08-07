@@ -1,3 +1,26 @@
+## 3.0.0-alpha.1
+- fix: BREAKING. Renames web server template widgets for improved clarity and consistency.
+- fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
+- fix: BREAKING. Replaces direct use of `dart:io`s `HttpServer` with `relic` and updates interfaces accordingly.
+- feat: Introduces the `serverpod_auth_core` module, providing the foundation for the new authentication system.
+- feat: Introduces the `serverpod_auth_idp` module for concrete identity provider integrations.
+- feat: Introduces the `serverpod_auth_bridge` module to enable compatibility between old and new auth systems after migration.
+- feat: Introduces the `serverpod_auth_migration` module with tools to support auth migration.
+- feat: Server now stops automatically if the integrity check fails in `development` mode.
+- feat: Adds a clickable link to the web server when launched.
+- fix: Fixes an issue where invalid client code could be generated when using default values ([@ashishexee](https://github.com/ashishexee))
+- fix: Fixes an issue where the web server port would not reflect the actual port used by the server.
+- fix: Fixes an issue where Redis could not be enabled/disabled through configuration flag.
+- fix: Fixes an issue where constructor configuration could not be overridden by passed in arguments.
+- fix: Fixes an issue where SCP-lite Git URLs were not recognized when warning users about outdated lock files.
+- fix: Improves error messaging when database password cannot be resolved.
+- fix: `WebWidget` now uses `HTML` instead of `plainText` as the default `mimeType`.
+- fix: Database methods intended to only be used by generated code are now annotated with `@internal`.
+- fix: Only downloads templates during `serverpod create` execution.
+- fix: Add missing `public` parameter to file upload description ([@LeonidVeremchuk](https://github.com/LeonidVeremchuk))
+- fix: Fixes an issue where empty maps in endpoint parameters and server-side return types where not encoded correctly.
+- fix: Removes redundant null check in models using custom classes.
+
 ## 2.9.1
 - feat: Makes it possible to configure a default page for `SignInWithEmailDialog`.
 - feat: Adds lints to project template.

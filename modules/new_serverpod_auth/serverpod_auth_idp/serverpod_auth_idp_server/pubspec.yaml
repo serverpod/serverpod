@@ -3,16 +3,16 @@
 
 name: serverpod_auth_idp_server
 description: Next version of the Serverpod authentication module.
-version: 2.9.1
+version: 3.0.0-alpha.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod: 2.9.1
-  serverpod_shared: 2.9.1
-  serverpod_auth_core_server: 2.9.1
+  serverpod: 3.0.0-alpha.1
+  serverpod_shared: 3.0.0-alpha.1
+  serverpod_auth_core_server: 3.0.0-alpha.1
 
   googleapis: ">=11.0.0 <15.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
@@ -24,8 +24,8 @@ dependencies:
   pointycastle: ^3.7.4
 
 dev_dependencies:
-  serverpod_lints: 2.9.1
-  serverpod_test: 2.9.1
+  serverpod_lints: 3.0.0-alpha.1
+  serverpod_test: 3.0.0-alpha.1
   test: "^1.24.2"
 
 dependency_overrides:
