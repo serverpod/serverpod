@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
@@ -123,6 +126,39 @@ abstract final class AppleAccounts {
       details: details,
       authUserNewlyCreated: authUserNewlyCreated,
     );
+  }
+
+  /// Handler for server-to-server notifications coming from Apple.
+  ///
+  /// To be mounted as a `POST` handler under the URL configured in Apple's
+  /// developer portal, for example:
+  ///
+  /// ```dart
+  ///   Router<Handler>()..post(
+  ///     '/hooks/apple-notification',
+  ///     handleAppleNotification, // your function to handle the notification
+  ///   );
+  /// ```
+  ///
+  /// If the notification is of type [AppleServerNotificationConsentRevoked] or
+  /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
+  /// authentication should be removed.
+  static Handler serverNotificationHandler(
+    final FutureOr<void> Function(AppleServerNotification notification) handler,
+  ) {
+    return (final RequestContext ctx) async {
+      final body = await utf8.decodeStream(ctx.request.body.read());
+
+      final payload = (jsonDecode(body) as Map)['payload'] as String;
+
+      final notification = await _siwa.decodeAppleServerNotification(
+        payload,
+      );
+
+      await handler(notification);
+
+      return (ctx as RespondableContext).withResponse(Response.ok());
+    };
   }
 }
 
