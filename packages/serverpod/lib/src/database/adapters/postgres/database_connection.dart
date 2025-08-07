@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
+import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -13,9 +14,9 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/generated/database/enum_serialization.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
@@ -232,6 +233,84 @@ class DatabaseConnection {
     }
 
     return updated.first;
+  }
+
+  /// Updates a single row by its ID with the specified column values.
+  ///
+  /// Returns the updated row or null if no row with the given ID exists.
+  /// Throws [ArgumentError] if [columnValues] is empty.
+  ///
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T?> updateById<T extends TableRow>(
+    Session session,
+    Object id,
+    List<ColumnValue> columnValues, {
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'updateById');
+
+    if (columnValues.isEmpty) {
+      throw ArgumentError('columnValues cannot be empty');
+    }
+
+    var setClause = columnValues.map((cv) {
+      var value = DatabasePoolManager.encoder.convert(cv.value);
+      return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+    }).join(', ');
+
+    var query = 'UPDATE "${table.tableName}" SET $setClause '
+        'WHERE "${table.id.columnName}" = ${DatabasePoolManager.encoder.convert(id)} '
+        'RETURNING *';
+
+    var result = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      return null;
+    }
+
+    return _poolManager.serializationManager.deserialize<T>(result.first);
+  }
+
+  /// Updates all rows matching the WHERE expression with the specified column values.
+  ///
+  /// Returns a list of all updated rows. Returns an empty list if no rows match.
+  /// Throws [ArgumentError] if [columnValues] is empty.
+  ///
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> updateWhere<T extends TableRow>(
+    Session session,
+    List<ColumnValue> columnValues, {
+    required Expression where,
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
+
+    if (columnValues.isEmpty) {
+      throw ArgumentError('columnValues cannot be empty');
+    }
+
+    var setClause = columnValues.map((cv) {
+      var value = DatabasePoolManager.encoder.convert(cv.value);
+      return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+    }).join(', ');
+
+    var query = 'UPDATE "${table.tableName}" SET $setClause'
+        ' WHERE $where'
+        ' RETURNING *';
+
+    var result = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+    );
+
+    return result
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
