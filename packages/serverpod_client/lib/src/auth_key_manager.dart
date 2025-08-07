@@ -1,36 +1,27 @@
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'dart:async';
+
+import 'package:meta/meta.dart';
 
 /// Manages keys for authentication with the server.
-abstract class AuthenticationKeyManager {
-  /// Retrieves an authentication key.
-  Future<String?> get();
-
-  /// Saves an authentication key retrieved by the server.
-  Future<void> put(String key);
-
-  /// Removes the authentication key.
-  Future<void> remove();
-
-  /// Retrieves the authentication key in a format that can be used in a transport header.
-  /// The format conversion is performed by [toHeaderValue].
-  Future<String?> getHeaderValue() async {
-    String? key = await get();
-    return toHeaderValue(key);
-  }
-
-  /// Converts an authentication key to a format that can be used in a transport header.
-  /// The default implementation encodes and wraps the key in a 'Basic' scheme.
-  /// (This will automatically be unwrapped again on the server side
-  /// before being handed to the authentication handler.)
+abstract class AuthenticationKeyProvider {
+  /// Retrieves the authentication key to be used for the next request.
   ///
-  /// To use a different scheme, override this method.
-  /// The value must be compliant with the HTTP header format defined in
-  /// RFC 9110 HTTP Semantics, 11.6.2. Authorization.
-  /// See:
-  /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
-  /// https://httpwg.org/specs/rfc9110.html#field.authorization
-  Future<String?> toHeaderValue(String? key) async {
-    if (key == null) return null;
-    return wrapAsBasicAuthHeaderValue(key);
-  }
+  /// Depending on the request, plain HTTP vs. WebSocket for streaming-requests,
+  /// this will be send either as the `Authorization` header or an `auth` URL
+  /// query parameter.
+  ///
+  /// The framework ensures that this is encoded appropriately and the server
+  /// will unwrap it to its original value.
+  FutureOr<String?> getAuthenticationKey();
+
+  /// Callback to be invoked whenever a given auth header value lead to an
+  /// unauthenticated exception on the server.
+  ///
+  /// Implementors may use this to invalidate their stored session.
+  @visibleForOverriding
+  void onUnauthenticatedException(String authenticationKey) {}
 }
+
+// TODO: Remove in 3.0
+// ignore: public_member_api_docs
+typedef AuthenticationKeyManager = AuthenticationKeyProvider;

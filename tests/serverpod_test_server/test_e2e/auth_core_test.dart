@@ -10,23 +10,28 @@ import 'package:test/scaffolding.dart';
 void main() {
   group('Given a simulated legacy client with old authorization conventions, ',
       () {
+    late TestAuthKeyManager authenticationKeyManager;
     late Client client;
     late String authKey;
 
     setUpAll(() async {
       // prepare a proper authentication key
+      authenticationKeyManager = TestAuthKeyManager();
       client = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authenticationKeyManager: authenticationKeyManager,
       );
-      var response =
-          await client.authentication.authenticate('test@foo.bar', 'password');
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
       assert(response.success, 'Authentication setup failed');
       authKey = '${response.keyId}:${response.key}';
     });
 
     tearDownAll(() async {
-      await client.authenticationKeyManager?.remove();
+      // TODO: Interestingly, this would never have been set
+      authenticationKeyManager.key = null;
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(

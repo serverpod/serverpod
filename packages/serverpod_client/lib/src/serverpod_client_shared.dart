@@ -6,11 +6,10 @@ import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'serverpod_client_shared_private.dart';
-
 import 'serverpod_client_io.dart'
     if (dart.library.js_interop) 'serverpod_client_browser.dart'
     if (dart.library.io) 'serverpod_client_io.dart';
+import 'serverpod_client_shared_private.dart';
 
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
@@ -123,7 +122,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
-    var auth = await authenticationKeyManager?.get();
+    var auth = await _authenticationKeyProvider?.getAuthenticationKey();
     if (auth != null) {
       uri = uri.replace(
         queryParameters: {
@@ -131,15 +130,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
         },
       );
     }
+
     return uri.toString();
   }
 
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// Optional [AuthenticationKeyManager] if the client needs to sign the user
-  /// in.
-  final AuthenticationKeyManager? authenticationKeyManager;
+  /// Optional [AuthenticationKeAuthenticationKeyProvideryManager] if the client
+  /// makes use of authenticated requests.
+  final AuthenticationKeyProvider? _authenticationKeyProvider;
 
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
@@ -210,13 +210,18 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic securityContext,
-    required this.authenticationKeyManager,
+    // TODO: This is only retained for the generated clients
+    // @Deprecated('Use `authenticationKeyProvider` instead')
+    AuthenticationKeyManager? authenticationKeyManager,
+    AuthenticationKeyProvider? authenticationKeyProvider,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-  })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
+  })  : _authenticationKeyProvider =
+            authenticationKeyProvider ?? authenticationKeyManager,
+        connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
         streamingConnectionTimeout =
             streamingConnectionTimeout ?? const Duration(seconds: 5) {
     assert(host.endsWith('/'),
@@ -447,16 +452,20 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Updates the authentication key if the streaming connection is open.
-  /// Note, the provided key will be converted/wrapped as a proper authentication header value
-  /// when sent to the server.
+  /// Note, the provided key will be converted/wrapped as a proper
+  /// authentication header value when sent to the server.
   Future<void> updateStreamingConnectionAuthenticationKey(
     String? authKey,
   ) async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    var authValue = await authenticationKeyManager?.toHeaderValue(authKey);
-    await _sendControlCommandToStream('auth', {'key': authValue});
+    var authValue = await _authenticationKeyProvider?.getAuthenticationKey();
+    await _sendControlCommandToStream('auth', {
+      if (authValue != null)
+        // TODO: This does not really need to be prefixed with "Basic ", base64 encoding should be fine
+        'key': wrapAsBasicAuthHeaderValue(authValue),
+    });
   }
 
   @override
@@ -473,14 +482,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     try {
       var authenticationValue =
-          await authenticationKeyManager?.getHeaderValue();
+          await _authenticationKeyProvider?.getAuthenticationKey();
       var body = formatArgs(args, method);
       var url = Uri.parse('$host$endpoint');
 
       var data = await _requestDelegate.serverRequest(
         url,
         body: body,
-        authenticationValue: authenticationValue,
+        authenticationValue: authenticationValue != null
+            ? wrapAsBasicAuthHeaderValue(authenticationValue)
+            : null,
       );
 
       T result;
@@ -512,8 +523,10 @@ abstract class ServerpodClientShared extends EndpointCaller {
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
+      // TODO: Investigate when this is called
+      // TODO: Pass entire class if needed (so we can get feedback)
       authenticationProvider: () async =>
-          authenticationKeyManager?.getHeaderValue(),
+          _authenticationKeyProvider?.getAuthenticationKey(),
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {

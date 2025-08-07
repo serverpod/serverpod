@@ -17,10 +17,10 @@ void main() async {
   }
 
   group('Given auth key in valid HTTP header format', () {
-    var authKeyManager = TestAuthKeyManager();
+    var authenticationKeyManager = TestAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: authKeyManager,
+      authenticationKeyManager: authenticationKeyManager,
     );
     late Serverpod server;
 
@@ -36,7 +36,7 @@ void main() async {
     tearDown(() async {
       await server.shutdown(exitProcess: false);
       // clear the authKeyManager so that auth is not retained between tests
-      await authKeyManager.remove();
+      authenticationKeyManager.key = null;
     });
 
     test(
@@ -44,7 +44,7 @@ void main() async {
         'then it should receive plain auth key (i.e. in original format)',
         () async {
       var key = 'username-4711:password-4711';
-      await authKeyManager.put(key);
+      authenticationKeyManager.key = key;
 
       var reflectedKey = await client.echoRequest.echoAuthenticationKey();
       expect(reflectedKey, key);
@@ -58,7 +58,7 @@ void main() async {
         'then it should receive plain auth key (i.e. in original format)',
         () async {
       var key = 'username-4711:password-4711';
-      await authKeyManager.put(key);
+      authenticationKeyManager.key = key;
 
       await client.echoRequest.echoHttpHeader('authorization');
 
@@ -71,7 +71,7 @@ void main() async {
         'then endpoint method request should contain properly formatted "authorization" header with Basic scheme',
         () async {
       var key = 'username-4712:password-4712';
-      await authKeyManager.put(key);
+      authenticationKeyManager.key = key;
 
       var reflectedHeader =
           await client.echoRequest.echoHttpHeader('authorization');
@@ -89,7 +89,7 @@ void main() async {
         'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
         () async {
       var key = 'username-4713:password-4713';
-      await authKeyManager.put(key);
+      authenticationKeyManager.key = key;
 
       var reflectedHeader =
           await client.echoRequest.echoHttpHeader('authorization');
@@ -119,15 +119,15 @@ void main() async {
     tearDown(() async {
       await server.shutdown(exitProcess: false);
       // clear the authKeyManager so that auth is not retained between tests
-      await incorrectAuthKeyManager.remove();
+      // await incorrectAuthKeyManager.remove();
     });
 
     test(
         'when calling an endpoint method '
         'then endpoint method should return error corresponding to HTTP invalid request error (400)',
         () async {
-      var key = 'username-4711:password-4711';
-      await incorrectAuthKeyManager.put(key);
+      // var key = 'username-4711:password-4711';
+      // incorrectAuthKeyManager.key = key;
 
       ServerpodClientException? clientException;
       try {
@@ -146,24 +146,34 @@ void main() async {
 }
 
 /// A test implementation that skips encoding of the key, i.e. yields invalid header values.
-class TestIncorrectAuthKeyManager extends AuthenticationKeyManager {
-  String? _key;
+class TestIncorrectAuthKeyManager extends AuthenticationKeyProvider {
+  // String? _key;
+
+  // @override
+  // Future<String?> get() async => _key;
+
+  // @override
+  // Future<void> put(String key) async {
+  //   _key = key;
+  // }
+
+  // @override
+  // Future<void> remove() async {
+  //   _key = null;
+  // }
+
+  // @override
+  // Future<String?> toHeaderValue(String? key) async {
+  //   return 'basic $key';
+  // }
 
   @override
-  Future<String?> get() async => _key;
-
-  @override
-  Future<void> put(String key) async {
-    _key = key;
-  }
-
-  @override
-  Future<void> remove() async {
-    _key = null;
-  }
-
-  @override
-  Future<String?> toHeaderValue(String? key) async {
-    return 'basic $key';
+  Future<String?> getAuthenticationKey() {
+    // TODO: This probably does not make sense anymore, since the framework now
+    //       ensures consistent en- and decoding, and does not rely on this
+    //       class to prepare this. Maybe a "definitely does not work without
+    //       encoding" test key would make sense here.
+    // But then this is already plenty covered with the `:`, no? Maybe a further `\n` would be a nice error case…
+    throw UnimplementedError();
   }
 }

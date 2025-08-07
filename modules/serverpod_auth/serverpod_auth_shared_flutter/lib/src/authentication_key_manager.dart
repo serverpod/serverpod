@@ -1,11 +1,10 @@
-import 'package:serverpod_client/serverpod_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'serverpod_authentication_key';
 
 /// Implementation of a Serverpod [AuthenticationKeyManager] specifically for
 /// Flutter. Authentication key is stored in the [SharedPreferences].
-class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
+class FlutterAuthenticationKeyManager {
   bool _initialized = false;
   String? _authenticationKey;
 
