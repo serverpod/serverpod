@@ -6,8 +6,8 @@ library;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:web_socket/src/web_socket.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import 'websocket_extensions.dart';
 
 import '../test_utils/test_web_socket_server.dart';
 
@@ -44,11 +44,10 @@ void main() async {
     tearDown(() => closeServer());
 
     test('when sending a message then expect same response', () async {
-      var webSocket = WebSocketChannel.connect(webSocketHost);
-      await webSocket.ready;
+      var webSocket = await WebSocket.connect(webSocketHost);
       var message = 'Hello';
-      webSocket.sink.add(message);
-      var response = await webSocket.stream.first;
+      webSocket.sendText(message);
+      var response = await webSocket.textEvents.first;
       expect(response, message);
     });
   });
@@ -81,25 +80,23 @@ void main() async {
 
     test('when sending single message then configured response is returned.',
         () async {
-      var webSocket = WebSocketChannel.connect(webSocketHost);
-      await webSocket.ready;
-      webSocket.sink.add('Hello');
-      var response = await webSocket.stream.first;
+      var webSocket = await WebSocket.connect(webSocketHost);
+      webSocket.sendText('Hello');
+      var response = await webSocket.textEvents.first;
       expect(response, sequence.first);
     });
 
     test('when sending multiple messages then a single response is returned.',
         () async {
-      var webSocket = WebSocketChannel.connect(webSocketHost);
-      await webSocket.ready;
+      var webSocket = await WebSocket.connect(webSocketHost);
 
       List<String> responses = [];
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         responses.add(event);
       });
 
-      webSocket.sink.add('First Message');
-      webSocket.sink.add('Second Message');
+      webSocket.sendText('First Message');
+      webSocket.sendText('Second Message');
 
       await Future.delayed(const Duration(milliseconds: 100));
 

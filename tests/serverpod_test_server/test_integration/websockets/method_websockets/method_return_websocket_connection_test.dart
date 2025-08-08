@@ -5,7 +5,8 @@ import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../websocket_extensions.dart';
 
 void main() {
   group('Given multiple method stream connections when one returns', () {
@@ -15,7 +16,7 @@ void main() {
     var keepAliveConnectionId = const Uuid().v4obj();
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
     late Completer<void> webSocketCompleter;
@@ -28,11 +29,10 @@ void main() {
       testInProgress = true;
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
 
-      await webSocket.ready;
 
       closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
       webSocketCompleter = Completer<void>();
@@ -45,7 +45,7 @@ void main() {
         'keepAliveMessageReceived': keepAliveMessageReceived,
       });
 
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
           server.serializationManager,
@@ -65,7 +65,7 @@ void main() {
         if (testInProgress) webSocketCompleter.complete();
       });
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         args: {},
@@ -73,7 +73,7 @@ void main() {
         inputStreams: ['stream'],
       ));
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: closeMethod,
         args: {'value': 4},
@@ -93,13 +93,13 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     test('then websocket can still be used to send messages.', () async {
       expect(webSocketCompleter.future, doesNotComplete);
 
-      webSocket.sink.add(MethodStreamMessage.buildMessage(
+      webSocket.sendText(MethodStreamMessage.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
@@ -124,7 +124,7 @@ void main() {
     var keepAliveConnectionId = const Uuid().v4obj();
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
     late Completer<void> webSocketCompleter;
@@ -137,11 +137,10 @@ void main() {
       testInProgress = true;
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
 
-      await webSocket.ready;
 
       closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
       webSocketCompleter = Completer<void>();
@@ -154,7 +153,7 @@ void main() {
         'keepAliveMessageReceived': keepAliveMessageReceived,
       });
 
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
           server.serializationManager,
@@ -174,7 +173,7 @@ void main() {
         if (testInProgress) webSocketCompleter.complete();
       });
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         args: {},
@@ -182,7 +181,7 @@ void main() {
         inputStreams: ['stream'],
       ));
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: throwMethod,
         args: {},
@@ -202,13 +201,13 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     test('then websocket can still be used to send messages.', () async {
       expect(webSocketCompleter.future, doesNotComplete);
 
-      webSocket.sink.add(MethodStreamMessage.buildMessage(
+      webSocket.sendText(MethodStreamMessage.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
@@ -233,7 +232,7 @@ void main() {
     var keepAliveConnectionId = const Uuid().v4obj();
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     late Completer<CloseMethodStreamCommand> closeMethodStreamCommand;
     late Completer<void> webSocketCompleter;
@@ -246,11 +245,10 @@ void main() {
       testInProgress = true;
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
 
-      await webSocket.ready;
 
       closeMethodStreamCommand = Completer<CloseMethodStreamCommand>();
       webSocketCompleter = Completer<void>();
@@ -263,7 +261,7 @@ void main() {
         'keepAliveMessageReceived': keepAliveMessageReceived,
       });
 
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
           server.serializationManager,
@@ -283,7 +281,7 @@ void main() {
         if (testInProgress) webSocketCompleter.complete();
       });
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         args: {},
@@ -291,7 +289,7 @@ void main() {
         inputStreams: ['stream'],
       ));
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: throwMethod,
         args: {},
@@ -311,13 +309,13 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     test('then websocket can still be used to send messages.', () async {
       expect(webSocketCompleter.future, doesNotComplete);
 
-      webSocket.sink.add(MethodStreamMessage.buildMessage(
+      webSocket.sendText(MethodStreamMessage.buildMessage(
         endpoint: endpoint,
         method: keepAliveMethod,
         parameter: 'stream',
@@ -333,3 +331,4 @@ void main() {
     });
   });
 }
+

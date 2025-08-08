@@ -10,7 +10,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_client/src/client_method_stream_manager.dart';
 import 'package:serverpod_client/src/method_stream/method_stream_connection_details.dart';
 import 'package:test/test.dart';
-import 'package:web_socket/web_socket.dart';
+import 'websocket_extensions.dart';
 
 import '../test_utils/method_stream_connection_details_builder.dart';
 import '../test_utils/test_web_socket_server.dart';
@@ -447,11 +447,4 @@ void main() async {
       await expectLater(webSocketClosed.future, completes);
     });
   });
-}
-
-extension on RelicWebSocket {
-  Stream<String> get textEvents => events
-      .where((e) => e is TextDataReceived)
-      .cast<TextDataReceived>()
-      .map((e) => e.text);
 }
