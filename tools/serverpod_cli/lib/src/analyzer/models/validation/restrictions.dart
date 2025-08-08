@@ -448,6 +448,19 @@ class Restrictions {
       ];
     }
 
+    // Check if index name matches the table name
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition && definition.tableName != null) {
+      if (indexName == definition.tableName) {
+        return [
+          SourceSpanSeverityException(
+            'The index name "$indexName" cannot be the same as the table name. Use a unique name for the index.',
+            span,
+          )
+        ];
+      }
+    }
+
     return [];
   }
 

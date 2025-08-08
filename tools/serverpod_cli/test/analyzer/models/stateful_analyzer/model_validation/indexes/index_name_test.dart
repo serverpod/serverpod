@@ -197,4 +197,72 @@ void main() {
           'this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa');
     }, skip: errors.isNotEmpty);
   });
+
+  test(
+      'Given a class with an index name that matches the table name, then collect an error that the index name cannot be the same as the table name.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          example:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The index name "example" cannot be the same as the table name. Use a unique name for the index.',
+    );
+  });
+
+  test(
+      'Given a class with an index name that does not match the table name, then no error is collected.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          example_index:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors but some were generated.',
+    );
+
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
+    var index = definition?.indexes.firstOrNull;
+    expect(index?.name, 'example_index');
+  });
 }
