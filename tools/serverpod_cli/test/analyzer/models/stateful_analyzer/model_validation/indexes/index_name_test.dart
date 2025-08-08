@@ -10,7 +10,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given a class with an index name that does not match the table name, then no error is collected.',
+      'Given a class with an index when analyzing models then the index name is set correctly.',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
