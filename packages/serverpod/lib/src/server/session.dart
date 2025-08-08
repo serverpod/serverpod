@@ -54,6 +54,7 @@ abstract class Session implements DatabaseAccessor {
   int? _messageId;
 
   AuthenticationInfo? _authenticated;
+  Future<void>? _initializationFuture;
 
   /// Updates the authentication information for the session.
   /// This is typically done by the [Server] when the user is authenticated.
@@ -66,7 +67,10 @@ abstract class Session implements DatabaseAccessor {
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
   Future<AuthenticationInfo?> get authenticated async {
-    if (!_initialized) await _initialize();
+    // Ensure initialization is complete
+    if (_initializationFuture != null) {
+      await _initializationFuture;
+    }
     return _authenticated;
   }
 
@@ -173,6 +177,19 @@ abstract class Session implements DatabaseAccessor {
     } else {
       _logManager = null;
     }
+
+    // Initialize authentication immediately if an auth key is provided
+    _initializeAuthenticationIfNeeded();
+  }
+
+  void _initializeAuthenticationIfNeeded() {
+    if (_authenticationKey != null && !_initialized && _initializationFuture == null) {
+      _initializationFuture = _initialize();
+    } else if (_authenticationKey == null) {
+      _initialized = true;
+      _authenticated = null;
+      _initializationFuture = null;
+    }
   }
 
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
@@ -252,6 +269,12 @@ abstract class Session implements DatabaseAccessor {
       }
 
       server.messageCentral.removeListenersForSession(this);
+      
+      // Ensure authentication initialization is complete before logging
+      if (_initializationFuture != null) {
+        await _initializationFuture;
+      }
+      
       return await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
@@ -434,6 +457,9 @@ class StreamingSession extends Session {
 
     // Get the authentication key, if any
     _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
+    
+    // Initialize authentication immediately if an auth key is provided
+    _initializeAuthenticationIfNeeded();
   }
 
   /// Updates the authentication key for the streaming session.
@@ -441,6 +467,11 @@ class StreamingSession extends Session {
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
     _initialized = false;
+    _authenticated = null;
+    _initializationFuture = null;
+    
+    // Initialize authentication immediately if an auth key is provided
+    _initializeAuthenticationIfNeeded();
   }
 }
 
