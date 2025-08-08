@@ -427,6 +427,53 @@ dart test -t integration --reporter=failures-only
    # Verify generated project works
    ```
 
+## Pull Request Guidelines
+
+**CRITICAL**: All PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/) format to pass CI validation.
+
+### PR Title Format
+```
+<type>: <description>
+```
+
+**Valid types** (enforced by GitHub Actions):
+- **`feat`**: New features
+- **`fix`**: Bug fixes  
+- **`docs`**: Documentation changes
+- **`style`**: Code style changes (formatting, missing semi-colons, etc)
+- **`refactor`**: Code refactoring without changing functionality
+- **`perf`**: Performance improvements
+- **`test`**: Adding or updating tests
+- **`build`**: Changes to build system or dependencies
+- **`ci`**: Changes to CI configuration files and scripts
+- **`chore`**: Maintenance tasks, tooling changes
+- **`revert`**: Reverting previous commits
+
+**Requirements**:
+- Description must start with an uppercase letter
+- Be descriptive and concise
+- Use imperative mood ("Add feature" not "Added feature")
+
+**Examples**:
+```
+feat: Add authentication module for OAuth2 integration
+fix: Resolve database connection timeout issue
+docs: Update installation guide with Docker requirements
+refactor: Simplify error handling in client package
+test: Add integration tests for chat module
+chore: Update dependencies to latest versions
+```
+
+### PR Submission Checklist
+Before submitting a PR, ensure:
+
+1. **Title follows conventional commits format**
+2. **Code is formatted**: `dart format .`
+3. **Linting passes**: `melos lint_strict` 
+4. **Tests pass**: Run relevant test suites for your changes
+5. **Examples still work**: Verify at least one example project starts successfully
+6. **Documentation updated**: If adding features or changing APIs
+
 ## Common Issues and Solutions
 
 - **"Dart not found"**: Ensure Flutter is installed and in PATH
