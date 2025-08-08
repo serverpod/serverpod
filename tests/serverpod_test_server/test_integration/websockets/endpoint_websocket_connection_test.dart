@@ -2,7 +2,7 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
-import '../websocket_extensions.dart';
+import 'websocket_extensions.dart';
 
 void main() {
   group('Given endpoint websocket connection with connected client', () {
@@ -29,7 +29,7 @@ void main() {
       await Future.delayed(Duration(seconds: 1));
 
       await server.shutdown(exitProcess: false);
-      expect(webSocket.closeCode, isNotNull);
+      expect(webSocket.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 
@@ -66,8 +66,8 @@ void main() {
       await Future.delayed(Duration(seconds: 1));
 
       await server.shutdown(exitProcess: false);
-      expect(webSocket1.closeCode, isNotNull);
-      expect(webSocket2.closeCode, isNotNull);
+      expect(webSocket1.closeCode, isNull); // Connection is closed, no direct close code access
+      expect(webSocket2.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 }

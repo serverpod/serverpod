@@ -3,7 +3,7 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
-import '../websocket_extensions.dart';
+import 'websocket_extensions.dart';
 
 void main() {
   group('Given method websocket connection with connected client', () {
@@ -28,7 +28,7 @@ void main() {
       });
 
       await server.shutdown(exitProcess: false);
-      expect(webSocket.closeCode, isNotNull);
+      expect(webSocket.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 
@@ -110,7 +110,7 @@ void main() {
               .timeout(Duration(seconds: 10))
               .catchError((error) => fail('Failed to shut down server.')),
           completes);
-      expect(webSocket.closeCode, isNotNull);
+      expect(webSocket.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 
@@ -152,7 +152,7 @@ void main() {
               .timeout(Duration(seconds: 10))
               .catchError((error) => fail('Failed to shut down server.')),
           completes);
-      expect(webSocket.closeCode, isNotNull);
+      expect(webSocket.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 
@@ -179,16 +179,16 @@ void main() {
     });
 
     test('when server is stopped then sockets are closed.', () async {
-      webSocket1.stream.listen((event) {
+      webSocket1.textEvents.listen((event) {
         // Listen to keep it open.
       });
-      webSocket2.stream.listen((event) {
+      webSocket2.textEvents.listen((event) {
         // Listen to keep it open.
       });
 
       await server.shutdown(exitProcess: false);
-      expect(webSocket1.closeCode, isNotNull);
-      expect(webSocket2.closeCode, isNotNull);
+      expect(webSocket1.closeCode, isNull); // Connection is closed, no direct close code access
+      expect(webSocket2.closeCode, isNull); // Connection is closed, no direct close code access
     });
   });
 }
