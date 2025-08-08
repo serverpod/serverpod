@@ -8,7 +8,7 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
-  
+
   test(
       'Given a class with an index name that does not match the table name, then no error is collected.',
       () {
