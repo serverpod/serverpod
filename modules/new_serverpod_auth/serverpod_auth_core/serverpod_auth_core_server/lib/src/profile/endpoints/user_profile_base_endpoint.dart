@@ -14,7 +14,7 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
 
   /// Returns the user profile of the current user.
   Future<UserProfileModel> get(final Session session) async {
-    final authUserId = (await session.authenticatedAsyncAsync)!.authUserId;
+    final authUserId = session.authenticated!.authUserId;
 
     final profile = await UserProfiles.findUserProfileByUserId(
       session,
@@ -27,7 +27,7 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<UserProfileModel> removeUserImage(final Session session) async {
-    final userId = (await session.authenticatedAsync)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
     return UserProfiles.setDefaultUserImage(session, userId);
   }
@@ -37,7 +37,7 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final ByteData image,
   ) async {
-    final userId = (await session.authenticatedAsync)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
     return UserProfiles.setUserImageFromBytes(
       session,
@@ -51,7 +51,7 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final String? userName,
   ) async {
-    final userId = (await session.authenticatedAsync)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
     return UserProfiles.changeUserName(session, userId, userName);
   }
@@ -61,7 +61,7 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final String? fullName,
   ) async {
-    final userId = (await session.authenticatedAsync)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
     return UserProfiles.changeFullName(session, userId, fullName);
   }

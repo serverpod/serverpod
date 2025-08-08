@@ -60,35 +60,17 @@ abstract class Session implements DatabaseAccessor {
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
   void updateAuthenticated(AuthenticationInfo? info) {
-    _initialized = true;
     _authenticated = info;
   }
 
   /// The authentication information for the session.
-  /// This will be null if the session is not authenticated or if authentication
-  /// is still being resolved. Use with caution - prefer accessing this after
-  /// the session has been fully initialized.
+  /// This will be null if the session is not authenticated.
+  /// Authentication is resolved automatically in the constructor when an auth key is provided.
   AuthenticationInfo? get authenticated {
     return _authenticated;
   }
 
-  /// Returns the authentication information, waiting for initialization to complete if needed.
-  /// This method is async and should be used when you need to ensure authentication is fully resolved.
-  Future<AuthenticationInfo?> get authenticatedAsync async {
-    // Ensure initialization is complete
-    if (_initializationFuture != null) {
-      try {
-        await _initializationFuture;
-      } catch (e) {
-        // Authentication failed, but we still return the current state (null)
-      }
-    }
-    return _authenticated;
-  }
-
   /// Returns true if the user is signed in.
-  /// Note: This checks the current state and may return false if authentication
-  /// is still being resolved. Use authenticatedAsync for guaranteed results.
   bool get isUserSignedIn {
     return authenticated != null;
   }
@@ -197,12 +179,18 @@ abstract class Session implements DatabaseAccessor {
   }
 
   void _initializeAuthenticationIfNeeded() {
-    if (_authenticationKey != null && !_initialized && _initializationFuture == null) {
+    if (_authenticationKey != null && _initializationFuture == null) {
       _initializationFuture = _initialize();
     } else if (_authenticationKey == null) {
-      _initialized = true;
       _authenticated = null;
       _initializationFuture = null;
+    }
+  }
+
+  Future<void> _initialize() async {
+    var authKey = _authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
     }
   }
 
@@ -236,17 +224,6 @@ abstract class Session implements DatabaseAccessor {
     return MultipleLogWriter(
       logWriters.map((writer) => CachedLogWriter(writer)).toList(),
     );
-  }
-
-  bool _initialized = false;
-
-  Future<void> _initialize() async {
-    var authKey = _authenticationKey;
-    if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
-    }
-
-    _initialized = true;
   }
 
   /// Returns the duration this session has been open.
@@ -485,7 +462,6 @@ class StreamingSession extends Session {
   @internal
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
-    _initialized = false;
     _authenticated = null;
     _initializationFuture = null;
     

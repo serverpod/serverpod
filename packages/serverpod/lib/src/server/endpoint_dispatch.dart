@@ -174,7 +174,7 @@ abstract class EndpointDispatch {
     var session = createSessionCallback(connector);
 
     var authenticationFailedResult = await canUserAccessEndpoint(
-      () => session.authenticatedAsync,
+      () => session.authenticated,
       connector.endpoint.requireLogin,
       connector.endpoint.requiredScopes,
     );

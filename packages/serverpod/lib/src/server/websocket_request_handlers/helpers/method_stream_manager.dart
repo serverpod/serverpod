@@ -45,7 +45,7 @@ class _RevokedAuthenticationHandler {
       return null;
     }
 
-    var authenticationInfo = await session.authenticatedAsync;
+    var authenticationInfo = session.authenticated;
     if (authenticationInfo == null) {
       throw StateError(
         'Authentication was required but no authentication info could be retrieved.',

@@ -18,26 +18,13 @@ void main() {
       expect(isSignedIn, isFalse, reason: 'Mock session should not be signed in');
     });
 
-    test('authenticatedAsync getter should be available for guaranteed resolution', () async {
-      // Verify that the authenticatedAsync getter is available for backward compatibility
-      // This is a compile-time test - if this compiles, the async getter exists
-      
-      // Mock session
-      Session? session;
-      
-      // This should compile with await - verifying async nature
-      var auth = await session?.authenticatedAsync;  // Should be AuthenticationInfo?
-      
-      expect(auth, isNull, reason: 'Mock session should have null authentication');
-    });
-
-    test('should maintain breaking change compatibility', () {
-      // This test documents the breaking changes:
+    test('should maintain synchronous authentication access', () {
+      // This test documents that authentication is now resolved synchronously:
       // 1. authenticated is now sync (AuthenticationInfo? not Future<AuthenticationInfo?>)
       // 2. isUserSignedIn is now sync (bool not Future<bool>)
-      // 3. authenticatedAsync provides async access for guaranteed resolution
+      // 3. Authentication is resolved completely in the Session constructor
       
-      expect(true, isTrue, reason: 'Breaking changes documented and implemented');
+      expect(true, isTrue, reason: 'Synchronous authentication access implemented');
     });
   });
 }

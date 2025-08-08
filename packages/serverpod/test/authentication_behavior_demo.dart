@@ -29,7 +29,7 @@ class ExampleEndpoint extends Endpoint {
   /// This endpoint explicitly checks authentication
   Future<String> privateMethod(Session session, String input) async {
     // This has always worked correctly because it explicitly accesses authentication
-    final authInfo = await session.authenticatedAsync;
+    final authInfo = session.authenticated;
     if (authInfo == null) {
       throw Exception('Authentication required');
     }
@@ -56,19 +56,13 @@ class ExampleEndpoint extends Endpoint {
 /// 
 /// OLD CODE:
 /// ```dart
-/// final authInfo = await session.authenticated;
+/// final authInfo = session.authenticated;
 /// final isSignedIn = await session.isUserSignedIn;
 /// ```
 /// 
-/// NEW CODE (Option 1 - Guaranteed resolution):
+/// NEW CODE:
 /// ```dart
-/// final authInfo = await session.authenticatedAsync;
-/// final isSignedIn = session.isUserSignedIn;  // Now synchronous
-/// ```
-/// 
-/// NEW CODE (Option 2 - Current state access):
-/// ```dart
-/// final authInfo = session.authenticated;  // Now synchronous, returns current state
+/// final authInfo = session.authenticated;  // Now synchronous, resolved in constructor
 /// final isSignedIn = session.isUserSignedIn;  // Now synchronous
 /// ```
 

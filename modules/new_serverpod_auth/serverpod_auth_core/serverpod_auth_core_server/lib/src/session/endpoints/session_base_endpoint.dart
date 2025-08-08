@@ -12,7 +12,7 @@ abstract class SessionBaseEndpoint extends Endpoint {
   /// Return `true` if the caller is authentication, `false` otherwise.
   /// Does not error on missing authentication.
   Future<bool> isAuthenticated(final Session session) async {
-    return await session.authenticatedAsync != null;
+    return session.authenticated != null;
   }
 
   /// Logs out the current user.
@@ -24,7 +24,7 @@ abstract class SessionBaseEndpoint extends Endpoint {
     /// Whether to destroy all of the user's sessions, or only the current one.
     final bool allSessions = false,
   }) async {
-    final authInfo = await session.authenticatedAsync;
+    final authInfo = session.authenticated;
 
     if (authInfo == null) {
       return false;
