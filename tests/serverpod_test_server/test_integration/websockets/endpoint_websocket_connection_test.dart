@@ -36,32 +36,30 @@ void main() {
   group('Given multiple endpoint websocket connections with connected clients',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket1;
-    late WebSocketChannel webSocket2;
+    late WebSocket webSocket1;
+    late WebSocket webSocket2;
 
     setUp(() async {
       await server.start();
-      webSocket1 = WebSocketChannel.connect(
+      webSocket1 = await WebSocket.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      await webSocket1.ready;
-      webSocket2 = WebSocketChannel.connect(
+      webSocket2 = await WebSocket.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      await webSocket2.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket1.sink.close();
-      await webSocket2.sink.close();
+      await webSocket1.close();
+      await webSocket2.close();
     });
 
     test('when server is stopped then sockets are closed.', () async {
-      webSocket1.stream.listen((event) {
+      webSocket1.textEvents.listen((event) {
         // Listen to the stream to keep it open.
       });
-      webSocket2.stream.listen((event) {
+      webSocket2.textEvents.listen((event) {
         // Listen to the stream to keep it open.
       });
       // Await connection to be established and all handshakes to be done.

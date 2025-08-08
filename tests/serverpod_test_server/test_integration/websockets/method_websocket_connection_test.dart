@@ -159,23 +159,22 @@ void main() {
   group('Given multiple method websocket connections with connected clients',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket1;
-    late WebSocketChannel webSocket2;
+    late WebSocket webSocket1;
+    late WebSocket webSocket2;
 
     setUp(() async {
       await server.start();
-      webSocket1 = WebSocketChannel.connect(
+      webSocket1 = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      webSocket2 = WebSocketChannel.connect(
+      webSocket2 = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await Future.wait([webSocket1.ready, webSocket2.ready]);
     });
 
     tearDown(() async {
-      await webSocket1.sink.close();
-      await webSocket2.sink.close();
+      await webSocket1.close();
+      await webSocket2.close();
       await server.shutdown(exitProcess: false);
     });
 

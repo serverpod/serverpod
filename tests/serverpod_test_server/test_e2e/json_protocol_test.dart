@@ -9,10 +9,10 @@ import 'package:web_socket/web_socket.dart';
 import '../test_integration/websockets/websocket_extensions.dart';
 
 Future<dynamic> _getWebsocketMessage(
-  WebSocketChannel websocket,
+  WebSocket websocket,
 ) async {
   try {
-    return await websocket.stream
+    return await websocket.textEvents
         .timeout(
           Duration(seconds: 5),
           onTimeout: (sink) => throw TimeoutException(
@@ -20,8 +20,7 @@ Future<dynamic> _getWebsocketMessage(
           ),
         )
         .firstWhere(
-          (event) =>
-              event is String && event.contains('serverOnlyScopedFieldModel'),
+          (event) => event.contains('serverOnlyScopedFieldModel'),
           orElse: () => null,
         );
   } catch (e) {
@@ -81,12 +80,12 @@ void main() {
     late dynamic message;
 
     setUpAll(() async {
-      WebSocketChannel websocket = WebSocketChannel.connect(
+      WebSocket websocket = await WebSocket.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
 
       message = await _getWebsocketMessage(websocket);
-      await websocket.sink.close();
+      await websocket.close();
       if (message is Exception) throw message;
     });
 
@@ -138,12 +137,12 @@ void main() {
       late dynamic message;
 
       setUpAll(() async {
-        WebSocketChannel websocket = WebSocketChannel.connect(
+        WebSocket websocket = await WebSocket.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
 
         message = await _getWebsocketMessage(websocket);
-        await websocket.sink.close();
+        await websocket.close();
         if (message is Exception) throw message;
       });
 
@@ -189,12 +188,12 @@ void main() {
       late dynamic message;
 
       setUpAll(() async {
-        WebSocketChannel websocket = WebSocketChannel.connect(
+        WebSocket websocket = await WebSocket.connect(
           Uri.parse(serverEndpointWebsocketUrl),
         );
 
         message = await _getWebsocketMessage(websocket);
-        await websocket.sink.close();
+        await websocket.close();
         if (message is Exception) throw message;
       });
 

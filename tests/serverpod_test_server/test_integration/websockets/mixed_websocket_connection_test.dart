@@ -9,34 +9,30 @@ void main() {
       'Given a method websocket connection and an endpoint method connection with connected clients',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel methodWebSocketConnection;
-    late WebSocketChannel endpointWebSocketConnection;
+    late WebSocket methodWebSocketConnection;
+    late WebSocket endpointWebSocketConnection;
 
     setUp(() async {
       await server.start();
-      methodWebSocketConnection = WebSocketChannel.connect(
+      methodWebSocketConnection = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      endpointWebSocketConnection = WebSocketChannel.connect(
+      endpointWebSocketConnection = await WebSocket.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      await Future.wait([
-        methodWebSocketConnection.ready,
-        endpointWebSocketConnection.ready,
-      ]);
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await methodWebSocketConnection.sink.close();
-      await endpointWebSocketConnection.sink.close();
+      await methodWebSocketConnection.close();
+      await endpointWebSocketConnection.close();
     });
 
     test('when server is stopped then sockets are closed.', () async {
-      methodWebSocketConnection.stream.listen((event) {
+      methodWebSocketConnection.textEvents.listen((event) {
         // Listen to the to keep it open.
       });
-      endpointWebSocketConnection.stream.listen((event) {
+      endpointWebSocketConnection.textEvents.listen((event) {
         // Listen to the to keep it open.
       });
 
