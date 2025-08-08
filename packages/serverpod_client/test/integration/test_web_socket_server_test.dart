@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:test/test.dart';
 import 'package:web_socket/web_socket.dart';
+import 'websocket_extensions.dart';
 
 import '../test_utils/test_web_socket_server.dart';
 
@@ -103,11 +104,4 @@ void main() async {
       expect(responses.first, sequence.first);
     });
   });
-}
-
-extension on WebSocket {
-  Stream<String> get textEvents => events
-      .where((e) => e is TextDataReceived)
-      .cast<TextDataReceived>()
-      .map((e) => e.text);
 }

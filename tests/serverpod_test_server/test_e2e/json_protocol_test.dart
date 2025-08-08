@@ -6,6 +6,7 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 import 'package:web_socket/web_socket.dart';
+import '../test_integration/websockets/websocket_extensions.dart';
 
 Future<dynamic> _getWebsocketMessage(
   WebSocketChannel websocket,
@@ -280,11 +281,4 @@ void main() {
       expect(jsonMap, contains('someNullableField'));
     });
   });
-}
-
-extension on WebSocket {
-  Stream<String> get textEvents => events
-      .where((e) => e is TextDataReceived)
-      .cast<TextDataReceived>()
-      .map((e) => e.text);
 }
