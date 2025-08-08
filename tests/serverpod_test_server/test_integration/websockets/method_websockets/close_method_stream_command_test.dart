@@ -6,25 +6,24 @@ import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 void main() {
   group('Given method websocket connection', () {
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     group('with a connected method stream has a delayed response', () {
@@ -49,7 +48,7 @@ void main() {
                   delayedStreamIsCanceled.complete();
                 });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -64,7 +63,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {'delay': 10},
@@ -96,7 +95,7 @@ void main() {
       test(
           'when stream is closed by a CloseMethodStreamCommand then delayed stream is canceled.',
           () async {
-        webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+        webSocket.sendText(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           connectionId: connectionId,
@@ -139,7 +138,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -155,7 +154,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -211,7 +210,7 @@ void main() {
       () {
     late Completer<void> delayedStreamIsCanceled;
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
     var method = 'delayedStreamResponse';
     var connectionId = const Uuid().v4obj();
@@ -229,12 +228,11 @@ void main() {
               });
 
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         args: {'delay': 20},
@@ -244,20 +242,20 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test(
         'when a CloseMethodStreamCommand is sent then endpoint stream is canceled',
         () async {
-      webSocket.stream.listen(
+      webSocket.textEvents.listen(
         (event) {
           // Listen to the to keep it open.
         },
       );
 
-      webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+      webSocket.sendText(CloseMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         connectionId: connectionId,
@@ -277,7 +275,7 @@ void main() {
       'Given a single method stream connection to an endpoint that has an input stream that is never listened to',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
     var method = 'delayedNeverListenedInputStream';
     var connectionId = const Uuid().v4obj();
@@ -295,12 +293,11 @@ void main() {
               ));
 
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         args: {'delay': 20},
@@ -310,18 +307,18 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test(
         'when a CloseMethodStreamCommand is sent then endpoint session is closed',
         () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to the to keep it open.
       });
 
-      webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+      webSocket.sendText(CloseMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         connectionId: connectionId,
@@ -341,7 +338,7 @@ void main() {
       'Given a single method stream connection to an endpoint that has an input stream that is paused',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
     var method = 'delayedPausedInputStream';
     var connectionId = const Uuid().v4obj();
@@ -359,12 +356,11 @@ void main() {
               ));
 
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         args: {'delay': 20},
@@ -374,18 +370,18 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test(
         'when a CloseMethodStreamCommand is sent then endpoint session is closed',
         () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to the to keep it open.
       });
 
-      webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+      webSocket.sendText(CloseMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: method,
         connectionId: connectionId,
@@ -408,20 +404,19 @@ void main() {
     var method = 'didInputStreamHaveError';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     group('when input stream is closed with error close reason', () {
@@ -443,7 +438,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -459,7 +454,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -471,7 +466,7 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+        webSocket.sendText(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,
@@ -495,4 +490,11 @@ void main() {
       });
     });
   });
+}
+
+extension on WebSocket {
+  Stream<String> get textEvents => events
+      .where((e) => e is TextDataReceived)
+      .cast<TextDataReceived>()
+      .map((e) => e.text);
 }

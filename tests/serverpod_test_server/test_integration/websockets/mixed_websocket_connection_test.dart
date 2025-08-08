@@ -1,7 +1,7 @@
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 void main() {
   group(
@@ -47,4 +47,11 @@ void main() {
       expect(endpointWebSocketConnection.closeCode, isNotNull);
     });
   });
+}
+
+extension on WebSocket {
+  Stream<String> get textEvents => events
+      .where((e) => e is TextDataReceived)
+      .cast<TextDataReceived>()
+      .map((e) => e.text);
 }

@@ -2,28 +2,27 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 void main() {
   group('Given method websocket connection with connected client', () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test('when server is stopped then socket is closed.', () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to keep it open.
       });
 
@@ -34,17 +33,16 @@ void main() {
 
   group('Given method websocket connection with connected method stream', () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
 
     setUp(() async {
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: 'intEchoStream',
         args: {},
@@ -54,12 +52,12 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test('when server is shut down then socket is closed.', () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to keep it open.
       });
 
@@ -77,17 +75,16 @@ void main() {
       'Given method websocket connection with connected method stream with never listened input stream',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
 
     setUp(() async {
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: 'delayedStreamResponse',
         args: {'delay': 20},
@@ -97,12 +94,12 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test('when server is shut down then socket is closed.', () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to keep it open.
       });
 
@@ -120,17 +117,16 @@ void main() {
       'Given method websocket connection with connected method stream with paused input stream',
       () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
     var endpoint = 'methodStreaming';
 
     setUp(() async {
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
 
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: endpoint,
         method: 'delayedPausedInputStream',
         args: {'delay': 20},
@@ -140,12 +136,12 @@ void main() {
     });
 
     tearDown(() async {
-      await webSocket.sink.close();
+      await webSocket.close();
       await server.shutdown(exitProcess: false);
     });
 
     test('when server is shut down then socket is closed.', () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to keep it open.
       });
 
@@ -195,4 +191,11 @@ void main() {
       expect(webSocket2.closeCode, isNotNull);
     });
   });
+}
+
+extension on WebSocket {
+  Stream<String> get textEvents => events
+      .where((e) => e is TextDataReceived)
+      .cast<TextDataReceived>()
+      .map((e) => e.text);
 }

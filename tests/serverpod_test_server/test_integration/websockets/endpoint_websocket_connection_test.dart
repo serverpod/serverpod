@@ -1,28 +1,27 @@
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
 
 void main() {
   group('Given endpoint websocket connection with connected client', () {
     var server = IntegrationTestServer.create();
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverEndpointWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.close();
     });
 
     test('when server is stopped then socket is closed.', () async {
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         // Listen to the stream to keep it open.
       });
       // Await connection to be established and all handshakes to be done.
@@ -72,4 +71,11 @@ void main() {
       expect(webSocket2.closeCode, isNotNull);
     });
   });
+}
+
+extension on WebSocket {
+  Stream<String> get textEvents => events
+      .where((e) => e is TextDataReceived)
+      .cast<TextDataReceived>()
+      .map((e) => e.text);
 }
