@@ -65,18 +65,32 @@ abstract class Session implements DatabaseAccessor {
   }
 
   /// The authentication information for the session.
-  /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get authenticated async {
+  /// This will be null if the session is not authenticated or if authentication
+  /// is still being resolved. Use with caution - prefer accessing this after
+  /// the session has been fully initialized.
+  AuthenticationInfo? get authenticated {
+    return _authenticated;
+  }
+
+  /// Returns the authentication information, waiting for initialization to complete if needed.
+  /// This method is async and should be used when you need to ensure authentication is fully resolved.
+  Future<AuthenticationInfo?> get authenticatedAsync async {
     // Ensure initialization is complete
     if (_initializationFuture != null) {
-      await _initializationFuture;
+      try {
+        await _initializationFuture;
+      } catch (e) {
+        // Authentication failed, but we still return the current state (null)
+      }
     }
     return _authenticated;
   }
 
   /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await authenticated) != null;
+  /// Note: This checks the current state and may return false if authentication
+  /// is still being resolved. Use authenticatedAsync for guaranteed results.
+  bool get isUserSignedIn {
+    return authenticated != null;
   }
 
   String? _authenticationKey;
@@ -272,7 +286,12 @@ abstract class Session implements DatabaseAccessor {
       
       // Ensure authentication initialization is complete before logging
       if (_initializationFuture != null) {
-        await _initializationFuture;
+        try {
+          await _initializationFuture;
+        } catch (e) {
+          // Authentication initialization failed, but we still want to complete session cleanup
+          // The authentication will remain null, which is the correct behavior
+        }
       }
       
       return await _logManager?.finalizeLog(
