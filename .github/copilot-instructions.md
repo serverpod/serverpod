@@ -493,3 +493,27 @@ Before submitting a PR, ensure:
 - **Code generation**: 30 seconds - 2 minutes
 
 **CRITICAL**: Never cancel long-running operations. The monorepo is large and operations take significant time.
+
+## Test Writing Guidelines
+
+### Test Description Pattern
+Use the "Given, When, Then" pattern for test descriptions to maintain consistency:
+
+```dart
+test(
+  'Given [initial state] when [action performed] then [expected outcome].',
+  () {
+    // Test implementation
+  }
+);
+```
+
+### Test Organization
+- Place passing/success test cases at the top of test files
+- Group related test cases using `group()` where appropriate
+- Follow success test cases with error test cases for the same functionality
+
+## Code Style
+- Follow Dart formatting conventions
+- Remove unnecessary comments from production code
+- Use descriptive variable and function names
