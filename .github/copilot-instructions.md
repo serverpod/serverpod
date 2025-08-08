@@ -501,7 +501,7 @@ Use the "Given, When, Then" pattern for test descriptions to maintain consistenc
 
 ```dart
 test(
-  'Given a class with an index name that matches the table name when analyzing models then collect an error that the index name cannot be the same as the table name.',
+  'Given [initial state] when [action performed] then [expected outcome].',
   () {
     // Test implementation
   }
@@ -511,7 +511,7 @@ test(
 ### Test Organization
 - Place passing/success test cases at the top of test files
 - Group related test cases using `group()` where appropriate
-- Follow error test cases with success test cases for the same functionality
+- Follow success test cases with error test cases for the same functionality
 
 ## Code Style
 - Follow Dart formatting conventions
