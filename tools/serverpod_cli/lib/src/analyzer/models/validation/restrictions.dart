@@ -448,7 +448,6 @@ class Restrictions {
       ];
     }
 
-    // Check if index name matches the table name
     var definition = documentDefinition;
     if (definition is ModelClassDefinition && definition.tableName != null) {
       if (indexName == definition.tableName) {

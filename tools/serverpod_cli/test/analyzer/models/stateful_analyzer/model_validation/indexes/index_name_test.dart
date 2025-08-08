@@ -8,6 +8,40 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().build();
+  
+  test(
+      'Given a class with an index name that does not match the table name, then no error is collected.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          example_index:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors but some were generated.',
+    );
+
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
+    var index = definition?.indexes.firstOrNull;
+    expect(index?.name, 'example_index');
+  });
+
   test(
       'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
       () {
@@ -199,7 +233,7 @@ void main() {
   });
 
   test(
-      'Given a class with an index name that matches the table name, then collect an error that the index name cannot be the same as the table name.',
+      'Given a class with an index name that matches the table name when analyzing models then collect an error that the index name cannot be the same as the table name.',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
@@ -231,38 +265,5 @@ void main() {
       error.message,
       'The index name "example" cannot be the same as the table name. Use a unique name for the index.',
     );
-  });
-
-  test(
-      'Given a class with an index name that does not match the table name, then no error is collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
-        class: Example
-        table: example
-        fields:
-          name: String
-        indexes:
-          example_index:
-            fields: name
-        ''',
-      ).build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
-
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors but some were generated.',
-    );
-
-    var definition = definitions.firstOrNull as ModelClassDefinition?;
-    var index = definition?.indexes.firstOrNull;
-    expect(index?.name, 'example_index');
   });
 }
