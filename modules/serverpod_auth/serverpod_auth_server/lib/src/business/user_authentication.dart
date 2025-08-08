@@ -62,7 +62,7 @@ class UserAuthentication {
     Session session, {
     int? userId,
   }) async {
-    userId ??= (session.authenticated)?.userId;
+    userId ??= session.authenticated?.userId;
     if (userId == null) return;
 
     // Delete all authentication keys for the user

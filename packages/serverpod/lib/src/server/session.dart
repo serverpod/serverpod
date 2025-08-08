@@ -54,7 +54,6 @@ abstract class Session implements DatabaseAccessor {
   int? _messageId;
 
   AuthenticationInfo? _authenticated;
-  Future<void>? _initializationFuture;
 
   /// Updates the authentication information for the session.
   /// This is typically done by the [Server] when the user is authenticated.
@@ -174,24 +173,21 @@ abstract class Session implements DatabaseAccessor {
       _logManager = null;
     }
 
-    // Initialize authentication immediately if an auth key is provided
-    _initializeAuthenticationIfNeeded();
+    // Resolve authentication immediately if an auth key is provided
+    if (authenticationKey != null) {
+      _resolveAuthentication(authenticationKey);
+    }
   }
 
-  void _initializeAuthenticationIfNeeded() {
-    if (_authenticationKey != null && _initializationFuture == null) {
-      _initializationFuture = _initialize();
-    } else if (_authenticationKey == null) {
+  void _resolveAuthentication(String authKey) {
+    // Call the authentication handler immediately but don't wait for it
+    // Authentication will be available once the handler completes
+    server.authenticationHandler(this, authKey).then((authInfo) {
+      _authenticated = authInfo;
+    }).catchError((error) {
+      // If authentication fails, keep _authenticated as null
       _authenticated = null;
-      _initializationFuture = null;
-    }
-  }
-
-  Future<void> _initialize() async {
-    var authKey = _authenticationKey;
-    if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
-    }
+    });
   }
 
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
@@ -260,17 +256,7 @@ abstract class Session implements DatabaseAccessor {
       }
 
       server.messageCentral.removeListenersForSession(this);
-      
-      // Ensure authentication initialization is complete before logging
-      if (_initializationFuture != null) {
-        try {
-          await _initializationFuture;
-        } catch (e) {
-          // Authentication initialization failed, but we still want to complete session cleanup
-          // The authentication will remain null, which is the correct behavior
-        }
-      }
-      
+
       return await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
@@ -453,9 +439,11 @@ class StreamingSession extends Session {
 
     // Get the authentication key, if any
     _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
-    
-    // Initialize authentication immediately if an auth key is provided
-    _initializeAuthenticationIfNeeded();
+
+    // Resolve authentication immediately if an auth key is provided
+    if (_authenticationKey != null) {
+      _resolveAuthentication(_authenticationKey!);
+    }
   }
 
   /// Updates the authentication key for the streaming session.
@@ -463,10 +451,11 @@ class StreamingSession extends Session {
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
     _authenticated = null;
-    _initializationFuture = null;
-    
-    // Initialize authentication immediately if an auth key is provided
-    _initializeAuthenticationIfNeeded();
+
+    // Resolve authentication immediately if an auth key is provided
+    if (authenticationKey != null) {
+      _resolveAuthentication(authenticationKey);
+    }
   }
 }
 
