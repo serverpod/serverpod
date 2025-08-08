@@ -59,20 +59,19 @@ abstract class Session implements DatabaseAccessor {
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
   void updateAuthenticated(AuthenticationInfo? info) {
-    _initialized = true;
     _authenticated = info;
   }
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get authenticated async {
-    if (!_initialized) await _initialize();
+  /// Authentication is resolved automatically in the constructor when an auth key is provided.
+  AuthenticationInfo? get authenticated {
     return _authenticated;
   }
 
   /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await authenticated) != null;
+  bool get isUserSignedIn {
+    return authenticated != null;
   }
 
   String? _authenticationKey;
@@ -173,6 +172,22 @@ abstract class Session implements DatabaseAccessor {
     } else {
       _logManager = null;
     }
+
+    // Resolve authentication immediately if an auth key is provided
+    if (authenticationKey != null) {
+      _resolveAuthentication(authenticationKey);
+    }
+  }
+
+  void _resolveAuthentication(String authKey) {
+    // Call the authentication handler immediately but don't wait for it
+    // Authentication will be available once the handler completes
+    server.authenticationHandler(this, authKey).then((authInfo) {
+      _authenticated = authInfo;
+    }).catchError((error) {
+      // If authentication fails, keep _authenticated as null
+      _authenticated = null;
+    });
   }
 
   LogWriter _createLogWriter(Session session, LogSettingsManager settings) {
@@ -205,17 +220,6 @@ abstract class Session implements DatabaseAccessor {
     return MultipleLogWriter(
       logWriters.map((writer) => CachedLogWriter(writer)).toList(),
     );
-  }
-
-  bool _initialized = false;
-
-  Future<void> _initialize() async {
-    var authKey = _authenticationKey;
-    if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
-    }
-
-    _initialized = true;
   }
 
   /// Returns the duration this session has been open.
@@ -252,6 +256,7 @@ abstract class Session implements DatabaseAccessor {
       }
 
       server.messageCentral.removeListenersForSession(this);
+
       return await _logManager?.finalizeLog(
         this,
         exception: error?.toString(),
@@ -434,13 +439,23 @@ class StreamingSession extends Session {
 
     // Get the authentication key, if any
     _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
+
+    // Resolve authentication immediately if an auth key is provided
+    if (_authenticationKey != null) {
+      _resolveAuthentication(_authenticationKey!);
+    }
   }
 
   /// Updates the authentication key for the streaming session.
   @internal
   void updateAuthenticationKey(String? authenticationKey) {
     _authenticationKey = authenticationKey;
-    _initialized = false;
+    _authenticated = null;
+
+    // Resolve authentication immediately if an auth key is provided
+    if (authenticationKey != null) {
+      _resolveAuthentication(authenticationKey);
+    }
   }
 }
 
