@@ -20,7 +20,7 @@ void main() {
             )
             .build();
 
-        authenticationInfo = await session.authenticated;
+        authenticationInfo = await session.authenticatedAsync;
       });
 
       test(
@@ -55,7 +55,7 @@ void main() {
             )
             .build();
 
-        authenticationInfo = await session.authenticated;
+        authenticationInfo = await session.authenticatedAsync;
       });
 
       test(

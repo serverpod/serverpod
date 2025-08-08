@@ -9,7 +9,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 class StatusEndpoint extends Endpoint {
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn(Session session) async {
-    var userId = (await session.authenticated)?.userId;
+    var userId = (await session.authenticatedAsync)?.userId;
     return userId != null;
   }
 
@@ -21,7 +21,7 @@ class StatusEndpoint extends Endpoint {
     'This method will be removed in future releases.',
   )
   Future<void> signOut(Session session) async {
-    var authInfo = await session.authenticated;
+    var authInfo = await session.authenticatedAsync;
     if (authInfo == null) return;
 
     switch (AuthConfig.current.legacyUserSignOutBehavior) {
@@ -43,7 +43,7 @@ class StatusEndpoint extends Endpoint {
 
   /// Signs out a user from the current device.
   Future<void> signOutDevice(Session session) async {
-    var authInfo = await session.authenticated;
+    var authInfo = await session.authenticatedAsync;
     var authKeyId = authInfo?.authId;
     if (authKeyId == null) return;
 
@@ -55,7 +55,7 @@ class StatusEndpoint extends Endpoint {
 
   /// Signs out a user from all active devices.
   Future<void> signOutAllDevices(Session session) async {
-    var authInfo = await session.authenticated;
+    var authInfo = await session.authenticatedAsync;
     var userId = authInfo?.userId;
     if (userId == null) return;
 
@@ -68,7 +68,7 @@ class StatusEndpoint extends Endpoint {
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
   /// not signed in with the server.
   Future<UserInfo?> getUserInfo(Session session) async {
-    var userId = (await session.authenticated)?.userId;
+    var userId = (await session.authenticatedAsync)?.userId;
     if (userId == null) return null;
 
     return await UserInfo.db.findById(session, userId);

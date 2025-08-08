@@ -26,7 +26,7 @@ void main() async {
           updateSession: true,
         );
 
-        var auth = await session.authenticated;
+        var auth = await session.authenticatedAsync;
 
         expect(
           auth,
@@ -57,7 +57,7 @@ void main() async {
           updateSession: false,
         );
 
-        var auth = await session.authenticated;
+        var auth = await session.authenticatedAsync;
 
         expect(
           auth,
@@ -77,7 +77,7 @@ void main() async {
           'email',
         );
 
-        var auth = await session.authenticated;
+        var auth = await session.authenticatedAsync;
 
         expect(
           auth,
