@@ -537,6 +537,7 @@ class Serverpod {
     _internalSession = InternalSession(server: server, enableLogging: false);
 
     if (Features.enableFutureCalls) {
+      // Note: This will only be run if `config.futureCallExecutionEnabled` is true
       _futureCallManager = FutureCallManager(
         server.serverpod.config.futureCall,
         serializationManager,
@@ -685,7 +686,9 @@ class Serverpod {
       }
 
       // Main API server.
-      serversStarted &= await server.start();
+      if (config.apiEndpointsEnabled) {
+        serversStarted &= await server.start();
+      }
 
       /// Web server.
       if (Features.enableWebServer(_webServer)) {
