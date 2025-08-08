@@ -10,10 +10,10 @@ void main() async {
         print('Sending validation email to $email with code $validationCode');
         return true;
       },
-      passwordHashValidator: (
-        password,
-        email,
-        hash, {
+      passwordHashValidator: ({
+        required password,
+        required email,
+        required hash, 
         onError,
         onValidationFailure,
       }) async =>

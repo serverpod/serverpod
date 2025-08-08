@@ -25,10 +25,10 @@ Future<String> defaultGeneratePasswordHash(String password) =>
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
 /// password hash validation and migration.
-Future<bool> defaultValidatePasswordHash(
-  String password,
-  String email,
-  String hash, {
+Future<bool> defaultValidatePasswordHash({
+  required String password,
+  required String email,
+  required String hash, 
   void Function({
     required String passwordHash,
     required String storedHash,
@@ -627,9 +627,9 @@ class Emails {
     void Function(Object e)? onError,
   }) =>
       AuthConfig.current.passwordHashValidator(
-        password,
-        email,
-        hash,
+        password: password,
+        email: email,
+        hash: hash,
         onError: onError,
         onValidationFailure: onValidationFailure,
       );

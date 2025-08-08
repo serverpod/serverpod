@@ -39,10 +39,10 @@ typedef SendValidationEmailCallback = Future<bool> Function(
 typedef PasswordHashGenerator = Future<String> Function(String password);
 
 /// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<bool> Function(
-  String password,
-  String email,
-  String hash, {
+typedef PasswordHashValidator = Future<bool> Function({
+  required String password,
+  required String email,
+  required String hash,
   void Function({required String passwordHash, required String storedHash})?
       onValidationFailure,
   void Function(Object e)? onError,
