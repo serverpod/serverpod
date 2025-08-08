@@ -381,6 +381,37 @@ class EmailAccountFailedLoginAttemptRepository {
     );
   }
 
+  /// Updates a single [EmailAccountFailedLoginAttempt] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountFailedLoginAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id,
+    _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountFailedLoginAttempt>(
+      id,
+      columns(EmailAccountFailedLoginAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountFailedLoginAttempt]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountFailedLoginAttempt>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable> columns, {
+    required _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>
+        where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountFailedLoginAttempt>(
+      columns(EmailAccountFailedLoginAttempt.t),
+      where: where(EmailAccountFailedLoginAttempt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountFailedLoginAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

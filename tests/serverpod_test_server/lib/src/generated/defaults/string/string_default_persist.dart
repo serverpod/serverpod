@@ -588,6 +588,36 @@ class StringDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [StringDefaultPersist] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<StringDefaultPersist?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<StringDefaultPersistTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<StringDefaultPersist>(
+      id,
+      columns(StringDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [StringDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<StringDefaultPersist>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<StringDefaultPersistTable> columns, {
+    required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<StringDefaultPersist>(
+      columns(StringDefaultPersist.t),
+      where: where(StringDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [StringDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

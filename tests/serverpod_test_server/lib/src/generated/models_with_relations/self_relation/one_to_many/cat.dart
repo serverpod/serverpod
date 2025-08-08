@@ -477,6 +477,36 @@ class CatRepository {
     );
   }
 
+  /// Updates a single [Cat] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Cat?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CatTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Cat>(
+      id,
+      columns(Cat.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Cat]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Cat>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CatTable> columns, {
+    required _i1.WhereExpressionBuilder<CatTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Cat>(
+      columns(Cat.t),
+      where: where(Cat.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Cat]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

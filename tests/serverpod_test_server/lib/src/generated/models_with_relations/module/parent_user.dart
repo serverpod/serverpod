@@ -347,6 +347,36 @@ class ParentUserRepository {
     );
   }
 
+  /// Updates a single [ParentUser] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ParentUser?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ParentUserTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ParentUser>(
+      id,
+      columns(ParentUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ParentUser]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<ParentUser>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ParentUserTable> columns, {
+    required _i1.WhereExpressionBuilder<ParentUserTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ParentUser>(
+      columns(ParentUser.t),
+      where: where(ParentUser.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ParentUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

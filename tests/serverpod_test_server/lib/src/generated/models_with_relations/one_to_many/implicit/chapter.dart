@@ -373,6 +373,36 @@ class ChapterRepository {
     );
   }
 
+  /// Updates a single [Chapter] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Chapter?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<ChapterTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Chapter>(
+      id,
+      columns(Chapter.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Chapter]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Chapter>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<ChapterTable> columns, {
+    required _i1.WhereExpressionBuilder<ChapterTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Chapter>(
+      columns(Chapter.t),
+      where: where(Chapter.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Chapter]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

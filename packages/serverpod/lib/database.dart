@@ -1,4 +1,5 @@
 export 'src/database/concepts/columns.dart';
+export 'src/database/concepts/column_value.dart';
 export 'src/database/concepts/database_result.dart';
 export 'src/database/concepts/exceptions.dart';
 export 'src/database/concepts/expressions.dart';

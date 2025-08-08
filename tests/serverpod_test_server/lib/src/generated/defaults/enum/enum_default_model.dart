@@ -420,6 +420,36 @@ class EnumDefaultModelRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultModel] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultModel?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<EnumDefaultModelTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultModel>(
+      id,
+      columns(EnumDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultModel]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultModel>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EnumDefaultModelTable> columns, {
+    required _i1.WhereExpressionBuilder<EnumDefaultModelTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultModel>(
+      columns(EnumDefaultModel.t),
+      where: where(EnumDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnumDefaultModel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

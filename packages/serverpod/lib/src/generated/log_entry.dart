@@ -522,6 +522,36 @@ class LogEntryRepository {
     );
   }
 
+  /// Updates a single [LogEntry] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LogEntry?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<LogEntryTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LogEntry>(
+      id,
+      columns(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LogEntry]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<LogEntry>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<LogEntryTable> columns, {
+    required _i1.WhereExpressionBuilder<LogEntryTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LogEntry>(
+      columns(LogEntry.t),
+      where: where(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LogEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -493,6 +493,36 @@ class CityWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [CityWithLongTableName] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CityWithLongTableName?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CityWithLongTableNameTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CityWithLongTableName>(
+      id,
+      columns(CityWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CityWithLongTableName]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<CityWithLongTableName>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CityWithLongTableNameTable> columns, {
+    required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CityWithLongTableName>(
+      columns(CityWithLongTableName.t),
+      where: where(CityWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CityWithLongTableName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

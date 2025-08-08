@@ -388,6 +388,36 @@ class DateTimeDefaultMixRepository {
     );
   }
 
+  /// Updates a single [DateTimeDefaultMix] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DateTimeDefaultMix?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<DateTimeDefaultMixTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DateTimeDefaultMix>(
+      id,
+      columns(DateTimeDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DateTimeDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<DateTimeDefaultMix>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<DateTimeDefaultMixTable> columns, {
+    required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DateTimeDefaultMix>(
+      columns(DateTimeDefaultMix.t),
+      where: where(DateTimeDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DateTimeDefaultMix]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

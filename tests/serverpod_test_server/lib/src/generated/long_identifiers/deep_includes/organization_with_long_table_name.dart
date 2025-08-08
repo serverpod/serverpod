@@ -485,6 +485,37 @@ class OrganizationWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [OrganizationWithLongTableName] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<OrganizationWithLongTableName?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<OrganizationWithLongTableName>(
+      id,
+      columns(OrganizationWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [OrganizationWithLongTableName]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<OrganizationWithLongTableName>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable> columns, {
+    required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
+        where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<OrganizationWithLongTableName>(
+      columns(OrganizationWithLongTableName.t),
+      where: where(OrganizationWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [OrganizationWithLongTableName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

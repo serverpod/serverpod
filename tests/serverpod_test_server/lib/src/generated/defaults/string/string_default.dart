@@ -353,6 +353,36 @@ class StringDefaultRepository {
     );
   }
 
+  /// Updates a single [StringDefault] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<StringDefault?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<StringDefaultTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<StringDefault>(
+      id,
+      columns(StringDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [StringDefault]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<StringDefault>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<StringDefaultTable> columns, {
+    required _i1.WhereExpressionBuilder<StringDefaultTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<StringDefault>(
+      columns(StringDefault.t),
+      where: where(StringDefault.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [StringDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -400,6 +400,36 @@ class CommentRepository {
     );
   }
 
+  /// Updates a single [Comment] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Comment?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<CommentTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Comment>(
+      id,
+      columns(Comment.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Comment]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Comment>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<CommentTable> columns, {
+    required _i1.WhereExpressionBuilder<CommentTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Comment>(
+      columns(Comment.t),
+      where: where(Comment.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Comment]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

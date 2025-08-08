@@ -432,6 +432,36 @@ class UuidDefaultRepository {
     );
   }
 
+  /// Updates a single [UuidDefault] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UuidDefault?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<UuidDefaultTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UuidDefault>(
+      id,
+      columns(UuidDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefault]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<UuidDefault>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<UuidDefaultTable> columns, {
+    required _i1.WhereExpressionBuilder<UuidDefaultTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UuidDefault>(
+      columns(UuidDefault.t),
+      where: where(UuidDefault.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UuidDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

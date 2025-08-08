@@ -452,6 +452,36 @@ class EnrollmentIntRepository {
     );
   }
 
+  /// Updates a single [EnrollmentInt] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnrollmentInt?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<EnrollmentIntTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnrollmentInt>(
+      id,
+      columns(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnrollmentInt]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<EnrollmentInt>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<EnrollmentIntTable> columns, {
+    required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnrollmentInt>(
+      columns(EnrollmentInt.t),
+      where: where(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnrollmentInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

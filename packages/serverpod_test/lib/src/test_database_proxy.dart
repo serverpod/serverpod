@@ -330,6 +330,38 @@ class TestDatabaseProxy implements Database {
     );
   }
 
+  @override
+  Future<T?> updateById<T extends TableRow>(
+    Object id,
+    List<ColumnValue> columnValues, {
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.updateById<T>(
+        id,
+        columnValues,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<List<T>> updateWhere<T extends TableRow>(
+    List<ColumnValue> columnValues, {
+    required Expression where,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.updateWhere<T>(
+        columnValues,
+        where: where,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
   Future<T> _rollbackSingleOperationIfDatabaseException<T>(
     Future<T> Function() databaseOperation, {
     required bool isPartOfUserTransaction,

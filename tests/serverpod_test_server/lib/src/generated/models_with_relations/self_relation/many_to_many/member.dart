@@ -478,6 +478,36 @@ class MemberRepository {
     );
   }
 
+  /// Updates a single [Member] by its [id] with the specified [columns].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Member?> updateById(
+    _i1.Session session,
+    int id,
+    _i1.ColumnValueListBuilder<MemberTable> columns, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Member>(
+      id,
+      columns(Member.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Member]s matching the [where] expression with the specified [columns].
+  /// Returns the list of updated rows.
+  Future<List<Member>> updateWhere(
+    _i1.Session session,
+    _i1.ColumnValueListBuilder<MemberTable> columns, {
+    required _i1.WhereExpressionBuilder<MemberTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Member>(
+      columns(Member.t),
+      where: where(Member.t),
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Member]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
