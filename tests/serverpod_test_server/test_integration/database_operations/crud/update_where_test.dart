@@ -1,5 +1,4 @@
-import 'package:serverpod/serverpod.dart' as serverpod;
-import 'package:serverpod/serverpod.dart' hide Order;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -44,22 +43,6 @@ void main() async {
           containsAll(['first@serverpod.dev', 'duplicate@serverpod.dev']));
     });
 
-    test('when updating number column then all matching rows are updated',
-        () async {
-      var updated = await UniqueData.db.updateWhere(
-        session,
-        columnValues: (t) => [t.number(100)],
-        where: (t) => t.number.equals(1),
-      );
-
-      expect(updated.length, 2);
-      expect(updated.every((row) => row.number == 100), isTrue);
-      // Emails should remain unchanged
-      var emails = updated.map((e) => e.email).toSet();
-      expect(emails,
-          containsAll(['first@serverpod.dev', 'duplicate@serverpod.dev']));
-    });
-
     test(
         'when updating with complex where clause then only matching rows are updated',
         () async {
@@ -75,6 +58,37 @@ void main() async {
       var emails = updated.map((e) => e.email).toSet();
       expect(
           emails, containsAll(['second@serverpod.dev', 'third@serverpod.dev']));
+    });
+
+    test(
+        'when updating within a transaction then update is part of transaction',
+        () async {
+      try {
+        await session.db.transaction((transaction) async {
+          var updated = await UniqueData.db.updateWhere(
+            session,
+            columnValues: (t) => [t.number(999)],
+            where: (t) => t.number.equals(1),
+            transaction: transaction,
+          );
+
+          expect(updated.length, 2);
+          expect(updated.every((row) => row.number == 999), isTrue);
+
+          // Throw to rollback the transaction
+          throw Exception('Rollback');
+        });
+      } catch (e) {
+        // Expected error for rollback
+      }
+
+      // Verify the updates were rolled back
+      var results = await UniqueData.db.find(
+        session,
+        where: (t) => t.number.equals(1),
+      );
+      expect(results.length, 2);
+      expect(results.every((row) => row.number == 1), isTrue);
     });
   });
 
@@ -145,7 +159,7 @@ void main() async {
     });
 
     test(
-        'when updating where anInt equals 1 then only matching rows are updated',
+        'when updating specific columns then only those columns are updated and others remain unchanged',
         () async {
       var updated = await Types.db.updateWhere(
         session,
@@ -207,6 +221,31 @@ void main() async {
       expect(updated.length, 1);
       expect(updated.first.anInt, 99);
       expect(updated.first.aString, 'was_null');
+    });
+
+    test('when updating a column to null then the column is set to null',
+        () async {
+      // First verify we have a row with values
+      var initial = await Types.db.findFirstRow(
+        session,
+        where: (t) => t.anInt.equals(1),
+      );
+      expect(initial!.anInt, 1);
+      expect(initial.aString, 'value');
+
+      // Now set them to null
+      var updated = await Types.db.updateWhere(
+        session,
+        columnValues: (t) => [t.anInt(null), t.aString(null)],
+        where: (t) => t.anInt.equals(1),
+      );
+
+      expect(updated.length, 1);
+      expect(updated.first.anInt, isNull);
+      expect(updated.first.aString, isNull);
+      // Other fields should remain unchanged
+      expect(updated.first.aBool, true);
+      expect(updated.first.aDouble, 1.5);
     });
   });
 }

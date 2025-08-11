@@ -38,20 +38,6 @@ void main() async {
     });
 
     test(
-        'when updating by id with multiple columns then all specified columns are updated',
-        () async {
-      var updated = await UniqueData.db.updateById(
-        session,
-        existingEntry.id!,
-        columnValues: (t) => [t.number(100), t.email('updated@serverpod.dev')],
-      );
-
-      expect(updated, isNotNull);
-      expect(updated!.number, 100);
-      expect(updated.email, 'updated@serverpod.dev');
-    });
-
-    test(
         'when updating by id within a transaction then update is part of transaction',
         () async {
       try {
@@ -160,23 +146,6 @@ void main() async {
         session,
         where: (_) => Constant.bool(true),
       );
-    });
-
-    test(
-        'when updating specific columns by id then only those columns are updated',
-        () async {
-      var updated = await Types.db.updateById(
-        session,
-        existingEntry.id!,
-        columnValues: (t) => [t.anInt(42), t.aBool(true), t.aString('value')],
-      );
-
-      expect(updated, isNotNull);
-      expect(updated!.anInt, 42);
-      expect(updated.aBool, true);
-      expect(updated.aString, 'value');
-      expect(updated.aDouble, isNull);
-      expect(updated.aDateTime, isNull);
     });
 
     test('when updating a column to null then the column is set to null',
