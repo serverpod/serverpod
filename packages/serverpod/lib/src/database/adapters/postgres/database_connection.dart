@@ -243,8 +243,8 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> updateById<T extends TableRow>(
     Session session,
-    Object id,
-    List<ColumnValue> columnValues, {
+    Object id, {
+    required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateById');
@@ -282,8 +282,8 @@ class DatabaseConnection {
   ///
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> updateWhere<T extends TableRow>(
-    Session session,
-    List<ColumnValue> columnValues, {
+    Session session, {
+    required List<ColumnValue> columnValues,
     required Expression where,
     Transaction? transaction,
   }) async {

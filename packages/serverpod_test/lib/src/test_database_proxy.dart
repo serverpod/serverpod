@@ -332,14 +332,14 @@ class TestDatabaseProxy implements Database {
 
   @override
   Future<T?> updateById<T extends TableRow>(
-    Object id,
-    List<ColumnValue> columnValues, {
+    Object id, {
+    required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.updateById<T>(
         id,
-        columnValues,
+        columnValues: columnValues,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
@@ -347,14 +347,14 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
-  Future<List<T>> updateWhere<T extends TableRow>(
-    List<ColumnValue> columnValues, {
+  Future<List<T>> updateWhere<T extends TableRow>({
+    required List<ColumnValue> columnValues,
     required Expression where,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.updateWhere<T>(
-        columnValues,
+        columnValues: columnValues,
         where: where,
         transaction: transaction,
       ),
