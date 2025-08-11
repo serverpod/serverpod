@@ -29,7 +29,7 @@ void main() async {
       var updated = await UniqueData.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.number(42)],
+        columnValues: (t) => [t.number(42)],
       );
 
       expect(updated, isNotNull);
@@ -43,7 +43,7 @@ void main() async {
       var updated = await UniqueData.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.number(100), t.email('updated@serverpod.dev')],
+        columnValues: (t) => [t.number(100), t.email('updated@serverpod.dev')],
       );
 
       expect(updated, isNotNull);
@@ -59,7 +59,7 @@ void main() async {
           var updated = await UniqueData.db.updateById(
             session,
             existingEntry.id!,
-            (t) => [t.number(42)],
+            columnValues: (t) => [t.number(42)],
             transaction: transaction,
           );
 
@@ -91,7 +91,7 @@ void main() async {
       var updated = await UniqueData.db.updateById(
         session,
         999999,
-        (t) => [t.number(123)],
+        columnValues: (t) => [t.number(123)],
       );
 
       expect(updated, isNull);
@@ -127,7 +127,7 @@ void main() async {
       var updated = await Types.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.anInt(42), t.aString('updated')],
+        columnValues: (t) => [t.anInt(42), t.aString('updated')],
       );
 
       expect(updated, isNotNull);
@@ -168,7 +168,7 @@ void main() async {
       var updated = await Types.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.anInt(42), t.aBool(true), t.aString('value')],
+        columnValues: (t) => [t.anInt(42), t.aBool(true), t.aString('value')],
       );
 
       expect(updated, isNotNull);
@@ -185,7 +185,7 @@ void main() async {
       var firstUpdate = await Types.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.anInt(42), t.aString('test')],
+        columnValues: (t) => [t.anInt(42), t.aString('test')],
       );
       expect(firstUpdate!.anInt, 42);
       expect(firstUpdate.aString, 'test');
@@ -194,7 +194,7 @@ void main() async {
       var updated = await Types.db.updateById(
         session,
         existingEntry.id!,
-        (t) => [t.anInt(null), t.aString(null)],
+        columnValues: (t) => [t.anInt(null), t.aString(null)],
       );
 
       expect(updated, isNotNull);

@@ -32,7 +32,7 @@ void main() async {
         () async {
       var updated = await UniqueData.db.updateWhere(
         session,
-        (t) => [t.number(42)],
+        columnValues: (t) => [t.number(42)],
         where: (t) => t.number.equals(1),
       );
 
@@ -48,7 +48,7 @@ void main() async {
         () async {
       var updated = await UniqueData.db.updateWhere(
         session,
-        (t) => [t.number(100)],
+        columnValues: (t) => [t.number(100)],
         where: (t) => t.number.equals(1),
       );
 
@@ -65,7 +65,7 @@ void main() async {
         () async {
       var updated = await UniqueData.db.updateWhere(
         session,
-        (t) => [t.number(200)],
+        columnValues: (t) => [t.number(200)],
         where: (t) => t.number.equals(2) | t.number.equals(3),
       );
 
@@ -99,7 +99,7 @@ void main() async {
         () async {
       var updated = await UniqueData.db.updateWhere(
         session,
-        (t) => [t.number(999)],
+        columnValues: (t) => [t.number(999)],
         where: (t) => t.number.equals(999),
       );
 
@@ -149,7 +149,7 @@ void main() async {
         () async {
       var updated = await Types.db.updateWhere(
         session,
-        (t) => [t.anInt(42), t.aString('updated')],
+        columnValues: (t) => [t.anInt(42), t.aString('updated')],
         where: (t) => t.anInt.equals(1),
       );
 
@@ -200,7 +200,7 @@ void main() async {
         () async {
       var updated = await Types.db.updateWhere(
         session,
-        (t) => [t.anInt(99), t.aString('was_null')],
+        columnValues: (t) => [t.anInt(99), t.aString('was_null')],
         where: (t) => t.anInt.equals(null),
       );
 
