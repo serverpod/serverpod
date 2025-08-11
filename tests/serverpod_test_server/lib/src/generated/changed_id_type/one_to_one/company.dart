@@ -402,31 +402,31 @@ class CompanyUuidRepository {
     );
   }
 
-  /// Updates a single [CompanyUuid] by its [id] with the specified [columns].
+  /// Updates a single [CompanyUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CompanyUuid?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<CompanyUuidTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<CompanyUuidTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CompanyUuid>(
       id,
-      columns(CompanyUuid.t),
+      columnValues: columnValues(CompanyUuid.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CompanyUuid]s matching the [where] expression with the specified [columns].
+  /// Updates all [CompanyUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CompanyUuid>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CompanyUuidTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CompanyUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<CompanyUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CompanyUuid>(
-      columns(CompanyUuid.t),
+      columnValues: columnValues(CompanyUuid.t),
       where: where(CompanyUuid.t),
       transaction: transaction,
     );

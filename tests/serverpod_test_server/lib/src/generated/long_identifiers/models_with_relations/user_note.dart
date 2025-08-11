@@ -383,31 +383,31 @@ class UserNoteRepository {
     );
   }
 
-  /// Updates a single [UserNote] by its [id] with the specified [columns].
+  /// Updates a single [UserNote] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserNote?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UserNoteTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNote>(
       id,
-      columns(UserNote.t),
+      columnValues: columnValues(UserNote.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserNote]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserNote]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserNote>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserNoteTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteTable> columnValues,
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNote>(
-      columns(UserNote.t),
+      columnValues: columnValues(UserNote.t),
       where: where(UserNote.t),
       transaction: transaction,
     );

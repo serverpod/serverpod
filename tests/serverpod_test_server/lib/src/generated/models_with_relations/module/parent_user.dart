@@ -347,31 +347,31 @@ class ParentUserRepository {
     );
   }
 
-  /// Updates a single [ParentUser] by its [id] with the specified [columns].
+  /// Updates a single [ParentUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ParentUser?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ParentUserTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ParentUserTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ParentUser>(
       id,
-      columns(ParentUser.t),
+      columnValues: columnValues(ParentUser.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ParentUser]s matching the [where] expression with the specified [columns].
+  /// Updates all [ParentUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ParentUser>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ParentUserTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ParentUserTable> columnValues,
     required _i1.WhereExpressionBuilder<ParentUserTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ParentUser>(
-      columns(ParentUser.t),
+      columnValues: columnValues(ParentUser.t),
       where: where(ParentUser.t),
       transaction: transaction,
     );

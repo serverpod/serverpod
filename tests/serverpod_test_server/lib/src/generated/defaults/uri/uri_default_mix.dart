@@ -383,31 +383,31 @@ class UriDefaultMixRepository {
     );
   }
 
-  /// Updates a single [UriDefaultMix] by its [id] with the specified [columns].
+  /// Updates a single [UriDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UriDefaultMix?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UriDefaultMixTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UriDefaultMixTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultMix>(
       id,
-      columns(UriDefaultMix.t),
+      columnValues: columnValues(UriDefaultMix.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UriDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Updates all [UriDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UriDefaultMix>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UriDefaultMixTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UriDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefaultMix>(
-      columns(UriDefaultMix.t),
+      columnValues: columnValues(UriDefaultMix.t),
       where: where(UriDefaultMix.t),
       transaction: transaction,
     );

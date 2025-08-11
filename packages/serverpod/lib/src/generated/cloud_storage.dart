@@ -442,31 +442,31 @@ class CloudStorageEntryRepository {
     );
   }
 
-  /// Updates a single [CloudStorageEntry] by its [id] with the specified [columns].
+  /// Updates a single [CloudStorageEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageEntry?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CloudStorageEntryTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CloudStorageEntryTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageEntry>(
       id,
-      columns(CloudStorageEntry.t),
+      columnValues: columnValues(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CloudStorageEntry]s matching the [where] expression with the specified [columns].
+  /// Updates all [CloudStorageEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CloudStorageEntry>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CloudStorageEntryTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CloudStorageEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CloudStorageEntry>(
-      columns(CloudStorageEntry.t),
+      columnValues: columnValues(CloudStorageEntry.t),
       where: where(CloudStorageEntry.t),
       transaction: transaction,
     );

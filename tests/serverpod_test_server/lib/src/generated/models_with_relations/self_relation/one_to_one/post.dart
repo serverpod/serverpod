@@ -450,31 +450,31 @@ class PostRepository {
     );
   }
 
-  /// Updates a single [Post] by its [id] with the specified [columns].
+  /// Updates a single [Post] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Post?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<PostTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<PostTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Post>(
       id,
-      columns(Post.t),
+      columnValues: columnValues(Post.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Post]s matching the [where] expression with the specified [columns].
+  /// Updates all [Post]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Post>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<PostTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PostTable> columnValues,
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Post>(
-      columns(Post.t),
+      columnValues: columnValues(Post.t),
       where: where(Post.t),
       transaction: transaction,
     );

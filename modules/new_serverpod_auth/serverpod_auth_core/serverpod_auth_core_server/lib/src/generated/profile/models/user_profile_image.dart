@@ -468,31 +468,31 @@ class UserProfileImageRepository {
     );
   }
 
-  /// Updates a single [UserProfileImage] by its [id] with the specified [columns].
+  /// Updates a single [UserProfileImage] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserProfileImage?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<UserProfileImageTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfileImage>(
       id,
-      columns(UserProfileImage.t),
+      columnValues: columnValues(UserProfileImage.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserProfileImage>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserProfileImageTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
-      columns(UserProfileImage.t),
+      columnValues: columnValues(UserProfileImage.t),
       where: where(UserProfileImage.t),
       transaction: transaction,
     );

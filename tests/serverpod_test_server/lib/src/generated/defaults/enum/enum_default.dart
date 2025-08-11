@@ -416,31 +416,31 @@ class EnumDefaultRepository {
     );
   }
 
-  /// Updates a single [EnumDefault] by its [id] with the specified [columns].
+  /// Updates a single [EnumDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefault?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<EnumDefaultTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefault>(
       id,
-      columns(EnumDefault.t),
+      columnValues: columnValues(EnumDefault.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EnumDefault]s matching the [where] expression with the specified [columns].
+  /// Updates all [EnumDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EnumDefault>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EnumDefaultTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefault>(
-      columns(EnumDefault.t),
+      columnValues: columnValues(EnumDefault.t),
       where: where(EnumDefault.t),
       transaction: transaction,
     );

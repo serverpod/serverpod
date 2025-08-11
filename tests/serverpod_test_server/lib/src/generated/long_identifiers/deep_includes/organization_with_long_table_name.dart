@@ -485,32 +485,34 @@ class OrganizationWithLongTableNameRepository {
     );
   }
 
-  /// Updates a single [OrganizationWithLongTableName] by its [id] with the specified [columns].
+  /// Updates a single [OrganizationWithLongTableName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<OrganizationWithLongTableName?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<OrganizationWithLongTableName>(
       id,
-      columns(OrganizationWithLongTableName.t),
+      columnValues: columnValues(OrganizationWithLongTableName.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [OrganizationWithLongTableName]s matching the [where] expression with the specified [columns].
+  /// Updates all [OrganizationWithLongTableName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<OrganizationWithLongTableName>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrganizationWithLongTableName>(
-      columns(OrganizationWithLongTableName.t),
+      columnValues: columnValues(OrganizationWithLongTableName.t),
       where: where(OrganizationWithLongTableName.t),
       transaction: transaction,
     );

@@ -353,31 +353,31 @@ class StringDefaultRepository {
     );
   }
 
-  /// Updates a single [StringDefault] by its [id] with the specified [columns].
+  /// Updates a single [StringDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<StringDefault?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<StringDefaultTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<StringDefaultTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefault>(
       id,
-      columns(StringDefault.t),
+      columnValues: columnValues(StringDefault.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [StringDefault]s matching the [where] expression with the specified [columns].
+  /// Updates all [StringDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<StringDefault>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<StringDefaultTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StringDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefault>(
-      columns(StringDefault.t),
+      columnValues: columnValues(StringDefault.t),
       where: where(StringDefault.t),
       transaction: transaction,
     );

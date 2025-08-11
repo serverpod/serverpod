@@ -452,31 +452,31 @@ class MigratedUserRepository {
     );
   }
 
-  /// Updates a single [MigratedUser] by its [id] with the specified [columns].
+  /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MigratedUser?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<MigratedUserTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MigratedUser>(
       id,
-      columns(MigratedUser.t),
+      columnValues: columnValues(MigratedUser.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [MigratedUser]s matching the [where] expression with the specified [columns].
+  /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MigratedUser>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<MigratedUserTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MigratedUser>(
-      columns(MigratedUser.t),
+      columnValues: columnValues(MigratedUser.t),
       where: where(MigratedUser.t),
       transaction: transaction,
     );

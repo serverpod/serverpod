@@ -333,31 +333,31 @@ class SimpleDateTimeRepository {
     );
   }
 
-  /// Updates a single [SimpleDateTime] by its [id] with the specified [columns].
+  /// Updates a single [SimpleDateTime] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SimpleDateTime?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<SimpleDateTimeTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SimpleDateTime>(
       id,
-      columns(SimpleDateTime.t),
+      columnValues: columnValues(SimpleDateTime.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [SimpleDateTime]s matching the [where] expression with the specified [columns].
+  /// Updates all [SimpleDateTime]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<SimpleDateTime>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<SimpleDateTimeTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SimpleDateTime>(
-      columns(SimpleDateTime.t),
+      columnValues: columnValues(SimpleDateTime.t),
       where: where(SimpleDateTime.t),
       transaction: transaction,
     );

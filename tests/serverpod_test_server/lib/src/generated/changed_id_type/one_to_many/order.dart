@@ -475,31 +475,31 @@ class OrderUuidRepository {
     );
   }
 
-  /// Updates a single [OrderUuid] by its [id] with the specified [columns].
+  /// Updates a single [OrderUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<OrderUuid?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<OrderUuidTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<OrderUuidTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<OrderUuid>(
       id,
-      columns(OrderUuid.t),
+      columnValues: columnValues(OrderUuid.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [OrderUuid]s matching the [where] expression with the specified [columns].
+  /// Updates all [OrderUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<OrderUuid>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<OrderUuidTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrderUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrderUuid>(
-      columns(OrderUuid.t),
+      columnValues: columnValues(OrderUuid.t),
       where: where(OrderUuid.t),
       transaction: transaction,
     );

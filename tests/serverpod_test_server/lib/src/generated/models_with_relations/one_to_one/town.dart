@@ -401,31 +401,31 @@ class TownRepository {
     );
   }
 
-  /// Updates a single [Town] by its [id] with the specified [columns].
+  /// Updates a single [Town] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Town?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<TownTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<TownTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Town>(
       id,
-      columns(Town.t),
+      columnValues: columnValues(Town.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Town]s matching the [where] expression with the specified [columns].
+  /// Updates all [Town]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Town>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<TownTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TownTable> columnValues,
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Town>(
-      columns(Town.t),
+      columnValues: columnValues(Town.t),
       where: where(Town.t),
       transaction: transaction,
     );

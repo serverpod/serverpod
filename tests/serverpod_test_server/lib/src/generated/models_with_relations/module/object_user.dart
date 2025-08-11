@@ -401,31 +401,31 @@ class ObjectUserRepository {
     );
   }
 
-  /// Updates a single [ObjectUser] by its [id] with the specified [columns].
+  /// Updates a single [ObjectUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectUser?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ObjectUserTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectUser>(
       id,
-      columns(ObjectUser.t),
+      columnValues: columnValues(ObjectUser.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ObjectUser]s matching the [where] expression with the specified [columns].
+  /// Updates all [ObjectUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectUser>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ObjectUserTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectUser>(
-      columns(ObjectUser.t),
+      columnValues: columnValues(ObjectUser.t),
       where: where(ObjectUser.t),
       transaction: transaction,
     );

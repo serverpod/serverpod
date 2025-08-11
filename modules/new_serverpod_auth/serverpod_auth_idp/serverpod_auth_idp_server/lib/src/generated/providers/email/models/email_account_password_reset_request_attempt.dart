@@ -389,35 +389,37 @@ class EmailAccountPasswordResetRequestAttemptRepository {
     );
   }
 
-  /// Updates a single [EmailAccountPasswordResetRequestAttempt] by its [id] with the specified [columns].
+  /// Updates a single [EmailAccountPasswordResetRequestAttempt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccountPasswordResetRequestAttempt?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
-        columns, {
+    _i1.UuidValue id, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequestAttempt>(
       id,
-      columns(EmailAccountPasswordResetRequestAttempt.t),
+      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountPasswordResetRequestAttempt]s matching the [where] expression with the specified [columns].
+  /// Updates all [EmailAccountPasswordResetRequestAttempt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequestAttempt>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
-        columns, {
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columnValues,
     required _i1
         .WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequestAttempt>(
-      columns(EmailAccountPasswordResetRequestAttempt.t),
+      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
       where: where(EmailAccountPasswordResetRequestAttempt.t),
       transaction: transaction,
     );

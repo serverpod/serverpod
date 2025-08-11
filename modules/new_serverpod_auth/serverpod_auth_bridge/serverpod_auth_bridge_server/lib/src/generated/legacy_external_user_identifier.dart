@@ -413,32 +413,34 @@ class LegacyExternalUserIdentifierRepository {
     );
   }
 
-  /// Updates a single [LegacyExternalUserIdentifier] by its [id] with the specified [columns].
+  /// Updates a single [LegacyExternalUserIdentifier] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LegacyExternalUserIdentifier?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyExternalUserIdentifier>(
       id,
-      columns(LegacyExternalUserIdentifier.t),
+      columnValues: columnValues(LegacyExternalUserIdentifier.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [LegacyExternalUserIdentifier]s matching the [where] expression with the specified [columns].
+  /// Updates all [LegacyExternalUserIdentifier]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<LegacyExternalUserIdentifier>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacyExternalUserIdentifier>(
-      columns(LegacyExternalUserIdentifier.t),
+      columnValues: columnValues(LegacyExternalUserIdentifier.t),
       where: where(LegacyExternalUserIdentifier.t),
       transaction: transaction,
     );

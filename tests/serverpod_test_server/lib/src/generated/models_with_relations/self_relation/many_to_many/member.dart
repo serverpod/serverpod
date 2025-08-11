@@ -478,31 +478,31 @@ class MemberRepository {
     );
   }
 
-  /// Updates a single [Member] by its [id] with the specified [columns].
+  /// Updates a single [Member] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Member?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<MemberTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<MemberTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Member>(
       id,
-      columns(Member.t),
+      columnValues: columnValues(Member.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Member]s matching the [where] expression with the specified [columns].
+  /// Updates all [Member]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Member>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<MemberTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MemberTable> columnValues,
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Member>(
-      columns(Member.t),
+      columnValues: columnValues(Member.t),
       where: where(Member.t),
       transaction: transaction,
     );

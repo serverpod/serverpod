@@ -401,31 +401,31 @@ class PlayerRepository {
     );
   }
 
-  /// Updates a single [Player] by its [id] with the specified [columns].
+  /// Updates a single [Player] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Player?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<PlayerTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<PlayerTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Player>(
       id,
-      columns(Player.t),
+      columnValues: columnValues(Player.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Player]s matching the [where] expression with the specified [columns].
+  /// Updates all [Player]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Player>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<PlayerTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PlayerTable> columnValues,
     required _i1.WhereExpressionBuilder<PlayerTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Player>(
-      columns(Player.t),
+      columnValues: columnValues(Player.t),
       where: where(Player.t),
       transaction: transaction,
     );

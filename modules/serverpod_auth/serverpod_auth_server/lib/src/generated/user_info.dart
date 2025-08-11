@@ -487,31 +487,31 @@ class UserInfoRepository {
     );
   }
 
-  /// Updates a single [UserInfo] by its [id] with the specified [columns].
+  /// Updates a single [UserInfo] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserInfo?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UserInfoTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UserInfoTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserInfo>(
       id,
-      columns(UserInfo.t),
+      columnValues: columnValues(UserInfo.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserInfo]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserInfo]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserInfo>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserInfoTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserInfoTable> columnValues,
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserInfo>(
-      columns(UserInfo.t),
+      columnValues: columnValues(UserInfo.t),
       where: where(UserInfo.t),
       transaction: transaction,
     );

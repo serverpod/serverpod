@@ -341,31 +341,31 @@ class MaxFieldNameRepository {
     );
   }
 
-  /// Updates a single [MaxFieldName] by its [id] with the specified [columns].
+  /// Updates a single [MaxFieldName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MaxFieldName?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<MaxFieldNameTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<MaxFieldNameTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MaxFieldName>(
       id,
-      columns(MaxFieldName.t),
+      columnValues: columnValues(MaxFieldName.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [MaxFieldName]s matching the [where] expression with the specified [columns].
+  /// Updates all [MaxFieldName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MaxFieldName>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<MaxFieldNameTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MaxFieldNameTable> columnValues,
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MaxFieldName>(
-      columns(MaxFieldName.t),
+      columnValues: columnValues(MaxFieldName.t),
       where: where(MaxFieldName.t),
       transaction: transaction,
     );

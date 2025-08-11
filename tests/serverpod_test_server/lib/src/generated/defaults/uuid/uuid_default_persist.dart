@@ -393,31 +393,31 @@ class UuidDefaultPersistRepository {
     );
   }
 
-  /// Updates a single [UuidDefaultPersist] by its [id] with the specified [columns].
+  /// Updates a single [UuidDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UuidDefaultPersist?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultPersist>(
       id,
-      columns(UuidDefaultPersist.t),
+      columnValues: columnValues(UuidDefaultPersist.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UuidDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Updates all [UuidDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UuidDefaultPersist>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefaultPersist>(
-      columns(UuidDefaultPersist.t),
+      columnValues: columnValues(UuidDefaultPersist.t),
       where: where(UuidDefaultPersist.t),
       transaction: transaction,
     );

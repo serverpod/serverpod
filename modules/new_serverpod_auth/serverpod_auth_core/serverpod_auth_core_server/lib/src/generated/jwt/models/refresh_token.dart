@@ -609,31 +609,31 @@ class RefreshTokenRepository {
     );
   }
 
-  /// Updates a single [RefreshToken] by its [id] with the specified [columns].
+  /// Updates a single [RefreshToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RefreshToken?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<RefreshTokenTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<RefreshTokenTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RefreshToken>(
       id,
-      columns(RefreshToken.t),
+      columnValues: columnValues(RefreshToken.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [RefreshToken]s matching the [where] expression with the specified [columns].
+  /// Updates all [RefreshToken]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RefreshToken>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<RefreshTokenTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RefreshTokenTable> columnValues,
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RefreshToken>(
-      columns(RefreshToken.t),
+      columnValues: columnValues(RefreshToken.t),
       where: where(RefreshToken.t),
       transaction: transaction,
     );

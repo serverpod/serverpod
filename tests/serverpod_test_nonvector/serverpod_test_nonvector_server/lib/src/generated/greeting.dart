@@ -374,31 +374,31 @@ class GreetingRepository {
     );
   }
 
-  /// Updates a single [Greeting] by its [id] with the specified [columns].
+  /// Updates a single [Greeting] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Greeting?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<GreetingTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<GreetingTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Greeting>(
       id,
-      columns(Greeting.t),
+      columnValues: columnValues(Greeting.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Greeting]s matching the [where] expression with the specified [columns].
+  /// Updates all [Greeting]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Greeting>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<GreetingTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<GreetingTable> columnValues,
     required _i1.WhereExpressionBuilder<GreetingTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Greeting>(
-      columns(Greeting.t),
+      columnValues: columnValues(Greeting.t),
       where: where(Greeting.t),
       transaction: transaction,
     );

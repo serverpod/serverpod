@@ -474,31 +474,31 @@ class OrderRepository {
     );
   }
 
-  /// Updates a single [Order] by its [id] with the specified [columns].
+  /// Updates a single [Order] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Order?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<OrderTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<OrderTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Order>(
       id,
-      columns(Order.t),
+      columnValues: columnValues(Order.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Order]s matching the [where] expression with the specified [columns].
+  /// Updates all [Order]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Order>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<OrderTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrderTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Order>(
-      columns(Order.t),
+      columnValues: columnValues(Order.t),
       where: where(Order.t),
       transaction: transaction,
     );

@@ -456,31 +456,31 @@ class GoogleAccountRepository {
     );
   }
 
-  /// Updates a single [GoogleAccount] by its [id] with the specified [columns].
+  /// Updates a single [GoogleAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GoogleAccount?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<GoogleAccountTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<GoogleAccountTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<GoogleAccount>(
       id,
-      columns(GoogleAccount.t),
+      columnValues: columnValues(GoogleAccount.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [GoogleAccount]s matching the [where] expression with the specified [columns].
+  /// Updates all [GoogleAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<GoogleAccount>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<GoogleAccountTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<GoogleAccountTable> columnValues,
     required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<GoogleAccount>(
-      columns(GoogleAccount.t),
+      columnValues: columnValues(GoogleAccount.t),
       where: where(GoogleAccount.t),
       transaction: transaction,
     );

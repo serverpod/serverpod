@@ -477,31 +477,31 @@ class CatRepository {
     );
   }
 
-  /// Updates a single [Cat] by its [id] with the specified [columns].
+  /// Updates a single [Cat] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Cat?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CatTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CatTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Cat>(
       id,
-      columns(Cat.t),
+      columnValues: columnValues(Cat.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Cat]s matching the [where] expression with the specified [columns].
+  /// Updates all [Cat]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Cat>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CatTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CatTable> columnValues,
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Cat>(
-      columns(Cat.t),
+      columnValues: columnValues(Cat.t),
       where: where(Cat.t),
       transaction: transaction,
     );

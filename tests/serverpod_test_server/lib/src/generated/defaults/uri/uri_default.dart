@@ -355,31 +355,31 @@ class UriDefaultRepository {
     );
   }
 
-  /// Updates a single [UriDefault] by its [id] with the specified [columns].
+  /// Updates a single [UriDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UriDefault?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UriDefaultTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefault>(
       id,
-      columns(UriDefault.t),
+      columnValues: columnValues(UriDefault.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UriDefault]s matching the [where] expression with the specified [columns].
+  /// Updates all [UriDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UriDefault>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UriDefaultTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefault>(
-      columns(UriDefault.t),
+      columnValues: columnValues(UriDefault.t),
       where: where(UriDefault.t),
       transaction: transaction,
     );

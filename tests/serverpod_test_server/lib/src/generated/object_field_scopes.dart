@@ -359,31 +359,31 @@ class ObjectFieldScopesRepository {
     );
   }
 
-  /// Updates a single [ObjectFieldScopes] by its [id] with the specified [columns].
+  /// Updates a single [ObjectFieldScopes] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectFieldScopes?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
       id,
-      columns(ObjectFieldScopes.t),
+      columnValues: columnValues(ObjectFieldScopes.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ObjectFieldScopes]s matching the [where] expression with the specified [columns].
+  /// Updates all [ObjectFieldScopes]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectFieldScopes>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldScopes>(
-      columns(ObjectFieldScopes.t),
+      columnValues: columnValues(ObjectFieldScopes.t),
       where: where(ObjectFieldScopes.t),
       transaction: transaction,
     );

@@ -357,31 +357,31 @@ class ObjectFieldPersistRepository {
     );
   }
 
-  /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columns].
+  /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectFieldPersist?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldPersist>(
       id,
-      columns(ObjectFieldPersist.t),
+      columnValues: columnValues(ObjectFieldPersist.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columns].
+  /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectFieldPersist>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
-      columns(ObjectFieldPersist.t),
+      columnValues: columnValues(ObjectFieldPersist.t),
       where: where(ObjectFieldPersist.t),
       transaction: transaction,
     );

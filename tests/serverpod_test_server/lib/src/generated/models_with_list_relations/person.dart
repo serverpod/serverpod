@@ -457,31 +457,31 @@ class PersonRepository {
     );
   }
 
-  /// Updates a single [Person] by its [id] with the specified [columns].
+  /// Updates a single [Person] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Person?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<PersonTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<PersonTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Person>(
       id,
-      columns(Person.t),
+      columnValues: columnValues(Person.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Person]s matching the [where] expression with the specified [columns].
+  /// Updates all [Person]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Person>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<PersonTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PersonTable> columnValues,
     required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Person>(
-      columns(Person.t),
+      columnValues: columnValues(Person.t),
       where: where(Person.t),
       transaction: transaction,
     );

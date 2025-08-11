@@ -406,31 +406,31 @@ class RuntimeSettingsRepository {
     );
   }
 
-  /// Updates a single [RuntimeSettings] by its [id] with the specified [columns].
+  /// Updates a single [RuntimeSettings] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RuntimeSettings?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<RuntimeSettingsTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RuntimeSettings>(
       id,
-      columns(RuntimeSettings.t),
+      columnValues: columnValues(RuntimeSettings.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columns].
+  /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RuntimeSettings>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<RuntimeSettingsTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
-      columns(RuntimeSettings.t),
+      columnValues: columnValues(RuntimeSettings.t),
       where: where(RuntimeSettings.t),
       transaction: transaction,
     );

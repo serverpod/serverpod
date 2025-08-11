@@ -357,31 +357,31 @@ class ScopeNoneFieldsRepository {
     );
   }
 
-  /// Updates a single [ScopeNoneFields] by its [id] with the specified [columns].
+  /// Updates a single [ScopeNoneFields] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ScopeNoneFields?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ScopeNoneFields>(
       id,
-      columns(ScopeNoneFields.t),
+      columnValues: columnValues(ScopeNoneFields.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ScopeNoneFields]s matching the [where] expression with the specified [columns].
+  /// Updates all [ScopeNoneFields]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ScopeNoneFields>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ScopeNoneFields>(
-      columns(ScopeNoneFields.t),
+      columnValues: columnValues(ScopeNoneFields.t),
       where: where(ScopeNoneFields.t),
       transaction: transaction,
     );
