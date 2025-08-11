@@ -174,14 +174,14 @@ class Database {
   /// Returns the updated row or null if no row with the given id exists.
   @internal
   Future<T?> updateById<T extends TableRow>(
-    Object id,
-    List<ColumnValue> columnValues, {
+    Object id, {
+    required List<ColumnValue> columnValues,
     Transaction? transaction,
   }) async {
     return _databaseConnection.updateById<T>(
       _session,
       id,
-      columnValues,
+      columnValues: columnValues,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
     );
@@ -190,14 +190,14 @@ class Database {
   /// Updates all [TableRow]s matching the [where] expression with the specified column values.
   /// Returns the list of updated rows.
   @internal
-  Future<List<T>> updateWhere<T extends TableRow>(
-    List<ColumnValue> columnValues, {
+  Future<List<T>> updateWhere<T extends TableRow>({
+    required List<ColumnValue> columnValues,
     required Expression where,
     Transaction? transaction,
   }) async {
     return _databaseConnection.updateWhere<T>(
       _session,
-      columnValues,
+      columnValues: columnValues,
       where: where,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
