@@ -460,32 +460,34 @@ class EmailAccountPasswordResetRequestRepository {
     );
   }
 
-  /// Updates a single [EmailAccountPasswordResetRequest] by its [id] with the specified [columns].
+  /// Updates a single [EmailAccountPasswordResetRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccountPasswordResetRequest?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequest>(
       id,
-      columns(EmailAccountPasswordResetRequest.t),
+      columnValues: columnValues(EmailAccountPasswordResetRequest.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountPasswordResetRequest]s matching the [where] expression with the specified [columns].
+  /// Updates all [EmailAccountPasswordResetRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequest>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
-      columns(EmailAccountPasswordResetRequest.t),
+      columnValues: columnValues(EmailAccountPasswordResetRequest.t),
       where: where(EmailAccountPasswordResetRequest.t),
       transaction: transaction,
     );

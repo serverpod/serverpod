@@ -424,32 +424,34 @@ class RelationToMultipleMaxFieldNameRepository {
     );
   }
 
-  /// Updates a single [RelationToMultipleMaxFieldName] by its [id] with the specified [columns].
+  /// Updates a single [RelationToMultipleMaxFieldName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RelationToMultipleMaxFieldName?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelationToMultipleMaxFieldName>(
       id,
-      columns(RelationToMultipleMaxFieldName.t),
+      columnValues: columnValues(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [RelationToMultipleMaxFieldName]s matching the [where] expression with the specified [columns].
+  /// Updates all [RelationToMultipleMaxFieldName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RelationToMultipleMaxFieldName>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelationToMultipleMaxFieldName>(
-      columns(RelationToMultipleMaxFieldName.t),
+      columnValues: columnValues(RelationToMultipleMaxFieldName.t),
       where: where(RelationToMultipleMaxFieldName.t),
       transaction: transaction,
     );

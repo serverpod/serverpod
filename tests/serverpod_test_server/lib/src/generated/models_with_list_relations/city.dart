@@ -482,31 +482,31 @@ class CityRepository {
     );
   }
 
-  /// Updates a single [City] by its [id] with the specified [columns].
+  /// Updates a single [City] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<City?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CityTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CityTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<City>(
       id,
-      columns(City.t),
+      columnValues: columnValues(City.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [City]s matching the [where] expression with the specified [columns].
+  /// Updates all [City]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<City>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CityTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CityTable> columnValues,
     required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<City>(
-      columns(City.t),
+      columnValues: columnValues(City.t),
       where: where(City.t),
       transaction: transaction,
     );

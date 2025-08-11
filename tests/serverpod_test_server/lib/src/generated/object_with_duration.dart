@@ -330,31 +330,31 @@ class ObjectWithDurationRepository {
     );
   }
 
-  /// Updates a single [ObjectWithDuration] by its [id] with the specified [columns].
+  /// Updates a single [ObjectWithDuration] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithDuration?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ObjectWithDurationTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithDuration>(
       id,
-      columns(ObjectWithDuration.t),
+      columnValues: columnValues(ObjectWithDuration.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ObjectWithDuration]s matching the [where] expression with the specified [columns].
+  /// Updates all [ObjectWithDuration]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectWithDuration>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ObjectWithDurationTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithDuration>(
-      columns(ObjectWithDuration.t),
+      columnValues: columnValues(ObjectWithDuration.t),
       where: where(ObjectWithDuration.t),
       transaction: transaction,
     );

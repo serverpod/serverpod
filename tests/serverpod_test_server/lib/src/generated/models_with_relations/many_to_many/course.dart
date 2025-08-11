@@ -410,31 +410,31 @@ class CourseRepository {
     );
   }
 
-  /// Updates a single [Course] by its [id] with the specified [columns].
+  /// Updates a single [Course] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Course?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CourseTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CourseTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Course>(
       id,
-      columns(Course.t),
+      columnValues: columnValues(Course.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Course]s matching the [where] expression with the specified [columns].
+  /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Course>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CourseTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CourseTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Course>(
-      columns(Course.t),
+      columnValues: columnValues(Course.t),
       where: where(Course.t),
       transaction: transaction,
     );

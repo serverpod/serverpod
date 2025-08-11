@@ -348,31 +348,31 @@ class ObjectWithIndexRepository {
     );
   }
 
-  /// Updates a single [ObjectWithIndex] by its [id] with the specified [columns].
+  /// Updates a single [ObjectWithIndex] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithIndex?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ObjectWithIndexTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithIndex>(
       id,
-      columns(ObjectWithIndex.t),
+      columnValues: columnValues(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ObjectWithIndex]s matching the [where] expression with the specified [columns].
+  /// Updates all [ObjectWithIndex]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectWithIndex>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ObjectWithIndexTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithIndex>(
-      columns(ObjectWithIndex.t),
+      columnValues: columnValues(ObjectWithIndex.t),
       where: where(ObjectWithIndex.t),
       transaction: transaction,
     );

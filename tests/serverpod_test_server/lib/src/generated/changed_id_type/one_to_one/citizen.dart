@@ -517,31 +517,31 @@ class CitizenIntRepository {
     );
   }
 
-  /// Updates a single [CitizenInt] by its [id] with the specified [columns].
+  /// Updates a single [CitizenInt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CitizenInt?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CitizenIntTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CitizenInt>(
       id,
-      columns(CitizenInt.t),
+      columnValues: columnValues(CitizenInt.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CitizenInt]s matching the [where] expression with the specified [columns].
+  /// Updates all [CitizenInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CitizenInt>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CitizenIntTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CitizenInt>(
-      columns(CitizenInt.t),
+      columnValues: columnValues(CitizenInt.t),
       where: where(CitizenInt.t),
       transaction: transaction,
     );

@@ -418,31 +418,31 @@ class FutureCallEntryRepository {
     );
   }
 
-  /// Updates a single [FutureCallEntry] by its [id] with the specified [columns].
+  /// Updates a single [FutureCallEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FutureCallEntry?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<FutureCallEntryTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallEntry>(
       id,
-      columns(FutureCallEntry.t),
+      columnValues: columnValues(FutureCallEntry.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [FutureCallEntry]s matching the [where] expression with the specified [columns].
+  /// Updates all [FutureCallEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<FutureCallEntry>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<FutureCallEntryTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<FutureCallEntry>(
-      columns(FutureCallEntry.t),
+      columnValues: columnValues(FutureCallEntry.t),
       where: where(FutureCallEntry.t),
       transaction: transaction,
     );

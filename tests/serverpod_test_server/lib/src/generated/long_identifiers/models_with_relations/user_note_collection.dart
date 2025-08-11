@@ -420,31 +420,31 @@ class UserNoteCollectionRepository {
     );
   }
 
-  /// Updates a single [UserNoteCollection] by its [id] with the specified [columns].
+  /// Updates a single [UserNoteCollection] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserNoteCollection?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UserNoteCollectionTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteCollection>(
       id,
-      columns(UserNoteCollection.t),
+      columnValues: columnValues(UserNoteCollection.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserNoteCollection>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserNoteCollectionTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteCollection>(
-      columns(UserNoteCollection.t),
+      columnValues: columnValues(UserNoteCollection.t),
       where: where(UserNoteCollection.t),
       transaction: transaction,
     );

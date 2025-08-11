@@ -396,31 +396,31 @@ class EnumDefaultMixRepository {
     );
   }
 
-  /// Updates a single [EnumDefaultMix] by its [id] with the specified [columns].
+  /// Updates a single [EnumDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefaultMix?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<EnumDefaultMixTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultMix>(
       id,
-      columns(EnumDefaultMix.t),
+      columnValues: columnValues(EnumDefaultMix.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EnumDefaultMix>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EnumDefaultMixTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
-      columns(EnumDefaultMix.t),
+      columnValues: columnValues(EnumDefaultMix.t),
       where: where(EnumDefaultMix.t),
       transaction: transaction,
     );

@@ -407,31 +407,31 @@ class StudentRepository {
     );
   }
 
-  /// Updates a single [Student] by its [id] with the specified [columns].
+  /// Updates a single [Student] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Student?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<StudentTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<StudentTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Student>(
       id,
-      columns(Student.t),
+      columnValues: columnValues(Student.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Student]s matching the [where] expression with the specified [columns].
+  /// Updates all [Student]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Student>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<StudentTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StudentTable> columnValues,
     required _i1.WhereExpressionBuilder<StudentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Student>(
-      columns(Student.t),
+      columnValues: columnValues(Student.t),
       where: where(Student.t),
       transaction: transaction,
     );

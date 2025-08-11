@@ -525,31 +525,31 @@ class MessageLogEntryRepository {
     );
   }
 
-  /// Updates a single [MessageLogEntry] by its [id] with the specified [columns].
+  /// Updates a single [MessageLogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MessageLogEntry?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<MessageLogEntryTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MessageLogEntry>(
       id,
-      columns(MessageLogEntry.t),
+      columnValues: columnValues(MessageLogEntry.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [MessageLogEntry]s matching the [where] expression with the specified [columns].
+  /// Updates all [MessageLogEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MessageLogEntry>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<MessageLogEntryTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
-      columns(MessageLogEntry.t),
+      columnValues: columnValues(MessageLogEntry.t),
       where: where(MessageLogEntry.t),
       transaction: transaction,
     );

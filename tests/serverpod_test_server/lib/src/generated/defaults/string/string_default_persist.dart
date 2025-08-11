@@ -588,31 +588,31 @@ class StringDefaultPersistRepository {
     );
   }
 
-  /// Updates a single [StringDefaultPersist] by its [id] with the specified [columns].
+  /// Updates a single [StringDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<StringDefaultPersist?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<StringDefaultPersistTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<StringDefaultPersistTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultPersist>(
       id,
-      columns(StringDefaultPersist.t),
+      columnValues: columnValues(StringDefaultPersist.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [StringDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Updates all [StringDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<StringDefaultPersist>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<StringDefaultPersistTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StringDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultPersist>(
-      columns(StringDefaultPersist.t),
+      columnValues: columnValues(StringDefaultPersist.t),
       where: where(StringDefaultPersist.t),
       transaction: transaction,
     );

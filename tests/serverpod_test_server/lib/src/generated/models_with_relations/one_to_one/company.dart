@@ -400,31 +400,31 @@ class CompanyRepository {
     );
   }
 
-  /// Updates a single [Company] by its [id] with the specified [columns].
+  /// Updates a single [Company] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Company?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CompanyTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CompanyTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Company>(
       id,
-      columns(Company.t),
+      columnValues: columnValues(Company.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Company]s matching the [where] expression with the specified [columns].
+  /// Updates all [Company]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Company>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CompanyTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CompanyTable> columnValues,
     required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Company>(
-      columns(Company.t),
+      columnValues: columnValues(Company.t),
       where: where(Company.t),
       transaction: transaction,
     );

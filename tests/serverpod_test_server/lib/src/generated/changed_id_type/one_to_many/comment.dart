@@ -401,31 +401,31 @@ class CommentIntRepository {
     );
   }
 
-  /// Updates a single [CommentInt] by its [id] with the specified [columns].
+  /// Updates a single [CommentInt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CommentInt?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CommentIntTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CommentInt>(
       id,
-      columns(CommentInt.t),
+      columnValues: columnValues(CommentInt.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CommentInt]s matching the [where] expression with the specified [columns].
+  /// Updates all [CommentInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CommentInt>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CommentIntTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
     required _i1.WhereExpressionBuilder<CommentIntTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CommentInt>(
-      columns(CommentInt.t),
+      columnValues: columnValues(CommentInt.t),
       where: where(CommentInt.t),
       transaction: transaction,
     );

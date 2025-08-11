@@ -384,31 +384,31 @@ class DateTimeDefaultModelRepository {
     );
   }
 
-  /// Updates a single [DateTimeDefaultModel] by its [id] with the specified [columns].
+  /// Updates a single [DateTimeDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DateTimeDefaultModel?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefaultModel>(
       id,
-      columns(DateTimeDefaultModel.t),
+      columnValues: columnValues(DateTimeDefaultModel.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [DateTimeDefaultModel]s matching the [where] expression with the specified [columns].
+  /// Updates all [DateTimeDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<DateTimeDefaultModel>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DateTimeDefaultModel>(
-      columns(DateTimeDefaultModel.t),
+      columnValues: columnValues(DateTimeDefaultModel.t),
       where: where(DateTimeDefaultModel.t),
       transaction: transaction,
     );

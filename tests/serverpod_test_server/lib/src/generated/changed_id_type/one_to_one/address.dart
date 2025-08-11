@@ -404,31 +404,31 @@ class AddressUuidRepository {
     );
   }
 
-  /// Updates a single [AddressUuid] by its [id] with the specified [columns].
+  /// Updates a single [AddressUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AddressUuid?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<AddressUuidTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AddressUuid>(
       id,
-      columns(AddressUuid.t),
+      columnValues: columnValues(AddressUuid.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [AddressUuid]s matching the [where] expression with the specified [columns].
+  /// Updates all [AddressUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AddressUuid>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<AddressUuidTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AddressUuid>(
-      columns(AddressUuid.t),
+      columnValues: columnValues(AddressUuid.t),
       where: where(AddressUuid.t),
       transaction: transaction,
     );

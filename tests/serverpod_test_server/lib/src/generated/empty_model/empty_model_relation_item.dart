@@ -381,31 +381,33 @@ class EmptyModelRelationItemRepository {
     );
   }
 
-  /// Updates a single [EmptyModelRelationItem] by its [id] with the specified [columns].
+  /// Updates a single [EmptyModelRelationItem] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmptyModelRelationItem?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<EmptyModelRelationItemTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelRelationItem>(
       id,
-      columns(EmptyModelRelationItem.t),
+      columnValues: columnValues(EmptyModelRelationItem.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmptyModelRelationItem]s matching the [where] expression with the specified [columns].
+  /// Updates all [EmptyModelRelationItem]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmptyModelRelationItem>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EmptyModelRelationItemTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmptyModelRelationItem>(
-      columns(EmptyModelRelationItem.t),
+      columnValues: columnValues(EmptyModelRelationItem.t),
       where: where(EmptyModelRelationItem.t),
       transaction: transaction,
     );

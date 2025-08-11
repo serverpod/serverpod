@@ -478,31 +478,31 @@ class OrganizationRepository {
     );
   }
 
-  /// Updates a single [Organization] by its [id] with the specified [columns].
+  /// Updates a single [Organization] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Organization?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<OrganizationTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Organization>(
       id,
-      columns(Organization.t),
+      columnValues: columnValues(Organization.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Organization]s matching the [where] expression with the specified [columns].
+  /// Updates all [Organization]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Organization>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<OrganizationTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Organization>(
-      columns(Organization.t),
+      columnValues: columnValues(Organization.t),
       where: where(Organization.t),
       transaction: transaction,
     );

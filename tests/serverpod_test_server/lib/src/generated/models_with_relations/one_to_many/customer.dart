@@ -410,31 +410,31 @@ class CustomerRepository {
     );
   }
 
-  /// Updates a single [Customer] by its [id] with the specified [columns].
+  /// Updates a single [Customer] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Customer?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CustomerTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Customer>(
       id,
-      columns(Customer.t),
+      columnValues: columnValues(Customer.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Customer]s matching the [where] expression with the specified [columns].
+  /// Updates all [Customer]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Customer>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CustomerTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Customer>(
-      columns(Customer.t),
+      columnValues: columnValues(Customer.t),
       where: where(Customer.t),
       transaction: transaction,
     );

@@ -385,31 +385,33 @@ class UserNoteWithALongNameRepository {
     );
   }
 
-  /// Updates a single [UserNoteWithALongName] by its [id] with the specified [columns].
+  /// Updates a single [UserNoteWithALongName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserNoteWithALongName?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<UserNoteWithALongNameTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteWithALongNameTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteWithALongName>(
       id,
-      columns(UserNoteWithALongName.t),
+      columnValues: columnValues(UserNoteWithALongName.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserNoteWithALongName]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserNoteWithALongName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserNoteWithALongName>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserNoteWithALongNameTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteWithALongNameTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteWithALongName>(
-      columns(UserNoteWithALongName.t),
+      columnValues: columnValues(UserNoteWithALongName.t),
       where: where(UserNoteWithALongName.t),
       transaction: transaction,
     );

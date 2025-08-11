@@ -403,31 +403,31 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  /// Updates a single [RelatedUniqueData] by its [id] with the specified [columns].
+  /// Updates a single [RelatedUniqueData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RelatedUniqueData?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
       id,
-      columns(RelatedUniqueData.t),
+      columnValues: columnValues(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [RelatedUniqueData]s matching the [where] expression with the specified [columns].
+  /// Updates all [RelatedUniqueData]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RelatedUniqueData>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelatedUniqueData>(
-      columns(RelatedUniqueData.t),
+      columnValues: columnValues(RelatedUniqueData.t),
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );

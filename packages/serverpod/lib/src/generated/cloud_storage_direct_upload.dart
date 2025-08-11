@@ -397,32 +397,34 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
-  /// Updates a single [CloudStorageDirectUploadEntry] by its [id] with the specified [columns].
+  /// Updates a single [CloudStorageDirectUploadEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageDirectUploadEntry?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CloudStorageDirectUploadEntryTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CloudStorageDirectUploadEntryTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageDirectUploadEntry>(
       id,
-      columns(CloudStorageDirectUploadEntry.t),
+      columnValues: columnValues(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CloudStorageDirectUploadEntry]s matching the [where] expression with the specified [columns].
+  /// Updates all [CloudStorageDirectUploadEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CloudStorageDirectUploadEntry>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CloudStorageDirectUploadEntryTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CloudStorageDirectUploadEntryTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
         where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CloudStorageDirectUploadEntry>(
-      columns(CloudStorageDirectUploadEntry.t),
+      columnValues: columnValues(CloudStorageDirectUploadEntry.t),
       where: where(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );

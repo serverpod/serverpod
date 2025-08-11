@@ -379,31 +379,31 @@ class BoolDefaultMixRepository {
     );
   }
 
-  /// Updates a single [BoolDefaultMix] by its [id] with the specified [columns].
+  /// Updates a single [BoolDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BoolDefaultMix?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<BoolDefaultMixTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultMix>(
       id,
-      columns(BoolDefaultMix.t),
+      columnValues: columnValues(BoolDefaultMix.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [BoolDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Updates all [BoolDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<BoolDefaultMix>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<BoolDefaultMixTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultMix>(
-      columns(BoolDefaultMix.t),
+      columnValues: columnValues(BoolDefaultMix.t),
       where: where(BoolDefaultMix.t),
       transaction: transaction,
     );

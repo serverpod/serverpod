@@ -548,31 +548,31 @@ class UserProfileRepository {
     );
   }
 
-  /// Updates a single [UserProfile] by its [id] with the specified [columns].
+  /// Updates a single [UserProfile] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserProfile?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<UserProfileTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<UserProfileTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfile>(
       id,
-      columns(UserProfile.t),
+      columnValues: columnValues(UserProfile.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [UserProfile]s matching the [where] expression with the specified [columns].
+  /// Updates all [UserProfile]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserProfile>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<UserProfileTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserProfileTable> columnValues,
     required _i1.WhereExpressionBuilder<UserProfileTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserProfile>(
-      columns(UserProfile.t),
+      columnValues: columnValues(UserProfile.t),
       where: where(UserProfile.t),
       transaction: transaction,
     );

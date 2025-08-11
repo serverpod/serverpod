@@ -449,31 +449,31 @@ class LegacySessionRepository {
     );
   }
 
-  /// Updates a single [LegacySession] by its [id] with the specified [columns].
+  /// Updates a single [LegacySession] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LegacySession?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<LegacySessionTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<LegacySessionTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacySession>(
       id,
-      columns(LegacySession.t),
+      columnValues: columnValues(LegacySession.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [LegacySession]s matching the [where] expression with the specified [columns].
+  /// Updates all [LegacySession]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<LegacySession>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<LegacySessionTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LegacySessionTable> columnValues,
     required _i1.WhereExpressionBuilder<LegacySessionTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacySession>(
-      columns(LegacySession.t),
+      columnValues: columnValues(LegacySession.t),
       where: where(LegacySession.t),
       transaction: transaction,
     );

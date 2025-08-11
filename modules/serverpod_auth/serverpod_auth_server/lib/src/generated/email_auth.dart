@@ -374,31 +374,31 @@ class EmailAuthRepository {
     );
   }
 
-  /// Updates a single [EmailAuth] by its [id] with the specified [columns].
+  /// Updates a single [EmailAuth] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAuth?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<EmailAuthTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAuth>(
       id,
-      columns(EmailAuth.t),
+      columnValues: columnValues(EmailAuth.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAuth]s matching the [where] expression with the specified [columns].
+  /// Updates all [EmailAuth]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailAuth>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EmailAuthTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAuth>(
-      columns(EmailAuth.t),
+      columnValues: columnValues(EmailAuth.t),
       where: where(EmailAuth.t),
       transaction: transaction,
     );

@@ -478,31 +478,31 @@ class EmailAccountRequestRepository {
     );
   }
 
-  /// Updates a single [EmailAccountRequest] by its [id] with the specified [columns].
+  /// Updates a single [EmailAccountRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccountRequest?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<EmailAccountRequestTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<EmailAccountRequestTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountRequest>(
       id,
-      columns(EmailAccountRequest.t),
+      columnValues: columnValues(EmailAccountRequest.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountRequest]s matching the [where] expression with the specified [columns].
+  /// Updates all [EmailAccountRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailAccountRequest>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EmailAccountRequestTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAccountRequestTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountRequest>(
-      columns(EmailAccountRequest.t),
+      columnValues: columnValues(EmailAccountRequest.t),
       where: where(EmailAccountRequest.t),
       transaction: transaction,
     );

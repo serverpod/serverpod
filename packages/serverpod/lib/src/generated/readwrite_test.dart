@@ -333,31 +333,31 @@ class ReadWriteTestEntryRepository {
     );
   }
 
-  /// Updates a single [ReadWriteTestEntry] by its [id] with the specified [columns].
+  /// Updates a single [ReadWriteTestEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ReadWriteTestEntry?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ReadWriteTestEntry>(
       id,
-      columns(ReadWriteTestEntry.t),
+      columnValues: columnValues(ReadWriteTestEntry.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columns].
+  /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ReadWriteTestEntry>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ReadWriteTestEntry>(
-      columns(ReadWriteTestEntry.t),
+      columnValues: columnValues(ReadWriteTestEntry.t),
       where: where(ReadWriteTestEntry.t),
       transaction: transaction,
     );

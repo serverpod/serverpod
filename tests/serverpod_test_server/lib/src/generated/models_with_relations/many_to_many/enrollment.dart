@@ -449,31 +449,31 @@ class EnrollmentRepository {
     );
   }
 
-  /// Updates a single [Enrollment] by its [id] with the specified [columns].
+  /// Updates a single [Enrollment] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Enrollment?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<EnrollmentTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<EnrollmentTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Enrollment>(
       id,
-      columns(Enrollment.t),
+      columnValues: columnValues(Enrollment.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Enrollment]s matching the [where] expression with the specified [columns].
+  /// Updates all [Enrollment]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Enrollment>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<EnrollmentTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnrollmentTable> columnValues,
     required _i1.WhereExpressionBuilder<EnrollmentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Enrollment>(
-      columns(Enrollment.t),
+      columnValues: columnValues(Enrollment.t),
       where: where(Enrollment.t),
       transaction: transaction,
     );

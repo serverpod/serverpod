@@ -758,31 +758,31 @@ class TypesRepository {
     );
   }
 
-  /// Updates a single [Types] by its [id] with the specified [columns].
+  /// Updates a single [Types] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Types?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<TypesTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<TypesTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Types>(
       id,
-      columns(Types.t),
+      columnValues: columnValues(Types.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Types]s matching the [where] expression with the specified [columns].
+  /// Updates all [Types]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Types>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<TypesTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TypesTable> columnValues,
     required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Types>(
-      columns(Types.t),
+      columnValues: columnValues(Types.t),
       where: where(Types.t),
       transaction: transaction,
     );

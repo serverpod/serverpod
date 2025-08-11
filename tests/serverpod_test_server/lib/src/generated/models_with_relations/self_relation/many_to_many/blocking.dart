@@ -450,31 +450,31 @@ class BlockingRepository {
     );
   }
 
-  /// Updates a single [Blocking] by its [id] with the specified [columns].
+  /// Updates a single [Blocking] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Blocking?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<BlockingTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<BlockingTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Blocking>(
       id,
-      columns(Blocking.t),
+      columnValues: columnValues(Blocking.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [Blocking]s matching the [where] expression with the specified [columns].
+  /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Blocking>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<BlockingTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BlockingTable> columnValues,
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Blocking>(
-      columns(Blocking.t),
+      columnValues: columnValues(Blocking.t),
       where: where(Blocking.t),
       transaction: transaction,
     );

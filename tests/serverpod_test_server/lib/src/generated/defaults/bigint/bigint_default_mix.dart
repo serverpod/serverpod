@@ -386,31 +386,31 @@ class BigIntDefaultMixRepository {
     );
   }
 
-  /// Updates a single [BigIntDefaultMix] by its [id] with the specified [columns].
+  /// Updates a single [BigIntDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BigIntDefaultMix?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefaultMix>(
       id,
-      columns(BigIntDefaultMix.t),
+      columnValues: columnValues(BigIntDefaultMix.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [BigIntDefaultMix]s matching the [where] expression with the specified [columns].
+  /// Updates all [BigIntDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<BigIntDefaultMix>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
-      columns(BigIntDefaultMix.t),
+      columnValues: columnValues(BigIntDefaultMix.t),
       where: where(BigIntDefaultMix.t),
       transaction: transaction,
     );

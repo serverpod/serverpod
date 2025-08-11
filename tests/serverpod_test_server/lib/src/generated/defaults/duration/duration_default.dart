@@ -373,31 +373,31 @@ class DurationDefaultRepository {
     );
   }
 
-  /// Updates a single [DurationDefault] by its [id] with the specified [columns].
+  /// Updates a single [DurationDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DurationDefault?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<DurationDefaultTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefault>(
       id,
-      columns(DurationDefault.t),
+      columnValues: columnValues(DurationDefault.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [DurationDefault]s matching the [where] expression with the specified [columns].
+  /// Updates all [DurationDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<DurationDefault>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<DurationDefaultTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefault>(
-      columns(DurationDefault.t),
+      columnValues: columnValues(DurationDefault.t),
       where: where(DurationDefault.t),
       transaction: transaction,
     );

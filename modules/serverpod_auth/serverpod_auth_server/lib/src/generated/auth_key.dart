@@ -411,31 +411,31 @@ class AuthKeyRepository {
     );
   }
 
-  /// Updates a single [AuthKey] by its [id] with the specified [columns].
+  /// Updates a single [AuthKey] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AuthKey?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<AuthKeyTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<AuthKeyTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthKey>(
       id,
-      columns(AuthKey.t),
+      columnValues: columnValues(AuthKey.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [AuthKey]s matching the [where] expression with the specified [columns].
+  /// Updates all [AuthKey]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AuthKey>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<AuthKeyTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AuthKeyTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthKey>(
-      columns(AuthKey.t),
+      columnValues: columnValues(AuthKey.t),
       where: where(AuthKey.t),
       transaction: transaction,
     );

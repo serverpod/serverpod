@@ -360,31 +360,31 @@ class BoolDefaultPersistRepository {
     );
   }
 
-  /// Updates a single [BoolDefaultPersist] by its [id] with the specified [columns].
+  /// Updates a single [BoolDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BoolDefaultPersist?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultPersist>(
       id,
-      columns(BoolDefaultPersist.t),
+      columnValues: columnValues(BoolDefaultPersist.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [BoolDefaultPersist]s matching the [where] expression with the specified [columns].
+  /// Updates all [BoolDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<BoolDefaultPersist>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultPersist>(
-      columns(BoolDefaultPersist.t),
+      columnValues: columnValues(BoolDefaultPersist.t),
       where: where(BoolDefaultPersist.t),
       transaction: transaction,
     );

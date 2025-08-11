@@ -493,31 +493,33 @@ class CityWithLongTableNameRepository {
     );
   }
 
-  /// Updates a single [CityWithLongTableName] by its [id] with the specified [columns].
+  /// Updates a single [CityWithLongTableName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CityWithLongTableName?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<CityWithLongTableNameTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<CityWithLongTableNameTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CityWithLongTableName>(
       id,
-      columns(CityWithLongTableName.t),
+      columnValues: columnValues(CityWithLongTableName.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [CityWithLongTableName]s matching the [where] expression with the specified [columns].
+  /// Updates all [CityWithLongTableName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CityWithLongTableName>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<CityWithLongTableNameTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CityWithLongTableNameTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CityWithLongTableName>(
-      columns(CityWithLongTableName.t),
+      columnValues: columnValues(CityWithLongTableName.t),
       where: where(CityWithLongTableName.t),
       transaction: transaction,
     );

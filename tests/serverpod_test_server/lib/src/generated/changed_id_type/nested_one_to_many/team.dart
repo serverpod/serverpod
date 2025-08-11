@@ -480,31 +480,31 @@ class TeamIntRepository {
     );
   }
 
-  /// Updates a single [TeamInt] by its [id] with the specified [columns].
+  /// Updates a single [TeamInt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TeamInt?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<TeamIntTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<TeamInt>(
       id,
-      columns(TeamInt.t),
+      columnValues: columnValues(TeamInt.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [TeamInt]s matching the [where] expression with the specified [columns].
+  /// Updates all [TeamInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<TeamInt>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<TeamIntTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<TeamInt>(
-      columns(TeamInt.t),
+      columnValues: columnValues(TeamInt.t),
       where: where(TeamInt.t),
       transaction: transaction,
     );

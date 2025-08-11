@@ -352,31 +352,31 @@ class DoubleDefaultModelRepository {
     );
   }
 
-  /// Updates a single [DoubleDefaultModel] by its [id] with the specified [columns].
+  /// Updates a single [DoubleDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DoubleDefaultModel?> updateById(
     _i1.Session session,
-    int id,
-    _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columns, {
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultModel>(
       id,
-      columns(DoubleDefaultModel.t),
+      columnValues: columnValues(DoubleDefaultModel.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [DoubleDefaultModel]s matching the [where] expression with the specified [columns].
+  /// Updates all [DoubleDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<DoubleDefaultModel>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
-      columns(DoubleDefaultModel.t),
+      columnValues: columnValues(DoubleDefaultModel.t),
       where: where(DoubleDefaultModel.t),
       transaction: transaction,
     );

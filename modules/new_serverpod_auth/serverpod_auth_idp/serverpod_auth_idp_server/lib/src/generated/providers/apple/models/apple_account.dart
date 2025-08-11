@@ -632,31 +632,31 @@ class AppleAccountRepository {
     );
   }
 
-  /// Updates a single [AppleAccount] by its [id] with the specified [columns].
+  /// Updates a single [AppleAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AppleAccount?> updateById(
     _i1.Session session,
-    _i1.UuidValue id,
-    _i1.ColumnValueListBuilder<AppleAccountTable> columns, {
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AppleAccountTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AppleAccount>(
       id,
-      columns(AppleAccount.t),
+      columnValues: columnValues(AppleAccount.t),
       transaction: transaction,
     );
   }
 
-  /// Updates all [AppleAccount]s matching the [where] expression with the specified [columns].
+  /// Updates all [AppleAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AppleAccount>> updateWhere(
-    _i1.Session session,
-    _i1.ColumnValueListBuilder<AppleAccountTable> columns, {
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AppleAccountTable> columnValues,
     required _i1.WhereExpressionBuilder<AppleAccountTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AppleAccount>(
-      columns(AppleAccount.t),
+      columnValues: columnValues(AppleAccount.t),
       where: where(AppleAccount.t),
       transaction: transaction,
     );
