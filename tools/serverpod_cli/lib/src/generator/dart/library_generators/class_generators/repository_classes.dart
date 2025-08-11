@@ -708,7 +708,7 @@ class BuildRepositoryClass {
     return Method((methodBuilder) {
       methodBuilder
         ..docs.add('''
-/// Updates a single [$className] by its [id] with the specified [columns].
+/// Updates a single [$className] by its [id] with the specified [columnValues].
 /// Returns the updated row or null if no row with the given id exists.''')
         ..name = 'updateById'
         ..returns = TypeReference(
@@ -727,13 +727,15 @@ class BuildRepositoryClass {
           Parameter((p) => p
             ..type = idTypeReference.rebuild((u) => u.isNullable = false)
             ..name = 'id'),
+        ])
+        ..optionalParameters.addAll([
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..symbol = 'ColumnValueListBuilder<${className}Table>'
               ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columns'),
-        ])
-        ..optionalParameters.addAll([
+            ..name = 'columnValues'
+            ..named = true
+            ..required = true),
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..isNullable = true
@@ -748,10 +750,10 @@ class BuildRepositoryClass {
             .property('updateById')
             .call([
               refer('id'),
-              refer('columns').call([
-                refer(className).property('t'),
-              ])
             ], {
+              'columnValues': refer('columnValues').call([
+                refer(className).property('t'),
+              ]),
               'transaction': refer('transaction'),
             }, [
               refer(className)
@@ -765,7 +767,7 @@ class BuildRepositoryClass {
     return Method((methodBuilder) {
       methodBuilder
         ..docs.add('''
-/// Updates all [$className]s matching the [where] expression with the specified [columns].
+/// Updates all [$className]s matching the [where] expression with the specified [columnValues].
 /// Returns the list of updated rows.''')
         ..name = 'updateWhere'
         ..returns = TypeReference(
@@ -781,13 +783,15 @@ class BuildRepositoryClass {
           Parameter((p) => p
             ..type = refer('Session', 'package:serverpod/serverpod.dart')
             ..name = 'session'),
+        ])
+        ..optionalParameters.addAll([
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..symbol = 'ColumnValueListBuilder<${className}Table>'
               ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columns'),
-        ])
-        ..optionalParameters.addAll([
+            ..name = 'columnValues'
+            ..named = true
+            ..required = true),
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..symbol = 'WhereExpressionBuilder<${className}Table>'
@@ -807,11 +811,10 @@ class BuildRepositoryClass {
         ..body = refer('session')
             .property('db')
             .property('updateWhere')
-            .call([
-              refer('columns').call([
+            .call([], {
+              'columnValues': refer('columnValues').call([
                 refer(className).property('t'),
-              ])
-            ], {
+              ]),
               'where': refer('where').call([
                 refer(className).property('t'),
               ]),
