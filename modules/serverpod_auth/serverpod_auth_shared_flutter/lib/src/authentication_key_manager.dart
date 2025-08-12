@@ -5,7 +5,9 @@ const _prefsKey = 'serverpod_authentication_key';
 
 /// Implementation of a Serverpod [AuthenticationKeyManager] specifically for
 /// Flutter. Authentication key is stored in the [SharedPreferences].
-class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
+class FlutterAuthenticationKeyManager
+    // ignore: deprecated_member_use
+    extends BackwardsCompatibleAuthKeyManager {
   bool _initialized = false;
   String? _authenticationKey;
 

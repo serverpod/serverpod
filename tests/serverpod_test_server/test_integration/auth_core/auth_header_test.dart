@@ -17,7 +17,7 @@ void main() async {
   }
 
   group('Given auth key in valid HTTP header format', () {
-    var authKeyManager = TestAuthKeyManager();
+    var authKeyManager = TestBackwardsCompatibleAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
       authenticationKeyManager: authKeyManager,
@@ -143,10 +143,95 @@ void main() async {
       );
     });
   });
+
+  group('Given auth key with Bearer HTTP header format', () {
+    var authKeyManager = TestAuthKeyManager();
+    var client = Client(
+      'http://localhost:8080/',
+      authenticationKeyManager: authKeyManager,
+    );
+    late Serverpod server;
+
+    setUp(() async {
+      tokenInspectionCompleter = Completer();
+
+      server = IntegrationTestServer.create(
+        authenticationHandler: authenticationHandler,
+      );
+      await server.start();
+    });
+
+    tearDown(() async {
+      await server.shutdown(exitProcess: false);
+      // clear the authKeyManager so that auth is not retained between tests
+      await authKeyManager.remove();
+    });
+
+    test(
+        'when calling an endpoint method without parameters '
+        'then it should receive plain auth key (i.e. in original format)',
+        () async {
+      var key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+      await authKeyManager.put(key);
+
+      var reflectedKey = await client.echoRequest.echoAuthenticationKey();
+      expect(reflectedKey, key);
+
+      var receivedToken = await tokenInspectionCompleter.future;
+      expect(receivedToken, key);
+    });
+
+    test(
+        'when calling an endpoint method with a parameter '
+        'then it should receive plain auth key (i.e. in original format)',
+        () async {
+      var key = 'abc123-bearer-token';
+      await authKeyManager.put(key);
+
+      await client.echoRequest.echoHttpHeader('authorization');
+
+      var receivedToken = await tokenInspectionCompleter.future;
+      expect(receivedToken, key);
+    });
+
+    test(
+        'when calling an endpoint method '
+        'then endpoint method request should contain properly formatted "authorization" header with Bearer scheme',
+        () async {
+      var key = 'jwt-token-4712';
+      await authKeyManager.put(key);
+
+      var reflectedHeader =
+          await client.echoRequest.echoHttpHeader('authorization');
+
+      expect(reflectedHeader, isNotNull);
+      expect(reflectedHeader!, isNotEmpty);
+      expect(isValidAuthHeaderValue(reflectedHeader.first), isTrue);
+      expect(isWrappedBearerAuthHeaderValue(reflectedHeader.first), isTrue);
+      var scheme = reflectedHeader.first.split(' ')[0];
+      expect(scheme, 'Bearer');
+    });
+
+    test(
+        'when calling an endpoint method '
+        'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
+        () async {
+      var key = 'bearer-token-4713';
+      await authKeyManager.put(key);
+
+      var reflectedHeader =
+          await client.echoRequest.echoHttpHeader('authorization');
+
+      var unwrappedKey = unwrapAuthHeaderValue(reflectedHeader!.first);
+      expect(unwrappedKey, key);
+    });
+  });
 }
 
-/// A test implementation that skips encoding of the key, i.e. yields invalid header values.
-class TestIncorrectAuthKeyManager extends AuthenticationKeyManager {
+/// A test implementation that yields backwards compatible Basic auth header values.
+class TestBackwardsCompatibleAuthKeyManager
+    // ignore: deprecated_member_use
+    extends BackwardsCompatibleAuthKeyManager {
   String? _key;
 
   @override
@@ -161,7 +246,10 @@ class TestIncorrectAuthKeyManager extends AuthenticationKeyManager {
   Future<void> remove() async {
     _key = null;
   }
+}
 
+/// A test implementation that skips encoding of the key, i.e. yields invalid header values.
+class TestIncorrectAuthKeyManager extends TestAuthKeyManager {
   @override
   Future<String?> toHeaderValue(String? key) async {
     return 'basic $key';
