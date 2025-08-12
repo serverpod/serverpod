@@ -13,10 +13,15 @@ void main() {
     ),
   ];
 
+  /// JWT valid token
+  var jwtToken = ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+      'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaXNBZG1pbiI6ZmFsc2V9.'
+      'EypViEDiJhjeuXgjtGdibxrFPFZyYKn-KqFeAw3c2No');
+
   /// conventional bearer tokens
   var conventionalBearerTokens = [
     ('abc123', 'simple token'),
-    ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9', 'JWT-like token'),
+    (jwtToken, 'JWT-like token'),
     ('dGVzd,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}_', 'special characters token'),
     ('', 'empty token'),
     ('very-long-token-' * 10, 'long token'),
@@ -37,17 +42,14 @@ void main() {
   /// standard bearer auth schemes' key formats
   var standardBearerAuthKeys = [
     ('Bearer abc123', 'valid bearer scheme with simple token'),
-    (
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-      'valid bearer scheme with JWT-like token'
-    ),
+    ('Bearer $jwtToken', 'valid bearer scheme with JWT-like token'),
     (
       'Bearer dGVzd,;.<>_-/\\|"\'`~!@#\$%^&*()+=[]{}_',
       'valid bearer scheme with token containing allowed special characters',
     ),
-    ('bearer abc123', 'valid bearer scheme name in lowercase'),
-    ('BEARER abc123', 'valid bearer scheme name in uppercase'),
-    ('beareR abc123', 'valid bearer scheme name in mixed case'),
+    ('bearer $jwtToken', 'valid bearer scheme name in lowercase'),
+    ('BEARER $jwtToken', 'valid bearer scheme name in uppercase'),
+    ('beareR $jwtToken', 'valid bearer scheme name in mixed case'),
     ('Bearer ', 'valid bearer scheme with empty token'),
   ];
 
