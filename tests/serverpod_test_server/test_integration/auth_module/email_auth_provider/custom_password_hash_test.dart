@@ -18,7 +18,7 @@ void main() async {
         onValidationFailure,
       }) async =>
           // Always return true to allow the test to proceed
-          true,
+          PasswordHashValidatorResponse(success: true),
       // Custom password hash generator that does not hash the password
       passwordHashGenerator: (password) async => password,
       extraSaltyHash: false,

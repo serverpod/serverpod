@@ -349,18 +349,19 @@ void main() async {
       late String actualStoredHash;
       late String actualPasswordHash;
 
-      await Emails.validatePasswordHash(
+      final validationResponse = await Emails.validatePasswordHash(
         'notHunter4',
         'test7@serverpod.dev',
         hunter4PasswordHash,
-        onValidationFailure: ({
-          required String storedHash,
-          required String passwordHash,
-        }) {
-          actualStoredHash = storedHash;
-          actualPasswordHash = passwordHash;
-        },
       );
+
+      if (!validationResponse.success && validationResponse.error != null &&
+          validationResponse.error is PasswordHashValidationFailedException) {
+        final castedError =
+        validationResponse.error as PasswordHashValidationFailedException;
+        actualPasswordHash = castedError.passwordHash;
+        actualStoredHash = castedError.storedHash;
+      }
 
       expect(actualStoredHash, hunter4PasswordHash);
       expect(actualPasswordHash, notHunter4PasswordHash);

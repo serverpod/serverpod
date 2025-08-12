@@ -25,15 +25,10 @@ Future<String> defaultGeneratePasswordHash(String password) =>
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
 /// password hash validation and migration.
-Future<bool> defaultValidatePasswordHash({
+Future<PasswordHashValidatorResponse> defaultValidatePasswordHash({
   required String password,
   required String email,
-  required String hash, 
-  void Function({
-    required String passwordHash,
-    required String storedHash,
-  })? onValidationFailure,
-  void Function(Object e)? onError,
+  required String hash,
 }) async {
   try {
     return await PasswordHash(
@@ -41,10 +36,15 @@ Future<bool> defaultValidatePasswordHash({
       legacySalt: EmailSecrets.legacySalt,
       legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
       pepper: EmailSecrets.pepper,
-    ).validate(password, onValidationFailure: onValidationFailure);
-  } catch (e) {
-    onError?.call(e);
-    return false;
+    ).validate(password);
+  } catch (e, s) {
+    return PasswordHashValidatorResponse(
+      success: false,
+      error: PasswordHashValidatorException(
+        errorMessage: e,
+        stackTrace: s,
+      ),
+    );
   }
 }
 
@@ -84,25 +84,30 @@ class Emails {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    if (!await Emails.validatePasswordHash(
+    final validationResponse = await Emails.validatePasswordHash(
       password,
       email,
       entry.hash,
-      onValidationFailure: ({
-        required String passwordHash,
-        required String storedHash,
-      }) =>
-          session.log(
-        ' - $passwordHash saved: $storedHash',
-        level: LogLevel.debug,
-      ),
-      onError: (e) {
+    );
+
+    if (!validationResponse.success) {
+      if (validationResponse.error != null &&
+          validationResponse.error is PasswordHashValidationFailedException) {
+        final castedError =
+            validationResponse.error as PasswordHashValidationFailedException;
         session.log(
-          ' - error when validating password hash: $e',
+          ' - ${castedError.passwordHash} saved: ${castedError.storedHash}',
+          level: LogLevel.debug,
+        );
+      }
+
+      if (validationResponse.error?.errorMessage != null) {
+        session.log(
+          ' - error when validating password hash: ${validationResponse.error!.errorMessage}',
           level: LogLevel.error,
         );
-      },
-    )) {
+      }
+
       await _logFailedSignIn(session, email);
       return AuthenticationResponse(
         success: false,
@@ -187,17 +192,18 @@ class Emails {
     }
 
     // Check old password
-    if (!await validatePasswordHash(
+    final validationResponse = await validatePasswordHash(
       oldPassword,
       auth.email,
       auth.hash,
-      onError: (e) {
+    );
+    if (!validationResponse.success) {
+      if (validationResponse.error?.errorMessage != null) {
         session.log(
-          ' - error when validating password hash: $e',
+          ' - error when validating password hash: ${validationResponse.error!.errorMessage}',
           level: LogLevel.error,
         );
-      },
-    )) {
+      }
       session.log(
         'Invalid password!',
         level: LogLevel.debug,
@@ -616,22 +622,15 @@ class Emails {
   ///
   /// If an error occurs, the [onError] function is called with the error as
   /// argument.
-  static Future<bool> validatePasswordHash(
+  static Future<PasswordHashValidatorResponse> validatePasswordHash(
     String password,
     String email,
-    String hash, {
-    void Function({
-      required String passwordHash,
-      required String storedHash,
-    })? onValidationFailure,
-    void Function(Object e)? onError,
-  }) =>
+    String hash,
+  ) =>
       AuthConfig.current.passwordHashValidator(
         password: password,
         email: email,
         hash: hash,
-        onError: onError,
-        onValidationFailure: onValidationFailure,
       );
 
   static String _generateVerificationCode() {

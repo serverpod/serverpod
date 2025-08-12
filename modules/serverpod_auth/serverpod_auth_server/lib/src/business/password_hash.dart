@@ -110,25 +110,21 @@ class PasswordHash {
   ///
   /// If the password does not match the hash, the [onValidationFailure] function
   /// will be called with the hash and the password hash as arguments.
-  Future<bool> validate(
-    String password, {
-    void Function({
-      required String storedHash,
-      required String passwordHash,
-    })? onValidationFailure,
-  }) async {
+  Future<PasswordHashValidatorResponse> validate(String password) async {
     var passwordHash =
         await Isolate.run(() => _hashGenerator.generateHash(password));
 
     if (_hash != passwordHash) {
-      onValidationFailure?.call(
-        storedHash: _hash,
-        passwordHash: passwordHash,
+      return PasswordHashValidatorResponse(
+        success: false,
+        error: PasswordHashValidationFailedException(
+          passwordHash: passwordHash,
+          storedHash: _hash,
+        ),
       );
-      return false;
     }
 
-    return true;
+    return PasswordHashValidatorResponse(success: true);
   }
 
   /// Creates a new password hash using the legacy algorithm.

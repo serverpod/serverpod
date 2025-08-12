@@ -7,3 +7,4 @@ export 'src/generated/protocol.dart';
 export 'src/util/random_string.dart';
 export 'src/extensions/user_info_extension.dart';
 export 'src/web/routes/route_google_sign_in.dart';
+export 'src/exceptions/password_hash_validator_exception.dart';

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
+import 'package:serverpod_auth_server/src/exceptions/password_hash_validator_exception.dart';
 
 import 'user_images.dart';
 
@@ -39,13 +40,10 @@ typedef SendValidationEmailCallback = Future<bool> Function(
 typedef PasswordHashGenerator = Future<String> Function(String password);
 
 /// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<bool> Function({
+typedef PasswordHashValidator = Future<PasswordHashValidatorResponse> Function({
   required String password,
   required String email,
   required String hash,
-  void Function({required String passwordHash, required String storedHash})?
-      onValidationFailure,
-  void Function(Object e)? onError,
 });
 
 /// Enum to define the sign-out behavior for the legacy sign out endpoint.
@@ -55,6 +53,31 @@ enum SignOutBehavior {
 
   /// Sign out the user from the current device only.
   currentDevice,
+}
+
+/// Response returned from a [PasswordHashValidator].
+///
+/// Indicates whether password hash validation succeeded and, if it failed,
+/// provides details about the error.
+class PasswordHashValidatorResponse {
+  /// True if the provided password matches the stored hash.
+  ///
+  /// When true, [error] will be null.
+  final bool success;
+
+  /// Optional error describing why validation failed.
+  ///
+  /// This will be non-null only when [success] is false. It may contain
+  /// a [PasswordHashValidationFailedException] when the computed hash does
+  /// not match the stored hash, or a generic [PasswordHashValidatorException]
+  /// if an unexpected error occurred during validation.
+  final PasswordHashValidatorException? error;
+
+  /// Creates a new [PasswordHashValidatorResponse].
+  ///
+  /// Set [success] to true for successful validation and provide [error]
+  /// only for failed validations.
+  PasswordHashValidatorResponse({required this.success, this.error});
 }
 
 /// Configuration options for the Auth module.
