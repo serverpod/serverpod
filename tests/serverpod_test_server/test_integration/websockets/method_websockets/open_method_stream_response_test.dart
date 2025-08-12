@@ -4,25 +4,29 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../websocket_extensions.dart';
 
 void main() {
   group('Given method websocket connection', () {
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      try {
+        await webSocket.close();
+      } on WebSocketConnectionClosed {
+        // Connection is already closed
+      }
     });
 
     test(
@@ -30,7 +34,7 @@ void main() {
         () {
       var pongReceived = Completer<void>();
       var otherMessageReceived = Completer<void>();
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
           server.serializationManager,
@@ -43,13 +47,13 @@ void main() {
         }
       });
 
-      webSocket.sink.add(OpenMethodStreamResponse.buildMessage(
+      webSocket.sendText(OpenMethodStreamResponse.buildMessage(
         endpoint: 'endpoint',
         method: 'method',
         responseType: OpenMethodStreamResponseType.success,
         connectionId: const Uuid().v4obj(),
       ));
-      webSocket.sink.add(PingCommand.buildMessage());
+      webSocket.sendText(PingCommand.buildMessage());
 
       expect(
         otherMessageReceived.future,
