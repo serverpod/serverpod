@@ -13,7 +13,7 @@ void main() async {
       passwordHashValidator: ({
         required password,
         required email,
-        required hash, 
+        required hash,
         onError,
         onValidationFailure,
       }) async =>
