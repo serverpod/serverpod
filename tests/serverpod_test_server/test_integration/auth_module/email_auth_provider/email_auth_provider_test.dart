@@ -355,10 +355,11 @@ void main() async {
         hunter4PasswordHash,
       );
 
-      if (!validationResponse.success && validationResponse.error != null &&
+      if (!validationResponse.success &&
+          validationResponse.error != null &&
           validationResponse.error is PasswordHashValidationFailedException) {
         final castedError =
-        validationResponse.error as PasswordHashValidationFailedException;
+            validationResponse.error as PasswordHashValidationFailedException;
         actualPasswordHash = castedError.passwordHash;
         actualStoredHash = castedError.storedHash;
       }

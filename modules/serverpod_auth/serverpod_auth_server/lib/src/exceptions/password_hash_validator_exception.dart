@@ -15,7 +15,8 @@ class PasswordHashValidatorException implements Exception {
 }
 
 /// Thrown when validation of a computed password hash against a stored hash fails.
-class PasswordHashValidationFailedException extends PasswordHashValidatorException {
+class PasswordHashValidationFailedException
+    extends PasswordHashValidatorException {
   /// Creates a [PasswordHashValidationFailedException].
   ///
   /// [passwordHash] is the computed hash of the provided password.
