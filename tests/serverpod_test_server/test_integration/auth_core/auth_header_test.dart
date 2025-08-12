@@ -213,6 +213,28 @@ void main() async {
     });
 
     test(
+        'when calling an endpoint method with invalid token '
+        'then endpoint method should return error corresponding to HTTP invalid request error (400)',
+        () async {
+      var key = 'doubled-bearer jwt-token-4712';
+      await authKeyManager.put(key);
+
+      ServerpodClientException? clientException;
+      try {
+        await client.echoRequest.echoHttpHeader('authorization');
+      } catch (e) {
+        clientException = e as ServerpodClientException?;
+      }
+      expect(clientException, isNotNull);
+      expect(clientException!.statusCode, equals(400));
+      expect(
+        clientException.message,
+        'Bad request: Request has invalid "authorization" header: Bearer '
+        'doubled-bearer jwt-token-4712',
+      );
+    });
+
+    test(
         'when calling an endpoint method '
         'then endpoint method request\'s "authorization" should when unwrapped contain the original key',
         () async {
