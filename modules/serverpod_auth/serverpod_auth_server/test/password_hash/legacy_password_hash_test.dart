@@ -25,7 +25,7 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect((await passwordHash.validate(password)).success, isTrue);
     });
 
     test('when validating with incorrect password then validator returns false',
@@ -37,7 +37,7 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect((await passwordHash.validate('chaser1')).success, isFalse);
     });
 
     test('when validating with different salts then validator returns false',
@@ -49,7 +49,7 @@ void main() {
         legacySalt: 'second salt',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
   });
 
@@ -117,7 +117,7 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect((await passwordHash.validate(password)).success, isTrue);
     });
 
     test('when matching with incorrect password then it evaluates to false',
@@ -135,7 +135,7 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect((await passwordHash.validate('chaser1')).success, isFalse);
     });
 
     test('when matching with incorrect salt then it evaluates to false',
@@ -153,7 +153,7 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
 
     test('when matching with incorrect email then it evaluates to false',
@@ -171,7 +171,7 @@ void main() {
         legacyEmail: 'second@serverpod.dev',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
   });
 }

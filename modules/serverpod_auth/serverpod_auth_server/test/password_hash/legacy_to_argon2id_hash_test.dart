@@ -189,7 +189,7 @@ void main() {
         legacySalt: legacySalt,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect((await passwordHash.validate(password)).success, isTrue);
     });
 
     test(
@@ -207,7 +207,7 @@ void main() {
         legacySalt: 'differentLegacySalt',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
 
     test('when validating with incorrect password then validator returns false',
@@ -224,7 +224,7 @@ void main() {
         legacySalt: legacySalt,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect((await passwordHash.validate('chaser1')).success, isFalse);
     });
 
     test('when validating with modified salt then validator returns false',
@@ -248,7 +248,7 @@ void main() {
         legacySalt: legacySalt,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
 
     test('when validating with valid pepper then validator returns true.',
@@ -269,7 +269,7 @@ void main() {
         pepper: pepper,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect((await passwordHash.validate(password)).success, isTrue);
     });
 
     test('when validating with invalid pepper then validator returns false.',
@@ -289,7 +289,7 @@ void main() {
         pepper: 'differentPepper',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
 
     test('when validating with missing pepper then validator returns false.',
@@ -308,7 +308,7 @@ void main() {
         legacySalt: legacySalt,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
 
     test('when validating with added pepper then validator returns false.',
@@ -327,7 +327,7 @@ void main() {
         pepper: 'pepper',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect((await passwordHash.validate(password)).success, isFalse);
     });
   });
 

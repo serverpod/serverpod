@@ -273,11 +273,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          await Emails.validatePasswordHash(
+          (await Emails.validatePasswordHash(
             'hunter0',
             'test1@serverpod.dev',
             passwordHash,
-          ),
+          ))
+              .success,
           isTrue,
         );
       });
@@ -294,11 +295,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          await Emails.validatePasswordHash(
+          (await Emails.validatePasswordHash(
             'hunter2',
             'test6@serverpod.dev',
             passwordHash,
-          ),
+          ))
+              .success,
           isTrue,
         );
       });
@@ -314,11 +316,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          await Emails.validatePasswordHash(
+          (await Emails.validatePasswordHash(
             'hunter2',
             'test7@serverpod.dev',
             passwordHash,
-          ),
+          ))
+              .success,
           isTrue,
         );
       });
@@ -334,11 +337,12 @@ void main() async {
 
     test('then validation fails.', () async {
       expect(
-        await Emails.validatePasswordHash(
+        (await Emails.validatePasswordHash(
           'notHunter4',
           'test7@serverpod.dev',
           hunter4PasswordHash,
-        ),
+        ))
+            .success,
         isFalse,
       );
     });
