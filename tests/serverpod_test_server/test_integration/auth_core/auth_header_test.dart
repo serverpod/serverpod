@@ -17,7 +17,7 @@ void main() async {
   }
 
   group('Given auth key in valid HTTP header format', () {
-    var authKeyManager = TestBackwardsCompatibleAuthKeyManager();
+    var authKeyManager = TestBasicAuthenticationKeyManager();
     var client = Client(
       'http://localhost:8080/',
       authenticationKeyManager: authKeyManager,
@@ -229,9 +229,7 @@ void main() async {
 }
 
 /// A test implementation that yields backwards compatible Basic auth header values.
-class TestBackwardsCompatibleAuthKeyManager
-    // ignore: deprecated_member_use
-    extends BackwardsCompatibleAuthKeyManager {
+class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
   String? _key;
 
   @override

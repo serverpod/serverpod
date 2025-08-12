@@ -1,6 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
-class TestServiceKeyManager extends AuthenticationKeyManager {
+class TestServiceKeyManager extends BearerAuthenticationKeyManager {
   final String name;
   final String serviceSecret;
 

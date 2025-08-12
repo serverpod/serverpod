@@ -1,6 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
-class TestAuthKeyManager extends AuthenticationKeyManager {
+class TestAuthKeyManager extends BearerAuthenticationKeyManager {
   String? _key;
 
   @override
