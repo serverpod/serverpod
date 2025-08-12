@@ -55,7 +55,7 @@ void main() async {
 
     test(
         'when calling an endpoint method with a parameter '
-        'then it should receive plain auth key (i.e. in original format)',
+        'then the authentication handler receives the raw key without the schema prefix',
         () async {
       var key = 'username-4711:password-4711';
       await authKeyManager.put(key);
@@ -183,7 +183,7 @@ void main() async {
 
     test(
         'when calling an endpoint method with a parameter '
-        'then it should receive plain auth key (i.e. in original format)',
+        'then the authentication handler receives the raw token without the schema prefix',
         () async {
       var key = 'abc123-bearer-token';
       await authKeyManager.put(key);
