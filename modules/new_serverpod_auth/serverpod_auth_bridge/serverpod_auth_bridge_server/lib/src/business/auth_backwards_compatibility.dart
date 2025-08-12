@@ -96,6 +96,7 @@ abstract final class AuthBackwardsCompatibility {
       await clearLegacyPassword(
         session,
         emailAccountId: emailAccountInfo.emailAccountId,
+        transaction: transaction,
       );
 
       // The account was already migrated without a password, and now we need to
