@@ -433,7 +433,7 @@ class StreamingSession extends Session {
     this.queryParameters = queryParameters;
 
     // Get the authentication key, if any
-    _authenticationKey = unwrapAuthHeaderValue(queryParameters['auth']);
+    _authenticationKey = queryParameters['auth'];
   }
 
   /// Updates the authentication key for the streaming session.
