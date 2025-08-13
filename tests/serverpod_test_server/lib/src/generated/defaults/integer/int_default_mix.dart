@@ -400,11 +400,21 @@ class IntDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<IntDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<IntDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<IntDefaultMix>(
       columnValues: columnValues(IntDefaultMix.t),
       where: where(IntDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(IntDefaultMix.t),
+      orderByList: orderByList?.call(IntDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -422,11 +422,21 @@ class TownRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<TownTable> columnValues,
     required _i1.WhereExpressionBuilder<TownTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TownTable>? orderBy,
+    _i1.OrderByListBuilder<TownTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Town>(
       columnValues: columnValues(Town.t),
       where: where(Town.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Town.t),
+      orderByList: orderByList?.call(Town.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

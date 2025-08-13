@@ -382,11 +382,21 @@ class BigIntDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefault>(
       columnValues: columnValues(BigIntDefault.t),
       where: where(BigIntDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefault.t),
+      orderByList: orderByList?.call(BigIntDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

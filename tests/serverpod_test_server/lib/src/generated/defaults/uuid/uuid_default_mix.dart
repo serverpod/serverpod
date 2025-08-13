@@ -404,11 +404,21 @@ class UuidDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UuidDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefaultMix>(
       columnValues: columnValues(UuidDefaultMix.t),
       where: where(UuidDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

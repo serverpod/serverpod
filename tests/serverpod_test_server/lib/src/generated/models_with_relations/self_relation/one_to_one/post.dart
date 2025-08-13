@@ -471,11 +471,21 @@ class PostRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PostTable> columnValues,
     required _i1.WhereExpressionBuilder<PostTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PostTable>? orderBy,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Post>(
       columnValues: columnValues(Post.t),
       where: where(Post.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

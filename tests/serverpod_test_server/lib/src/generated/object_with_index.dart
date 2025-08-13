@@ -369,11 +369,21 @@ class ObjectWithIndexRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithIndexTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithIndex>(
       columnValues: columnValues(ObjectWithIndex.t),
       where: where(ObjectWithIndex.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithIndex.t),
+      orderByList: orderByList?.call(ObjectWithIndex.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

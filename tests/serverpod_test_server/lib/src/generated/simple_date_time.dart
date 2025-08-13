@@ -354,11 +354,21 @@ class SimpleDateTimeRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SimpleDateTime>(
       columnValues: columnValues(SimpleDateTime.t),
       where: where(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -460,11 +460,21 @@ class ObjectWithBitRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithBitTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithBit>(
       columnValues: columnValues(ObjectWithBit.t),
       where: where(ObjectWithBit.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -374,11 +374,21 @@ class GoogleRefreshTokenRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<GoogleRefreshTokenTable> columnValues,
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<GoogleRefreshToken>(
       columnValues: columnValues(GoogleRefreshToken.t),
       where: where(GoogleRefreshToken.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

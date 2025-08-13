@@ -422,11 +422,21 @@ class ObjectUserRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectUserTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectUser>(
       columnValues: columnValues(ObjectUser.t),
       where: where(ObjectUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectUser.t),
+      orderByList: orderByList?.call(ObjectUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

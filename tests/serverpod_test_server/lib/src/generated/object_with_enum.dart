@@ -446,11 +446,21 @@ class ObjectWithEnumRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithEnumTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithEnum>(
       columnValues: columnValues(ObjectWithEnum.t),
       where: where(ObjectWithEnum.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

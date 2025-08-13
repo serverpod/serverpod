@@ -413,11 +413,21 @@ class RelationEmptyModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RelationEmptyModelTable> columnValues,
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelationEmptyModel>(
       columnValues: columnValues(RelationEmptyModel.t),
       where: where(RelationEmptyModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

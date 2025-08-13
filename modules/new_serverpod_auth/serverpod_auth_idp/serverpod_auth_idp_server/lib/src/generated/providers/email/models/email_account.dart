@@ -499,11 +499,21 @@ class EmailAccountRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailAccountTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccount>(
       columnValues: columnValues(EmailAccount.t),
       where: where(EmailAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccount.t),
+      orderByList: orderByList?.call(EmailAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

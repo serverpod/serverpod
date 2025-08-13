@@ -428,11 +428,21 @@ class StudentRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StudentTable> columnValues,
     required _i1.WhereExpressionBuilder<StudentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Student>(
       columnValues: columnValues(Student.t),
       where: where(Student.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -395,11 +395,21 @@ class AuthUserRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AuthUserTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthUserTable>? orderBy,
+    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthUser>(
       columnValues: columnValues(AuthUser.t),
       where: where(AuthUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

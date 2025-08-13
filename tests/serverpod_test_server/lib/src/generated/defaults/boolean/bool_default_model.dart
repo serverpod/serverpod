@@ -393,11 +393,21 @@ class BoolDefaultModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BoolDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultModel>(
       columnValues: columnValues(BoolDefaultModel.t),
       where: where(BoolDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultModel.t),
+      orderByList: orderByList?.call(BoolDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

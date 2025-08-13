@@ -351,11 +351,21 @@ class ObjectWithSelfParentRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithSelfParent>(
       columnValues: columnValues(ObjectWithSelfParent.t),
       where: where(ObjectWithSelfParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

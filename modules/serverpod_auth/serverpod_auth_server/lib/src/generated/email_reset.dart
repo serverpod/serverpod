@@ -396,11 +396,21 @@ class EmailResetRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailResetTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailReset>(
       columnValues: columnValues(EmailReset.t),
       where: where(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

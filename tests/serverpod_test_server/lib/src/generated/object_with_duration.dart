@@ -351,11 +351,21 @@ class ObjectWithDurationRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithDuration>(
       columnValues: columnValues(ObjectWithDuration.t),
       where: where(ObjectWithDuration.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

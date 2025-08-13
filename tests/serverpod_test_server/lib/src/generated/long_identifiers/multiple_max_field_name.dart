@@ -461,11 +461,21 @@ class MultipleMaxFieldNameRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MultipleMaxFieldNameTable> columnValues,
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    _i1.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MultipleMaxFieldName>(
       columnValues: columnValues(MultipleMaxFieldName.t),
       where: where(MultipleMaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MultipleMaxFieldName.t),
+      orderByList: orderByList?.call(MultipleMaxFieldName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

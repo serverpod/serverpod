@@ -499,11 +499,21 @@ class OrganizationRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Organization>(
       columnValues: columnValues(Organization.t),
       where: where(Organization.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -405,11 +405,21 @@ class EmailAccountFailedLoginAttemptRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountFailedLoginAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountFailedLoginAttemptTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountFailedLoginAttempt>(
       columnValues: columnValues(EmailAccountFailedLoginAttempt.t),
       where: where(EmailAccountFailedLoginAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountFailedLoginAttempt.t),
+      orderByList: orderByList?.call(EmailAccountFailedLoginAttempt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

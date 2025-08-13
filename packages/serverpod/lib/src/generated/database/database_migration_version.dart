@@ -400,11 +400,21 @@ class DatabaseMigrationVersionRepository {
     required _i1.ColumnValueListBuilder<DatabaseMigrationVersionTable>
         columnValues,
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DatabaseMigrationVersion>(
       columnValues: columnValues(DatabaseMigrationVersion.t),
       where: where(DatabaseMigrationVersion.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

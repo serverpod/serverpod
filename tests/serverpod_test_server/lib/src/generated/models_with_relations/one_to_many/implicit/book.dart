@@ -431,11 +431,21 @@ class BookRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BookTable> columnValues,
     required _i1.WhereExpressionBuilder<BookTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BookTable>? orderBy,
+    _i1.OrderByListBuilder<BookTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Book>(
       columnValues: columnValues(Book.t),
       where: where(Book.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

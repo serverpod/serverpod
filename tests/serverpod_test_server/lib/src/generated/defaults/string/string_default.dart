@@ -374,11 +374,21 @@ class StringDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StringDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<StringDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefault>(
       columnValues: columnValues(StringDefault.t),
       where: where(StringDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefault.t),
+      orderByList: orderByList?.call(StringDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -417,11 +417,21 @@ class EnumDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
       columnValues: columnValues(EnumDefaultMix.t),
       where: where(EnumDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

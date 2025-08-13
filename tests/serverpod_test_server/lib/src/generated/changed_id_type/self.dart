@@ -608,11 +608,21 @@ class ChangedIdTypeSelfRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfTable> columnValues,
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
       columnValues: columnValues(ChangedIdTypeSelf.t),
       where: where(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

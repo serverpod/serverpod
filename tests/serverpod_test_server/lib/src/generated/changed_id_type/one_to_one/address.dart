@@ -425,11 +425,21 @@ class AddressUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressUuidTable>? orderBy,
+    _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AddressUuid>(
       columnValues: columnValues(AddressUuid.t),
       where: where(AddressUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -470,11 +470,21 @@ class LegacySessionRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LegacySessionTable> columnValues,
     required _i1.WhereExpressionBuilder<LegacySessionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacySession>(
       columnValues: columnValues(LegacySession.t),
       where: where(LegacySession.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

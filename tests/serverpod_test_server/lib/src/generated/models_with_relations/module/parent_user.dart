@@ -368,11 +368,21 @@ class ParentUserRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ParentUserTable> columnValues,
     required _i1.WhereExpressionBuilder<ParentUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ParentUserTable>? orderBy,
+    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ParentUser>(
       columnValues: columnValues(ParentUser.t),
       where: where(ParentUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentUser.t),
+      orderByList: orderByList?.call(ParentUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

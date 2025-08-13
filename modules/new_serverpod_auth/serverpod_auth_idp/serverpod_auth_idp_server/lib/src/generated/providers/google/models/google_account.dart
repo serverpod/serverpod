@@ -477,11 +477,21 @@ class GoogleAccountRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<GoogleAccountTable> columnValues,
     required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<GoogleAccount>(
       columnValues: columnValues(GoogleAccount.t),
       where: where(GoogleAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -341,11 +341,21 @@ class ParentClassRepository {
     _i2.Session session, {
     required _i2.ColumnValueListBuilder<ParentClassTable> columnValues,
     required _i2.WhereExpressionBuilder<ParentClassTable> where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    bool orderDescending = false,
     _i2.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ParentClass>(
       columnValues: columnValues(ParentClass.t),
       where: where(ParentClass.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

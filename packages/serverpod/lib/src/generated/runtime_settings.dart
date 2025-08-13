@@ -427,11 +427,21 @@ class RuntimeSettingsRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
       columnValues: columnValues(RuntimeSettings.t),
       where: where(RuntimeSettings.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -609,11 +609,21 @@ class StringDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StringDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultPersist>(
       columnValues: columnValues(StringDefaultPersist.t),
       where: where(StringDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultPersist.t),
+      orderByList: orderByList?.call(StringDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

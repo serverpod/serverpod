@@ -420,11 +420,21 @@ class EmailCreateAccountRequestRepository {
     required _i1.ColumnValueListBuilder<EmailCreateAccountRequestTable>
         columnValues,
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailCreateAccountRequest>(
       columnValues: columnValues(EmailCreateAccountRequest.t),
       where: where(EmailCreateAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -373,11 +373,21 @@ class DoubleDefaultModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
       columnValues: columnValues(DoubleDefaultModel.t),
       where: where(DoubleDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefaultModel.t),
+      orderByList: orderByList?.call(DoubleDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

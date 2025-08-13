@@ -428,11 +428,21 @@ class ObjectWithSparseVectorRepository {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorTable>
         columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithSparseVector>(
       columnValues: columnValues(ObjectWithSparseVector.t),
       where: where(ObjectWithSparseVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

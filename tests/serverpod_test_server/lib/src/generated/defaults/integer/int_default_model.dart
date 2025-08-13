@@ -370,11 +370,21 @@ class IntDefaultModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<IntDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<IntDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<IntDefaultModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<IntDefaultModel>(
       columnValues: columnValues(IntDefaultModel.t),
       where: where(IntDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(IntDefaultModel.t),
+      orderByList: orderByList?.call(IntDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

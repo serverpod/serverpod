@@ -404,11 +404,21 @@ class UserNoteRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserNoteTable> columnValues,
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNote>(
       columnValues: columnValues(UserNote.t),
       where: where(UserNote.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

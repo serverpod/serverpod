@@ -473,11 +473,21 @@ class MigratedUserRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MigratedUser>(
       columnValues: columnValues(MigratedUser.t),
       where: where(MigratedUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

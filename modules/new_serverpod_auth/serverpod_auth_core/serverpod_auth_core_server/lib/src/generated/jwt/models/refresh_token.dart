@@ -630,11 +630,21 @@ class RefreshTokenRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RefreshTokenTable> columnValues,
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RefreshToken>(
       columnValues: columnValues(RefreshToken.t),
       where: where(RefreshToken.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RefreshToken.t),
+      orderByList: orderByList?.call(RefreshToken.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

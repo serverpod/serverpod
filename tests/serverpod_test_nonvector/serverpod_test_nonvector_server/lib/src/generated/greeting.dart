@@ -395,11 +395,21 @@ class GreetingRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<GreetingTable> columnValues,
     required _i1.WhereExpressionBuilder<GreetingTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<GreetingTable>? orderBy,
+    _i1.OrderByListBuilder<GreetingTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Greeting>(
       columnValues: columnValues(Greeting.t),
       where: where(Greeting.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Greeting.t),
+      orderByList: orderByList?.call(Greeting.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -421,11 +421,21 @@ class CloudStorageDirectUploadEntryRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CloudStorageDirectUploadEntry>(
       columnValues: columnValues(CloudStorageDirectUploadEntry.t),
       where: where(CloudStorageDirectUploadEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

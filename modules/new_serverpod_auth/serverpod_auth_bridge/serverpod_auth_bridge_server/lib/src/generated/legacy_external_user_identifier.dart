@@ -437,11 +437,21 @@ class LegacyExternalUserIdentifierRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacyExternalUserIdentifier>(
       columnValues: columnValues(LegacyExternalUserIdentifier.t),
       where: where(LegacyExternalUserIdentifier.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

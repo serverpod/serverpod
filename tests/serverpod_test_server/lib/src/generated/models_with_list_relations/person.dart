@@ -478,11 +478,21 @@ class PersonRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PersonTable> columnValues,
     required _i1.WhereExpressionBuilder<PersonTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PersonTable>? orderBy,
+    _i1.OrderByListBuilder<PersonTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Person>(
       columnValues: columnValues(Person.t),
       where: where(Person.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Person.t),
+      orderByList: orderByList?.call(Person.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

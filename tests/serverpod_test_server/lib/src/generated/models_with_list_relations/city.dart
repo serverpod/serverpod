@@ -503,11 +503,21 @@ class CityRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CityTable> columnValues,
     required _i1.WhereExpressionBuilder<CityTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CityTable>? orderBy,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<City>(
       columnValues: columnValues(City.t),
       where: where(City.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

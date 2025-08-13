@@ -354,11 +354,21 @@ class ReadWriteTestEntryRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
+    _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ReadWriteTestEntry>(
       columnValues: columnValues(ReadWriteTestEntry.t),
       where: where(ReadWriteTestEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

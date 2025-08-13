@@ -395,11 +395,21 @@ class EmailAuthRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAuth>(
       columnValues: columnValues(EmailAuth.t),
       where: where(EmailAuth.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAuth.t),
+      orderByList: orderByList?.call(EmailAuth.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -432,11 +432,21 @@ class LegacyEmailPasswordRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LegacyEmailPasswordTable> columnValues,
     required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacyEmailPassword>(
       columnValues: columnValues(LegacyEmailPassword.t),
       where: where(LegacyEmailPassword.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacyEmailPassword.t),
+      orderByList: orderByList?.call(LegacyEmailPassword.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

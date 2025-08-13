@@ -422,11 +422,21 @@ class CommentIntRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
     required _i1.WhereExpressionBuilder<CommentIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CommentInt>(
       columnValues: columnValues(CommentInt.t),
       where: where(CommentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

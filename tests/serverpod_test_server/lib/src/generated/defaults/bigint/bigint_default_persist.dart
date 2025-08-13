@@ -360,11 +360,21 @@ class BigIntDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefaultPersist>(
       columnValues: columnValues(BigIntDefaultPersist.t),
       where: where(BigIntDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultPersist.t),
+      orderByList: orderByList?.call(BigIntDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

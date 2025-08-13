@@ -381,11 +381,21 @@ class BoolDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultPersist>(
       columnValues: columnValues(BoolDefaultPersist.t),
       where: where(BoolDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultPersist.t),
+      orderByList: orderByList?.call(BoolDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

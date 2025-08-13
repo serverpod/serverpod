@@ -498,11 +498,21 @@ class TeamRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<TeamTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TeamTable>? orderBy,
+    _i1.OrderByListBuilder<TeamTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Team>(
       columnValues: columnValues(Team.t),
       where: where(Team.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

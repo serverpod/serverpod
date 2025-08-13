@@ -374,11 +374,21 @@ class MethodInfoRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MethodInfoTable> columnValues,
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
+    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MethodInfo>(
       columnValues: columnValues(MethodInfo.t),
       where: where(MethodInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

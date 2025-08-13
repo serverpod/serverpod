@@ -481,11 +481,21 @@ class LongImplicitIdFieldCollectionRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LongImplicitIdFieldCollection>(
       columnValues: columnValues(LongImplicitIdFieldCollection.t),
       where: where(LongImplicitIdFieldCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
+      orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

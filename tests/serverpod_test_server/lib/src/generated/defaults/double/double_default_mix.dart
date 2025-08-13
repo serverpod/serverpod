@@ -406,11 +406,21 @@ class DoubleDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefaultMix>(
       columnValues: columnValues(DoubleDefaultMix.t),
       where: where(DoubleDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefaultMix.t),
+      orderByList: orderByList?.call(DoubleDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

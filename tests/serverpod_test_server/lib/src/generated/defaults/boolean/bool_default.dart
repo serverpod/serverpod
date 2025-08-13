@@ -396,11 +396,21 @@ class BoolDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BoolDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<BoolDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefault>(
       columnValues: columnValues(BoolDefault.t),
       where: where(BoolDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefault.t),
+      orderByList: orderByList?.call(BoolDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

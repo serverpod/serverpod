@@ -308,11 +308,21 @@ class EmptyModelWithTableRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmptyModelWithTableTable> columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmptyModelWithTable>(
       columnValues: columnValues(EmptyModelWithTable.t),
       where: where(EmptyModelWithTable.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmptyModelWithTable.t),
+      orderByList: orderByList?.call(EmptyModelWithTable.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

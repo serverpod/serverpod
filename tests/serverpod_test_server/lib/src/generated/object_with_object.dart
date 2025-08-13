@@ -639,11 +639,21 @@ class ObjectWithObjectRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithObjectTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithObject>(
       columnValues: columnValues(ObjectWithObject.t),
       where: where(ObjectWithObject.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithObject.t),
+      orderByList: orderByList?.call(ObjectWithObject.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

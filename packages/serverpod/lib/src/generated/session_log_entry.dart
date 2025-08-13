@@ -636,11 +636,21 @@ class SessionLogEntryRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SessionLogEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SessionLogEntry>(
       columnValues: columnValues(SessionLogEntry.t),
       where: where(SessionLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

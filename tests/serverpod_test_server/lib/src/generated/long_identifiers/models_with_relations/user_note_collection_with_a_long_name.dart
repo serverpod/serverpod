@@ -444,11 +444,21 @@ class UserNoteCollectionWithALongNameRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteCollectionWithALongName>(
       columnValues: columnValues(UserNoteCollectionWithALongName.t),
       where: where(UserNoteCollectionWithALongName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
+      orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
