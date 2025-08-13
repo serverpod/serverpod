@@ -25,7 +25,7 @@ Future<String> defaultGeneratePasswordHash(String password) =>
 /// Warning: Using a custom hashing algorithm for passwords
 /// will permanently disrupt compatibility with Serverpod's
 /// password hash validation and migration.
-Future<PasswordHashValidatorResponse> defaultValidatePasswordHash({
+Future<PasswordValidationResult> defaultValidatePasswordHash({
   required String password,
   required String email,
   required String hash,
@@ -38,12 +38,9 @@ Future<PasswordHashValidatorResponse> defaultValidatePasswordHash({
       pepper: EmailSecrets.pepper,
     ).validate(password);
   } catch (e, s) {
-    return PasswordHashValidatorResponse(
-      success: false,
-      error: PasswordHashValidatorException(
-        errorMessage: e,
-        stackTrace: s,
-      ),
+    return PasswordValidationError(
+      errorMessage: e,
+      stackTrace: s,
     );
   }
 }
@@ -90,20 +87,17 @@ class Emails {
       entry.hash,
     );
 
-    if (!validationResponse.success) {
-      if (validationResponse.error != null &&
-          validationResponse.error is PasswordHashValidationFailedException) {
-        final castedError =
-            validationResponse.error as PasswordHashValidationFailedException;
+    if (validationResponse is! PasswordValidationSuccess) {
+      if (validationResponse is PasswordValidationFailed) {
         session.log(
-          ' - ${castedError.passwordHash} saved: ${castedError.storedHash}',
+          ' - ${validationResponse.passwordHash} saved: ${validationResponse.storedHash}',
           level: LogLevel.debug,
         );
       }
 
-      if (validationResponse.error?.errorMessage != null) {
+      if (validationResponse is PasswordValidationError) {
         session.log(
-          ' - error when validating password hash: ${validationResponse.error!.errorMessage}',
+          ' - error when validating password hash: ${validationResponse.errorMessage}',
           level: LogLevel.error,
         );
       }
@@ -197,13 +191,15 @@ class Emails {
       auth.email,
       auth.hash,
     );
-    if (!validationResponse.success) {
-      if (validationResponse.error?.errorMessage != null) {
+
+    if (validationResponse is! PasswordValidationSuccess) {
+      if (validationResponse is PasswordValidationError) {
         session.log(
-          ' - error when validating password hash: ${validationResponse.error!.errorMessage}',
+          ' - error when validating password hash: ${validationResponse.errorMessage}',
           level: LogLevel.error,
         );
       }
+
       session.log(
         'Invalid password!',
         level: LogLevel.debug,
@@ -622,7 +618,7 @@ class Emails {
   ///
   /// If an error occurs, the [onError] function is called with the error as
   /// argument.
-  static Future<PasswordHashValidatorResponse> validatePasswordHash(
+  static Future<PasswordValidationResult> validatePasswordHash(
     String password,
     String email,
     String hash,

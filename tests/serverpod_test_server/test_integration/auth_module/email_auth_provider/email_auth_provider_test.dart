@@ -273,13 +273,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          (await Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter0',
             'test1@serverpod.dev',
             passwordHash,
-          ))
-              .success,
-          isTrue,
+          ),
+          isA<PasswordValidationSuccess>(),
         );
       });
 
@@ -295,13 +294,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          (await Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter2',
             'test6@serverpod.dev',
             passwordHash,
-          ))
-              .success,
-          isTrue,
+          ),
+          isA<PasswordValidationSuccess>(),
         );
       });
 
@@ -316,13 +314,12 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          (await Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter2',
             'test7@serverpod.dev',
             passwordHash,
-          ))
-              .success,
-          isTrue,
+          ),
+          isA<PasswordValidationSuccess>(),
         );
       });
     });
@@ -337,13 +334,12 @@ void main() async {
 
     test('then validation fails.', () async {
       expect(
-        (await Emails.validatePasswordHash(
+        await Emails.validatePasswordHash(
           'notHunter4',
           'test7@serverpod.dev',
           hunter4PasswordHash,
-        ))
-            .success,
-        isFalse,
+        ),
+        isNot(isA<PasswordValidationSuccess>()),
       );
     });
 
@@ -358,14 +354,11 @@ void main() async {
         'test7@serverpod.dev',
         hunter4PasswordHash,
       );
-
-      if (!validationResponse.success &&
-          validationResponse.error != null &&
-          validationResponse.error is PasswordHashValidationFailedException) {
-        final castedError =
-            validationResponse.error as PasswordHashValidationFailedException;
-        actualPasswordHash = castedError.passwordHash;
-        actualStoredHash = castedError.storedHash;
+      if (validationResponse is! PasswordValidationSuccess) {
+        if (validationResponse is PasswordValidationFailed) {
+          actualPasswordHash = validationResponse.passwordHash;
+          actualStoredHash = validationResponse.storedHash;
+        }
       }
 
       expect(actualStoredHash, hunter4PasswordHash);

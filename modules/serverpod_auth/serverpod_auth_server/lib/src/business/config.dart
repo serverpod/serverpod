@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
-import 'package:serverpod_auth_server/src/exceptions/password_hash_validator_exception.dart';
 
 import 'user_images.dart';
 
@@ -40,7 +39,7 @@ typedef SendValidationEmailCallback = Future<bool> Function(
 typedef PasswordHashGenerator = Future<String> Function(String password);
 
 /// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<PasswordHashValidatorResponse> Function({
+typedef PasswordHashValidator = Future<PasswordValidationResult> Function({
   required String password,
   required String email,
   required String hash,
@@ -55,29 +54,53 @@ enum SignOutBehavior {
   currentDevice,
 }
 
-/// Response returned from a [PasswordHashValidator].
+/// Represents the result of validating a plaintext password against a
+/// stored password hash.
 ///
-/// Indicates whether password hash validation succeeded and, if it failed,
-/// provides details about the error.
-class PasswordHashValidatorResponse {
-  /// True if the provided password matches the stored hash.
-  ///
-  /// When true, [error] will be null.
-  final bool success;
+/// This is a sealed hierarchy with the following concrete results:
+/// - [PasswordValidationSuccess]: The provided password matches the stored hash.
+/// - [PasswordValidationFailed]: The password did not match the stored hash.
+/// - [PasswordValidationError]: An unexpected error occurred during validation.
+sealed class PasswordValidationResult {
+  const PasswordValidationResult();
+}
 
-  /// Optional error describing why validation failed.
-  ///
-  /// This will be non-null only when [success] is false. It may contain
-  /// a [PasswordHashValidationFailedException] when the computed hash does
-  /// not match the stored hash, or a generic [PasswordHashValidatorException]
-  /// if an unexpected error occurred during validation.
-  final PasswordHashValidatorException? error;
+/// Validation succeeded; the provided password matches the stored hash.
+final class PasswordValidationSuccess extends PasswordValidationResult {
+  /// 
+  const PasswordValidationSuccess();
+}
 
-  /// Creates a new [PasswordHashValidatorResponse].
+/// Validation failed because the computed password hash did not match the
+/// stored hash.
+final class PasswordValidationFailed extends PasswordValidationResult {
+  /// The hash computed from the provided password using the configured
+  /// password hashing algorithm.
+  final String passwordHash;
+
+  /// The hash retrieved from storage (e.g., database) for the user.
+  final String storedHash;
+
   ///
-  /// Set [success] to true for successful validation and provide [error]
-  /// only for failed validations.
-  PasswordHashValidatorResponse({required this.success, this.error});
+  PasswordValidationFailed({
+    required this.passwordHash,
+    required this.storedHash,
+  });
+}
+
+/// An unexpected error occurred while attempting to validate the password.
+final class PasswordValidationError extends PasswordValidationResult {
+  /// Optional error message or exception object describing the failure.
+  final Object? errorMessage;
+
+  /// Optional stack trace captured when the error occurred.
+  final StackTrace? stackTrace;
+
+  ///
+  PasswordValidationError({
+    this.errorMessage,
+    this.stackTrace,
+  });
 }
 
 /// Configuration options for the Auth module.

@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:test/test.dart';
 
@@ -25,7 +26,8 @@ void main() {
         legacySalt: salt,
       );
 
-      expect((await passwordHash.validate(password)).success, isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
     test('when validating with incorrect password then validator returns false',
@@ -37,7 +39,8 @@ void main() {
         legacySalt: salt,
       );
 
-      expect((await passwordHash.validate('chaser1')).success, isFalse);
+      expect(await passwordHash.validate('chaser1'),
+          isNot(isA<PasswordValidationSuccess>()));
     });
 
     test('when validating with different salts then validator returns false',
@@ -49,7 +52,8 @@ void main() {
         legacySalt: 'second salt',
       );
 
-      expect((await passwordHash.validate(password)).success, isFalse);
+      expect(await passwordHash.validate(password),
+          isNot(isA<PasswordValidationSuccess>()));
     });
   });
 
@@ -117,7 +121,8 @@ void main() {
         legacyEmail: email,
       );
 
-      expect((await passwordHash.validate(password)).success, isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
     test('when matching with incorrect password then it evaluates to false',
@@ -135,7 +140,8 @@ void main() {
         legacyEmail: email,
       );
 
-      expect((await passwordHash.validate('chaser1')).success, isFalse);
+      expect(await passwordHash.validate('chaser1'),
+          isNot(isA<PasswordValidationSuccess>()));
     });
 
     test('when matching with incorrect salt then it evaluates to false',
@@ -153,7 +159,8 @@ void main() {
         legacyEmail: email,
       );
 
-      expect((await passwordHash.validate(password)).success, isFalse);
+      expect(await passwordHash.validate(password),
+          isNot(isA<PasswordValidationSuccess>()));
     });
 
     test('when matching with incorrect email then it evaluates to false',
@@ -171,7 +178,8 @@ void main() {
         legacyEmail: 'second@serverpod.dev',
       );
 
-      expect((await passwordHash.validate(password)).success, isFalse);
+      expect(await passwordHash.validate(password),
+          isNot(isA<PasswordValidationSuccess>()));
     });
   });
 }
