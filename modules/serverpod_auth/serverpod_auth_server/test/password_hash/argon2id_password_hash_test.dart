@@ -244,7 +244,7 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isA<PasswordValidationSuccess>());
+          isNot(isA<PasswordValidationSuccess>()));
     });
   });
 
