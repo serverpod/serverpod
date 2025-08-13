@@ -24,11 +24,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('with a connected method stream has a delayed response', () {
@@ -247,11 +243,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -316,11 +308,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -383,11 +371,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -433,11 +417,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when input stream is closed with error close reason', () {

@@ -29,11 +29,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when serializable exception is passed to stream', () {

@@ -92,11 +92,7 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test('then websocket can still be used to send messages.', () async {
@@ -203,11 +199,7 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test('then websocket can still be used to send messages.', () async {
@@ -314,11 +306,7 @@ void main() {
       testInProgress = false;
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test('then websocket can still be used to send messages.', () async {

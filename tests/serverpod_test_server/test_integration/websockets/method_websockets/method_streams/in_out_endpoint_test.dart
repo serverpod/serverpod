@@ -28,11 +28,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when a value is passed in', () {
@@ -171,11 +167,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when input value 4 is passed in', () {
@@ -273,11 +265,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when a stream of values are passed in', () {

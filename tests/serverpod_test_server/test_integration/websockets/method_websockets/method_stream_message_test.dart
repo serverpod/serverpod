@@ -24,11 +24,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test(
@@ -500,11 +496,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when MethodStreamMessage is passed targeting the endpoint method',

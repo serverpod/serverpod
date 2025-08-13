@@ -28,11 +28,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when a stream of values are passed in', () {
@@ -150,11 +146,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     group('when a null value is passed in', () {

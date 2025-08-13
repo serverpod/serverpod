@@ -24,14 +24,8 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await Future.wait([
-          methodWebSocketConnection.close(),
-          endpointWebSocketConnection.close(),
-        ]);
-      } on WebSocketConnectionClosed {
-        // Connections are already closed
-      }
+      await methodWebSocketConnection.tryClose();
+      await endpointWebSocketConnection.tryClose();
     });
 
     test('when server is stopped then sockets are closed.', () async {

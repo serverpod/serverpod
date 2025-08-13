@@ -18,11 +18,7 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test('when server is stopped then socket is closed.', () async {
@@ -58,14 +54,8 @@ void main() {
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      try {
-        await Future.wait([
-          webSocket1.close(),
-          webSocket2.close(),
-        ]);
-      } on WebSocketConnectionClosed {
-        // Connections are already closed
-      }
+      await webSocket1.tryClose();
+      await webSocket2.tryClose();
     });
 
     test('when server is stopped then sockets are closed.', () async {

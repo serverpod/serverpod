@@ -18,11 +18,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -60,11 +56,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -109,11 +101,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -158,11 +146,7 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
       await server.shutdown(exitProcess: false);
     });
 
@@ -201,14 +185,8 @@ void main() {
     });
 
     tearDown(() async {
-      try {
-        await Future.wait([
-          webSocket1.close(),
-          webSocket2.close(),
-        ]);
-      } on WebSocketConnectionClosed {
-        // Connections are already closed
-      }
+      await webSocket1.tryClose();
+      await webSocket2.tryClose();
       await server.shutdown(exitProcess: false);
     });
 

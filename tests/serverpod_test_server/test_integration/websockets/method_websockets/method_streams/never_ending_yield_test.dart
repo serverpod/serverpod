@@ -74,11 +74,7 @@ void main() {
     tearDown(() async {
       testCompleterTimeout.cancel();
       await server.shutdown(exitProcess: false);
-      try {
-        await webSocket.close();
-      } on WebSocketConnectionClosed {
-        // Connection is already closed
-      }
+      await webSocket.tryClose();
     });
 
     test('when method stream is closed then never ending stream is canceled.',
