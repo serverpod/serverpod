@@ -280,11 +280,19 @@ class DatabaseConnection {
   /// Returns a list of all updated rows. Returns an empty list if no rows match.
   /// Throws [ArgumentError] if [columnValues] is empty.
   ///
+  /// When [limit], [offset], [orderBy], [orderByList], or [orderDescending] are provided,
+  /// only the rows selected by these parameters will be updated.
+  ///
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> updateWhere<T extends TableRow>(
     Session session, {
     required List<ColumnValue> columnValues,
     required Expression where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
@@ -298,13 +306,41 @@ class DatabaseConnection {
       return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
     }).join(', ');
 
-    var query = 'UPDATE "${table.tableName}" SET $setClause'
-        ' WHERE $where'
-        ' RETURNING *';
+    String updateQuery;
 
+    if (limit != null ||
+        offset != null ||
+        orderBy != null ||
+        orderByList != null) {
+      // Build subquery to select IDs with ordering/limiting
+      var subquery = SelectQueryBuilder(table: table)
+          .withSelectFields([table.id])
+          .withWhere(where)
+          .withOrderBy(_resolveOrderBy(orderByList, orderBy, orderDescending))
+          .withLimit(limit)
+          .withOffset(offset)
+          .build();
+
+      // The SelectQueryBuilder returns columns with aliases like "table.id"
+      // so we need to reference them correctly in the subquery
+      var idAlias = '${table.tableName}.${table.id.columnName}';
+
+      // Build UPDATE with CTE
+      updateQuery = 'WITH rows_to_update AS ($subquery) '
+          'UPDATE "${table.tableName}" SET $setClause '
+          'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+          'RETURNING *';
+    } else {
+      // Simple update without ordering/limiting
+      updateQuery = 'UPDATE "${table.tableName}" SET $setClause'
+          ' WHERE $where'
+          ' RETURNING *';
+    }
+
+    // Execute the update
     var result = await _mappedResultsQuery(
       session,
-      query,
+      updateQuery,
       transaction: transaction,
     );
 
