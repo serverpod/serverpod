@@ -5,6 +5,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
+import 'package:serverpod_cli/src/downloads/template_checksum_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -103,33 +104,81 @@ class ResourceManager {
     return templateDirectory.existsSync();
   }
 
+  Future<bool> verifyAndInstallTemplatesIfNeeded(String templateType) async {
+    if (!isTemplatesInstalled) {
+      if (!productionMode) {
+        return true;
+      }
+      try {
+        await installTemplates();
+      } catch (e) {
+        log.error('Failed to download templates: $e');
+        return false;
+      }
+    }
+
+    // In development mode, we can't re-download templates as they're part of the source
+    // Just verify once without retry
+    if (!productionMode) {
+      return await TemplateChecksumManager.verifyTemplateChecksums(
+        templateDirectory,
+        templateType: templateType,
+      );
+    }
+
+    return await TemplateChecksumManager.verifyWithRetry(
+      templateDirectory,
+      templateType: templateType,
+      redownloadCallback: () async {
+        await installTemplates();
+      },
+    );
+  }
+
   Future<void> installTemplates() async {
     log.info('Downloading templates for version $templateVersion');
     if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
-    var response = await http.get(Uri.parse(packageDownloadUrl));
-    var data = response.bodyBytes;
+    var tempDir = Directory(p.join(
+        versionedDir.path, 'temp_${DateTime.now().millisecondsSinceEpoch}'));
+    tempDir.createSync(recursive: true);
 
-    // var outFile = File(p.join(versionedDir.path, 'serverpod_templates.tar.gz'));
-    // outFile.writeAsBytesSync(data);
+    try {
+      var response = await http.get(Uri.parse(packageDownloadUrl));
+      var data = response.bodyBytes;
 
-    // Const constructor was introduced in version 4.0.0 of archive package.
-    // At the time this was written, that version was 2 days old and we don't
-    // want to force a constraint on the package for this.
-    // ignore: prefer_const_constructors
-    var unzipped = GZipDecoder().decodeBytes(data);
-    var archive = TarDecoder().decodeBytes(unzipped);
+      // Const constructor was introduced in version 4.0.0 of archive package.
+      // At the time this was written, that version was 2 days old and we don't
+      // want to force a constraint on the package for this.
+      // ignore: prefer_const_constructors
+      var unzipped = GZipDecoder().decodeBytes(data);
+      var archive = TarDecoder().decodeBytes(unzipped);
 
-    for (var file in archive) {
-      var outFileName = p.join(templateDirectory.path, file.name);
-      if (file.isFile) {
-        var outFile = File(outFileName);
-        outFile = await outFile.create(recursive: true);
-        await outFile.writeAsBytes(file.content);
-      } else {
-        await Directory(outFileName).create(recursive: true);
+      var tempTemplateDir =
+          Directory(p.join(tempDir.path, 'serverpod_template'));
+      for (var file in archive) {
+        var outFileName = p.join(tempTemplateDir.path, file.name);
+        if (file.isFile) {
+          var outFile = File(outFileName);
+          outFile = await outFile.create(recursive: true);
+          await outFile.writeAsBytes(file.content);
+        } else {
+          await Directory(outFileName).create(recursive: true);
+        }
+      }
+
+      if (templateDirectory.existsSync()) {
+        await templateDirectory.delete(recursive: true);
+      }
+      await tempTemplateDir.rename(templateDirectory.path);
+
+      log.info('Download complete.');
+    } finally {
+      if (tempDir.existsSync()) {
+        try {
+          await tempDir.delete(recursive: true);
+        } catch (_) {}
       }
     }
-    log.info('Download complete.');
   }
 }
