@@ -32,6 +32,12 @@ class HealthCheckManager {
   Future<void> start() async {
     _running = true;
 
+    if (Platform.isWindows) {
+      stderr.writeln(
+          'WARNING: CPU and memory usage metrics are not supported on Windows.');
+      return;
+    }
+
     try {
       await SystemResources.init();
     } catch (e) {
