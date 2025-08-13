@@ -800,6 +800,33 @@ class BuildRepositoryClass {
             ..named = true
             ..required = true),
           Parameter((p) => p
+            ..type = refer('int?', 'dart:core')
+            ..name = 'limit'
+            ..named = true),
+          Parameter((p) => p
+            ..type = refer('int?', 'dart:core')
+            ..name = 'offset'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'OrderByBuilder<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart'
+              ..isNullable = true)
+            ..name = 'orderBy'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'OrderByListBuilder<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart'
+              ..isNullable = true)
+            ..name = 'orderByList'
+            ..named = true),
+          Parameter((p) => p
+            ..type = refer('bool', 'dart:core')
+            ..name = 'orderDescending'
+            ..named = true
+            ..defaultTo = const Code('false')),
+          Parameter((p) => p
             ..type = TypeReference((b) => b
               ..isNullable = true
               ..symbol = 'Transaction'
@@ -818,6 +845,15 @@ class BuildRepositoryClass {
               'where': refer('where').call([
                 refer(className).property('t'),
               ]),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy')
+                  .nullSafeProperty('call')
+                  .call([refer(className).property('t')]),
+              'orderByList': refer('orderByList')
+                  .nullSafeProperty('call')
+                  .call([refer(className).property('t')]),
+              'orderDescending': refer('orderDescending'),
               'transaction': refer('transaction'),
             }, [
               refer(className)
