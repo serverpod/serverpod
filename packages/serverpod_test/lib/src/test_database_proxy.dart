@@ -1,8 +1,8 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/serverpod_test.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
-import 'with_serverpod.dart';
 import 'package:synchronized/synchronized.dart';
 
 /// A database proxy that forwards all calls to the provided database.
@@ -350,12 +350,22 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> updateWhere<T extends TableRow>({
     required List<ColumnValue> columnValues,
     required Expression where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.updateWhere<T>(
         columnValues: columnValues,
         where: where,
+        limit: limit,
+        offset: offset,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        orderDescending: orderDescending,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
