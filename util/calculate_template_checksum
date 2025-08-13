@@ -1,0 +1,254 @@
+#!/bin/bash
+
+# Set locale to ensure consistent sorting and behavior across different systems
+export LC_ALL=C
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/calculate_template_checksum"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+BASE=`pwd`
+TEMPLATES_DIR=$BASE/templates/serverpod_templates
+
+echo "Calculating checksums for Serverpod templates..."
+
+# Function to calculate MD5 checksum for a directory tree
+calculate_directory_checksum() {
+    local dir_path=$1
+    local template_name=$2
+    
+    echo "  Calculating checksum for $template_name..." >&2
+    
+    # Create temporary file for collecting all file hashes
+    temp_file=$(mktemp)
+    
+    # If a gitignore file exists in the template, use it to filter files
+    # The templates have "gitignore" (without dot) that gets renamed during project creation
+    gitignore_file=""
+    if [ -f "$dir_path/gitignore" ]; then
+        gitignore_file="$dir_path/gitignore"
+    elif [ -f "$dir_path/.gitignore" ]; then
+        gitignore_file="$dir_path/.gitignore"
+    fi
+    
+    # Find all files and filter based on gitignore patterns
+    find "$dir_path" -type f ! -name "checksums.json" -print0 | \
+        sort -z | \
+        while IFS= read -r -d '' file; do
+            # Get relative path from template directory
+            rel_path="${file#$dir_path/}"
+            
+            # Check if file should be ignored
+            should_ignore=false
+            
+            # Always ignore certain files/patterns
+            case "$rel_path" in
+                .dart_tool/*|.git/*|.DS_Store|*.lock|pubspec.lock)
+                    should_ignore=true
+                    ;;
+            esac
+            
+            # If we have a gitignore file and file isn't already ignored, check against it
+            if [ "$should_ignore" = false ] && [ -n "$gitignore_file" ]; then
+                # Read gitignore patterns and check if file matches
+                # This is a simplified check - just looks for exact matches and directory patterns
+                while IFS= read -r pattern; do
+                    # Skip comments and empty lines
+                    [[ "$pattern" =~ ^[[:space:]]*# ]] && continue
+                    [[ -z "$pattern" ]] && continue
+                    
+                    # Remove leading/trailing whitespace
+                    pattern=$(echo "$pattern" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                    
+                    # Check for matches (simplified gitignore matching)
+                    case "$rel_path" in
+                        $pattern|$pattern/*|*/$pattern|*/$pattern/*)
+                            should_ignore=true
+                            break
+                            ;;
+                    esac
+                    
+                    # Check specific file patterns
+                    if [[ "$rel_path" == *"$pattern" ]] || [[ "/$rel_path" == *"/$pattern" ]]; then
+                        should_ignore=true
+                        break
+                    fi
+                done < "$gitignore_file"
+            fi
+            
+            # Skip ignored files
+            if [ "$should_ignore" = true ]; then
+                if [ -n "$DEBUG_CHECKSUMS" ]; then
+                    echo "    Skipping (ignored): $rel_path" >&2
+                fi
+                continue
+            fi
+            
+            # Process non-ignored files
+            if [ -n "$DEBUG_CHECKSUMS" ]; then
+                echo "    Processing: $rel_path" >&2
+            fi
+            
+            # Calculate MD5 of file content
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS
+                file_hash=$(md5 -q "$file")
+            else
+                # Linux
+                file_hash=$(md5sum "$file" | cut -d' ' -f1)
+            fi
+            # Combine path and hash
+            echo "$rel_path:$file_hash" >> "$temp_file"
+        done
+    
+    # Calculate final checksum from all file hashes
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        final_checksum=$(md5 -q "$temp_file")
+    else
+        # Linux
+        final_checksum=$(md5sum "$temp_file" | cut -d' ' -f1)
+    fi
+    
+    # Clean up temp file
+    rm "$temp_file"
+    
+    # Return only the checksum
+    echo "$final_checksum"
+}
+
+# Calculate checksums for each individual template directory
+echo ""
+echo "Calculating checksums for all template directories..."
+
+# List of all template directories that are downloaded
+template_dirs=(
+    "projectname_server"
+    "projectname_server_upgrade"
+    "projectname_client"
+    "projectname_flutter"
+    "modulename_server"
+    "modulename_client"
+    "github"
+)
+
+# Store checksums as individual variables (for compatibility)
+checksum_projectname_server=""
+checksum_projectname_server_upgrade=""
+checksum_projectname_client=""
+checksum_projectname_flutter=""
+checksum_modulename_server=""
+checksum_modulename_client=""
+checksum_github=""
+
+for dir in "${template_dirs[@]}"; do
+    if [ -d "$TEMPLATES_DIR/$dir" ]; then
+        checksum=$(calculate_directory_checksum "$TEMPLATES_DIR/$dir" "$dir")
+        # Store in variable named checksum_<dirname>
+        case "$dir" in
+            "projectname_server")
+                checksum_projectname_server="$checksum"
+                ;;
+            "projectname_server_upgrade")
+                checksum_projectname_server_upgrade="$checksum"
+                ;;
+            "projectname_client")
+                checksum_projectname_client="$checksum"
+                ;;
+            "projectname_flutter")
+                checksum_projectname_flutter="$checksum"
+                ;;
+            "modulename_server")
+                checksum_modulename_server="$checksum"
+                ;;
+            "modulename_client")
+                checksum_modulename_client="$checksum"
+                ;;
+            "github")
+                checksum_github="$checksum"
+                ;;
+        esac
+    else
+        echo "  Warning: Directory $dir not found, skipping..."
+    fi
+done
+
+# Also calculate composite checksums for template types
+echo ""
+echo "Calculating composite checksums for template types..."
+
+# Mini template: projectname_server, projectname_client, projectname_flutter
+mini_checksum=""
+mini_checksum="${mini_checksum}${checksum_projectname_server}"
+mini_checksum="${mini_checksum}${checksum_projectname_client}"
+mini_checksum="${mini_checksum}${checksum_projectname_flutter}"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    mini_final=$(echo -n "$mini_checksum" | md5)
+else
+    mini_final=$(echo -n "$mini_checksum" | md5sum | cut -d' ' -f1)
+fi
+
+# Server template: all projectname directories + github
+server_checksum=""
+server_checksum="${server_checksum}${checksum_projectname_server}"
+server_checksum="${server_checksum}${checksum_projectname_server_upgrade}"
+server_checksum="${server_checksum}${checksum_projectname_client}"
+server_checksum="${server_checksum}${checksum_projectname_flutter}"
+server_checksum="${server_checksum}${checksum_github}"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    server_final=$(echo -n "$server_checksum" | md5)
+else
+    server_final=$(echo -n "$server_checksum" | md5sum | cut -d' ' -f1)
+fi
+
+# Module template: modulename_server, modulename_client
+module_checksum=""
+module_checksum="${module_checksum}${checksum_modulename_server}"
+module_checksum="${module_checksum}${checksum_modulename_client}"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    module_final=$(echo -n "$module_checksum" | md5)
+else
+    module_final=$(echo -n "$module_checksum" | md5sum | cut -d' ' -f1)
+fi
+
+# Create checksums.json file with both individual and composite checksums
+cat > "$TEMPLATES_DIR/checksums.json" << EOF
+{
+  "directories": {
+    "projectname_server": "$checksum_projectname_server",
+    "projectname_server_upgrade": "$checksum_projectname_server_upgrade",
+    "projectname_client": "$checksum_projectname_client",
+    "projectname_flutter": "$checksum_projectname_flutter",
+    "modulename_server": "$checksum_modulename_server",
+    "modulename_client": "$checksum_modulename_client",
+    "github": "$checksum_github"
+  },
+  "templates": {
+    "mini": "$mini_final",
+    "server": "$server_final",
+    "module": "$module_final"
+  }
+}
+EOF
+
+echo ""
+echo "Checksums calculated and saved to $TEMPLATES_DIR/checksums.json"
+echo ""
+echo "Individual directory checksums:"
+[ -n "$checksum_projectname_server" ] && echo "  projectname_server: $checksum_projectname_server"
+[ -n "$checksum_projectname_server_upgrade" ] && echo "  projectname_server_upgrade: $checksum_projectname_server_upgrade"
+[ -n "$checksum_projectname_client" ] && echo "  projectname_client: $checksum_projectname_client"
+[ -n "$checksum_projectname_flutter" ] && echo "  projectname_flutter: $checksum_projectname_flutter"
+[ -n "$checksum_modulename_server" ] && echo "  modulename_server: $checksum_modulename_server"
+[ -n "$checksum_modulename_client" ] && echo "  modulename_client: $checksum_modulename_client"
+[ -n "$checksum_github" ] && echo "  github: $checksum_github"
+echo ""
+echo "Template type checksums:"
+echo "  mini:   $mini_final"
+echo "  server: $server_final"
+echo "  module: $module_final"

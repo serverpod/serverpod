@@ -1,0 +1,16 @@
+{
+  "directories": {
+    "projectname_server": "fa2735b026b907a24155878bbba6c5c2",
+    "projectname_server_upgrade": "090b6ce4fb017c3f6726459e2d48e43c",
+    "projectname_client": "7284770670ac290b29ee3631c13489d7",
+    "projectname_flutter": "854898128a7e4b5365c863c8c8ae97fb",
+    "modulename_server": "2bcf7fc05f2cd50b352cf29a1ef1cddd",
+    "modulename_client": "182164cba05c2df58c5f96e066b772bc",
+    "github": "26364b6ee3abbbbc6d3c2f72746b5814"
+  },
+  "templates": {
+    "mini": "cf7cc972b973880be94c8295f1ed6eee",
+    "server": "11a0494f1ad0c8d2a0607f01bd96db16",
+    "module": "c2e9c6f031f2f850f9c42372cc8c8a8a"
+  }
+}
