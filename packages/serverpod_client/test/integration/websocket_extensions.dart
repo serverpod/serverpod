@@ -8,6 +8,14 @@ extension WebSocketExtensions on WebSocket {
       .where((event) => event is TextDataReceived)
       .cast<TextDataReceived>()
       .map((e) => e.text);
+
+  Future<void> tryClose([int? code, String? reason]) async {
+    try {
+      await close(code, reason);
+    } on WebSocketConnectionClosed {
+      // Connection is already closed
+    }
+  }
 }
 
 /// Extension to provide backward-compatible stream-based API for RelicWebSocket.
