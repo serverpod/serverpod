@@ -390,11 +390,21 @@ class DateTimeDefaultPersistRepository {
     required _i1.ColumnValueListBuilder<DateTimeDefaultPersistTable>
         columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DateTimeDefaultPersist>(
       columnValues: columnValues(DateTimeDefaultPersist.t),
       where: where(DateTimeDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultPersist.t),
+      orderByList: orderByList?.call(DateTimeDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

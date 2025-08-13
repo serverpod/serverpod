@@ -425,11 +425,21 @@ class PlayerUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PlayerUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<PlayerUuid>(
       columnValues: columnValues(PlayerUuid.t),
       where: where(PlayerUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PlayerUuid.t),
+      orderByList: orderByList?.call(PlayerUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

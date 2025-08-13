@@ -357,11 +357,21 @@ class DoubleDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefaultPersist>(
       columnValues: columnValues(DoubleDefaultPersist.t),
       where: where(DoubleDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefaultPersist.t),
+      orderByList: orderByList?.call(DoubleDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -437,11 +437,21 @@ class EnumDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefault>(
       columnValues: columnValues(EnumDefault.t),
       where: where(EnumDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefault.t),
+      orderByList: orderByList?.call(EnumDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

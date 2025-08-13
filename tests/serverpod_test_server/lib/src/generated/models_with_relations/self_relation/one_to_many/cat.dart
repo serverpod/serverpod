@@ -498,11 +498,21 @@ class CatRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CatTable> columnValues,
     required _i1.WhereExpressionBuilder<CatTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CatTable>? orderBy,
+    _i1.OrderByListBuilder<CatTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Cat>(
       columnValues: columnValues(Cat.t),
       where: where(Cat.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

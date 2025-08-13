@@ -466,11 +466,21 @@ class ServerHealthConnectionInfoRepository {
     required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoTable>
         columnValues,
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ServerHealthConnectionInfo>(
       columnValues: columnValues(ServerHealthConnectionInfo.t),
       where: where(ServerHealthConnectionInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

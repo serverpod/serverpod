@@ -407,11 +407,21 @@ class BigIntDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
       columnValues: columnValues(BigIntDefaultMix.t),
       where: where(BigIntDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultMix.t),
+      orderByList: orderByList?.call(BigIntDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

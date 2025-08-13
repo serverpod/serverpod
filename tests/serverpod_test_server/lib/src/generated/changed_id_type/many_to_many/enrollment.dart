@@ -473,11 +473,21 @@ class EnrollmentIntRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EnrollmentIntTable> columnValues,
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnrollmentInt>(
       columnValues: columnValues(EnrollmentInt.t),
       where: where(EnrollmentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

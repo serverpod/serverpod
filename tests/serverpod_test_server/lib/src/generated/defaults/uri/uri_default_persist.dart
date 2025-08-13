@@ -358,11 +358,21 @@ class UriDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefaultPersist>(
       columnValues: columnValues(UriDefaultPersist.t),
       where: where(UriDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UriDefaultPersist.t),
+      orderByList: orderByList?.call(UriDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

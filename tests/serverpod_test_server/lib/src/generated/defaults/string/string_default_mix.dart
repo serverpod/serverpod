@@ -406,11 +406,21 @@ class StringDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultMix>(
       columnValues: columnValues(StringDefaultMix.t),
       where: where(StringDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultMix.t),
+      orderByList: orderByList?.call(StringDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -448,11 +448,21 @@ class RelationToMultipleMaxFieldNameRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelationToMultipleMaxFieldName>(
       columnValues: columnValues(RelationToMultipleMaxFieldName.t),
       where: where(RelationToMultipleMaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

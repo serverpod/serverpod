@@ -431,11 +431,21 @@ class CourseRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CourseTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseTable>? orderBy,
+    _i1.OrderByListBuilder<CourseTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Course>(
       columnValues: columnValues(Course.t),
       where: where(Course.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

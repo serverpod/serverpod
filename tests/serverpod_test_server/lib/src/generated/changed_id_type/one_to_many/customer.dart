@@ -431,11 +431,21 @@ class CustomerIntRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CustomerIntTable> columnValues,
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CustomerIntTable>? orderBy,
+    _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CustomerInt>(
       columnValues: columnValues(CustomerInt.t),
       where: where(CustomerInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

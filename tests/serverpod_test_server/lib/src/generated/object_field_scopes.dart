@@ -380,11 +380,21 @@ class ObjectFieldScopesRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldScopes>(
       columnValues: columnValues(ObjectFieldScopes.t),
       where: where(ObjectFieldScopes.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -391,11 +391,21 @@ class EnumDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EnumDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefaultPersist>(
       columnValues: columnValues(EnumDefaultPersist.t),
       where: where(EnumDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultPersist.t),
+      orderByList: orderByList?.call(EnumDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

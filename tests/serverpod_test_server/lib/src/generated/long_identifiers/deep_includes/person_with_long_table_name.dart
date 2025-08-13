@@ -497,11 +497,21 @@ class PersonWithLongTableNameRepository {
     required _i1.ColumnValueListBuilder<PersonWithLongTableNameTable>
         columnValues,
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<PersonWithLongTableName>(
       columnValues: columnValues(PersonWithLongTableName.t),
       where: where(PersonWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PersonWithLongTableName.t),
+      orderByList: orderByList?.call(PersonWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

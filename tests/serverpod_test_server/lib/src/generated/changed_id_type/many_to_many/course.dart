@@ -435,11 +435,21 @@ class CourseUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CourseUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CourseUuid>(
       columnValues: columnValues(CourseUuid.t),
       where: where(CourseUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

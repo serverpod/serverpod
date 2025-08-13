@@ -368,11 +368,21 @@ class UniqueDataRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UniqueDataTable> columnValues,
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UniqueDataTable>? orderBy,
+    _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UniqueData>(
       columnValues: columnValues(UniqueData.t),
       where: where(UniqueData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UniqueData.t),
+      orderByList: orderByList?.call(UniqueData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

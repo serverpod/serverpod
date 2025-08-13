@@ -432,11 +432,21 @@ class AuthKeyRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AuthKeyTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthKey>(
       columnValues: columnValues(AuthKey.t),
       where: where(AuthKey.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

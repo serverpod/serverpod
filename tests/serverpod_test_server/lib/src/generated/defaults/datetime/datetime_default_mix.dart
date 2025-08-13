@@ -409,11 +409,21 @@ class DateTimeDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DateTimeDefaultMix>(
       columnValues: columnValues(DateTimeDefaultMix.t),
       where: where(DateTimeDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultMix.t),
+      orderByList: orderByList?.call(DateTimeDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

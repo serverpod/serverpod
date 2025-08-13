@@ -350,11 +350,21 @@ class ObjectWithParentRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithParentTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithParent>(
       columnValues: columnValues(ObjectWithParent.t),
       where: where(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -463,11 +463,21 @@ class ServerHealthMetricRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ServerHealthMetricTable> columnValues,
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ServerHealthMetric>(
       columnValues: columnValues(ServerHealthMetric.t),
       where: where(ServerHealthMetric.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

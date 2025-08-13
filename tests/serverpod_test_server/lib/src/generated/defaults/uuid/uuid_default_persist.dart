@@ -414,11 +414,21 @@ class UuidDefaultPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefaultPersist>(
       columnValues: columnValues(UuidDefaultPersist.t),
       where: where(UuidDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

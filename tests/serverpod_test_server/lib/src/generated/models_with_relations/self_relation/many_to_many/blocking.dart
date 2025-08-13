@@ -471,11 +471,21 @@ class BlockingRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BlockingTable> columnValues,
     required _i1.WhereExpressionBuilder<BlockingTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Blocking>(
       columnValues: columnValues(Blocking.t),
       where: where(Blocking.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

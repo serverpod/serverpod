@@ -396,11 +396,21 @@ class EmailFailedSignInRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailFailedSignIn>(
       columnValues: columnValues(EmailFailedSignIn.t),
       where: where(EmailFailedSignIn.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

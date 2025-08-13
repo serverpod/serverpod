@@ -352,11 +352,21 @@ class ObjectWithByteDataRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithByteDataTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithByteData>(
       columnValues: columnValues(ObjectWithByteData.t),
       where: where(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

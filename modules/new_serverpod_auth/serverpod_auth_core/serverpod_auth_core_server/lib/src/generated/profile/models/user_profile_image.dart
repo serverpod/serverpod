@@ -489,11 +489,21 @@ class UserProfileImageRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
       columnValues: columnValues(UserProfileImage.t),
       where: where(UserProfileImage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserProfileImage.t),
+      orderByList: orderByList?.call(UserProfileImage.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

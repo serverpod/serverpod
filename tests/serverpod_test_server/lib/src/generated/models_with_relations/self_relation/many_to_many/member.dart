@@ -499,11 +499,21 @@ class MemberRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MemberTable> columnValues,
     required _i1.WhereExpressionBuilder<MemberTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MemberTable>? orderBy,
+    _i1.OrderByListBuilder<MemberTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Member>(
       columnValues: columnValues(Member.t),
       where: where(Member.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

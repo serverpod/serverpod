@@ -421,11 +421,21 @@ class CompanyRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CompanyTable> columnValues,
     required _i1.WhereExpressionBuilder<CompanyTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CompanyTable>? orderBy,
+    _i1.OrderByListBuilder<CompanyTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Company>(
       columnValues: columnValues(Company.t),
       where: where(Company.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

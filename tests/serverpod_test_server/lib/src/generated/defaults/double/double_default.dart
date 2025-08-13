@@ -375,11 +375,21 @@ class DoubleDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefault>(
       columnValues: columnValues(DoubleDefault.t),
       where: where(DoubleDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

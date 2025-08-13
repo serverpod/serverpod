@@ -394,11 +394,21 @@ class ChapterRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ChapterTable> columnValues,
     required _i1.WhereExpressionBuilder<ChapterTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChapterTable>? orderBy,
+    _i1.OrderByListBuilder<ChapterTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Chapter>(
       columnValues: columnValues(Chapter.t),
       where: where(Chapter.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

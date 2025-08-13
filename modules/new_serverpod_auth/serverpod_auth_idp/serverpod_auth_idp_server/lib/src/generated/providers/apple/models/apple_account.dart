@@ -653,11 +653,21 @@ class AppleAccountRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AppleAccountTable> columnValues,
     required _i1.WhereExpressionBuilder<AppleAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AppleAccountTable>? orderBy,
+    _i1.OrderByListBuilder<AppleAccountTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AppleAccount>(
       columnValues: columnValues(AppleAccount.t),
       where: where(AppleAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

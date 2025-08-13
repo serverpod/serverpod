@@ -362,11 +362,21 @@ class MaxFieldNameRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MaxFieldNameTable> columnValues,
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MaxFieldName>(
       columnValues: columnValues(MaxFieldName.t),
       where: where(MaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MaxFieldName.t),
+      orderByList: orderByList?.call(MaxFieldName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

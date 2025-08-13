@@ -463,11 +463,21 @@ class EmailAccountPasswordResetAttemptRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetAttemptTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountPasswordResetAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetAttemptTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetAttempt>(
       columnValues: columnValues(EmailAccountPasswordResetAttempt.t),
       where: where(EmailAccountPasswordResetAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountPasswordResetAttempt.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetAttempt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

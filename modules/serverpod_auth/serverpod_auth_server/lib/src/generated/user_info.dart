@@ -508,11 +508,21 @@ class UserInfoRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserInfoTable> columnValues,
     required _i1.WhereExpressionBuilder<UserInfoTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserInfoTable>? orderBy,
+    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserInfo>(
       columnValues: columnValues(UserInfo.t),
       where: where(UserInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserInfo.t),
+      orderByList: orderByList?.call(UserInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

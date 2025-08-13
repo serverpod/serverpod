@@ -403,11 +403,21 @@ class ArenaRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ArenaTable> columnValues,
     required _i1.WhereExpressionBuilder<ArenaTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Arena>(
       columnValues: columnValues(Arena.t),
       where: where(Arena.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

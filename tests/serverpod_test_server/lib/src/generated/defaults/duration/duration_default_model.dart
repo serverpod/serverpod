@@ -394,11 +394,21 @@ class DurationDefaultModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DurationDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefaultModel>(
       columnValues: columnValues(DurationDefaultModel.t),
       where: where(DurationDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultModel.t),
+      orderByList: orderByList?.call(DurationDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

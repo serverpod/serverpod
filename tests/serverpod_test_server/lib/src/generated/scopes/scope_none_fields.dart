@@ -378,11 +378,21 @@ class ScopeNoneFieldsRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ScopeNoneFields>(
       columnValues: columnValues(ScopeNoneFields.t),
       where: where(ScopeNoneFields.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

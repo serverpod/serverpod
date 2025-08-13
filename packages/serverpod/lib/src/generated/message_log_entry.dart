@@ -546,11 +546,21 @@ class MessageLogEntryRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
       columnValues: columnValues(MessageLogEntry.t),
       where: where(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

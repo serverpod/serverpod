@@ -495,11 +495,21 @@ class OrderRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<OrderTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrderTable>? orderBy,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Order>(
       columnValues: columnValues(Order.t),
       where: where(Order.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

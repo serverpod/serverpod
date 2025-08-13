@@ -424,11 +424,21 @@ class AddressRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AddressTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Address>(
       columnValues: columnValues(Address.t),
       where: where(Address.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

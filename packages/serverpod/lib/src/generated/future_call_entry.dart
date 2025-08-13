@@ -439,11 +439,21 @@ class FutureCallEntryRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<FutureCallEntry>(
       columnValues: columnValues(FutureCallEntry.t),
       where: where(FutureCallEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

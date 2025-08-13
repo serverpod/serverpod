@@ -453,11 +453,21 @@ class UuidDefaultRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UuidDefaultTable> columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefault>(
       columnValues: columnValues(UuidDefault.t),
       where: where(UuidDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefault.t),
+      orderByList: orderByList?.call(UuidDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

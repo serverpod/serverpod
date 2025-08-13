@@ -423,11 +423,21 @@ class CompanyUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CompanyUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<CompanyUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CompanyUuidTable>? orderBy,
+    _i1.OrderByListBuilder<CompanyUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CompanyUuid>(
       columnValues: columnValues(CompanyUuid.t),
       where: where(CompanyUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CompanyUuid.t),
+      orderByList: orderByList?.call(CompanyUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

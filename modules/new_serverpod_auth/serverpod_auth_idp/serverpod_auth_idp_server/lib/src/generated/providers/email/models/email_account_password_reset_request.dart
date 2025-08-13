@@ -484,11 +484,21 @@ class EmailAccountPasswordResetRequestRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
       columnValues: columnValues(EmailAccountPasswordResetRequest.t),
       where: where(EmailAccountPasswordResetRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

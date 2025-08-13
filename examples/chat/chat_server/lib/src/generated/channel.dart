@@ -373,11 +373,21 @@ class ChannelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ChannelTable> columnValues,
     required _i1.WhereExpressionBuilder<ChannelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChannelTable>? orderBy,
+    _i1.OrderByListBuilder<ChannelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Channel>(
       columnValues: columnValues(Channel.t),
       where: where(Channel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Channel.t),
+      orderByList: orderByList?.call(Channel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

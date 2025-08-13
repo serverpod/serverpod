@@ -422,11 +422,21 @@ class PlayerRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PlayerTable> columnValues,
     required _i1.WhereExpressionBuilder<PlayerTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PlayerTable>? orderBy,
+    _i1.OrderByListBuilder<PlayerTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Player>(
       columnValues: columnValues(Player.t),
       where: where(Player.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

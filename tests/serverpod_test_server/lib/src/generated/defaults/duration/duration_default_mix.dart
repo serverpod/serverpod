@@ -427,11 +427,21 @@ class DurationDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DurationDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefaultMix>(
       columnValues: columnValues(DurationDefaultMix.t),
       where: where(DurationDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultMix.t),
+      orderByList: orderByList?.call(DurationDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

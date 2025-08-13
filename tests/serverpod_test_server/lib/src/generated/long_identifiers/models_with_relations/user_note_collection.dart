@@ -441,11 +441,21 @@ class UserNoteCollectionRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteCollection>(
       columnValues: columnValues(UserNoteCollection.t),
       where: where(UserNoteCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

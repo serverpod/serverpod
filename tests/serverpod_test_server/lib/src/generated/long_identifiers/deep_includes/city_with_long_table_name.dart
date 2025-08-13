@@ -516,11 +516,21 @@ class CityWithLongTableNameRepository {
     required _i1.ColumnValueListBuilder<CityWithLongTableNameTable>
         columnValues,
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CityWithLongTableName>(
       columnValues: columnValues(CityWithLongTableName.t),
       where: where(CityWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

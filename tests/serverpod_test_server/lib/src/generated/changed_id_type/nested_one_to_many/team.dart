@@ -501,11 +501,21 @@ class TeamIntRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TeamIntTable>? orderBy,
+    _i1.OrderByListBuilder<TeamIntTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<TeamInt>(
       columnValues: columnValues(TeamInt.t),
       where: where(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

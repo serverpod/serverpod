@@ -378,11 +378,21 @@ class ObjectFieldPersistRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
       columnValues: columnValues(ObjectFieldPersist.t),
       where: where(ObjectFieldPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

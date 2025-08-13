@@ -404,11 +404,21 @@ class EmptyModelRelationItemRepository {
     required _i1.ColumnValueListBuilder<EmptyModelRelationItemTable>
         columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmptyModelRelationItem>(
       columnValues: columnValues(EmptyModelRelationItem.t),
       where: where(EmptyModelRelationItem.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmptyModelRelationItem.t),
+      orderByList: orderByList?.call(EmptyModelRelationItem.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

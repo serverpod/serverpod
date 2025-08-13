@@ -532,11 +532,21 @@ class CitizenRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CitizenTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Citizen>(
       columnValues: columnValues(Citizen.t),
       where: where(Citizen.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

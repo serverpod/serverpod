@@ -404,11 +404,21 @@ class ArenaUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ArenaUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ArenaUuid>(
       columnValues: columnValues(ArenaUuid.t),
       where: where(ArenaUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

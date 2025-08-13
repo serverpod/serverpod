@@ -543,11 +543,21 @@ class LogEntryRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LogEntryTable> columnValues,
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LogEntry>(
       columnValues: columnValues(LogEntry.t),
       where: where(LogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LogEntry.t),
+      orderByList: orderByList?.call(LogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

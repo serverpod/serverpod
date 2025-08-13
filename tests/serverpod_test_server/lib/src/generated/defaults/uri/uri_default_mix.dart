@@ -404,11 +404,21 @@ class UriDefaultMixRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultMixTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UriDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<UriDefaultMixTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefaultMix>(
       columnValues: columnValues(UriDefaultMix.t),
       where: where(UriDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UriDefaultMix.t),
+      orderByList: orderByList?.call(UriDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

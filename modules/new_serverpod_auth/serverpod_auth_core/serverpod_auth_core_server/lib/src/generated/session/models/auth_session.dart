@@ -611,11 +611,21 @@ class AuthSessionRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<AuthSessionTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthSessionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthSessionTable>? orderBy,
+    _i1.OrderByListBuilder<AuthSessionTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthSession>(
       columnValues: columnValues(AuthSession.t),
       where: where(AuthSession.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthSession.t),
+      orderByList: orderByList?.call(AuthSession.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

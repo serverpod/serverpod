@@ -473,11 +473,21 @@ class ObjectWithHalfVectorRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithHalfVectorTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithHalfVector>(
       columnValues: columnValues(ObjectWithHalfVector.t),
       where: where(ObjectWithHalfVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithHalfVector.t),
+      orderByList: orderByList?.call(ObjectWithHalfVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -779,11 +779,21 @@ class TypesRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<TypesTable> columnValues,
     required _i1.WhereExpressionBuilder<TypesTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Types>(
       columnValues: columnValues(Types.t),
       where: where(Types.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

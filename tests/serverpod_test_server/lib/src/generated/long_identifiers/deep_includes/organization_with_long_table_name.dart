@@ -509,11 +509,21 @@ class OrganizationWithLongTableNameRepository {
         columnValues,
     required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
         where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrganizationWithLongTableName>(
       columnValues: columnValues(OrganizationWithLongTableName.t),
       where: where(OrganizationWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -374,11 +374,21 @@ class StringDefaultModelRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultModelTable> columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultModel>(
       columnValues: columnValues(StringDefaultModel.t),
       where: where(StringDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

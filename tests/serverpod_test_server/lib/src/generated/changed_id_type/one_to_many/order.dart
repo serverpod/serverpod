@@ -496,11 +496,21 @@ class OrderUuidRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<OrderUuidTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
+    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrderUuid>(
       columnValues: columnValues(OrderUuid.t),
       where: where(OrderUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

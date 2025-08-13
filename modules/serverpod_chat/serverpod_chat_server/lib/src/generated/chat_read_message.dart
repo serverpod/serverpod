@@ -395,11 +395,21 @@ class ChatReadMessageRepository {
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ChatReadMessageTable> columnValues,
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
+    _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ChatReadMessage>(
       columnValues: columnValues(ChatReadMessage.t),
       where: where(ChatReadMessage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChatReadMessage.t),
+      orderByList: orderByList?.call(ChatReadMessage.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

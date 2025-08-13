@@ -408,11 +408,21 @@ class UserNoteWithALongNameRepository {
     required _i1.ColumnValueListBuilder<UserNoteWithALongNameTable>
         columnValues,
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteWithALongName>(
       columnValues: columnValues(UserNoteWithALongName.t),
       where: where(UserNoteWithALongName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
