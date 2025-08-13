@@ -4,6 +4,22 @@ Always reference these instructions first and fallback to search or bash command
 
 Serverpod is a next-generation app and web server framework built for the Flutter community. It allows you to write server-side code in Dart, automatically generate APIs, and hook up databases with minimal effort. This is a monorepo containing the core framework, CLI tools, modules, integrations, examples, and comprehensive tests.
 
+## Pull Request Automation
+
+When working with pull requests in this repository, **ALWAYS**:
+
+1. **Use the PR description template**: Apply the exact template structure from `.github/pull_request_template.md`
+2. **Reference issues**: Include "Fixes #XXXX." at the end of every PR description
+3. **Follow conventional commits**: Ensure PR titles follow the format `<type>: <description>`
+4. **Complete checklists**: Mark appropriate items in the pre-launch checklist
+5. **Document breaking changes**: Always fill in the breaking changes section if applicable
+
+### PR Template Enforcement
+- **Never create** a PR description without using the standard template
+- **Always preserve** the checklist structure and format
+- **Ensure consistency** across all PRs for documentation quality
+- **Reference the template file** directly when generating descriptions
+
 ## Command Validation Status
 
 **FULLY VALIDATED** (confirmed working in test environment):
@@ -517,3 +533,5 @@ test(
 - Follow Dart formatting conventions
 - Remove unnecessary comments from production code
 - Use descriptive variable and function names
+
+
