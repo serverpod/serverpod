@@ -4,6 +4,22 @@ Always reference these instructions first and fallback to search or bash command
 
 Serverpod is a next-generation app and web server framework built for the Flutter community. It allows you to write server-side code in Dart, automatically generate APIs, and hook up databases with minimal effort. This is a monorepo containing the core framework, CLI tools, modules, integrations, examples, and comprehensive tests.
 
+## Pull Request Automation
+
+When working with pull requests in this repository, **ALWAYS**:
+
+1. **Use the PR description template**: Apply the exact template structure from `.github/pull_request_template.md`
+2. **Reference issues**: Include "Fixes #XXXX." at the end of every PR description
+3. **Follow conventional commits**: Ensure PR titles follow the format `<type>: <description>`
+4. **Complete checklists**: Mark appropriate items in the pre-launch checklist
+5. **Document breaking changes**: Always fill in the breaking changes section if applicable
+
+### PR Template Enforcement
+- **Never create** a PR description without using the standard template
+- **Always preserve** the checklist structure and format
+- **Ensure consistency** across all PRs for documentation quality
+- **Reference the template file** directly when generating descriptions
+
 ## Command Validation Status
 
 **FULLY VALIDATED** (confirmed working in test environment):
@@ -517,3 +533,49 @@ test(
 - Follow Dart formatting conventions
 - Remove unnecessary comments from production code
 - Use descriptive variable and function names
+
+## Pull Request Description Template
+
+**ALWAYS use the standard PR description template** when generating pull request descriptions. The template is located at `.github/pull_request_template.md` and must be followed exactly for consistency and documentation quality.
+
+### Required PR Description Structure
+When creating or updating PR descriptions, always use this exact format:
+
+```markdown
+_Replace this paragraph with a description of what this PR is changing or adding, and why._
+
+_List which issues are fixed by this PR. You must list at least one issue._
+
+## Pre-launch Checklist
+
+- [ ] I read the [Contribute](https://docs.serverpod.dev/contribute) page and followed the process outlined there for submitting PRs.
+- [ ] This update contains only one single feature or bug fix and nothing else. (If you are submitting multiple fixes, please make multiple PRs.)
+- [ ] I read and followed the [Dart Style Guide](https://dart.dev/guides/language/effective-dart/style) and formatted the code with [dart format](https://dart.dev/tools/dart-format).
+- [ ] I listed at least one issue that this PR fixes in the description above.
+- [ ] I updated/added relevant documentation (doc comments with `///`), and made sure that the documentation follows the same style as other Serverpod documentation. I checked spelling and grammar.
+- [ ] I added new tests to check the change I am making.
+- [ ] All existing and new tests are passing.
+- [ ] Any breaking changes are documented below.
+
+If you need help, consider asking for advice on the [discussion board](https://github.com/serverpod/serverpod/discussions).
+
+## Breaking changes
+
+_If you have done any breaking changes, make sure to outline them here, so that they can be included in the notes for the next release._
+```
+
+### PR Description Guidelines
+- **Replace the placeholder text** with specific details about the changes
+- **Always list at least one issue** that the PR fixes using "Fixes #XXXX" format
+- **Check appropriate boxes** in the pre-launch checklist based on the changes made
+- **Document breaking changes** if any exist
+- **Use clear, descriptive language** explaining what changed and why
+- **Include "Fixes #XXXX."** as the last line of the description (with the period)
+
+### Automatic PR Description Generation
+When generating PR descriptions automatically:
+1. Use the template structure above as the base
+2. Fill in the description with specific details about the code changes
+3. Reference the relevant issue numbers
+4. Pre-check applicable checklist items based on the changes
+5. Ensure the description is clear and follows conventional commit guidelines
