@@ -67,7 +67,7 @@ sealed class PasswordValidationResult {
 
 /// Validation succeeded; the provided password matches the stored hash.
 final class PasswordValidationSuccess extends PasswordValidationResult {
-  /// 
+  ///
   const PasswordValidationSuccess();
 }
 
