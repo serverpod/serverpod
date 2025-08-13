@@ -6,7 +6,8 @@ import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../websocket_extensions.dart';
 
 void main() {
   group(
@@ -16,20 +17,19 @@ void main() {
     var method = 'didInputStreamHaveSerializableExceptionError';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     group('when serializable exception is passed to stream', () {
@@ -51,7 +51,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -67,7 +67,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -88,7 +88,7 @@ void main() {
           ],
           someNullableField: 1,
         );
-        webSocket.sink.add(MethodStreamSerializableException.buildMessage(
+        webSocket.sendText(MethodStreamSerializableException.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,

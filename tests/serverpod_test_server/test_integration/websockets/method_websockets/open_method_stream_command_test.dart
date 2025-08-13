@@ -3,31 +3,31 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../websocket_extensions.dart';
 
 void main() {
   group('Given method websocket connection', () {
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     test(
         'when a open method stream command with an invalid endpoint is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'this is not an existing endpoint',
         method: 'method',
         args: {},
@@ -35,12 +35,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -54,7 +53,7 @@ void main() {
     test(
         'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'this is not an existing method',
         args: {},
@@ -62,12 +61,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -81,7 +79,7 @@ void main() {
     test(
         'when a open method stream command is sent to a method call endpoint then OpenMethodStreamResponse type "endpointNotFound" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'methodCallEndpoint',
         args: {},
@@ -89,12 +87,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -108,7 +105,7 @@ void main() {
     test(
         'when a valid open method stream command is sent then OpenMethodStreamResponse type "success" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleStream',
         args: {},
@@ -116,12 +113,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -135,7 +131,7 @@ void main() {
     test(
         'when a open method stream command is sent without required argument then OpenMethodStreamResponse type "invalidArguments" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleStreamWithParameter',
         args: {},
@@ -143,12 +139,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -162,7 +157,7 @@ void main() {
     test(
         'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'intEchoStream',
         args: {},
@@ -170,12 +165,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -189,7 +183,7 @@ void main() {
     test(
         'when a open method stream command is sent with required argument then OpenMethodStreamResponse type "success" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleStreamWithParameter',
         args: {'value': 42},
@@ -197,12 +191,11 @@ void main() {
         inputStreams: [],
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -216,7 +209,7 @@ void main() {
     test(
         'when a open method stream command is sent to a method with a streaming argument then OpenMethodStreamResponse type "success" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleInputReturnStream',
         args: {},
@@ -224,7 +217,7 @@ void main() {
         inputStreams: ['stream'],
       ));
 
-      var response = webSocket.stream.first;
+      var response = webSocket.textEvents.first;
       await expectLater(
         response.timeout(Duration(seconds: 5)),
         completion(isA<String>()),
@@ -232,7 +225,7 @@ void main() {
       );
 
       var message = WebSocketMessage.fromJsonString(
-        await response as String,
+        await response,
         server.serializationManager,
       );
       expect(
@@ -247,7 +240,7 @@ void main() {
     test(
         'when a open method stream command is sent to an authenticated endpoint without an authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'authenticatedMethodStreaming',
         method: 'simpleStream',
         args: {},
@@ -256,12 +249,11 @@ void main() {
         // No authentication token is provided
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -275,7 +267,7 @@ void main() {
     test(
         'when a open method stream command is sent to an authenticated endpoint with an invalid authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
         () async {
-      webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
         endpoint: 'authenticatedMethodStreaming',
         method: 'simpleStream',
         args: {},
@@ -284,12 +276,11 @@ void main() {
         authentication: 'invalid token',
       ));
 
-      var response = await webSocket.stream.first as String;
+      var response = await webSocket.textEvents.first;
       var message = WebSocketMessage.fromJsonString(
         response,
         server.serializationManager,
       );
-      ;
 
       expect(
           message,
@@ -321,7 +312,7 @@ void main() {
       test(
           'then OpenMethodStreamResponse type "authorizationDeclined" is received.',
           () async {
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleStream',
           args: {},
@@ -330,12 +321,11 @@ void main() {
           inputStreams: [],
         ));
 
-        var response = await webSocket.stream.first as String;
+        var response = await webSocket.textEvents.first;
         var message = WebSocketMessage.fromJsonString(
           response,
           server.serializationManager,
         );
-        ;
 
         expect(
           message,
@@ -372,7 +362,7 @@ void main() {
 
       test('then OpenMethodStreamResponse type "success" is received.',
           () async {
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: 'authenticatedMethodStreaming',
           method: 'simpleStream',
           args: {},
@@ -381,12 +371,11 @@ void main() {
           inputStreams: [],
         ));
 
-        var response = await webSocket.stream.first as String;
+        var response = await webSocket.textEvents.first;
         var message = WebSocketMessage.fromJsonString(
           response,
           server.serializationManager,
         );
-        ;
 
         expect(
           message,

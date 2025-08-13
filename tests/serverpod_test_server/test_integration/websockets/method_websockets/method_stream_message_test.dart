@@ -6,32 +6,32 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../websocket_extensions.dart';
 
 void main() {
   group('Given method websocket connection', () {
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     test(
         'when a MethodStreamMessage is sent to the server without an open stream then response is a CloseMethodStreamCommand with error reason.',
         () async {
       var closeMethodCommand = Completer<CloseMethodStreamCommand>();
-      webSocket.stream.listen((event) {
+      webSocket.textEvents.listen((event) {
         var message = WebSocketMessage.fromJsonString(
           event,
           server.serializationManager,
@@ -41,7 +41,7 @@ void main() {
         }
       });
 
-      webSocket.sink.add(MethodStreamMessage.buildMessage(
+      webSocket.sendText(MethodStreamMessage.buildMessage(
         endpoint: 'methodStreaming',
         method: 'simpleStream',
         parameter: 'stream',
@@ -79,7 +79,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -92,7 +92,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -147,7 +147,7 @@ void main() {
         webSocketCompleter = Completer<void>();
         var streamOpened = Completer<void>();
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -164,7 +164,7 @@ void main() {
           webSocketCompleter.complete();
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {'value': inputValue},
@@ -232,7 +232,7 @@ void main() {
         webSocketCompleter = Completer<void>();
         var streamOpened = Completer<void>();
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -249,7 +249,7 @@ void main() {
           webSocketCompleter.complete();
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {'value': inputValue},
@@ -316,7 +316,7 @@ void main() {
         var returningStreamConnectionId = const Uuid().v4obj();
         var delayedResponseConnectionId = const Uuid().v4obj();
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -337,7 +337,7 @@ void main() {
           webSocketCompleter.complete();
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: 'delayedStreamResponse',
           args: {'delay': 10},
@@ -345,7 +345,7 @@ void main() {
           inputStreams: [],
         ));
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: 'directVoidReturnWithStreamInput',
           args: {},
@@ -405,7 +405,7 @@ void main() {
         var returningStreamConnectionId = const Uuid().v4obj();
         var delayedResponseConnectionId = const Uuid().v4obj();
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -426,7 +426,7 @@ void main() {
           webSocketCompleter.complete();
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: 'delayedStreamResponse',
           args: {'delay': 10},
@@ -434,7 +434,7 @@ void main() {
           inputStreams: [],
         ));
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: 'simpleStream',
           args: {},
@@ -484,20 +484,19 @@ void main() {
     var method = 'intEchoStream';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     group('when MethodStreamMessage is passed targeting the endpoint method',
@@ -519,7 +518,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -534,7 +533,7 @@ void main() {
           webSocketCompleter.complete();
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -546,7 +545,7 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        webSocket.sink.add(MethodStreamMessage.buildMessage(
+        webSocket.sendText(MethodStreamMessage.buildMessage(
           endpoint: endpoint,
           method: method,
           connectionId: connectionId,

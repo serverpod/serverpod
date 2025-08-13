@@ -5,7 +5,8 @@ import 'package:serverpod_test_server/test_util/test_completer_timeout.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket/web_socket.dart';
+import '../../websocket_extensions.dart';
 
 void main() {
   group(
@@ -15,20 +16,19 @@ void main() {
     var method = 'intReturnFromStream';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     group('when a value is passed in', () {
@@ -57,7 +57,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -76,7 +76,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -88,7 +88,7 @@ void main() {
         assert(streamOpened.isCompleted == true,
             'Failed to open method stream with server');
 
-        webSocket.sink.add(MethodStreamMessage.buildMessage(
+        webSocket.sendText(MethodStreamMessage.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,
@@ -155,20 +155,19 @@ void main() {
     var method = 'intStreamFromValue';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     group('when input value 4 is passed in', () {
@@ -189,7 +188,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -204,7 +203,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {'value': inputValue},
@@ -254,20 +253,19 @@ void main() {
     var method = 'intEchoStream';
 
     late Serverpod server;
-    late WebSocketChannel webSocket;
+    late WebSocket webSocket;
 
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = WebSocketChannel.connect(
+      webSocket = await WebSocket.connect(
         Uri.parse(serverMethodWebsocketUrl),
       );
-      await webSocket.ready;
     });
 
     tearDown(() async {
       await server.shutdown(exitProcess: false);
-      await webSocket.sink.close();
+      await webSocket.tryClose();
     });
 
     group('when a stream of values are passed in', () {
@@ -289,7 +287,7 @@ void main() {
           'streamOpened': streamOpened,
         });
 
-        webSocket.stream.listen((event) {
+        webSocket.textEvents.listen((event) {
           var message = WebSocketMessage.fromJsonString(
             event,
             server.serializationManager,
@@ -304,7 +302,7 @@ void main() {
           }
         });
 
-        webSocket.sink.add(OpenMethodStreamCommand.buildMessage(
+        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           args: {},
@@ -317,7 +315,7 @@ void main() {
             'Failed to open method stream with server');
 
         for (var inputValue in inputValues)
-          webSocket.sink.add(MethodStreamMessage.buildMessage(
+          webSocket.sendText(MethodStreamMessage.buildMessage(
             endpoint: endpoint,
             method: method,
             parameter: inputParameter,
@@ -326,7 +324,7 @@ void main() {
             serializationManager: server.serializationManager,
           ));
 
-        webSocket.sink.add(CloseMethodStreamCommand.buildMessage(
+        webSocket.sendText(CloseMethodStreamCommand.buildMessage(
           endpoint: endpoint,
           method: method,
           parameter: inputParameter,
