@@ -112,6 +112,40 @@ jobs:
       - name: Run serverpod generate
         run: bash util/run_tests_serverpod_generate
 
+  template_checksums:
+    name: template checksums
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          architecture: x64
+          cache: true
+      - name: Install dependencies
+        run: |
+          cd tools/serverpod_cli
+          dart pub get
+      - name: Install all package dependencies
+        run: bash util/pub_get_all
+      - name: Generate all files
+        run: |
+          export SERVERPOD_HOME=$GITHUB_WORKSPACE
+          bash util/generate_all
+      - name: Verify template checksums are up to date
+        run: |
+          bash util/calculate_template_checksum
+          
+          if git diff --exit-code templates/serverpod_templates/checksums.json; then
+            echo "✅ Template checksums are up to date"
+          else
+            echo "❌ Template checksums are out of date!"
+            echo "Please run: util/calculate_template_checksum"
+            echo "And commit the updated checksums.json file."
+            git diff templates/serverpod_templates/checksums.json
+            exit 1
+          fi
+
   update_pubspecs:
     name: update pubspecs
     runs-on: ubuntu-latest
