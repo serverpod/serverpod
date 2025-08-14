@@ -477,12 +477,16 @@ class Server {
     try {
       authenticationHeaderValue = request.headers.authorization?.headerValue;
       authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    } on InvalidHeaderException catch (_) {
-      // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
-      return ResultStatusCode(
-        400,
-        'Request has invalid "authorization" header: $authenticationHeaderValue',
-      );
+    } catch (e) {
+      if (e is AuthHeaderEncodingException || e is InvalidHeaderException) {
+        // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
+        return ResultStatusCode(
+          400,
+          'Request has invalid "authorization" header: $authenticationHeaderValue',
+        );
+      } else {
+        rethrow;
+      }
     }
     authenticationKey ??= queryParameters['auth'] as String?;
 

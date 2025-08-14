@@ -7,7 +7,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_core_flutter/src/shared_preferences_key_value_storage.dart';
 
 /// Session manager client a server using `serverpod_auth_session`.
-class SessionManager extends AuthenticationKeyManager {
+class SessionManager extends BearerAuthenticationKeyManager {
   /// Creates a new session manager instance.
   SessionManager({
     KeyValueStorage? storage,
