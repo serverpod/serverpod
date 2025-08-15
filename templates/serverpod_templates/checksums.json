@@ -1,16 +1,16 @@
 {
   "directories": {
-    "projectname_server": "fa2735b026b907a24155878bbba6c5c2",
-    "projectname_server_upgrade": "090b6ce4fb017c3f6726459e2d48e43c",
-    "projectname_client": "7284770670ac290b29ee3631c13489d7",
-    "projectname_flutter": "854898128a7e4b5365c863c8c8ae97fb",
-    "modulename_server": "2bcf7fc05f2cd50b352cf29a1ef1cddd",
-    "modulename_client": "182164cba05c2df58c5f96e066b772bc",
-    "github": "26364b6ee3abbbbc6d3c2f72746b5814"
+    "projectname_server": "28bc2f8a00f86f0289652ea395efbf5d",
+    "projectname_server_upgrade": "656a50b761d6da05dddad1d9299f865a",
+    "projectname_client": "cb4bb21be94608ed2d7b3c363b0bfcfa",
+    "projectname_flutter": "a1f7fbd4be8ddf92ba91bd024e171fea",
+    "modulename_server": "b38cbd92fe6225a1b7b9dab72c219505",
+    "modulename_client": "05f17c433d8a6b9c4edc7f721a6bba2c",
+    "github": "17690940cb27c4dc04cd4f3b67b8aac4"
   },
   "templates": {
-    "mini": "cf7cc972b973880be94c8295f1ed6eee",
-    "server": "11a0494f1ad0c8d2a0607f01bd96db16",
-    "module": "c2e9c6f031f2f850f9c42372cc8c8a8a"
+    "mini": "c7a7f2b27bc1c519e9863308be67dd8c",
+    "server": "f24e4ccccc9d7052ea1cda47d20263c3",
+    "module": "967486eb2e6d9fe5b190ad441925d7fe"
   }
 }
