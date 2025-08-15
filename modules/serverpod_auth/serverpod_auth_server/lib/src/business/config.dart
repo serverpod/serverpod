@@ -60,7 +60,6 @@ enum SignOutBehavior {
 /// This is a sealed hierarchy with the following concrete results:
 /// - [PasswordValidationSuccess]: The provided password matches the stored hash.
 /// - [PasswordValidationFailed]: The password did not match the stored hash.
-/// - [PasswordValidationError]: An unexpected error occurred during validation.
 sealed class PasswordValidationResult {
   const PasswordValidationResult();
 }
@@ -85,21 +84,6 @@ final class PasswordValidationFailed extends PasswordValidationResult {
   PasswordValidationFailed({
     required this.passwordHash,
     required this.storedHash,
-  });
-}
-
-/// An unexpected error occurred while attempting to validate the password.
-final class PasswordValidationError extends PasswordValidationResult {
-  /// Optional error message or exception object describing the failure.
-  final Object? errorMessage;
-
-  /// Optional stack trace captured when the error occurred.
-  final StackTrace? stackTrace;
-
-  ///
-  PasswordValidationError({
-    this.errorMessage,
-    this.stackTrace,
   });
 }
 

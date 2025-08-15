@@ -29,21 +29,12 @@ Future<PasswordValidationResult> defaultValidatePasswordHash({
   required String password,
   required String email,
   required String hash,
-}) async {
-  try {
-    return await PasswordHash(
-      hash,
-      legacySalt: EmailSecrets.legacySalt,
-      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-      pepper: EmailSecrets.pepper,
-    ).validate(password);
-  } catch (e, s) {
-    return PasswordValidationError(
-      errorMessage: e,
-      stackTrace: s,
-    );
-  }
-}
+}) async =>  await PasswordHash(
+    hash,
+    legacySalt: EmailSecrets.legacySalt,
+    legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+    pepper: EmailSecrets.pepper,
+  ).validate(password);
 
 /// Collection of utility methods when working with email authentication.
 class Emails {
@@ -81,31 +72,33 @@ class Emails {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    final validationResponse = await Emails.validatePasswordHash(
-      password,
-      email,
-      entry.hash,
-    );
-
-    if (validationResponse is! PasswordValidationSuccess) {
+    try {
+      final validationResponse = await Emails.validatePasswordHash(
+        password,
+        email,
+        entry.hash,
+      );
       if (validationResponse is PasswordValidationFailed) {
         session.log(
           ' - ${validationResponse.passwordHash} saved: ${validationResponse.storedHash}',
           level: LogLevel.debug,
         );
-      }
 
-      if (validationResponse is PasswordValidationError) {
-        session.log(
-          ' - error when validating password hash: ${validationResponse.errorMessage}',
-          level: LogLevel.error,
+        await _logFailedSignIn(session, email);
+        return AuthenticationResponse(
+          success: false,
+          failReason: AuthenticationFailReason.invalidCredentials,
         );
       }
-
+    } catch (e) {
+      session.log(
+        ' - error when validating password hash: $e',
+        level: LogLevel.error,
+      );
       await _logFailedSignIn(session, email);
       return AuthenticationResponse(
         success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
+        failReason: AuthenticationFailReason.internalError,
       );
     }
 
@@ -186,23 +179,24 @@ class Emails {
     }
 
     // Check old password
-    final validationResponse = await validatePasswordHash(
-      oldPassword,
-      auth.email,
-      auth.hash,
-    );
 
-    if (validationResponse is! PasswordValidationSuccess) {
-      if (validationResponse is PasswordValidationError) {
+    try {
+      final validationResponse = await validatePasswordHash(
+        oldPassword,
+        auth.email,
+        auth.hash,
+      );
+      if (validationResponse is! PasswordValidationSuccess) {
         session.log(
-          ' - error when validating password hash: ${validationResponse.errorMessage}',
-          level: LogLevel.error,
+          'Invalid password!',
+          level: LogLevel.debug,
         );
+        return false;
       }
-
+    } catch (e) {
       session.log(
-        'Invalid password!',
-        level: LogLevel.debug,
+        ' - error when validating password hash: $e',
+        level: LogLevel.error,
       );
       return false;
     }

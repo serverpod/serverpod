@@ -175,7 +175,7 @@ void main() {
 
       expect(passwordHash.isLegacyHash(), isFalse);
     });
-    test('when validating with correct password then validator returns true',
+    test('when validating with correct password then validator returns PasswordValidationSuccess',
         () async {
       var salt = 'saltySalt';
       var legacySalt = 'legacySalt';
@@ -195,7 +195,7 @@ void main() {
     });
 
     test(
-        'when validating with correct password but different legacy salt then validator returns false',
+        'when validating with correct password but different legacy salt then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -210,10 +210,10 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with incorrect password then validator returns false',
+    test('when validating with incorrect password then validator returns PasswordValidationFailed',
         () async {
       var salt = 'saltySalt';
       var legacySalt = 'legacySalt';
@@ -228,10 +228,10 @@ void main() {
       );
 
       expect(await passwordHash.validate('chaser1'),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with modified salt then validator returns false',
+    test('when validating with modified salt then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -253,10 +253,10 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with valid pepper then validator returns true.',
+    test('when validating with valid pepper then validator returns PasswordValidationSuccess.',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -278,7 +278,7 @@ void main() {
           isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with invalid pepper then validator returns false.',
+    test('when validating with invalid pepper then validator returns PasswordValidationFailed.',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -296,10 +296,10 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with missing pepper then validator returns false.',
+    test('when validating with missing pepper then validator returns PasswordValidationFailed.',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -316,10 +316,10 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with added pepper then validator returns false.',
+    test('when validating with added pepper then validator returns PasswordValidationFailed.',
         () async {
       var password = 'hunter2';
       var legacySalt = 'legacySalt';
@@ -336,7 +336,7 @@ void main() {
       );
 
       expect(await passwordHash.validate(password),
-          isNot(isA<PasswordValidationSuccess>()));
+          isA<PasswordValidationFailed>());
     });
   });
 

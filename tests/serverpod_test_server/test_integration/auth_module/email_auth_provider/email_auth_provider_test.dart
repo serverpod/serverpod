@@ -263,7 +263,7 @@ void main() async {
     group('when migrating auth entries', () {
       setUp(() async => await Emails.migrateLegacyPasswordHashes(session));
 
-      test('then user that had legacy password passes validation.', () async {
+      test('then user that had legacy password returns PasswordValidationSuccess.', () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,
           where: (t) => t.email.equals('test1@serverpod.dev'),
@@ -283,7 +283,7 @@ void main() async {
       });
 
       test(
-          'then user with already migrated legacy password hash can passes validation.',
+          'then user with already migrated legacy password hash returns PasswordValidationSuccess.',
           () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,
@@ -303,7 +303,7 @@ void main() async {
         );
       });
 
-      test('then user with argon2id password hash passes validation.',
+      test('then user with argon2id password hash returns PasswordValidationSuccess.',
           () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,
@@ -332,33 +332,21 @@ void main() async {
     var notHunter4PasswordHash =
         '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
 
-    test('then validation fails.', () async {
-      expect(
-        await Emails.validatePasswordHash(
-          'notHunter4',
-          'test7@serverpod.dev',
-          hunter4PasswordHash,
-        ),
-        isNot(isA<PasswordValidationSuccess>()),
-      );
-    });
-
     test(
-        'then validation failure callback is called with generated hash and passed in hash.',
+        'then validation fails and validation failure callback is called with generated hash and passed in hash.',
         () async {
       late String actualStoredHash;
       late String actualPasswordHash;
-
       final validationResponse = await Emails.validatePasswordHash(
         'notHunter4',
         'test7@serverpod.dev',
         hunter4PasswordHash,
       );
-      if (validationResponse is! PasswordValidationSuccess) {
-        if (validationResponse is PasswordValidationFailed) {
-          actualPasswordHash = validationResponse.passwordHash;
-          actualStoredHash = validationResponse.storedHash;
-        }
+      expect(validationResponse, isA<PasswordValidationFailed>());
+
+      if (validationResponse is PasswordValidationFailed) {
+        actualPasswordHash = validationResponse.passwordHash;
+        actualStoredHash = validationResponse.storedHash;
       }
 
       expect(actualStoredHash, hunter4PasswordHash);
