@@ -13,6 +13,22 @@ class TemplateChecksumManager {
   static Future<String> calculateDirectoryChecksum(Directory dir) async {
     var fileHashes = <String>[];
 
+    // Read gitignore patterns if the file exists
+    var gitignorePatterns = <String>[];
+    var gitignoreFile = File(p.join(dir.path, 'gitignore'));
+    if (!await gitignoreFile.exists()) {
+      gitignoreFile = File(p.join(dir.path, '.gitignore'));
+    }
+    if (await gitignoreFile.exists()) {
+      var lines = await gitignoreFile.readAsLines();
+      for (var line in lines) {
+        line = line.trim();
+        // Skip comments and empty lines
+        if (line.isEmpty || line.startsWith('#')) continue;
+        gitignorePatterns.add(line);
+      }
+    }
+
     var files = await dir
         .list(recursive: true, followLinks: false)
         .where((entity) => entity is File)
@@ -23,11 +39,43 @@ class TemplateChecksumManager {
 
     for (var file in files) {
       var fileName = p.basename(file.path);
-      if (fileName == checksumsFileName || fileName == 'checksum.json') {
+      if (fileName == checksumsFileName) {
         continue;
       }
 
       var relativePath = p.relative(file.path, from: dir.path);
+
+      // Skip dotfiles and dotfolders (matching Copier behavior)
+      if (relativePath.startsWith('.') || relativePath.contains('/.')) {
+        continue;
+      }
+
+      // Skip generated directories
+      if (relativePath.contains('/generated/') ||
+          relativePath.startsWith('generated/')) {
+        continue;
+      }
+
+      // Skip specific patterns
+      if (relativePath.endsWith('.lock') ||
+          relativePath == 'pubspec.lock' ||
+          relativePath.contains('.DS_Store')) {
+        continue;
+      }
+
+      // Check gitignore patterns
+      var shouldSkip = false;
+      for (var pattern in gitignorePatterns) {
+        // Simple pattern matching (not full gitignore syntax)
+        if (relativePath == pattern ||
+            relativePath.startsWith('$pattern/') ||
+            relativePath.endsWith(pattern) ||
+            relativePath.contains('/$pattern/')) {
+          shouldSkip = true;
+          break;
+        }
+      }
+      if (shouldSkip) continue;
 
       var content = await file.readAsBytes();
       var fileHash = md5.convert(content).toString();
