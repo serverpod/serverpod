@@ -60,6 +60,7 @@ void main() {
     var expression2 = const Expression('"A" = "A"');
     var combinedExpression = expression1 & expression2;
     var notWrappedExpression = NotExpression(combinedExpression);
+    var notWrappedExpressionOperator = ~combinedExpression;
 
     test('when toString is called then expression is returned', () {
       expect(
@@ -87,6 +88,11 @@ void main() {
           i++;
         }
       });
+    });
+
+    test('then using operator ~ is equivalent to using NotExpression', () {
+      expect(notWrappedExpression.toString(),
+          notWrappedExpressionOperator.toString());
     });
   });
 
