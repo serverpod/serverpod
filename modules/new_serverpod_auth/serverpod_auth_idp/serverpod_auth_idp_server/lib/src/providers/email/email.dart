@@ -22,14 +22,7 @@ export '../../generated/protocol.dart'
         EmailAccountRequestCompletionAttempt,
         EmailAccountLoginException,
         EmailAccountLoginFailureReason,
-        EmailAccountPasswordPolicyViolationException,
-        EmailAccountPasswordResetRequestExpiredException,
-        EmailAccountPasswordResetRequestNotFoundException,
-        EmailAccountPasswordResetRequestTooManyAttemptsException,
-        EmailAccountPasswordResetRequestUnauthorizedException,
-        EmailAccountPasswordResetTooManyAttemptsException,
-        EmailAccountRequestExpiredException,
-        EmailAccountRequestNotFoundException,
-        EmailAccountRequestNotVerifiedException,
-        EmailAccountRequestTooManyAttemptsException,
-        EmailAccountRequestUnauthorizedException;
+        EmailAccountPasswordResetException,
+        EmailAccountPasswordResetExceptionReason,
+        EmailAccountRequestException,
+        EmailAccountRequestExceptionReason;
