@@ -126,12 +126,6 @@ jobs:
         run: |
           cd tools/serverpod_cli
           dart pub get
-      - name: Install all package dependencies
-        run: bash util/pub_get_all
-      - name: Generate all files
-        run: |
-          export SERVERPOD_HOME=$GITHUB_WORKSPACE
-          bash util/generate_all
       - name: Verify template checksums are up to date
         run: |
           bash util/calculate_template_checksum
