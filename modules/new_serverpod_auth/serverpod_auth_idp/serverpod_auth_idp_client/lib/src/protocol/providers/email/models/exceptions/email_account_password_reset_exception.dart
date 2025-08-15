@@ -10,7 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../../providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
     as _i2;
 
@@ -19,10 +19,7 @@ import '../../../../providers/email/models/exceptions/email_account_password_res
 /// Inspect the [reason] to determine whether this was due to invalid or unknown
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountPasswordResetException
-    implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+    implements _i1.SerializableException, _i1.SerializableModel {
   EmailAccountPasswordResetException._({required this.type});
 
   factory EmailAccountPasswordResetException(
@@ -45,11 +42,6 @@ abstract class EmailAccountPasswordResetException
       {_i2.EmailAccountPasswordResetExceptionReason? type});
   @override
   Map<String, dynamic> toJson() {
-    return {'type': type.toJson()};
-  }
-
-  @override
-  Map<String, dynamic> toJsonForProtocol() {
     return {'type': type.toJson()};
   }
 

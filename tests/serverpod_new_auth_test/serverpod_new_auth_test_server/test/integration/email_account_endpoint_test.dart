@@ -49,7 +49,11 @@ void main() {
             email: 'test@serverpod.dev',
             password: 'short',
           ),
-          throwsA(isA<EmailAccountPasswordPolicyViolationException>()),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.type,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.policyViolation,
+          )),
         );
       });
 

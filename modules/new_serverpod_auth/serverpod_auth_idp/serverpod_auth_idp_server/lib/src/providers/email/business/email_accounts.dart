@@ -219,7 +219,7 @@ abstract final class EmailAccounts {
     );
 
     if (request == null) {
-      throw EmailAccountRequestNotFoundException();
+      throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.notFound);
     }
 
     if (request.isExpired) {
@@ -228,8 +228,7 @@ abstract final class EmailAccounts {
         request,
         // passing no transaction, so this will not be rolled back
       );
-
-      throw EmailAccountRequestExpiredException();
+      throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.expired);
     }
 
     if (await _hasTooManyEmailAccountCompletionAttempts(
@@ -242,7 +241,7 @@ abstract final class EmailAccounts {
         // passing no transaction, so this will not be rolled back
       );
 
-      throw EmailAccountRequestTooManyAttemptsException();
+      throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.tooManyAttempts);
     }
 
     if (!await EmailAccountSecretHash.validateHash(
@@ -250,7 +249,7 @@ abstract final class EmailAccounts {
       hash: request.verificationCodeHash.asUint8List,
       salt: request.verificationCodeSalt.asUint8List,
     )) {
-      throw EmailAccountRequestUnauthorizedException();
+      throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.unauthorized);
     }
 
     await EmailAccountRequest.db.updateRow(
@@ -291,11 +290,11 @@ abstract final class EmailAccounts {
         );
 
         if (request == null) {
-          throw EmailAccountRequestNotFoundException();
+          throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.notFound);
         }
 
         if (request.verifiedAt == null) {
-          throw EmailAccountRequestNotVerifiedException();
+          throw EmailAccountRequestException(type: EmailAccountRequestExceptionReason.notVerified);
         }
 
         await EmailAccountRequest.db.deleteRow(

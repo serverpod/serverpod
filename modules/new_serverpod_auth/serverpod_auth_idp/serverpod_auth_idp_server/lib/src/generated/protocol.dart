@@ -34,19 +34,13 @@ import 'providers/email/models/exceptions/email_account_password_reset_exception
     as _i14;
 import 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
     as _i15;
-import 'providers/email/models/exceptions/email_account_request_expired_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_exception.dart'
     as _i16;
-import 'providers/email/models/exceptions/email_account_request_not_found_exception.dart'
+import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
     as _i17;
-import 'providers/email/models/exceptions/email_account_request_not_verified_exception.dart'
-    as _i18;
-import 'providers/email/models/exceptions/email_account_request_too_many_attempts_exception.dart'
-    as _i19;
-import 'providers/email/models/exceptions/email_account_request_unauthorized_exception.dart'
-    as _i20;
-import 'providers/google/models/google_account.dart' as _i21;
+import 'providers/google/models/google_account.dart' as _i18;
 import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i22;
+    as _i19;
 export 'providers/apple/models/apple_account.dart';
 export 'providers/email/models/email_account.dart';
 export 'providers/email/models/email_account_failed_login_attempt.dart';
@@ -59,11 +53,8 @@ export 'providers/email/models/exceptions/email_account_login_exception.dart';
 export 'providers/email/models/exceptions/email_account_login_failure_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
-export 'providers/email/models/exceptions/email_account_request_expired_exception.dart';
-export 'providers/email/models/exceptions/email_account_request_not_found_exception.dart';
-export 'providers/email/models/exceptions/email_account_request_not_verified_exception.dart';
-export 'providers/email/models/exceptions/email_account_request_too_many_attempts_exception.dart';
-export 'providers/email/models/exceptions/email_account_request_unauthorized_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_exception.dart';
+export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
 export 'providers/google/models/google_account.dart';
 export 'providers/google/models/google_id_token_verification_exception.dart';
 
@@ -910,27 +901,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i15.EmailAccountPasswordResetExceptionReason) {
       return _i15.EmailAccountPasswordResetExceptionReason.fromJson(data) as T;
     }
-    if (t == _i16.EmailAccountRequestExpiredException) {
-      return _i16.EmailAccountRequestExpiredException.fromJson(data) as T;
+    if (t == _i16.EmailAccountRequestException) {
+      return _i16.EmailAccountRequestException.fromJson(data) as T;
     }
-    if (t == _i17.EmailAccountRequestNotFoundException) {
-      return _i17.EmailAccountRequestNotFoundException.fromJson(data) as T;
+    if (t == _i17.EmailAccountRequestExceptionReason) {
+      return _i17.EmailAccountRequestExceptionReason.fromJson(data) as T;
     }
-    if (t == _i18.EmailAccountRequestNotVerifiedException) {
-      return _i18.EmailAccountRequestNotVerifiedException.fromJson(data) as T;
+    if (t == _i18.GoogleAccount) {
+      return _i18.GoogleAccount.fromJson(data) as T;
     }
-    if (t == _i19.EmailAccountRequestTooManyAttemptsException) {
-      return _i19.EmailAccountRequestTooManyAttemptsException.fromJson(data)
-          as T;
-    }
-    if (t == _i20.EmailAccountRequestUnauthorizedException) {
-      return _i20.EmailAccountRequestUnauthorizedException.fromJson(data) as T;
-    }
-    if (t == _i21.GoogleAccount) {
-      return _i21.GoogleAccount.fromJson(data) as T;
-    }
-    if (t == _i22.GoogleIdTokenVerificationException) {
-      return _i22.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i19.GoogleIdTokenVerificationException) {
+      return _i19.GoogleIdTokenVerificationException.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.AppleAccount?>()) {
       return (data != null ? _i4.AppleAccount.fromJson(data) : null) as T;
@@ -987,37 +968,22 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i15.EmailAccountPasswordResetExceptionReason.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i16.EmailAccountRequestExpiredException?>()) {
+    if (t == _i1.getType<_i16.EmailAccountRequestException?>()) {
       return (data != null
-          ? _i16.EmailAccountRequestExpiredException.fromJson(data)
+          ? _i16.EmailAccountRequestException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i17.EmailAccountRequestNotFoundException?>()) {
+    if (t == _i1.getType<_i17.EmailAccountRequestExceptionReason?>()) {
       return (data != null
-          ? _i17.EmailAccountRequestNotFoundException.fromJson(data)
+          ? _i17.EmailAccountRequestExceptionReason.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i18.EmailAccountRequestNotVerifiedException?>()) {
-      return (data != null
-          ? _i18.EmailAccountRequestNotVerifiedException.fromJson(data)
-          : null) as T;
+    if (t == _i1.getType<_i18.GoogleAccount?>()) {
+      return (data != null ? _i18.GoogleAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.EmailAccountRequestTooManyAttemptsException?>()) {
+    if (t == _i1.getType<_i19.GoogleIdTokenVerificationException?>()) {
       return (data != null
-          ? _i19.EmailAccountRequestTooManyAttemptsException.fromJson(data)
-          : null) as T;
-    }
-    if (t == _i1.getType<_i20.EmailAccountRequestUnauthorizedException?>()) {
-      return (data != null
-          ? _i20.EmailAccountRequestUnauthorizedException.fromJson(data)
-          : null) as T;
-    }
-    if (t == _i1.getType<_i21.GoogleAccount?>()) {
-      return (data != null ? _i21.GoogleAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.GoogleIdTokenVerificationException?>()) {
-      return (data != null
-          ? _i22.GoogleIdTokenVerificationException.fromJson(data)
+          ? _i19.GoogleIdTokenVerificationException.fromJson(data)
           : null) as T;
     }
     try {
@@ -1069,25 +1035,16 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i15.EmailAccountPasswordResetExceptionReason) {
       return 'EmailAccountPasswordResetExceptionReason';
     }
-    if (data is _i16.EmailAccountRequestExpiredException) {
-      return 'EmailAccountRequestExpiredException';
+    if (data is _i16.EmailAccountRequestException) {
+      return 'EmailAccountRequestException';
     }
-    if (data is _i17.EmailAccountRequestNotFoundException) {
-      return 'EmailAccountRequestNotFoundException';
+    if (data is _i17.EmailAccountRequestExceptionReason) {
+      return 'EmailAccountRequestExceptionReason';
     }
-    if (data is _i18.EmailAccountRequestNotVerifiedException) {
-      return 'EmailAccountRequestNotVerifiedException';
-    }
-    if (data is _i19.EmailAccountRequestTooManyAttemptsException) {
-      return 'EmailAccountRequestTooManyAttemptsException';
-    }
-    if (data is _i20.EmailAccountRequestUnauthorizedException) {
-      return 'EmailAccountRequestUnauthorizedException';
-    }
-    if (data is _i21.GoogleAccount) {
+    if (data is _i18.GoogleAccount) {
       return 'GoogleAccount';
     }
-    if (data is _i22.GoogleIdTokenVerificationException) {
+    if (data is _i19.GoogleIdTokenVerificationException) {
       return 'GoogleIdTokenVerificationException';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1146,31 +1103,17 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<_i15.EmailAccountPasswordResetExceptionReason>(
           data['data']);
     }
-    if (dataClassName == 'EmailAccountRequestExpiredException') {
-      return deserialize<_i16.EmailAccountRequestExpiredException>(
-          data['data']);
+    if (dataClassName == 'EmailAccountRequestException') {
+      return deserialize<_i16.EmailAccountRequestException>(data['data']);
     }
-    if (dataClassName == 'EmailAccountRequestNotFoundException') {
-      return deserialize<_i17.EmailAccountRequestNotFoundException>(
-          data['data']);
-    }
-    if (dataClassName == 'EmailAccountRequestNotVerifiedException') {
-      return deserialize<_i18.EmailAccountRequestNotVerifiedException>(
-          data['data']);
-    }
-    if (dataClassName == 'EmailAccountRequestTooManyAttemptsException') {
-      return deserialize<_i19.EmailAccountRequestTooManyAttemptsException>(
-          data['data']);
-    }
-    if (dataClassName == 'EmailAccountRequestUnauthorizedException') {
-      return deserialize<_i20.EmailAccountRequestUnauthorizedException>(
-          data['data']);
+    if (dataClassName == 'EmailAccountRequestExceptionReason') {
+      return deserialize<_i17.EmailAccountRequestExceptionReason>(data['data']);
     }
     if (dataClassName == 'GoogleAccount') {
-      return deserialize<_i21.GoogleAccount>(data['data']);
+      return deserialize<_i18.GoogleAccount>(data['data']);
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i22.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i19.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1214,8 +1157,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i10.EmailAccountRequest.t;
       case _i11.EmailAccountRequestCompletionAttempt:
         return _i11.EmailAccountRequestCompletionAttempt.t;
-      case _i21.GoogleAccount:
-        return _i21.GoogleAccount.t;
+      case _i18.GoogleAccount:
+        return _i18.GoogleAccount.t;
     }
     return null;
   }
