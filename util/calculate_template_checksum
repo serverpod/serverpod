@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Set locale to ensure consistent sorting and behavior across different systems
+export LC_ALL=C
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/calculate_template_checksum"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+BASE=`pwd`
+TEMPLATES_DIR=$BASE/templates/serverpod_templates
+
+# Check if SERVERPOD_HOME is set (required for development mode)
+if [ -z "$SERVERPOD_HOME" ]; then
+    echo "Warning: SERVERPOD_HOME not set, using current directory as base"
+    export SERVERPOD_HOME="$BASE"
+fi
+
+echo "Calculating checksums for Serverpod templates..."
+echo ""
+
+# Navigate to serverpod_cli directory to run the Dart script
+cd tools/serverpod_cli
+
+# Make sure dependencies are installed
+if [ ! -d ".dart_tool" ]; then
+    echo "Installing dependencies for serverpod_cli..."
+    dart pub get
+fi
+
+# Run the Dart script to calculate checksums
+echo "Running Dart checksum calculator..."
+CHECKSUMS_JSON=$(dart run bin/calculate_checksums.dart)
+
+# Check if the command succeeded
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to calculate checksums"
+    echo "$CHECKSUMS_JSON"
+    exit 1
+fi
+
+# Go back to base directory
+cd "$BASE"
+
+# Write the checksums to the file
+echo "$CHECKSUMS_JSON" > "$TEMPLATES_DIR/checksums.json"
+
+echo ""
+echo "Checksums calculated and saved to $TEMPLATES_DIR/checksums.json"
+
+# Parse and display the checksums
+echo ""
+echo "Individual directory checksums:"
+echo "$CHECKSUMS_JSON" | grep -A 20 '"directories"' | grep '": "' | sed 's/[",]//g' | while read -r line; do
+    if [[ ! -z "$line" && ! "$line" =~ "directories" && ! "$line" =~ "templates" ]]; then
+        echo "  $line"
+    fi
+done
+
+echo ""
+echo "Template type checksums:"
+echo "$CHECKSUMS_JSON" | grep -A 5 '"templates"' | grep '": "' | sed 's/[",]//g' | while read -r line; do
+    if [[ ! -z "$line" && ! "$line" =~ "templates" ]]; then
+        echo "  $line"
+    fi
+done
