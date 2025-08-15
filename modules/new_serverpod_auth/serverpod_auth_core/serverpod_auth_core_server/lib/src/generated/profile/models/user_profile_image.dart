@@ -468,6 +468,46 @@ class UserProfileImageRepository {
     );
   }
 
+  /// Updates a single [UserProfileImage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserProfileImage?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserProfileImage>(
+      id,
+      columnValues: columnValues(UserProfileImage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserProfileImage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserProfileImage>(
+      columnValues: columnValues(UserProfileImage.t),
+      where: where(UserProfileImage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserProfileImage.t),
+      orderByList: orderByList?.call(UserProfileImage.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserProfileImage]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

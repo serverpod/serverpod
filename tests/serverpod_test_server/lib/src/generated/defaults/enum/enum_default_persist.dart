@@ -370,6 +370,46 @@ class EnumDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultPersist>(
+      id,
+      columnValues: columnValues(EnumDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultPersist>(
+      columnValues: columnValues(EnumDefaultPersist.t),
+      where: where(EnumDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultPersist.t),
+      orderByList: orderByList?.call(EnumDefaultPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnumDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

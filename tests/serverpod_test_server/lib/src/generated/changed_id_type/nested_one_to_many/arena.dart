@@ -383,6 +383,46 @@ class ArenaUuidRepository {
     );
   }
 
+  /// Updates a single [ArenaUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ArenaUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<ArenaUuidTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ArenaUuid>(
+      id,
+      columnValues: columnValues(ArenaUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ArenaUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ArenaUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ArenaUuidTable> columnValues,
+    required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ArenaUuid>(
+      columnValues: columnValues(ArenaUuid.t),
+      where: where(ArenaUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ArenaUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

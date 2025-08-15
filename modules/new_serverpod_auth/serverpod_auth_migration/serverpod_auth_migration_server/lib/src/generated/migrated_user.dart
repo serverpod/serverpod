@@ -452,6 +452,46 @@ class MigratedUserRepository {
     );
   }
 
+  /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<MigratedUser?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<MigratedUser>(
+      id,
+      columnValues: columnValues(MigratedUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<MigratedUser>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
+    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<MigratedUser>(
+      columnValues: columnValues(MigratedUser.t),
+      where: where(MigratedUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [MigratedUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -410,6 +410,46 @@ class BookRepository {
     );
   }
 
+  /// Updates a single [Book] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Book?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BookTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Book>(
+      id,
+      columnValues: columnValues(Book.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Book]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Book>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BookTable> columnValues,
+    required _i1.WhereExpressionBuilder<BookTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BookTable>? orderBy,
+    _i1.OrderByListBuilder<BookTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Book>(
+      columnValues: columnValues(Book.t),
+      where: where(Book.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Book]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

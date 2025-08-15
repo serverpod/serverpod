@@ -339,6 +339,48 @@ class DurationDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [DurationDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefaultPersist>(
+      id,
+      columnValues: columnValues(DurationDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefaultPersist>(
+      columnValues: columnValues(DurationDefaultPersist.t),
+      where: where(DurationDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultPersist.t),
+      orderByList: orderByList?.call(DurationDefaultPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DurationDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

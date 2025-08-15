@@ -359,6 +359,46 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  /// Updates a single [ObjectFieldScopes] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectFieldScopes?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectFieldScopes>(
+      id,
+      columnValues: columnValues(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectFieldScopes]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectFieldScopes>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectFieldScopes>(
+      columnValues: columnValues(ObjectFieldScopes.t),
+      where: where(ObjectFieldScopes.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectFieldScopes]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

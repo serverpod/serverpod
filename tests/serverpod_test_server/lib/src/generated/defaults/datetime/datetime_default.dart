@@ -384,6 +384,46 @@ class DateTimeDefaultRepository {
     );
   }
 
+  /// Updates a single [DateTimeDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DateTimeDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DateTimeDefault>(
+      id,
+      columnValues: columnValues(DateTimeDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DateTimeDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DateTimeDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultTable> columnValues,
+    required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DateTimeDefault>(
+      columnValues: columnValues(DateTimeDefault.t),
+      where: where(DateTimeDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefault.t),
+      orderByList: orderByList?.call(DateTimeDefault.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DateTimeDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -517,6 +517,46 @@ class CitizenIntRepository {
     );
   }
 
+  /// Updates a single [CitizenInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CitizenInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CitizenInt>(
+      id,
+      columnValues: columnValues(CitizenInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CitizenInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CitizenInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
+    required _i1.WhereExpressionBuilder<CitizenIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CitizenIntTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CitizenInt>(
+      columnValues: columnValues(CitizenInt.t),
+      where: where(CitizenInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CitizenInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

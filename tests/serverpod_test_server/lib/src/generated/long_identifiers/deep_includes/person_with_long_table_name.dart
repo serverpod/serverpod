@@ -474,6 +474,48 @@ class PersonWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [PersonWithLongTableName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<PersonWithLongTableName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<PersonWithLongTableNameTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<PersonWithLongTableName>(
+      id,
+      columnValues: columnValues(PersonWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [PersonWithLongTableName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<PersonWithLongTableName>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PersonWithLongTableNameTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<PersonWithLongTableName>(
+      columnValues: columnValues(PersonWithLongTableName.t),
+      where: where(PersonWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PersonWithLongTableName.t),
+      orderByList: orderByList?.call(PersonWithLongTableName.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [PersonWithLongTableName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

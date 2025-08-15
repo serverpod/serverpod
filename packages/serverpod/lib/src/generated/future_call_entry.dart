@@ -418,6 +418,46 @@ class FutureCallEntryRepository {
     );
   }
 
+  /// Updates a single [FutureCallEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<FutureCallEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<FutureCallEntry>(
+      id,
+      columnValues: columnValues(FutureCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [FutureCallEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<FutureCallEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
+    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<FutureCallEntry>(
+      columnValues: columnValues(FutureCallEntry.t),
+      where: where(FutureCallEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [FutureCallEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

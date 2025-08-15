@@ -331,6 +331,46 @@ class ObjectWithByteDataRepository {
     );
   }
 
+  /// Updates a single [ObjectWithByteData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithByteData?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithByteData>(
+      id,
+      columnValues: columnValues(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithByteData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithByteData>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithByteData>(
+      columnValues: columnValues(ObjectWithByteData.t),
+      where: where(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithByteData]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

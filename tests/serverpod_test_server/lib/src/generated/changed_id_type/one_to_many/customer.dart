@@ -410,6 +410,46 @@ class CustomerIntRepository {
     );
   }
 
+  /// Updates a single [CustomerInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CustomerInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CustomerIntTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CustomerInt>(
+      id,
+      columnValues: columnValues(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CustomerInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CustomerInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CustomerIntTable> columnValues,
+    required _i1.WhereExpressionBuilder<CustomerIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CustomerIntTable>? orderBy,
+    _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CustomerInt>(
+      columnValues: columnValues(CustomerInt.t),
+      where: where(CustomerInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CustomerInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

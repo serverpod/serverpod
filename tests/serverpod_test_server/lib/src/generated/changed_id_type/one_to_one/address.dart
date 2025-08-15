@@ -404,6 +404,46 @@ class AddressUuidRepository {
     );
   }
 
+  /// Updates a single [AddressUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AddressUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AddressUuid>(
+      id,
+      columnValues: columnValues(AddressUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AddressUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AddressUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
+    required _i1.WhereExpressionBuilder<AddressUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressUuidTable>? orderBy,
+    _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AddressUuid>(
+      columnValues: columnValues(AddressUuid.t),
+      where: where(AddressUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [AddressUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

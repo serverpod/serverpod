@@ -480,6 +480,46 @@ class TeamIntRepository {
     );
   }
 
+  /// Updates a single [TeamInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<TeamInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<TeamInt>(
+      id,
+      columnValues: columnValues(TeamInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [TeamInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<TeamInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
+    required _i1.WhereExpressionBuilder<TeamIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TeamIntTable>? orderBy,
+    _i1.OrderByListBuilder<TeamIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<TeamInt>(
+      columnValues: columnValues(TeamInt.t),
+      where: where(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [TeamInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

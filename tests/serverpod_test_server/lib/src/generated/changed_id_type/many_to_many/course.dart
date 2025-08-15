@@ -414,6 +414,46 @@ class CourseUuidRepository {
     );
   }
 
+  /// Updates a single [CourseUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CourseUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<CourseUuidTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CourseUuid>(
+      id,
+      columnValues: columnValues(CourseUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CourseUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CourseUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CourseUuidTable> columnValues,
+    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CourseUuid>(
+      columnValues: columnValues(CourseUuid.t),
+      where: where(CourseUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CourseUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

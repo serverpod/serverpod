@@ -374,6 +374,46 @@ class ChatReadMessageRepository {
     );
   }
 
+  /// Updates a single [ChatReadMessage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChatReadMessage?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ChatReadMessageTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChatReadMessage>(
+      id,
+      columnValues: columnValues(ChatReadMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChatReadMessage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ChatReadMessage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChatReadMessageTable> columnValues,
+    required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
+    _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChatReadMessage>(
+      columnValues: columnValues(ChatReadMessage.t),
+      where: where(ChatReadMessage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChatReadMessage.t),
+      orderByList: orderByList?.call(ChatReadMessage.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ChatReadMessage]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

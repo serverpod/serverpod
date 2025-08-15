@@ -333,6 +333,46 @@ class ReadWriteTestEntryRepository {
     );
   }
 
+  /// Updates a single [ReadWriteTestEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ReadWriteTestEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ReadWriteTestEntry>(
+      id,
+      columnValues: columnValues(ReadWriteTestEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ReadWriteTestEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
+    required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
+    _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ReadWriteTestEntry>(
+      columnValues: columnValues(ReadWriteTestEntry.t),
+      where: where(ReadWriteTestEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ReadWriteTestEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -393,6 +393,46 @@ class UuidDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [UuidDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UuidDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UuidDefaultPersist>(
+      id,
+      columnValues: columnValues(UuidDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UuidDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
+    required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UuidDefaultPersist>(
+      columnValues: columnValues(UuidDefaultPersist.t),
+      where: where(UuidDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UuidDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

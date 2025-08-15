@@ -374,6 +374,46 @@ class UserImageRepository {
     );
   }
 
+  /// Updates a single [UserImage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserImage?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserImageTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserImage>(
+      id,
+      columnValues: columnValues(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserImage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserImage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserImageTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserImageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserImage>(
+      columnValues: columnValues(UserImage.t),
+      where: where(UserImage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserImage]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
