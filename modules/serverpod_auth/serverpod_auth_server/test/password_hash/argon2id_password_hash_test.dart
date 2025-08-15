@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:serverpod_auth_server/module.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:test/test.dart';
 
@@ -121,7 +122,8 @@ void main() {
       expect(passwordHash.isLegacyHash(), isFalse);
     });
 
-    test('when validating with correct password then validator returns true',
+    test(
+        'when validating with correct password then validator returns PasswordValidationSuccess',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -131,11 +133,12 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
     test(
-        'when validating with correct password but different legacy salt then validator returns true',
+        'when validating with correct password but different legacy salt then validator returns PasswordValidationSuccess',
         () async {
       var password = 'hunter2';
 
@@ -144,10 +147,12 @@ void main() {
         legacySalt: 'differentSalt' /* field is ignored */,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with incorrect password then validator returns false',
+    test(
+        'when validating with incorrect password then validator returns PasswordValidationFailed',
         () async {
       var salt = 'saltySalt';
 
@@ -156,10 +161,12 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect(await passwordHash.validate('chaser1'),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with modified salt then validator returns false',
+    test(
+        'when validating with modified salt then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var originalPasswordHash =
@@ -175,10 +182,12 @@ void main() {
         legacySalt: 'original salt' /* field is ignored */,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with valid pepper then validator returns true.',
+    test(
+        'when validating with valid pepper then validator returns PasswordValidationSuccess.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -190,10 +199,12 @@ void main() {
         pepper: pepper,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with invalid pepper then validator returns false.',
+    test(
+        'when validating with invalid pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -208,10 +219,12 @@ void main() {
         pepper: 'differentPepper',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with missing pepper then validator returns false.',
+    test(
+        'when validating with missing pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -221,10 +234,12 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with added pepper then validator returns false.',
+    test(
+        'when validating with added pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -235,7 +250,8 @@ void main() {
         pepper: 'pepper',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
   });
 

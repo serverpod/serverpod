@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_server/src/business/config.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:test/test.dart';
 
@@ -15,7 +16,8 @@ void main() {
       expect(actualHash, expectedHash);
     });
 
-    test('when validating with correct password then validator returns true',
+    test(
+        'when validating with correct password then validator returns PasswordValidationSuccess',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';
@@ -25,10 +27,12 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with incorrect password then validator returns false',
+    test(
+        'when validating with incorrect password then validator returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
 
@@ -37,10 +41,12 @@ void main() {
         legacySalt: salt,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect(await passwordHash.validate('chaser1'),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when validating with different salts then validator returns false',
+    test(
+        'when validating with different salts then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
 
@@ -49,7 +55,8 @@ void main() {
         legacySalt: 'second salt',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
   });
 
@@ -101,7 +108,8 @@ void main() {
       expect(passwordHash.isLegacyHash(), isTrue);
     });
 
-    test('when matching with correct password then it evaluates to true',
+    test(
+        'when matching with correct password then it returns PasswordValidationSuccess',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';
@@ -117,10 +125,12 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>());
     });
 
-    test('when matching with incorrect password then it evaluates to false',
+    test(
+        'when matching with incorrect password then it returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
       var email = 'test@serverpod.dev';
@@ -135,10 +145,12 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate('chaser1'), isFalse);
+      expect(await passwordHash.validate('chaser1'),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when matching with incorrect salt then it evaluates to false',
+    test(
+        'when matching with incorrect salt then it returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var email = 'test@serverpod.dev';
@@ -153,10 +165,12 @@ void main() {
         legacyEmail: email,
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
 
-    test('when matching with incorrect email then it evaluates to false',
+    test(
+        'when matching with incorrect email then it returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';
@@ -171,7 +185,8 @@ void main() {
         legacyEmail: 'second@serverpod.dev',
       );
 
-      expect(await passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password),
+          isA<PasswordValidationFailed>());
     });
   });
 }

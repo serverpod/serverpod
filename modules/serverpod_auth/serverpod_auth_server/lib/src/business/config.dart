@@ -39,13 +39,10 @@ typedef SendValidationEmailCallback = Future<bool> Function(
 typedef PasswordHashGenerator = Future<String> Function(String password);
 
 /// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<bool> Function(
-  String password,
-  String email,
-  String hash, {
-  void Function({required String passwordHash, required String storedHash})?
-      onValidationFailure,
-  void Function(Object e)? onError,
+typedef PasswordHashValidator = Future<PasswordValidationResult> Function({
+  required String password,
+  required String email,
+  required String hash,
 });
 
 /// Enum to define the sign-out behavior for the legacy sign out endpoint.
@@ -55,6 +52,39 @@ enum SignOutBehavior {
 
   /// Sign out the user from the current device only.
   currentDevice,
+}
+
+/// Represents the result of validating a plaintext password against a
+/// stored password hash.
+///
+/// This is a sealed hierarchy with the following concrete results:
+/// - [PasswordValidationSuccess]: The provided password matches the stored hash.
+/// - [PasswordValidationFailed]: The password did not match the stored hash.
+sealed class PasswordValidationResult {
+  const PasswordValidationResult();
+}
+
+/// Validation succeeded; the provided password matches the stored hash.
+final class PasswordValidationSuccess extends PasswordValidationResult {
+  ///
+  const PasswordValidationSuccess();
+}
+
+/// Validation failed because the computed password hash did not match the
+/// stored hash.
+final class PasswordValidationFailed extends PasswordValidationResult {
+  /// The hash computed from the provided password using the configured
+  /// password hashing algorithm.
+  final String passwordHash;
+
+  /// The hash retrieved from storage (e.g., database) for the user.
+  final String storedHash;
+
+  ///
+  PasswordValidationFailed({
+    required this.passwordHash,
+    required this.storedHash,
+  });
 }
 
 /// Configuration options for the Auth module.
