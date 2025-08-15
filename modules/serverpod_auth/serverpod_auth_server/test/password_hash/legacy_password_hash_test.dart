@@ -16,7 +16,8 @@ void main() {
       expect(actualHash, expectedHash);
     });
 
-    test('when validating with correct password then validator returns PasswordValidationSuccess',
+    test(
+        'when validating with correct password then validator returns PasswordValidationSuccess',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';
@@ -30,7 +31,8 @@ void main() {
           isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with incorrect password then validator returns PasswordValidationFailed',
+    test(
+        'when validating with incorrect password then validator returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
 
@@ -43,7 +45,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when validating with different salts then validator returns PasswordValidationFailed',
+    test(
+        'when validating with different salts then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
 
@@ -105,7 +108,8 @@ void main() {
       expect(passwordHash.isLegacyHash(), isTrue);
     });
 
-    test('when matching with correct password then it returns PasswordValidationSuccess',
+    test(
+        'when matching with correct password then it returns PasswordValidationSuccess',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';
@@ -125,7 +129,8 @@ void main() {
           isA<PasswordValidationSuccess>());
     });
 
-    test('when matching with incorrect password then it returns PasswordValidationFailed',
+    test(
+        'when matching with incorrect password then it returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
       var email = 'test@serverpod.dev';
@@ -144,7 +149,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when matching with incorrect salt then it returns PasswordValidationFailed',
+    test(
+        'when matching with incorrect salt then it returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var email = 'test@serverpod.dev';
@@ -163,7 +169,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when matching with incorrect email then it returns PasswordValidationFailed',
+    test(
+        'when matching with incorrect email then it returns PasswordValidationFailed',
         () async {
       var salt = 'serverpod password salt';
       var password = 'hunter2';

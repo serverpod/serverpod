@@ -29,12 +29,13 @@ Future<PasswordValidationResult> defaultValidatePasswordHash({
   required String password,
   required String email,
   required String hash,
-}) async =>  await PasswordHash(
-    hash,
-    legacySalt: EmailSecrets.legacySalt,
-    legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-    pepper: EmailSecrets.pepper,
-  ).validate(password);
+}) async =>
+    await PasswordHash(
+      hash,
+      legacySalt: EmailSecrets.legacySalt,
+      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+      pepper: EmailSecrets.pepper,
+    ).validate(password);
 
 /// Collection of utility methods when working with email authentication.
 class Emails {

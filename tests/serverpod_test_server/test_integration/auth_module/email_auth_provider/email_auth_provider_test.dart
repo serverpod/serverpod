@@ -263,7 +263,9 @@ void main() async {
     group('when migrating auth entries', () {
       setUp(() async => await Emails.migrateLegacyPasswordHashes(session));
 
-      test('then user that had legacy password returns PasswordValidationSuccess.', () async {
+      test(
+          'then user that had legacy password returns PasswordValidationSuccess.',
+          () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,
           where: (t) => t.email.equals('test1@serverpod.dev'),
@@ -303,7 +305,8 @@ void main() async {
         );
       });
 
-      test('then user with argon2id password hash returns PasswordValidationSuccess.',
+      test(
+          'then user with argon2id password hash returns PasswordValidationSuccess.',
           () async {
         var emailAuth = await EmailAuth.db.findFirstRow(
           session,

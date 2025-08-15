@@ -122,7 +122,8 @@ void main() {
       expect(passwordHash.isLegacyHash(), isFalse);
     });
 
-    test('when validating with correct password then validator returns PasswordValidationSuccess',
+    test(
+        'when validating with correct password then validator returns PasswordValidationSuccess',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -150,7 +151,8 @@ void main() {
           isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with incorrect password then validator returns PasswordValidationFailed',
+    test(
+        'when validating with incorrect password then validator returns PasswordValidationFailed',
         () async {
       var salt = 'saltySalt';
 
@@ -163,7 +165,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when validating with modified salt then validator returns PasswordValidationFailed',
+    test(
+        'when validating with modified salt then validator returns PasswordValidationFailed',
         () async {
       var password = 'hunter2';
       var originalPasswordHash =
@@ -183,7 +186,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when validating with valid pepper then validator returns PasswordValidationSuccess.',
+    test(
+        'when validating with valid pepper then validator returns PasswordValidationSuccess.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -199,7 +203,8 @@ void main() {
           isA<PasswordValidationSuccess>());
     });
 
-    test('when validating with invalid pepper then validator returns PasswordValidationFailed.',
+    test(
+        'when validating with invalid pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -218,7 +223,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when validating with missing pepper then validator returns PasswordValidationFailed.',
+    test(
+        'when validating with missing pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
@@ -232,7 +238,8 @@ void main() {
           isA<PasswordValidationFailed>());
     });
 
-    test('when validating with added pepper then validator returns PasswordValidationFailed.',
+    test(
+        'when validating with added pepper then validator returns PasswordValidationFailed.',
         () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
