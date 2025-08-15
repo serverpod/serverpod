@@ -170,7 +170,7 @@ void main() {
             verificationCode: 'some invalid code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.unauthorized,
           )),
@@ -191,7 +191,7 @@ void main() {
             ),
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.expired,
           )),
@@ -212,7 +212,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.unauthorized,
           )),
@@ -225,7 +225,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.tooManyAttempts,
           )),
@@ -238,7 +238,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.notFound,
           )),
@@ -257,7 +257,7 @@ void main() {
             accountRequestId: pendingAccountRequestId,
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.notVerified,
           )),
@@ -442,7 +442,7 @@ void main() {
             verificationCode: accountCreationParameters.verificationCode,
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountRequestExceptionReason.notFound,
           )),

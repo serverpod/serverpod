@@ -112,7 +112,7 @@ void main() {
             email: email.toUpperCase(),
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestTooManyAttempts,
           )),
@@ -184,11 +184,10 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestUnauthorized,
           )),
-          
         );
 
         await expectLater(
@@ -199,7 +198,7 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )),
@@ -213,7 +212,7 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-                (exception) => exception.type,
+            (exception) => exception.type,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestNotFound,
           )),
