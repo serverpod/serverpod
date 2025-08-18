@@ -28,6 +28,7 @@ abstract class SessionLogEntry
     this.error,
     this.stackTrace,
     this.authenticatedUserId,
+    this.userId,
     this.isOpen,
     required this.touched,
   });
@@ -45,6 +46,7 @@ abstract class SessionLogEntry
     String? error,
     String? stackTrace,
     int? authenticatedUserId,
+    String? userId,
     bool? isOpen,
     required DateTime touched,
   }) = _SessionLogEntryImpl;
@@ -63,6 +65,7 @@ abstract class SessionLogEntry
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
+      userId: jsonSerialization['userId'] as String?,
       isOpen: jsonSerialization['isOpen'] as bool?,
       touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
     );
@@ -106,11 +109,14 @@ abstract class SessionLogEntry
   /// If the session ends with an exception, a stack trace will be set.
   String? stackTrace;
 
+  /// Deprecated. Use userId instead.
+  int? authenticatedUserId;
+
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  int? authenticatedUserId;
+  String? userId;
 
   /// True if the session is still open.
   bool? isOpen;
@@ -137,6 +143,7 @@ abstract class SessionLogEntry
     String? error,
     String? stackTrace,
     int? authenticatedUserId,
+    String? userId,
     bool? isOpen,
     DateTime? touched,
   });
@@ -156,6 +163,7 @@ abstract class SessionLogEntry
       if (stackTrace != null) 'stackTrace': stackTrace,
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
+      if (userId != null) 'userId': userId,
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),
     };
@@ -177,6 +185,7 @@ abstract class SessionLogEntry
       if (stackTrace != null) 'stackTrace': stackTrace,
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
+      if (userId != null) 'userId': userId,
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),
     };
@@ -228,6 +237,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     String? error,
     String? stackTrace,
     int? authenticatedUserId,
+    String? userId,
     bool? isOpen,
     required DateTime touched,
   }) : super._(
@@ -243,6 +253,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           error: error,
           stackTrace: stackTrace,
           authenticatedUserId: authenticatedUserId,
+          userId: userId,
           isOpen: isOpen,
           touched: touched,
         );
@@ -264,6 +275,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     Object? error = _Undefined,
     Object? stackTrace = _Undefined,
     Object? authenticatedUserId = _Undefined,
+    Object? userId = _Undefined,
     Object? isOpen = _Undefined,
     DateTime? touched,
   }) {
@@ -282,6 +294,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       authenticatedUserId: authenticatedUserId is int?
           ? authenticatedUserId
           : this.authenticatedUserId,
+      userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
     );
@@ -335,6 +348,10 @@ class SessionLogEntryTable extends _i1.Table<int?> {
       'authenticatedUserId',
       this,
     );
+    userId = _i1.ColumnString(
+      'userId',
+      this,
+    );
     isOpen = _i1.ColumnBool(
       'isOpen',
       this,
@@ -376,11 +393,14 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   /// If the session ends with an exception, a stack trace will be set.
   late final _i1.ColumnString stackTrace;
 
+  /// Deprecated. Use userId instead.
+  late final _i1.ColumnInt authenticatedUserId;
+
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  late final _i1.ColumnInt authenticatedUserId;
+  late final _i1.ColumnString userId;
 
   /// True if the session is still open.
   late final _i1.ColumnBool isOpen;
@@ -402,6 +422,7 @@ class SessionLogEntryTable extends _i1.Table<int?> {
         error,
         stackTrace,
         authenticatedUserId,
+        userId,
         isOpen,
         touched,
       ];
