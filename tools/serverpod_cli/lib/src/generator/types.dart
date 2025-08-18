@@ -68,7 +68,7 @@ class TypeDefinition {
     String? recordFieldName,
   }) {
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-    var url = type.element?.librarySource?.uri.toString();
+    var url = type.element?.library?.identifier;
 
     if (type is RecordType) {
       var positionalField = type.positionalFields
