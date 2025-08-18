@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'compilation_unit_matcher/chainable_matcher.dart';
@@ -178,7 +179,8 @@ class FormattedCompilationUnit {
 
   @override
   String toString() {
-    return DartFormatter().format(compilationUnit.toSource());
+    return DartFormatter(languageVersion: Version(3, 6, 0))
+        .format(compilationUnit.toSource());
   }
 }
 

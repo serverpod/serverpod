@@ -2,20 +2,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:source_span/source_span.dart';
 
 extension DartElementSourceSpan on Element {
+  /// Returns the [SourceSpan] of the Dart element, if available.
   SourceSpan? get span {
-    var sourceData = source?.contents.data;
-    var sourceUri = source?.uri;
-    var offset = nameOffset;
-    var length = nameLength;
-
-    if (sourceData != null && offset != 0 && length != -1) {
-      var sourceFile = SourceFile.fromString(
-        sourceData,
-        url: sourceUri,
-      );
-      return sourceFile.span(offset, offset + length);
-    } else {
-      return null;
-    }
+    final lib = library;
+    if (lib == null) return null;
+    final offset = firstFragment.offset;
+    final length = firstFragment.name?.length ?? 0;
+    final sourceCode = lib.firstFragment.source.contents.data;
+    return SourceFile.fromString(sourceCode, url: lib.uri)
+        .span(offset, offset + length);
   }
 }

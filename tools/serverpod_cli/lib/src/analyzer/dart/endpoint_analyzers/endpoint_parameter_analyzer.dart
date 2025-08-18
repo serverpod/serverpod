@@ -12,7 +12,7 @@ abstract class EndpointParameterAnalyzer {
   /// Parses a [ParameterElement] into a [ParameterDefinition].
   /// Assumes that the [ParameterElement] is a valid endpoint parameter.
   static Parameters parse(
-    List<ParameterElement> parameters,
+    List<FormalParameterElement> parameters,
   ) {
     var requiredParameters = <ParameterDefinition>[];
     var positionalParameters = <ParameterDefinition>[];
@@ -21,7 +21,7 @@ abstract class EndpointParameterAnalyzer {
     var filteredParameters = parameters.withoutSessionParameter;
     for (var parameter in filteredParameters) {
       var definition = ParameterDefinition(
-        name: parameter.name,
+        name: parameter.name!,
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
       );
@@ -44,7 +44,7 @@ abstract class EndpointParameterAnalyzer {
 
   /// Validates a list of [ParameterElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
-    List<ParameterElement> parameters,
+    List<FormalParameterElement> parameters,
   ) {
     List<SourceSpanSeverityException> exceptions = [];
 
@@ -118,7 +118,7 @@ abstract class EndpointParameterAnalyzer {
     return exceptions;
   }
 
-  static bool _isRequired(ParameterElement parameter) {
+  static bool _isRequired(FormalParameterElement parameter) {
     if (parameter.isRequiredPositional) {
       return true;
     }
