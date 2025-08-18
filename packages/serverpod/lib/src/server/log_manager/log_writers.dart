@@ -337,7 +337,7 @@ class TextStdOutLogWriter extends LogWriter {
           '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
       id: _logId,
       fields: {
-        'user': entry.authenticatedUserId,
+        'user': entry.userId,
       },
       error: entry.error,
       stackTrace: entry.stackTrace,
@@ -353,7 +353,7 @@ class TextStdOutLogWriter extends LogWriter {
           context: '${entry.endpoint}.${entry.method}',
           id: _logId,
           fields: {
-            'user': entry.authenticatedUserId,
+            'user': entry.userId,
             'queries': entry.numQueries,
             'duration': _printDuration(entry.duration),
           },
@@ -380,7 +380,7 @@ class TextStdOutLogWriter extends LogWriter {
           context: entry.endpoint,
           id: _logId,
           fields: {
-            'user': entry.authenticatedUserId,
+            'user': entry.userId,
             'queries': entry.numQueries,
             'duration': _printDuration(entry.duration),
           },
@@ -395,7 +395,7 @@ class TextStdOutLogWriter extends LogWriter {
               '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
           id: _logId,
           fields: {
-            'user': entry.authenticatedUserId,
+            'user': entry.userId,
             'queries': entry.numQueries,
             'duration': _printDuration(entry.duration),
           },

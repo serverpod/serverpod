@@ -26,7 +26,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
     this.slow,
     this.error,
     this.stackTrace,
-    this.authenticatedUserId,
     this.userId,
     this.isOpen,
     required this.touched,
@@ -44,7 +43,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
     bool? slow,
     String? error,
     String? stackTrace,
-    int? authenticatedUserId,
     String? userId,
     bool? isOpen,
     required DateTime touched,
@@ -63,7 +61,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
       slow: jsonSerialization['slow'] as bool?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
       userId: jsonSerialization['userId'] as String?,
       isOpen: jsonSerialization['isOpen'] as bool?,
       touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
@@ -106,9 +103,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   /// If the session ends with an exception, a stack trace will be set.
   String? stackTrace;
 
-  /// Deprecated. Use userId instead.
-  int? authenticatedUserId;
-
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
@@ -136,7 +130,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
     bool? slow,
     String? error,
     String? stackTrace,
-    int? authenticatedUserId,
     String? userId,
     bool? isOpen,
     DateTime? touched,
@@ -155,8 +148,6 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
       if (slow != null) 'slow': slow,
       if (error != null) 'error': error,
       if (stackTrace != null) 'stackTrace': stackTrace,
-      if (authenticatedUserId != null)
-        'authenticatedUserId': authenticatedUserId,
       if (userId != null) 'userId': userId,
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),
@@ -184,7 +175,6 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     bool? slow,
     String? error,
     String? stackTrace,
-    int? authenticatedUserId,
     String? userId,
     bool? isOpen,
     required DateTime touched,
@@ -200,7 +190,6 @@ class _SessionLogEntryImpl extends SessionLogEntry {
           slow: slow,
           error: error,
           stackTrace: stackTrace,
-          authenticatedUserId: authenticatedUserId,
           userId: userId,
           isOpen: isOpen,
           touched: touched,
@@ -222,7 +211,6 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     Object? slow = _Undefined,
     Object? error = _Undefined,
     Object? stackTrace = _Undefined,
-    Object? authenticatedUserId = _Undefined,
     Object? userId = _Undefined,
     Object? isOpen = _Undefined,
     DateTime? touched,
@@ -239,9 +227,6 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       slow: slow is bool? ? slow : this.slow,
       error: error is String? ? error : this.error,
       stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
-      authenticatedUserId: authenticatedUserId is int?
-          ? authenticatedUserId
-          : this.authenticatedUserId,
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,

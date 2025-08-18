@@ -183,8 +183,6 @@ abstract class SessionLogEntry
       if (slow != null) 'slow': slow,
       if (error != null) 'error': error,
       if (stackTrace != null) 'stackTrace': stackTrace,
-      if (authenticatedUserId != null)
-        'authenticatedUserId': authenticatedUserId,
       if (userId != null) 'userId': userId,
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),

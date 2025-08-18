@@ -313,10 +313,7 @@ class SessionLogManager {
         slow: isSlow,
         error: exception,
         stackTrace: stackTrace?.toString(),
-        // TODO: Support non-`int` user IDs https://github.com/serverpod/serverpod/issues/3448
-        authenticatedUserId: authenticatedUserId == null
-            ? null
-            : int.tryParse(authenticatedUserId),
+        userId: authenticatedUserId,
       );
 
       try {
