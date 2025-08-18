@@ -115,26 +115,21 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i2.EmailAccountLoginException) {
-      return 'EmailAccountLoginException';
-    }
-    if (data is _i3.EmailAccountLoginFailureReason) {
-      return 'EmailAccountLoginFailureReason';
-    }
-    if (data is _i4.EmailAccountPasswordResetException) {
-      return 'EmailAccountPasswordResetException';
-    }
-    if (data is _i5.EmailAccountPasswordResetExceptionReason) {
-      return 'EmailAccountPasswordResetExceptionReason';
-    }
-    if (data is _i6.EmailAccountRequestException) {
-      return 'EmailAccountRequestException';
-    }
-    if (data is _i7.EmailAccountRequestExceptionReason) {
-      return 'EmailAccountRequestExceptionReason';
-    }
-    if (data is _i8.GoogleIdTokenVerificationException) {
-      return 'GoogleIdTokenVerificationException';
+    switch (data) {
+      case _i2.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i3.EmailAccountLoginFailureReason():
+        return 'EmailAccountLoginFailureReason';
+      case _i4.EmailAccountPasswordResetException():
+        return 'EmailAccountPasswordResetException';
+      case _i5.EmailAccountPasswordResetExceptionReason():
+        return 'EmailAccountPasswordResetExceptionReason';
+      case _i6.EmailAccountRequestException():
+        return 'EmailAccountRequestException';
+      case _i7.EmailAccountRequestExceptionReason():
+        return 'EmailAccountRequestExceptionReason';
+      case _i8.GoogleIdTokenVerificationException():
+        return 'GoogleIdTokenVerificationException';
     }
     className = _i9.Protocol().getClassNameForObject(data);
     if (className != null) {

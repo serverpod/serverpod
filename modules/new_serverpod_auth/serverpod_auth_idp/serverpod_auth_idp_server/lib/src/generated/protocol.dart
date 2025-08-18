@@ -999,53 +999,39 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i4.AppleAccount) {
-      return 'AppleAccount';
-    }
-    if (data is _i5.EmailAccount) {
-      return 'EmailAccount';
-    }
-    if (data is _i6.EmailAccountFailedLoginAttempt) {
-      return 'EmailAccountFailedLoginAttempt';
-    }
-    if (data is _i7.EmailAccountPasswordResetAttempt) {
-      return 'EmailAccountPasswordResetAttempt';
-    }
-    if (data is _i8.EmailAccountPasswordResetRequest) {
-      return 'EmailAccountPasswordResetRequest';
-    }
-    if (data is _i9.EmailAccountPasswordResetRequestAttempt) {
-      return 'EmailAccountPasswordResetRequestAttempt';
-    }
-    if (data is _i10.EmailAccountRequest) {
-      return 'EmailAccountRequest';
-    }
-    if (data is _i11.EmailAccountRequestCompletionAttempt) {
-      return 'EmailAccountRequestCompletionAttempt';
-    }
-    if (data is _i12.EmailAccountLoginException) {
-      return 'EmailAccountLoginException';
-    }
-    if (data is _i13.EmailAccountLoginFailureReason) {
-      return 'EmailAccountLoginFailureReason';
-    }
-    if (data is _i14.EmailAccountPasswordResetException) {
-      return 'EmailAccountPasswordResetException';
-    }
-    if (data is _i15.EmailAccountPasswordResetExceptionReason) {
-      return 'EmailAccountPasswordResetExceptionReason';
-    }
-    if (data is _i16.EmailAccountRequestException) {
-      return 'EmailAccountRequestException';
-    }
-    if (data is _i17.EmailAccountRequestExceptionReason) {
-      return 'EmailAccountRequestExceptionReason';
-    }
-    if (data is _i18.GoogleAccount) {
-      return 'GoogleAccount';
-    }
-    if (data is _i19.GoogleIdTokenVerificationException) {
-      return 'GoogleIdTokenVerificationException';
+    switch (data) {
+      case _i4.AppleAccount():
+        return 'AppleAccount';
+      case _i5.EmailAccount():
+        return 'EmailAccount';
+      case _i6.EmailAccountFailedLoginAttempt():
+        return 'EmailAccountFailedLoginAttempt';
+      case _i7.EmailAccountPasswordResetAttempt():
+        return 'EmailAccountPasswordResetAttempt';
+      case _i8.EmailAccountPasswordResetRequest():
+        return 'EmailAccountPasswordResetRequest';
+      case _i9.EmailAccountPasswordResetRequestAttempt():
+        return 'EmailAccountPasswordResetRequestAttempt';
+      case _i10.EmailAccountRequest():
+        return 'EmailAccountRequest';
+      case _i11.EmailAccountRequestCompletionAttempt():
+        return 'EmailAccountRequestCompletionAttempt';
+      case _i12.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i13.EmailAccountLoginFailureReason():
+        return 'EmailAccountLoginFailureReason';
+      case _i14.EmailAccountPasswordResetException():
+        return 'EmailAccountPasswordResetException';
+      case _i15.EmailAccountPasswordResetExceptionReason():
+        return 'EmailAccountPasswordResetExceptionReason';
+      case _i16.EmailAccountRequestException():
+        return 'EmailAccountRequestException';
+      case _i17.EmailAccountRequestExceptionReason():
+        return 'EmailAccountRequestExceptionReason';
+      case _i18.GoogleAccount():
+        return 'GoogleAccount';
+      case _i19.GoogleIdTokenVerificationException():
+        return 'GoogleIdTokenVerificationException';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
