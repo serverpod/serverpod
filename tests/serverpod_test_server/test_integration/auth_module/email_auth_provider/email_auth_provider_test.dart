@@ -336,7 +336,7 @@ void main() async {
         '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
 
     test(
-        'then validation fails and validation failure callback is called with generated hash and passed in hash.',
+        'then validation returns PasswordValidationFailed with generated and passed in hash.',
         () async {
       late String actualStoredHash;
       late String actualPasswordHash;
