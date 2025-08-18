@@ -1,95 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
 
 class TemplateChecksumManager {
-  static const String checksumsFileName = 'checksums.json';
+  static const String checksumsFileName = 'template_checksums.yaml';
+  static const String filesManifestName = 'template_files.yaml';
   static const int maxRetryAttempts = 5;
   static const String bugReportUrl =
       'https://github.com/serverpod/serverpod/issues/new?template=bug_report.yml';
 
-  /// Calculate MD5 checksum for a directory tree
-  static Future<String> calculateDirectoryChecksum(Directory dir) async {
-    var fileHashes = <String>[];
-
-    // Read gitignore patterns if the file exists
-    var gitignorePatterns = <String>[];
-    var gitignoreFile = File(p.join(dir.path, 'gitignore'));
-    if (!await gitignoreFile.exists()) {
-      gitignoreFile = File(p.join(dir.path, '.gitignore'));
-    }
-    if (await gitignoreFile.exists()) {
-      var lines = await gitignoreFile.readAsLines();
-      for (var line in lines) {
-        line = line.trim();
-        // Skip comments and empty lines
-        if (line.isEmpty || line.startsWith('#')) continue;
-        gitignorePatterns.add(line);
-      }
-    }
-
-    var files = await dir
-        .list(recursive: true, followLinks: false)
-        .where((entity) => entity is File)
-        .cast<File>()
-        .toList();
-
-    files.sort((a, b) => a.path.compareTo(b.path));
-
-    for (var file in files) {
-      var fileName = p.basename(file.path);
-      if (fileName == checksumsFileName) {
-        continue;
-      }
-
-      var relativePath = p.relative(file.path, from: dir.path);
-
-      // Skip dotfiles and dotfolders (matching Copier behavior)
-      if (relativePath.startsWith('.') || relativePath.contains('/.')) {
-        continue;
-      }
-
-      // Skip generated directories
-      if (relativePath.contains('/generated/') ||
-          relativePath.startsWith('generated/')) {
-        continue;
-      }
-
-      // Skip specific patterns
-      if (relativePath.endsWith('.lock') ||
-          relativePath == 'pubspec.lock' ||
-          relativePath.contains('.DS_Store')) {
-        continue;
-      }
-
-      // Check gitignore patterns
-      var shouldSkip = false;
-      for (var pattern in gitignorePatterns) {
-        // Simple pattern matching (not full gitignore syntax)
-        if (relativePath == pattern ||
-            relativePath.startsWith('$pattern/') ||
-            relativePath.endsWith(pattern) ||
-            relativePath.contains('/$pattern/')) {
-          shouldSkip = true;
-          break;
-        }
-      }
-      if (shouldSkip) continue;
-
-      var content = await file.readAsBytes();
-      var fileHash = md5.convert(content).toString();
-
-      fileHashes.add('$relativePath:$fileHash');
-    }
-
-    var combinedHashes = fileHashes.join('\n');
-    var finalChecksum = md5.convert(utf8.encode(combinedHashes)).toString();
-
-    return finalChecksum;
-  }
-
-  /// Verify checksums for downloaded templates
+  /// Verify checksums for downloaded templates using the YAML manifest
   static Future<bool> verifyTemplateChecksums(
     Directory templateDir, {
     required String templateType,
@@ -97,88 +18,75 @@ class TemplateChecksumManager {
     var checksumsFile = File(p.join(templateDir.path, checksumsFileName));
 
     if (!await checksumsFile.exists()) {
+      // No checksums file means we can't verify
+      // In production, this would be downloaded with templates
+      // In development, this should exist
       return true;
     }
 
     try {
-      var checksumsJson = jsonDecode(await checksumsFile.readAsString())
-          as Map<String, dynamic>;
-      var expectedChecksums =
-          checksumsJson['directories'] as Map<String, dynamic>?;
-      var templateChecksums =
-          checksumsJson['templates'] as Map<String, dynamic>?;
-
-      if (expectedChecksums == null || templateChecksums == null) {
+      var checksumsYaml = loadYaml(await checksumsFile.readAsString()) as Map;
+      
+      // Read the template files manifest to get template type mappings
+      var filesManifestFile = File(p.join(templateDir.path, filesManifestName));
+      List<String> dirsToVerify;
+      
+      if (!await filesManifestFile.exists()) {
+        print('Template files manifest not found: $filesManifestName');
         return false;
       }
-
-      List<String> dirsToCheck;
-      String? compositeChecksum;
-
-      switch (templateType) {
-        case 'mini':
-          dirsToCheck = [
-            'projectname_server',
-            'projectname_client',
-            'projectname_flutter'
-          ];
-          compositeChecksum = templateChecksums['mini'] as String?;
-          break;
-        case 'server':
-          dirsToCheck = [
-            'projectname_server',
-            'projectname_server_upgrade',
-            'projectname_client',
-            'projectname_flutter',
-            'github'
-          ];
-          compositeChecksum = templateChecksums['server'] as String?;
-          break;
-        case 'module':
-          dirsToCheck = ['modulename_server', 'modulename_client'];
-          compositeChecksum = templateChecksums['module'] as String?;
-          break;
-        default:
-          return true;
+      
+      // Read template type mapping from manifest
+      var filesManifest = loadYaml(await filesManifestFile.readAsString()) as Map;
+      var templateTypes = filesManifest['template_types'] as Map?;
+      
+      if (templateTypes == null) {
+        print('No template_types section found in manifest');
+        return false;
       }
+      
+      if (!templateTypes.containsKey(templateType)) {
+        print('Unknown template type in manifest: $templateType');
+        return false;
+      }
+      
+      dirsToVerify = List<String>.from(templateTypes[templateType] as List);
 
-      for (var dirName in dirsToCheck) {
+      // Verify each directory's files
+      for (var dirName in dirsToVerify) {
+        if (!checksumsYaml.containsKey(dirName)) {
+          print('Missing checksums for directory: $dirName');
+          return false;
+        }
+        
+        var dirChecksums = checksumsYaml[dirName] as Map;
         var dir = Directory(p.join(templateDir.path, dirName));
+        
         if (!await dir.exists()) {
-          continue;
-        }
-
-        var expectedChecksum = expectedChecksums[dirName] as String?;
-        if (expectedChecksum == null) {
-          continue;
-        }
-
-        var actualChecksum = await calculateDirectoryChecksum(dir);
-        if (expectedChecksum != actualChecksum) {
-          print('Checksum mismatch for $dirName:');
-          print('  Expected: $expectedChecksum');
-          print('  Actual:   $actualChecksum');
+          print('Missing template directory: $dirName');
           return false;
         }
-      }
-
-      if (compositeChecksum != null && compositeChecksum != 'dummy') {
-        var compositeHashes = StringBuffer();
-        for (var dirName in dirsToCheck) {
-          var dir = Directory(p.join(templateDir.path, dirName));
-          if (await dir.exists()) {
-            var dirChecksum = await calculateDirectoryChecksum(dir);
-            compositeHashes.write(dirChecksum);
+        
+        // Verify each file in the manifest
+        for (var entry in dirChecksums.entries) {
+          var filePath = entry.key as String;
+          var expectedChecksum = entry.value as String;
+          
+          var file = File(p.join(dir.path, filePath));
+          if (!await file.exists()) {
+            print('Missing file: $dirName/$filePath');
+            return false;
           }
-        }
-
-        var actualComposite =
-            md5.convert(utf8.encode(compositeHashes.toString())).toString();
-        if (compositeChecksum != actualComposite) {
-          print('Composite checksum mismatch for $templateType:');
-          print('  Expected: $compositeChecksum');
-          print('  Actual:   $actualComposite');
-          return false;
+          
+          var content = await file.readAsBytes();
+          var actualChecksum = md5.convert(content).toString();
+          
+          if (actualChecksum != expectedChecksum) {
+            print('Checksum mismatch for $dirName/$filePath:');
+            print('  Expected: $expectedChecksum');
+            print('  Actual:   $actualChecksum');
+            return false;
+          }
         }
       }
 

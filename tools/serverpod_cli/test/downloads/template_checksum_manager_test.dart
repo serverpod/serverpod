@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/downloads/template_checksum_manager.dart';
@@ -18,74 +17,17 @@ void main() {
       }
     });
 
-    group('Given a directory with files and subdirectories', () {
-      test('then the checksum is consistent when calculated multiple times',
-          () async {
-        var testDir = Directory(p.join(tempDir.path, 'test_template'));
-        testDir.createSync(recursive: true);
-        File(p.join(testDir.path, 'file1.txt')).writeAsStringSync('content1');
-        File(p.join(testDir.path, 'file2.txt')).writeAsStringSync('content2');
-        Directory(p.join(testDir.path, 'subdir')).createSync();
-        File(p.join(testDir.path, 'subdir', 'file3.txt'))
-            .writeAsStringSync('content3');
-
-        var checksum1 =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir);
-        var checksum2 =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir);
-
-        expect(checksum1, equals(checksum2));
-        expect(checksum1, isNotEmpty);
-      });
-    });
-
-    group('Given two directories with different content', () {
-      test('then the checksums are different', () async {
-        var testDir1 = Directory(p.join(tempDir.path, 'test_template1'));
-        testDir1.createSync(recursive: true);
-        File(p.join(testDir1.path, 'file.txt')).writeAsStringSync('content1');
-
-        var testDir2 = Directory(p.join(tempDir.path, 'test_template2'));
-        testDir2.createSync(recursive: true);
-        File(p.join(testDir2.path, 'file.txt')).writeAsStringSync('content2');
-
-        var checksum1 =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir1);
-        var checksum2 =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir2);
-
-        expect(checksum1, isNot(equals(checksum2)));
-      });
-    });
-
-    group('Given a directory with content when adding checksums.json file', () {
-      test('then the checksum remains unchanged', () async {
-        var testDir = Directory(p.join(tempDir.path, 'test_template'));
-        testDir.createSync(recursive: true);
-        File(p.join(testDir.path, 'file.txt')).writeAsStringSync('content');
-
-        var checksumBefore =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir);
-
-        File(p.join(testDir.path, 'checksums.json'))
-            .writeAsStringSync('{"test": "value"}');
-
-        var checksumAfter =
-            await TemplateChecksumManager.calculateDirectoryChecksum(testDir);
-
-        expect(checksumBefore, equals(checksumAfter));
-      });
-    });
-
     group('Given template directories with matching checksums', () {
       test('then verification returns true', () async {
         var templateDir = Directory(p.join(tempDir.path, 'templates'));
         templateDir.createSync(recursive: true);
 
+        // Create template directories with files
         var serverDir =
             Directory(p.join(templateDir.path, 'projectname_server'));
         serverDir.createSync(recursive: true);
         File(p.join(serverDir.path, 'file.txt')).writeAsStringSync('server');
+        File(p.join(serverDir.path, 'main.dart')).writeAsStringSync('main');
 
         var clientDir =
             Directory(p.join(templateDir.path, 'projectname_client'));
@@ -97,27 +39,32 @@ void main() {
         flutterDir.createSync(recursive: true);
         File(p.join(flutterDir.path, 'file.txt')).writeAsStringSync('flutter');
 
-        var serverChecksum =
-            await TemplateChecksumManager.calculateDirectoryChecksum(serverDir);
-        var clientChecksum =
-            await TemplateChecksumManager.calculateDirectoryChecksum(clientDir);
-        var flutterChecksum =
-            await TemplateChecksumManager.calculateDirectoryChecksum(
-                flutterDir);
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+    - projectname_client
+    - projectname_flutter
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
 
-        var checksums = {
-          'directories': {
-            'projectname_server': serverChecksum,
-            'projectname_client': clientChecksum,
-            'projectname_flutter': flutterChecksum,
-          },
-          'templates': {
-            'mini': 'dummy', // Not used in basic verification
-          },
-        };
+        // Create YAML checksums file with correct checksums
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: cf1e8c14e54505f60aa10ceb8d5d8ab3
+  main.dart: fad58de7366495db4650cfefac2fcd61
 
-        File(p.join(templateDir.path, 'checksums.json'))
-            .writeAsStringSync(jsonEncode(checksums));
+projectname_client:
+  file.txt: 62608e08adc29a8d6dbc9754e659f125
+
+projectname_flutter:
+  file.txt: 5acebc4cb70ddbb074b0ac76aab176ae
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
 
         var result = await TemplateChecksumManager.verifyTemplateChecksums(
           templateDir,
@@ -138,17 +85,23 @@ void main() {
         serverDir.createSync(recursive: true);
         File(p.join(serverDir.path, 'file.txt')).writeAsStringSync('content');
 
-        var checksums = {
-          'directories': {
-            'projectname_server': 'incorrect_checksum',
-          },
-          'templates': {
-            'mini': 'dummy',
-          },
-        };
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
 
-        File(p.join(templateDir.path, 'checksums.json'))
-            .writeAsStringSync(jsonEncode(checksums));
+        // Create YAML with incorrect checksum
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: incorrect_checksum
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
 
         var result = await TemplateChecksumManager.verifyTemplateChecksums(
           templateDir,
@@ -159,7 +112,7 @@ void main() {
       });
     });
 
-    group('Given template directory without checksums.json', () {
+    group('Given template directory without template_checksums.yaml', () {
       test('then verification returns true', () async {
         var templateDir = Directory(p.join(tempDir.path, 'templates'));
         templateDir.createSync(recursive: true);
@@ -173,30 +126,117 @@ void main() {
       });
     });
 
-    group('Given valid checksums when verifying with retry', () {
-      test('then succeeds without redownload', () async {
+    group('Given missing template directory', () {
+      test('then verification returns false', () async {
+        var templateDir = Directory(p.join(tempDir.path, 'templates'));
+        templateDir.createSync(recursive: true);
+
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
+        // Create YAML requiring projectname_server but don't create the directory
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: cf1e8c14e54505f60aa10ceb8d5d8ab3
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
+
+        var result = await TemplateChecksumManager.verifyTemplateChecksums(
+          templateDir,
+          templateType: 'mini',
+        );
+
+        expect(result, isFalse);
+      });
+    });
+
+    group('Given missing file in template', () {
+      test('then verification returns false', () async {
         var templateDir = Directory(p.join(tempDir.path, 'templates'));
         templateDir.createSync(recursive: true);
 
         var serverDir =
             Directory(p.join(templateDir.path, 'projectname_server'));
         serverDir.createSync(recursive: true);
+        // Don't create the file that's listed in checksums
+
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
+        var checksumsYaml = '''
+projectname_server:
+  missing_file.txt: cf1e8c14e54505f60aa10ceb8d5d8ab3
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
+
+        var result = await TemplateChecksumManager.verifyTemplateChecksums(
+          templateDir,
+          templateType: 'mini',
+        );
+
+        expect(result, isFalse);
+      });
+    });
+
+    group('Given valid checksums when verifying with retry', () {
+      test('then succeeds without redownload', () async {
+        var templateDir = Directory(p.join(tempDir.path, 'templates'));
+        templateDir.createSync(recursive: true);
+
+        // For mini template, we need all three directories
+        var serverDir =
+            Directory(p.join(templateDir.path, 'projectname_server'));
+        serverDir.createSync(recursive: true);
         File(p.join(serverDir.path, 'file.txt')).writeAsStringSync('server');
 
-        var serverChecksum =
-            await TemplateChecksumManager.calculateDirectoryChecksum(serverDir);
+        var clientDir =
+            Directory(p.join(templateDir.path, 'projectname_client'));
+        clientDir.createSync(recursive: true);
+        File(p.join(clientDir.path, 'file.txt')).writeAsStringSync('client');
 
-        var checksums = {
-          'directories': {
-            'projectname_server': serverChecksum,
-          },
-          'templates': {
-            'mini': 'dummy',
-          },
-        };
+        var flutterDir =
+            Directory(p.join(templateDir.path, 'projectname_flutter'));
+        flutterDir.createSync(recursive: true);
+        File(p.join(flutterDir.path, 'file.txt')).writeAsStringSync('flutter');
 
-        File(p.join(templateDir.path, 'checksums.json'))
-            .writeAsStringSync(jsonEncode(checksums));
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+    - projectname_client
+    - projectname_flutter
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: cf1e8c14e54505f60aa10ceb8d5d8ab3
+projectname_client:
+  file.txt: 62608e08adc29a8d6dbc9754e659f125
+projectname_flutter:
+  file.txt: 5acebc4cb70ddbb074b0ac76aab176ae
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
 
         var downloadCount = 0;
 
@@ -221,33 +261,46 @@ void main() {
         var templateDir = Directory(p.join(tempDir.path, 'templates'));
         templateDir.createSync(recursive: true);
 
+        // Create all directories but with wrong content in one
         var serverDir =
             Directory(p.join(templateDir.path, 'projectname_server'));
         serverDir.createSync(recursive: true);
         File(p.join(serverDir.path, 'file.txt'))
             .writeAsStringSync('wrong_content');
 
+        var clientDir =
+            Directory(p.join(templateDir.path, 'projectname_client'));
+        clientDir.createSync(recursive: true);
+        File(p.join(clientDir.path, 'file.txt')).writeAsStringSync('client');
+
+        var flutterDir =
+            Directory(p.join(templateDir.path, 'projectname_flutter'));
+        flutterDir.createSync(recursive: true);
+        File(p.join(flutterDir.path, 'file.txt')).writeAsStringSync('flutter');
+
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+    - projectname_client
+    - projectname_flutter
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
         var correctContent = 'correct_content';
-        var tempTestDir = Directory(p.join(tempDir.path, 'temp_test'));
-        tempTestDir.createSync();
-        File(p.join(tempTestDir.path, 'file.txt'))
-            .writeAsStringSync(correctContent);
-        var expectedChecksum =
-            await TemplateChecksumManager.calculateDirectoryChecksum(
-                tempTestDir);
-        tempTestDir.deleteSync(recursive: true);
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: 8d834aa8af95c3d4d6b416652529b937
+projectname_client:
+  file.txt: 62608e08adc29a8d6dbc9754e659f125
+projectname_flutter:
+  file.txt: 5acebc4cb70ddbb074b0ac76aab176ae
+''';
 
-        var checksums = {
-          'directories': {
-            'projectname_server': expectedChecksum,
-          },
-          'templates': {
-            'mini': 'dummy',
-          },
-        };
-
-        File(p.join(templateDir.path, 'checksums.json'))
-            .writeAsStringSync(jsonEncode(checksums));
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
 
         var downloadCount = 0;
 
@@ -260,11 +313,23 @@ void main() {
             if (downloadCount == 1) {
               // Recreate with correct content
               templateDir.createSync(recursive: true);
+
               serverDir.createSync(recursive: true);
               File(p.join(serverDir.path, 'file.txt'))
                   .writeAsStringSync(correctContent);
-              File(p.join(templateDir.path, 'checksums.json'))
-                  .writeAsStringSync(jsonEncode(checksums));
+
+              clientDir.createSync(recursive: true);
+              File(p.join(clientDir.path, 'file.txt'))
+                  .writeAsStringSync('client');
+
+              flutterDir.createSync(recursive: true);
+              File(p.join(flutterDir.path, 'file.txt'))
+                  .writeAsStringSync('flutter');
+
+              File(p.join(templateDir.path, 'template_files.yaml'))
+                  .writeAsStringSync(filesManifestYaml);
+              File(p.join(templateDir.path, 'template_checksums.yaml'))
+                  .writeAsStringSync(checksumsYaml);
             }
           },
         );
@@ -282,18 +347,23 @@ void main() {
         var templateDir = Directory(p.join(tempDir.path, 'templates'));
         templateDir.createSync(recursive: true);
 
-        var checksums = {
-          'directories': {
-            'projectname_server': 'will_never_match',
-          },
-          'templates': {
-            'mini': 'dummy',
-          },
-        };
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  mini:
+    - projectname_server
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
 
-        // Create initial checksums.json with wrong checksum
-        File(p.join(templateDir.path, 'checksums.json'))
-            .writeAsStringSync(jsonEncode(checksums));
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: will_never_match
+''';
+
+        // Create initial checksums.yaml with wrong checksum
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
 
         // Create initial directory with content
         var serverDir =
@@ -316,14 +386,119 @@ void main() {
             serverDir.createSync(recursive: true);
             File(p.join(serverDir.path, 'file.txt'))
                 .writeAsStringSync('always_wrong');
-            File(p.join(templateDir.path, 'checksums.json'))
-                .writeAsStringSync(jsonEncode(checksums));
+            File(p.join(templateDir.path, 'template_files.yaml'))
+                .writeAsStringSync(filesManifestYaml);
+            File(p.join(templateDir.path, 'template_checksums.yaml'))
+                .writeAsStringSync(checksumsYaml);
           },
         );
 
         expect(result, isFalse);
         expect(downloadCount,
             equals(TemplateChecksumManager.maxRetryAttempts - 1));
+      });
+    });
+
+    group('Given server template type', () {
+      test('then verifies all required directories', () async {
+        var templateDir = Directory(p.join(tempDir.path, 'templates'));
+        templateDir.createSync(recursive: true);
+
+        // Create all required directories for server template
+        var dirs = [
+          'projectname_server',
+          'projectname_server_upgrade',
+          'projectname_client',
+          'projectname_flutter',
+          'github'
+        ];
+
+        for (var dirName in dirs) {
+          var dir = Directory(p.join(templateDir.path, dirName));
+          dir.createSync(recursive: true);
+          File(p.join(dir.path, 'file.txt')).writeAsStringSync('content');
+        }
+
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  server:
+    - projectname_server
+    - projectname_server_upgrade
+    - projectname_client
+    - projectname_flutter
+    - github
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
+        var checksumsYaml = '''
+projectname_server:
+  file.txt: 9a0364b9e99bb480dd25e1f0284c8555
+projectname_server_upgrade:
+  file.txt: 9a0364b9e99bb480dd25e1f0284c8555
+projectname_client:
+  file.txt: 9a0364b9e99bb480dd25e1f0284c8555
+projectname_flutter:
+  file.txt: 9a0364b9e99bb480dd25e1f0284c8555
+github:
+  file.txt: 9a0364b9e99bb480dd25e1f0284c8555
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
+
+        var result = await TemplateChecksumManager.verifyTemplateChecksums(
+          templateDir,
+          templateType: 'server',
+        );
+
+        expect(result, isTrue);
+      });
+    });
+
+    group('Given module template type', () {
+      test('then verifies only module directories', () async {
+        var templateDir = Directory(p.join(tempDir.path, 'templates'));
+        templateDir.createSync(recursive: true);
+
+        // Create module directories
+        var serverDir =
+            Directory(p.join(templateDir.path, 'modulename_server'));
+        serverDir.createSync(recursive: true);
+        File(p.join(serverDir.path, 'file.txt')).writeAsStringSync('server');
+
+        var clientDir =
+            Directory(p.join(templateDir.path, 'modulename_client'));
+        clientDir.createSync(recursive: true);
+        File(p.join(clientDir.path, 'file.txt')).writeAsStringSync('client');
+
+        // Create template files manifest
+        var filesManifestYaml = '''
+template_types:
+  module:
+    - modulename_server
+    - modulename_client
+''';
+        File(p.join(templateDir.path, 'template_files.yaml'))
+            .writeAsStringSync(filesManifestYaml);
+
+        var checksumsYaml = '''
+modulename_server:
+  file.txt: cf1e8c14e54505f60aa10ceb8d5d8ab3
+modulename_client:
+  file.txt: 62608e08adc29a8d6dbc9754e659f125
+''';
+
+        File(p.join(templateDir.path, 'template_checksums.yaml'))
+            .writeAsStringSync(checksumsYaml);
+
+        var result = await TemplateChecksumManager.verifyTemplateChecksums(
+          templateDir,
+          templateType: 'module',
+        );
+
+        expect(result, isTrue);
       });
     });
   });

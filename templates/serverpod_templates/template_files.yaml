@@ -1,0 +1,135 @@
+# Template files manifest - defines which files to include in checksums
+# This file is manually maintained and serves as the source of truth
+# for which files should be included in template checksums.
+# Generated files and build artifacts are excluded.
+
+# Template types define which directories are used for each template
+template_types:
+  mini:
+    - projectname_server
+    - projectname_client
+    - projectname_flutter
+  server:
+    - projectname_server
+    - projectname_server_upgrade
+    - projectname_client
+    - projectname_flutter
+    - github
+  module:
+    - modulename_server
+    - modulename_client
+
+# Files to include in checksums for each directory
+directories:
+  projectname_server:
+    - CHANGELOG.md
+    - Dockerfile
+    - README.md
+    - analysis_options.yaml
+    - bin/main.dart
+    - dart_test.yaml
+    - gitignore
+    - lib/server.dart
+    - lib/src/greeting.spy.yaml
+    - lib/src/greeting_endpoint.dart
+    - pubspec.lock
+    - pubspec.yaml
+    - test/integration/greeting_endpoint_test.dart
+
+  projectname_server_upgrade:
+    - config/development.yaml
+    - config/generator.yaml
+    - config/passwords.yaml
+    - config/production.yaml
+    - config/staging.yaml
+    - config/test.yaml
+    - deploy/aws/scripts/appspec.yml
+    - deploy/aws/scripts/install_dependencies
+    - deploy/aws/scripts/run_serverpod
+    - deploy/aws/scripts/start_server
+    - deploy/aws/terraform/balancers-staging.tf
+    - deploy/aws/terraform/balancers.tf
+    - deploy/aws/terraform/cloudfront-web-staging.tf
+    - deploy/aws/terraform/cloudfront-web.tf
+    - deploy/aws/terraform/code-deploy.tf
+    - deploy/aws/terraform/config.auto.tfvars
+    - deploy/aws/terraform/database.tf
+    - deploy/aws/terraform/init-script.sh
+    - deploy/aws/terraform/instances.tf
+    - deploy/aws/terraform/main.tf
+    - deploy/aws/terraform/redis.tf
+    - deploy/aws/terraform/staging.tf
+    - deploy/aws/terraform/storage.tf
+    - deploy/aws/terraform/variables.tf
+    - deploy/aws/terraform/vpc.tf
+    - deploy/gcp/console_gcr/cloud-run-deploy.sh
+    - deploy/gcp/terraform_gce/config.auto.tfvars
+    - deploy/gcp/terraform_gce/main.tf
+    - deploy/gcp/terraform_gce/variables.tf
+    - docker-compose.yaml
+    - gcloudignore
+    - lib/server.dart
+    - lib/src/birthday_reminder.dart
+    - lib/src/web/routes/root.dart
+    - lib/src/web/widgets/built_with_serverpod_page.dart
+    - web/static/css/style.css
+    - web/static/images/background.svg
+    - web/static/images/serverpod-logo.svg
+    - web/templates/built_with_serverpod.html
+
+  projectname_client:
+    - CHANGELOG.md
+    - README.md
+    - analysis_options.yaml
+    - dartdoc_options.yaml
+    - doc/endpoint.md
+    - gitignore
+    - lib/projectname_client.dart
+    - pubspec.lock
+    - pubspec.yaml
+
+  projectname_flutter:
+    - README.md
+    - analysis_options.yaml
+    - gitignore
+    - lib/main.dart
+    - pubspec.lock
+    - pubspec.yaml
+    - test/widget_test.dart
+    - web/favicon.png
+    - web/icons/Icon-192.png
+    - web/icons/Icon-512.png
+    - web/index.html
+    - web/manifest.json
+
+  modulename_server:
+    - CHANGELOG.md
+    - README.md
+    - analysis_options.yaml
+    - config/generator.yaml
+    - config/passwords.yaml
+    - config/test.yaml
+    - dart_test.yaml
+    - docker-compose.yaml
+    - gitignore
+    - lib/modulename_server.dart
+    - lib/src/endpoints/module_endpoint.dart
+    - lib/src/models/module_class.spy.yaml
+    - lib/src/module_util.dart
+    - pubspec.lock
+    - pubspec.yaml
+    - test/integration/module_endpoint_test.dart
+    - test/unit/module_util_test.dart
+
+  modulename_client:
+    - analysis_options.yaml
+    - dartdoc_options.yaml
+    - doc/endpoint.md
+    - gitignore
+    - lib/modulename_client.dart
+    - pubspec.lock
+    - pubspec.yaml
+
+  github:
+    - workflows/deployment-aws.yml
+    - workflows/deployment-gcp.yml
