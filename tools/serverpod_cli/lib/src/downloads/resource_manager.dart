@@ -139,9 +139,7 @@ class ResourceManager {
     log.info('Downloading templates for version $templateVersion');
     if (!versionedDir.existsSync()) versionedDir.createSync(recursive: true);
 
-    var tempDir = Directory(p.join(
-        versionedDir.path, 'temp_${DateTime.now().millisecondsSinceEpoch}'));
-    tempDir.createSync(recursive: true);
+    var tempDir = await Directory.systemTemp.createTemp('serverpod_templates_');
 
     try {
       var response = await http.get(Uri.parse(packageDownloadUrl));
