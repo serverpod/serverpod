@@ -12,7 +12,7 @@ environment:
 dependencies:
   crypto: ^3.0.2
   meta: ^1.11.0
-  pointycastle: ^3.7.4
+  pointycastle: '>=3.7.4 <5.0.0'
   serverpod: 3.0.0-alpha.1
   serverpod_auth_idp_server: 3.0.0-alpha.1
   serverpod_auth_core_server: 3.0.0-alpha.1

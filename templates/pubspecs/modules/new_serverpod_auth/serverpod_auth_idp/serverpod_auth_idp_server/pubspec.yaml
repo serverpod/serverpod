@@ -20,7 +20,7 @@ dependencies:
   clock: ^1.1.1
   sign_in_with_apple_server: ^0.3.0
   email_validator: ">=2.1.17 <4.0.0"
-  pointycastle: ^3.7.4
+  pointycastle: '>=3.7.4 <5.0.0'
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
