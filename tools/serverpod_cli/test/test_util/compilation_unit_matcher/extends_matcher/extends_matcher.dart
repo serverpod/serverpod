@@ -82,7 +82,7 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
 
 extension on ExtendsClause {
   String? _getExtendedTypeName() {
-    return superclass.name2.lexeme;
+    return superclass.name.lexeme;
   }
 
   bool _hasMatchingClassName(String className) {
