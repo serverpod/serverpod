@@ -24,6 +24,7 @@ export 'package:serverpod/database.dart';
 export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'package:serverpod/src/util/request_extension.dart';
 export 'package:serverpod/src/generated/log_level.dart';
+export 'package:serverpod/src/util/migrate_session_logs.dart';
 
 // Cloud storage
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
