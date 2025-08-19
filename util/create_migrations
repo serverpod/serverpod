@@ -7,6 +7,9 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+# Makes script exit on first non-zero error code
+set -e
+
 . "util/all_packages"
 
 BASE=`pwd`

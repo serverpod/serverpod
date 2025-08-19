@@ -19,7 +19,7 @@ echo "pub get cli"
 cd $CLI_DIR
 dart pub get
 
-# Attempt to create migrations for all server packages
+# Attempt to generate all server packages
 for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
     echo "### $path"
     cd "$BASE/$path"
