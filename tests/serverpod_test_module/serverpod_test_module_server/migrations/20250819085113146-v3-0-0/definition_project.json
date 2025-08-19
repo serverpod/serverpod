@@ -1,0 +1,11 @@
+{
+  "moduleName": "serverpod_test_module",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20250819085019410-v3-0-0"
+    }
+  ],
+  "migrationApiVersion": 1
+}
