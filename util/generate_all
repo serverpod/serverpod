@@ -6,6 +6,42 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+# Makes script exit on first non-zero error code
+set -e
+
+. "util/all_packages"
+
+BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
+echo "pub get cli"
+cd $CLI_DIR
+dart pub get
+
+# Attempt to generate all server packages
+for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
+    echo "### $path"
+    cd "$BASE/$path"
+
+    if [[ " ${SERVERPOD_SERVER_EXPERIMENTAL_PATHS[@]} " =~ " $path " ]]; then
+        dart $CLI generate --no-analytics --experimental-features=all
+    else
+        dart $CLI generate --no-analytics
+    fi
+done
+
+
+# Templates
+
+echo "\nmodulename_server"
+cd $BASE/templates/serverpod_templates/modulename_server
+dart $CLI generate --no-analytics
+
+echo "\nprojectname_server"
+cd $BASE/templates/serverpod_templates/projectname_server
+dart $CLI generate --no-analytics
+
 generateServerUpgradeFiles() {
     # The upgrade folder doesn't have all the files needed
     # run `serverpod generate`. Therefore some project files have
@@ -32,88 +68,6 @@ generateServerUpgradeFiles() {
     rm before.txt
 }
 
-# Makes script exit on first non-zero error code
-set -e
-
-BASE=`pwd`
-CLI_DIR=$BASE/tools/serverpod_cli
-CLI=$CLI_DIR/bin/serverpod_cli.dart
-
-echo "pub get cli"
-cd $CLI_DIR
-dart pub get
-
-echo "serverpod"
-cd $BASE/packages/serverpod
-dart $CLI generate --no-analytics
-
-echo "examples/chat/chat_server"
-cd $BASE/examples/chat/chat_server
-dart $CLI generate --no-analytics
-
-echo "examples/auth_example/auth_example_server"
-cd $BASE/examples/auth_example/auth_example_server
-dart $CLI generate --no-analytics
-
-# Templates
-
-echo "\nmodulename_server"
-cd $BASE/templates/serverpod_templates/modulename_server
-dart $CLI generate --no-analytics
-
-echo "\nprojectname_server"
-cd $BASE/templates/serverpod_templates/projectname_server
-dart $CLI generate --no-analytics
-
 echo "\nprojectname_server_upgrade"
 cd $BASE/templates/serverpod_templates/projectname_server_upgrade
 generateServerUpgradeFiles
-
-# Auth module
-
-echo "\nserverpod_auth_server"
-cd $BASE/modules/serverpod_auth/serverpod_auth_server
-dart $CLI generate --no-analytics
-
-# New auth modules
-
-echo "\nserverpod_auth_core_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
-dart $CLI generate --no-analytics
-
-echo "\nserverpod_auth_migration_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
-dart $CLI generate --no-analytics
-
-echo "\nserverpod_auth_idp"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
-dart $CLI generate --no-analytics
-
-echo "\nserverpod_auth_bridge_server"
-cd $BASE/modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
-dart $CLI generate --no-analytics
-
-# Chat module
-
-echo "\nserverpod_chat_server"
-cd $BASE/modules/serverpod_chat/serverpod_chat_server
-dart $CLI generate --no-analytics
-
-
-# Tests
-
-echo "\ntests/serverpod_test_server"
-cd $BASE/tests/serverpod_test_server
-dart $CLI generate --no-analytics --experimental-features=all
-
-echo "\ntests/serverpod_test_module/serverpod_test_module_server"
-cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart $CLI generate --no-analytics --experimental-features=all
-
-echo "\ntests/serverpod_test_nonvector/serverpod_test_nonvector_server"
-cd $BASE/tests/serverpod_test_nonvector/serverpod_test_nonvector_server
-dart $CLI generate --no-analytics --experimental-features=all
-
-echo "\nserverpod_new_auth_test_server "
-cd $BASE/tests/serverpod_new_auth_test/serverpod_new_auth_test_server
-dart $CLI generate --no-analytics

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/create_migrations"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+. "util/all_packages"
+
+BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
+echo "pub get cli"
+cd $CLI_DIR
+dart pub get
+
+
+# Optional tag argument
+TAG_ARG=""
+if [ ! -z "$1" ]; then
+    TAG_ARG="--tag=$1"
+    echo "Using migration tag: $1"
+fi
+
+# Attempt to create migrations for all server packages
+for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
+    echo "### $path"
+    cd "$BASE/$path"
+
+    if [[ " ${SERVERPOD_SERVER_EXPERIMENTAL_PATHS[@]} " =~ " $path " ]]; then
+        dart $CLI create-migration --no-analytics --experimental-features=all $TAG_ARG
+    else
+        dart $CLI create-migration --no-analytics $TAG_ARG
+    fi
+done
