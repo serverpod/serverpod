@@ -23,34 +23,34 @@ abstract class EmailAccountRequestException
         _i1.SerializableException,
         _i1.SerializableModel,
         _i1.ProtocolSerialization {
-  EmailAccountRequestException._({required this.type});
+  EmailAccountRequestException._({required this.reason});
 
   factory EmailAccountRequestException(
-          {required _i2.EmailAccountRequestExceptionReason type}) =
+          {required _i2.EmailAccountRequestExceptionReason reason}) =
       _EmailAccountRequestExceptionImpl;
 
   factory EmailAccountRequestException.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountRequestException(
-        type: _i2.EmailAccountRequestExceptionReason.fromJson(
-            (jsonSerialization['type'] as int)));
+        reason: _i2.EmailAccountRequestExceptionReason.fromJson(
+            (jsonSerialization['reason'] as int)));
   }
 
-  _i2.EmailAccountRequestExceptionReason type;
+  _i2.EmailAccountRequestExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountRequestException copyWith(
-      {_i2.EmailAccountRequestExceptionReason? type});
+      {_i2.EmailAccountRequestExceptionReason? reason});
   @override
   Map<String, dynamic> toJson() {
-    return {'type': type.toJson()};
+    return {'reason': reason.toJson()};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'type': type.toJson()};
+    return {'reason': reason.toJson()};
   }
 
   @override
@@ -61,15 +61,15 @@ abstract class EmailAccountRequestException
 
 class _EmailAccountRequestExceptionImpl extends EmailAccountRequestException {
   _EmailAccountRequestExceptionImpl(
-      {required _i2.EmailAccountRequestExceptionReason type})
-      : super._(type: type);
+      {required _i2.EmailAccountRequestExceptionReason reason})
+      : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
   EmailAccountRequestException copyWith(
-      {_i2.EmailAccountRequestExceptionReason? type}) {
-    return EmailAccountRequestException(type: type ?? this.type);
+      {_i2.EmailAccountRequestExceptionReason? reason}) {
+    return EmailAccountRequestException(reason: reason ?? this.reason);
   }
 }

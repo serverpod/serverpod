@@ -20,29 +20,29 @@ import '../../../../providers/email/models/exceptions/email_account_password_res
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountPasswordResetException
     implements _i1.SerializableException, _i1.SerializableModel {
-  EmailAccountPasswordResetException._({required this.type});
+  EmailAccountPasswordResetException._({required this.reason});
 
   factory EmailAccountPasswordResetException(
-          {required _i2.EmailAccountPasswordResetExceptionReason type}) =
+          {required _i2.EmailAccountPasswordResetExceptionReason reason}) =
       _EmailAccountPasswordResetExceptionImpl;
 
   factory EmailAccountPasswordResetException.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountPasswordResetException(
-        type: _i2.EmailAccountPasswordResetExceptionReason.fromJson(
-            (jsonSerialization['type'] as int)));
+        reason: _i2.EmailAccountPasswordResetExceptionReason.fromJson(
+            (jsonSerialization['reason'] as int)));
   }
 
-  _i2.EmailAccountPasswordResetExceptionReason type;
+  _i2.EmailAccountPasswordResetExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountPasswordResetException copyWith(
-      {_i2.EmailAccountPasswordResetExceptionReason? type});
+      {_i2.EmailAccountPasswordResetExceptionReason? reason});
   @override
   Map<String, dynamic> toJson() {
-    return {'type': type.toJson()};
+    return {'reason': reason.toJson()};
   }
 
   @override
@@ -54,15 +54,15 @@ abstract class EmailAccountPasswordResetException
 class _EmailAccountPasswordResetExceptionImpl
     extends EmailAccountPasswordResetException {
   _EmailAccountPasswordResetExceptionImpl(
-      {required _i2.EmailAccountPasswordResetExceptionReason type})
-      : super._(type: type);
+      {required _i2.EmailAccountPasswordResetExceptionReason reason})
+      : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
   EmailAccountPasswordResetException copyWith(
-      {_i2.EmailAccountPasswordResetExceptionReason? type}) {
-    return EmailAccountPasswordResetException(type: type ?? this.type);
+      {_i2.EmailAccountPasswordResetExceptionReason? reason}) {
+    return EmailAccountPasswordResetException(reason: reason ?? this.reason);
   }
 }

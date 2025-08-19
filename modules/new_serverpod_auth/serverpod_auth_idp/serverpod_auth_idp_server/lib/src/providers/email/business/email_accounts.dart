@@ -107,7 +107,7 @@ abstract final class EmailAccounts {
   }) async {
     if (!EmailAccounts.config.passwordValidationFunction(password)) {
       throw EmailAccountPasswordResetException(
-          type: EmailAccountPasswordResetExceptionReason.policyViolation);
+          reason: EmailAccountPasswordResetExceptionReason.policyViolation);
     }
 
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -221,7 +221,7 @@ abstract final class EmailAccounts {
 
     if (request == null) {
       throw EmailAccountRequestException(
-          type: EmailAccountRequestExceptionReason.notFound);
+          reason: EmailAccountRequestExceptionReason.notFound);
     }
 
     if (request.isExpired) {
@@ -231,7 +231,7 @@ abstract final class EmailAccounts {
         // passing no transaction, so this will not be rolled back
       );
       throw EmailAccountRequestException(
-          type: EmailAccountRequestExceptionReason.expired);
+          reason: EmailAccountRequestExceptionReason.expired);
     }
 
     if (await _hasTooManyEmailAccountCompletionAttempts(
@@ -245,7 +245,7 @@ abstract final class EmailAccounts {
       );
 
       throw EmailAccountRequestException(
-          type: EmailAccountRequestExceptionReason.tooManyAttempts);
+          reason: EmailAccountRequestExceptionReason.tooManyAttempts);
     }
 
     if (!await EmailAccountSecretHash.validateHash(
@@ -254,7 +254,7 @@ abstract final class EmailAccounts {
       salt: request.verificationCodeSalt.asUint8List,
     )) {
       throw EmailAccountRequestException(
-          type: EmailAccountRequestExceptionReason.unauthorized);
+          reason: EmailAccountRequestExceptionReason.unauthorized);
     }
 
     await EmailAccountRequest.db.updateRow(
@@ -296,12 +296,12 @@ abstract final class EmailAccounts {
 
         if (request == null) {
           throw EmailAccountRequestException(
-              type: EmailAccountRequestExceptionReason.notFound);
+              reason: EmailAccountRequestExceptionReason.notFound);
         }
 
         if (request.verifiedAt == null) {
           throw EmailAccountRequestException(
-              type: EmailAccountRequestExceptionReason.notVerified);
+              reason: EmailAccountRequestExceptionReason.notVerified);
         }
 
         await EmailAccountRequest.db.deleteRow(
@@ -354,7 +354,7 @@ abstract final class EmailAccounts {
           email: email,
         )) {
           throw EmailAccountPasswordResetException(
-              type: EmailAccountPasswordResetExceptionReason
+              reason: EmailAccountPasswordResetExceptionReason
                   .requestTooManyAttempts);
         }
 
@@ -432,7 +432,7 @@ abstract final class EmailAccounts {
 
         if (resetRequest == null) {
           throw EmailAccountPasswordResetException(
-              type: EmailAccountPasswordResetExceptionReason.requestNotFound);
+              reason: EmailAccountPasswordResetExceptionReason.requestNotFound);
         }
 
         if (resetRequest.isExpired) {
@@ -443,12 +443,12 @@ abstract final class EmailAccounts {
           );
 
           throw EmailAccountPasswordResetException(
-              type: EmailAccountPasswordResetExceptionReason.requestExpired);
+              reason: EmailAccountPasswordResetExceptionReason.requestExpired);
         }
 
         if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
           throw EmailAccountPasswordResetException(
-              type: EmailAccountPasswordResetExceptionReason.policyViolation);
+              reason: EmailAccountPasswordResetExceptionReason.policyViolation);
         }
 
         if (await _hasTooManyPasswordResetAttempts(
@@ -462,7 +462,7 @@ abstract final class EmailAccounts {
           );
 
           throw EmailAccountPasswordResetException(
-              type: EmailAccountPasswordResetExceptionReason.tooManyAttempts);
+              reason: EmailAccountPasswordResetExceptionReason.tooManyAttempts);
         }
 
         if (!await EmailAccountSecretHash.validateHash(
@@ -471,7 +471,7 @@ abstract final class EmailAccounts {
           salt: resetRequest.verificationCodeSalt.asUint8List,
         )) {
           throw EmailAccountPasswordResetException(
-              type:
+              reason:
                   EmailAccountPasswordResetExceptionReason.requestUnauthorized);
         }
 

@@ -50,7 +50,7 @@ void main() {
             password: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.type,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.policyViolation,
           )),

@@ -4,4 +4,4 @@
 ### credentials, or whether the client has been blocked outright.
 exception: EmailAccountRequestException
 fields:
-  type: EmailAccountRequestExceptionReason
+  reason: EmailAccountRequestExceptionReason
