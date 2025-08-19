@@ -46,7 +46,7 @@ class _GenericMatcherImpl implements Matcher, GenericMatcher {
     return typeParameters.where((e) => e.toSource() == _generic).isNotEmpty;
   }
 
-  Iterable<TypeAnnotation>? _featureValueOf(actual) {
+  Iterable<TypeAnnotation>? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
