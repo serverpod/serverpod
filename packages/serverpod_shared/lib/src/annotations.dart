@@ -17,11 +17,21 @@ const doNotGenerate = _DoNotGenerate();
 @Deprecated('Use `@doNotGenerate` instead')
 const ignoreEndpoint = doNotGenerate;
 
+/// Used to annotate endpoint classes and methods that should not use authentication.
+///
+/// If an endpoint (class or method) is annotated with this annotation:
+/// - No authentication will be added to the header on the client when calling it.
+const unauthenticated = _Unauthenticated();
+
 /// Names of annotations used by the Serverpod framework.
 abstract final class ServerpodAnnotationClassNames {
   /// Name of the "do not generate" annotation class.
   /// Needs to be synchronized with the [_DoNotGenerate] annotation.
   static const String doNotGenerate = '_DoNotGenerate';
+
+  /// Name of the "unauthenticated" annotation class.
+  /// Needs to be synchronized with the [_Unauthenticated] annotation.
+  static const String unauthenticated = '_Unauthenticated';
 }
 
 /// Name of the class needs to be synchronized with the
@@ -32,4 +42,14 @@ abstract final class ServerpodAnnotationClassNames {
 })
 class _DoNotGenerate {
   const _DoNotGenerate();
+}
+
+/// Name of the class needs to be synchronized with the
+/// [ServerpodAnnotationClassNames.unauthenticated] constant.
+@Target({
+  TargetKind.classType,
+  TargetKind.method,
+})
+class _Unauthenticated {
+  const _Unauthenticated();
 }
