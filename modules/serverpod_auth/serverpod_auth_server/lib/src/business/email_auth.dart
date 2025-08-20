@@ -179,6 +179,18 @@ class Emails {
       return false;
     }
 
+    if (newPassword.length < AuthConfig.current.minPasswordLength ||
+        newPassword.length > AuthConfig.current.maxPasswordLength) {
+      session.log(
+        'Invalid password!\n'
+        'Password length must be >= ${AuthConfig.current.minPasswordLength}'
+        ' and '
+        '<= ${AuthConfig.current.maxPasswordLength}',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
+
     // Check old password
 
     try {
@@ -518,6 +530,18 @@ class Emails {
     if (passwordResets.isEmpty) {
       session.log(
         'Verification code is invalid!',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
+
+    if (password.length < AuthConfig.current.minPasswordLength ||
+        password.length > AuthConfig.current.maxPasswordLength) {
+      session.log(
+        'Invalid password!\n'
+        'Password length must be >= ${AuthConfig.current.minPasswordLength}'
+        ' and '
+        '<= ${AuthConfig.current.maxPasswordLength}',
         level: LogLevel.debug,
       );
       return false;
