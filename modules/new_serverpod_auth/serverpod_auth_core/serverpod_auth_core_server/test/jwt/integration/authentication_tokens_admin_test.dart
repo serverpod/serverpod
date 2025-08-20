@@ -121,7 +121,7 @@ void main() {
 
           refreshTokenIdsInOrderOfCreation.add(
             UuidValue.fromByteList(
-              base64Decode(tokenPair.refreshToken.split(':')[1]),
+              base64Decode(tokenPair.refreshToken!.split(':')[1]),
             ),
           );
         }

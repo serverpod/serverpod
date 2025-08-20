@@ -59,7 +59,7 @@ abstract final class AuthenticationTokens {
   /// Creates a new token pair for the given auth user.
   ///
   /// This is akin to creating a new session, and should be used after a successful login or registration.
-  static Future<TokenPair> createTokens(
+  static Future<AuthSuccess> createTokens(
     final Session session, {
     required final UuidValue authUserId,
     required final Set<Scope> scopes,
@@ -91,12 +91,15 @@ abstract final class AuthenticationTokens {
       transaction: transaction,
     );
 
-    return TokenPair(
+    return AuthSuccess(
+      authStrategy: AuthStrategy.jwt,
+      token: _jwtUtil.createJwt(refreshToken),
       refreshToken: RefreshTokenString.buildRefreshTokenString(
         refreshToken: refreshToken,
         rotatingSecret: secret,
       ),
-      accessToken: _jwtUtil.createJwt(refreshToken),
+      authUserId: authUserId,
+      scopeNames: scopes.names,
     );
   }
 
