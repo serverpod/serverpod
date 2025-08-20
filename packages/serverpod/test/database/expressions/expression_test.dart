@@ -60,7 +60,6 @@ void main() {
     var expression2 = const Expression('"A" = "A"');
     var combinedExpression = expression1 & expression2;
     var notWrappedExpression = NotExpression(combinedExpression);
-    var notWrappedExpressionOperator = ~combinedExpression;
 
     test('when toString is called then expression is returned', () {
       expect(
@@ -89,10 +88,71 @@ void main() {
         }
       });
     });
+  });
 
-    test('then using operator ~ is equivalent to using NotExpression', () {
-      expect(notWrappedExpression.toString(),
-          notWrappedExpressionOperator.toString());
+  group('Given expressions using the ~ (NOT) operator', () {
+    group('Given one expression wrapped using ~ operator', () {
+      var expression = const Expression('TRUE');
+      var notWrappedExpression = ~expression;
+
+      test('when toString is called then string matches expected.', () {
+        expect(notWrappedExpression.toString(), 'NOT TRUE');
+      });
+
+      test('when subExpression is called then wrapped expression is returned',
+          () {
+        expect(
+            (notWrappedExpression as NotExpression).subExpression, expression);
+      });
+
+      group('when iterating not wrapped expression', () {
+        test('then both expressions are represented.', () {
+          expect(notWrappedExpression.depthFirst, hasLength(2));
+        });
+
+        test('then first expression is NOT expression.', () {
+          expect(notWrappedExpression.depthFirst.first, notWrappedExpression);
+        });
+
+        test('then last expression is wrapped expression.', () {
+          expect(notWrappedExpression.depthFirst.last, expression);
+        });
+      });
+    });
+
+    group('Given a combined expression wrapped using ~ operator', () {
+      var expression1 = const Expression('true = true');
+      var expression2 = const Expression('"A" = "A"');
+      var combinedExpression = expression1 & expression2;
+      var notWrappedExpression = ~combinedExpression;
+
+      test('when toString is called then expression is returned', () {
+        expect(
+          notWrappedExpression.toString(),
+          'NOT (true = true AND "A" = "A")',
+        );
+      });
+
+      group('when iterating not wrapped expression', () {
+        test('then all expressions are represented.', () {
+          expect(notWrappedExpression.depthFirst, hasLength(4));
+        });
+
+        test('then order matches expressions.', () {
+          var expectedExpressions = [
+            notWrappedExpression,
+            combinedExpression,
+            expression1,
+            expression2,
+          ];
+
+          var i = 0;
+          for (var expression in notWrappedExpression.depthFirst) {
+            expect(expression, expectedExpressions[i]);
+            i++;
+          }
+        });
+      });
     });
   });
 
