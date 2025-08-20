@@ -79,8 +79,9 @@ final class ClientMethodStreamManager {
   /// Throws a [ConnectionAttemptTimedOutException] if the connection attempt
   /// takes too long.
   Future<void> openMethodStream(
-    MethodStreamConnectionDetails connectionDetails,
-  ) async {
+    MethodStreamConnectionDetails connectionDetails, [
+    bool shouldRetryOnAuthFailed = true,
+  ]) async {
     if (_webSocket == null) await _connectSynchronized();
 
     var connectionId = const Uuid().v4obj();
@@ -106,7 +107,7 @@ final class ClientMethodStreamManager {
       method: connectionDetails.method,
       args: connectionDetails.args,
       inputStreams: parameterStreams,
-      authentication: await connectionDetails.authenticationProvider.call(),
+      authentication: await connectionDetails.authKeyProvider?.authHeaderValue,
     );
 
     _addMessageToWebSocket(openCommand);
@@ -115,6 +116,14 @@ final class ClientMethodStreamManager {
     if (openResponse != OpenMethodStreamResponseType.success) {
       _inboundStreams.remove(inboundStreamKey);
       _tryCloseConnection();
+
+      final authKeyProvider = connectionDetails.authKeyProvider;
+      if (openResponse == OpenMethodStreamResponseType.authenticationFailed &&
+          authKeyProvider is RefresherClientAuthKeyProvider &&
+          shouldRetryOnAuthFailed &&
+          await authKeyProvider.refreshAuthKey()) {
+        await openMethodStream(connectionDetails, false);
+      }
       throw OpenMethodStreamException(openResponse);
     }
 

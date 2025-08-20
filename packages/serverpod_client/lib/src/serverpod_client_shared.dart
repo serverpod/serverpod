@@ -123,11 +123,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
-    var auth = await authenticationKeyManager?.get();
+    var auth = await authKeyProvider?.authHeaderValue;
     if (auth != null) {
       uri = uri.replace(
         queryParameters: {
-          'auth': auth,
+          // Key must be unwrapped here because the server expects it plain.
+          'auth': unwrapAuthHeaderValue(auth),
         },
       );
     }
@@ -137,8 +138,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// Optional [AuthenticationKeyManager] if the client needs to sign the user
-  /// in.
+  // TODO: Deprecate after the new authentication system is in place.
+  /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
   /// Looks up module callers by their name. Overridden by generated code.
@@ -205,12 +206,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
+  /// Provides the authentication key for the client. Required to make
+  /// authenticated requests. If not provided, all requests will be
+  /// unauthenticated.
+  ClientAuthKeyProvider? authKeyProvider;
+
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
     dynamic securityContext,
-    required this.authenticationKeyManager,
+    this.authenticationKeyManager,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
@@ -233,6 +239,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
         disconnectStreamsOnLostInternetConnection;
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
+
+    // TODO: Remove this backwards compatibility assignment.
+    authKeyProvider ??= authenticationKeyManager;
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
@@ -453,16 +462,19 @@ abstract class ServerpodClientShared extends EndpointCaller {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    var authValue = await authenticationKeyManager?.getHeaderValue();
-    await _sendControlCommandToStream('auth', {'key': authValue});
+    await _sendControlCommandToStream(
+      'auth',
+      {'key': await authKeyProvider?.authHeaderValue},
+    );
   }
 
   @override
   Future<T> callServerEndpoint<T>(
     String endpoint,
     String method,
-    Map<String, dynamic> args,
-  ) async {
+    Map<String, dynamic> args, [
+    bool shouldRetryOnAuthFailed = true,
+  ]) async {
     var callContext = MethodCallContext(
       endpointName: endpoint,
       methodName: method,
@@ -470,8 +482,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var authenticationValue =
-          await authenticationKeyManager?.getHeaderValue();
+      var authenticationValue = await authKeyProvider?.authHeaderValue;
       var body = formatArgs(args, method);
       var url = Uri.parse('$host$endpoint');
 
@@ -493,6 +504,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
     } catch (e, s) {
       onFailedCall?.call(callContext, e, s);
 
+      // A first failure here with 401 can be due to an access token expiration.
+      // We will retry only once in such case, and only if the `authKeyProvider`
+      // exposes a `refreshAuthKey` method (like JWT).
+      final keyProvider = authKeyProvider;
+      if (e is ServerpodClientException &&
+          e.statusCode == 401 &&
+          keyProvider is RefresherClientAuthKeyProvider &&
+          shouldRetryOnAuthFailed &&
+          await keyProvider.refreshAuthKey()) {
+        return callServerEndpoint(endpoint, method, args, false);
+      }
       rethrow;
     }
   }
@@ -510,8 +532,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
-      authenticationProvider: () async =>
-          authenticationKeyManager?.getHeaderValue(),
+      authKeyProvider: authKeyProvider,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
@@ -536,6 +557,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       connectionDetails.outputController.addError(error);
       connectionDetails.outputController.close();
     });
+
     if (T == Stream<G>) {
       return connectionDetails.outputController.stream;
     } else if ((T == Future<G>) && G == getType<void>()) {
