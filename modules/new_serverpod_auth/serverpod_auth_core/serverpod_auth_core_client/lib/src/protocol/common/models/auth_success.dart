@@ -47,7 +47,7 @@ abstract class AuthSuccess implements _i1.SerializableModel {
   /// The authentication strategy used for this session.
   _i2.AuthStrategy authStrategy;
 
-  /// The authentication token, in the case of JTW this is the access token.
+  /// The authentication token, in the case of JWT this is the access token.
   String token;
 
   /// Optional refresh token.

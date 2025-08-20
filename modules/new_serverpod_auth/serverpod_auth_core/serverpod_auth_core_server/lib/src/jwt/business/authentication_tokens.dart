@@ -66,7 +66,7 @@ abstract final class AuthenticationTokens {
 
     /// Extra claims to be added to the JWT.
     ///
-    /// These are added on the top level of the paylaod, so be sure not to conflict with the [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1),
+    /// These are added on the top level of the payload, so be sure not to conflict with the [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1),
     /// as those will always overwrite any custom claims given here.
     ///
     /// These claims will be embedded in every access token (also across rotations) and then sent along with any request. This should be taken into account with regard to the total size of the added claims.

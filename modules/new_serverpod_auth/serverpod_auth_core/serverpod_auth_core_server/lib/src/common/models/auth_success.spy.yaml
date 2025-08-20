@@ -3,7 +3,7 @@ fields:
   ### The authentication strategy used for this session.
   authStrategy: AuthStrategy
 
-  ### The authentication token, in the case of JTW this is the access token.
+  ### The authentication token, in the case of JWT this is the access token.
   token: String
 
   ### Optional refresh token.
