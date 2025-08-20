@@ -115,7 +115,7 @@ abstract final class AuthSessions {
   /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
   ///
   /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
-  /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decomissioned.
+  /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decommissioned.
   ///
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
@@ -186,7 +186,8 @@ abstract final class AuthSessions {
     );
 
     return AuthSuccess(
-      sessionKey: buildSessionKey(
+      authStrategy: AuthStrategy.session,
+      token: buildSessionKey(
         secret: secret,
         authSessionId: authSession.id!,
       ),

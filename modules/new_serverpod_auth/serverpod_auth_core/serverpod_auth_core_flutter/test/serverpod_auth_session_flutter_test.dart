@@ -35,7 +35,7 @@ void main() {
     test('when logging-in, then all entries are written to the storage.',
         () async {
       // `init` is not called in before this one
-      await sessionManager.setLoggedIn(_authSucces);
+      await sessionManager.setLoggedIn(_authSuccess);
 
       expect(
         storage.values,
@@ -45,9 +45,9 @@ void main() {
       expect(
         storage.values,
         {
-          SessionManagerStorageKeys.sessionKey.key: _authSucces.sessionKey,
+          SessionManagerStorageKeys.sessionKey.key: _authSuccess.token,
           SessionManagerStorageKeys.authUserId.key:
-              _authSucces.authUserId.toString(),
+              _authSuccess.authUserId.toString(),
           SessionManagerStorageKeys.scopeNames.key: '["test1","test2"]'
         },
       );
@@ -65,7 +65,7 @@ void main() {
       sessionManager = SessionManager(storage: storage);
 
       await sessionManager.init();
-      await sessionManager.setLoggedIn(_authSucces);
+      await sessionManager.setLoggedIn(_authSuccess);
     });
 
     test('when reading the storage, then all keys are present.', () async {
@@ -77,9 +77,9 @@ void main() {
       expect(
         storage.values,
         {
-          SessionManagerStorageKeys.sessionKey.key: _authSucces.sessionKey,
+          SessionManagerStorageKeys.sessionKey.key: _authSuccess.token,
           SessionManagerStorageKeys.authUserId.key:
-              _authSucces.authUserId.toString(),
+              _authSuccess.authUserId.toString(),
           SessionManagerStorageKeys.scopeNames.key: '["test1","test2"]'
         },
       );
@@ -93,7 +93,7 @@ void main() {
       final authInfo = sessionManager.authInfo.value;
 
       expect(authInfo, isNotNull);
-      expect(authInfo?.authUserId, _authSucces.authUserId);
+      expect(authInfo?.authUserId, _authSuccess.authUserId);
       expect(authInfo?.scopeNames, {'test1', 'test2'});
     });
   });
@@ -118,12 +118,12 @@ void main() {
 
     test('when logging-in, then all entries are written to the storage.',
         () async {
-      await sessionManager.setLoggedIn(_authSucces);
+      await sessionManager.setLoggedIn(_authSuccess);
 
       expect(
         secureStorage.values,
         {
-          SessionManagerStorageKeys.sessionKey.key: _authSucces.sessionKey,
+          SessionManagerStorageKeys.sessionKey.key: _authSuccess.token,
         },
       );
 
@@ -131,7 +131,7 @@ void main() {
         defaultStorage.values,
         {
           SessionManagerStorageKeys.authUserId.key:
-              _authSucces.authUserId.toString(),
+              _authSuccess.authUserId.toString(),
           SessionManagerStorageKeys.scopeNames.key: '["test1","test2"]'
         },
       );
@@ -220,12 +220,12 @@ void main() {
     });
 
     test('when calling `setLoggedIn`, then `authInfo` is updated.', () async {
-      await sessionManager.setLoggedIn(_authSucces);
+      await sessionManager.setLoggedIn(_authSuccess);
 
       expect(sessionManager.authInfo.value, isNotNull);
       expect(
         sessionManager.authInfo.value?.authUserId,
-        _authSucces.authUserId,
+        _authSuccess.authUserId,
       );
     });
   });
@@ -314,8 +314,9 @@ class TestStorage extends KeyValueStorage {
   }
 }
 
-final _authSucces = AuthSuccess(
-  sessionKey: 'session-key',
+final _authSuccess = AuthSuccess(
+  authStrategy: AuthStrategy.session,
+  token: 'session-key',
   authUserId: const Uuid().v4obj(),
   scopeNames: {'test1', 'test2'},
 );

@@ -26,7 +26,7 @@ void main() {
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
     });
 
     test(
@@ -117,14 +117,14 @@ void main() {
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
       retainedSessionKey = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
 
       final sessionToDestroy = UuidValue.fromByteList(
           base64Decode(destroyedSessionKey.split(':')[1]));
@@ -184,14 +184,14 @@ void main() {
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
       sessionKey2 = (await AuthSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
 
       await AuthSessions.destroyAllSessions(
         session,
