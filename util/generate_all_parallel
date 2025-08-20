@@ -9,6 +9,53 @@ fi
 # Source the package arrays from all_packages
 source util/all_packages
 
+# Function to get CPU core count (cross-platform)
+getCoreCount() {
+    local cores
+    
+    # Try getconf first (works on Linux, macOS, Windows Git Bash)
+    if command -v getconf >/dev/null 2>&1; then
+        cores=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Fallback to sysctl for macOS/BSD
+    if command -v sysctl >/dev/null 2>&1; then
+        cores=$(sysctl -n hw.ncpu 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Last resort: check /proc/cpuinfo on Linux
+    if [ -f /proc/cpuinfo ]; then
+        cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Default fallback
+    echo "4"
+}
+
+getDefaultBatchSize() {
+    local cores=$(getCoreCount)
+    local batch_size=$((cores - 2))
+    
+    # Ensure minimum of 1
+    if [ "$batch_size" -lt 1 ]; then
+        batch_size=1
+    fi
+    
+    echo "$batch_size"
+}
+
 generateServerUpgradeFiles() {
     local project_name=$1
     local path=$2
@@ -87,8 +134,9 @@ CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
 
 # Set batch size (adjust this to control how many processes run at once)
-# Default is 4, but you can change this based on your system capabilities
-BATCH_SIZE=${BATCH_SIZE:-4}
+# Default is based on CPU cores (cores - 2, minimum 1)
+# Can be overridden by setting BATCH_SIZE environment variable
+BATCH_SIZE=${BATCH_SIZE:-$(getDefaultBatchSize)}
 
 echo "pub get cli"
 cd $CLI_DIR
