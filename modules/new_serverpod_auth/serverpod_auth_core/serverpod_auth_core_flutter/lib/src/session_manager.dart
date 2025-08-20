@@ -83,7 +83,7 @@ class SessionManager extends BearerAuthenticationKeyManager {
   Future<void> setLoggedIn(AuthSuccess authSuccess) async {
     await _secureStorage.set(
       SessionManagerStorageKeys.sessionKey.key,
-      authSuccess.sessionKey,
+      authSuccess.token,
     );
 
     await _storage.set(

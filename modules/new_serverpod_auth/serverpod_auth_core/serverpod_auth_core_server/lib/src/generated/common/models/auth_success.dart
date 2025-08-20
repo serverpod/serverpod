@@ -10,24 +10,33 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i1;
+import '../../common/models/auth_strategy.dart' as _i2;
 
-abstract class AuthSuccess implements _i1.SerializableModel {
+abstract class AuthSuccess
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   AuthSuccess._({
-    required this.sessionKey,
+    required this.authStrategy,
+    required this.token,
+    this.refreshToken,
     required this.authUserId,
     required this.scopeNames,
   });
 
   factory AuthSuccess({
-    required String sessionKey,
+    required _i2.AuthStrategy authStrategy,
+    required String token,
+    String? refreshToken,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) = _AuthSuccessImpl;
 
   factory AuthSuccess.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthSuccess(
-      sessionKey: jsonSerialization['sessionKey'] as String,
+      authStrategy: _i2.AuthStrategy.fromJson(
+          (jsonSerialization['authStrategy'] as String)),
+      token: jsonSerialization['token'] as String,
+      refreshToken: jsonSerialization['refreshToken'] as String?,
       authUserId:
           _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
       scopeNames: _i1.SetJsonExtension.fromJson(
@@ -36,7 +45,14 @@ abstract class AuthSuccess implements _i1.SerializableModel {
     );
   }
 
-  String sessionKey;
+  /// The authentication strategy used for this session.
+  _i2.AuthStrategy authStrategy;
+
+  /// The authentication token, in the case of JWT this is the access token.
+  String token;
+
+  /// Optional refresh token.
+  String? refreshToken;
 
   /// The [AuthUser] this session belongs to.
   _i1.UuidValue authUserId;
@@ -50,14 +66,29 @@ abstract class AuthSuccess implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   AuthSuccess copyWith({
-    String? sessionKey,
+    _i2.AuthStrategy? authStrategy,
+    String? token,
+    String? refreshToken,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'sessionKey': sessionKey,
+      'authStrategy': authStrategy.toJson(),
+      'token': token,
+      if (refreshToken != null) 'refreshToken': refreshToken,
+      'authUserId': authUserId.toJson(),
+      'scopeNames': scopeNames.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      'authStrategy': authStrategy.toJson(),
+      'token': token,
+      if (refreshToken != null) 'refreshToken': refreshToken,
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
     };
@@ -69,13 +100,19 @@ abstract class AuthSuccess implements _i1.SerializableModel {
   }
 }
 
+class _Undefined {}
+
 class _AuthSuccessImpl extends AuthSuccess {
   _AuthSuccessImpl({
-    required String sessionKey,
+    required _i2.AuthStrategy authStrategy,
+    required String token,
+    String? refreshToken,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) : super._(
-          sessionKey: sessionKey,
+          authStrategy: authStrategy,
+          token: token,
+          refreshToken: refreshToken,
           authUserId: authUserId,
           scopeNames: scopeNames,
         );
@@ -85,12 +122,16 @@ class _AuthSuccessImpl extends AuthSuccess {
   @_i1.useResult
   @override
   AuthSuccess copyWith({
-    String? sessionKey,
+    _i2.AuthStrategy? authStrategy,
+    String? token,
+    Object? refreshToken = _Undefined,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
   }) {
     return AuthSuccess(
-      sessionKey: sessionKey ?? this.sessionKey,
+      authStrategy: authStrategy ?? this.authStrategy,
+      token: token ?? this.token,
+      refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
     );

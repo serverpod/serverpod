@@ -10,6 +10,7 @@ export '../auth_user/auth_user.dart';
 export '../generated/protocol.dart'
     show
         AuthenticationTokenInfo,
+        AuthSuccess,
         RefreshTokenExpiredException,
         RefreshTokenInvalidSecretException,
         RefreshTokenMalformedException,
