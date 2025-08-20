@@ -449,13 +449,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Updates the authentication key if the streaming connection is open.
   /// Note, the provided key will be converted/wrapped as a proper authentication header value
   /// when sent to the server.
-  Future<void> updateStreamingConnectionAuthenticationKey(
-    String? authKey,
-  ) async {
+  Future<void> updateStreamingConnectionAuthenticationKey() async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    var authValue = await authenticationKeyManager?.toHeaderValue(authKey);
+    var authValue = await authenticationKeyManager?.getHeaderValue();
     await _sendControlCommandToStream('auth', {'key': authValue});
   }
 
