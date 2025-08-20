@@ -13,11 +13,11 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i2;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
-import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
-    as _i4;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i3;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i4;
+import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i5;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
 export 'client.dart';
@@ -66,15 +66,15 @@ class Protocol extends _i1.SerializationManager {
     }
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return 'serverpod_auth_core.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_migration.$className';
+      return 'serverpod_auth_idp.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return 'serverpod_auth_migration.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -93,16 +93,16 @@ class Protocol extends _i1.SerializationManager {
       data['className'] = dataClassName.substring(22);
       return _i2.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth_core.')) {
+      data['className'] = dataClassName.substring(20);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i4.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_migration.')) {
       data['className'] = dataClassName.substring(25);
-      return _i4.Protocol().deserializeByClassName(data);
-    }
-    if (dataClassName.startsWith('serverpod_auth_core.')) {
-      data['className'] = dataClassName.substring(20);
       return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {

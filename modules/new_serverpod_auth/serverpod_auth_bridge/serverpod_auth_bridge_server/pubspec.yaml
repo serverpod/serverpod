@@ -14,8 +14,8 @@ dependencies:
   meta: ^1.11.0
   pointycastle: '>=3.7.4 <5.0.0'
   serverpod: 3.0.0-alpha.1
-  serverpod_auth_idp_server: 3.0.0-alpha.1
   serverpod_auth_core_server: 3.0.0-alpha.1
+  serverpod_auth_idp_server: 3.0.0-alpha.1
   serverpod_shared: 3.0.0-alpha.1
 
 dev_dependencies:
@@ -26,10 +26,10 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../../packages/serverpod
-  serverpod_auth_idp_server:
-    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_core_server:
     path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_server:
+    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
