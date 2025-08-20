@@ -18,7 +18,7 @@ dependencies:
   http: ">=1.1.0 <2.0.0"
   meta: ^1.11.0
   clock: ^1.1.1
-  sign_in_with_apple_server: ^0.3.0
+  sign_in_with_apple_server: ^1.0.0
   email_validator: ">=2.1.17 <4.0.0"
   pointycastle: ^3.7.4
 
