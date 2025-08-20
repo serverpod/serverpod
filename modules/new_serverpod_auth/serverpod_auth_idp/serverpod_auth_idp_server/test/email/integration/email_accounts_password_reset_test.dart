@@ -111,9 +111,11 @@ void main() {
             session,
             email: email.toUpperCase(),
           ),
-          throwsA(
-            isA<EmailAccountPasswordResetRequestTooManyAttemptsException>(),
-          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.requestTooManyAttempts,
+          )),
         );
       });
     },
@@ -181,7 +183,11 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetRequestUnauthorizedException>()),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.requestUnauthorized,
+          )),
         );
 
         await expectLater(
@@ -191,7 +197,11 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetTooManyAttemptsException>()),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+          )),
         );
 
         await expectLater(
@@ -201,7 +211,11 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetRequestNotFoundException>()),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.requestNotFound,
+          )),
         );
       });
     },

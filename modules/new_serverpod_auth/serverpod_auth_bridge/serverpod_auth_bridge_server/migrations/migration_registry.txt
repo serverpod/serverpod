@@ -5,3 +5,4 @@
 ### the conflict by removing and recreating the conflicting migration.
 
 20250806140918738
+20250819085056855-v3-0-0

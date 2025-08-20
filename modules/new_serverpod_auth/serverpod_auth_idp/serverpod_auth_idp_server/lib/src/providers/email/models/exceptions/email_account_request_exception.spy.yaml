@@ -1,0 +1,7 @@
+### Exception to be thrown if email account creation request fails.
+###
+### Inspect the [reason] to determine whether this was due to invalid or unknown
+### credentials, or whether the client has been blocked outright.
+exception: EmailAccountRequestException
+fields:
+  reason: EmailAccountRequestExceptionReason

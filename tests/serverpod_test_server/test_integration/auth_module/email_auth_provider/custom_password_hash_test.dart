@@ -10,15 +10,15 @@ void main() async {
         print('Sending validation email to $email with code $validationCode');
         return true;
       },
-      passwordHashValidator: (
-        password,
-        email,
-        hash, {
+      passwordHashValidator: ({
+        required password,
+        required email,
+        required hash,
         onError,
         onValidationFailure,
       }) async =>
           // Always return true to allow the test to proceed
-          true,
+          PasswordValidationSuccess(),
       // Custom password hash generator that does not hash the password
       passwordHashGenerator: (password) async => password,
       extraSaltyHash: false,

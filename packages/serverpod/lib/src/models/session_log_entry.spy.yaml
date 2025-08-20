@@ -33,11 +33,14 @@ fields:
   ### If the session ends with an exception, a stack trace will be set.
   stackTrace: String?
 
+  ### Deprecated. Use userId instead.
+  authenticatedUserId: int?, scope=serverOnly
+
   ### The id of an authenticated user associated with this session. The user id
   ### is only set if it has been requested during the session. This means that
   ### it can be null, even though the session was performed by an authenticated
   ### user.
-  authenticatedUserId: int?
+  userId: String?
 
   ### True if the session is still open.
   isOpen: bool?

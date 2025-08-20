@@ -30,7 +30,7 @@ abstract final class AppleAccounts {
         redirectUri: config.redirectUri,
         teamId: config.teamId,
         keyId: config.keyId,
-        key: ECPrivateKey(config.key),
+        key: config.key,
       ),
     );
 

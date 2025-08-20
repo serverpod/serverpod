@@ -22,7 +22,7 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   jose: ^0.3.3
-  pointycastle: ^3.7.4
+  pointycastle: '>=3.7.4 <5.0.0'
 
 dev_dependencies:
   serverpod_lints: 3.0.0-alpha.1

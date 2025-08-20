@@ -32,7 +32,11 @@ void main() {
             email: 'test@serverpod.dev',
             password: 'short',
           ),
-          throwsA(isA<EmailAccountPasswordPolicyViolationException>()),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.policyViolation,
+          )),
         );
       });
 
@@ -165,7 +169,11 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'some invalid code',
           ),
-          throwsA(isA<EmailAccountRequestUnauthorizedException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.unauthorized,
+          )),
         );
       });
 
@@ -182,7 +190,11 @@ void main() {
               verificationCode: pendingAccountVerificationCode,
             ),
           ),
-          throwsA(isA<EmailAccountRequestExpiredException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.expired,
+          )),
         );
       });
 
@@ -199,7 +211,11 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestUnauthorizedException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.unauthorized,
+          )),
         );
 
         await expectLater(
@@ -208,7 +224,11 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestTooManyAttemptsException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.tooManyAttempts,
+          )),
         );
 
         await expectLater(
@@ -217,7 +237,11 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.notFound,
+          )),
         );
       });
 
@@ -232,7 +256,11 @@ void main() {
             authUserId: authUser.id,
             accountRequestId: pendingAccountRequestId,
           ),
-          throwsA(isA<EmailAccountRequestNotVerifiedException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.notVerified,
+          )),
         );
       });
 
@@ -413,7 +441,11 @@ void main() {
             accountRequestId: accountCreationParameters.accountRequestId,
             verificationCode: accountCreationParameters.verificationCode,
           ),
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.notFound,
+          )),
         );
       });
 
