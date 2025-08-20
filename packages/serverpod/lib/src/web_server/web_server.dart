@@ -153,7 +153,23 @@ class WebServer {
   ) async {
     // TODO: route.setHeaders(request.response.headers);
     try {
-      return await route.handleCall(session, context);
+      final result = await route.handleCall(session, context);
+
+      if (route is WidgetRoute && result is ResponseContext) {
+        final transformedResponse = result.response.copyWith(
+          headers: result.response.headers.transform(
+            (mh) => mh.cacheControl = CacheControlHeader(
+              maxAge: 0,
+              sMaxAge: 0,
+              noCache: true,
+              noStore: true,
+            ),
+          ),
+        );
+        return result.withResponse(transformedResponse);
+      }
+
+      return result;
     } catch (e, stackTrace) {
       final request = context.request;
       await _reportException(
