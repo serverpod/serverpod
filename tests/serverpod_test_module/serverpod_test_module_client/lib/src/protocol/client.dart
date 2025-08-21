@@ -74,6 +74,70 @@ class EndpointStreaming extends _i1.EndpointRef {
       );
 }
 
+/// An endpoint with all methods unauthenticated.
+/// {@category Endpoint}
+class EndpointUnauthenticated extends _i1.EndpointRef {
+  EndpointUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_test_module.unauthenticated';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'serverpod_test_module.unauthenticated',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'serverpod_test_module.unauthenticated',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+}
+
+/// An endpoint with only one method unauthenticated.
+/// {@category Endpoint}
+class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
+  EndpointPartiallyUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_test_module.partiallyUnauthenticated';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'serverpod_test_module.partiallyUnauthenticated',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'serverpod_test_module.partiallyUnauthenticated',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+
+  _i2.Future<bool> authenticatedMethod() => caller.callServerEndpoint<bool>(
+        'serverpod_test_module.partiallyUnauthenticated',
+        'authenticatedMethod',
+        {},
+      );
+
+  _i2.Stream<bool> authenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'serverpod_test_module.partiallyUnauthenticated',
+        'authenticatedStream',
+        {},
+        {},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointMyModuleFeature extends _i1.EndpointRef {
   EndpointMyModuleFeature(_i1.EndpointCaller caller) : super(caller);
@@ -99,6 +163,8 @@ class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     module = EndpointModule(this);
     streaming = EndpointStreaming(this);
+    unauthenticated = EndpointUnauthenticated(this);
+    partiallyUnauthenticated = EndpointPartiallyUnauthenticated(this);
     myModuleFeature = EndpointMyModuleFeature(this);
   }
 
@@ -106,12 +172,19 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   late final EndpointStreaming streaming;
 
+  late final EndpointUnauthenticated unauthenticated;
+
+  late final EndpointPartiallyUnauthenticated partiallyUnauthenticated;
+
   late final EndpointMyModuleFeature myModuleFeature;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'serverpod_test_module.module': module,
         'serverpod_test_module.streaming': streaming,
+        'serverpod_test_module.unauthenticated': unauthenticated,
+        'serverpod_test_module.partiallyUnauthenticated':
+            partiallyUnauthenticated,
         'serverpod_test_module.myModuleFeature': myModuleFeature,
       };
 }

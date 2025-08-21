@@ -438,6 +438,14 @@ authenticatedTestTools:
   - returnsStream:
   - returnsListFromInputStream:
   - intEchoStream:
+unauthenticated:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
+partiallyUnauthenticated:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
+  - authenticatedMethod:
+  - authenticatedStream:
 upload:
   - uploadByteData:
 myFeature:
