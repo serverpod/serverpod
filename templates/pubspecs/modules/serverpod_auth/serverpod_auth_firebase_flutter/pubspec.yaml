@@ -12,7 +12,7 @@ environment:
   flutter: FLUTTER_VERSION
 
 dependencies:
-  firebase_ui_auth: ^1.2.2
+  firebase_ui_auth: ^3.0.0
   flutter:
     sdk: flutter
   material_design_icons_flutter: '>=6.0.0 <8.0.0'
