@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 import '/src/storage/base.dart';
@@ -16,7 +16,8 @@ final _authSessionManagersCache =
 /// or other methods. Please refer to the documentation to see supported
 /// methods. Session information is stored in the secure shared preferences of
 /// the app and persists between restarts of the app.
-class ClientAuthSessionManager with ChangeNotifier {
+// TODO: Implement the provider here.
+class ClientAuthSessionManager {
   // MAYBE: Is it worth making this class generic to the [AuthSuccess] so that
   // users can extend it to their own auth responses enhanced with user info?
 
@@ -61,43 +62,30 @@ class ClientAuthSessionManager with ChangeNotifier {
     );
   }
 
-  /// Control whether the value can be recovered from the cached [signedInUser].
-  var _initialized = false;
+  final _authInfo = ValueNotifier<AuthSuccess?>(null);
 
-  AuthSuccess? _signedInUser;
-
-  /// Returns information about the signed in user, if any.
-  AuthSuccess? get signedInUser {
-    if (!_initialized) {
-      throw StateError('Call "initialize" before accessing this property.');
-    }
-    return _signedInUser;
-  }
+  /// A listenable that provides access to the signed in user.
+  ValueListenable<AuthSuccess?> get authInfo => _authInfo;
 
   /// Whether an user is currently signed in.
-  bool get isSignedIn => signedInUser != null;
+  bool get isAuthenticated => authInfo.value != null;
 
   /// Restores any existing session from the storage and perform a refresh.
-  Future<ClientAuthSessionManager> initialize() async {
+  Future<bool> initialize() async {
     await restore();
-    await refreshAuthentication();
-    _initialized = true;
-    return this;
+    return refreshAuthentication();
   }
 
   /// Restore the current sign in status from the storage.
-  Future<AuthSuccess?> restore() async {
-    _signedInUser = await storage.get();
-    notifyListeners();
-    return _signedInUser;
+  Future<void> restore() async {
+    await storage.get();
   }
 
   /// Updates the signed in user on the storage and for open connections.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
-    await storage.set(signedInUser);
-    _signedInUser = authInfo;
+    await storage.set(authInfo);
+    _authInfo.value = authInfo;
     await caller.client.updateStreamingConnectionAuthenticationKey();
-    notifyListeners();
   }
 
   // MAYBE: Is this true/false return enough? A connection error could return
