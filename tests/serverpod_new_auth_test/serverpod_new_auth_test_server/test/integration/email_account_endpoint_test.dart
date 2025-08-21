@@ -292,7 +292,7 @@ void main() {
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'Newpassword123!',
+            newPassword: 'NewPassword123!',
           );
 
           final authInfo = await AuthSessions.authenticationHandler(
@@ -313,7 +313,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const oldPassword = 'Foobar123!';
-      const newPassword = 'Barfoo789?';
+      const newPassword = 'BarFoo789?';
 
       late UuidValue authUserId;
       late String loginSessionKey;

@@ -92,10 +92,10 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
   ///
   /// Since the server runs with the backwards compatible auth handler, both
   /// old session keys will work post migration.
-  _i2.Future<String?> sessionUserIdentifer() =>
+  _i2.Future<String?> sessionUserIdentifier() =>
       caller.callServerEndpoint<String?>(
         'emailAccountBackwardsCompatibilityTest',
-        'sessionUserIdentifer',
+        'sessionUserIdentifier',
         {},
       );
 

@@ -205,8 +205,8 @@ class Endpoints extends _i1.EndpointDispatch {
             userId: params['userId'],
           ),
         ),
-        'sessionUserIdentifer': _i1.MethodConnector(
-          name: 'sessionUserIdentifer',
+        'sessionUserIdentifier': _i1.MethodConnector(
+          name: 'sessionUserIdentifier',
           params: {},
           call: (
             _i1.Session session,
@@ -214,7 +214,7 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['emailAccountBackwardsCompatibilityTest']
                       as _i2.EmailAccountBackwardsCompatibilityTestEndpoint)
-                  .sessionUserIdentifer(session),
+                  .sessionUserIdentifier(session),
         ),
         'checkLegacyPassword': _i1.MethodConnector(
           name: 'checkLegacyPassword',
