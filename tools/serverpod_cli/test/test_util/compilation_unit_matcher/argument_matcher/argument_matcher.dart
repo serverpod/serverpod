@@ -88,7 +88,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
     return filteredArguments.isNotEmpty;
   }
 
-  Iterable<Expression>? _featureValueOf(actual) {
+  Iterable<Expression>? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 

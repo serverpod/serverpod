@@ -140,7 +140,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     );
   }
 
-  ConstructorDeclaration? _featureValueOf(actual) {
+  ConstructorDeclaration? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
