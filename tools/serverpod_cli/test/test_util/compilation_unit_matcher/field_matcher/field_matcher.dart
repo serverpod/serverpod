@@ -84,7 +84,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     var field = _featureValueOf(item);
     if (field is! FieldDeclaration) return false;
 
@@ -96,7 +96,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     return true;
   }
 
-  FieldDeclaration? _featureValueOf(actual) {
+  FieldDeclaration? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
