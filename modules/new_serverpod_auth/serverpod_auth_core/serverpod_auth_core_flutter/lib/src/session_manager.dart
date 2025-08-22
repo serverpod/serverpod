@@ -16,50 +16,22 @@ final _authSessionManagersCache =
 /// or other methods. Please refer to the documentation to see supported
 /// methods. Session information is stored in the secure shared preferences of
 /// the app and persists between restarts of the app.
-// TODO: Implement the provider here.
-class ClientAuthSessionManager {
-  // MAYBE: Is it worth making this class generic to the [AuthSuccess] so that
-  // users can extend it to their own auth responses enhanced with user info?
-
+class ClientAuthSessionManager implements ClientAuthKeyProvider {
   /// The auth module's caller.
   Caller caller;
 
   /// The secure storage to keep user authentication info.
-  late final ClientAuthInfoStorage storage;
+  final ClientAuthInfoStorage storage;
 
   /// Creates a new [ClientAuthSessionManager].
   ClientAuthSessionManager({
     required this.caller,
 
-    /// Stores the authentication information that must be used as provider to
-    /// the client. If not specified, will default to the [authKeyProvider] of
-    /// the [client], in case it implements the storage interface. If it does
-    /// not, an error will be thrown. If both attributes are missing, the
-    /// session manager will use a [SecureClientAuthInfoStorage].
+    /// The secure storage to keep user authentication info. If missing, the
+    /// session manager will create a [SecureClientAuthInfoStorage].
     ClientAuthInfoStorage? storage,
-  }) {
-    final maybeStorage = storage ?? caller.client.authKeyProvider;
-
-    // To offer a good user experience, the [ClientSessionManager] will attempt
-    // to initialize from the [authKeyProvider], if exists, or set it otherwise,
-    // if a [storage] exists.
-    if (maybeStorage == null) {
-      storage = caller.client.authKeyProvider = FlutterSecureAuthKeyManager();
-    } else if (storage == null) {
-      if (caller.client.authKeyProvider is ClientAuthInfoStorage) {
-        storage = caller.client.authKeyProvider as ClientAuthInfoStorage;
-      }
-    } else if (caller.client.authKeyProvider == null) {
-      if (storage is ClientAuthKeyProvider) {
-        caller.client.authKeyProvider = storage as ClientAuthKeyProvider;
-      }
-    }
-
-    throw StateError(
-      'To create the session manager, either set an authentication key '
-      'provider on the client that also implements the ClientAuthInfoStorage '
-      'interface or provide it through the storage property.',
-    );
+  }) : storage = storage ?? SecureClientAuthInfoStorage() {
+    _authSessionManagersCache[caller.client] = this;
   }
 
   final _authInfo = ValueNotifier<AuthSuccess?>(null);
@@ -69,6 +41,13 @@ class ClientAuthSessionManager {
 
   /// Whether an user is currently signed in.
   bool get isAuthenticated => authInfo.value != null;
+
+  @override
+  Future<String?> get authHeaderValue async {
+    final currentAuth = authInfo.value;
+    if (currentAuth == null) return null;
+    return wrapAsBearerAuthHeaderValue(currentAuth.token);
+  }
 
   /// Restores any existing session from the storage and perform a refresh.
   Future<bool> initialize() async {
@@ -128,35 +107,15 @@ class ClientAuthSessionManager {
   }
 }
 
-/// Stores session information in a secure shared preferences of the app and
-/// persists between restarts of the app.
-class FlutterSecureAuthKeyManager extends SecureClientAuthInfoStorage
-    implements ClientAuthKeyProvider {
-  /// Creates a new [FlutterSecureAuthKeyManager].
-  FlutterSecureAuthKeyManager({super.storage, super.authInfoStorageKey});
-
-  @override
-  Future<String?> get authHeaderValue async {
-    final authInfo = await get();
-    if (authInfo == null) return null;
-    return wrapAsBearerAuthHeaderValue(authInfo.token);
-  }
-}
-
 /// Extension for ServerpodClientShared to provide auth session management.
 extension ClientAuthSessionManagerExtension on ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
   ClientAuthSessionManager get auth {
     final manager = _authSessionManagersCache[this] ??
         (throw StateError(
-          'To access the auth instance, first set the session manager through '
-          'the `authSessionManager` property.',
+          'To access the auth instance, first instantiate the session manager '
+          'with a caller from this client.',
         ));
     return manager;
-  }
-
-  /// Sets the authentication session manager for the client.
-  set authSessionManager(ClientAuthSessionManager manager) {
-    _authSessionManagersCache[this] = manager;
   }
 }
