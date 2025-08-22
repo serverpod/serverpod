@@ -379,6 +379,46 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Updates a single [BoolDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BoolDefaultMix?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BoolDefaultMix>(
+      id,
+      columnValues: columnValues(BoolDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BoolDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BoolDefaultMix>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
+    required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BoolDefaultMix>(
+      columnValues: columnValues(BoolDefaultMix.t),
+      where: where(BoolDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [BoolDefaultMix]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -382,6 +382,46 @@ class ArenaRepository {
     );
   }
 
+  /// Updates a single [Arena] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Arena?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ArenaTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Arena>(
+      id,
+      columnValues: columnValues(Arena.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Arena]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Arena>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ArenaTable> columnValues,
+    required _i1.WhereExpressionBuilder<ArenaTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Arena>(
+      columnValues: columnValues(Arena.t),
+      where: where(Arena.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Arena]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

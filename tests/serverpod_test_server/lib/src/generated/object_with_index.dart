@@ -348,6 +348,46 @@ class ObjectWithIndexRepository {
     );
   }
 
+  /// Updates a single [ObjectWithIndex] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithIndex?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithIndex>(
+      id,
+      columnValues: columnValues(ObjectWithIndex.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithIndex]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithIndex>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithIndex>(
+      columnValues: columnValues(ObjectWithIndex.t),
+      where: where(ObjectWithIndex.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithIndex.t),
+      orderByList: orderByList?.call(ObjectWithIndex.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithIndex]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

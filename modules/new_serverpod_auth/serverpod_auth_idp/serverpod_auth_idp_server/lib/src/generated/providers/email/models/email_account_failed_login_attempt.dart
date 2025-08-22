@@ -381,6 +381,49 @@ class EmailAccountFailedLoginAttemptRepository {
     );
   }
 
+  /// Updates a single [EmailAccountFailedLoginAttempt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountFailedLoginAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountFailedLoginAttempt>(
+      id,
+      columnValues: columnValues(EmailAccountFailedLoginAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountFailedLoginAttempt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountFailedLoginAttempt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountFailedLoginAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountFailedLoginAttemptTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountFailedLoginAttempt>(
+      columnValues: columnValues(EmailAccountFailedLoginAttempt.t),
+      where: where(EmailAccountFailedLoginAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountFailedLoginAttempt.t),
+      orderByList: orderByList?.call(EmailAccountFailedLoginAttempt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountFailedLoginAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

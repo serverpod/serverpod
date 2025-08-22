@@ -320,6 +320,46 @@ class ParentClassRepository {
     );
   }
 
+  /// Updates a single [ParentClass] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ParentClass?> updateById(
+    _i2.Session session,
+    int id, {
+    required _i2.ColumnValueListBuilder<ParentClassTable> columnValues,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ParentClass>(
+      id,
+      columnValues: columnValues(ParentClass.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ParentClass]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ParentClass>> updateWhere(
+    _i2.Session session, {
+    required _i2.ColumnValueListBuilder<ParentClassTable> columnValues,
+    required _i2.WhereExpressionBuilder<ParentClassTable> where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    bool orderDescending = false,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ParentClass>(
+      columnValues: columnValues(ParentClass.t),
+      where: where(ParentClass.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ParentClass]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

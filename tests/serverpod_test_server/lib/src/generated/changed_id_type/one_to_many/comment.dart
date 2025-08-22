@@ -401,6 +401,46 @@ class CommentIntRepository {
     );
   }
 
+  /// Updates a single [CommentInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CommentInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CommentInt>(
+      id,
+      columnValues: columnValues(CommentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CommentInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CommentInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
+    required _i1.WhereExpressionBuilder<CommentIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CommentIntTable>? orderBy,
+    _i1.OrderByListBuilder<CommentIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CommentInt>(
+      columnValues: columnValues(CommentInt.t),
+      where: where(CommentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [CommentInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

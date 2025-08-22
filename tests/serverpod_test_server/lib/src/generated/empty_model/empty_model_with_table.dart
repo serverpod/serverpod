@@ -287,6 +287,46 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Updates a single [EmptyModelWithTable] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmptyModelWithTable?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmptyModelWithTableTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmptyModelWithTable>(
+      id,
+      columnValues: columnValues(EmptyModelWithTable.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmptyModelWithTable]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmptyModelWithTable>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmptyModelWithTableTable> columnValues,
+    required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmptyModelWithTable>(
+      columnValues: columnValues(EmptyModelWithTable.t),
+      where: where(EmptyModelWithTable.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmptyModelWithTable.t),
+      orderByList: orderByList?.call(EmptyModelWithTable.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmptyModelWithTable]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

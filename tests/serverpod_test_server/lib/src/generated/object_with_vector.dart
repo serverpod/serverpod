@@ -442,6 +442,46 @@ class ObjectWithVectorRepository {
     );
   }
 
+  /// Updates a single [ObjectWithVector] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithVector?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithVectorTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithVector>(
+      id,
+      columnValues: columnValues(ObjectWithVector.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithVector]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithVector>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithVectorTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithVector>(
+      columnValues: columnValues(ObjectWithVector.t),
+      where: where(ObjectWithVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithVector.t),
+      orderByList: orderByList?.call(ObjectWithVector.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithVector]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -396,6 +396,46 @@ class EnumDefaultMixRepository {
     );
   }
 
+  /// Updates a single [EnumDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultMix?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultMix>(
+      id,
+      columnValues: columnValues(EnumDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultMix>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultMix>(
+      columnValues: columnValues(EnumDefaultMix.t),
+      where: where(EnumDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnumDefaultMix]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

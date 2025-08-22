@@ -403,6 +403,46 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  /// Updates a single [RelatedUniqueData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RelatedUniqueData?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RelatedUniqueData>(
+      id,
+      columnValues: columnValues(RelatedUniqueData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RelatedUniqueData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<RelatedUniqueData>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
+    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RelatedUniqueData>(
+      columnValues: columnValues(RelatedUniqueData.t),
+      where: where(RelatedUniqueData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [RelatedUniqueData]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

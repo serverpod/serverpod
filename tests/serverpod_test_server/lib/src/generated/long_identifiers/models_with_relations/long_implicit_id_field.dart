@@ -384,6 +384,46 @@ class LongImplicitIdFieldRepository {
     );
   }
 
+  /// Updates a single [LongImplicitIdField] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LongImplicitIdField?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LongImplicitIdField>(
+      id,
+      columnValues: columnValues(LongImplicitIdField.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LongImplicitIdField]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LongImplicitIdField>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columnValues,
+    required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
+    _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LongImplicitIdField>(
+      columnValues: columnValues(LongImplicitIdField.t),
+      where: where(LongImplicitIdField.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LongImplicitIdField.t),
+      orderByList: orderByList?.call(LongImplicitIdField.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LongImplicitIdField]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

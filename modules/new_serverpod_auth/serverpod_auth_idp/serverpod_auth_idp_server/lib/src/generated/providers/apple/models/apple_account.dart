@@ -632,6 +632,46 @@ class AppleAccountRepository {
     );
   }
 
+  /// Updates a single [AppleAccount] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AppleAccount?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AppleAccountTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AppleAccount>(
+      id,
+      columnValues: columnValues(AppleAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AppleAccount]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AppleAccount>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AppleAccountTable> columnValues,
+    required _i1.WhereExpressionBuilder<AppleAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AppleAccountTable>? orderBy,
+    _i1.OrderByListBuilder<AppleAccountTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AppleAccount>(
+      columnValues: columnValues(AppleAccount.t),
+      where: where(AppleAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [AppleAccount]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
