@@ -470,19 +470,19 @@ class EndpointUserProfile extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_bridge = _i7.Caller(client);
+    serverpod_auth_core = _i5.Caller(client);
     serverpod_auth_idp = _i8.Caller(client);
     serverpod_auth_migration = _i9.Caller(client);
-    serverpod_auth_core = _i5.Caller(client);
     auth = _i3.Caller(client);
   }
 
   late final _i7.Caller serverpod_auth_bridge;
 
+  late final _i5.Caller serverpod_auth_core;
+
   late final _i8.Caller serverpod_auth_idp;
 
   late final _i9.Caller serverpod_auth_migration;
-
-  late final _i5.Caller serverpod_auth_core;
 
   late final _i3.Caller auth;
 }
@@ -560,9 +560,9 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
         'serverpod_auth_bridge': modules.serverpod_auth_bridge,
+        'serverpod_auth_core': modules.serverpod_auth_core,
         'serverpod_auth_idp': modules.serverpod_auth_idp,
         'serverpod_auth_migration': modules.serverpod_auth_migration,
-        'serverpod_auth_core': modules.serverpod_auth_core,
         'auth': modules.auth,
       };
 }
