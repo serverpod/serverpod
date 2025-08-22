@@ -11,9 +11,9 @@ environment:
 dependencies:
   serverpod: SERVERPOD_VERSION
   serverpod_auth_bridge_server: SERVERPOD_VERSION
+  serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_auth_idp_server: SERVERPOD_VERSION
   serverpod_auth_migration_server: SERVERPOD_VERSION
-  serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_auth_server: SERVERPOD_VERSION
 
 dev_dependencies:
@@ -26,12 +26,12 @@ dependency_overrides:
     path: ../../../packages/serverpod
   serverpod_auth_bridge_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
+  serverpod_auth_core_server:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
   serverpod_auth_idp_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_migration_server:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_server
-  serverpod_auth_core_server:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
   serverpod_auth_server:
     path: ../../../modules/serverpod_auth/serverpod_auth_server
   serverpod_cli:
