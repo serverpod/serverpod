@@ -96,7 +96,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
     return true;
   }
 
-  FieldDeclaration? _featureValueOf(actual) {
+  FieldDeclaration? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
@@ -149,7 +149,7 @@ extension on FieldDeclaration {
     return switch (type) {
       null => '',
       GenericFunctionType() => type.toSource(),
-      NamedType() => type.name2.lexeme,
+      NamedType() => type.name.lexeme,
       RecordTypeAnnotation() => type.toSource(),
     };
   }

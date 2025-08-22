@@ -17,7 +17,7 @@ dependencies:
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  test: ^1.24.2
+  test: ^1.25.5
   serverpod_test: 2.3.1
 ''';
     group('when calling PubspecPlus.parse', () {
@@ -114,12 +114,12 @@ dev_dependencies:
         expect(testSpan.start.column, 8);
         expect(testSpan.end.line, 9);
         expect(testSpan.end.column, 15);
-        expect(testSpan.text, '^1.24.2');
+        expect(testSpan.text, '^1.25.5');
         expect(
           testSpan.message('<the message>'),
           'line 10, column 9: <the message>\n' // 1-based
           '   ╷\n'
-          '10 │   test: ^1.24.2\n'
+          '10 │   test: ^1.25.5\n'
           '   │         ^^^^^^^\n'
           '   ╵',
         );

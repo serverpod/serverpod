@@ -96,7 +96,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     );
   }
 
-  MethodDeclaration? _featureValueOf(actual) {
+  MethodDeclaration? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 

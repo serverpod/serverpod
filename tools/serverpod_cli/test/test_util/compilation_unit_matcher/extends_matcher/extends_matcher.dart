@@ -44,7 +44,7 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
     return _matches(extendsClause);
   }
 
-  ExtendsClause? _featureValueOf(actual) {
+  ExtendsClause? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
@@ -82,7 +82,7 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
 
 extension on ExtendsClause {
   String? _getExtendedTypeName() {
-    return superclass.name2.lexeme;
+    return superclass.name.lexeme;
   }
 
   bool _hasMatchingClassName(String className) {

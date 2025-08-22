@@ -3,7 +3,7 @@ import 'package:serverpod_shared/annotations.dart';
 
 extension ElementIgnoreEndpointExtensions on Element {
   bool get markedAsIgnored {
-    return metadata.any((annotation) {
+    return metadata.annotations.any((annotation) {
       var constant = annotation.computeConstantValue();
       var type = constant?.type;
       var typeName = type?.element?.name;

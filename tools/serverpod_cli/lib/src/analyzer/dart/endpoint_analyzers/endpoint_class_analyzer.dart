@@ -12,7 +12,7 @@ abstract class EndpointClassAnalyzer {
     List<MethodDefinition> methodDefinitions,
     String filePath,
   ) {
-    var className = element.name;
+    var className = element.displayName;
     var endpointName = _formatEndpointName(className);
     var classDocumentationComment = element.documentationComment;
 

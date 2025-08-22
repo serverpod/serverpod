@@ -108,7 +108,7 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
     return true;
   }
 
-  FormalParameter? _featureValueOf(actual) {
+  FormalParameter? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 

@@ -31,7 +31,7 @@ abstract class EndpointMethodAnalyzer {
 
     if (isStream) {
       return MethodStreamDefinition(
-        name: method.name,
+        name: method.displayName,
         documentationComment: method.documentationComment,
         annotations: _parseAnnotations(dartElement: method),
         parameters: parameters.required,
@@ -42,7 +42,7 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return MethodCallDefinition(
-      name: method.name,
+      name: method.displayName,
       documentationComment: method.documentationComment,
       annotations: _parseAnnotations(dartElement: method),
       parameters: parameters.required,
@@ -73,7 +73,7 @@ abstract class EndpointMethodAnalyzer {
 
     if (_excludedMethodNameSet.contains(method.name)) return false;
 
-    return method.parameters.isFirstRequiredParameterSession;
+    return method.formalParameters.isFirstRequiredParameterSession;
   }
 
   /// Validates the [MethodElement] and returns a list of
@@ -83,7 +83,7 @@ abstract class EndpointMethodAnalyzer {
       _validateReturnType(
         dartType: method.returnType,
         dartElement: method,
-        hasStreamParameter: method.parameters._hasStream(),
+        hasStreamParameter: method.formalParameters._hasStream(),
       )
     ];
 
@@ -163,7 +163,8 @@ abstract class EndpointMethodAnalyzer {
   static List<AnnotationDefinition> _parseAnnotations({
     required Element dartElement,
   }) {
-    return dartElement.metadata.expand<AnnotationDefinition>((annotation) {
+    return dartElement.metadata.annotations
+        .expand<AnnotationDefinition>((annotation) {
       var annotationElement = annotation.element;
       var annotationName = annotationElement is ConstructorElement
           ? annotationElement.enclosingElement.name
@@ -194,7 +195,7 @@ abstract class EndpointMethodAnalyzer {
   }
 }
 
-extension on List<ParameterElement> {
+extension on List<FormalParameterElement> {
   bool _hasStream() {
     return any((element) => element.type.isDartAsyncStream);
   }

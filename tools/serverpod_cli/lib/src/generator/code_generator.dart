@@ -1,5 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -46,7 +47,7 @@ extension GenerateCode on Library {
     )).toString();
 
     try {
-      return DartFormatter().format('''
+      return DartFormatter(languageVersion: Version(3, 6, 0)).format('''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
