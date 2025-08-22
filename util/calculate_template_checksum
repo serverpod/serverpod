@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Set locale to ensure consistent sorting and behavior across different systems
+export LC_ALL=C
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/calculate_template_checksum"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+BASE=`pwd`
+TEMPLATES_DIR=$BASE/templates/serverpod_templates
+
+# Check if SERVERPOD_HOME is set (required for development mode)
+if [ -z "$SERVERPOD_HOME" ]; then
+    echo "Warning: SERVERPOD_HOME not set, using current directory as base"
+    export SERVERPOD_HOME="$BASE"
+fi
+
+echo "Calculating template checksums..."
+echo ""
+
+# Navigate to serverpod_cli directory to run the Dart script
+cd tools/serverpod_cli
+
+# Make sure dependencies are installed
+if [ ! -d ".dart_tool" ]; then
+    echo "Installing dependencies for serverpod_cli..."
+    dart pub get
+fi
+
+# Run the Dart script to calculate checksums
+echo "Running checksum calculator..."
+dart run bin/calculate_checksums.dart
+
+# Go back to base directory
+cd "$BASE"
+
+echo ""
+echo "Template checksums have been updated in:"
+echo "  - $TEMPLATES_DIR/template_checksums.yaml"
+echo ""
+echo "Please commit both files:"
+echo "  - template_files.yaml (if modified)"
+echo "  - template_checksums.yaml (regenerated)"

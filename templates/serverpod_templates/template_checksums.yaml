@@ -1,0 +1,116 @@
+# Template checksums - auto-generated, do not edit
+# Generated from template_files.yaml
+# Last updated: 2025-08-15T17:58:34.362660
+
+projectname_server:
+  CHANGELOG.md: b3c75d8b5939c71f4ef8cfe5a98b3f8a
+  Dockerfile: 08fd7c153b15a57a768783ba26c6fd23
+  README.md: 2724be7c9ceeafcc364e3233606af662
+  analysis_options.yaml: 6eaf50abe7adb77383f1676c84676969
+  bin/main.dart: 70b5c25cbdf0b6da91e8ac6c6959b0b8
+  dart_test.yaml: 4ea7042833d76dd6892ecda8f7b708f5
+  gitignore: 8608cb22a9ced2e6f0534633a1b27055
+  lib/server.dart: 6047043d807e0a6848fb5c226b7d2c88
+  lib/src/greeting.spy.yaml: bbb4899c88f35a03266a840593098cf4
+  lib/src/greeting_endpoint.dart: cb5c9627712e7d24c229a001bb335ebd
+  pubspec.lock: c7dd43c5728964d6cc0dd4ca59c6c606
+  pubspec.yaml: e9ea8d838dd325b6e722b0cac70e9d8d
+  test/integration/greeting_endpoint_test.dart: 3031708c6816822af0e9d8757bb752ce
+
+projectname_server_upgrade:
+  config/development.yaml: d8dbccc203321fa1a5c93744af06c411
+  config/generator.yaml: 0ce7bd1a321c88fbef4c372431b39d61
+  config/passwords.yaml: dd5eee5516e94653d46018129480ca6e
+  config/production.yaml: e51981f669d9f0c1401a2bae300e9c8a
+  config/staging.yaml: 557491c9768c09572f46c5b057334e29
+  config/test.yaml: b3a5f2d05479d56c61542de1ef13185a
+  deploy/aws/scripts/appspec.yml: 255cb253291c65a1e5d0616bc8d042ad
+  deploy/aws/scripts/install_dependencies: 9666012c51f7408079a3fe65570cb934
+  deploy/aws/scripts/run_serverpod: 713244e9fa1ed3f5e585c6941a409d06
+  deploy/aws/scripts/start_server: 4d09d14c6e12c78c80dc29851a9b6438
+  deploy/aws/terraform/balancers-staging.tf: a385f182d163c94c323d2821536485db
+  deploy/aws/terraform/balancers.tf: 62747962364d8b1fd98ec62b18f36bac
+  deploy/aws/terraform/cloudfront-web-staging.tf: 5ddcaae1c6b65fd8e42e9ab5c55e60de
+  deploy/aws/terraform/cloudfront-web.tf: 053c1b14475202121727822c99c8d21a
+  deploy/aws/terraform/code-deploy.tf: 53fc5c2ede5654c28bf8e28ddf7fb327
+  deploy/aws/terraform/config.auto.tfvars: 7a2a875218b3f6419679687f2ae27c6c
+  deploy/aws/terraform/database.tf: 1ec86600076dc949fd47e3f6ea38aacb
+  deploy/aws/terraform/init-script.sh: eae07ef0eb5cefd41aceb59e7fc76d33
+  deploy/aws/terraform/instances.tf: 76886d7a1f6d0b2d2f6f3665fc584234
+  deploy/aws/terraform/main.tf: d022dda9290e422f54d1278c429ee041
+  deploy/aws/terraform/redis.tf: 74ef66a0b765231e333197a2d2f75420
+  deploy/aws/terraform/staging.tf: 4e1e9ebcdb4946021cd9d4fb39905702
+  deploy/aws/terraform/storage.tf: 09ab4639bde66a91e648deff8633e8a0
+  deploy/aws/terraform/variables.tf: a50f3d0fd611d39d40cb8e3359b494f9
+  deploy/aws/terraform/vpc.tf: 4855cd8e2234f8b06ab4022eb67659b5
+  deploy/gcp/console_gcr/cloud-run-deploy.sh: c35989f5ca9a6c37f60c0bd63a2edd17
+  deploy/gcp/terraform_gce/config.auto.tfvars: 771a05a0650fe31346510de5bd2cbdcc
+  deploy/gcp/terraform_gce/main.tf: 4e35269d5788167ed87ba556810e6171
+  deploy/gcp/terraform_gce/variables.tf: 6418c6d4a1c1fadea1cbd176a9e3141e
+  docker-compose.yaml: 6e7bf9d98f6e0af69ac05121aa3abed1
+  gcloudignore: 6a82ca915b39fb4371f0eac3c2d8e77b
+  lib/server.dart: 5f9e6ed45a6c906e5da6fd1d449647c9
+  lib/src/birthday_reminder.dart: fb1b884ef15d59da4e1107f86209a55e
+  lib/src/web/routes/root.dart: a64e27bca771c84df9375386c717e1d6
+  lib/src/web/widgets/built_with_serverpod_page.dart: 3cf0455e7dec31056bee2b1ffa38c3c1
+  web/static/css/style.css: dcccebc0f1a82134992a1e9641c89d3b
+  web/static/images/background.svg: 77e2fdbb28b21deacff2ef7620db5e61
+  web/static/images/serverpod-logo.svg: dcea847dc0eceea0fbbf8d3d8b25da16
+  web/templates/built_with_serverpod.html: 0a37d9de0555732fc6fd7ef91d699517
+
+projectname_client:
+  CHANGELOG.md: b3c75d8b5939c71f4ef8cfe5a98b3f8a
+  README.md: ab398026864b67f9db91a26adc94f7d8
+  analysis_options.yaml: 2e3018d3b77309c35d6db8194266f01a
+  dartdoc_options.yaml: 35902b8f0c19bc5a51abc58bd7058025
+  doc/endpoint.md: c9e4c22e8a42ec0b185ed9d8be86a0ed
+  gitignore: f7c412911337a823b69af2008689a5e2
+  lib/projectname_client.dart: 69f3f998a14950b60aff5e60930a0ae9
+  pubspec.lock: 636df7615e51a6c8f4f6576c2375bb9b
+  pubspec.yaml: a9d9478948d5b683ab127dd2ec6bb266
+
+projectname_flutter:
+  README.md: 99384271a9b20fd7eb26679cb09a7762
+  analysis_options.yaml: 9e701b66e518675b518e783ca94926a0
+  gitignore: c9edf93a66e84731e886ee1b8141bd9e
+  lib/main.dart: ff9b45c289cdb698eefd71dcf2662a37
+  pubspec.lock: f4126ce83c2832dab48364bbcc632e77
+  pubspec.yaml: 17954855598d883f7e7a221826440bf5
+  test/widget_test.dart: 04a97361b0aabcf62474a8423a9bfb03
+  web/favicon.png: 5dcef449791fa27946b3d35ad8803796
+  web/icons/Icon-192.png: ac9a721a12bbc803b44f645561ecb1e1
+  web/icons/Icon-512.png: 96e752610906ba2a93c65f8abe1645f1
+  web/index.html: 9f9cce5dfda1d8779508c78c7196f278
+  web/manifest.json: 08661a3989b14d31d7684002b0d43cd0
+
+modulename_server:
+  CHANGELOG.md: b3c75d8b5939c71f4ef8cfe5a98b3f8a
+  README.md: 63183c77d21dace6e4534a9369bdf849
+  analysis_options.yaml: 8c761537deeedd04f0bf4d665ba2d9a1
+  config/generator.yaml: 2164c7e50c67a61d2e1e28b68014bea4
+  config/passwords.yaml: 54da4775346f7e234090afaa3d7e22cd
+  config/test.yaml: a03dd2799609a7e0469aaa61976f46da
+  dart_test.yaml: 4ea7042833d76dd6892ecda8f7b708f5
+  docker-compose.yaml: 372e732fce76d44cc086f7cc3a10347f
+  gitignore: f7c412911337a823b69af2008689a5e2
+  lib/modulename_server.dart: a57f05d6cda21506bc8e6e38c2f3f542
+  lib/src/endpoints/module_endpoint.dart: dccdd57cd4bb349f81d3f95868f77f76
+  lib/src/models/module_class.spy.yaml: 7aa60cc77a0d0c8e6927bafc79f45b5b
+  lib/src/module_util.dart: 84d7a48abb91e80904d70e13a13042ad
+  pubspec.lock: c7dd43c5728964d6cc0dd4ca59c6c606
+  pubspec.yaml: 0e0ab4350cc2e9c3b577728ffa402861
+  test/integration/module_endpoint_test.dart: 21ec8d6e4bef2d0c2e3e9dd2c81d9770
+  test/unit/module_util_test.dart: 0f902af418eeda140f6cf7fa26550f02
+
+modulename_client:
+  analysis_options.yaml: 2e3018d3b77309c35d6db8194266f01a
+  dartdoc_options.yaml: 35902b8f0c19bc5a51abc58bd7058025
+  doc/endpoint.md: 7dc8380962c242c6eb6275741c05e129
+  gitignore: f7c412911337a823b69af2008689a5e2
+  lib/modulename_client.dart: 69f3f998a14950b60aff5e60930a0ae9
+  pubspec.lock: 636df7615e51a6c8f4f6576c2375bb9b
+  pubspec.yaml: 9f22f873a45452f60f5a36255aea8543
+
+github:
+  workflows/deployment-aws.yml: 4f43b33060b2954ebfbb1dba26fc004b
+  workflows/deployment-gcp.yml: a1e056c50175e09d6538817719125a94
