@@ -91,10 +91,10 @@ Below is a list of tools required to contribute to Serverpod.
 After the required tools have been installed, you will need a local clone of the repository.
 We recommend [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) the repository and then cloning your fork.
 
-After the repository is cloned, run the following command to install all dependencies:
+After the repository is cloned, run the following command from the root of the repository to install all dependencies:
 
 ```bash
-$ util/pub_get_all
+$ melos bs
 ```
 
 > [!TIP]
@@ -147,18 +147,18 @@ To ensure all tests work as expected, it is recommended to add an entry for the 
 
 Scripts that run groups of tests are located in the `util` directory and their name start with `run_tests`. The following test scripts are available:
 
-| Script | Description |
-| --- | --- |
-| `run_tests_unit` | Run all unit tests. |
-| `run_tests_integration` | Run all non concurrent integration tests in the test project. |
-| `run_tests_integration_concurrently` | Run all concurrent integration tests in the test project. |
-| `run_tests_flutter_integration` | Run all Flutter integration tests in the flutter test project. |
-| `run_tests_e2e` | Run all server end to end tests in the test project. |
-| `run_tests_migrations_e2e` | Run all migration end to end tests. |
-| `run_tests_bootstrap` | Run all bootstrap tests. |
-| `run_tests_update_pubspecs` | Ensure that all pubspec files are up to date with the templates. |
-| `run_tests_analyze` | Run the code analysis tests. |
-| `run_tests_update_pubspecs` | Ensure that all pubspec files are up to date with the templates. |
+| Script                               | Description                                                      |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `run_tests_unit`                     | Run all unit tests.                                              |
+| `run_tests_integration`              | Run all non concurrent integration tests in the test project.    |
+| `run_tests_integration_concurrently` | Run all concurrent integration tests in the test project.        |
+| `run_tests_flutter_integration`      | Run all Flutter integration tests in the flutter test project.   |
+| `run_tests_e2e`                      | Run all server end to end tests in the test project.             |
+| `run_tests_migrations_e2e`           | Run all migration end to end tests.                              |
+| `run_tests_bootstrap`                | Run all bootstrap tests.                                         |
+| `run_tests_update_pubspecs`          | Ensure that all pubspec files are up to date with the templates. |
+| `run_tests_analyze`                  | Run the code analysis tests.                                     |
+| `run_tests_update_pubspecs`          | Ensure that all pubspec files are up to date with the templates. |
 
 To run any script, navigate to the root of the repository and run the script, e.g.:
 
