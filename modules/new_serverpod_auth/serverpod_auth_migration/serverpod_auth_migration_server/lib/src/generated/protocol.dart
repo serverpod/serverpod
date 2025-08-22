@@ -14,9 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
     as _i3;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i4;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i4;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i5;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
 import 'migrated_user.dart' as _i7;
@@ -176,11 +176,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_idp.$className';
+      return 'serverpod_auth_core.$className';
     }
     className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth_core.$className';
+      return 'serverpod_auth_idp.$className';
     }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -206,12 +206,12 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(22);
       return _i3.Protocol().deserializeByClassName(data);
     }
-    if (dataClassName.startsWith('serverpod_auth_idp.')) {
-      data['className'] = dataClassName.substring(19);
-      return _i4.Protocol().deserializeByClassName(data);
-    }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
+      return _i4.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth_idp.')) {
+      data['className'] = dataClassName.substring(19);
       return _i5.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {

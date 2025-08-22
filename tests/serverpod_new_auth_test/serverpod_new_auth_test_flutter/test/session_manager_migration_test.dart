@@ -70,7 +70,7 @@ void main() {
 
       expect(
         await legacySessionClient.emailAccountBackwardsCompatibilityTest
-            .sessionUserIdentifer(),
+            .sessionUserIdentifier(),
         isNull, // old sessions do not work before migration
       );
 
@@ -85,7 +85,7 @@ void main() {
 
       expect(
         await legacySessionClient.emailAccountBackwardsCompatibilityTest
-            .sessionUserIdentifer(),
+            .sessionUserIdentifier(),
         isNull, // the session has not been migrated yet
       );
 
@@ -105,7 +105,7 @@ void main() {
 
       expect(
         await newSessionClient.emailAccountBackwardsCompatibilityTest
-            .sessionUserIdentifer(),
+            .sessionUserIdentifier(),
         newAuthUserId!.uuid,
       );
     },
