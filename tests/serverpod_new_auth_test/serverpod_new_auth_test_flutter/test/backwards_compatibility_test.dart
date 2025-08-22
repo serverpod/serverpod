@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
-import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_server_client.dart';
+import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
 import 'utils/test_storage.dart';
 
@@ -9,13 +9,11 @@ void main() {
   test(
     'Given a legacy user, when importing the user, then their legacy password can be migrated later on and used for the login.',
     () async {
-      final sessionManager = SessionManager(
-        storage: TestStorage(),
-      );
+      final client = Client('http://localhost:8080/');
 
-      final client = Client(
-        'http://localhost:8080/',
-        authenticationKeyManager: sessionManager,
+      client.authKeyProvider = ClientAuthSessionManager(
+        caller: client.modules.serverpod_auth_core,
+        storage: TestStorage(),
       );
 
       final email =
