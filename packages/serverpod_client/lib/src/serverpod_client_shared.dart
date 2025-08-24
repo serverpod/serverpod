@@ -654,9 +654,9 @@ abstract class EndpointRef {
   Stream<SerializableModel> get stream => _streamController.stream;
 
   /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableModel message) async {
-    return client._sendSerializableObjectToStream(name, message);
-  }
+  Future<void> sendStreamMessage(SerializableModel message) => client
+      ._sendSerializableObjectToStream(name, message)
+      .timeout(client.streamingConnectionTimeout);
 
   /// Resets web socket stream, so it's possible to re-listen to endpoint
   /// streams.
