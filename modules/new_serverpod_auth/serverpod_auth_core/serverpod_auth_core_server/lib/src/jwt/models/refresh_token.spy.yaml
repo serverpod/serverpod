@@ -23,6 +23,11 @@ fields:
   ### This is only stored as a serialized String in the database due to schema limitations.
   extraClaims: String?
 
+  ### The method through which this token was created.
+  ###
+  ### This can be either an email or social login, a personal access token, service account etc.
+  method: String
+
   ### The fixed part of the secret.
   ###
   ### Any incoming rotation request referencing refresh token by ID and having the correct fixed part,
