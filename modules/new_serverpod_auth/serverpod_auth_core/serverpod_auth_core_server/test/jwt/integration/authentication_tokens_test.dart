@@ -38,6 +38,7 @@ void main() {
           session,
           authUserId: authUserId,
           scopes: {},
+          method: 'test',
         ),
         isNotNull,
       );
@@ -50,6 +51,7 @@ void main() {
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
+        method: 'test',
       );
 
       final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
@@ -67,6 +69,7 @@ void main() {
         authUserId: authUserId,
         scopes: {},
         extraClaims: {'test': 123},
+        method: 'test',
       );
 
       final decodedToken = JWT.decode(authSuccess.token);
@@ -83,6 +86,7 @@ void main() {
           authUserId: authUserId,
           scopes: {},
           extraClaims: {'exp': 123, 'custom': 'hello'},
+          method: 'test',
         ),
         throwsArgumentError,
       );
@@ -119,6 +123,7 @@ void main() {
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
         extraClaims: {'string': 'foo', 'int': 1},
+        method: 'test',
       );
     });
 
@@ -274,6 +279,7 @@ void main() {
         session,
         authUserId: authUser.id,
         scopes: {},
+        method: 'test',
       );
 
       refreshedTokenPair = await AuthenticationTokens.rotateRefreshToken(
@@ -325,8 +331,12 @@ void main() {
       final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
-      await AuthenticationTokens.createTokens(session,
-          authUserId: authUserId, scopes: {});
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
     });
 
     tearDownAll(() {
@@ -367,6 +377,7 @@ void main() {
         session,
         authUserId: authUserId1,
         scopes: {},
+        method: 'test',
       );
 
       final authUser2 = await AuthUsers.create(session);
@@ -376,6 +387,7 @@ void main() {
         session,
         authUserId: authUserId2,
         scopes: {},
+        method: 'test',
       );
     });
 
@@ -392,6 +404,116 @@ void main() {
       );
 
       expect(tokenInfos.single.authUserId, authUserId1);
+    });
+  });
+
+  withServerpod('Given a user with scopes,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late final secretsWithHmac = AuthenticationTokenSecretsMock()
+      ..setHs512Algorithm()
+      ..refreshTokenHashPepper = 'pepper123';
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+      // Assign scopes to the user using update
+      await AuthUsers.update(
+        session,
+        authUserId: authUserId,
+        scopes: {const Scope('user-scope')},
+      );
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test('when no scopes are provided, the users scopes should be used.',
+        () async {
+      final authSuccess = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        method: 'test',
+      );
+      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+        authSuccess.token,
+      );
+      expect(decodedToken.scopes, hasLength(1));
+      expect(decodedToken.scopes.single.name, 'user-scope');
+    });
+
+    test('when scopes are provided, the provided scopes are used.', () async {
+      final authSuccess = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {
+          Scope('test-scope'),
+        },
+        method: 'test',
+      );
+      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+        authSuccess.token,
+      );
+      expect(decodedToken.scopes, hasLength(1));
+      expect(decodedToken.scopes.single.name, 'test-scope');
+    });
+  });
+
+  withServerpod('Given a user that is blocked,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late final secretsWithHmac = AuthenticationTokenSecretsMock()
+      ..setHs512Algorithm()
+      ..refreshTokenHashPepper = 'pepper123';
+
+    setUpAll(() {
+      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
+    });
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+      // Block the user using update
+      await AuthUsers.update(session, authUserId: authUserId, blocked: true);
+    });
+
+    tearDownAll(() {
+      AuthenticationTokens.secretsTestOverride = null;
+    });
+
+    test('when creating tokens, an AuthUserBlockedException should be thrown.',
+        () async {
+      await expectLater(
+        () => AuthenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        ),
+        throwsA(isA<AuthUserBlockedException>()),
+      );
+    });
+
+    test(
+        'when creating token with skipUserBlockedChecked as true, then the token should be created successfully.',
+        () async {
+      final authSuccess = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+        skipUserBlockedChecked: true,
+      );
+      expect(authSuccess, isNotNull);
     });
   });
 }
