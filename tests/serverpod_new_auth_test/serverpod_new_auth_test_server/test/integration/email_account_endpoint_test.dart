@@ -408,7 +408,115 @@ void main() {
   );
 
   withServerpod(
-    'Given a migrated user whose first action is password reset,',
+    'Given a non-migrated user (legacy user),',
+    (final sessionBuilder, final endpoints) {
+      const email = 'test@serverpod.dev';
+      const legacyPassword = 'LegacyPass123!';
+
+      late int legacyUserId;
+
+      setUp(() async {
+        // Create a legacy user (non-migrated)
+        legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
+            .createLegacyUser(
+          sessionBuilder,
+          email: email,
+          password: legacyPassword,
+        );
+
+        // Verify the user is NOT migrated
+        expect(
+          await endpoints.emailAccountBackwardsCompatibilityTest
+              .getNewAuthUserId(
+            sessionBuilder,
+            userId: legacyUserId,
+          ),
+          isNull,
+        );
+      });
+
+      tearDown(() async {
+        EmailAccounts.config = EmailAccountConfig();
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
+      test(
+        'when starting password reset, then no verification code is sent because user does not exist in new system.',
+        () async {
+          String? receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          // The new system should not find the user since they're not migrated
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          // No verification code should be sent because the user doesn't exist in the new system
+          expect(receivedVerificationCode, isNull);
+        },
+      );
+
+      test(
+        'when migrating user and then starting password reset, then verification code is sent.',
+        () async {
+          // First migrate the user
+          await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
+            sessionBuilder,
+            legacyUserId: legacyUserId,
+          );
+
+          // Verify the user is now migrated
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .getNewAuthUserId(
+              sessionBuilder,
+              userId: legacyUserId,
+            ),
+            isNotNull,
+          );
+
+          String? receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          // Now the password reset should work
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          expect(receivedVerificationCode, isNotNull);
+        },
+      );
+    },
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
+
+  withServerpod(
+    'Given a migrated user whose first action is password reset (after migration),',
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const legacyPassword = 'LegacyPass123!';
