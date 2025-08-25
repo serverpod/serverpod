@@ -1,0 +1,11 @@
+### Authentication strategies supported the Serverpod authentication core module
+enum: AuthStrategy
+serialized: byName
+default: unknown
+values:
+    ### Unknown authentication strategy
+    - unknown
+    ### JSON Web Token authentication
+    - jwt
+    ### Session-based authentication
+    - session

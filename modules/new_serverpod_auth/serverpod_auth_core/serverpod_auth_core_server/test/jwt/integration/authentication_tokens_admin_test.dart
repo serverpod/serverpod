@@ -113,7 +113,7 @@ void main() {
 
       for (var i = 0; i < 100; i++) {
         for (final authUserId in [authUserId1, authUserId2]) {
-          final tokenPair = await AuthenticationTokens.createTokens(
+          final authSuccess = await AuthenticationTokens.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},
@@ -121,7 +121,7 @@ void main() {
 
           refreshTokenIdsInOrderOfCreation.add(
             UuidValue.fromByteList(
-              base64Decode(tokenPair.refreshToken.split(':')[1]),
+              base64Decode(authSuccess.refreshToken!.split(':')[1]),
             ),
           );
         }

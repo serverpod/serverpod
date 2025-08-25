@@ -46,14 +46,14 @@ void main() {
     test(
         'when requesting a new token pair with scopes, then those are visible on the initial access token.',
         () async {
-      final tokenPair = await AuthenticationTokens.createTokens(
+      final authSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
       );
 
       final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
-        tokenPair.accessToken,
+        authSuccess.token,
       );
       expect(decodedToken.scopes, hasLength(1));
       expect(decodedToken.scopes.single.name, 'test');
@@ -62,14 +62,14 @@ void main() {
     test(
         'when requesting a new token pair with extra claims, then those are visible on the initial access token.',
         () async {
-      final tokenPair = await AuthenticationTokens.createTokens(
+      final authSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
         extraClaims: {'test': 123},
       );
 
-      final decodedToken = JWT.decode(tokenPair.accessToken);
+      final decodedToken = JWT.decode(authSuccess.token);
 
       expect((decodedToken.payload as Map)['test'], 123);
     });
@@ -99,7 +99,7 @@ void main() {
     late AuthenticationTokenSecretsMock secrets;
     late Session session;
     late UuidValue authUserId;
-    late TokenPair tokenPair;
+    late AuthSuccess authSuccess;
 
     setUp(() async {
       secrets = AuthenticationTokenSecretsMock()
@@ -114,7 +114,7 @@ void main() {
       );
       authUserId = authUser.id;
 
-      tokenPair = await AuthenticationTokens.createTokens(
+      authSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
@@ -134,12 +134,12 @@ void main() {
         Clock.fixed(DateTime.now().add(const Duration(seconds: 2))),
         () => AuthenticationTokens.rotateRefreshToken(
           session,
-          refreshToken: tokenPair.refreshToken,
+          refreshToken: authSuccess.refreshToken!,
         ),
       );
 
-      expect(newTokenPair.accessToken, isNot(tokenPair.accessToken));
-      expect(newTokenPair.refreshToken, isNot(tokenPair.refreshToken));
+      expect(newTokenPair.accessToken, isNot(authSuccess.token));
+      expect(newTokenPair.refreshToken, isNot(authSuccess.refreshToken));
     });
 
     test(
@@ -147,10 +147,10 @@ void main() {
         () async {
       final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
         session,
-        refreshToken: tokenPair.refreshToken,
+        refreshToken: authSuccess.refreshToken!,
       );
 
-      final decodedToken = JWT.decode(tokenPair.accessToken);
+      final decodedToken = JWT.decode(authSuccess.token);
       final newDecodedToken = JWT.decode(newTokenPair.accessToken);
 
       expect(newDecodedToken.jwtId, isNotNull);
@@ -162,7 +162,7 @@ void main() {
         () async {
       final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
         session,
-        refreshToken: tokenPair.refreshToken,
+        refreshToken: authSuccess.refreshToken!,
       );
 
       final newDecodedToken = JWT.decode(newTokenPair.accessToken);
@@ -182,7 +182,7 @@ void main() {
       await expectLater(
         () => AuthenticationTokens.rotateRefreshToken(
           session,
-          refreshToken: tokenPair.refreshToken,
+          refreshToken: authSuccess.refreshToken!,
         ),
         throwsA(isA<RefreshTokenNotFoundException>()),
       );
@@ -196,7 +196,7 @@ void main() {
       await expectLater(
         () => AuthenticationTokens.rotateRefreshToken(
           session,
-          refreshToken: tokenPair.refreshToken,
+          refreshToken: authSuccess.refreshToken!,
         ),
         throwsA(isA<RefreshTokenInvalidSecretException>()),
       );
@@ -205,7 +205,7 @@ void main() {
     test(
         'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
         () async {
-      final tokenParts = tokenPair.refreshToken.split(':');
+      final tokenParts = authSuccess.refreshToken!.split(':');
       tokenParts[2] = 'dGVzdA==';
 
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
@@ -222,7 +222,7 @@ void main() {
     test(
         'when trying to rotate the token with a wrong variable secret, then it throws an error.',
         () async {
-      final tokenParts = tokenPair.refreshToken.split(':');
+      final tokenParts = authSuccess.refreshToken!.split(':');
       tokenParts[3] = 'dGVzdA==';
 
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
@@ -257,7 +257,7 @@ void main() {
     final endpoints,
   ) {
     late Session session;
-    late TokenPair initialTokenPair;
+    late AuthSuccess initialAuthSuccess;
     late TokenPair refreshedTokenPair;
 
     setUp(() async {
@@ -270,7 +270,7 @@ void main() {
 
       final authUser = await AuthUsers.create(session);
 
-      initialTokenPair = await AuthenticationTokens.createTokens(
+      initialAuthSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUser.id,
         scopes: {},
@@ -278,7 +278,7 @@ void main() {
 
       refreshedTokenPair = await AuthenticationTokens.rotateRefreshToken(
         session,
-        refreshToken: initialTokenPair.refreshToken,
+        refreshToken: initialAuthSuccess.refreshToken!,
       );
     });
 
@@ -292,7 +292,7 @@ void main() {
       await expectLater(
         () => AuthenticationTokens.rotateRefreshToken(
           session,
-          refreshToken: initialTokenPair.refreshToken,
+          refreshToken: initialAuthSuccess.refreshToken!,
         ),
         throwsA(isA<RefreshTokenInvalidSecretException>()),
       );

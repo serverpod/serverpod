@@ -57,7 +57,7 @@ void main() {
     late AuthenticationTokenSecretsMock secrets;
     late Session session;
     late UuidValue authUserId;
-    late TokenPair tokenPair;
+    late AuthSuccess authSuccess;
 
     setUp(() async {
       secrets = AuthenticationTokenSecretsMock()
@@ -70,7 +70,7 @@ void main() {
       final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
-      tokenPair = await AuthenticationTokens.createTokens(
+      authSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
@@ -87,7 +87,7 @@ void main() {
         () async {
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
-        tokenPair.accessToken,
+        authSuccess.token,
       );
 
       expect(authInfo, isNotNull);
@@ -100,7 +100,7 @@ void main() {
         () async {
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
-        tokenPair.accessToken,
+        authSuccess.token,
       );
 
       expect(authInfo?.extraClaims, equals({'string': 'foo', 'int': 1}));
@@ -113,7 +113,7 @@ void main() {
         Clock.fixed(DateTime.now().add(const Duration(minutes: 11))),
         () => AuthenticationTokens.authenticationHandler(
           session,
-          tokenPair.accessToken,
+          authSuccess.token,
         ),
       );
 
@@ -127,7 +127,7 @@ void main() {
 
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
-        tokenPair.accessToken,
+        authSuccess.token,
       );
 
       expect(authInfo, isNull);
@@ -143,7 +143,7 @@ void main() {
     const String scopeName = 'test scope';
     late Session session;
     late UuidValue authUserId;
-    late TokenPair tokenPair;
+    late AuthSuccess authSuccess;
 
     setUp(() async {
       AuthenticationTokens.secretsTestOverride =
@@ -156,7 +156,7 @@ void main() {
       final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
-      tokenPair = await AuthenticationTokens.createTokens(
+      authSuccess = await AuthenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
@@ -173,13 +173,13 @@ void main() {
         () async {
       final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
         session,
-        refreshToken: tokenPair.refreshToken,
+        refreshToken: authSuccess.refreshToken!,
       );
 
       expect(
         await AuthenticationTokens.authenticationHandler(
           session,
-          tokenPair.accessToken,
+          authSuccess.token,
         ),
         isNotNull,
       );
@@ -203,7 +203,7 @@ void main() {
 
       final authInfo = await AuthenticationTokens.authenticationHandler(
         session,
-        tokenPair.accessToken,
+        authSuccess.token,
       );
 
       expect(authInfo, isNotNull);

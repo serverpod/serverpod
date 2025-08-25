@@ -331,19 +331,19 @@ class _EmailAccountBackwardsCompatibilityTestEndpoint {
     });
   }
 
-  _i3.Future<String?> sessionUserIdentifer(
+  _i3.Future<String?> sessionUserIdentifier(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'emailAccountBackwardsCompatibilityTest',
-        method: 'sessionUserIdentifer',
+        method: 'sessionUserIdentifier',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'emailAccountBackwardsCompatibilityTest',
-          methodName: 'sessionUserIdentifer',
+          methodName: 'sessionUserIdentifier',
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );

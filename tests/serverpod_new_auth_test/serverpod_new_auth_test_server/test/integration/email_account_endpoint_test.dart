@@ -121,7 +121,7 @@ void main() {
         expect(
           await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            authSuccess.sessionKey,
+            authSuccess.token,
           ),
           isNotNull,
         );
@@ -161,7 +161,7 @@ void main() {
         expect(
           await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            authSuccess.sessionKey,
+            authSuccess.token,
           ),
           isNotNull,
         );
@@ -292,12 +292,12 @@ void main() {
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'Newpassword123!',
+            newPassword: 'NewPassword123!',
           );
 
           final authInfo = await AuthSessions.authenticationHandler(
             sessionBuilder.build(),
-            authSuccess.sessionKey,
+            authSuccess.token,
           );
 
           expect(authInfo?.authUserId, authUserId);
@@ -313,7 +313,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const oldPassword = 'Foobar123!';
-      const newPassword = 'Barfoo789?';
+      const newPassword = 'BarFoo789?';
 
       late UuidValue authUserId;
       late String loginSessionKey;
@@ -372,7 +372,7 @@ void main() {
           expect(
             await AuthSessions.authenticationHandler(
               sessionBuilder.build(),
-              authSuccess.sessionKey,
+              authSuccess.token,
             ),
             isNotNull,
           );
@@ -444,13 +444,10 @@ extension on TestEndpoints {
 
     final authInfo = await AuthSessions.authenticationHandler(
       sessionBuilder.build(),
-      authSuccess.sessionKey,
+      authSuccess.token,
     );
 
-    return (
-      sessionKey: authSuccess.sessionKey,
-      authUserId: authInfo!.authUserId
-    );
+    return (sessionKey: authSuccess.token, authUserId: authInfo!.authUserId);
   }
 
   Future<
@@ -503,7 +500,7 @@ extension on TestEndpoints {
       newPassword: password,
     );
 
-    return authSuccess.sessionKey;
+    return authSuccess.token;
   }
 }
 

@@ -59,7 +59,7 @@ void main() {
         scopes: {},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
     });
 
     test(
@@ -132,7 +132,7 @@ void main() {
         scopes: {const Scope('test')},
         method: 'test',
       ))
-          .sessionKey;
+          .token;
     });
 
     test(
@@ -171,7 +171,7 @@ void main() {
           method: 'test',
           expiresAt: expiresAt,
         ))
-            .sessionKey;
+            .token;
       });
 
       tearDown(() {
@@ -232,7 +232,7 @@ void main() {
         method: 'test',
         expireAfterUnusedFor: expireAfterUnusedFor,
       ))
-          .sessionKey;
+          .token;
     });
 
     test(

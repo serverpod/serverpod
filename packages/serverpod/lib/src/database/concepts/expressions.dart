@@ -33,6 +33,11 @@ class Expression<T> {
     return _OrExpression(this, other);
   }
 
+  /// Database NOT operator.
+  Expression operator ~() {
+    return NotExpression(this);
+  }
+
   /// Iterator for all [Expression]s in the expression.
   /// Iterates elements deterministically depth first.
   Iterable<Expression> get depthFirst sync* {
