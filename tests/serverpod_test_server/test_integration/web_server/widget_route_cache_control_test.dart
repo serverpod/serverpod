@@ -91,6 +91,29 @@ void main() {
     });
 
     test(
+        'when requesting an HTML widget route '
+        'then the content-type is text/html even with cache headers set',
+        () async {
+      var response = await http.get(
+        Uri.parse('http://localhost:8082/html-route'),
+      );
+
+      expect(response.headers['content-type'], contains('text/html'));
+      expect(response.headers['cache-control'], 'no-cache, private');
+    });
+
+    test(
+        'when requesting a JSON widget route '
+        'then both content-type and cache headers are set correctly', () async {
+      var response = await http.get(
+        Uri.parse('http://localhost:8082/json-route'),
+      );
+
+      expect(response.headers['content-type'], contains('application/json'));
+      expect(response.headers['cache-control'], 'no-cache, private');
+    });
+
+    test(
         'when requesting a redirect widget route '
         'then the redirect response does not have cache-control headers',
         () async {
