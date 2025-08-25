@@ -1,0 +1,77 @@
+#!/bin/bash
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/remove_migrations"
+    exit 1
+fi
+
+BASE=`pwd`
+
+. "$BASE/util/all_packages"
+
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
+# Optional tag argument
+TAG="$1"
+
+# Get migration dir name for a server package
+get_migration_dir() {
+    echo "$1/migrations"
+}
+
+# Remove latest migration version directory in a package
+remove_latest_migration() {
+    MIGRATION_DIR=$(get_migration_dir "$1")
+    if [ -d "$MIGRATION_DIR" ]; then
+        # Only consider directories (ignore files like migration_registry.txt)
+        LATEST_VERSION=$(find "$MIGRATION_DIR" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)
+        if [ -n "$LATEST_VERSION" ]; then
+            echo "Removing latest migration directory: $LATEST_VERSION"
+            rm -rf "$LATEST_VERSION"
+        else
+            echo "No migration directories found in $MIGRATION_DIR"
+        fi
+    fi
+}
+
+# Remove all migration version directories newer than or equal to the tag
+remove_migrations_to_tag_glob() {
+    MIGRATION_DIR=$(get_migration_dir "$1")
+    if [ -d "$MIGRATION_DIR" ]; then
+        # Only consider directories (ignore files like migration_registry.txt)
+        DIRS=$(find "$MIGRATION_DIR" -mindepth 1 -maxdepth 1 -type d)
+        MATCHED=$(basename -a $DIRS | grep -E "$TAG" | sort -r)
+        if [ -z "$MATCHED" ]; then
+            echo "No migration directories match pattern: $TAG"
+            return
+        fi
+        # Remove all matching and newer migration directories
+        for version in $(basename -a $DIRS | sort -r); do
+            for match in $MATCHED; do
+                if [[ "$version" == "$match" || "$version" > "$match" ]]; then
+                    echo "Removing migration directory: $MIGRATION_DIR/$version"
+                    rm -rf "$MIGRATION_DIR/$version"
+                fi
+            done
+        done
+    fi
+}
+
+# Run pub get for CLI
+echo "pub get cli"
+cd $CLI_DIR
+dart pub get
+
+# Remove migrations for all server packages
+for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
+    echo "### $path"
+    cd "$BASE/$path"
+
+    if [ -z "$TAG" ]; then
+        remove_latest_migration "$BASE/$path"
+    else
+        remove_migrations_to_tag_glob "$BASE/$path"
+    fi
+done
