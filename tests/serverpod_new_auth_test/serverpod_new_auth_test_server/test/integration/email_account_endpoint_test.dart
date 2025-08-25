@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
-
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
@@ -407,6 +406,264 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
+
+  withServerpod(
+    'Given a migrated user whose first action is password reset,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'test@serverpod.dev';
+      const legacyPassword = 'LegacyPass123!';
+      const newPassword = 'NewPassword456!';
+
+      late int legacyUserId;
+      late UuidValue newAuthUserId;
+
+      setUp(() async {
+        // Create a legacy user
+        legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
+            .createLegacyUser(
+          sessionBuilder,
+          email: email,
+          password: legacyPassword,
+        );
+
+        // Migrate the user without setting a password (simulating migration without login)
+        await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
+          sessionBuilder,
+          legacyUserId: legacyUserId,
+        );
+
+        // Get the new auth user ID
+        final newAuthUserIdResult = await endpoints
+            .emailAccountBackwardsCompatibilityTest
+            .getNewAuthUserId(
+          sessionBuilder,
+          userId: legacyUserId,
+        );
+        newAuthUserId = newAuthUserIdResult!;
+      });
+
+      tearDown(() async {
+        EmailAccounts.config = EmailAccountConfig();
+
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
+      test(
+        'when starting password reset, then the verification code is sent out.',
+        () async {
+          String? receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          expect(receivedVerificationCode, isNotNull);
+        },
+      );
+
+      test(
+        'when completing password reset, then it succeeds and returns a valid session key.',
+        () async {
+          late UuidValue receivedPasswordResetRequestId;
+          late String receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedPasswordResetRequestId = passwordResetRequestId;
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: receivedPasswordResetRequestId,
+            verificationCode: receivedVerificationCode,
+            newPassword: newPassword,
+          );
+
+          final authInfo = await AuthSessions.authenticationHandler(
+            sessionBuilder.build(),
+            authSuccess.token,
+          );
+
+          expect(authInfo, isNotNull);
+          expect(authInfo!.authUserId, newAuthUserId);
+        },
+      );
+
+      test(
+        'when logging in with the new password after reset, then it succeeds.',
+        () async {
+          // First complete the password reset
+          late UuidValue receivedPasswordResetRequestId;
+          late String receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedPasswordResetRequestId = passwordResetRequestId;
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: receivedPasswordResetRequestId,
+            verificationCode: receivedVerificationCode,
+            newPassword: newPassword,
+          );
+
+          // Reset config for login test
+          EmailAccounts.config = EmailAccountConfig();
+
+          // Now test login with the new password
+          final authSuccess = await endpoints.emailAccount.login(
+            sessionBuilder,
+            email: email,
+            password: newPassword,
+          );
+
+          final authInfo = await AuthSessions.authenticationHandler(
+            sessionBuilder.build(),
+            authSuccess.token,
+          );
+
+          expect(authInfo, isNotNull);
+          expect(authInfo!.authUserId, newAuthUserId);
+        },
+      );
+
+      test(
+        'when completing password reset, then legacy password entry remains as fallback.',
+        () async {
+          // Verify legacy password still exists before reset
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .checkLegacyPassword(
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            ),
+            isTrue,
+          );
+
+          // Complete password reset
+          late UuidValue receivedPasswordResetRequestId;
+          late String receivedVerificationCode;
+
+          EmailAccounts.config = EmailAccountConfig(
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedPasswordResetRequestId = passwordResetRequestId;
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: receivedPasswordResetRequestId,
+            verificationCode: receivedVerificationCode,
+            newPassword: newPassword,
+          );
+
+          // Verify legacy password still exists after reset (remains as fallback)
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .checkLegacyPassword(
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            ),
+            isTrue,
+          );
+
+          // Login with the new password using regular endpoint (should not clear legacy password)
+          EmailAccounts.config = EmailAccountConfig();
+
+          await endpoints.emailAccount.login(
+            sessionBuilder,
+            email: email,
+            password: newPassword,
+          );
+
+          // Verify legacy password still exists after regular login (remains as fallback)
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .checkLegacyPassword(
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            ),
+            isTrue,
+          );
+
+          // Login using the password importing endpoint (should not clear legacy password since account has password)
+          await endpoints.passwordImportingEmailAccount.login(
+            sessionBuilder,
+            email: email,
+            password: newPassword,
+          );
+
+          // Verify legacy password still exists after password importing login (remains as fallback)
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .checkLegacyPassword(
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            ),
+            isTrue,
+          );
+        },
+      );
+    },
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
 }
 
 extension on TestEndpoints {
@@ -524,4 +781,6 @@ Future<void> _cleanUpDatabase(final Session session) async {
     session,
     where: (final _) => Constant.bool(true),
   );
+
+  // LegacyEmailPassword entries are cleaned up automatically via foreign key constraints
 }
