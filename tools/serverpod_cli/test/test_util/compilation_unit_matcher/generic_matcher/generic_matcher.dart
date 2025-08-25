@@ -13,7 +13,7 @@ class _GenericMatcherImpl implements Matcher, GenericMatcher {
 
   @override
   Description describeMismatch(
-    item,
+    dynamic item,
     Description mismatchDescription,
     Map matchState,
     bool verbose,
@@ -39,14 +39,14 @@ class _GenericMatcherImpl implements Matcher, GenericMatcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     var typeParameters = _featureValueOf(item);
     if (typeParameters == null) return false;
 
     return typeParameters.where((e) => e.toSource() == _generic).isNotEmpty;
   }
 
-  Iterable<TypeAnnotation>? _featureValueOf(actual) {
+  Iterable<TypeAnnotation>? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 

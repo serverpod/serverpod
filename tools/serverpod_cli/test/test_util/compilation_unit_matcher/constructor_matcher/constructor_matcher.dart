@@ -70,7 +70,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     var constructor = _featureValueOf(item);
     return _matches(constructor);
   }
@@ -140,7 +140,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     );
   }
 
-  ConstructorDeclaration? _featureValueOf(actual) {
+  ConstructorDeclaration? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 

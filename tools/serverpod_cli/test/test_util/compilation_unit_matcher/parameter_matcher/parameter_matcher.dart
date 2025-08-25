@@ -97,7 +97,7 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     var parameter = _featureValueOf(item);
     if (parameter is! FormalParameter) return false;
 
@@ -108,7 +108,7 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
     return true;
   }
 
-  FormalParameter? _featureValueOf(actual) {
+  FormalParameter? _featureValueOf(dynamic actual) {
     var match = parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
