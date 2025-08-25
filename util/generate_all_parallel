@@ -12,6 +12,12 @@ source util/all_packages
 # Global flag to track if script is interrupted
 INTERRUPTED=false
 
+# Global array to track failed projects
+declare -a FAILED_PROJECTS=()
+
+# Flag for fail-fast mode (default: false)
+FAIL_FAST=false
+
 # Cleanup function to handle interruption
 cleanup() {
     echo -e "\n\n⚠️  Script interrupted! Cleaning up..."
@@ -94,35 +100,58 @@ generateServerUpgradeFiles() {
     
     echo "Starting: $project_name"
     
-    cd "$path" || exit 1
+    # Use a subshell to properly handle errors
+    (
+        cd "$path" || exit 1
+        
+        # The upgrade folder doesn't have all the files needed
+        # run `serverpod generate`. Therefore some project files have
+        # to temporarily be copied over from the base projectname_server template.
+
+        # Save current files
+        find . -type f | sort > before.txt
+
+        # Copy over project files temporarily from base projectname_server template
+        cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
+        cp $BASE/templates/serverpod_templates/projectname_server/pubspec.yaml pubspec.yaml
+        cp -r $BASE/templates/serverpod_templates/projectname_server/.dart_tool .
+
+        dart $CLI generate --no-analytics 2>&1 | while read line; do
+            echo "[$project_name] $line"
+        done
+        
+        # Check dart command exit status
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            exit 1
+        fi
+
+        # Save files after generation
+        find . -type f | sort > after.txt
+
+        # Remove all generated files except the test tools file.
+        # The generated endpoint files are already tracked in projectname_server,
+        # and should not be tracked again in the upgrade template.
+        test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
+        comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
+        rm before.txt
+    )
+    local exit_status=$?
     
-    # The upgrade folder doesn't have all the files needed
-    # run `serverpod generate`. Therefore some project files have
-    # to temporarily be copied over from the base projectname_server template.
-
-    # Save current files
-    find . -type f | sort > before.txt
-
-    # Copy over project files temporarily from base projectname_server template
-    cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
-    cp $BASE/templates/serverpod_templates/projectname_server/pubspec.yaml pubspec.yaml
-    cp -r $BASE/templates/serverpod_templates/projectname_server/.dart_tool .
-
-    dart $CLI generate --no-analytics 2>&1 | while read line; do
-        echo "[$project_name] $line"
-    done
-
-    # Save files after generation
-    find . -type f | sort > after.txt
-
-    # Remove all generated files except the test tools file.
-    # The generated endpoint files are already tracked in projectname_server,
-    # and should not be tracked again in the upgrade template.
-    test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
-    comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
-    rm before.txt
-    
-    echo "✅ Done: $project_name"
+    if [ $exit_status -eq 0 ]; then
+        echo "✅ Done: $project_name"
+        return 0
+    else
+        echo "❌ Failed: $project_name"
+        FAILED_PROJECTS+=("$project_name")
+        
+        # If fail-fast mode is enabled, exit immediately
+        if [ "$FAIL_FAST" = true ]; then
+            echo -e "\n⚠️  Fail-fast mode: Exiting due to failure in $project_name"
+            cleanup
+        fi
+        
+        return $exit_status
+    fi
 }
 
 # Function to run generation and capture output
@@ -132,13 +161,30 @@ generateProject() {
     local extra_args=$3
     
     echo "Starting: $name"
-    cd "$path" && dart "$CLI" generate --no-analytics $extra_args 2>&1 | while read line; do
-        echo "[$name] $line"
-    done
-    if [ $? -eq 0 ]; then
+    
+    # Use a subshell to capture the exit status properly
+    (
+        cd "$path" && dart "$CLI" generate --no-analytics $extra_args 2>&1 | while read line; do
+            echo "[$name] $line"
+        done
+        exit ${PIPESTATUS[0]}  # Get the exit status of the dart command, not the while loop
+    )
+    local exit_status=$?
+    
+    if [ $exit_status -eq 0 ]; then
         echo "✅ Done: $name"
+        return 0
     else
         echo "❌ Failed: $name"
+        FAILED_PROJECTS+=("$name")
+        
+        # If fail-fast mode is enabled, exit immediately
+        if [ "$FAIL_FAST" = true ]; then
+            echo -e "\n⚠️  Fail-fast mode: Exiting due to failure in $name"
+            cleanup
+        fi
+        
+        return $exit_status
     fi
 }
 
@@ -155,24 +201,63 @@ runBatch() {
     
     echo -e "\n📦 Starting batch $batch_num...\n"
     
+    # Array to store PIDs and their corresponding project commands
+    local pids=()
+    local pid_commands=()
+    
     # Start all projects in this batch in background
     for project in "$@"; do
         eval "$project &"
+        local pid=$!
+        pids+=($pid)
+        pid_commands[$pid]="$project"
     done
     
-    # Wait for this batch to complete
-    wait
+    # Wait for all processes in this batch to complete
+    local batch_had_failures=false
+    for pid in "${pids[@]}"; do
+        wait $pid
+        local exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+            batch_had_failures=true
+            # Note: The failure is already tracked in generateProject/generateServerUpgradeFiles
+        fi
+    done
     
     # Check again after waiting
     if [ "$INTERRUPTED" = true ]; then
         echo "Batch $batch_num interrupted"
     else
-        echo -e "\n✅ Batch $batch_num completed!\n"
+        if [ "$batch_had_failures" = true ]; then
+            echo -e "\n⚠️  Batch $batch_num completed with some failures\n"
+        else
+            echo -e "\n✅ Batch $batch_num completed successfully!\n"
+        fi
     fi
 }
 
-# Makes script exit on first non-zero error code
-set -e
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --fail-fast)
+            FAIL_FAST=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [--fail-fast]"
+            echo ""
+            echo "Options:"
+            echo "  --fail-fast    Exit immediately on first failure (default: continue all and report at end)"
+            echo "  --help, -h     Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
 
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
@@ -236,4 +321,17 @@ for i in "${!tasks[@]}"; do
     fi
 done
 
-echo -e "\n✨ All generation tasks completed!\n"
+# Final summary and exit
+if [ ${#FAILED_PROJECTS[@]} -gt 0 ]; then
+    echo -e "\n❌ Generation completed with failures!\n"
+    echo "Failed projects (${#FAILED_PROJECTS[@]}):"
+    for project in "${FAILED_PROJECTS[@]}"; do
+        echo "  • $project"
+    done
+    echo ""
+    echo "Please check the output above for error details."
+    exit 1
+else
+    echo -e "\n✨ All generation tasks completed successfully!\n"
+    exit 0
+fi
