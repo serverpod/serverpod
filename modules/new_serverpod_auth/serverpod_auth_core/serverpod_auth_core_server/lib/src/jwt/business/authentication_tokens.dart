@@ -63,6 +63,7 @@ abstract final class AuthenticationTokens {
     final Session session, {
     required final UuidValue authUserId,
     required final Set<Scope> scopes,
+    required final String method,
 
     /// Extra claims to be added to the JWT.
     ///
@@ -87,6 +88,7 @@ abstract final class AuthenticationTokens {
         extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
         createdAt: clock.now(),
         lastUpdatedAt: clock.now(),
+        method: method,
       ),
       transaction: transaction,
     );

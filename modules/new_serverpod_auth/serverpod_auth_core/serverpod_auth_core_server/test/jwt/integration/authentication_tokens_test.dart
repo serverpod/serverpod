@@ -38,6 +38,7 @@ void main() {
           session,
           authUserId: authUserId,
           scopes: {},
+          method: 'test',
         ),
         isNotNull,
       );
@@ -50,6 +51,7 @@ void main() {
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
+        method: 'test',
       );
 
       final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
@@ -67,6 +69,7 @@ void main() {
         authUserId: authUserId,
         scopes: {},
         extraClaims: {'test': 123},
+        method: 'test',
       );
 
       final decodedToken = JWT.decode(authSuccess.token);
@@ -83,6 +86,7 @@ void main() {
           authUserId: authUserId,
           scopes: {},
           extraClaims: {'exp': 123, 'custom': 'hello'},
+          method: 'test',
         ),
         throwsArgumentError,
       );
@@ -119,6 +123,7 @@ void main() {
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
         extraClaims: {'string': 'foo', 'int': 1},
+        method: 'test',
       );
     });
 
@@ -274,6 +279,7 @@ void main() {
         session,
         authUserId: authUser.id,
         scopes: {},
+        method: 'test',
       );
 
       refreshedTokenPair = await AuthenticationTokens.rotateRefreshToken(
@@ -325,8 +331,12 @@ void main() {
       final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
-      await AuthenticationTokens.createTokens(session,
-          authUserId: authUserId, scopes: {});
+      await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
     });
 
     tearDownAll(() {
@@ -367,6 +377,7 @@ void main() {
         session,
         authUserId: authUserId1,
         scopes: {},
+        method: 'test',
       );
 
       final authUser2 = await AuthUsers.create(session);
@@ -376,6 +387,7 @@ void main() {
         session,
         authUserId: authUserId2,
         scopes: {},
+        method: 'test',
       );
     });
 

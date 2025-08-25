@@ -75,6 +75,7 @@ void main() {
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
         extraClaims: {'string': 'foo', 'int': 1},
+        method: 'test',
       );
     });
 
@@ -161,6 +162,7 @@ void main() {
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
         extraClaims: {'string': 'foo', 'int': 1},
+        method: 'test',
       );
     });
 
