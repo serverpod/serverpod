@@ -30,4 +30,4 @@ echo "### Running update pubspecs"
 util/update_pubspecs
 
 echo "### Running pub get all"
-util/pub_get_all
+melos bs
