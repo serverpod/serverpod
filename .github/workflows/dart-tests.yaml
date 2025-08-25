@@ -78,6 +78,7 @@ jobs:
     name: dart analyze downgrade
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         flutter-version: ['3.24.0', '3.32.1']
         os: [windows-latest, ubuntu-latest]
