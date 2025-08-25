@@ -9,6 +9,38 @@ fi
 # Source the package arrays from all_packages
 source util/all_packages
 
+# Global flag to track if script is interrupted
+INTERRUPTED=false
+
+# Cleanup function to handle interruption
+cleanup() {
+    echo -e "\n\n⚠️  Script interrupted! Cleaning up..."
+    INTERRUPTED=true
+    
+    # Get all child process IDs
+    local pids=$(jobs -p)
+    
+    if [ -n "$pids" ]; then
+        # Kill all child processes (macOS xargs doesn't have -r flag)
+        echo "$pids" | xargs kill 2>/dev/null
+        
+        # Wait a moment for processes to terminate
+        sleep 1
+        
+        # Force kill any remaining processes
+        pids=$(jobs -p)
+        if [ -n "$pids" ]; then
+            echo "$pids" | xargs kill -9 2>/dev/null
+        fi
+    fi
+    
+    echo "✅ Cleanup complete. Exiting."
+    exit 130  # Standard exit code for SIGINT
+}
+
+# Set up signal trap for SIGINT (Ctrl+C) and SIGTERM
+trap cleanup SIGINT SIGTERM
+
 # Function to get CPU core count (cross-platform)
 getCoreCount() {
     local cores
@@ -114,6 +146,13 @@ generateProject() {
 runBatch() {
     local batch_num=$1
     shift
+    
+    # Check if script was interrupted
+    if [ "$INTERRUPTED" = true ]; then
+        echo "Skipping batch $batch_num due to interruption..."
+        return
+    fi
+    
     echo -e "\n📦 Starting batch $batch_num...\n"
     
     # Start all projects in this batch in background
@@ -123,7 +162,13 @@ runBatch() {
     
     # Wait for this batch to complete
     wait
-    echo -e "\n✅ Batch $batch_num completed!\n"
+    
+    # Check again after waiting
+    if [ "$INTERRUPTED" = true ]; then
+        echo "Batch $batch_num interrupted"
+    else
+        echo -e "\n✅ Batch $batch_num completed!\n"
+    fi
 }
 
 # Makes script exit on first non-zero error code
