@@ -18,17 +18,29 @@ declare -a FAILED_PROJECTS=()
 # Flag for fail-fast mode (default: false)
 FAIL_FAST=false
 
+# Temporary file to track failures across parallel processes
+# Use mktemp with fallback for Windows Git Bash
+if command -v mktemp >/dev/null 2>&1; then
+    FAILURE_FILE=$(mktemp -t serverpod_generate_failures.XXXXXX 2>/dev/null || mktemp /tmp/serverpod_generate_failures.XXXXXX 2>/dev/null || mktemp)
+else
+    # Fallback for systems without mktemp
+    FAILURE_FILE="/tmp/serverpod_generate_failures.$$"
+fi
+> "$FAILURE_FILE"
+
 # Cleanup function to handle interruption
 cleanup() {
-    echo -e "\n\n⚠️  Script interrupted! Cleaning up..."
+    printf "\n\n⚠️  Script interrupted! Cleaning up...\n"
     INTERRUPTED=true
     
     # Get all child process IDs
     local pids=$(jobs -p)
     
     if [ -n "$pids" ]; then
-        # Kill all child processes (macOS xargs doesn't have -r flag)
-        echo "$pids" | xargs kill 2>/dev/null
+        # Kill all child processes
+        for pid in $pids; do
+            kill "$pid" 2>/dev/null || true
+        done
         
         # Wait a moment for processes to terminate
         sleep 1
@@ -36,16 +48,22 @@ cleanup() {
         # Force kill any remaining processes
         pids=$(jobs -p)
         if [ -n "$pids" ]; then
-            echo "$pids" | xargs kill -9 2>/dev/null
+            for pid in $pids; do
+                kill -9 "$pid" 2>/dev/null || true
+            done
         fi
     fi
     
+    rm -f "$FAILURE_FILE"
+    
     echo "✅ Cleanup complete. Exiting."
-    exit 130  # Standard exit code for SIGINT
+    exit 130
 }
 
 # Set up signal trap for SIGINT (Ctrl+C) and SIGTERM
 trap cleanup SIGINT SIGTERM
+
+trap 'rm -f "$FAILURE_FILE"' EXIT
 
 # Function to get CPU core count (cross-platform)
 getCoreCount() {
@@ -100,7 +118,6 @@ generateServerUpgradeFiles() {
     
     echo "Starting: $project_name"
     
-    # Use a subshell to properly handle errors
     (
         cd "$path" || exit 1
         
@@ -120,7 +137,6 @@ generateServerUpgradeFiles() {
             echo "[$project_name] $line"
         done
         
-        # Check dart command exit status
         if [ ${PIPESTATUS[0]} -ne 0 ]; then
             exit 1
         fi
@@ -142,14 +158,7 @@ generateServerUpgradeFiles() {
         return 0
     else
         echo "❌ Failed: $project_name"
-        FAILED_PROJECTS+=("$project_name")
-        
-        # If fail-fast mode is enabled, exit immediately
-        if [ "$FAIL_FAST" = true ]; then
-            echo -e "\n⚠️  Fail-fast mode: Exiting due to failure in $project_name"
-            cleanup
-        fi
-        
+        echo "$project_name" >> "$FAILURE_FILE"
         return $exit_status
     fi
 }
@@ -162,12 +171,11 @@ generateProject() {
     
     echo "Starting: $name"
     
-    # Use a subshell to capture the exit status properly
     (
         cd "$path" && dart "$CLI" generate --no-analytics $extra_args 2>&1 | while read line; do
             echo "[$name] $line"
         done
-        exit ${PIPESTATUS[0]}  # Get the exit status of the dart command, not the while loop
+        exit ${PIPESTATUS[0]}
     )
     local exit_status=$?
     
@@ -176,14 +184,7 @@ generateProject() {
         return 0
     else
         echo "❌ Failed: $name"
-        FAILED_PROJECTS+=("$name")
-        
-        # If fail-fast mode is enabled, exit immediately
-        if [ "$FAIL_FAST" = true ]; then
-            echo -e "\n⚠️  Fail-fast mode: Exiting due to failure in $name"
-            cleanup
-        fi
-        
+        echo "$name" >> "$FAILURE_FILE"
         return $exit_status
     fi
 }
@@ -199,7 +200,7 @@ runBatch() {
         return
     fi
     
-    echo -e "\n📦 Starting batch $batch_num...\n"
+    printf "\n📦 Starting batch %s...\n\n" "$batch_num"
     
     # Array to store PIDs and their corresponding project commands
     local pids=()
@@ -220,7 +221,6 @@ runBatch() {
         local exit_code=$?
         if [ $exit_code -ne 0 ]; then
             batch_had_failures=true
-            # Note: The failure is already tracked in generateProject/generateServerUpgradeFiles
         fi
     done
     
@@ -229,9 +229,11 @@ runBatch() {
         echo "Batch $batch_num interrupted"
     else
         if [ "$batch_had_failures" = true ]; then
-            echo -e "\n⚠️  Batch $batch_num completed with some failures\n"
+            printf "\n⚠️  Batch %s completed with some failures\n\n" "$batch_num"
+            return 1
         else
-            echo -e "\n✅ Batch $batch_num completed successfully!\n"
+            printf "\n✅ Batch %s completed successfully!\n\n" "$batch_num"
+            return 0
         fi
     fi
 }
@@ -272,7 +274,7 @@ echo "pub get cli"
 cd $CLI_DIR
 dart pub get
 
-echo -e "\n🚀 Starting batched parallel generation (batch size: $BATCH_SIZE)...\n"
+printf "\n🚀 Starting batched parallel generation (batch size: %s)...\n\n" "$BATCH_SIZE"
 
 # Build generation tasks dynamically from SERVERPOD_SERVER_PATHS
 declare -a tasks=()
@@ -316,22 +318,40 @@ for i in "${!tasks[@]}"; do
     # If batch is full or we're at the last task, run the batch
     if [ ${#batch[@]} -eq $BATCH_SIZE ] || [ $i -eq $((${#tasks[@]} - 1)) ]; then
         runBatch $batch_num "${batch[@]}"
+        batch_exit_code=$?
+        
+        # In fail-fast mode, check if batch failed and stop if it did
+        if [ "$FAIL_FAST" = true ] && [ $batch_exit_code -ne 0 ]; then
+            printf "\n⚠️  Fail-fast mode: Stopping after batch %s due to failures\n" "$batch_num"
+            break
+        fi
+        
         batch=()
         ((batch_num++))
     fi
 done
 
 # Final summary and exit
-if [ ${#FAILED_PROJECTS[@]} -gt 0 ]; then
-    echo -e "\n❌ Generation completed with failures!\n"
+# Read failures from temp file
+if [ -f "$FAILURE_FILE" ] && [ -s "$FAILURE_FILE" ]; then
+    FAILED_PROJECTS=()
+    while IFS= read -r line; do
+        FAILED_PROJECTS+=("$line")
+    done < <(sort -u "$FAILURE_FILE")
+    
+    printf "\n❌ Generation completed with failures!\n\n"
     echo "Failed projects (${#FAILED_PROJECTS[@]}):"
     for project in "${FAILED_PROJECTS[@]}"; do
         echo "  • $project"
     done
     echo ""
     echo "Please check the output above for error details."
+    
+    rm -f "$FAILURE_FILE"
     exit 1
 else
-    echo -e "\n✨ All generation tasks completed successfully!\n"
+    printf "\n✨ All generation tasks completed successfully!\n\n"
+    
+    rm -f "$FAILURE_FILE"
     exit 0
 fi
