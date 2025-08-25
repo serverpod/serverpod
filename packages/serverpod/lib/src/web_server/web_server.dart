@@ -153,23 +153,7 @@ class WebServer {
   ) async {
     // TODO: route.setHeaders(request.response.headers);
     try {
-      final result = await route.handleCall(session, context);
-
-      if (route is WidgetRoute && result is ResponseContext) {
-        final transformedResponse = result.response.copyWith(
-          headers: result.response.headers.transform(
-            (mh) => mh.cacheControl = CacheControlHeader(
-              maxAge: 0,
-              sMaxAge: 0,
-              noCache: true,
-              noStore: true,
-            ),
-          ),
-        );
-        return result.withResponse(transformedResponse);
-      }
-
-      return result;
+      return await route.handleCall(session, context);
     } catch (e, stackTrace) {
       final request = context.request;
       await _reportException(
@@ -313,8 +297,17 @@ abstract class WidgetRoute extends Route {
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
+
+    final headers = Headers.build(
+      (mh) => mh.cacheControl = CacheControlHeader(
+        noCache: true,
+        privateCache: true,
+      ),
+    );
+
     return context.withResponse(Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
+      headers: headers,
     ));
   }
 }
