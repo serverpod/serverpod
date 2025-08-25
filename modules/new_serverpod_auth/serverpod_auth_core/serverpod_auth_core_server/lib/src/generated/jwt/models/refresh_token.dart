@@ -24,6 +24,7 @@ abstract class RefreshToken
     this.authUser,
     required this.scopeNames,
     this.extraClaims,
+    required this.method,
     required this.fixedSecret,
     required this.rotatingSecretHash,
     required this.rotatingSecretSalt,
@@ -38,6 +39,7 @@ abstract class RefreshToken
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
     String? extraClaims,
+    required String method,
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
@@ -60,6 +62,7 @@ abstract class RefreshToken
           (jsonSerialization['scopeNames'] as List),
           itemFromJson: (e) => e as String)!,
       extraClaims: jsonSerialization['extraClaims'] as String?,
+      method: jsonSerialization['method'] as String,
       fixedSecret:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['fixedSecret']),
       rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
@@ -100,6 +103,11 @@ abstract class RefreshToken
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
   String? extraClaims;
+
+  /// The method through which this token was created.
+  ///
+  /// This can be either an email or social login, a personal access token, service account etc.
+  String method;
 
   /// The fixed part of the secret.
   ///
@@ -143,6 +151,7 @@ abstract class RefreshToken
     _i2.AuthUser? authUser,
     Set<String>? scopeNames,
     String? extraClaims,
+    String? method,
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
@@ -157,6 +166,7 @@ abstract class RefreshToken
       if (authUser != null) 'authUser': authUser?.toJson(),
       'scopeNames': scopeNames.toJson(),
       if (extraClaims != null) 'extraClaims': extraClaims,
+      'method': method,
       'fixedSecret': fixedSecret.toJson(),
       'rotatingSecretHash': rotatingSecretHash.toJson(),
       'rotatingSecretSalt': rotatingSecretSalt.toJson(),
@@ -209,6 +219,7 @@ class _RefreshTokenImpl extends RefreshToken {
     _i2.AuthUser? authUser,
     required Set<String> scopeNames,
     String? extraClaims,
+    required String method,
     required _i3.ByteData fixedSecret,
     required _i3.ByteData rotatingSecretHash,
     required _i3.ByteData rotatingSecretSalt,
@@ -220,6 +231,7 @@ class _RefreshTokenImpl extends RefreshToken {
           authUser: authUser,
           scopeNames: scopeNames,
           extraClaims: extraClaims,
+          method: method,
           fixedSecret: fixedSecret,
           rotatingSecretHash: rotatingSecretHash,
           rotatingSecretSalt: rotatingSecretSalt,
@@ -237,6 +249,7 @@ class _RefreshTokenImpl extends RefreshToken {
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
     Object? extraClaims = _Undefined,
+    String? method,
     _i3.ByteData? fixedSecret,
     _i3.ByteData? rotatingSecretHash,
     _i3.ByteData? rotatingSecretSalt,
@@ -250,6 +263,7 @@ class _RefreshTokenImpl extends RefreshToken {
           authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
+      method: method ?? this.method,
       fixedSecret: fixedSecret ?? this.fixedSecret.clone(),
       rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash.clone(),
       rotatingSecretSalt: rotatingSecretSalt ?? this.rotatingSecretSalt.clone(),
@@ -272,6 +286,10 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
     );
     extraClaims = _i1.ColumnString(
       'extraClaims',
+      this,
+    );
+    method = _i1.ColumnString(
+      'method',
       this,
     );
     fixedSecret = _i1.ColumnByteData(
@@ -318,6 +336,11 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
   late final _i1.ColumnString extraClaims;
+
+  /// The method through which this token was created.
+  ///
+  /// This can be either an email or social login, a personal access token, service account etc.
+  late final _i1.ColumnString method;
 
   /// The fixed part of the secret.
   ///
@@ -368,6 +391,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
         authUserId,
         scopeNames,
         extraClaims,
+        method,
         fixedSecret,
         rotatingSecretHash,
         rotatingSecretSalt,

@@ -32,6 +32,7 @@ void main() {
         session,
         authUserId: authUserId,
         scopes: {},
+        method: 'test',
       );
     });
 
@@ -117,6 +118,7 @@ void main() {
             session,
             authUserId: authUserId,
             scopes: {},
+            method: 'test',
           );
 
           refreshTokenIdsInOrderOfCreation.add(
@@ -248,6 +250,7 @@ void main() {
           session,
           authUserId: authUserId,
           scopes: {},
+          method: 'test',
         );
       });
     });
