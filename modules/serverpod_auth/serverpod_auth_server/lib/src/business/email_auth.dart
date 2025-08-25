@@ -160,6 +160,34 @@ class Emails {
     );
   }
 
+  /// Validates that a password respects the configured length constraints.
+  ///
+  /// This checks the provided [password] against [AuthConfig.current.minPasswordLength]
+  /// and [AuthConfig.current.maxPasswordLength]. If the password length is
+  /// outside the allowed range, a debug message is logged to the provided
+  /// [session] and `false` is returned. Otherwise, returns `true`.
+  ///
+  /// Parameters:
+  /// - password: The plain text password to validate.
+  /// - session: The current [Session], used for logging validation details.
+  ///
+  /// Returns `true` if the password length is within bounds, otherwise `false`.
+  static bool _isValidPasswordLength(
+      {required String password, Session? session}) {
+    if (password.length < AuthConfig.current.minPasswordLength ||
+        password.length > AuthConfig.current.maxPasswordLength) {
+      session?.log(
+        'Invalid password!\n'
+        'Password length must be >= ${AuthConfig.current.minPasswordLength}'
+        ' and '
+        '<= ${AuthConfig.current.maxPasswordLength}',
+        level: LogLevel.debug,
+      );
+      return false;
+    }
+    return true;
+  }
+
   /// Updates the password of a user.
   static Future<bool> changePassword(
     Session session,
@@ -176,6 +204,10 @@ class Emails {
         "userId: '$userId' is invalid!",
         level: LogLevel.debug,
       );
+      return false;
+    }
+
+    if (!_isValidPasswordLength(password: newPassword, session: session)) {
       return false;
     }
 
@@ -255,15 +287,7 @@ class Emails {
         return false;
       }
 
-      if (password.length < AuthConfig.current.minPasswordLength ||
-          password.length > AuthConfig.current.maxPasswordLength) {
-        session.log(
-          'Invalid password!\n'
-          'Password length must be >= ${AuthConfig.current.minPasswordLength}'
-          ' and '
-          '<= ${AuthConfig.current.maxPasswordLength}',
-          level: LogLevel.debug,
-        );
+      if (!_isValidPasswordLength(password: password, session: session)) {
         return false;
       }
 
@@ -520,6 +544,10 @@ class Emails {
         'Verification code is invalid!',
         level: LogLevel.debug,
       );
+      return false;
+    }
+
+    if (!_isValidPasswordLength(password: password, session: session)) {
       return false;
     }
 
