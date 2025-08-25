@@ -13,7 +13,7 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
 
   @override
   Description describeMismatch(
-    item,
+    dynamic item,
     Description mismatchDescription,
     Map matchState,
     bool verbose,
@@ -39,12 +39,12 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     var extendsClause = _featureValueOf(item);
     return _matches(extendsClause);
   }
 
-  ExtendsClause? _featureValueOf(actual) {
+  ExtendsClause? _featureValueOf(dynamic actual) {
     var match = _parent.matchedFeatureValueOf(actual);
     if (match == null) return null;
 
