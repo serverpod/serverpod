@@ -3,8 +3,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tools/serverpod_test_tools.dart';
 import '../../test_tags.dart';
+import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils.dart';
 
 void main() {
@@ -33,7 +33,7 @@ void main() {
             password: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.policyViolation,
           )),
@@ -170,7 +170,7 @@ void main() {
             verificationCode: 'some invalid code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.unauthorized,
           )),
@@ -191,7 +191,7 @@ void main() {
             ),
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.expired,
           )),
@@ -212,7 +212,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.unauthorized,
           )),
@@ -225,7 +225,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.tooManyAttempts,
           )),
@@ -238,7 +238,7 @@ void main() {
             verificationCode: 'wrong code',
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.notFound,
           )),
@@ -257,7 +257,7 @@ void main() {
             accountRequestId: pendingAccountRequestId,
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.notVerified,
           )),
@@ -442,7 +442,7 @@ void main() {
             verificationCode: accountCreationParameters.verificationCode,
           ),
           throwsA(isA<EmailAccountRequestException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountRequestExceptionReason.notFound,
           )),

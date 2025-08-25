@@ -2,8 +2,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tools/serverpod_test_tools.dart';
 import '../../test_tags.dart';
+import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils.dart';
 
 void main() {
@@ -112,7 +112,7 @@ void main() {
             email: email.toUpperCase(),
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestTooManyAttempts,
           )),
@@ -184,7 +184,7 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestUnauthorized,
           )),
@@ -198,7 +198,7 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )),
@@ -212,7 +212,7 @@ void main() {
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
-            (exception) => exception.reason,
+            (final exception) => exception.reason,
             'Reason',
             EmailAccountPasswordResetExceptionReason.requestNotFound,
           )),
