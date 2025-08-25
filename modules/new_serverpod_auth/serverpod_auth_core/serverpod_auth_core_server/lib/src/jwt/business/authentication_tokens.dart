@@ -8,6 +8,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import 'authentication_info_from_jwt.dart';
 import 'authentication_token_config.dart';
@@ -62,8 +63,12 @@ abstract final class AuthenticationTokens {
   static Future<AuthSuccess> createTokens(
     final Session session, {
     required final UuidValue authUserId,
-    required final Set<Scope> scopes,
     required final String method,
+
+    /// The scopes to apply to the token.
+    ///
+    /// By default forwards all of the [AuthUser]'s scopes to the session.
+    Set<Scope>? scopes,
 
     /// Extra claims to be added to the JWT.
     ///
@@ -72,8 +77,29 @@ abstract final class AuthenticationTokens {
     ///
     /// These claims will be embedded in every access token (also across rotations) and then sent along with any request. This should be taken into account with regard to the total size of the added claims.
     final Map<String, dynamic>? extraClaims,
+
+    /// Whether to skip the check if the user is blocked (in which case a
+    /// [AuthUserBlockedException] would be thrown).
+    ///
+    /// Should only to be used if the caller is sure that the user is not
+    /// blocked.
+    final bool skipUserBlockedChecked = false,
     final Transaction? transaction,
   }) async {
+    if (!skipUserBlockedChecked || scopes == null) {
+      final authUser = await AuthUsers.get(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
+
+      if (authUser.blocked && !skipUserBlockedChecked) {
+        throw AuthUserBlockedException();
+      }
+
+      scopes ??= authUser.scopes;
+    }
+
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await _refreshTokenSecretHash.createHash(secret: secret);
 
