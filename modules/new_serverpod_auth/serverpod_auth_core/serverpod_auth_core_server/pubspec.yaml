@@ -10,16 +10,16 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  uuid: ^4.1.0
+  clock: ^1.1.1
+  crypto: ^3.0.2
+  dart_jsonwebtoken: ^3.1.0
   http: ">=1.1.0 <2.0.0"
   image: ^4.0.15
-  clock: ^1.1.1
-  dart_jsonwebtoken: ^3.1.0
-  crypto: ^3.0.2
-  pointycastle: '>=3.7.4 <5.0.0'
   meta: ^1.11.0
+  pointycastle: '>=3.7.4 <5.0.0'
   serverpod: 3.0.0-alpha.1
   serverpod_shared: 3.0.0-alpha.1
+  uuid: ^4.1.0
 
 dev_dependencies:
   serverpod_lints: 3.0.0-alpha.1

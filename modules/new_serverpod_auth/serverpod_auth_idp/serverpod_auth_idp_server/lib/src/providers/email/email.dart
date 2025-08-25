@@ -1,3 +1,5 @@
+// ignore_for_file: directives_ordering
+
 export 'package:serverpod_auth_core_server/session.dart' show AuthSuccess;
 
 export 'business/auth_email.dart' show AuthEmail;
