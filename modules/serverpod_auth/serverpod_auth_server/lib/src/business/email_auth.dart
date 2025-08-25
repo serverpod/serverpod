@@ -172,7 +172,7 @@ class Emails {
   /// - session: The current [Session], used for logging validation details.
   ///
   /// Returns `true` if the password length is within bounds, otherwise `false`.
-  static bool isValidPasswordLength(
+  static bool _isValidPasswordLength(
       {required String password, Session? session}) {
     if (password.length < AuthConfig.current.minPasswordLength ||
         password.length > AuthConfig.current.maxPasswordLength) {
@@ -207,7 +207,7 @@ class Emails {
       return false;
     }
 
-    if (!isValidPasswordLength(password: newPassword, session: session)) {
+    if (!_isValidPasswordLength(password: newPassword, session: session)) {
       return false;
     }
 
@@ -287,7 +287,7 @@ class Emails {
         return false;
       }
 
-      if (!isValidPasswordLength(password: password, session: session)) {
+      if (!_isValidPasswordLength(password: password, session: session)) {
         return false;
       }
 
@@ -547,7 +547,7 @@ class Emails {
       return false;
     }
 
-    if (!isValidPasswordLength(password: password, session: session)) {
+    if (!_isValidPasswordLength(password: password, session: session)) {
       return false;
     }
 

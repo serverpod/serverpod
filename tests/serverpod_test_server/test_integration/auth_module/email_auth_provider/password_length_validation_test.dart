@@ -4,73 +4,12 @@ import 'package:test/test.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() async {
-  group('Given the password of a particular length', () {
-    test(
-        'then isValidPasswordLength returns true with password length in acceptable range',
-        () {
-      final tester = Emails.isValidPasswordLength(
-        password: '12345678',
-      );
-      expect(tester, isTrue);
-    });
-
-    test(
-        'then isValidPasswordLength returns false with password length not in acceptable range',
-        () {
-      final tester = Emails.isValidPasswordLength(
-        password: '123',
-      );
-      expect(tester, isFalse);
-    });
-  });
-
-  withServerpod('Given a created user when changing password',
-      (sessionBuilder, _) {
+  withServerpod('Given an existing user ', (sessionBuilder, _) {
     final session = sessionBuilder.build();
 
     const userName = 'user-change';
     const email = 'user.change@serverpod.dev';
     const oldPassword = 'oldPassword1';
-
-    setUp(() async {
-      await Emails.createUser(session, userName, email, oldPassword);
-    });
-
-    test('then new password shorter than minimum is rejected', () async {
-      final user = await Users.findUserByEmail(session, email);
-      expect(user, isNotNull, reason: 'User should exist');
-
-      final success = await Emails.changePassword(
-        session,
-        user!.id!,
-        oldPassword,
-        '123', // too short
-      );
-
-      expect(success, isFalse);
-    });
-
-    test('then new password with acceptable length is accepted', () async {
-      final user = await Users.findUserByEmail(session, email);
-      expect(user, isNotNull, reason: 'User should exist');
-
-      final success = await Emails.changePassword(
-        session,
-        user!.id!,
-        oldPassword,
-        '12345678', // min length
-      );
-
-      expect(success, isTrue);
-    });
-  });
-
-  withServerpod('Given a created user when resetting password',
-      (sessionBuilder, _) {
-    final session = sessionBuilder.build();
-
-    const userName = 'user-reset';
-    const email = 'user.reset@serverpod.dev';
 
     // Capture latest reset code here
     String? latestResetCode;
@@ -91,11 +30,45 @@ void main() async {
     });
 
     setUp(() async {
-      await Emails.createUser(session, userName, email, 'initialPass1');
+      await Emails.createUser(session, userName, email, oldPassword);
       latestResetCode = null;
     });
 
-    test('then reset with too short password is rejected', () async {
+    test(
+        'when changing to a password that is shorter than minimum required password length then password change is rejected',
+        () async {
+      final user = await Users.findUserByEmail(session, email);
+      expect(user, isNotNull, reason: 'User should exist');
+
+      final success = await Emails.changePassword(
+        session,
+        user!.id!,
+        oldPassword,
+        '123', // too short
+      );
+
+      expect(success, isFalse);
+    });
+
+    test(
+        'when changing to a password that is in range within required password length then password change is accepted',
+        () async {
+      final user = await Users.findUserByEmail(session, email);
+      expect(user, isNotNull, reason: 'User should exist');
+
+      final success = await Emails.changePassword(
+        session,
+        user!.id!,
+        oldPassword,
+        '12345678', // min length
+      );
+
+      expect(success, isTrue);
+    });
+
+    test(
+        'when resetting a password that is shorter than minimum required password length then password change is rejected',
+        () async {
       final initiated = await Emails.initiatePasswordReset(session, email);
       expect(initiated, isTrue, reason: 'Password reset should be initiated');
       expect(latestResetCode, isNotNull,
@@ -110,7 +83,9 @@ void main() async {
       expect(success, isFalse);
     });
 
-    test('then reset with acceptable password length is accepted', () async {
+    test(
+        'when resetting a password that is in range within required password length then password change is accepted',
+        () async {
       // Initiate a fresh reset to get a valid code
       final initiated = await Emails.initiatePasswordReset(session, email);
       expect(initiated, isTrue, reason: 'Password reset should be initiated');
@@ -124,6 +99,49 @@ void main() async {
       );
 
       expect(success, isTrue);
+    });
+  });
+
+  withServerpod('Given create account request ', (sessionBuilder, _) async {
+    var session = sessionBuilder.build();
+    var userName = 'test';
+    var email = 'test@serverpod.dev';
+
+    test(
+        'when creating an account with a password that is shorter than minimum required password length then password change is rejected',
+        () async {
+      final response = await Emails.createAccountRequest(
+        session,
+        userName,
+        email,
+        '123',
+      );
+
+      expect(response, isFalse);
+    });
+
+    test(
+        'when creating an account with a password that is in range within required password length then password change is accepted',
+        () async {
+      final response = await Emails.createAccountRequest(
+        session,
+        userName,
+        email,
+        'password',
+      );
+
+      var createAccountRequest =
+          await EmailCreateAccountRequest.db.findFirstRow(
+        session,
+        where: (t) => t.userName.equals(userName) & t.email.equals(email),
+      );
+
+      expect(response, isTrue);
+      expect(
+        createAccountRequest,
+        isNotNull,
+        reason: 'Failed to find create account request',
+      );
     });
   });
 }
