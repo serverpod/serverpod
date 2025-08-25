@@ -103,6 +103,8 @@ abstract final class AuthenticationTokens {
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await _refreshTokenSecretHash.createHash(secret: secret);
 
+    final currentTime = clock.now();
+
     final refreshToken = await RefreshToken.db.insertRow(
       session,
       RefreshToken(
@@ -112,8 +114,8 @@ abstract final class AuthenticationTokens {
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
         extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
-        createdAt: clock.now(),
-        lastUpdatedAt: clock.now(),
+        createdAt: currentTime,
+        lastUpdatedAt: currentTime,
         method: method,
       ),
       transaction: transaction,
