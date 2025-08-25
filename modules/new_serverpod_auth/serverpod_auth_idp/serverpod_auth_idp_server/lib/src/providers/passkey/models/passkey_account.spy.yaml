@@ -1,0 +1,41 @@
+### A fully configured passkey to be used for logins.
+class: PasskeyAccount
+serverOnly: true
+table: serverpod_auth_idp_passkey_account
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, defaultModel=now
+
+  ### The ID of the [publicKey].
+  keyId: ByteData
+
+  ### Base64 variant of the key ID (to enable DB lookups).
+  keyIdBase64: String
+
+  ### The authenticator's JSON client data.
+  clientDataJSON: ByteData
+
+  ### The public key provided by the client.
+  publicKey: ByteData
+
+  ### The algorithm of the public key.
+  publicKeyAlgorithm: int
+
+  ### The authenticator's attestation data.
+  attestationObject: ByteData
+
+  ### The authenticator's client data.
+  authenticatorData: ByteData
+
+  ### The challenge used during registration.
+  originalChallenge: ByteData
+
+indexes:
+  serverpod_auth_idp_passkey_account_key_id_base64:
+    fields: keyIdBase64
+    unique: true
