@@ -308,11 +308,12 @@ class DatabaseConnection {
 
     String updateQuery;
 
-    if (limit != null ||
+    var requiresFilteredSubquery = limit != null ||
         offset != null ||
         orderBy != null ||
-        orderByList != null) {
-      // Build subquery to select IDs with ordering/limiting
+        orderByList != null;
+
+    if (requiresFilteredSubquery) {
       var subquery = SelectQueryBuilder(table: table)
           .withSelectFields([table.id])
           .withWhere(where)
@@ -321,23 +322,18 @@ class DatabaseConnection {
           .withOffset(offset)
           .build();
 
-      // The SelectQueryBuilder returns columns with aliases like "table.id"
-      // so we need to reference them correctly in the subquery
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      // Build UPDATE with CTE
       updateQuery = 'WITH rows_to_update AS ($subquery) '
           'UPDATE "${table.tableName}" SET $setClause '
           'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
           'RETURNING *';
     } else {
-      // Simple update without ordering/limiting
       updateQuery = 'UPDATE "${table.tableName}" SET $setClause'
           ' WHERE $where'
           ' RETURNING *';
     }
 
-    // Execute the update
     var result = await _mappedResultsQuery(
       session,
       updateQuery,
