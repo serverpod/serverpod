@@ -25,7 +25,6 @@ When working with pull requests in this repository, **ALWAYS**:
 **FULLY VALIDATED** (confirmed working in test environment):
 - ✅ `docker compose config` - All Docker configurations are valid
 - ✅ `docker compose up -d postgres redis` - Services start and are accessible
-- ✅ `util/pub_get_all` - Script exists and runs (requires Dart/Flutter)
 - ✅ `tests/docker/tests_integration/wait-for-it.sh` - Service readiness checker works
 - ✅ Repository structure and file locations are accurate
 - ✅ Script permissions and executability confirmed
@@ -94,9 +93,11 @@ git --version      # Should work
 
 ### Initial Setup (Run from repository root)
 ```bash
-# Install all dependencies - TAKES 10-15 MINUTES. NEVER CANCEL.
-util/pub_get_all
 # Alternative: melos bootstrap
+dart pub global activate melos
+
+# Install all dependencies - NEVER CANCEL.
+melos bootstrap
 
 # Activate CLI from source (required for development)
 cd tools/serverpod_cli
@@ -108,7 +109,7 @@ cd ../..
 export SERVERPOD_HOME=$(pwd)
 ```
 
-**TIMING**: `util/pub_get_all` takes 10-15 minutes. Set timeout to 30+ minutes.
+**TIMING**: `melos bootstrap` takes 10-15 minutes. Set timeout to 30+ minutes.
 
 ### Build Commands
 ```bash
@@ -118,10 +119,7 @@ util/generate_all
 # Update pubspec files from templates (after template changes)
 util/update_pubspecs
 
-# Full repository dependency installation - TAKES 10-15 MINUTES. NEVER CANCEL.
-util/pub_get_all
-
-# Alternative: Melos-based setup
+# Full repository dependency installation - NEVER CANCEL.
 melos bootstrap
 ```
 
@@ -134,7 +132,7 @@ melos bootstrap
 - **Service readiness**: Additional 1-2 seconds for network accessibility
 
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
-- **Repository setup**: `util/pub_get_all` - 10-15 minutes - Set timeout to 30+ minutes
+- **Repository setup**: `melos bootstrap` - 10-15 minutes - Set timeout to 30+ minutes
 - **Unit tests**: `util/run_tests_unit` - 5-15 minutes - Set timeout to 30+ minutes  
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
@@ -304,16 +302,18 @@ git clone https://github.com/serverpod/serverpod.git
 cd serverpod
 export SERVERPOD_HOME=$(pwd)
 
-# 2. Install dependencies (10-15 minutes - NEVER CANCEL)
-util/pub_get_all
+# 2. Install melos
+dart pub global activate melos
 
-# 3. Activate CLI
+# 3. Install dependencies (10-15 minutes - NEVER CANCEL)
+melos bootstrap
+
+# 4. Activate CLI
 cd tools/serverpod_cli
-dart pub get  
 dart pub global activate --source path .
 cd ../..
 
-# 4. Verify setup
+# 5. Verify setup
 serverpod --version
 ```
 
@@ -494,7 +494,7 @@ Before submitting a PR, ensure:
 
 - **"Dart not found"**: Ensure Flutter is installed and in PATH
 - **"Docker connection failed"**: Ensure Docker daemon is running
-- **"pub get failed"**: Run `util/pub_get_all --offline` for cached deps
+- **"pub get failed"**: Run `melos bootstrap --offline` for cached deps
 - **"Tests hanging"**: Wait full timeout period - tests can take 45+ minutes
 - **"CLI not updated"**: Rerun `dart pub global activate --source path tools/serverpod_cli`
 - **"Template not found"**: Ensure `SERVERPOD_HOME` environment variable is set
@@ -533,5 +533,3 @@ test(
 - Follow Dart formatting conventions
 - Remove unnecessary comments from production code
 - Use descriptive variable and function names
-
-
