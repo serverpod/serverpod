@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../generated/protocol.dart';
@@ -115,6 +116,13 @@ abstract final class EmailAccounts {
       transaction,
       (final transaction) async {
         email = email.trim().toLowerCase();
+
+        if (!EmailValidator.validate(email)) {
+          return (
+            result: EmailAccountRequestResult.emailInvalid,
+            accountRequestId: null,
+          );
+        }
 
         final existingAccountCount = await EmailAccount.db.count(
           session,
@@ -670,6 +678,11 @@ enum EmailAccountRequestResult {
   ///
   /// No account request has been created.
   emailAlreadyRegistered,
+
+  /// The given email does not seem valid.
+  ///
+  /// No account request has been created.
+  emailInvalid,
 }
 
 /// Describes the result of a password reset operation.
