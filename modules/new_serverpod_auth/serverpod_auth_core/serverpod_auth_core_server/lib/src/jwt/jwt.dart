@@ -1,5 +1,3 @@
-// ignore_for_file: directives_ordering
-
 export '../auth_user/auth_user.dart';
 export '../generated/protocol.dart'
     show
