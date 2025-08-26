@@ -24,6 +24,23 @@ void main() {
       });
 
       test(
+          'when trying to create a new account with an invalid email, '
+          'then no account request is created and the correct status returned.',
+          () async {
+        final accountCreationResult = await EmailAccounts.startAccountCreation(
+          session,
+          email: 'test@serverpod',
+          password: 'Afine123Pw!',
+        );
+
+        expect(accountCreationResult.accountRequestId, isNull);
+        expect(
+          accountCreationResult.result,
+          EmailAccountRequestResult.emailInvalid,
+        );
+      });
+
+      test(
           'when trying to create a new account with a short password, '
           'then an error is thrown for short passwords.', () async {
         await expectLater(
