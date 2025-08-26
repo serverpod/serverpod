@@ -1,22 +1,25 @@
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+/// A [KeyValueClientAuthInfoStorage] implementation for testing that exposes
+/// the underlying delegate instance.
 class TestStorage extends KeyValueClientAuthInfoStorage {
-  final _storageKey = 'serverpod_userinfo_key';
-  final values = <String, String>{};
+  TestStorage({super.authInfoStorageKey})
+      : super(keyValueStorage: TestKeyValueStorage());
+}
+
+/// A [KeyValueStorage] implementation for testing.
+class TestKeyValueStorage implements KeyValueStorage {
+  final Map<String, String?> values = {};
 
   @override
-  Future<String?> getValue() async {
-    return values[_storageKey];
-  }
+  Future<String?> get(String key) async => values[key];
 
   @override
-  Future<void> setValue(String? value) async {
-    await Future.delayed(const Duration(microseconds: 1));
-
+  Future<void> set(String key, String? value) async {
     if (value == null) {
-      values.remove(_storageKey);
+      values.remove(key);
     } else {
-      values[_storageKey] = value;
+      values[key] = value;
     }
   }
 }

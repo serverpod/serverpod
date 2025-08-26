@@ -1,58 +1,61 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/src/storage/base.dart';
+import '/src/storage/cached.dart';
+import '/src/storage/key_value.dart';
 
-/// A [ClientAuthInfoStorage] based on Flutter secure storage.
-class SecureClientAuthInfoStorage extends KeyValueClientAuthInfoStorage {
-  /// The key on the storage where the [AuthSuccess] will be stored.
-  final String _storageKey;
+/// Exposes the [FlutterSecureStorage] class for convenience.
+export 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-  /// The secure storage to keep user authentication info.
-  final KeyValueStorage storage;
-
+/// A [ClientAuthInfoStorage] based on [FlutterSecureStorage].
+class SecureClientAuthInfoStorage extends CachedClientAuthInfoStorage {
   /// Creates a [SecureClientAuthInfoStorage] instance.
   SecureClientAuthInfoStorage({
-    // TODO: Change the default to use the `flutter_secure_storage`.
-    /// Custom secure storage. Defaults to [SharedPreferencesKeyValueStorage].
-    KeyValueStorage? storage,
+    /// Custom secure storage to use.
+    FlutterSecureStorage? secureStorage,
 
-    /// OVerride the default key name to store the auth info on the storage.
+    /// Override the default key name to store the auth info on the storage.
     String? authInfoStorageKey,
-  })  : storage = storage ?? SharedPreferencesKeyValueStorage(),
-        _storageKey = authInfoStorageKey ?? 'serverpod_userinfo_key';
-
-  @override
-  Future<void> setValue(String? value) => storage.set(_storageKey, value);
-
-  @override
-  Future<String?> getValue() => storage.get(_storageKey);
+  }) : super(
+          delegate: KeyValueClientAuthInfoStorage(
+            keyValueStorage: FlutterSecureKeyValueStorage(secureStorage),
+            authInfoStorageKey: authInfoStorageKey,
+          ),
+        );
 }
 
-// TODO: Change the `shared_preferences` package by `flutter_secure_storage`.
-/// A [KeyValueStorage] based on Flutter secure storage.
-class SharedPreferencesKeyValueStorage implements KeyValueStorage {
+/// A [KeyValueStorage] wrapper for [FlutterSecureStorage].
+class FlutterSecureKeyValueStorage implements KeyValueStorage {
+  final FlutterSecureStorage _storage;
+
+  /// Creates a new [FlutterSecureKeyValueStorage].
+  FlutterSecureKeyValueStorage(FlutterSecureStorage? storage)
+      : _storage = storage ?? _defaultSecureStorage();
+
+  static FlutterSecureStorage _defaultSecureStorage() =>
+      const FlutterSecureStorage(
+        aOptions: AndroidOptions(
+          encryptedSharedPreferences: true,
+        ),
+        iOptions: IOSOptions(
+          accessibility: KeychainAccessibility.first_unlock,
+        ),
+        mOptions: MacOsOptions(
+          accessibility: KeychainAccessibility.first_unlock_this_device,
+        ),
+      );
+
   @override
   Future<String?> get(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
+    return _storage.read(key: key);
   }
 
   @override
   Future<void> set(String key, String? value) async {
-    final prefs = await SharedPreferences.getInstance();
     if (value == null) {
-      await prefs.remove(key);
+      await _storage.delete(key: key);
     } else {
-      await prefs.setString(key, value);
+      await _storage.write(key: key, value: value);
     }
   }
-}
-
-/// Basic string-based key/value store interface.
-abstract interface class KeyValueStorage {
-  /// Gets the stored value for [key].
-  Future<String?> get(String key);
-
-  /// Sets [key] to the new [value].
-  Future<void> set(String key, String? value);
 }

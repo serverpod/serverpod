@@ -1,12 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+import '../test_utils/storage_delegate.dart';
+
 void main() {
   group('Given a CachedClientAuthInfoStorage implementation', () {
-    late TestCachedStorage storage;
+    late TestCachedAuthInfoStorage storage;
 
     setUp(() {
-      storage = TestCachedStorage();
+      storage = TestCachedAuthInfoStorage.create();
     });
 
     test(
@@ -31,7 +33,7 @@ void main() {
         final cached = storage.cachedAuthInfo!;
 
         expect(cached.toString(), _authSuccess.toString());
-        expect(storage.lastSetValue, isNotNull);
+        expect(storage.delegate.lastSetValue, isNotNull);
       });
 
       test('then subsequent calls to cachedAuthInfo return the same data',
@@ -52,13 +54,13 @@ void main() {
 
       test('then it clears the data and caches null', () async {
         expect(storage.cachedAuthInfo, isNull);
-        expect(storage.lastSetValue, isNull);
+        expect(storage.delegate.lastSetValue, isNull);
       });
     });
 
     group('when calling get for the first time', () {
       test('with data in storage then it retrieves from storage', () async {
-        await storage.setOnStorage(_authSuccess);
+        await storage.delegate.set(_authSuccess);
 
         final result = await storage.get();
         final cached = storage.cachedAuthInfo!;
@@ -79,7 +81,7 @@ void main() {
     group('when calling get after data is cached', () {
       test('then it returns cached data without hitting storage', () async {
         await storage.set(_authSuccess);
-        storage.shouldThrowOnGet = true;
+        storage.delegate.shouldThrowOnGet = true;
 
         final result = await storage.get();
 
@@ -93,7 +95,7 @@ void main() {
 
     group('when storage operations throw exceptions', () {
       test('then set propagates the exception', () async {
-        storage.shouldThrowOnSet = true;
+        storage.delegate.shouldThrowOnSet = true;
 
         await expectLater(
           () => storage.set(_authSuccess),
@@ -106,7 +108,7 @@ void main() {
       });
 
       test('then get propagates the exception', () async {
-        storage.shouldThrowOnGet = true;
+        storage.delegate.shouldThrowOnGet = true;
 
         await expectLater(
           () => storage.get(),
@@ -135,39 +137,18 @@ void main() {
   });
 }
 
-class TestCachedStorage extends CachedClientAuthInfoStorage {
-  final Map<String, String> _storage = {};
-  AuthSuccess? lastSetValue;
-  bool shouldThrowOnGet = false;
-  bool shouldThrowOnSet = false;
+/// A [CachedClientAuthInfoStorage] implementation for testing that exposes the
+/// underlying delegate instance.
+class TestCachedAuthInfoStorage extends CachedClientAuthInfoStorage {
+  late final TestClientAuthInfoStorage delegate;
 
-  @override
-  Future<void> setOnStorage(AuthSuccess? data) async {
-    if (shouldThrowOnSet) {
-      throw Exception('Storage error on set');
-    }
+  TestCachedAuthInfoStorage._({required super.delegate});
 
-    lastSetValue = data;
-    if (data == null) {
-      _storage.remove('test_key');
-    } else {
-      _storage['test_key'] = data.toString();
-    }
-  }
-
-  @override
-  Future<AuthSuccess?> getFromStorage() async {
-    if (shouldThrowOnGet) {
-      throw Exception('Storage error on get');
-    }
-
-    final value = _storage['test_key'];
-    return value != null ? Protocol().decode<AuthSuccess>(value) : null;
-  }
-
-  void clear() {
-    _storage.clear();
-    lastSetValue = null;
+  factory TestCachedAuthInfoStorage.create() {
+    final delegate = TestClientAuthInfoStorage();
+    final testStorage = TestCachedAuthInfoStorage._(delegate: delegate);
+    testStorage.delegate = delegate;
+    return testStorage;
   }
 }
 

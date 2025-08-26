@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import '../test_utils/storage_delegate.dart';
-
 void main() {
-  late TestKeyValueAuthInfoStorage storage;
+  late TestSecureKeyValueStorage storage;
 
-  group('Given a KeyValueClientAuthInfoStorage created with default key', () {
+  group('Given a SecureClientAuthInfoStorage created with default key', () {
+    const defaultKey = 'serverpod_userinfo_key';
+
     setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create();
+      FlutterSecureStorage.setMockInitialValues({});
+      storage = TestSecureKeyValueStorage.create();
     });
 
     group('when calling set with AuthSuccess data', () {
@@ -17,19 +18,19 @@ void main() {
       });
 
       test('then it stores the data using the default key', () async {
-        const defaultKey = 'serverpod_userinfo_key';
-        expect(storage.delegate.values[defaultKey], _authSuccess.toString());
+        final value = await storage.delegate.read(key: defaultKey);
+        expect(value, _authSuccess.toString());
       });
 
       test('then it encodes and stores the data as JSON string', () async {
-        final value = storage.delegate.lastSetValue;
+        final value = await storage.delegate.read(key: defaultKey);
         expect(value, isA<String>());
         expect(value, _authSuccess.toString());
       });
 
       test('then decoding the stored value returns the original object',
           () async {
-        final value = storage.delegate.lastSetValue;
+        final value = await storage.delegate.read(key: defaultKey);
         expect(() => Protocol().decode<AuthSuccess>(value!), returnsNormally);
 
         final decoded = Protocol().decode<AuthSuccess>(value!);
@@ -40,7 +41,7 @@ void main() {
     test('when calling set with null then it stores null value', () async {
       await storage.set(null);
 
-      expect(storage.delegate.lastSetValue, isNull);
+      expect(await storage.delegate.read(key: defaultKey), isNull);
     });
 
     test(
@@ -62,37 +63,9 @@ void main() {
 
     test('when calling get with invalid JSON data then it throws an exception',
         () async {
-      await storage.delegate.set('serverpod_userinfo_key', 'invalid-json');
+      await storage.delegate.write(key: defaultKey, value: 'invalid-json');
 
       await expectLater(() => storage.get(), throwsA(isA<Exception>()));
-    });
-
-    group('when storage operations throw exceptions', () {
-      test('then set propagates set exception', () async {
-        storage.delegate.shouldThrowOnSet = true;
-
-        await expectLater(
-          () => storage.set(_authSuccess),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Storage error on set'),
-          )),
-        );
-      });
-
-      test('then get propagates get exception', () async {
-        storage.delegate.shouldThrowOnGet = true;
-
-        await expectLater(
-          () => storage.get(),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Storage error on get'),
-          )),
-        );
-      });
     });
   });
 
@@ -100,20 +73,24 @@ void main() {
     const customKey = 'custom_auth_key';
 
     setUp(() {
-      storage =
-          TestKeyValueAuthInfoStorage.create(authInfoStorageKey: customKey);
+      FlutterSecureStorage.setMockInitialValues({});
+      storage = TestSecureKeyValueStorage.create(authInfoStorageKey: customKey);
     });
 
     test('when calling set then it uses the custom key', () async {
       await storage.set(_authSuccess);
+      final values = await storage.delegate.readAll();
 
-      expect(storage.delegate.values.keys.length, 1);
-      expect(storage.delegate.values.keys.first, customKey);
-      expect(storage.delegate.values.values.first, isA<String>());
+      expect(values.length, 1);
+      expect(values.keys.first, customKey);
+      expect(values.values.first, isA<String>());
     });
 
     test('when calling get then it uses the custom key', () async {
-      await storage.delegate.set(customKey, _authSuccess.toString());
+      await storage.delegate.write(
+        key: customKey,
+        value: _authSuccess.toString(),
+      );
 
       final result = await storage.get();
 
@@ -123,20 +100,21 @@ void main() {
   });
 }
 
-/// A [KeyValueClientAuthInfoStorage] implementation for testing that exposes
-/// the underlying delegate instance.
-class TestKeyValueAuthInfoStorage extends KeyValueClientAuthInfoStorage {
-  late final TestKeyValueStorage delegate;
+/// A [SecureClientAuthInfoStorage] implementation for testing that exposes the
+/// underlying delegate instance.
+class TestSecureKeyValueStorage extends SecureClientAuthInfoStorage {
+  late final FlutterSecureStorage delegate;
 
-  TestKeyValueAuthInfoStorage._({
-    required super.keyValueStorage,
+  /// Creates a new [FlutterSecureKeyValueStorage].
+  TestSecureKeyValueStorage._({
+    super.secureStorage,
     super.authInfoStorageKey,
   });
 
-  static TestKeyValueAuthInfoStorage create({String? authInfoStorageKey}) {
-    final delegate = TestKeyValueStorage();
-    final testStorage = TestKeyValueAuthInfoStorage._(
-      keyValueStorage: delegate,
+  static TestSecureKeyValueStorage create({String? authInfoStorageKey}) {
+    final delegate = FlutterSecureStorage();
+    final testStorage = TestSecureKeyValueStorage._(
+      secureStorage: delegate,
       authInfoStorageKey: authInfoStorageKey,
     );
     testStorage.delegate = delegate;

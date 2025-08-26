@@ -83,7 +83,7 @@ void main() {
       client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: storage);
 
-      await storage.setOnStorage(_authSuccess);
+      await storage.set(_authSuccess);
     });
 
     test('when calling restore, then auth info is available.', () async {
