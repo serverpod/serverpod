@@ -122,7 +122,7 @@ final class ClientMethodStreamManager {
           authKeyProvider is RefresherClientAuthKeyProvider &&
           shouldRetryOnAuthFailed &&
           await authKeyProvider.refreshAuthKey()) {
-        await openMethodStream(connectionDetails, false);
+        return openMethodStream(connectionDetails, false);
       }
       throw OpenMethodStreamException(openResponse);
     }
