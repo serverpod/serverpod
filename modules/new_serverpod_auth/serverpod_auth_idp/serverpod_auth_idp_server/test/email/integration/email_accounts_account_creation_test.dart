@@ -3,8 +3,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tools/serverpod_test_tools.dart';
 import '../../test_tags.dart';
+import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils.dart';
 
 void main() {
@@ -21,6 +21,23 @@ void main() {
         EmailAccounts.config = EmailAccountConfig();
 
         await cleanUpEmailAccountDatabaseEntities(session);
+      });
+
+      test(
+          'when trying to create a new account with an invalid email, '
+          'then no account request is created and the correct status returned.',
+          () async {
+        final accountCreationResult = await EmailAccounts.startAccountCreation(
+          session,
+          email: 'test@serverpod',
+          password: 'Afine123Pw!',
+        );
+
+        expect(accountCreationResult.accountRequestId, isNull);
+        expect(
+          accountCreationResult.result,
+          EmailAccountRequestResult.emailInvalid,
+        );
       });
 
       test(
