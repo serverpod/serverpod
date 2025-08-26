@@ -18,20 +18,32 @@ final _authSessionManagersCache =
 /// the app and persists between restarts of the app.
 class ClientAuthSessionManager implements ClientAuthKeyProvider {
   /// The auth module's caller.
-  Caller caller;
+  Caller? _caller;
 
   /// The secure storage to keep user authentication info.
   final ClientAuthInfoStorage storage;
 
   /// Creates a new [ClientAuthSessionManager].
   ClientAuthSessionManager({
-    required this.caller,
+    /// Optionally override the caller. If not provided directly, the caller
+    /// must be set before usage by calling [setCallerFromClient].
+    Caller? caller,
 
     /// The secure storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
     ClientAuthInfoStorage? storage,
-  }) : storage = storage ?? SecureClientAuthInfoStorage() {
-    _authSessionManagersCache[caller.client] = this;
+  })  : _caller = caller,
+        storage = storage ?? SecureClientAuthInfoStorage();
+
+  /// Sets the caller from the client's module lookup.
+  void setCallerFromClient(ServerpodClientShared client) {
+    _caller ??= client.getCaller();
+  }
+
+  /// The authentication module caller.
+  Caller get caller {
+    if (_caller != null) return _caller!;
+    throw StateError('Caller not set. Set the caller before accessing it.');
   }
 
   final _authInfo = ValueNotifier<AuthSuccess?>(null);
@@ -111,11 +123,24 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
 extension ClientAuthSessionManagerExtension on ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
   ClientAuthSessionManager get auth {
-    final manager = _authSessionManagersCache[this] ??
+    return _authSessionManagersCache[this] ??
         (throw StateError(
           'To access the auth instance, first instantiate the session manager '
           'with a caller from this client.',
         ));
-    return manager;
+  }
+
+  /// Sets the authentication session manager for this client.
+  set authSessionManager(ClientAuthSessionManager authSessionManager) {
+    authSessionManager.setCallerFromClient(this);
+    _authSessionManagersCache[this] = authSessionManager;
+  }
+}
+
+extension on ServerpodClientShared {
+  Caller getCaller() {
+    var caller = moduleLookup.values.whereType<Caller>().firstOrNull;
+    if (caller != null) return caller;
+    throw StateError('No authentication module found.');
   }
 }

@@ -8,12 +8,8 @@ void main() {
   test(
     'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
     () async {
-      final client = Client('http://localhost:8080/');
-
-      client.authKeyProvider = ClientAuthSessionManager(
-        caller: client.modules.serverpod_auth_core,
-        storage: TestStorage(),
-      );
+      final client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
       final testUser = await client.sessionTest.createTestUser();
       final authentication = await client.sessionTest.createSession(testUser);

@@ -10,13 +10,9 @@ void main() {
 
   group('Given a `ClientAuthSessionManager` created with an empty storage', () {
     setUpAll(() {
-      client = Client('http://localhost:8080/');
       storage = TestStorage();
-
-      client.authKeyProvider = ClientAuthSessionManager(
-        caller: client.modules.serverpod_auth_core,
-        storage: storage,
-      );
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
     });
 
     test('when calling initialize, then it completes.', () async {
@@ -83,16 +79,11 @@ void main() {
       'Given a `ClientAuthSessionManager` which has been initialized with a previous session from storage',
       () {
     setUpAll(() async {
-      client = Client('http://localhost:8080/');
       storage = TestStorage();
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
 
       await storage.set(_authSuccess);
-
-      client.authKeyProvider = ClientAuthSessionManager(
-        caller: client.modules.serverpod_auth_core,
-        storage: storage,
-      );
-
       await client.auth.initialize();
     });
 
@@ -101,6 +92,35 @@ void main() {
       expect(client.auth.isAuthenticated, isTrue);
       expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
       expect(client.auth.authHeaderValue, 'Bearer session-key');
+    });
+  });
+
+  group('Given two separate client instances with separate session managers',
+      () {
+    late Client client1;
+    late Client client2;
+
+    setUpAll(() async {
+      storage = TestStorage();
+      client1 = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+      client2 = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      await client1.auth.initialize();
+      await client2.auth.initialize();
+    });
+
+    test('when comparing the session managers, then they are not equal.', () {
+      expect(identical(client1.auth, client2.auth), isFalse);
+    });
+
+    test(
+        'when logging in on one client, then the other client is not authenticated.',
+        () async {
+      await client1.auth.updateSignedInUser(_authSuccess);
+      expect(client1.auth.isAuthenticated, isTrue);
+      expect(client2.auth.isAuthenticated, isFalse);
     });
   });
 }

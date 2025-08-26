@@ -9,12 +9,8 @@ void main() {
   test(
     'Given a legacy user, when importing the user, then their legacy password can be migrated later on and used for the login.',
     () async {
-      final client = Client('http://localhost:8080/');
-
-      client.authKeyProvider = ClientAuthSessionManager(
-        caller: client.modules.serverpod_auth_core,
-        storage: TestStorage(),
-      );
+      final client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
       final email =
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';

@@ -86,12 +86,8 @@ void main() {
         isNull, // the session has not been migrated yet
       );
 
-      final newSessionClient = Client('http://localhost:8080/');
-
-      client.authKeyProvider = ClientAuthSessionManager(
-        caller: client.modules.serverpod_auth_core,
-        storage: TestStorage(),
-      );
+      final newSessionClient = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
       await newSessionClient.auth.initAndImportLegacySessionIfNeeded(
         newSessionClient.modules.serverpod_auth_bridge,
