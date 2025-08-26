@@ -16,6 +16,10 @@ void main() {
         expect(() => client.auth, throwsStateError);
       });
 
+      test('then `client` has no authKeyProvider.', () {
+        expect(client.authKeyProvider, isNull);
+      });
+
       test('then accessing `authSessionManager.caller` throws.', () {
         expect(() => authSessionManager.caller, throwsStateError);
       });
@@ -33,6 +37,10 @@ void main() {
         expect(() => client.auth, throwsStateError);
       });
 
+      test('then `client` has no authKeyProvider.', () {
+        expect(client.authKeyProvider, isNull);
+      });
+
       test('then `caller` is available.', () {
         expect(authSessionManager.caller, isNotNull);
       });
@@ -45,6 +53,11 @@ void main() {
 
     test('then `client.auth` is available.', () {
       expect(client.auth, isNotNull);
+    });
+
+    test('then `client` has authKeyProvider set.', () {
+      expect(client.authKeyProvider, isNotNull);
+      expect(identical(client.authKeyProvider, client.auth), isTrue);
     });
 
     test('then `authSessionManager.caller` is available.', () {

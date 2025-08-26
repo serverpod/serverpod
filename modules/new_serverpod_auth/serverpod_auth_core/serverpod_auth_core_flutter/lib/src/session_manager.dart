@@ -133,6 +133,7 @@ extension ClientAuthSessionManagerExtension on ServerpodClientShared {
   /// Sets the authentication session manager for this client.
   set authSessionManager(ClientAuthSessionManager authSessionManager) {
     authSessionManager.setCallerFromClient(this);
+    authKeyProvider = authSessionManager;
     _authSessionManagersCache[this] = authSessionManager;
   }
 }
