@@ -358,5 +358,6 @@ RefreshToken _createRefreshToken() {
     fixedSecret: ByteData(0),
     rotatingSecretHash: ByteData(0),
     rotatingSecretSalt: ByteData(0),
+    method: 'test',
   );
 }

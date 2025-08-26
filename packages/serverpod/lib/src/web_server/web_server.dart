@@ -297,8 +297,17 @@ abstract class WidgetRoute extends Route {
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
+
+    final headers = Headers.build(
+      (mh) => mh.cacheControl = CacheControlHeader(
+        noCache: true,
+        privateCache: true,
+      ),
+    );
+
     return context.withResponse(Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
+      headers: headers,
     ));
   }
 }

@@ -30,7 +30,7 @@ class ParsedModelsCollection {
 
   Set<String> get moduleNames => modules;
 
-  bool classNameExists(name) => findAllByClassName(name).isNotEmpty;
+  bool classNameExists(String name) => findAllByClassName(name).isNotEmpty;
 
   Map<String, List<SerializableModelDefinition>> _createTableNameMap(
     List<SerializableModelDefinition> models,

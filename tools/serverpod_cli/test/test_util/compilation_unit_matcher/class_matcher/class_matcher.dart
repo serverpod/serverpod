@@ -130,7 +130,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
         .firstOrNull;
   }
 
-  ClassDeclaration? _matchedFeatureValueOf(actual) {
+  ClassDeclaration? _matchedFeatureValueOf(dynamic actual) {
     var classDecl = _featureValueOf(actual);
     if (classDecl == null) return null;
 
