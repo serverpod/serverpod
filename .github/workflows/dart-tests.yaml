@@ -112,7 +112,7 @@ jobs:
       - name: install Melos
         run: dart pub global activate melos
       - name: Install dependencies
-        run: melos bs
+        run: melos bootstrap
       - name: Run serverpod generate
         run: bash util/run_tests_serverpod_generate
 

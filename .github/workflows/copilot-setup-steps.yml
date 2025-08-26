@@ -47,12 +47,11 @@ jobs:
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install all dependencies
-        run: melos bs
+        run: melos bootstrap
 
       - name: Activate Serverpod CLI from source
         run: |
           cd tools/serverpod_cli
-          dart pub get
           dart pub global activate --source path .
 
       - name: Verify CLI installation

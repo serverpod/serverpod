@@ -84,4 +84,4 @@ cd $BASE
 git reset --hard HEAD
 
 echo "dart pub get"
-melos bs
+melos bootstrap

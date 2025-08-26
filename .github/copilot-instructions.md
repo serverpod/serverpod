@@ -97,7 +97,7 @@ git --version      # Should work
 dart pub global activate melos
 
 # Install all dependencies - NEVER CANCEL.
-melos bs
+melos bootstrap
 
 # Activate CLI from source (required for development)
 cd tools/serverpod_cli
@@ -109,7 +109,7 @@ cd ../..
 export SERVERPOD_HOME=$(pwd)
 ```
 
-**TIMING**: `melos bs` takes 10-15 minutes. Set timeout to 30+ minutes.
+**TIMING**: `melos bootstrap` takes 10-15 minutes. Set timeout to 30+ minutes.
 
 ### Build Commands
 ```bash
@@ -132,7 +132,7 @@ melos bootstrap
 - **Service readiness**: Additional 1-2 seconds for network accessibility
 
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
-- **Repository setup**: `melos bs` - 10-15 minutes - Set timeout to 30+ minutes
+- **Repository setup**: `melos bootstrap` - 10-15 minutes - Set timeout to 30+ minutes
 - **Unit tests**: `util/run_tests_unit` - 5-15 minutes - Set timeout to 30+ minutes  
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
@@ -306,11 +306,10 @@ export SERVERPOD_HOME=$(pwd)
 dart pub global activate melos
 
 # 3. Install dependencies (10-15 minutes - NEVER CANCEL)
-melos bs
+melos bootstrap
 
 # 4. Activate CLI
 cd tools/serverpod_cli
-dart pub get  
 dart pub global activate --source path .
 cd ../..
 
@@ -495,7 +494,7 @@ Before submitting a PR, ensure:
 
 - **"Dart not found"**: Ensure Flutter is installed and in PATH
 - **"Docker connection failed"**: Ensure Docker daemon is running
-- **"pub get failed"**: Run `melos bs --offline` for cached deps
+- **"pub get failed"**: Run `melos bootstrap --offline` for cached deps
 - **"Tests hanging"**: Wait full timeout period - tests can take 45+ minutes
 - **"CLI not updated"**: Rerun `dart pub global activate --source path tools/serverpod_cli`
 - **"Template not found"**: Ensure `SERVERPOD_HOME` environment variable is set
