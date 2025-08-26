@@ -34,8 +34,7 @@ void main() {
 
   late TestRefresherAuthKeyProvider authKeyProvider;
 
-  group('Given a Client with an authKeyProvider that supports refresh',
-      () {
+  group('Given a Client with an authKeyProvider that supports refresh', () {
     setUp(() {
       requestDelegate = TestRequestDelegate();
       authKeyProvider = TestRefresherAuthKeyProvider(
