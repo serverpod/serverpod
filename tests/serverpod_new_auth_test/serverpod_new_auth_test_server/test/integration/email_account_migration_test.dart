@@ -13,6 +13,7 @@ void main() {
       const legacyPassword = 'LegacyPass123!';
 
       late int legacyUserId;
+      late String? receivedVerificationCode;
 
       setUp(() async {
         // Create a legacy user (non-migrated)
@@ -32,6 +33,19 @@ void main() {
           ),
           isNull,
         );
+
+        // Configure EmailAccounts for password reset verification
+        EmailAccounts.config = EmailAccountConfig(
+          sendPasswordResetVerificationCode: (
+            final session, {
+            required final email,
+            required final passwordResetRequestId,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedVerificationCode = verificationCode;
+          },
+        );
       });
 
       tearDown(() async {
@@ -42,20 +56,6 @@ void main() {
       test(
         'when starting password reset, then no verification code is sent because user does not exist in new system.',
         () async {
-          String? receivedVerificationCode;
-
-          EmailAccounts.config = EmailAccountConfig(
-            sendPasswordResetVerificationCode: (
-              final session, {
-              required final email,
-              required final passwordResetRequestId,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedVerificationCode = verificationCode;
-            },
-          );
-
           // The new system should not find the user since they're not migrated
           await endpoints.emailAccount.startPasswordReset(
             sessionBuilder,
@@ -84,20 +84,6 @@ void main() {
               userId: legacyUserId,
             ),
             isNotNull,
-          );
-
-          String? receivedVerificationCode;
-
-          EmailAccounts.config = EmailAccountConfig(
-            sendPasswordResetVerificationCode: (
-              final session, {
-              required final email,
-              required final passwordResetRequestId,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedVerificationCode = verificationCode;
-            },
           );
 
           // Now the password reset should work
@@ -167,7 +153,6 @@ void main() {
 
       tearDown(() async {
         EmailAccounts.config = EmailAccountConfig();
-
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
