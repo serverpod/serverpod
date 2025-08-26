@@ -58,4 +58,4 @@ final _authSuccess = AuthSuccess(
   scopeNames: {'test1', 'test2'},
 );
 
-final _authHeaderValue = 'Bearer session-key';
+const _authHeaderValue = 'Bearer session-key';
