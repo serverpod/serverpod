@@ -46,24 +46,16 @@ jobs:
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
-      # Reactivate this once we have parallelized dependency installation
+      - name: Install all dependencies
+        run: melos bootstrap
 
-      # - name: Install all dependencies
-      #   run: |
-      #     # Use timeout to prevent hanging indefinitely
-      #     timeout 30m ./util/pub_get_all || {
-      #       echo "Dependency installation timed out after 30 minutes"
-      #       exit 1
-      #     }
+      - name: Activate Serverpod CLI from source
+        run: |
+          cd tools/serverpod_cli
+          dart pub global activate --source path .
 
-      # - name: Activate Serverpod CLI from source
-      #   run: |
-      #     cd tools/serverpod_cli
-      #     dart pub get
-      #     dart pub global activate --source path .
-
-      # - name: Verify CLI installation
-      #   run: serverpod --version
+      - name: Verify CLI installation
+        run: serverpod --version
 
       - name: Add test hosts to /etc/hosts
         run: |
