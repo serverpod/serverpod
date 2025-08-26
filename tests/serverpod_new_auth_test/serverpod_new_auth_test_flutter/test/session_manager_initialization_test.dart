@@ -78,20 +78,30 @@ void main() {
   group(
       'Given a `ClientAuthSessionManager` which has been initialized with a previous session from storage',
       () {
-    setUpAll(() async {
+    setUp(() async {
       storage = TestStorage();
       client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: storage);
 
-      await storage.set(_authSuccess);
-      await client.auth.initialize();
+      await storage.setOnStorage(_authSuccess);
     });
 
-    test('when initialized again, then auth info is available.', () async {
+    test('when calling restore, then auth info is available.', () async {
+      await client.auth.restore();
+
       expect(client.auth.authInfo.value, isNotNull);
       expect(client.auth.isAuthenticated, isTrue);
       expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
-      expect(client.auth.authHeaderValue, 'Bearer session-key');
+      expect(await client.auth.authHeaderValue, 'Bearer session-key');
+    });
+
+    test('when initialized again, then auth info is available.', () async {
+      await client.auth.initialize();
+
+      expect(client.auth.authInfo.value, isNotNull);
+      expect(client.auth.isAuthenticated, isTrue);
+      expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
+      expect(await client.auth.authHeaderValue, 'Bearer session-key');
     });
   });
 

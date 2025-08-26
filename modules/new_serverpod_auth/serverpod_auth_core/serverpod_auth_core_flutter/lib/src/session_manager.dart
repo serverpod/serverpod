@@ -69,7 +69,7 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
 
   /// Restore the current sign in status from the storage.
   Future<void> restore() async {
-    await storage.get();
+    _authInfo.value = await storage.get();
   }
 
   /// Updates the signed in user on the storage and for open connections.
