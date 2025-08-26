@@ -78,6 +78,7 @@ jobs:
     name: dart analyze downgrade
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         flutter-version: ['3.24.0', '3.32.1']
         os: [windows-latest, ubuntu-latest]
@@ -108,8 +109,10 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
+      - name: Install Melos
+        run: dart pub global activate melos
       - name: Install dependencies
-        run: bash util/pub_get_all
+        run: melos bootstrap
       - name: Run serverpod generate
         run: bash util/run_tests_serverpod_generate
 
@@ -448,5 +451,7 @@ jobs:
         with:
           flutter-version: '3.24.0'
           cache: true
+      - name: Install melos
+        run: dart pub global activate melos
       - name: Run version change test
         run: util/run_tests_version_change
