@@ -215,7 +215,7 @@ void main() {
       );
 
       test(
-        'when completing password reset, then legacy password entry remains as fallback.',
+        'when completing password reset, then legacy password is cleared for security.',
         () async {
           // Verify legacy password still exists before reset
           expect(
@@ -241,7 +241,7 @@ void main() {
             newPassword: newPassword,
           );
 
-          // Verify legacy password still exists after reset (remains as fallback)
+          // Verify legacy password is cleared after reset (for security)
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
@@ -249,17 +249,17 @@ void main() {
               email: email,
               password: legacyPassword,
             ),
-            isTrue,
+            isFalse,
           );
 
-          // Login with the new password using regular endpoint (should not clear legacy password)
+          // Login with the new password using regular endpoint
           await endpoints.emailAccount.login(
             sessionBuilder,
             email: email,
             password: newPassword,
           );
 
-          // Verify legacy password still exists after regular login (remains as fallback)
+          // Verify legacy password remains cleared after regular login
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
@@ -267,17 +267,17 @@ void main() {
               email: email,
               password: legacyPassword,
             ),
-            isTrue,
+            isFalse,
           );
 
-          // Login using the password importing endpoint (should not clear legacy password since account has password)
+          // Login using the password importing endpoint
           await endpoints.passwordImportingEmailAccount.login(
             sessionBuilder,
             email: email,
             password: newPassword,
           );
 
-          // Verify legacy password still exists after password importing login (remains as fallback)
+          // Verify legacy password remains cleared after password importing login
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
@@ -285,7 +285,7 @@ void main() {
               email: email,
               password: legacyPassword,
             ),
-            isTrue,
+            isFalse,
           );
         },
       );

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 
 import '../../../generated/protocol.dart';
 import '../util/byte_data_extension.dart';
@@ -497,6 +498,13 @@ abstract final class EmailAccounts {
             passwordHash: ByteData.sublistView(newPasswordHash.hash),
             passwordSalt: ByteData.sublistView(newPasswordHash.salt),
           ),
+          transaction: transaction,
+        );
+
+        // Clear legacy password after successful password reset for security
+        await AuthBackwardsCompatibility.clearLegacyPassword(
+          session,
+          emailAccountId: account.id!,
           transaction: transaction,
         );
 

@@ -7,12 +7,13 @@ version: 3.0.0-alpha.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   serverpod: 3.0.0-alpha.1
   serverpod_shared: 3.0.0-alpha.1
   serverpod_auth_core_server: 3.0.0-alpha.1
+  serverpod_auth_bridge_server: 3.0.0-alpha.1
 
   googleapis: ">=11.0.0 <15.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
@@ -21,7 +22,7 @@ dependencies:
   clock: ^1.1.1
   sign_in_with_apple_server: ^1.0.0
   email_validator: ">=2.1.17 <4.0.0"
-  pointycastle: '>=3.7.4 <5.0.0'
+  pointycastle: ">=3.7.4 <5.0.0"
 
 dev_dependencies:
   serverpod_lints: 3.0.0-alpha.1
@@ -33,6 +34,8 @@ dependency_overrides:
     path: ../../../../packages/serverpod
   serverpod_auth_core_server:
     path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_bridge_server:
+    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
