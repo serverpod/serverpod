@@ -454,7 +454,7 @@ void main() {
         session,
         authUserId: authUserId,
         scopes: {
-          Scope('test-scope'),
+          const Scope('test-scope'),
         },
         method: 'test',
       );

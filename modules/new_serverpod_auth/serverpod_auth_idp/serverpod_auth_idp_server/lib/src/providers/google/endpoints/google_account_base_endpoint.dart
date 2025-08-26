@@ -4,11 +4,13 @@ import 'package:serverpod_auth_core_server/session.dart';
 
 import '../google.dart';
 
+/// Base endpoint for Google Account-based authentication.
 abstract class GoogleAccountBaseEndpoint extends Endpoint {
   static const String _method = 'google';
 
+  /// Logs in or registers an [AuthUser] for the given Google account ID.
   Future<AuthSuccess> authenticate(
-    Session session, {
+    final Session session, {
     required final String idToken,
   }) async {
     return session.db.transaction((final transaction) async {
@@ -29,7 +31,7 @@ abstract class GoogleAccountBaseEndpoint extends Endpoint {
           transaction: transaction,
         );
 
-        if (Uri.tryParse(account.details.image) case Uri imageUri) {
+        if (Uri.tryParse(account.details.image) case final Uri imageUri) {
           try {
             await UserProfiles.setUserImageFromUrl(
               session,
