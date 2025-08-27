@@ -12,7 +12,6 @@ dependencies:
   serverpod: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
   serverpod_auth_core_server: SERVERPOD_VERSION
-  serverpod_auth_bridge_server: SERVERPOD_VERSION
 
   googleapis: ">=11.0.0 <15.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
@@ -33,8 +32,6 @@ dependency_overrides:
     path: ../../../../packages/serverpod
   serverpod_auth_core_server:
     path: ../../serverpod_auth_core/serverpod_auth_core_server
-  serverpod_auth_bridge_server:
-    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

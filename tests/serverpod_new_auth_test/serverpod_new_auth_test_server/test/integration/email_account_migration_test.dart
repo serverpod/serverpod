@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
@@ -147,6 +148,18 @@ void main() {
           }) {
             receivedPasswordResetRequestId = passwordResetRequestId;
             receivedVerificationCode = verificationCode;
+          },
+          onPasswordResetCompleted: (
+            final session, {
+            required final email,
+            required final emailAccountId,
+            required final transaction,
+          }) async {
+            await AuthBackwardsCompatibility.clearLegacyPassword(
+              session,
+              emailAccountId: emailAccountId,
+              transaction: transaction,
+            );
           },
         );
       });

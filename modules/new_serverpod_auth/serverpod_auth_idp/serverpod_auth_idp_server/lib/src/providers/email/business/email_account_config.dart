@@ -30,6 +30,14 @@ typedef SendPasswordResetVerificationCodeFunction = void Function(
   required Transaction transaction,
 });
 
+/// Function to be called after a password reset is successfully completed.
+typedef OnPasswordResetCompletedFunction = void Function(
+  Session session, {
+  required String email,
+  required UuidValue emailAccountId,
+  required Transaction transaction,
+});
+
 /// Configuration options for the email account module.
 class EmailAccountConfig {
   /// The time for the registration email verification code to be valid.
@@ -78,6 +86,12 @@ class EmailAccountConfig {
   final SendPasswordResetVerificationCodeFunction?
       sendPasswordResetVerificationCode;
 
+  /// Callback to be invoked after a password reset is successfully completed.
+  ///
+  /// This can be used to perform additional cleanup tasks, such as clearing legacy passwords
+  /// during migration scenarios.
+  final OnPasswordResetCompletedFunction? onPasswordResetCompleted;
+
   /// Function to check passwords against a policy during registration and password change.
   ///
   /// If the rules are changed after a password has been set, subsequent logins with
@@ -110,6 +124,7 @@ class EmailAccountConfig {
         defaultVerificationCodeGenerator,
     this.sendRegistrationVerificationCode,
     this.sendPasswordResetVerificationCode,
+    this.onPasswordResetCompleted,
     this.failedLoginRateLimit = (
       maxAttempts: 5,
       timeframe: const Duration(minutes: 5),
