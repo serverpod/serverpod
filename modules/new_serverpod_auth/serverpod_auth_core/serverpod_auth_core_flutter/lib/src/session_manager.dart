@@ -6,11 +6,6 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import '/src/storage/base.dart';
 import '/src/storage/secure.dart';
 
-/// As applications can have more than one Serverpod client, they also need to
-/// have separate auth session managers for each.
-final _authSessionManagersCache =
-    HashMap<ServerpodClientShared, ClientAuthSessionManager>.identity();
-
 /// The [ClientAuthSessionManager] keeps track of and manages the signed-in
 /// state of the user. Users are typically authenticated with Google, Apple,
 /// or other methods. Please refer to the documentation to see supported
@@ -43,7 +38,11 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
   /// The authentication module caller.
   Caller get caller {
     if (_caller != null) return _caller!;
-    throw StateError('Caller not set. Set the caller before accessing it.');
+    throw StateError(
+      'Caller not set on this session manager. Either set this session manager '
+      'to a client by using the "authSessionManager" extension, or call the '
+      '"setCallerFromClient" method before accessing the caller.',
+    );
   }
 
   final _authInfo = ValueNotifier<AuthSuccess?>(null);
@@ -123,18 +122,26 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
 extension ClientAuthSessionManagerExtension on ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
   ClientAuthSessionManager get auth {
-    return _authSessionManagersCache[this] ??
-        (throw StateError(
-          'To access the auth instance, first instantiate the session manager '
-          'with a caller from this client.',
-        ));
+    final currentProvider = authKeyProvider;
+    if (currentProvider == null) {
+      throw StateError(
+        'To access the auth instance, first instantiate the session manager '
+        'and set it as the "authKeyProvider" on the client.',
+      );
+    }
+    if (currentProvider is! ClientAuthSessionManager) {
+      throw StateError(
+        'The "authKeyProvider" is set to an unsupported type. '
+        'Expected "ClientAuthSessionManager", got "$currentProvider".',
+      );
+    }
+    return currentProvider;
   }
 
   /// Sets the authentication session manager for this client.
   set authSessionManager(ClientAuthSessionManager authSessionManager) {
     authSessionManager.setCallerFromClient(this);
     authKeyProvider = authSessionManager;
-    _authSessionManagersCache[this] = authSessionManager;
   }
 }
 
