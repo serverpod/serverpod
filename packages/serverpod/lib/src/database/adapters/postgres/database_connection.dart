@@ -324,10 +324,25 @@ class DatabaseConnection {
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      updateQuery = 'WITH rows_to_update AS ($subquery) '
+      var orderByClause = '';
+      if (orderBy != null || orderByList != null) {
+        var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+        if (orders != null && orders.isNotEmpty) {
+          var orderStrings = orders.map((o) {
+            var orderStr = o.toString();
+            return orderStr.replaceAll('"${table.tableName}".', '');
+          }).join(', ');
+          orderByClause = ' ORDER BY $orderStrings';
+        }
+      }
+
+      updateQuery = 'WITH rows_to_update AS ($subquery), '
+          'updated AS ('
           'UPDATE "${table.tableName}" SET $setClause '
           'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
-          'RETURNING *';
+          'RETURNING *'
+          ') '
+          'SELECT * FROM updated$orderByClause';
     } else {
       updateQuery = 'UPDATE "${table.tableName}" SET $setClause'
           ' WHERE $where'
