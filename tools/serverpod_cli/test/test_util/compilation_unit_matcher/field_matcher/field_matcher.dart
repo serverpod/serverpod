@@ -149,7 +149,7 @@ extension on FieldDeclaration {
     return switch (type) {
       null => '',
       GenericFunctionType() => type.toSource(),
-      NamedType() => type.name2.lexeme,
+      NamedType() => type.name.lexeme,
       RecordTypeAnnotation() => type.toSource(),
     };
   }

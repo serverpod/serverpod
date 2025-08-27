@@ -196,7 +196,7 @@ abstract class CompilationUnitHelpers {
       return false;
     }
 
-    return extendsClause.superclass.name2.toString() == name;
+    return extendsClause.superclass.name.toString() == name;
   }
 
   /// Returns `true` if the [classDeclaration] has an implements clause with
@@ -211,7 +211,7 @@ abstract class CompilationUnitHelpers {
     }
 
     var matchingImplementsClauses = implementsClause.interfaces
-        .where((type) => type.name2.toString() == name);
+        .where((type) => type.name.toString() == name);
 
     return matchingImplementsClauses.isNotEmpty;
   }
