@@ -508,6 +508,13 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
+        // Call the password reset completion callback
+        EmailAccounts.config.onPasswordResetCompleted?.call(
+          session,
+          emailAccountId: account.id!,
+          transaction: transaction,
+        );
+
         return account.authUserId;
       },
     );
