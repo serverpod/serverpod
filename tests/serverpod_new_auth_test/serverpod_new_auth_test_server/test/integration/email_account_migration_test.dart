@@ -149,18 +149,8 @@ void main() {
             receivedPasswordResetRequestId = passwordResetRequestId;
             receivedVerificationCode = verificationCode;
           },
-          onPasswordResetCompleted: (
-            final session, {
-            required final email,
-            required final emailAccountId,
-            required final transaction,
-          }) async {
-            await AuthBackwardsCompatibility.clearLegacyPassword(
-              session,
-              emailAccountId: emailAccountId,
-              transaction: transaction,
-            );
-          },
+          onPasswordResetCompleted:
+              AuthBackwardsCompatibility.clearLegacyPassword,
         );
       });
 
@@ -255,6 +245,35 @@ void main() {
           );
 
           // Verify legacy password is cleared after reset (for security)
+          expect(
+            await endpoints.emailAccountBackwardsCompatibilityTest
+                .checkLegacyPassword(
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            ),
+            isFalse,
+          );
+        },
+      );
+
+      test(
+        'when legacy password is cleared, then it remains cleared after subsequent login operations.',
+        () async {
+          // First, complete password reset to clear legacy password
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: receivedPasswordResetRequestId!,
+            verificationCode: receivedVerificationCode!,
+            newPassword: newPassword,
+          );
+
+          // Verify legacy password is cleared
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(

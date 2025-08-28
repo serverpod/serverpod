@@ -33,7 +33,6 @@ typedef SendPasswordResetVerificationCodeFunction = void Function(
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction = void Function(
   Session session, {
-  required String email,
   required UuidValue emailAccountId,
   required Transaction transaction,
 });
