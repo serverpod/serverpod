@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 
 import 'websocket_extensions.dart';
 import '../test_utils/method_stream_connection_details_builder.dart';
-import '../test_utils/test_serverpod_client.dart';
+import '../test_utils/test_auth_key_providers.dart';
 import '../test_utils/test_web_socket_server.dart';
 
 class TestSerializationManager extends SerializationManager {}
