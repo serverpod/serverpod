@@ -239,24 +239,5 @@ void main() {
       expect(receivedCmds.length, 1);
       expect(authKeyProvider.refreshCallCount, 0);
     });
-
-    test(
-        'when shouldRetryOnAuthFailed is false '
-        'then no retry is attempted.', () async {
-      shouldFailFirstCall = true;
-
-      var connectionDetails = MethodStreamConnectionDetailsBuilder()
-          .withAuthKeyProvider(authKeyProvider)
-          .build();
-
-      await expectLater(
-        streamManager.openMethodStream(connectionDetails, false),
-        throwsA(isA<OpenMethodStreamException>().having((e) => e.responseType,
-            'responseType', OpenMethodStreamResponseType.authenticationFailed)),
-      );
-
-      expect(receivedCmds.length, 1);
-      expect(authKeyProvider.refreshCallCount, 0);
-    });
   });
 }

@@ -146,21 +146,5 @@ void main() {
 
       expect(authKeyProvider.refreshCallCount, 0);
     });
-
-    test(
-        'when shouldRetryOnAuthFailed is false '
-        'then no retry is attempted.', () async {
-      requestDelegate.exceptionToThrow = unauthorizedException;
-
-      await expectLater(
-        client.callServerEndpoint<String>(
-            'test', 'method', {'arg': 'value'}, false),
-        throwsA(isA<ServerpodClientException>()
-            .having((e) => e.statusCode, 'statusCode', 401)),
-      );
-
-      expect(requestDelegate.callCount, 1);
-      expect(authKeyProvider.refreshCallCount, 0);
-    });
   });
 }

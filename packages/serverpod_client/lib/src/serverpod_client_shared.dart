@@ -475,9 +475,31 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<T> callServerEndpoint<T>(
     String endpoint,
     String method,
-    Map<String, dynamic> args, [
-    bool shouldRetryOnAuthFailed = true,
-  ]) async {
+    Map<String, dynamic> args,
+  ) async {
+    try {
+      return await _callServerEndpoint(endpoint, method, args);
+    } on ServerpodClientUnauthorized catch (_) {
+      final keyProvider = authKeyProvider;
+
+      // A first failure here with 401 can be due to an access token expiration.
+      // We will retry only once in such case, and only if the `authKeyProvider`
+      // exposes a `refreshAuthKey` method (like JWT).
+      final shouldRefreshAuth = keyProvider is RefresherClientAuthKeyProvider &&
+          await keyProvider.refreshAuthKey();
+
+      if (shouldRefreshAuth) {
+        return _callServerEndpoint(endpoint, method, args);
+      }
+      rethrow;
+    }
+  }
+
+  Future<T> _callServerEndpoint<T>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args,
+  ) async {
     var callContext = MethodCallContext(
       endpointName: endpoint,
       methodName: method,
@@ -506,18 +528,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
       return result;
     } catch (e, s) {
       onFailedCall?.call(callContext, e, s);
-
-      // A first failure here with 401 can be due to an access token expiration.
-      // We will retry only once in such case, and only if the `authKeyProvider`
-      // exposes a `refreshAuthKey` method (like JWT).
-      final keyProvider = authKeyProvider;
-      if (e is ServerpodClientException &&
-          e.statusCode == 401 &&
-          keyProvider is RefresherClientAuthKeyProvider &&
-          shouldRetryOnAuthFailed &&
-          await keyProvider.refreshAuthKey()) {
-        return callServerEndpoint(endpoint, method, args, false);
-      }
       rethrow;
     }
   }
