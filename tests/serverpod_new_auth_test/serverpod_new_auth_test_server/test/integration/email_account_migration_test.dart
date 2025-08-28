@@ -14,9 +14,12 @@ void main() {
       const legacyPassword = 'LegacyPass123!';
 
       late int legacyUserId;
-      late String? receivedVerificationCode;
+      String? receivedVerificationCode;
 
       setUp(() async {
+        // Initialize receivedVerificationCode to null
+        receivedVerificationCode = null;
+
         // Create a legacy user (non-migrated)
         legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
             .createLegacyUser(
@@ -110,10 +113,14 @@ void main() {
 
       late int legacyUserId;
       late UuidValue newAuthUserId;
-      late String? receivedVerificationCode;
-      late UuidValue? receivedPasswordResetRequestId;
+      String? receivedVerificationCode;
+      UuidValue? receivedPasswordResetRequestId;
 
       setUp(() async {
+        // Initialize variables to null
+        receivedVerificationCode = null;
+        receivedPasswordResetRequestId = null;
+
         // Create a legacy user
         legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
             .createLegacyUser(
