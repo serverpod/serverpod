@@ -112,7 +112,7 @@ class TestSecureKeyValueStorage extends SecureClientAuthInfoStorage {
   });
 
   static TestSecureKeyValueStorage create({String? authInfoStorageKey}) {
-    final delegate = FlutterSecureStorage();
+    const delegate = FlutterSecureStorage();
     final testStorage = TestSecureKeyValueStorage._(
       secureStorage: delegate,
       authInfoStorageKey: authInfoStorageKey,
