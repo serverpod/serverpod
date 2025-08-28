@@ -1,3 +1,8 @@
+@OnPlatform({
+  'browser': Skip('HTTP server tests are not supported in browser'),
+})
+library;
+
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:relic/relic.dart';
 import 'package:test/test.dart';
