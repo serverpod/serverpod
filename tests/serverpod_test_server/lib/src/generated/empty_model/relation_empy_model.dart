@@ -392,6 +392,46 @@ class RelationEmptyModelRepository {
     );
   }
 
+  /// Updates a single [RelationEmptyModel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RelationEmptyModel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<RelationEmptyModelTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RelationEmptyModel>(
+      id,
+      columnValues: columnValues(RelationEmptyModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RelationEmptyModel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<RelationEmptyModel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RelationEmptyModelTable> columnValues,
+    required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RelationEmptyModel>(
+      columnValues: columnValues(RelationEmptyModel.t),
+      where: where(RelationEmptyModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [RelationEmptyModel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -397,6 +397,48 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  /// Updates a single [EmailCreateAccountRequest] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailCreateAccountRequest?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailCreateAccountRequest>(
+      id,
+      columnValues: columnValues(EmailCreateAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailCreateAccountRequest]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailCreateAccountRequest>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailCreateAccountRequest>(
+      columnValues: columnValues(EmailCreateAccountRequest.t),
+      where: where(EmailCreateAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailCreateAccountRequest]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

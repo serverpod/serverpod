@@ -383,6 +383,46 @@ class UserNoteRepository {
     );
   }
 
+  /// Updates a single [UserNote] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNote?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNote>(
+      id,
+      columnValues: columnValues(UserNote.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNote]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserNote>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserNoteTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNote>(
+      columnValues: columnValues(UserNote.t),
+      where: where(UserNote.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserNote]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

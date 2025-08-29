@@ -525,6 +525,46 @@ class QueryLogEntryRepository {
     );
   }
 
+  /// Updates a single [QueryLogEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<QueryLogEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<QueryLogEntryTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<QueryLogEntry>(
+      id,
+      columnValues: columnValues(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [QueryLogEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<QueryLogEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<QueryLogEntryTable> columnValues,
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<QueryLogEntry>(
+      columnValues: columnValues(QueryLogEntry.t),
+      where: where(QueryLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [QueryLogEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -352,6 +352,46 @@ class ChannelRepository {
     );
   }
 
+  /// Updates a single [Channel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Channel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ChannelTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Channel>(
+      id,
+      columnValues: columnValues(Channel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Channel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Channel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChannelTable> columnValues,
+    required _i1.WhereExpressionBuilder<ChannelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChannelTable>? orderBy,
+    _i1.OrderByListBuilder<ChannelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Channel>(
+      columnValues: columnValues(Channel.t),
+      where: where(Channel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Channel.t),
+      orderByList: orderByList?.call(Channel.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Channel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

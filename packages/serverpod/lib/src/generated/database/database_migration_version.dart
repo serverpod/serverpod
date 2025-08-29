@@ -377,6 +377,48 @@ class DatabaseMigrationVersionRepository {
     );
   }
 
+  /// Updates a single [DatabaseMigrationVersion] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DatabaseMigrationVersion?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DatabaseMigrationVersionTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DatabaseMigrationVersion>(
+      id,
+      columnValues: columnValues(DatabaseMigrationVersion.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DatabaseMigrationVersion]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DatabaseMigrationVersion>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DatabaseMigrationVersionTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DatabaseMigrationVersion>(
+      columnValues: columnValues(DatabaseMigrationVersion.t),
+      where: where(DatabaseMigrationVersion.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DatabaseMigrationVersion]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

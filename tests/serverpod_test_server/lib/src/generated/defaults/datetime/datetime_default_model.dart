@@ -384,6 +384,46 @@ class DateTimeDefaultModelRepository {
     );
   }
 
+  /// Updates a single [DateTimeDefaultModel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DateTimeDefaultModel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DateTimeDefaultModel>(
+      id,
+      columnValues: columnValues(DateTimeDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DateTimeDefaultModel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DateTimeDefaultModel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultModelTable> columnValues,
+    required _i1.WhereExpressionBuilder<DateTimeDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DateTimeDefaultModel>(
+      columnValues: columnValues(DateTimeDefaultModel.t),
+      where: where(DateTimeDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DateTimeDefaultModel]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

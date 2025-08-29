@@ -354,6 +354,46 @@ class DoubleDefaultRepository {
     );
   }
 
+  /// Updates a single [DoubleDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefault>(
+      id,
+      columnValues: columnValues(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultTable> columnValues,
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefault>(
+      columnValues: columnValues(DoubleDefault.t),
+      where: where(DoubleDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DoubleDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

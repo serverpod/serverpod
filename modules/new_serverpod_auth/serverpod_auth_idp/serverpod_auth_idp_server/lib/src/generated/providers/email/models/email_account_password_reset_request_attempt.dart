@@ -389,6 +389,53 @@ class EmailAccountPasswordResetRequestAttemptRepository {
     );
   }
 
+  /// Updates a single [EmailAccountPasswordResetRequestAttempt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountPasswordResetRequestAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountPasswordResetRequestAttempt>(
+      id,
+      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountPasswordResetRequestAttempt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountPasswordResetRequestAttempt>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        columnValues,
+    required _i1
+        .WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestAttemptTable>?
+        orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountPasswordResetRequestAttempt>(
+      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
+      where: where(EmailAccountPasswordResetRequestAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequestAttempt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountPasswordResetRequestAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

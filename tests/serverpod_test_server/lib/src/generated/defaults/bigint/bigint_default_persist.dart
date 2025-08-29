@@ -339,6 +339,46 @@ class BigIntDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [BigIntDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultPersistTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefaultPersist>(
+      id,
+      columnValues: columnValues(BigIntDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultPersistTable> columnValues,
+    required _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefaultPersist>(
+      columnValues: columnValues(BigIntDefaultPersist.t),
+      where: where(BigIntDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultPersist.t),
+      orderByList: orderByList?.call(BigIntDefaultPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [BigIntDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

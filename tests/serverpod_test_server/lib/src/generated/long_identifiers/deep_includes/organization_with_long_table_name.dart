@@ -485,6 +485,49 @@ class OrganizationWithLongTableNameRepository {
     );
   }
 
+  /// Updates a single [OrganizationWithLongTableName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<OrganizationWithLongTableName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<OrganizationWithLongTableName>(
+      id,
+      columnValues: columnValues(OrganizationWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [OrganizationWithLongTableName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<OrganizationWithLongTableName>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<OrganizationWithLongTableName>(
+      columnValues: columnValues(OrganizationWithLongTableName.t),
+      where: where(OrganizationWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [OrganizationWithLongTableName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

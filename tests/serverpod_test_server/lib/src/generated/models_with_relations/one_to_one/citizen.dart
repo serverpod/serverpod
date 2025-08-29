@@ -511,6 +511,46 @@ class CitizenRepository {
     );
   }
 
+  /// Updates a single [Citizen] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Citizen?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CitizenTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Citizen>(
+      id,
+      columnValues: columnValues(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Citizen>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CitizenTable> columnValues,
+    required _i1.WhereExpressionBuilder<CitizenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Citizen>(
+      columnValues: columnValues(Citizen.t),
+      where: where(Citizen.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Citizen]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
