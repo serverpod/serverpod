@@ -1,0 +1,23 @@
+### Data to be sent when adding a Passkey to an existing user.
+class: PasskeyRegistrationRequest
+fields:
+  ### The ID of the solved challenge.
+  challengeId: UuidValue
+
+  ### The ID of the public key.
+  keyId: ByteData
+
+  ### The contents of the public key.
+  publicKey: ByteData
+
+  ### The algorithm of the public key.
+  publicKeyAlgorithm: int
+
+  ### The authenticator's JSON data.
+  clientDataJSON: ByteData
+
+  ### The authenticator's attestation object.
+  attestationObject: ByteData
+
+  ### The authenticator's data.
+  authenticatorData: ByteData

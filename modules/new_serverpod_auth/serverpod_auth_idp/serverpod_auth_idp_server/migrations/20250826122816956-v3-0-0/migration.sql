@@ -167,6 +167,35 @@ CREATE UNIQUE INDEX "serverpod_auth_google_account_user_identifier" ON "serverpo
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "serverpod_auth_idp_passkey_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "authUserId" uuid NOT NULL,
+    "createdAt" timestamp without time zone NOT NULL,
+    "keyId" bytea NOT NULL,
+    "keyIdBase64" text NOT NULL,
+    "clientDataJSON" bytea NOT NULL,
+    "publicKey" bytea NOT NULL,
+    "publicKeyAlgorithm" bigint NOT NULL,
+    "attestationObject" bytea NOT NULL,
+    "authenticatorData" bytea NOT NULL,
+    "originalChallenge" bytea NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_passkey_account_key_id_base64" ON "serverpod_auth_idp_passkey_account" USING btree ("keyIdBase64");
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_idp_passkey_challenge" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "createdAt" timestamp without time zone NOT NULL,
+    "challenge" bytea NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "serverpod_cloud_storage" (
     "id" bigserial PRIMARY KEY,
     "storageId" text NOT NULL,
@@ -507,6 +536,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_google_account"
 --
 -- ACTION CREATE FOREIGN KEY
 --
+ALTER TABLE ONLY "serverpod_auth_idp_passkey_account"
+    ADD CONSTRAINT "serverpod_auth_idp_passkey_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
 ALTER TABLE ONLY "serverpod_log"
     ADD CONSTRAINT "serverpod_log_fk_0"
     FOREIGN KEY("sessionLogId")
@@ -585,9 +624,9 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20250825102408113-v3-0-0', now())
+    VALUES ('serverpod_auth_idp', '20250826122816956-v3-0-0', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102408113-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20250826122816956-v3-0-0', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

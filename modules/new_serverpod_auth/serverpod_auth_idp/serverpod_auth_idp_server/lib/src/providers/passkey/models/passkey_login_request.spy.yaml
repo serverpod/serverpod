@@ -1,0 +1,17 @@
+### Data to be sent for a Passkey login.
+class: PasskeyLoginRequest
+fields:
+  ### The ID of the solved challenge.
+  challengeId: UuidValue
+
+  ### The ID of the key used.
+  keyId: ByteData
+
+  ### The client authenticator's response data.
+  authenticatorData: ByteData
+
+  ### The client authenticator's JSON data.
+  clientDataJSON: ByteData
+
+  ### The signature of the client's key on the challenge.
+  signature: ByteData

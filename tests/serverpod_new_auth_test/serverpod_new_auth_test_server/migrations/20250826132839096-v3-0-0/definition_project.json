@@ -11,16 +11,16 @@
       "version": "20250825102413395-v3-0-0"
     },
     {
+      "module": "serverpod_auth_core",
+      "version": "20250825102357155-v3-0-0"
+    },
+    {
       "module": "serverpod_auth_idp",
-      "version": "20250825102408113-v3-0-0"
+      "version": "20250826122816956-v3-0-0"
     },
     {
       "module": "serverpod_auth_migration",
-      "version": "20250825102402436-v3-0-0"
-    },
-    {
-      "module": "serverpod_auth_core",
-      "version": "20250825102357155-v3-0-0"
+      "version": "20250825131024210-v3-0-0"
     },
     {
       "module": "serverpod_auth",

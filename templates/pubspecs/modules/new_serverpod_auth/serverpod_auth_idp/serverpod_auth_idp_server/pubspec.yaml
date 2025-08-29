@@ -15,6 +15,7 @@ dependencies:
   googleapis_auth: ">=1.6.0 <3.0.0"
   http: ">=1.1.0 <2.0.0"
   meta: ^1.11.0
+  passkeys_server: ^0.4.0
   pointycastle: '>=3.7.4 <5.0.0'
   serverpod: SERVERPOD_VERSION
   serverpod_auth_core_server: SERVERPOD_VERSION
