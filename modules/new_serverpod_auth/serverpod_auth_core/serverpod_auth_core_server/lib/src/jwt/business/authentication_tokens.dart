@@ -121,9 +121,12 @@ abstract final class AuthenticationTokens {
       transaction: transaction,
     );
 
+    final token = _jwtUtil.createJwt(refreshToken);
+
     return AuthSuccess(
       authStrategy: AuthStrategy.jwt,
-      token: _jwtUtil.createJwt(refreshToken),
+      token: token,
+      tokenExpiresAt: _jwtUtil.extractExpirationDate(token),
       refreshToken: RefreshTokenString.buildRefreshTokenString(
         refreshToken: refreshToken,
         rotatingSecret: secret,

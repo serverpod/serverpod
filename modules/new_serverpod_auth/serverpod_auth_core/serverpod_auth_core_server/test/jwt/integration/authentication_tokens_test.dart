@@ -44,6 +44,25 @@ void main() {
       );
     });
 
+    test('when requesting a new token pair, then expiration date is returned.',
+        () async {
+      final authSuccess = await AuthenticationTokens.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+
+      final expirationExpected = DateTime.now()
+          .toUtc()
+          .add(AuthenticationTokens.config.accessTokenLifetime)
+          .subtract(const Duration(seconds: 5));
+
+      expect(authSuccess.tokenExpiresAt!.isAfter(expirationExpected), isTrue);
+    });
+
     test(
         'when requesting a new token pair with scopes, then those are visible on the initial access token.',
         () async {

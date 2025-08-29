@@ -18,6 +18,7 @@ abstract class AuthSuccess
   AuthSuccess._({
     required this.authStrategy,
     required this.token,
+    this.tokenExpiresAt,
     this.refreshToken,
     required this.authUserId,
     required this.scopeNames,
@@ -26,6 +27,7 @@ abstract class AuthSuccess
   factory AuthSuccess({
     required _i2.AuthStrategy authStrategy,
     required String token,
+    DateTime? tokenExpiresAt,
     String? refreshToken,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
@@ -36,6 +38,10 @@ abstract class AuthSuccess
       authStrategy: _i2.AuthStrategy.fromJson(
           (jsonSerialization['authStrategy'] as String)),
       token: jsonSerialization['token'] as String,
+      tokenExpiresAt: jsonSerialization['tokenExpiresAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['tokenExpiresAt']),
       refreshToken: jsonSerialization['refreshToken'] as String?,
       authUserId:
           _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
@@ -50,6 +56,9 @@ abstract class AuthSuccess
 
   /// The authentication token, in the case of JWT this is the access token.
   String token;
+
+  /// The token expiration date in UTC, if any.
+  DateTime? tokenExpiresAt;
 
   /// Optional refresh token.
   String? refreshToken;
@@ -68,6 +77,7 @@ abstract class AuthSuccess
   AuthSuccess copyWith({
     _i2.AuthStrategy? authStrategy,
     String? token,
+    DateTime? tokenExpiresAt,
     String? refreshToken,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -77,6 +87,7 @@ abstract class AuthSuccess
     return {
       'authStrategy': authStrategy.toJson(),
       'token': token,
+      if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
       if (refreshToken != null) 'refreshToken': refreshToken,
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -88,6 +99,7 @@ abstract class AuthSuccess
     return {
       'authStrategy': authStrategy.toJson(),
       'token': token,
+      if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
       if (refreshToken != null) 'refreshToken': refreshToken,
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -106,12 +118,14 @@ class _AuthSuccessImpl extends AuthSuccess {
   _AuthSuccessImpl({
     required _i2.AuthStrategy authStrategy,
     required String token,
+    DateTime? tokenExpiresAt,
     String? refreshToken,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) : super._(
           authStrategy: authStrategy,
           token: token,
+          tokenExpiresAt: tokenExpiresAt,
           refreshToken: refreshToken,
           authUserId: authUserId,
           scopeNames: scopeNames,
@@ -124,6 +138,7 @@ class _AuthSuccessImpl extends AuthSuccess {
   AuthSuccess copyWith({
     _i2.AuthStrategy? authStrategy,
     String? token,
+    Object? tokenExpiresAt = _Undefined,
     Object? refreshToken = _Undefined,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -131,6 +146,8 @@ class _AuthSuccessImpl extends AuthSuccess {
     return AuthSuccess(
       authStrategy: authStrategy ?? this.authStrategy,
       token: token ?? this.token,
+      tokenExpiresAt:
+          tokenExpiresAt is DateTime? ? tokenExpiresAt : this.tokenExpiresAt,
       refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
