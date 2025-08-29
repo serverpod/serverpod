@@ -24,60 +24,101 @@ void main() {
         });
 
         test(
-            'when updating where number equals 1 then all matching rows are updated',
-            () async {
-          var updated = await UniqueData.db.updateWhere(
-            session,
-            columnValues: (t) => [t.number(42)],
-            where: (t) => t.number.equals(1),
-          );
+          'when updating a single column where number equals 1 then all matching rows are updated',
+          () async {
+            const updatedNumber = 42;
 
-          expect(updated, hasLength(2));
-          var numbers = updated.map((row) => row.number).toList();
-          expect(numbers, everyElement(42));
-        });
+            var updated = await UniqueData.db.updateWhere(
+              session,
+              columnValues: (t) => [t.number(updatedNumber)],
+              where: (t) => t.number.equals(1),
+            );
 
-        test(
-            'when updating where number equals 1 then non-selected columns remain unchanged',
-            () async {
-          var updated = await UniqueData.db.updateWhere(
-            session,
-            columnValues: (t) => [t.number(42)],
-            where: (t) => t.number.equals(1),
-          );
+            expect(updated, hasLength(2));
+            var numbers = updated.map((row) => row.number);
+            expect(numbers, everyElement(updatedNumber));
 
-          var emails = updated.map((e) => e.email).toSet();
-          expect(emails,
-              containsAll(['first@serverpod.dev', 'duplicate@serverpod.dev']));
-        });
+            var dbRows = await UniqueData.db.find(
+              session,
+              where: (t) => t.number.equals(updatedNumber),
+            );
+            expect(dbRows, hasLength(2));
+            var dbNumbers = dbRows.map((row) => row.number);
+            expect(dbNumbers, everyElement(updatedNumber));
+          },
+        );
 
         test(
-            'when updating with complex where clause then only matching rows are updated',
-            () async {
-          var updated = await UniqueData.db.updateWhere(
-            session,
-            columnValues: (t) => [t.number(200)],
-            where: (t) => t.number.equals(2) | t.number.equals(3),
-          );
+          'when updating a single column then non-selected columns remain unchanged',
+          () async {
+            const updatedNumber = 42;
 
-          expect(updated, hasLength(2));
-          var numbers = updated.map((row) => row.number).toList();
-          expect(numbers, everyElement(200));
-        });
+            var updated = await UniqueData.db.updateWhere(
+              session,
+              columnValues: (t) => [t.number(updatedNumber)],
+              where: (t) => t.number.equals(1),
+            );
+
+            expect(updated, hasLength(2));
+            var numbers = updated.map((row) => row.number);
+            expect(numbers, everyElement(updatedNumber));
+
+            var emails = updated.map((e) => e.email);
+            expect(
+              emails,
+              containsAll(['first@serverpod.dev', 'duplicate@serverpod.dev']),
+            );
+          },
+        );
 
         test(
-            'when updating with complex where clause then non-selected columns remain unchanged',
-            () async {
-          var updated = await UniqueData.db.updateWhere(
-            session,
-            columnValues: (t) => [t.number(200)],
-            where: (t) => t.number.equals(2) | t.number.equals(3),
-          );
+          'when updating a single column with complex where clause '
+          'then only matching rows are updated',
+          () async {
+            const updatedComplexNumber = 200;
 
-          var emails = updated.map((e) => e.email).toSet();
-          expect(emails,
-              containsAll(['second@serverpod.dev', 'third@serverpod.dev']));
-        });
+            var updated = await UniqueData.db.updateWhere(
+              session,
+              columnValues: (t) => [t.number(updatedComplexNumber)],
+              where: (t) => t.number.equals(2) | t.number.equals(3),
+            );
+
+            expect(updated, hasLength(2));
+            var numbers = updated.map((row) => row.number);
+            expect(numbers, everyElement(updatedComplexNumber));
+
+            var dbRows = await UniqueData.db.find(
+              session,
+              where: (t) => t.number.equals(updatedComplexNumber),
+            );
+            expect(dbRows, hasLength(2));
+            var emails = dbRows.map((e) => e.email);
+            expect(
+              emails,
+              containsAll(['second@serverpod.dev', 'third@serverpod.dev']),
+            );
+          },
+        );
+
+        test(
+          'when updating a single column with complex where clause '
+          'then non-selected columns remain unchanged',
+          () async {
+            const updatedComplexNumber = 200;
+
+            var updated = await UniqueData.db.updateWhere(
+              session,
+              columnValues: (t) => [t.number(updatedComplexNumber)],
+              where: (t) => t.number.equals(2) | t.number.equals(3),
+            );
+
+            var emails = updated.map((e) => e.email);
+            expect(
+              emails,
+              containsAll(['second@serverpod.dev', 'third@serverpod.dev']),
+            );
+          },
+        );
       });
 
       group('Given no matching entries', () {
@@ -90,16 +131,20 @@ void main() {
           );
         });
 
-        test('when updating where no rows match then empty list is returned',
-            () async {
-          var updated = await UniqueData.db.updateWhere(
-            session,
-            columnValues: (t) => [t.number(999)],
-            where: (t) => t.number.equals(999),
-          );
+        test(
+          'when updating where no rows match then empty list is returned',
+          () async {
+            const nonExistingNumber = 999;
 
-          expect(updated, isEmpty);
-        });
+            var updated = await UniqueData.db.updateWhere(
+              session,
+              columnValues: (t) => [t.number(nonExistingNumber)],
+              where: (t) => t.number.equals(nonExistingNumber),
+            );
+
+            expect(updated, isEmpty);
+          },
+        );
       });
 
       group('Given Types entries with different values', () {
@@ -133,25 +178,41 @@ void main() {
         });
 
         test(
-            'when updating specific columns then only those columns are updated and others remain unchanged',
-            () async {
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.anInt(42), t.aString('updated')],
-            where: (t) => t.anInt.equals(1),
-          );
+          'when updating multiple specific columns then only those columns are updated and others remain unchanged',
+          () async {
+            const updatedInt = 42;
+            const updatedString = 'updated';
 
-          expect(updated.length, 2);
-          expect(updated.every((row) => row.anInt == 42), isTrue);
-          expect(updated.every((row) => row.aString == 'updated'), isTrue);
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) =>
+                  [t.anInt(updatedInt), t.aString(updatedString)],
+              where: (t) => t.anInt.equals(1),
+            );
 
-          // Verify non-matching row was not updated
-          var nonMatching = await Types.db.findFirstRow(
-            session,
-            where: (t) => t.anInt.equals(2),
-          );
-          expect(nonMatching!.aString, 'second');
-        });
+            expect(updated, hasLength(2));
+            var updatedNumbers = updated.map((row) => row.anInt);
+            expect(updatedNumbers, everyElement(updatedInt));
+            var updatedStrings = updated.map((row) => row.aString);
+            expect(updatedStrings, everyElement(updatedString));
+
+            var dbUpdatedRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(updatedInt),
+            );
+            expect(dbUpdatedRows, hasLength(2));
+            var dbUpdatedNumbers = dbUpdatedRows.map((row) => row.anInt);
+            expect(dbUpdatedNumbers, everyElement(updatedInt));
+            var dbUpdatedStrings = dbUpdatedRows.map((row) => row.aString);
+            expect(dbUpdatedStrings, everyElement(updatedString));
+
+            var nonMatching = await Types.db.findFirstRow(
+              session,
+              where: (t) => t.anInt.equals(2),
+            );
+            expect(nonMatching!.aString, 'second');
+          },
+        );
       });
 
       group('Given Types entries with null values', () {
@@ -166,6 +227,37 @@ void main() {
                 aString: null,
                 aDateTime: null,
               ),
+            ],
+          );
+        });
+
+        test(
+          'when updating where anInt is null then only null entries are updated',
+          () async {
+            const updatedIntFromNull = 99;
+            const updatedStringFromNull = 'was_null';
+
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [
+                t.anInt(updatedIntFromNull),
+                t.aString(updatedStringFromNull)
+              ],
+              where: (t) => t.anInt.equals(null),
+            );
+
+            expect(updated, hasLength(1));
+            expect(updated.first.anInt, updatedIntFromNull);
+            expect(updated.first.aString, updatedStringFromNull);
+          },
+        );
+      });
+
+      group('Given Types entries with non-null values', () {
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
               Types(
                 anInt: 1,
                 aBool: true,
@@ -178,44 +270,28 @@ void main() {
         });
 
         test(
-            'when updating where anInt is null then only null entries are updated',
-            () async {
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.anInt(99), t.aString('was_null')],
-            where: (t) => t.anInt.equals(null),
-          );
+          'when updating non-null values to null then the columns are set to null',
+          () async {
+            var initial = await Types.db.findFirstRow(
+              session,
+              where: (t) => t.anInt.equals(1),
+            );
+            expect(initial!.anInt, 1);
+            expect(initial.aString, 'value');
 
-          expect(updated.length, 1);
-          expect(updated.first.anInt, 99);
-          expect(updated.first.aString, 'was_null');
-        });
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.anInt(null), t.aString(null)],
+              where: (t) => t.anInt.equals(1),
+            );
 
-        test(
-            'when updating non-null values to null then the columns are set to null',
-            () async {
-          // First verify we have a row with values
-          var initial = await Types.db.findFirstRow(
-            session,
-            where: (t) => t.anInt.equals(1),
-          );
-          expect(initial!.anInt, 1);
-          expect(initial.aString, 'value');
-
-          // Now set them to null
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.anInt(null), t.aString(null)],
-            where: (t) => t.anInt.equals(1),
-          );
-
-          expect(updated, hasLength(1));
-          expect(updated.first.anInt, isNull);
-          expect(updated.first.aString, isNull);
-          // Other fields should remain unchanged
-          expect(updated.first.aBool, true);
-          expect(updated.first.aDouble, 1.5);
-        });
+            expect(updated, hasLength(1));
+            expect(updated.first.anInt, isNull);
+            expect(updated.first.aString, isNull);
+            expect(updated.first.aBool, true);
+            expect(updated.first.aDouble, 1.5);
+          },
+        );
       });
 
       group('Given 5 matching entries', () {
@@ -258,130 +334,152 @@ void main() {
         });
 
         test('when updating with limit 3 then 3 rows are updated', () async {
+          const limitedUpdateString = 'limited_update';
+
           var updated = await Types.db.updateWhere(
             session,
-            columnValues: (t) => [t.aString('limited_update')],
+            columnValues: (t) => [t.aString(limitedUpdateString)],
             where: (t) => t.anInt.equals(100),
             orderBy: (t) => t.aDouble,
             limit: 3,
           );
 
           expect(updated, hasLength(3));
-          expect(updated.every((r) => r.aString == 'limited_update'), isTrue);
+          var updatedStrings = updated.map((r) => r.aString);
+          expect(updatedStrings, everyElement(limitedUpdateString));
         });
 
-        test('when updating with limit 3 then remaining rows are unaffected',
-            () async {
-          await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString('limited_update')],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            limit: 3,
-          );
+        test(
+          'when updating with limit 3 then remaining rows are unaffected',
+          () async {
+            const limitedUpdateString = 'limited_update';
 
-          var allRows = await Types.db.find(
-            session,
-            where: (t) => t.anInt.equals(100),
-          );
-          var unchangedRows =
-              allRows.where((r) => r.aString != 'limited_update').toList();
-          expect(unchangedRows, hasLength(2));
-          expect(unchangedRows.map((r) => r.aString).toSet(),
-              containsAll(['entry4', 'entry5']));
-        });
+            await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.aString(limitedUpdateString)],
+              where: (t) => t.anInt.equals(100),
+              orderBy: (t) => t.aDouble,
+              limit: 3,
+            );
 
-        test('when using orderDescending then rows are ordered correctly',
-            () async {
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString('ordered_update')],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            orderDescending: true,
-            limit: 2,
-          );
+            var allRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(100),
+            );
+            var unchangedRows =
+                allRows.where((r) => r.aString != limitedUpdateString).toList();
+            expect(unchangedRows, hasLength(2));
+            expect(unchangedRows.map((r) => r.aString).toSet(),
+                containsAll(['entry4', 'entry5']));
+          },
+        );
 
-          expect(updated, hasLength(2));
-          expect(updated[0].aDouble, 5.0); // Highest value first
-          expect(updated[1].aDouble, 4.0); // Second highest
-        });
+        test(
+          'when using orderDescending then rows are ordered correctly',
+          () async {
+            const orderedUpdateString = 'ordered_update';
+
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.aString(orderedUpdateString)],
+              where: (t) => t.anInt.equals(100),
+              orderBy: (t) => t.aDouble,
+              orderDescending: true,
+              limit: 2,
+            );
+
+            expect(updated, hasLength(2));
+            expect(updated[0].aDouble, 5.0);
+            expect(updated[1].aDouble, 4.0);
+          },
+        );
 
         test('when using offset 2 then first 2 rows are skipped', () async {
+          const offsetUpdateString = 'offset_update';
+
           var updated = await Types.db.updateWhere(
             session,
-            columnValues: (t) => [t.aString('offset_update')],
+            columnValues: (t) => [t.aString(offsetUpdateString)],
             where: (t) => t.anInt.equals(100),
             orderBy: (t) => t.aDouble,
             offset: 2,
           );
 
-          // Should update rows after offset (entry3, entry4, entry5)
           expect(updated, hasLength(3));
           expect(updated.map((r) => r.aDouble).toSet(), {3.0, 4.0, 5.0});
         });
 
-        test('when using offset 2 then skipped rows remain unchanged',
-            () async {
-          await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString('offset_update')],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            offset: 2,
-          );
+        test(
+          'when using offset 2 then skipped rows remain unchanged',
+          () async {
+            const offsetUpdateString = 'offset_update';
 
-          var allRows = await Types.db.find(
-            session,
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-          );
+            await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.aString(offsetUpdateString)],
+              where: (t) => t.anInt.equals(100),
+              orderBy: (t) => t.aDouble,
+              offset: 2,
+            );
 
-          // First 2 rows should be unchanged
-          expect(allRows[0].aString, 'entry1');
-          expect(allRows[1].aString, 'entry2');
-        });
+            var allRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(100),
+              orderBy: (t) => t.aDouble,
+            );
 
-        test('when using limit 2 and offset 1 then rows 2-3 are updated',
-            () async {
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString('window_update')],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            limit: 2,
-            offset: 1,
-          );
+            expect(allRows[0].aString, 'entry1');
+            expect(allRows[1].aString, 'entry2');
+          },
+        );
 
-          // Should update exactly 2 rows: entry2 and entry3 (skip entry1)
-          expect(updated, hasLength(2));
-          expect(updated.map((r) => r.aDouble).toSet(), {2.0, 3.0});
-        });
+        test(
+          'when using limit 2 and offset 1 then rows 2-3 are updated',
+          () async {
+            const windowUpdateString = 'window_update';
 
-        test('when offset is larger than result set then no rows are updated',
-            () async {
-          // Try to update with offset larger than available rows
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString('should_not_update')],
-            where: (t) => t.anInt.equals(100),
-            offset: 1000,
-          );
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.aString(windowUpdateString)],
+              where: (t) => t.anInt.equals(100),
+              orderBy: (t) => t.aDouble,
+              limit: 2,
+              offset: 1,
+            );
 
-          expect(updated, isEmpty);
+            expect(updated, hasLength(2));
+            expect(updated.map((r) => r.aDouble).toSet(), {2.0, 3.0});
+          },
+        );
 
-          // Verify no rows were updated
-          var allRows = await Types.db.find(
-            session,
-            where: (t) => t.aString.equals('should_not_update'),
-          );
-          expect(allRows, isEmpty);
-        });
+        test(
+          'when offset is larger than result set then no rows are updated',
+          () async {
+            const shouldNotUpdateString = 'should_not_update';
+
+            var updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.aString(shouldNotUpdateString)],
+              where: (t) => t.anInt.equals(100),
+              offset: 1000,
+            );
+
+            expect(updated, isEmpty);
+
+            var allRows = await Types.db.find(
+              session,
+              where: (t) => t.aString.equals(shouldNotUpdateString),
+            );
+            expect(allRows, isEmpty);
+          },
+        );
 
         test('when limit is 0 then no rows are updated', () async {
+          const zeroLimitUpdateString = 'zero_limit_update';
+
           var updated = await Types.db.updateWhere(
             session,
-            columnValues: (t) => [t.aString('zero_limit_update')],
+            columnValues: (t) => [t.aString(zeroLimitUpdateString)],
             where: (t) => t.anInt.equals(100),
             limit: 0,
           );
@@ -391,47 +489,47 @@ void main() {
       });
 
       test(
-          'when updating within an aborted transaction then update reverted as part of transaction',
-          () async {
-        await UniqueData.db.insert(
-          session,
-          [
-            UniqueData(number: 1, email: 'first@serverpod.dev'),
-            UniqueData(number: 2, email: 'second@serverpod.dev'),
-            UniqueData(number: 1, email: 'duplicate@serverpod.dev'),
-          ],
-        );
+        'when updating within an aborted transaction then update reverted as part of transaction',
+        () async {
+          const transactionUpdatedNumber = 999;
+          const originalNumber = 1;
 
-        await expectLater(
-          session.db.transaction((transaction) async {
+          await UniqueData.db.insert(
+            session,
+            [
+              UniqueData(number: originalNumber, email: 'first@serverpod.dev'),
+              UniqueData(number: 2, email: 'second@serverpod.dev'),
+              UniqueData(
+                  number: originalNumber, email: 'duplicate@serverpod.dev'),
+            ],
+          );
+
+          await session.db.transaction((transaction) async {
+            var savepoint = await transaction.createSavepoint();
+
             var updated = await UniqueData.db.updateWhere(
               session,
-              columnValues: (t) => [t.number(999)],
-              where: (t) => t.number.equals(1),
+              columnValues: (t) => [t.number(transactionUpdatedNumber)],
+              where: (t) => t.number.equals(originalNumber),
               transaction: transaction,
             );
 
             expect(updated, hasLength(2));
-            expect(updated.every((row) => row.number == 999), isTrue);
+            expect(
+                updated.every((row) => row.number == transactionUpdatedNumber),
+                isTrue);
 
-            // Note: We use an exception to rollback the transaction instead of
-            // transaction.cancel() because the withServerpod test framework
-            // wraps all tests in a transaction for automatic rollback.
-            // Using transaction.cancel() causes the underlying connection to close,
-            // which conflicts with the test framework's transaction management.
-            throw Exception('Rollback transaction');
-          }),
-          throwsA(isA<Exception>()),
-        );
+            await savepoint.rollback();
+          });
 
-        // Verify the updates were rolled back
-        var results = await UniqueData.db.find(
-          session,
-          where: (t) => t.number.equals(1),
-        );
-        expect(results, hasLength(2));
-        expect(results.every((row) => row.number == 1), isTrue);
-      });
+          var results = await UniqueData.db.find(
+            session,
+            where: (t) => t.number.equals(originalNumber),
+          );
+          expect(results, hasLength(2));
+          expect(results.every((row) => row.number == originalNumber), isTrue);
+        },
+      );
     },
   );
 }
