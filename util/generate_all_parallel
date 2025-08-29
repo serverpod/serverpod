@@ -1,0 +1,357 @@
+#!/bin/bash
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/generate_all_parallel"
+    exit 1
+fi
+
+# Source the package arrays from all_packages
+source util/all_packages
+
+# Global flag to track if script is interrupted
+INTERRUPTED=false
+
+# Global array to track failed projects
+declare -a FAILED_PROJECTS=()
+
+# Flag for fail-fast mode (default: false)
+FAIL_FAST=false
+
+# Temporary file to track failures across parallel processes
+# Use mktemp with fallback for Windows Git Bash
+if command -v mktemp >/dev/null 2>&1; then
+    FAILURE_FILE=$(mktemp -t serverpod_generate_failures.XXXXXX 2>/dev/null || mktemp /tmp/serverpod_generate_failures.XXXXXX 2>/dev/null || mktemp)
+else
+    # Fallback for systems without mktemp
+    FAILURE_FILE="/tmp/serverpod_generate_failures.$$"
+fi
+> "$FAILURE_FILE"
+
+# Cleanup function to handle interruption
+cleanup() {
+    printf "\n\n⚠️  Script interrupted! Cleaning up...\n"
+    INTERRUPTED=true
+    
+    # Get all child process IDs
+    local pids=$(jobs -p)
+    
+    if [ -n "$pids" ]; then
+        # Kill all child processes
+        for pid in $pids; do
+            kill "$pid" 2>/dev/null || true
+        done
+        
+        # Wait a moment for processes to terminate
+        sleep 1
+        
+        # Force kill any remaining processes
+        pids=$(jobs -p)
+        if [ -n "$pids" ]; then
+            for pid in $pids; do
+                kill -9 "$pid" 2>/dev/null || true
+            done
+        fi
+    fi
+    
+    rm -f "$FAILURE_FILE"
+    
+    echo "✅ Cleanup complete. Exiting."
+    exit 130
+}
+
+# Set up signal trap for SIGINT (Ctrl+C) and SIGTERM
+trap cleanup SIGINT SIGTERM
+
+trap 'rm -f "$FAILURE_FILE"' EXIT
+
+# Function to get CPU core count (cross-platform)
+getCoreCount() {
+    local cores
+    
+    # Try getconf first (works on Linux, macOS, Windows Git Bash)
+    if command -v getconf >/dev/null 2>&1; then
+        cores=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Fallback to sysctl for macOS/BSD
+    if command -v sysctl >/dev/null 2>&1; then
+        cores=$(sysctl -n hw.ncpu 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Last resort: check /proc/cpuinfo on Linux
+    if [ -f /proc/cpuinfo ]; then
+        cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Default fallback
+    echo "4"
+}
+
+getDefaultBatchSize() {
+    local cores=$(getCoreCount)
+    local batch_size=$((cores - 2))
+    
+    # Ensure minimum of 1
+    if [ "$batch_size" -lt 1 ]; then
+        batch_size=1
+    fi
+    
+    echo "$batch_size"
+}
+
+generateServerUpgradeFiles() {
+    local project_name=$1
+    local path=$2
+    
+    echo "Starting: $project_name"
+    
+    (
+        cd "$path" || exit 1
+        
+        # The upgrade folder doesn't have all the files needed
+        # run `serverpod generate`. Therefore some project files have
+        # to temporarily be copied over from the base projectname_server template.
+
+        # Save current files
+        find . -type f | sort > before.txt
+
+        # Copy over project files temporarily from base projectname_server template
+        cp -rn $BASE/templates/serverpod_templates/projectname_server/lib/src/* lib/src/
+        cp $BASE/templates/serverpod_templates/projectname_server/pubspec.yaml pubspec.yaml
+        cp -r $BASE/templates/serverpod_templates/projectname_server/.dart_tool .
+
+        dart $CLI generate --no-analytics 2>&1 | while read line; do
+            echo "[$project_name] $line"
+        done
+        
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            exit 1
+        fi
+
+        # Save files after generation
+        find . -type f | sort > after.txt
+
+        # Remove all generated files except the test tools file.
+        # The generated endpoint files are already tracked in projectname_server,
+        # and should not be tracked again in the upgrade template.
+        test_tools_file="test/integration/test_tools/serverpod_test_tools.dart"
+        comm -13 before.txt after.txt | grep -v "$test_tools_file" | xargs rm
+        rm before.txt
+    )
+    local exit_status=$?
+    
+    if [ $exit_status -eq 0 ]; then
+        echo "✅ Done: $project_name"
+        return 0
+    else
+        echo "❌ Failed: $project_name"
+        echo "$project_name" >> "$FAILURE_FILE"
+        return $exit_status
+    fi
+}
+
+# Function to run generation and capture output
+generateProject() {
+    local name=$1
+    local path=$2
+    local extra_args=$3
+    
+    echo "Starting: $name"
+    
+    (
+        cd "$path" && dart "$CLI" generate --no-analytics $extra_args 2>&1 | while read line; do
+            echo "[$name] $line"
+        done
+        exit ${PIPESTATUS[0]}
+    )
+    local exit_status=$?
+    
+    if [ $exit_status -eq 0 ]; then
+        echo "✅ Done: $name"
+        return 0
+    else
+        echo "❌ Failed: $name"
+        echo "$name" >> "$FAILURE_FILE"
+        return $exit_status
+    fi
+}
+
+# Function to run a batch of projects in parallel
+runBatch() {
+    local batch_num=$1
+    shift
+    
+    # Check if script was interrupted
+    if [ "$INTERRUPTED" = true ]; then
+        echo "Skipping batch $batch_num due to interruption..."
+        return
+    fi
+    
+    printf "\n📦 Starting batch %s...\n\n" "$batch_num"
+    
+    # Array to store PIDs and their corresponding project commands
+    local pids=()
+    local pid_commands=()
+    
+    # Start all projects in this batch in background
+    for project in "$@"; do
+        eval "$project &"
+        local pid=$!
+        pids+=($pid)
+        pid_commands[$pid]="$project"
+    done
+    
+    # Wait for all processes in this batch to complete
+    local batch_had_failures=false
+    for pid in "${pids[@]}"; do
+        wait $pid
+        local exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+            batch_had_failures=true
+        fi
+    done
+    
+    # Check again after waiting
+    if [ "$INTERRUPTED" = true ]; then
+        echo "Batch $batch_num interrupted"
+    else
+        if [ "$batch_had_failures" = true ]; then
+            printf "\n⚠️  Batch %s completed with some failures\n\n" "$batch_num"
+            return 1
+        else
+            printf "\n✅ Batch %s completed successfully!\n\n" "$batch_num"
+            return 0
+        fi
+    fi
+}
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --fail-fast)
+            FAIL_FAST=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [--fail-fast]"
+            echo ""
+            echo "Options:"
+            echo "  --fail-fast    Exit immediately on first failure (default: continue all and report at end)"
+            echo "  --help, -h     Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
+# Set batch size (adjust this to control how many processes run at once)
+# Default is based on CPU cores (cores - 2, minimum 1)
+# Can be overridden by setting BATCH_SIZE environment variable
+BATCH_SIZE=${BATCH_SIZE:-$(getDefaultBatchSize)}
+
+echo "pub get cli"
+cd $CLI_DIR
+dart pub get
+
+printf "\n🚀 Starting batched parallel generation (batch size: %s)...\n\n" "$BATCH_SIZE"
+
+# Build generation tasks dynamically from SERVERPOD_SERVER_PATHS
+declare -a tasks=()
+
+for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
+    # Extract project name from path
+    project_name=$(basename "$path")
+    
+    # Check if this project needs experimental features
+    extra_args=""
+    for exp_path in "${SERVERPOD_SERVER_EXPERIMENTAL_PATHS[@]}"; do
+        if [ "$path" = "$exp_path" ]; then
+            extra_args="--experimental-features=all"
+            break
+        fi
+    done
+    
+    # Add regular generation task
+    tasks+=("generateProject \"$project_name\" \"$BASE/$path\" \"$extra_args\"")
+done
+
+# Add template servers
+for path in "${SERVERPOD_TEMPLATE_SERVERS[@]}"; do
+    project_name=$(basename "$path")
+    
+    # Special handling for projectname_server_upgrade
+    if [[ "$path" == *"projectname_server_upgrade"* ]]; then
+        tasks+=("generateServerUpgradeFiles \"$project_name\" \"$BASE/$path\"")
+    else
+        tasks+=("generateProject \"$project_name\" \"$BASE/$path\" \"\"")
+    fi
+done
+
+# Process tasks in batches
+batch_num=1
+batch=()
+
+for i in "${!tasks[@]}"; do
+    batch+=("${tasks[$i]}")
+    
+    # If batch is full or we're at the last task, run the batch
+    if [ ${#batch[@]} -eq $BATCH_SIZE ] || [ $i -eq $((${#tasks[@]} - 1)) ]; then
+        runBatch $batch_num "${batch[@]}"
+        batch_exit_code=$?
+        
+        # In fail-fast mode, check if batch failed and stop if it did
+        if [ "$FAIL_FAST" = true ] && [ $batch_exit_code -ne 0 ]; then
+            printf "\n⚠️  Fail-fast mode: Stopping after batch %s due to failures\n" "$batch_num"
+            break
+        fi
+        
+        batch=()
+        ((batch_num++))
+    fi
+done
+
+# Final summary and exit
+# Read failures from temp file
+if [ -f "$FAILURE_FILE" ] && [ -s "$FAILURE_FILE" ]; then
+    FAILED_PROJECTS=()
+    while IFS= read -r line; do
+        FAILED_PROJECTS+=("$line")
+    done < <(sort -u "$FAILURE_FILE")
+    
+    printf "\n❌ Generation completed with failures!\n\n"
+    echo "Failed projects (${#FAILED_PROJECTS[@]}):"
+    for project in "${FAILED_PROJECTS[@]}"; do
+        echo "  • $project"
+    done
+    echo ""
+    echo "Please check the output above for error details."
+    
+    rm -f "$FAILURE_FILE"
+    exit 1
+else
+    printf "\n✨ All generation tasks completed successfully!\n\n"
+    
+    rm -f "$FAILURE_FILE"
+    exit 0
+fi
