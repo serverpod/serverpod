@@ -1,7 +1,7 @@
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Test auth key provider that supports refresh functionality.
-class TestRefresherAuthKeyProvider extends RefresherClientAuthKeyProvider {
+class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   String? _authKey;
   bool? _refreshResult;
   final List<String> refreshLog = [];
@@ -12,7 +12,7 @@ class TestRefresherAuthKeyProvider extends RefresherClientAuthKeyProvider {
   }) : _authKey = initialAuthKey?.wrapAsBearerAuthHeader();
 
   @override
-  Future<String?> get notLockedAuthHeaderValue async => _authKey;
+  Future<String?> get authHeaderValue async => _authKey;
 
   @override
   Future<bool> refreshAuthKey() async {
