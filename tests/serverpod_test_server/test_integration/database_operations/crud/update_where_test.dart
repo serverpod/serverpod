@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -6,168 +8,149 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given updateWhere operations',
+    'Given database entries with matching criteria',
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
-      group('Given multiple UniqueData entries', () {
+      group(
+          'when updating where number equals specific value for a single column',
+          () {
+        const originalNumber1 = 1;
+        const originalNumber2 = 2;
+        const originalNumber3 = 3;
+        const updatedNumber = 42;
+
+        late List<Types> updated;
+
         setUp(() async {
-          await UniqueData.db.insert(
+          await Types.db.insert(
             session,
             [
-              UniqueData(number: 1, email: 'first@serverpod.dev'),
-              UniqueData(number: 2, email: 'second@serverpod.dev'),
-              UniqueData(number: 3, email: 'third@serverpod.dev'),
-              UniqueData(number: 1, email: 'duplicate@serverpod.dev'),
+              Types(anInt: originalNumber1, aString: 'first'),
+              Types(anInt: originalNumber2, aString: 'second'),
+              Types(anInt: originalNumber3, aString: 'third'),
+              Types(anInt: originalNumber1, aString: 'duplicate'),
             ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.anInt(updatedNumber)],
+            where: (t) => t.anInt.equals(originalNumber1),
           );
         });
 
-        test(
-          'when updating a single column where number equals 1 then all matching rows are updated',
-          () async {
-            const updatedNumber = 42;
+        test('then the updated result returns all matching updated rows', () {
+          expect(updated, hasLength(2));
+          var numbers = updated.map((row) => row.anInt);
+          expect(numbers, everyElement(updatedNumber));
+        });
 
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(updatedNumber)],
-              where: (t) => t.number.equals(1),
-            );
+        test('then all matching rows are updated in the database', () async {
+          var dbRows = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(updatedNumber),
+          );
+          expect(dbRows, hasLength(2));
+          var dbNumbers = dbRows.map((row) => row.anInt);
+          expect(dbNumbers, everyElement(updatedNumber));
+        });
 
-            expect(updated, hasLength(2));
-            var numbers = updated.map((row) => row.number);
-            expect(numbers, everyElement(updatedNumber));
-
-            var dbRows = await UniqueData.db.find(
-              session,
-              where: (t) => t.number.equals(updatedNumber),
-            );
-            expect(dbRows, hasLength(2));
-            var dbNumbers = dbRows.map((row) => row.number);
-            expect(dbNumbers, everyElement(updatedNumber));
-          },
-        );
-
-        test(
-          'when updating a single column then non-selected columns remain unchanged',
-          () async {
-            const updatedNumber = 42;
-
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(updatedNumber)],
-              where: (t) => t.number.equals(1),
-            );
-
-            expect(updated, hasLength(2));
-            var numbers = updated.map((row) => row.number);
-            expect(numbers, everyElement(updatedNumber));
-
-            var emails = updated.map((e) => e.email);
-            expect(
-              emails,
-              containsAll(['first@serverpod.dev', 'duplicate@serverpod.dev']),
-            );
-          },
-        );
-
-        test(
-          'when updating a single column with complex where clause '
-          'then only matching rows are updated',
-          () async {
-            const updatedComplexNumber = 200;
-
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(updatedComplexNumber)],
-              where: (t) => t.number.equals(2) | t.number.equals(3),
-            );
-
-            expect(updated, hasLength(2));
-            var numbers = updated.map((row) => row.number);
-            expect(numbers, everyElement(updatedComplexNumber));
-
-            var dbRows = await UniqueData.db.find(
-              session,
-              where: (t) => t.number.equals(updatedComplexNumber),
-            );
-            expect(dbRows, hasLength(2));
-            var emails = dbRows.map((e) => e.email);
-            expect(
-              emails,
-              containsAll(['second@serverpod.dev', 'third@serverpod.dev']),
-            );
-          },
-        );
-
-        test(
-          'when updating a single column with complex where clause '
-          'then non-selected columns remain unchanged',
-          () async {
-            const updatedComplexNumber = 200;
-
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(updatedComplexNumber)],
-              where: (t) => t.number.equals(2) | t.number.equals(3),
-            );
-
-            var emails = updated.map((e) => e.email);
-            expect(
-              emails,
-              containsAll(['second@serverpod.dev', 'third@serverpod.dev']),
-            );
-          },
-        );
+        test('then non-selected columns remain unchanged', () {
+          var emails = updated.map((e) => e.aString);
+          expect(
+            emails,
+            containsAll(['first', 'duplicate']),
+          );
+        });
       });
 
-      group('Given no matching entries', () {
+      group(
+          'when updating where number matches complex criteria for a single column',
+          () {
+        const originalNumber1 = 1;
+        const originalNumber2 = 2;
+        const originalNumber3 = 3;
+        const updatedComplexNumber = 200;
+
+        late List<Types> updated;
+
         setUp(() async {
-          await UniqueData.db.insert(
+          await Types.db.insert(
             session,
             [
-              UniqueData(number: 1, email: 'test@serverpod.dev'),
+              Types(anInt: originalNumber1, aString: 'first'),
+              Types(anInt: originalNumber2, aString: 'second'),
+              Types(anInt: originalNumber3, aString: 'third'),
+              Types(anInt: originalNumber1, aString: 'duplicate'),
             ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.anInt(updatedComplexNumber)],
+            where: (t) =>
+                t.anInt.equals(originalNumber2) |
+                t.anInt.equals(originalNumber3),
           );
         });
 
-        test(
-          'when updating where no rows match then empty list is returned',
-          () async {
-            const nonExistingNumber = 999;
+        test('then the updated result returns only matching rows', () {
+          expect(updated, hasLength(2));
+          var numbers = updated.map((row) => row.anInt);
+          expect(numbers, everyElement(updatedComplexNumber));
+        });
 
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(nonExistingNumber)],
-              where: (t) => t.number.equals(nonExistingNumber),
-            );
+        test('then only matching rows are updated in the database', () async {
+          var dbRows = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(updatedComplexNumber),
+          );
+          expect(dbRows, hasLength(2));
+          var emails = dbRows.map((e) => e.aString);
+          expect(
+            emails,
+            containsAll(['second', 'third']),
+          );
+        });
 
-            expect(updated, isEmpty);
-          },
-        );
+        test('then non-selected columns remain unchanged', () {
+          var emails = updated.map((e) => e.aString);
+          expect(
+            emails,
+            containsAll(['second', 'third']),
+          );
+        });
       });
 
-      group('Given Types entries with different values', () {
+      group('when updating where criteria matches for multiple columns', () {
+        const originalInt1 = 1;
+        const originalInt2 = 2;
+        const updatedInt = 42;
+        const updatedString = 'updated';
+
+        late List<Types> updated;
+
         setUp(() async {
           await Types.db.insert(
             session,
             [
               Types(
-                anInt: 1,
+                anInt: originalInt1,
                 aBool: true,
                 aDouble: 1.5,
                 aString: 'first',
                 aDateTime: DateTime(2024, 1, 1),
               ),
               Types(
-                anInt: 2,
+                anInt: originalInt2,
                 aBool: false,
                 aDouble: 2.5,
                 aString: 'second',
                 aDateTime: DateTime(2024, 2, 1),
               ),
               Types(
-                anInt: 1,
+                anInt: originalInt1,
                 aBool: true,
                 aDouble: 3.5,
                 aString: 'third',
@@ -175,47 +158,130 @@ void main() {
               ),
             ],
           );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) =>
+                [t.anInt(updatedInt), t.aString(updatedString)],
+            where: (t) => t.anInt.equals(originalInt1),
+          );
         });
 
-        test(
-          'when updating multiple specific columns then only those columns are updated and others remain unchanged',
-          () async {
-            const updatedInt = 42;
-            const updatedString = 'updated';
+        test('then the updated result returns updated rows with new values',
+            () {
+          expect(updated, hasLength(2));
+          var updatedNumbers = updated.map((row) => row.anInt);
+          expect(updatedNumbers, everyElement(updatedInt));
+          var updatedStrings = updated.map((row) => row.aString);
+          expect(updatedStrings, everyElement(updatedString));
+        });
+
+        test('then only selected columns are updated in the database',
+            () async {
+          var dbUpdatedRows = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(updatedInt),
+          );
+          expect(dbUpdatedRows, hasLength(2));
+          var dbUpdatedNumbers = dbUpdatedRows.map((row) => row.anInt);
+          expect(dbUpdatedNumbers, everyElement(updatedInt));
+          var dbUpdatedStrings = dbUpdatedRows.map((row) => row.aString);
+          expect(dbUpdatedStrings, everyElement(updatedString));
+        });
+
+        test('then non-matching rows remain unchanged', () async {
+          var nonMatching = await Types.db.findFirstRow(
+            session,
+            where: (t) => t.anInt.equals(originalInt2),
+          );
+          expect(nonMatching!.aString, 'second');
+        });
+      });
+
+      group('when updating within an aborted transaction', () {
+        const transactionUpdatedInt = 999;
+        const originalInt = 1;
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(anInt: originalInt, aString: 'first'),
+              Types(anInt: 2, aString: 'second'),
+              Types(anInt: originalInt, aString: 'duplicate'),
+            ],
+          );
+
+          await session.db.transaction((transaction) async {
+            var savepoint = await transaction.createSavepoint();
 
             var updated = await Types.db.updateWhere(
               session,
-              columnValues: (t) =>
-                  [t.anInt(updatedInt), t.aString(updatedString)],
-              where: (t) => t.anInt.equals(1),
+              columnValues: (t) => [t.anInt(transactionUpdatedInt)],
+              where: (t) => t.anInt.equals(originalInt),
+              transaction: transaction,
             );
 
             expect(updated, hasLength(2));
-            var updatedNumbers = updated.map((row) => row.anInt);
-            expect(updatedNumbers, everyElement(updatedInt));
-            var updatedStrings = updated.map((row) => row.aString);
-            expect(updatedStrings, everyElement(updatedString));
-
-            var dbUpdatedRows = await Types.db.find(
-              session,
-              where: (t) => t.anInt.equals(updatedInt),
+            expect(
+              updated.every((row) => row.anInt == transactionUpdatedInt),
+              isTrue,
             );
-            expect(dbUpdatedRows, hasLength(2));
-            var dbUpdatedNumbers = dbUpdatedRows.map((row) => row.anInt);
-            expect(dbUpdatedNumbers, everyElement(updatedInt));
-            var dbUpdatedStrings = dbUpdatedRows.map((row) => row.aString);
-            expect(dbUpdatedStrings, everyElement(updatedString));
 
-            var nonMatching = await Types.db.findFirstRow(
-              session,
-              where: (t) => t.anInt.equals(2),
-            );
-            expect(nonMatching!.aString, 'second');
-          },
-        );
+            await savepoint.rollback();
+          });
+        });
+
+        test('then update is reverted as part of transaction', () async {
+          var results = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(originalInt),
+          );
+          expect(results, hasLength(2));
+          expect(results.every((row) => row.anInt == originalInt), isTrue);
+        });
       });
+    },
+  );
 
-      group('Given Types entries with null values', () {
+  withServerpod(
+    'Given no matching database entries',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      test(
+        'when updating where no rows match then empty list is returned',
+        () async {
+          await Types.db.insert(
+            session,
+            [
+              Types(anInt: 1, aString: 'test'),
+            ],
+          );
+
+          var updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.anInt(999)],
+            where: (t) => t.anInt.equals(999),
+          );
+
+          expect(updated, isEmpty);
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given database entries with null values',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      group('when updating where column to non-null value', () {
+        const updatedIntFromNull = 99;
+        const updatedStringFromNull = 'was_null';
+
+        late List<Types> updated;
+
         setUp(() async {
           await Types.db.insert(
             session,
@@ -229,31 +295,425 @@ void main() {
               ),
             ],
           );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) =>
+                [t.anInt(updatedIntFromNull), t.aString(updatedStringFromNull)],
+            where: (t) => t.anInt.equals(null),
+          );
         });
 
-        test(
-          'when updating where anInt is null then only null entries are updated',
-          () async {
-            const updatedIntFromNull = 99;
-            const updatedStringFromNull = 'was_null';
+        test('then null entries are updated to new values', () {
+          expect(updated, hasLength(1));
+          expect(updated.first.anInt, updatedIntFromNull);
+          expect(updated.first.aString, updatedStringFromNull);
+        });
 
-            var updated = await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [
-                t.anInt(updatedIntFromNull),
-                t.aString(updatedStringFromNull)
-              ],
-              where: (t) => t.anInt.equals(null),
-            );
+        test('then null entries are updated in the database', () async {
+          var dbRow = await Types.db.findFirstRow(
+            session,
+            where: (t) => t.anInt.equals(updatedIntFromNull),
+          );
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, updatedIntFromNull);
+          expect(dbRow.aString, updatedStringFromNull);
+        });
+      });
+    },
+  );
 
-            expect(updated, hasLength(1));
-            expect(updated.first.anInt, updatedIntFromNull);
-            expect(updated.first.aString, updatedStringFromNull);
-          },
-        );
+  withServerpod(
+    'Given database entries with non-null values',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      group('when updating non-null values to null values', () {
+        const originalInt = 1;
+        const originalString = 'value';
+        const originalBool = true;
+        const originalDouble = 1.5;
+
+        late List<Types> updated;
+
+        setUp(() async {
+          await Types.db.insertRow(
+            session,
+            Types(
+              anInt: originalInt,
+              aBool: originalBool,
+              aDouble: originalDouble,
+              aString: originalString,
+              aDateTime: DateTime(2024, 1, 1),
+            ),
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.anInt(null), t.aString(null)],
+            where: (t) => t.anInt.equals(originalInt),
+          );
+        });
+
+        test('then selected columns are set to null', () {
+          expect(updated, hasLength(1));
+          expect(updated.first.anInt, isNull);
+          expect(updated.first.aString, isNull);
+        });
+
+        test('then selected columns are set to null in the database', () async {
+          var dbRow = await Types.db.findFirstRow(
+            session,
+            where: (t) => t.aBool.equals(originalBool),
+          );
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, isNull);
+          expect(dbRow.aString, isNull);
+        });
+
+        test('then other columns remain unchanged', () {
+          expect(updated.first.aBool, originalBool);
+          expect(updated.first.aDouble, originalDouble);
+        });
+
+        test('then other columns remain unchanged in the database', () async {
+          var dbRow = await Types.db.findFirstRow(
+            session,
+            where: (t) => t.aBool.equals(originalBool),
+          );
+          expect(dbRow, isNotNull);
+          expect(dbRow!.aBool, originalBool);
+          expect(dbRow.aDouble, originalDouble);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given database entries for pagination operations',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      group('when updating with limit', () {
+        const matchingInt = 100;
+        const limitedUpdateString = 'limited_update';
+        const limit = 3;
+
+        late List<Types> updated;
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 1.0,
+                aString: 'entry1',
+                aDateTime: DateTime(2024, 1, 1),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 2.0,
+                aString: 'entry2',
+                aDateTime: DateTime(2024, 1, 2),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 3.0,
+                aString: 'entry3',
+                aDateTime: DateTime(2024, 1, 3),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 4.0,
+                aString: 'entry4',
+                aDateTime: DateTime(2024, 1, 4),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 5.0,
+                aString: 'entry5',
+                aDateTime: DateTime(2024, 1, 5),
+              ),
+            ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString(limitedUpdateString)],
+            where: (t) => t.anInt.equals(matchingInt),
+            orderBy: (t) => t.aDouble,
+            limit: limit,
+          );
+        });
+
+        test('then limited number of rows are updated', () {
+          expect(updated, hasLength(limit));
+          var updatedStrings = updated.map((r) => r.aString);
+          expect(updatedStrings, everyElement(limitedUpdateString));
+        });
+
+        test('then remaining rows are unaffected', () async {
+          var allRows = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(matchingInt),
+          );
+          var unchangedRows =
+              allRows.where((r) => r.aString != limitedUpdateString).toList();
+          expect(unchangedRows, hasLength(2));
+          expect(
+            unchangedRows.map((r) => r.aString).toSet(),
+            containsAll(['entry4', 'entry5']),
+          );
+        });
+
+        test('then limit 0 updates no rows', () async {
+          var updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString('zero_limit_update')],
+            where: (t) => t.anInt.equals(matchingInt),
+            limit: 0,
+          );
+
+          expect(updated, isEmpty);
+        });
       });
 
-      group('Given Types entries with non-null values', () {
+      group('when updating with orderDescending', () {
+        const matchingInt = 100;
+
+        late List<Types> updated;
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 1.0,
+                aString: 'entry1',
+                aDateTime: DateTime(2024, 1, 1),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 2.0,
+                aString: 'entry2',
+                aDateTime: DateTime(2024, 1, 2),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 3.0,
+                aString: 'entry3',
+                aDateTime: DateTime(2024, 1, 3),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 4.0,
+                aString: 'entry4',
+                aDateTime: DateTime(2024, 1, 4),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 5.0,
+                aString: 'entry5',
+                aDateTime: DateTime(2024, 1, 5),
+              ),
+            ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString('ordered_update')],
+            where: (t) => t.anInt.equals(matchingInt),
+            orderBy: (t) => t.aDouble,
+            orderDescending: true,
+            limit: 2,
+          );
+        });
+
+        test('then rows are ordered correctly in descending order', () {
+          expect(updated, hasLength(2));
+          expect(updated[0].aDouble, 5.0);
+          expect(updated[1].aDouble, 4.0);
+        });
+      });
+
+      group('when updating with offset', () {
+        const matchingInt = 100;
+
+        late List<Types> updated;
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 1.0,
+                aString: 'entry1',
+                aDateTime: DateTime(2024, 1, 1),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 2.0,
+                aString: 'entry2',
+                aDateTime: DateTime(2024, 1, 2),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 3.0,
+                aString: 'entry3',
+                aDateTime: DateTime(2024, 1, 3),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 4.0,
+                aString: 'entry4',
+                aDateTime: DateTime(2024, 1, 4),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 5.0,
+                aString: 'entry5',
+                aDateTime: DateTime(2024, 1, 5),
+              ),
+            ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString('offset_update')],
+            where: (t) => t.anInt.equals(matchingInt),
+            orderBy: (t) => t.aDouble,
+            offset: 2,
+          );
+        });
+
+        test('then first offset rows are skipped', () {
+          expect(updated, hasLength(3));
+          expect(updated.map((r) => r.aDouble).toSet(), {3.0, 4.0, 5.0});
+        });
+
+        test('then skipped rows remain unchanged', () async {
+          var allRows = await Types.db.find(
+            session,
+            where: (t) => t.anInt.equals(matchingInt),
+            orderBy: (t) => t.aDouble,
+          );
+
+          expect(allRows[0].aString, 'entry1');
+          expect(allRows[1].aString, 'entry2');
+        });
+
+        test('then large offset beyond result set updates no rows', () async {
+          var updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString('should_not_update')],
+            where: (t) => t.anInt.equals(matchingInt),
+            offset: 1000,
+          );
+
+          expect(updated, isEmpty);
+
+          var allRows = await Types.db.find(
+            session,
+            where: (t) => t.aString.equals('should_not_update'),
+          );
+          expect(allRows, isEmpty);
+        });
+      });
+
+      group('when updating with limit and offset', () {
+        const matchingInt = 100;
+
+        late List<Types> updated;
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 1.0,
+                aString: 'entry1',
+                aDateTime: DateTime(2024, 1, 1),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 2.0,
+                aString: 'entry2',
+                aDateTime: DateTime(2024, 1, 2),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 3.0,
+                aString: 'entry3',
+                aDateTime: DateTime(2024, 1, 3),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: false,
+                aDouble: 4.0,
+                aString: 'entry4',
+                aDateTime: DateTime(2024, 1, 4),
+              ),
+              Types(
+                anInt: matchingInt,
+                aBool: true,
+                aDouble: 5.0,
+                aString: 'entry5',
+                aDateTime: DateTime(2024, 1, 5),
+              ),
+            ],
+          );
+
+          updated = await Types.db.updateWhere(
+            session,
+            columnValues: (t) => [t.aString('window_update')],
+            where: (t) => t.anInt.equals(matchingInt),
+            orderBy: (t) => t.aDouble,
+            limit: 2,
+            offset: 1,
+          );
+        });
+
+        test('then windowed rows are updated', () {
+          expect(updated, hasLength(2));
+          expect(updated.map((r) => r.aDouble).toSet(), {2.0, 3.0});
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given database entries with all supported data types',
+    (sessionBuilder, endpoints) {
+      // Note: The following data types are not supported for database updates:
+      // - aVector, aHalfVector, aSparseVector, aBit (vector types)
+      // - aList, aMap, aSet, aRecord (complex collection types)
+      var session = sessionBuilder.build();
+
+      group('when updating all supported data types', () {
+        late List<Types> updated;
+
         setUp(() async {
           await Types.db.insert(
             session,
@@ -262,274 +722,117 @@ void main() {
                 anInt: 1,
                 aBool: true,
                 aDouble: 1.5,
-                aString: 'value',
                 aDateTime: DateTime(2024, 1, 1),
+                aString: 'first',
+                aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+                aDuration: Duration(seconds: 30),
+                aUuid: UuidValue.fromString(
+                    '550e8400-e29b-41d4-a716-446655440000'),
+                aUri: Uri.parse('https://serverpod.dev'),
+                aBigInt: BigInt.from(123456789),
+                anEnum: TestEnum.one,
+                aStringifiedEnum: TestEnumStringified.one,
+              ),
+              Types(
+                anInt: 2,
+                aBool: false,
+                aDouble: 2.5,
+                aDateTime: DateTime(2024, 2, 1),
+                aString: 'second',
+                aByteData: ByteData.view(Uint8List.fromList([7, 8, 9]).buffer),
+                aDuration: Duration(minutes: 1),
+                aUuid: UuidValue.fromString(
+                    '456e7890-e12b-34c5-a678-901234567890'),
+                aUri: Uri.parse('https://example.com'),
+                aBigInt: BigInt.from(987654321),
+                anEnum: TestEnum.two,
+                aStringifiedEnum: TestEnumStringified.two,
               ),
             ],
           );
-        });
 
-        test(
-          'when updating non-null values to null then the columns are set to null',
-          () async {
-            var initial = await Types.db.findFirstRow(
-              session,
-              where: (t) => t.anInt.equals(1),
-            );
-            expect(initial!.anInt, 1);
-            expect(initial.aString, 'value');
-
-            var updated = await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.anInt(null), t.aString(null)],
-              where: (t) => t.anInt.equals(1),
-            );
-
-            expect(updated, hasLength(1));
-            expect(updated.first.anInt, isNull);
-            expect(updated.first.aString, isNull);
-            expect(updated.first.aBool, true);
-            expect(updated.first.aDouble, 1.5);
-          },
-        );
-      });
-
-      group('Given 5 matching entries', () {
-        setUp(() async {
-          await Types.db.insert(
+          updated = await Types.db.updateWhere(
             session,
-            [
-              Types(
-                  anInt: 100,
-                  aBool: true,
-                  aDouble: 1.0,
-                  aString: 'entry1',
-                  aDateTime: DateTime(2024, 1, 1)),
-              Types(
-                  anInt: 100,
-                  aBool: false,
-                  aDouble: 2.0,
-                  aString: 'entry2',
-                  aDateTime: DateTime(2024, 1, 2)),
-              Types(
-                  anInt: 100,
-                  aBool: true,
-                  aDouble: 3.0,
-                  aString: 'entry3',
-                  aDateTime: DateTime(2024, 1, 3)),
-              Types(
-                  anInt: 100,
-                  aBool: false,
-                  aDouble: 4.0,
-                  aString: 'entry4',
-                  aDateTime: DateTime(2024, 1, 4)),
-              Types(
-                  anInt: 100,
-                  aBool: true,
-                  aDouble: 5.0,
-                  aString: 'entry5',
-                  aDateTime: DateTime(2024, 1, 5)),
+            columnValues: (t) => [
+              t.anInt(42),
+              t.aBool(false),
+              t.aDouble(3.14),
+              t.aDateTime(DateTime.utc(2024, 12, 31)),
+              t.aString('updated'),
+              t.aByteData(ByteData.view(Uint8List.fromList([4, 5, 6]).buffer)),
+              t.aDuration(Duration(minutes: 5)),
+              t.aUuid(
+                  UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000')),
+              t.aUri(Uri.parse('https://updated.com')),
+              t.aBigInt(BigInt.from(555666777)),
+              t.anEnum(TestEnum.three),
+              t.aStringifiedEnum(TestEnumStringified.three),
             ],
+            where: (t) => t.anInt.equals(1),
           );
         });
 
-        test('when updating with limit 3 then 3 rows are updated', () async {
-          const limitedUpdateString = 'limited_update';
-
-          var updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.aString(limitedUpdateString)],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            limit: 3,
-          );
-
-          expect(updated, hasLength(3));
-          var updatedStrings = updated.map((r) => r.aString);
-          expect(updatedStrings, everyElement(limitedUpdateString));
+        test('then all data types are updated correctly', () {
+          expect(updated, hasLength(1));
+          expect(updated.first.anInt, 42);
+          expect(updated.first.aBool, false);
+          expect(updated.first.aDouble, 3.14);
+          expect(updated.first.aDateTime, DateTime.utc(2024, 12, 31));
+          expect(updated.first.aString, 'updated');
+          expect(
+              Uint8List.view(
+                updated.first.aByteData!.buffer,
+                updated.first.aByteData!.offsetInBytes,
+                updated.first.aByteData!.lengthInBytes,
+              ).toList(),
+              [4, 5, 6]);
+          expect(updated.first.aDuration, Duration(minutes: 5));
+          expect(updated.first.aUuid,
+              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(updated.first.aUri, Uri.parse('https://updated.com'));
+          expect(updated.first.aBigInt, BigInt.from(555666777));
+          expect(updated.first.anEnum, TestEnum.three);
+          expect(updated.first.aStringifiedEnum, TestEnumStringified.three);
         });
 
-        test(
-          'when updating with limit 3 then remaining rows are unaffected',
-          () async {
-            const limitedUpdateString = 'limited_update';
-
-            await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.aString(limitedUpdateString)],
-              where: (t) => t.anInt.equals(100),
-              orderBy: (t) => t.aDouble,
-              limit: 3,
-            );
-
-            var allRows = await Types.db.find(
-              session,
-              where: (t) => t.anInt.equals(100),
-            );
-            var unchangedRows =
-                allRows.where((r) => r.aString != limitedUpdateString).toList();
-            expect(unchangedRows, hasLength(2));
-            expect(unchangedRows.map((r) => r.aString).toSet(),
-                containsAll(['entry4', 'entry5']));
-          },
-        );
-
-        test(
-          'when using orderDescending then rows are ordered correctly',
-          () async {
-            const orderedUpdateString = 'ordered_update';
-
-            var updated = await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.aString(orderedUpdateString)],
-              where: (t) => t.anInt.equals(100),
-              orderBy: (t) => t.aDouble,
-              orderDescending: true,
-              limit: 2,
-            );
-
-            expect(updated, hasLength(2));
-            expect(updated[0].aDouble, 5.0);
-            expect(updated[1].aDouble, 4.0);
-          },
-        );
-
-        test('when using offset 2 then first 2 rows are skipped', () async {
-          const offsetUpdateString = 'offset_update';
-
-          var updated = await Types.db.updateWhere(
+        test('then all data types are updated in the database', () async {
+          var dbRow = await Types.db.findFirstRow(
             session,
-            columnValues: (t) => [t.aString(offsetUpdateString)],
-            where: (t) => t.anInt.equals(100),
-            orderBy: (t) => t.aDouble,
-            offset: 2,
+            where: (t) => t.anInt.equals(42),
           );
-
-          expect(updated, hasLength(3));
-          expect(updated.map((r) => r.aDouble).toSet(), {3.0, 4.0, 5.0});
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, 42);
+          expect(dbRow.aBool, false);
+          expect(dbRow.aDouble, 3.14);
+          expect(dbRow.aDateTime, DateTime.utc(2024, 12, 31));
+          expect(dbRow.aString, 'updated');
+          expect(
+              Uint8List.view(
+                dbRow.aByteData!.buffer,
+                dbRow.aByteData!.offsetInBytes,
+                dbRow.aByteData!.lengthInBytes,
+              ).toList(),
+              [4, 5, 6]);
+          expect(dbRow.aDuration, Duration(minutes: 5));
+          expect(dbRow.aUuid,
+              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(dbRow.aUri, Uri.parse('https://updated.com'));
+          expect(dbRow.aBigInt, BigInt.from(555666777));
+          expect(dbRow.anEnum, TestEnum.three);
+          expect(dbRow.aStringifiedEnum, TestEnumStringified.three);
         });
 
-        test(
-          'when using offset 2 then skipped rows remain unchanged',
-          () async {
-            const offsetUpdateString = 'offset_update';
-
-            await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.aString(offsetUpdateString)],
-              where: (t) => t.anInt.equals(100),
-              orderBy: (t) => t.aDouble,
-              offset: 2,
-            );
-
-            var allRows = await Types.db.find(
-              session,
-              where: (t) => t.anInt.equals(100),
-              orderBy: (t) => t.aDouble,
-            );
-
-            expect(allRows[0].aString, 'entry1');
-            expect(allRows[1].aString, 'entry2');
-          },
-        );
-
-        test(
-          'when using limit 2 and offset 1 then rows 2-3 are updated',
-          () async {
-            const windowUpdateString = 'window_update';
-
-            var updated = await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.aString(windowUpdateString)],
-              where: (t) => t.anInt.equals(100),
-              orderBy: (t) => t.aDouble,
-              limit: 2,
-              offset: 1,
-            );
-
-            expect(updated, hasLength(2));
-            expect(updated.map((r) => r.aDouble).toSet(), {2.0, 3.0});
-          },
-        );
-
-        test(
-          'when offset is larger than result set then no rows are updated',
-          () async {
-            const shouldNotUpdateString = 'should_not_update';
-
-            var updated = await Types.db.updateWhere(
-              session,
-              columnValues: (t) => [t.aString(shouldNotUpdateString)],
-              where: (t) => t.anInt.equals(100),
-              offset: 1000,
-            );
-
-            expect(updated, isEmpty);
-
-            var allRows = await Types.db.find(
-              session,
-              where: (t) => t.aString.equals(shouldNotUpdateString),
-            );
-            expect(allRows, isEmpty);
-          },
-        );
-
-        test('when limit is 0 then no rows are updated', () async {
-          const zeroLimitUpdateString = 'zero_limit_update';
-
-          var updated = await Types.db.updateWhere(
+        test('then non-matching rows remain unchanged', () async {
+          var unchangedRow = await Types.db.findFirstRow(
             session,
-            columnValues: (t) => [t.aString(zeroLimitUpdateString)],
-            where: (t) => t.anInt.equals(100),
-            limit: 0,
+            where: (t) => t.anInt.equals(2),
           );
-
-          expect(updated, isEmpty);
+          expect(unchangedRow, isNotNull);
+          expect(unchangedRow!.aString, 'second');
+          expect(unchangedRow.aBool, false);
+          expect(unchangedRow.anEnum, TestEnum.two);
         });
       });
-
-      test(
-        'when updating within an aborted transaction then update reverted as part of transaction',
-        () async {
-          const transactionUpdatedNumber = 999;
-          const originalNumber = 1;
-
-          await UniqueData.db.insert(
-            session,
-            [
-              UniqueData(number: originalNumber, email: 'first@serverpod.dev'),
-              UniqueData(number: 2, email: 'second@serverpod.dev'),
-              UniqueData(
-                  number: originalNumber, email: 'duplicate@serverpod.dev'),
-            ],
-          );
-
-          await session.db.transaction((transaction) async {
-            var savepoint = await transaction.createSavepoint();
-
-            var updated = await UniqueData.db.updateWhere(
-              session,
-              columnValues: (t) => [t.number(transactionUpdatedNumber)],
-              where: (t) => t.number.equals(originalNumber),
-              transaction: transaction,
-            );
-
-            expect(updated, hasLength(2));
-            expect(
-                updated.every((row) => row.number == transactionUpdatedNumber),
-                isTrue);
-
-            await savepoint.rollback();
-          });
-
-          var results = await UniqueData.db.find(
-            session,
-            where: (t) => t.number.equals(originalNumber),
-          );
-          expect(results, hasLength(2));
-          expect(results.every((row) => row.number == originalNumber), isTrue);
-        },
-      );
     },
   );
 }

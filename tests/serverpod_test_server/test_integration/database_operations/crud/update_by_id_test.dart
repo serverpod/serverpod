@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
@@ -6,54 +8,183 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given updateById operations',
+    'Given a database entry',
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
-      test(
-        'when updating by id for a single column then only that column is updated',
-        () async {
-          const originalNumber = 1;
-          const originalEmail = 'original@serverpod.dev';
-          const updatedNumber = 42;
+      group('when updating by id for a single column', () {
+        const originalBool = true;
+        const originalInt = 1;
+        const updatedInt = 42;
 
-          var existingEntry = await UniqueData.db.insertRow(
+        late Types existingEntry;
+        late Types? updated;
+
+        setUp(() async {
+          existingEntry = await Types.db.insertRow(
             session,
-            UniqueData(number: originalNumber, email: originalEmail),
+            Types(
+              aBool: originalBool,
+              anInt: originalInt,
+            ),
           );
 
-          var updated = await UniqueData.db.updateById(
+          updated = await Types.db.updateById(
             session,
             existingEntry.id!,
-            columnValues: (t) => [t.number(updatedNumber)],
+            columnValues: (t) => [t.anInt(updatedInt)],
           );
+        });
 
+        test('then the updated result returns the updated row', () {
           expect(updated, isNotNull);
-          expect(updated!.number, updatedNumber);
-          expect(updated.email, originalEmail);
+          expect(updated!.anInt, updatedInt);
+          expect(updated!.aBool, originalBool);
+          expect(updated!.aString, isNull);
+        });
 
-          var dbRow = await UniqueData.db.findById(session, existingEntry.id!);
-          expect(dbRow, isNotNull);
-          expect(dbRow!.number, updatedNumber);
-          expect(dbRow.email, originalEmail);
-        },
-      );
-
-      test('when updating by non-existent id then null is returned', () async {
-        const nonExistentId = 999999;
-        const testNumber = 123;
-
-        var updated = await UniqueData.db.updateById(
-          session,
-          nonExistentId,
-          columnValues: (t) => [t.number(testNumber)],
+        test(
+          'then only that column is updated',
+          () async {
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, updatedInt);
+          },
         );
 
-        expect(updated, isNull);
+        test(
+          'then other columns are not updated',
+          () async {
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.aBool, originalBool);
+            expect(dbRow.aString, isNull);
+          },
+        );
       });
 
-      group('Given a Types entry', () {
+      group('when updating by id for multiple columns', () {
+        const originalBool = true;
+        const originalInt = 1;
+        const originalString = 'original';
+        const updatedInt = 42;
+        const updatedString = 'updated';
+
         late Types existingEntry;
+        late Types? updated;
+
+        setUp(() async {
+          existingEntry = await Types.db.insertRow(
+            session,
+            Types(
+                aBool: originalBool,
+                anInt: originalInt,
+                aString: originalString),
+          );
+
+          updated = await Types.db.updateById(
+            session,
+            existingEntry.id!,
+            columnValues: (t) =>
+                [t.anInt(updatedInt), t.aString(updatedString)],
+          );
+        });
+
+        test('then the updated result returns the updated row', () {
+          expect(updated, isNotNull);
+          expect(updated!.anInt, updatedInt);
+          expect(updated!.aBool, originalBool);
+          expect(updated!.aString, updatedString);
+        });
+
+        test(
+          'then only the selected columns are updated',
+          () async {
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, updatedInt);
+            expect(dbRow.aString, updatedString);
+          },
+        );
+
+        test(
+          'then other columns are not updated',
+          () async {
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.aBool, originalBool);
+          },
+        );
+      });
+
+      group('when updating non-null columns to null values', () {
+        const originalInt = 1;
+        const originalString = 'original';
+
+        late Types existingEntry;
+        late Types? updated;
+
+        setUp(() async {
+          existingEntry = await Types.db.insertRow(
+            session,
+            Types(anInt: originalInt, aString: originalString),
+          );
+
+          updated = await Types.db.updateById(
+            session,
+            existingEntry.id!,
+            columnValues: (t) => [t.anInt(null), t.aString(null)],
+          );
+        });
+
+        test('then the column is set to null', () async {
+          expect(updated, isNotNull);
+          expect(updated!.anInt, isNull);
+          expect(updated!.aString, isNull);
+        });
+
+        test('then the column is null in the database', () async {
+          var dbRow = await Types.db.findById(session, existingEntry.id!);
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, isNull);
+          expect(dbRow.aString, isNull);
+        });
+      });
+
+      group('when updating null columns to non-null values', () {
+        const updatedInt = 1;
+        const updatedString = 'updated';
+
+        late Types existingEntry;
+        late Types? updated;
+
+        setUp(() async {
+          existingEntry = await Types.db.insertRow(
+            session,
+            Types(anInt: null, aString: null),
+          );
+
+          updated = await Types.db.updateById(
+            session,
+            existingEntry.id!,
+            columnValues: (t) =>
+                [t.anInt(updatedInt), t.aString(updatedString)],
+          );
+        });
+
+        test('then the columns are set to the new values', () {
+          expect(updated, isNotNull);
+          expect(updated!.anInt, updatedInt);
+          expect(updated!.aString, updatedString);
+        });
+      });
+
+      group('when updating all supported data types', () {
+        // Note: The following data types are not supported for database updates:
+        // - aVector, aHalfVector, aSparseVector, aBit (vector types)
+        // - aList, aMap, aSet, aRecord (complex collection types)
+        late Types existingEntry;
+        late Types? updated;
 
         setUp(() async {
           existingEntry = await Types.db.insertRow(
@@ -62,149 +193,136 @@ void main() {
               anInt: 1,
               aBool: true,
               aDouble: 1.5,
+              aDateTime: DateTime(2024, 1, 1),
               aString: 'original',
-              aDateTime: DateTime.utc(2024, 1, 1),
+              aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+              aDuration: Duration(seconds: 30),
+              aUuid:
+                  UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+              aUri: Uri.parse('https://serverpod.dev'),
+              aBigInt: BigInt.from(123456789),
+              anEnum: TestEnum.one,
+              aStringifiedEnum: TestEnumStringified.one,
             ),
+          );
+
+          updated = await Types.db.updateById(
+            session,
+            existingEntry.id!,
+            columnValues: (t) => [
+              t.anInt(42),
+              t.aBool(false),
+              t.aDouble(3.14),
+              t.aDateTime(DateTime.utc(2024, 12, 31)),
+              t.aString('updated'),
+              t.aByteData(ByteData.view(Uint8List.fromList([4, 5, 6]).buffer)),
+              t.aDuration(Duration(minutes: 5)),
+              t.aUuid(
+                  UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000')),
+              t.aUri(Uri.parse('https://example.com')),
+              t.aBigInt(BigInt.from(987654321)),
+              t.anEnum(TestEnum.two),
+              t.aStringifiedEnum(TestEnumStringified.two),
+            ],
           );
         });
 
-        test(
-          'when updating specific columns by id then only those columns are updated and others remain unchanged',
-          () async {
-            const updatedInt = 42;
-            const updatedString = 'updated';
-            var updated = await Types.db.updateById(
-              session,
-              existingEntry.id!,
-              columnValues: (t) =>
-                  [t.anInt(updatedInt), t.aString(updatedString)],
-            );
+        test('then all data types are updated correctly', () {
+          expect(updated, isNotNull);
+          expect(updated!.anInt, 42);
+          expect(updated!.aBool, false);
+          expect(updated!.aDouble, 3.14);
+          expect(updated!.aDateTime, DateTime.utc(2024, 12, 31));
+          expect(updated!.aString, 'updated');
+          expect(
+              Uint8List.view(
+                updated!.aByteData!.buffer,
+                updated!.aByteData!.offsetInBytes,
+                updated!.aByteData!.lengthInBytes,
+              ).toList(),
+              [4, 5, 6]);
+          expect(updated!.aDuration, Duration(minutes: 5));
+          expect(updated!.aUuid,
+              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(updated!.aUri, Uri.parse('https://example.com'));
+          expect(updated!.aBigInt, BigInt.from(987654321));
+          expect(updated!.anEnum, TestEnum.two);
+          expect(updated!.aStringifiedEnum, TestEnumStringified.two);
+        });
 
-            expect(updated, isNotNull);
-            expect(updated!.anInt, updatedInt);
-            expect(updated.aString, updatedString);
-            expect(updated.aBool, existingEntry.aBool);
-            expect(updated.aDouble, existingEntry.aDouble);
-            expect(updated.aDateTime, existingEntry.aDateTime);
-
-            var dbRow = await Types.db.findById(session, existingEntry.id!);
-            expect(dbRow, isNotNull);
-            expect(dbRow!.anInt, updatedInt);
-            expect(dbRow.aString, updatedString);
-            expect(dbRow.aBool, existingEntry.aBool);
-            expect(dbRow.aDouble, existingEntry.aDouble);
-            expect(dbRow.aDateTime, existingEntry.aDateTime);
-          },
-        );
-
-        test(
-          'when updating a column to null then the column is set to null',
-          () async {
-            var updated = await Types.db.updateById(
-              session,
-              existingEntry.id!,
-              columnValues: (t) => [t.anInt(null), t.aString(null)],
-            );
-
-            expect(updated, isNotNull);
-            expect(updated!.anInt, isNull);
-            expect(updated.aString, isNull);
-            expect(updated.aBool, existingEntry.aBool);
-            expect(updated.aDouble, existingEntry.aDouble);
-            expect(updated.aDateTime, existingEntry.aDateTime);
-
-            var dbRow = await Types.db.findById(session, existingEntry.id!);
-            expect(dbRow, isNotNull);
-            expect(dbRow!.anInt, isNull);
-            expect(dbRow.aString, isNull);
-            expect(dbRow.aBool, existingEntry.aBool);
-            expect(dbRow.aDouble, existingEntry.aDouble);
-            expect(dbRow.aDateTime, existingEntry.aDateTime);
-          },
-        );
+        test('then all data types are updated in the database', () async {
+          var dbRow = await Types.db.findById(session, existingEntry.id!);
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, 42);
+          expect(dbRow.aBool, false);
+          expect(dbRow.aDouble, 3.14);
+          expect(dbRow.aDateTime, DateTime.utc(2024, 12, 31));
+          expect(dbRow.aString, 'updated');
+          expect(
+              Uint8List.view(
+                dbRow.aByteData!.buffer,
+                dbRow.aByteData!.offsetInBytes,
+                dbRow.aByteData!.lengthInBytes,
+              ).toList(),
+              [4, 5, 6]);
+          expect(dbRow.aDuration, Duration(minutes: 5));
+          expect(dbRow.aUuid,
+              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(dbRow.aUri, Uri.parse('https://example.com'));
+          expect(dbRow.aBigInt, BigInt.from(987654321));
+          expect(dbRow.anEnum, TestEnum.two);
+          expect(dbRow.aStringifiedEnum, TestEnumStringified.two);
+        });
       });
 
-      group('Given a Types entry with null values', () {
-        late Types existingNullEntry;
+      group('when updating within an aborted transaction', () {
+        const originalInt = 1;
+        const transactionUpdatedInt = 42;
+
+        late Types existingEntry;
 
         setUp(() async {
-          existingNullEntry = await Types.db.insertRow(
+          existingEntry = await Types.db.insertRow(
             session,
-            Types(
-              anInt: null,
-              aBool: null,
-              aDouble: null,
-              aString: null,
-              aDateTime: null,
-            ),
-          );
-        });
-
-        test(
-          'when updating null columns to non-null values then the columns are set correctly',
-          () async {
-            const updatedIntFromNull = 99;
-            const updatedStringFromNull = 'was_null';
-
-            var updated = await Types.db.updateById(
-              session,
-              existingNullEntry.id!,
-              columnValues: (t) => [
-                t.anInt(updatedIntFromNull),
-                t.aString(updatedStringFromNull)
-              ],
-            );
-
-            expect(updated, isNotNull);
-            expect(updated!.anInt, updatedIntFromNull);
-            expect(updated.aString, updatedStringFromNull);
-            expect(updated.aBool, existingNullEntry.aBool);
-            expect(updated.aDouble, existingNullEntry.aDouble);
-            expect(updated.aDateTime, existingNullEntry.aDateTime);
-
-            var dbRow = await Types.db.findById(session, existingNullEntry.id!);
-            expect(dbRow, isNotNull);
-            expect(dbRow!.anInt, updatedIntFromNull);
-            expect(dbRow.aString, updatedStringFromNull);
-            expect(dbRow.aBool, existingNullEntry.aBool);
-            expect(dbRow.aDouble, existingNullEntry.aDouble);
-            expect(dbRow.aDateTime, existingNullEntry.aDateTime);
-          },
-        );
-      });
-
-      test(
-        'when updating by id within an aborted transaction then update reverted as part of transaction',
-        () async {
-          const originalNumber = 1;
-          const originalEmail = 'original@serverpod.dev';
-          const transactionUpdatedNumber = 42;
-
-          var existingEntry = await UniqueData.db.insertRow(
-            session,
-            UniqueData(number: originalNumber, email: originalEmail),
+            Types(anInt: originalInt),
           );
 
           await session.db.transaction((transaction) async {
             var savepoint = await transaction.createSavepoint();
 
-            var updated = await UniqueData.db.updateById(
+            await Types.db.updateById(
               session,
               existingEntry.id!,
-              columnValues: (t) => [t.number(transactionUpdatedNumber)],
+              columnValues: (t) => [t.anInt(transactionUpdatedInt)],
               transaction: transaction,
             );
 
-            expect(updated, isNotNull);
-            expect(updated!.number, transactionUpdatedNumber);
-
             await savepoint.rollback();
           });
+        });
 
-          var result = await UniqueData.db.findById(session, existingEntry.id!);
-          expect(result!.number, originalNumber);
-        },
-      );
+        test('then update is reverted as part of transaction', () async {
+          var result = await Types.db.findById(session, existingEntry.id!);
+          expect(result!.anInt, originalInt);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given a non-existent database entry',
+    (testSession, endpoints) {
+      var session = testSession.build();
+
+      test('when updating by non-existent id then null is returned', () async {
+        var updated = await Types.db.updateById(
+          session,
+          999999,
+          columnValues: (t) => [t.anInt(123)],
+        );
+
+        expect(updated, isNull);
+      });
     },
   );
 }
