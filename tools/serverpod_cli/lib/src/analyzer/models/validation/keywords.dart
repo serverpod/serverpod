@@ -6,6 +6,7 @@ class Keyword {
   static const String serialized = 'serialized';
 
   static const String isSealed = 'sealed';
+  static const String isImmutable = 'immutable';
   static const String extendsClass = 'extends';
 
   static const String serverOnly = 'serverOnly';

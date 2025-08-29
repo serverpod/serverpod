@@ -23,6 +23,7 @@ class ModelClassDefinitionBuilder {
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
   bool _isSealed;
+  bool _isImmutable;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
 
@@ -38,7 +39,8 @@ class ModelClassDefinitionBuilder {
         _serverOnly = false,
         _indexes = [],
         _childClasses = [],
-        _isSealed = false;
+        _isSealed = false,
+        _isImmutable = false;
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -66,6 +68,7 @@ class ModelClassDefinitionBuilder {
       childClasses: _childClasses,
       extendsClass: _extendsClass,
       isSealed: _isSealed,
+      isImmutable: _isImmutable,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
@@ -395,6 +398,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withIsSealed(bool isSealed) {
     _isSealed = isSealed;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withIsImmutable(bool isImmutable) {
+    _isImmutable = isImmutable;
     return this;
   }
 }
