@@ -159,7 +159,7 @@ void main() {
             .first.typeArguments?.arguments.first as NamedType?;
 
         expect(
-          typeName?.name2.toString(),
+          typeName?.name.toString(),
           'int',
           reason: 'Wrong generic type for TableRow.',
         );
@@ -224,7 +224,7 @@ void main() {
         var genericType = typeArguments?.typeArguments?.arguments.first;
 
         expect(
-          (genericType as NamedType?)?.name2.toString(),
+          (genericType as NamedType?)?.name.toString(),
           'int',
           reason: 'Wrong generic type for Table getter.',
         );
@@ -247,7 +247,7 @@ void main() {
         );
 
         expect(
-          (maybeIdField?.fields.type as NamedType).name2.toString(),
+          (maybeIdField?.fields.type as NamedType).name.toString(),
           'int',
           reason: 'Wrong type for the id field.',
         );
