@@ -12,7 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'database/database_migration_action_type.dart' as _i3;
+import 'database/database_migration.dart' as _i3;
 import 'authentication/revoked_authentication_scope.dart' as _i4;
 import 'authentication/revoked_authentication_user.dart' as _i5;
 import 'cache_info.dart' as _i6;
@@ -28,50 +28,51 @@ import 'database/bulk_query_result.dart' as _i15;
 import 'database/column_definition.dart' as _i16;
 import 'database/column_migration.dart' as _i17;
 import 'database/column_type.dart' as _i18;
-import 'database/database_definition.dart' as _i19;
-import 'database/database_definitions.dart' as _i20;
-import 'database/database_migration.dart' as _i21;
-import 'database/database_migration_action.dart' as _i22;
-import 'authentication/revoked_authentication_auth_id.dart' as _i23;
-import 'database/database_migration_version.dart' as _i24;
-import 'database/database_migration_warning.dart' as _i25;
-import 'database/database_migration_warning_type.dart' as _i26;
-import 'database/enum_serialization.dart' as _i27;
-import 'database/filter/filter.dart' as _i28;
-import 'database/filter/filter_constraint.dart' as _i29;
-import 'database/filter/filter_constraint_type.dart' as _i30;
-import 'database/foreign_key_action.dart' as _i31;
-import 'database/foreign_key_definition.dart' as _i32;
-import 'database/foreign_key_match_type.dart' as _i33;
-import 'database/index_definition.dart' as _i34;
-import 'database/index_element_definition.dart' as _i35;
-import 'database/index_element_definition_type.dart' as _i36;
-import 'database/table_definition.dart' as _i37;
-import 'database/table_migration.dart' as _i38;
-import 'database/vector_distance_function.dart' as _i39;
-import 'distributed_cache_entry.dart' as _i40;
-import 'session_log_result.dart' as _i41;
-import 'exceptions/file_not_found.dart' as _i42;
-import 'future_call_entry.dart' as _i43;
-import 'log_entry.dart' as _i44;
-import 'log_level.dart' as _i45;
-import 'log_result.dart' as _i46;
-import 'log_settings.dart' as _i47;
-import 'log_settings_override.dart' as _i48;
-import 'message_log_entry.dart' as _i49;
-import 'method_info.dart' as _i50;
-import 'query_log_entry.dart' as _i51;
-import 'readwrite_test.dart' as _i52;
-import 'runtime_settings.dart' as _i53;
-import 'server_health_connection_info.dart' as _i54;
-import 'server_health_metric.dart' as _i55;
-import 'server_health_result.dart' as _i56;
-import 'serverpod_sql_exception.dart' as _i57;
-import 'session_log_entry.dart' as _i58;
-import 'session_log_filter.dart' as _i59;
-import 'session_log_info.dart' as _i60;
-import 'exceptions/access_denied.dart' as _i61;
-import 'package:serverpod/src/generated/database/table_definition.dart' as _i62;
+import 'database/custom_serialization.dart' as _i19;
+import 'database/database_definition.dart' as _i20;
+import 'database/database_definitions.dart' as _i21;
+import 'authentication/revoked_authentication_auth_id.dart' as _i22;
+import 'database/database_migration_action.dart' as _i23;
+import 'database/database_migration_action_type.dart' as _i24;
+import 'database/database_migration_version.dart' as _i25;
+import 'database/database_migration_warning.dart' as _i26;
+import 'database/database_migration_warning_type.dart' as _i27;
+import 'database/enum_serialization.dart' as _i28;
+import 'database/filter/filter.dart' as _i29;
+import 'database/filter/filter_constraint.dart' as _i30;
+import 'database/filter/filter_constraint_type.dart' as _i31;
+import 'database/foreign_key_action.dart' as _i32;
+import 'database/foreign_key_definition.dart' as _i33;
+import 'database/foreign_key_match_type.dart' as _i34;
+import 'database/index_definition.dart' as _i35;
+import 'database/index_element_definition.dart' as _i36;
+import 'database/index_element_definition_type.dart' as _i37;
+import 'database/table_definition.dart' as _i38;
+import 'database/table_migration.dart' as _i39;
+import 'database/vector_distance_function.dart' as _i40;
+import 'distributed_cache_entry.dart' as _i41;
+import 'session_log_result.dart' as _i42;
+import 'exceptions/file_not_found.dart' as _i43;
+import 'future_call_entry.dart' as _i44;
+import 'log_entry.dart' as _i45;
+import 'log_level.dart' as _i46;
+import 'log_result.dart' as _i47;
+import 'log_settings.dart' as _i48;
+import 'log_settings_override.dart' as _i49;
+import 'message_log_entry.dart' as _i50;
+import 'method_info.dart' as _i51;
+import 'query_log_entry.dart' as _i52;
+import 'readwrite_test.dart' as _i53;
+import 'runtime_settings.dart' as _i54;
+import 'server_health_connection_info.dart' as _i55;
+import 'server_health_metric.dart' as _i56;
+import 'server_health_result.dart' as _i57;
+import 'serverpod_sql_exception.dart' as _i58;
+import 'session_log_entry.dart' as _i59;
+import 'session_log_filter.dart' as _i60;
+import 'session_log_info.dart' as _i61;
+import 'exceptions/access_denied.dart' as _i62;
+import 'package:serverpod/src/generated/database/table_definition.dart' as _i63;
 export 'authentication/revoked_authentication_auth_id.dart';
 export 'authentication/revoked_authentication_scope.dart';
 export 'authentication/revoked_authentication_user.dart';
@@ -88,6 +89,7 @@ export 'database/bulk_query_result.dart';
 export 'database/column_definition.dart';
 export 'database/column_migration.dart';
 export 'database/column_type.dart';
+export 'database/custom_serialization.dart';
 export 'database/database_definition.dart';
 export 'database/database_definitions.dart';
 export 'database/database_migration.dart';
@@ -1316,8 +1318,8 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.DatabaseMigrationActionType) {
-      return _i3.DatabaseMigrationActionType.fromJson(data) as T;
+    if (t == _i3.DatabaseMigration) {
+      return _i3.DatabaseMigration.fromJson(data) as T;
     }
     if (t == _i4.RevokedAuthenticationScope) {
       return _i4.RevokedAuthenticationScope.fromJson(data) as T;
@@ -1364,139 +1366,140 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i18.ColumnType) {
       return _i18.ColumnType.fromJson(data) as T;
     }
-    if (t == _i19.DatabaseDefinition) {
-      return _i19.DatabaseDefinition.fromJson(data) as T;
+    if (t == _i19.CustomSerialization) {
+      return _i19.CustomSerialization.fromJson(data) as T;
     }
-    if (t == _i20.DatabaseDefinitions) {
-      return _i20.DatabaseDefinitions.fromJson(data) as T;
+    if (t == _i20.DatabaseDefinition) {
+      return _i20.DatabaseDefinition.fromJson(data) as T;
     }
-    if (t == _i21.DatabaseMigration) {
-      return _i21.DatabaseMigration.fromJson(data) as T;
+    if (t == _i21.DatabaseDefinitions) {
+      return _i21.DatabaseDefinitions.fromJson(data) as T;
     }
-    if (t == _i22.DatabaseMigrationAction) {
-      return _i22.DatabaseMigrationAction.fromJson(data) as T;
+    if (t == _i22.RevokedAuthenticationAuthId) {
+      return _i22.RevokedAuthenticationAuthId.fromJson(data) as T;
     }
-    if (t == _i23.RevokedAuthenticationAuthId) {
-      return _i23.RevokedAuthenticationAuthId.fromJson(data) as T;
+    if (t == _i23.DatabaseMigrationAction) {
+      return _i23.DatabaseMigrationAction.fromJson(data) as T;
     }
-    if (t == _i24.DatabaseMigrationVersion) {
-      return _i24.DatabaseMigrationVersion.fromJson(data) as T;
+    if (t == _i24.DatabaseMigrationActionType) {
+      return _i24.DatabaseMigrationActionType.fromJson(data) as T;
     }
-    if (t == _i25.DatabaseMigrationWarning) {
-      return _i25.DatabaseMigrationWarning.fromJson(data) as T;
+    if (t == _i25.DatabaseMigrationVersion) {
+      return _i25.DatabaseMigrationVersion.fromJson(data) as T;
     }
-    if (t == _i26.DatabaseMigrationWarningType) {
-      return _i26.DatabaseMigrationWarningType.fromJson(data) as T;
+    if (t == _i26.DatabaseMigrationWarning) {
+      return _i26.DatabaseMigrationWarning.fromJson(data) as T;
     }
-    if (t == _i27.EnumSerialization) {
-      return _i27.EnumSerialization.fromJson(data) as T;
+    if (t == _i27.DatabaseMigrationWarningType) {
+      return _i27.DatabaseMigrationWarningType.fromJson(data) as T;
     }
-    if (t == _i28.Filter) {
-      return _i28.Filter.fromJson(data) as T;
+    if (t == _i28.EnumSerialization) {
+      return _i28.EnumSerialization.fromJson(data) as T;
     }
-    if (t == _i29.FilterConstraint) {
-      return _i29.FilterConstraint.fromJson(data) as T;
+    if (t == _i29.Filter) {
+      return _i29.Filter.fromJson(data) as T;
     }
-    if (t == _i30.FilterConstraintType) {
-      return _i30.FilterConstraintType.fromJson(data) as T;
+    if (t == _i30.FilterConstraint) {
+      return _i30.FilterConstraint.fromJson(data) as T;
     }
-    if (t == _i31.ForeignKeyAction) {
-      return _i31.ForeignKeyAction.fromJson(data) as T;
+    if (t == _i31.FilterConstraintType) {
+      return _i31.FilterConstraintType.fromJson(data) as T;
     }
-    if (t == _i32.ForeignKeyDefinition) {
-      return _i32.ForeignKeyDefinition.fromJson(data) as T;
+    if (t == _i32.ForeignKeyAction) {
+      return _i32.ForeignKeyAction.fromJson(data) as T;
     }
-    if (t == _i33.ForeignKeyMatchType) {
-      return _i33.ForeignKeyMatchType.fromJson(data) as T;
+    if (t == _i33.ForeignKeyDefinition) {
+      return _i33.ForeignKeyDefinition.fromJson(data) as T;
     }
-    if (t == _i34.IndexDefinition) {
-      return _i34.IndexDefinition.fromJson(data) as T;
+    if (t == _i34.ForeignKeyMatchType) {
+      return _i34.ForeignKeyMatchType.fromJson(data) as T;
     }
-    if (t == _i35.IndexElementDefinition) {
-      return _i35.IndexElementDefinition.fromJson(data) as T;
+    if (t == _i35.IndexDefinition) {
+      return _i35.IndexDefinition.fromJson(data) as T;
     }
-    if (t == _i36.IndexElementDefinitionType) {
-      return _i36.IndexElementDefinitionType.fromJson(data) as T;
+    if (t == _i36.IndexElementDefinition) {
+      return _i36.IndexElementDefinition.fromJson(data) as T;
     }
-    if (t == _i37.TableDefinition) {
-      return _i37.TableDefinition.fromJson(data) as T;
+    if (t == _i37.IndexElementDefinitionType) {
+      return _i37.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i38.TableMigration) {
-      return _i38.TableMigration.fromJson(data) as T;
+    if (t == _i38.TableDefinition) {
+      return _i38.TableDefinition.fromJson(data) as T;
     }
-    if (t == _i39.VectorDistanceFunction) {
-      return _i39.VectorDistanceFunction.fromJson(data) as T;
+    if (t == _i39.TableMigration) {
+      return _i39.TableMigration.fromJson(data) as T;
     }
-    if (t == _i40.DistributedCacheEntry) {
-      return _i40.DistributedCacheEntry.fromJson(data) as T;
+    if (t == _i40.VectorDistanceFunction) {
+      return _i40.VectorDistanceFunction.fromJson(data) as T;
     }
-    if (t == _i41.SessionLogResult) {
-      return _i41.SessionLogResult.fromJson(data) as T;
+    if (t == _i41.DistributedCacheEntry) {
+      return _i41.DistributedCacheEntry.fromJson(data) as T;
     }
-    if (t == _i42.FileNotFoundException) {
-      return _i42.FileNotFoundException.fromJson(data) as T;
+    if (t == _i42.SessionLogResult) {
+      return _i42.SessionLogResult.fromJson(data) as T;
     }
-    if (t == _i43.FutureCallEntry) {
-      return _i43.FutureCallEntry.fromJson(data) as T;
+    if (t == _i43.FileNotFoundException) {
+      return _i43.FileNotFoundException.fromJson(data) as T;
     }
-    if (t == _i44.LogEntry) {
-      return _i44.LogEntry.fromJson(data) as T;
+    if (t == _i44.FutureCallEntry) {
+      return _i44.FutureCallEntry.fromJson(data) as T;
     }
-    if (t == _i45.LogLevel) {
-      return _i45.LogLevel.fromJson(data) as T;
+    if (t == _i45.LogEntry) {
+      return _i45.LogEntry.fromJson(data) as T;
     }
-    if (t == _i46.LogResult) {
-      return _i46.LogResult.fromJson(data) as T;
+    if (t == _i46.LogLevel) {
+      return _i46.LogLevel.fromJson(data) as T;
     }
-    if (t == _i47.LogSettings) {
-      return _i47.LogSettings.fromJson(data) as T;
+    if (t == _i47.LogResult) {
+      return _i47.LogResult.fromJson(data) as T;
     }
-    if (t == _i48.LogSettingsOverride) {
-      return _i48.LogSettingsOverride.fromJson(data) as T;
+    if (t == _i48.LogSettings) {
+      return _i48.LogSettings.fromJson(data) as T;
     }
-    if (t == _i49.MessageLogEntry) {
-      return _i49.MessageLogEntry.fromJson(data) as T;
+    if (t == _i49.LogSettingsOverride) {
+      return _i49.LogSettingsOverride.fromJson(data) as T;
     }
-    if (t == _i50.MethodInfo) {
-      return _i50.MethodInfo.fromJson(data) as T;
+    if (t == _i50.MessageLogEntry) {
+      return _i50.MessageLogEntry.fromJson(data) as T;
     }
-    if (t == _i51.QueryLogEntry) {
-      return _i51.QueryLogEntry.fromJson(data) as T;
+    if (t == _i51.MethodInfo) {
+      return _i51.MethodInfo.fromJson(data) as T;
     }
-    if (t == _i52.ReadWriteTestEntry) {
-      return _i52.ReadWriteTestEntry.fromJson(data) as T;
+    if (t == _i52.QueryLogEntry) {
+      return _i52.QueryLogEntry.fromJson(data) as T;
     }
-    if (t == _i53.RuntimeSettings) {
-      return _i53.RuntimeSettings.fromJson(data) as T;
+    if (t == _i53.ReadWriteTestEntry) {
+      return _i53.ReadWriteTestEntry.fromJson(data) as T;
     }
-    if (t == _i54.ServerHealthConnectionInfo) {
-      return _i54.ServerHealthConnectionInfo.fromJson(data) as T;
+    if (t == _i54.RuntimeSettings) {
+      return _i54.RuntimeSettings.fromJson(data) as T;
     }
-    if (t == _i55.ServerHealthMetric) {
-      return _i55.ServerHealthMetric.fromJson(data) as T;
+    if (t == _i55.ServerHealthConnectionInfo) {
+      return _i55.ServerHealthConnectionInfo.fromJson(data) as T;
     }
-    if (t == _i56.ServerHealthResult) {
-      return _i56.ServerHealthResult.fromJson(data) as T;
+    if (t == _i56.ServerHealthMetric) {
+      return _i56.ServerHealthMetric.fromJson(data) as T;
     }
-    if (t == _i57.ServerpodSqlException) {
-      return _i57.ServerpodSqlException.fromJson(data) as T;
+    if (t == _i57.ServerHealthResult) {
+      return _i57.ServerHealthResult.fromJson(data) as T;
     }
-    if (t == _i58.SessionLogEntry) {
-      return _i58.SessionLogEntry.fromJson(data) as T;
+    if (t == _i58.ServerpodSqlException) {
+      return _i58.ServerpodSqlException.fromJson(data) as T;
     }
-    if (t == _i59.SessionLogFilter) {
-      return _i59.SessionLogFilter.fromJson(data) as T;
+    if (t == _i59.SessionLogEntry) {
+      return _i59.SessionLogEntry.fromJson(data) as T;
     }
-    if (t == _i60.SessionLogInfo) {
-      return _i60.SessionLogInfo.fromJson(data) as T;
+    if (t == _i60.SessionLogFilter) {
+      return _i60.SessionLogFilter.fromJson(data) as T;
     }
-    if (t == _i61.AccessDeniedException) {
-      return _i61.AccessDeniedException.fromJson(data) as T;
+    if (t == _i61.SessionLogInfo) {
+      return _i61.SessionLogInfo.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.DatabaseMigrationActionType?>()) {
-      return (data != null
-          ? _i3.DatabaseMigrationActionType.fromJson(data)
-          : null) as T;
+    if (t == _i62.AccessDeniedException) {
+      return _i62.AccessDeniedException.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i3.DatabaseMigration?>()) {
+      return (data != null ? _i3.DatabaseMigration.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i4.RevokedAuthenticationScope?>()) {
       return (data != null
@@ -1551,162 +1554,178 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i18.ColumnType?>()) {
       return (data != null ? _i18.ColumnType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.DatabaseDefinition?>()) {
-      return (data != null ? _i19.DatabaseDefinition.fromJson(data) : null)
+    if (t == _i1.getType<_i19.CustomSerialization?>()) {
+      return (data != null ? _i19.CustomSerialization.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.DatabaseDefinitions?>()) {
-      return (data != null ? _i20.DatabaseDefinitions.fromJson(data) : null)
+    if (t == _i1.getType<_i20.DatabaseDefinition?>()) {
+      return (data != null ? _i20.DatabaseDefinition.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i21.DatabaseMigration?>()) {
-      return (data != null ? _i21.DatabaseMigration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.DatabaseMigrationAction?>()) {
-      return (data != null ? _i22.DatabaseMigrationAction.fromJson(data) : null)
+    if (t == _i1.getType<_i21.DatabaseDefinitions?>()) {
+      return (data != null ? _i21.DatabaseDefinitions.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.RevokedAuthenticationAuthId?>()) {
+    if (t == _i1.getType<_i22.RevokedAuthenticationAuthId?>()) {
       return (data != null
-          ? _i23.RevokedAuthenticationAuthId.fromJson(data)
+          ? _i22.RevokedAuthenticationAuthId.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i24.DatabaseMigrationVersion?>()) {
+    if (t == _i1.getType<_i23.DatabaseMigrationAction?>()) {
+      return (data != null ? _i23.DatabaseMigrationAction.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i24.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i24.DatabaseMigrationVersion.fromJson(data)
+          ? _i24.DatabaseMigrationActionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i25.DatabaseMigrationWarning?>()) {
+    if (t == _i1.getType<_i25.DatabaseMigrationVersion?>()) {
       return (data != null
-          ? _i25.DatabaseMigrationWarning.fromJson(data)
+          ? _i25.DatabaseMigrationVersion.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i26.DatabaseMigrationWarningType?>()) {
+    if (t == _i1.getType<_i26.DatabaseMigrationWarning?>()) {
       return (data != null
-          ? _i26.DatabaseMigrationWarningType.fromJson(data)
+          ? _i26.DatabaseMigrationWarning.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i27.EnumSerialization?>()) {
-      return (data != null ? _i27.EnumSerialization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i28.Filter?>()) {
-      return (data != null ? _i28.Filter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.FilterConstraint?>()) {
-      return (data != null ? _i29.FilterConstraint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.FilterConstraintType?>()) {
-      return (data != null ? _i30.FilterConstraintType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i31.ForeignKeyAction?>()) {
-      return (data != null ? _i31.ForeignKeyAction.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.ForeignKeyDefinition?>()) {
-      return (data != null ? _i32.ForeignKeyDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i33.ForeignKeyMatchType?>()) {
-      return (data != null ? _i33.ForeignKeyMatchType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i34.IndexDefinition?>()) {
-      return (data != null ? _i34.IndexDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i35.IndexElementDefinition?>()) {
-      return (data != null ? _i35.IndexElementDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i36.IndexElementDefinitionType?>()) {
+    if (t == _i1.getType<_i27.DatabaseMigrationWarningType?>()) {
       return (data != null
-          ? _i36.IndexElementDefinitionType.fromJson(data)
+          ? _i27.DatabaseMigrationWarningType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i37.TableDefinition?>()) {
-      return (data != null ? _i37.TableDefinition.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.EnumSerialization?>()) {
+      return (data != null ? _i28.EnumSerialization.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i38.TableMigration?>()) {
-      return (data != null ? _i38.TableMigration.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i29.Filter?>()) {
+      return (data != null ? _i29.Filter.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i39.VectorDistanceFunction?>()) {
-      return (data != null ? _i39.VectorDistanceFunction.fromJson(data) : null)
+    if (t == _i1.getType<_i30.FilterConstraint?>()) {
+      return (data != null ? _i30.FilterConstraint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.FilterConstraintType?>()) {
+      return (data != null ? _i31.FilterConstraintType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i40.DistributedCacheEntry?>()) {
-      return (data != null ? _i40.DistributedCacheEntry.fromJson(data) : null)
+    if (t == _i1.getType<_i32.ForeignKeyAction?>()) {
+      return (data != null ? _i32.ForeignKeyAction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.ForeignKeyDefinition?>()) {
+      return (data != null ? _i33.ForeignKeyDefinition.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i41.SessionLogResult?>()) {
-      return (data != null ? _i41.SessionLogResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i42.FileNotFoundException?>()) {
-      return (data != null ? _i42.FileNotFoundException.fromJson(data) : null)
+    if (t == _i1.getType<_i34.ForeignKeyMatchType?>()) {
+      return (data != null ? _i34.ForeignKeyMatchType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i43.FutureCallEntry?>()) {
-      return (data != null ? _i43.FutureCallEntry.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.IndexDefinition?>()) {
+      return (data != null ? _i35.IndexDefinition.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i44.LogEntry?>()) {
-      return (data != null ? _i44.LogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i45.LogLevel?>()) {
-      return (data != null ? _i45.LogLevel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.LogResult?>()) {
-      return (data != null ? _i46.LogResult.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i47.LogSettings?>()) {
-      return (data != null ? _i47.LogSettings.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i48.LogSettingsOverride?>()) {
-      return (data != null ? _i48.LogSettingsOverride.fromJson(data) : null)
+    if (t == _i1.getType<_i36.IndexElementDefinition?>()) {
+      return (data != null ? _i36.IndexElementDefinition.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i49.MessageLogEntry?>()) {
-      return (data != null ? _i49.MessageLogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i50.MethodInfo?>()) {
-      return (data != null ? _i50.MethodInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i51.QueryLogEntry?>()) {
-      return (data != null ? _i51.QueryLogEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i52.ReadWriteTestEntry?>()) {
-      return (data != null ? _i52.ReadWriteTestEntry.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i53.RuntimeSettings?>()) {
-      return (data != null ? _i53.RuntimeSettings.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i54.ServerHealthConnectionInfo?>()) {
+    if (t == _i1.getType<_i37.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i54.ServerHealthConnectionInfo.fromJson(data)
+          ? _i37.IndexElementDefinitionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i55.ServerHealthMetric?>()) {
-      return (data != null ? _i55.ServerHealthMetric.fromJson(data) : null)
+    if (t == _i1.getType<_i38.TableDefinition?>()) {
+      return (data != null ? _i38.TableDefinition.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i39.TableMigration?>()) {
+      return (data != null ? _i39.TableMigration.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i40.VectorDistanceFunction?>()) {
+      return (data != null ? _i40.VectorDistanceFunction.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i56.ServerHealthResult?>()) {
-      return (data != null ? _i56.ServerHealthResult.fromJson(data) : null)
+    if (t == _i1.getType<_i41.DistributedCacheEntry?>()) {
+      return (data != null ? _i41.DistributedCacheEntry.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i57.ServerpodSqlException?>()) {
-      return (data != null ? _i57.ServerpodSqlException.fromJson(data) : null)
+    if (t == _i1.getType<_i42.SessionLogResult?>()) {
+      return (data != null ? _i42.SessionLogResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i43.FileNotFoundException?>()) {
+      return (data != null ? _i43.FileNotFoundException.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i58.SessionLogEntry?>()) {
-      return (data != null ? _i58.SessionLogEntry.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i44.FutureCallEntry?>()) {
+      return (data != null ? _i44.FutureCallEntry.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i59.SessionLogFilter?>()) {
-      return (data != null ? _i59.SessionLogFilter.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i45.LogEntry?>()) {
+      return (data != null ? _i45.LogEntry.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i60.SessionLogInfo?>()) {
-      return (data != null ? _i60.SessionLogInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i46.LogLevel?>()) {
+      return (data != null ? _i46.LogLevel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i61.AccessDeniedException?>()) {
-      return (data != null ? _i61.AccessDeniedException.fromJson(data) : null)
+    if (t == _i1.getType<_i47.LogResult?>()) {
+      return (data != null ? _i47.LogResult.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i48.LogSettings?>()) {
+      return (data != null ? _i48.LogSettings.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i49.LogSettingsOverride?>()) {
+      return (data != null ? _i49.LogSettingsOverride.fromJson(data) : null)
           as T;
+    }
+    if (t == _i1.getType<_i50.MessageLogEntry?>()) {
+      return (data != null ? _i50.MessageLogEntry.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i51.MethodInfo?>()) {
+      return (data != null ? _i51.MethodInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i52.QueryLogEntry?>()) {
+      return (data != null ? _i52.QueryLogEntry.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i53.ReadWriteTestEntry?>()) {
+      return (data != null ? _i53.ReadWriteTestEntry.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i54.RuntimeSettings?>()) {
+      return (data != null ? _i54.RuntimeSettings.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i55.ServerHealthConnectionInfo?>()) {
+      return (data != null
+          ? _i55.ServerHealthConnectionInfo.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i56.ServerHealthMetric?>()) {
+      return (data != null ? _i56.ServerHealthMetric.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i57.ServerHealthResult?>()) {
+      return (data != null ? _i57.ServerHealthResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i58.ServerpodSqlException?>()) {
+      return (data != null ? _i58.ServerpodSqlException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i59.SessionLogEntry?>()) {
+      return (data != null ? _i59.SessionLogEntry.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i60.SessionLogFilter?>()) {
+      return (data != null ? _i60.SessionLogFilter.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i61.SessionLogInfo?>()) {
+      return (data != null ? _i61.SessionLogInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i62.AccessDeniedException?>()) {
+      return (data != null ? _i62.AccessDeniedException.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i23.DatabaseMigrationAction>) {
+      return (data as List)
+          .map((e) => deserialize<_i23.DatabaseMigrationAction>(e))
+          .toList() as T;
+    }
+    if (t == List<_i26.DatabaseMigrationWarning>) {
+      return (data as List)
+          .map((e) => deserialize<_i26.DatabaseMigrationWarning>(e))
+          .toList() as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -1726,34 +1745,24 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i14.BulkQueryColumnDescription>(e))
           .toList() as T;
     }
-    if (t == List<_i37.TableDefinition>) {
+    if (t == List<_i38.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i37.TableDefinition>(e))
+          .map((e) => deserialize<_i38.TableDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i24.DatabaseMigrationVersion>) {
+    if (t == List<_i25.DatabaseMigrationVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i24.DatabaseMigrationVersion>(e))
+          .map((e) => deserialize<_i25.DatabaseMigrationVersion>(e))
           .toList() as T;
     }
-    if (t == List<_i22.DatabaseMigrationAction>) {
+    if (t == List<_i30.FilterConstraint>) {
       return (data as List)
-          .map((e) => deserialize<_i22.DatabaseMigrationAction>(e))
+          .map((e) => deserialize<_i30.FilterConstraint>(e))
           .toList() as T;
     }
-    if (t == List<_i25.DatabaseMigrationWarning>) {
+    if (t == List<_i36.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i25.DatabaseMigrationWarning>(e))
-          .toList() as T;
-    }
-    if (t == List<_i29.FilterConstraint>) {
-      return (data as List)
-          .map((e) => deserialize<_i29.FilterConstraint>(e))
-          .toList() as T;
-    }
-    if (t == List<_i35.IndexElementDefinition>) {
-      return (data as List)
-          .map((e) => deserialize<_i35.IndexElementDefinition>(e))
+          .map((e) => deserialize<_i36.IndexElementDefinition>(e))
           .toList() as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
@@ -1767,14 +1776,14 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i16.ColumnDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i32.ForeignKeyDefinition>) {
+    if (t == List<_i33.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i32.ForeignKeyDefinition>(e))
+          .map((e) => deserialize<_i33.ForeignKeyDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i34.IndexDefinition>) {
+    if (t == List<_i35.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i34.IndexDefinition>(e))
+          .map((e) => deserialize<_i35.IndexDefinition>(e))
           .toList() as T;
     }
     if (t == List<_i17.ColumnMigration>) {
@@ -1782,43 +1791,43 @@ class Protocol extends _i1.SerializationManagerServer {
           .map((e) => deserialize<_i17.ColumnMigration>(e))
           .toList() as T;
     }
-    if (t == List<_i60.SessionLogInfo>) {
+    if (t == List<_i61.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i60.SessionLogInfo>(e))
+          .map((e) => deserialize<_i61.SessionLogInfo>(e))
           .toList() as T;
     }
-    if (t == List<_i44.LogEntry>) {
-      return (data as List).map((e) => deserialize<_i44.LogEntry>(e)).toList()
+    if (t == List<_i45.LogEntry>) {
+      return (data as List).map((e) => deserialize<_i45.LogEntry>(e)).toList()
           as T;
     }
-    if (t == List<_i48.LogSettingsOverride>) {
+    if (t == List<_i49.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i48.LogSettingsOverride>(e))
+          .map((e) => deserialize<_i49.LogSettingsOverride>(e))
           .toList() as T;
     }
-    if (t == List<_i55.ServerHealthMetric>) {
+    if (t == List<_i56.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i55.ServerHealthMetric>(e))
+          .map((e) => deserialize<_i56.ServerHealthMetric>(e))
           .toList() as T;
     }
-    if (t == List<_i54.ServerHealthConnectionInfo>) {
+    if (t == List<_i55.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i54.ServerHealthConnectionInfo>(e))
+          .map((e) => deserialize<_i55.ServerHealthConnectionInfo>(e))
           .toList() as T;
     }
-    if (t == List<_i51.QueryLogEntry>) {
+    if (t == List<_i52.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i51.QueryLogEntry>(e))
+          .map((e) => deserialize<_i52.QueryLogEntry>(e))
           .toList() as T;
     }
-    if (t == List<_i49.MessageLogEntry>) {
+    if (t == List<_i50.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i49.MessageLogEntry>(e))
+          .map((e) => deserialize<_i50.MessageLogEntry>(e))
           .toList() as T;
     }
-    if (t == List<_i62.TableDefinition>) {
+    if (t == List<_i63.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i62.TableDefinition>(e))
+          .map((e) => deserialize<_i63.TableDefinition>(e))
           .toList() as T;
     }
     if (t == List<String>) {
@@ -1832,8 +1841,8 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i3.DatabaseMigrationActionType():
-        return 'DatabaseMigrationActionType';
+      case _i3.DatabaseMigration():
+        return 'DatabaseMigration';
       case _i4.RevokedAuthenticationScope():
         return 'RevokedAuthenticationScope';
       case _i5.RevokedAuthenticationUser():
@@ -1864,91 +1873,93 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'ColumnMigration';
       case _i18.ColumnType():
         return 'ColumnType';
-      case _i19.DatabaseDefinition():
+      case _i19.CustomSerialization():
+        return 'CustomSerialization';
+      case _i20.DatabaseDefinition():
         return 'DatabaseDefinition';
-      case _i20.DatabaseDefinitions():
+      case _i21.DatabaseDefinitions():
         return 'DatabaseDefinitions';
-      case _i21.DatabaseMigration():
-        return 'DatabaseMigration';
-      case _i22.DatabaseMigrationAction():
-        return 'DatabaseMigrationAction';
-      case _i23.RevokedAuthenticationAuthId():
+      case _i22.RevokedAuthenticationAuthId():
         return 'RevokedAuthenticationAuthId';
-      case _i24.DatabaseMigrationVersion():
+      case _i23.DatabaseMigrationAction():
+        return 'DatabaseMigrationAction';
+      case _i24.DatabaseMigrationActionType():
+        return 'DatabaseMigrationActionType';
+      case _i25.DatabaseMigrationVersion():
         return 'DatabaseMigrationVersion';
-      case _i25.DatabaseMigrationWarning():
+      case _i26.DatabaseMigrationWarning():
         return 'DatabaseMigrationWarning';
-      case _i26.DatabaseMigrationWarningType():
+      case _i27.DatabaseMigrationWarningType():
         return 'DatabaseMigrationWarningType';
-      case _i27.EnumSerialization():
+      case _i28.EnumSerialization():
         return 'EnumSerialization';
-      case _i28.Filter():
+      case _i29.Filter():
         return 'Filter';
-      case _i29.FilterConstraint():
+      case _i30.FilterConstraint():
         return 'FilterConstraint';
-      case _i30.FilterConstraintType():
+      case _i31.FilterConstraintType():
         return 'FilterConstraintType';
-      case _i31.ForeignKeyAction():
+      case _i32.ForeignKeyAction():
         return 'ForeignKeyAction';
-      case _i32.ForeignKeyDefinition():
+      case _i33.ForeignKeyDefinition():
         return 'ForeignKeyDefinition';
-      case _i33.ForeignKeyMatchType():
+      case _i34.ForeignKeyMatchType():
         return 'ForeignKeyMatchType';
-      case _i34.IndexDefinition():
+      case _i35.IndexDefinition():
         return 'IndexDefinition';
-      case _i35.IndexElementDefinition():
+      case _i36.IndexElementDefinition():
         return 'IndexElementDefinition';
-      case _i36.IndexElementDefinitionType():
+      case _i37.IndexElementDefinitionType():
         return 'IndexElementDefinitionType';
-      case _i37.TableDefinition():
+      case _i38.TableDefinition():
         return 'TableDefinition';
-      case _i38.TableMigration():
+      case _i39.TableMigration():
         return 'TableMigration';
-      case _i39.VectorDistanceFunction():
+      case _i40.VectorDistanceFunction():
         return 'VectorDistanceFunction';
-      case _i40.DistributedCacheEntry():
+      case _i41.DistributedCacheEntry():
         return 'DistributedCacheEntry';
-      case _i41.SessionLogResult():
+      case _i42.SessionLogResult():
         return 'SessionLogResult';
-      case _i42.FileNotFoundException():
+      case _i43.FileNotFoundException():
         return 'FileNotFoundException';
-      case _i43.FutureCallEntry():
+      case _i44.FutureCallEntry():
         return 'FutureCallEntry';
-      case _i44.LogEntry():
+      case _i45.LogEntry():
         return 'LogEntry';
-      case _i45.LogLevel():
+      case _i46.LogLevel():
         return 'LogLevel';
-      case _i46.LogResult():
+      case _i47.LogResult():
         return 'LogResult';
-      case _i47.LogSettings():
+      case _i48.LogSettings():
         return 'LogSettings';
-      case _i48.LogSettingsOverride():
+      case _i49.LogSettingsOverride():
         return 'LogSettingsOverride';
-      case _i49.MessageLogEntry():
+      case _i50.MessageLogEntry():
         return 'MessageLogEntry';
-      case _i50.MethodInfo():
+      case _i51.MethodInfo():
         return 'MethodInfo';
-      case _i51.QueryLogEntry():
+      case _i52.QueryLogEntry():
         return 'QueryLogEntry';
-      case _i52.ReadWriteTestEntry():
+      case _i53.ReadWriteTestEntry():
         return 'ReadWriteTestEntry';
-      case _i53.RuntimeSettings():
+      case _i54.RuntimeSettings():
         return 'RuntimeSettings';
-      case _i54.ServerHealthConnectionInfo():
+      case _i55.ServerHealthConnectionInfo():
         return 'ServerHealthConnectionInfo';
-      case _i55.ServerHealthMetric():
+      case _i56.ServerHealthMetric():
         return 'ServerHealthMetric';
-      case _i56.ServerHealthResult():
+      case _i57.ServerHealthResult():
         return 'ServerHealthResult';
-      case _i57.ServerpodSqlException():
+      case _i58.ServerpodSqlException():
         return 'ServerpodSqlException';
-      case _i58.SessionLogEntry():
+      case _i59.SessionLogEntry():
         return 'SessionLogEntry';
-      case _i59.SessionLogFilter():
+      case _i60.SessionLogFilter():
         return 'SessionLogFilter';
-      case _i60.SessionLogInfo():
+      case _i61.SessionLogInfo():
         return 'SessionLogInfo';
-      case _i61.AccessDeniedException():
+      case _i62.AccessDeniedException():
         return 'AccessDeniedException';
     }
     return null;
@@ -1960,8 +1971,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'DatabaseMigrationActionType') {
-      return deserialize<_i3.DatabaseMigrationActionType>(data['data']);
+    if (dataClassName == 'DatabaseMigration') {
+      return deserialize<_i3.DatabaseMigration>(data['data']);
     }
     if (dataClassName == 'RevokedAuthenticationScope') {
       return deserialize<_i4.RevokedAuthenticationScope>(data['data']);
@@ -2008,134 +2019,137 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'ColumnType') {
       return deserialize<_i18.ColumnType>(data['data']);
     }
+    if (dataClassName == 'CustomSerialization') {
+      return deserialize<_i19.CustomSerialization>(data['data']);
+    }
     if (dataClassName == 'DatabaseDefinition') {
-      return deserialize<_i19.DatabaseDefinition>(data['data']);
+      return deserialize<_i20.DatabaseDefinition>(data['data']);
     }
     if (dataClassName == 'DatabaseDefinitions') {
-      return deserialize<_i20.DatabaseDefinitions>(data['data']);
-    }
-    if (dataClassName == 'DatabaseMigration') {
-      return deserialize<_i21.DatabaseMigration>(data['data']);
-    }
-    if (dataClassName == 'DatabaseMigrationAction') {
-      return deserialize<_i22.DatabaseMigrationAction>(data['data']);
+      return deserialize<_i21.DatabaseDefinitions>(data['data']);
     }
     if (dataClassName == 'RevokedAuthenticationAuthId') {
-      return deserialize<_i23.RevokedAuthenticationAuthId>(data['data']);
+      return deserialize<_i22.RevokedAuthenticationAuthId>(data['data']);
+    }
+    if (dataClassName == 'DatabaseMigrationAction') {
+      return deserialize<_i23.DatabaseMigrationAction>(data['data']);
+    }
+    if (dataClassName == 'DatabaseMigrationActionType') {
+      return deserialize<_i24.DatabaseMigrationActionType>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationVersion') {
-      return deserialize<_i24.DatabaseMigrationVersion>(data['data']);
+      return deserialize<_i25.DatabaseMigrationVersion>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationWarning') {
-      return deserialize<_i25.DatabaseMigrationWarning>(data['data']);
+      return deserialize<_i26.DatabaseMigrationWarning>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationWarningType') {
-      return deserialize<_i26.DatabaseMigrationWarningType>(data['data']);
+      return deserialize<_i27.DatabaseMigrationWarningType>(data['data']);
     }
     if (dataClassName == 'EnumSerialization') {
-      return deserialize<_i27.EnumSerialization>(data['data']);
+      return deserialize<_i28.EnumSerialization>(data['data']);
     }
     if (dataClassName == 'Filter') {
-      return deserialize<_i28.Filter>(data['data']);
+      return deserialize<_i29.Filter>(data['data']);
     }
     if (dataClassName == 'FilterConstraint') {
-      return deserialize<_i29.FilterConstraint>(data['data']);
+      return deserialize<_i30.FilterConstraint>(data['data']);
     }
     if (dataClassName == 'FilterConstraintType') {
-      return deserialize<_i30.FilterConstraintType>(data['data']);
+      return deserialize<_i31.FilterConstraintType>(data['data']);
     }
     if (dataClassName == 'ForeignKeyAction') {
-      return deserialize<_i31.ForeignKeyAction>(data['data']);
+      return deserialize<_i32.ForeignKeyAction>(data['data']);
     }
     if (dataClassName == 'ForeignKeyDefinition') {
-      return deserialize<_i32.ForeignKeyDefinition>(data['data']);
+      return deserialize<_i33.ForeignKeyDefinition>(data['data']);
     }
     if (dataClassName == 'ForeignKeyMatchType') {
-      return deserialize<_i33.ForeignKeyMatchType>(data['data']);
+      return deserialize<_i34.ForeignKeyMatchType>(data['data']);
     }
     if (dataClassName == 'IndexDefinition') {
-      return deserialize<_i34.IndexDefinition>(data['data']);
+      return deserialize<_i35.IndexDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinition') {
-      return deserialize<_i35.IndexElementDefinition>(data['data']);
+      return deserialize<_i36.IndexElementDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinitionType') {
-      return deserialize<_i36.IndexElementDefinitionType>(data['data']);
+      return deserialize<_i37.IndexElementDefinitionType>(data['data']);
     }
     if (dataClassName == 'TableDefinition') {
-      return deserialize<_i37.TableDefinition>(data['data']);
+      return deserialize<_i38.TableDefinition>(data['data']);
     }
     if (dataClassName == 'TableMigration') {
-      return deserialize<_i38.TableMigration>(data['data']);
+      return deserialize<_i39.TableMigration>(data['data']);
     }
     if (dataClassName == 'VectorDistanceFunction') {
-      return deserialize<_i39.VectorDistanceFunction>(data['data']);
+      return deserialize<_i40.VectorDistanceFunction>(data['data']);
     }
     if (dataClassName == 'DistributedCacheEntry') {
-      return deserialize<_i40.DistributedCacheEntry>(data['data']);
+      return deserialize<_i41.DistributedCacheEntry>(data['data']);
     }
     if (dataClassName == 'SessionLogResult') {
-      return deserialize<_i41.SessionLogResult>(data['data']);
+      return deserialize<_i42.SessionLogResult>(data['data']);
     }
     if (dataClassName == 'FileNotFoundException') {
-      return deserialize<_i42.FileNotFoundException>(data['data']);
+      return deserialize<_i43.FileNotFoundException>(data['data']);
     }
     if (dataClassName == 'FutureCallEntry') {
-      return deserialize<_i43.FutureCallEntry>(data['data']);
+      return deserialize<_i44.FutureCallEntry>(data['data']);
     }
     if (dataClassName == 'LogEntry') {
-      return deserialize<_i44.LogEntry>(data['data']);
+      return deserialize<_i45.LogEntry>(data['data']);
     }
     if (dataClassName == 'LogLevel') {
-      return deserialize<_i45.LogLevel>(data['data']);
+      return deserialize<_i46.LogLevel>(data['data']);
     }
     if (dataClassName == 'LogResult') {
-      return deserialize<_i46.LogResult>(data['data']);
+      return deserialize<_i47.LogResult>(data['data']);
     }
     if (dataClassName == 'LogSettings') {
-      return deserialize<_i47.LogSettings>(data['data']);
+      return deserialize<_i48.LogSettings>(data['data']);
     }
     if (dataClassName == 'LogSettingsOverride') {
-      return deserialize<_i48.LogSettingsOverride>(data['data']);
+      return deserialize<_i49.LogSettingsOverride>(data['data']);
     }
     if (dataClassName == 'MessageLogEntry') {
-      return deserialize<_i49.MessageLogEntry>(data['data']);
+      return deserialize<_i50.MessageLogEntry>(data['data']);
     }
     if (dataClassName == 'MethodInfo') {
-      return deserialize<_i50.MethodInfo>(data['data']);
+      return deserialize<_i51.MethodInfo>(data['data']);
     }
     if (dataClassName == 'QueryLogEntry') {
-      return deserialize<_i51.QueryLogEntry>(data['data']);
+      return deserialize<_i52.QueryLogEntry>(data['data']);
     }
     if (dataClassName == 'ReadWriteTestEntry') {
-      return deserialize<_i52.ReadWriteTestEntry>(data['data']);
+      return deserialize<_i53.ReadWriteTestEntry>(data['data']);
     }
     if (dataClassName == 'RuntimeSettings') {
-      return deserialize<_i53.RuntimeSettings>(data['data']);
+      return deserialize<_i54.RuntimeSettings>(data['data']);
     }
     if (dataClassName == 'ServerHealthConnectionInfo') {
-      return deserialize<_i54.ServerHealthConnectionInfo>(data['data']);
+      return deserialize<_i55.ServerHealthConnectionInfo>(data['data']);
     }
     if (dataClassName == 'ServerHealthMetric') {
-      return deserialize<_i55.ServerHealthMetric>(data['data']);
+      return deserialize<_i56.ServerHealthMetric>(data['data']);
     }
     if (dataClassName == 'ServerHealthResult') {
-      return deserialize<_i56.ServerHealthResult>(data['data']);
+      return deserialize<_i57.ServerHealthResult>(data['data']);
     }
     if (dataClassName == 'ServerpodSqlException') {
-      return deserialize<_i57.ServerpodSqlException>(data['data']);
+      return deserialize<_i58.ServerpodSqlException>(data['data']);
     }
     if (dataClassName == 'SessionLogEntry') {
-      return deserialize<_i58.SessionLogEntry>(data['data']);
+      return deserialize<_i59.SessionLogEntry>(data['data']);
     }
     if (dataClassName == 'SessionLogFilter') {
-      return deserialize<_i59.SessionLogFilter>(data['data']);
+      return deserialize<_i60.SessionLogFilter>(data['data']);
     }
     if (dataClassName == 'SessionLogInfo') {
-      return deserialize<_i60.SessionLogInfo>(data['data']);
+      return deserialize<_i61.SessionLogInfo>(data['data']);
     }
     if (dataClassName == 'AccessDeniedException') {
-      return deserialize<_i61.AccessDeniedException>(data['data']);
+      return deserialize<_i62.AccessDeniedException>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -2147,28 +2161,28 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.CloudStorageEntry.t;
       case _i9.CloudStorageDirectUploadEntry:
         return _i9.CloudStorageDirectUploadEntry.t;
-      case _i24.DatabaseMigrationVersion:
-        return _i24.DatabaseMigrationVersion.t;
-      case _i43.FutureCallEntry:
-        return _i43.FutureCallEntry.t;
-      case _i44.LogEntry:
-        return _i44.LogEntry.t;
-      case _i49.MessageLogEntry:
-        return _i49.MessageLogEntry.t;
-      case _i50.MethodInfo:
-        return _i50.MethodInfo.t;
-      case _i51.QueryLogEntry:
-        return _i51.QueryLogEntry.t;
-      case _i52.ReadWriteTestEntry:
-        return _i52.ReadWriteTestEntry.t;
-      case _i53.RuntimeSettings:
-        return _i53.RuntimeSettings.t;
-      case _i54.ServerHealthConnectionInfo:
-        return _i54.ServerHealthConnectionInfo.t;
-      case _i55.ServerHealthMetric:
-        return _i55.ServerHealthMetric.t;
-      case _i58.SessionLogEntry:
-        return _i58.SessionLogEntry.t;
+      case _i25.DatabaseMigrationVersion:
+        return _i25.DatabaseMigrationVersion.t;
+      case _i44.FutureCallEntry:
+        return _i44.FutureCallEntry.t;
+      case _i45.LogEntry:
+        return _i45.LogEntry.t;
+      case _i50.MessageLogEntry:
+        return _i50.MessageLogEntry.t;
+      case _i51.MethodInfo:
+        return _i51.MethodInfo.t;
+      case _i52.QueryLogEntry:
+        return _i52.QueryLogEntry.t;
+      case _i53.ReadWriteTestEntry:
+        return _i53.ReadWriteTestEntry.t;
+      case _i54.RuntimeSettings:
+        return _i54.RuntimeSettings.t;
+      case _i55.ServerHealthConnectionInfo:
+        return _i55.ServerHealthConnectionInfo.t;
+      case _i56.ServerHealthMetric:
+        return _i56.ServerHealthMetric.t;
+      case _i59.SessionLogEntry:
+        return _i59.SessionLogEntry.t;
     }
     return null;
   }

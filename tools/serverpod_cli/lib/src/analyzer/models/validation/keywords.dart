@@ -3,6 +3,7 @@ class Keyword {
   static const String exceptionType = 'exception';
   static const String enumType = 'enum';
 
+  static const String serialize = 'serialize';
   static const String serialized = 'serialized';
 
   static const String isSealed = 'sealed';

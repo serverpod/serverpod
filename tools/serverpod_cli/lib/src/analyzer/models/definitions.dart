@@ -75,6 +75,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set to true the class is sealed.
   final bool isSealed;
 
+  /// If set, the type of database column type this class should use for custom serialization.
+  final CustomSerialization? serialize;
+
   /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
   List<InheritanceDefinition> childClasses;
 
@@ -96,10 +99,15 @@ final class ModelClassDefinition extends ClassDefinition {
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
+    this.serialize,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
-  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[] {
+    fields.where((field) => field.type.isCustomSerializedType).forEach((field) {
+      field.type.serialize ??= serialize;
+    });
+  }
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
   /// If the field is not present, an error is thrown.

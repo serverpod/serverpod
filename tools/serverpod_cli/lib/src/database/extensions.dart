@@ -364,6 +364,9 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.json:
         type = 'json';
         break;
+      case ColumnType.jsonb:
+        type = 'jsonb';
+        break;
       case ColumnType.text:
         type = 'text';
         break;

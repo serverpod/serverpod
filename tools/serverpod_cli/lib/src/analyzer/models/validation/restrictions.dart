@@ -1496,6 +1496,28 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateSerializeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(SourceSpanSeverityException(
+        'The "${Keyword.scope}" key is not allowed on the "id" field.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
   List<SourceSpanSeverityException> validateRelationName(
     String parentNodeName,
     dynamic name,

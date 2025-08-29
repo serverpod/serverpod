@@ -58,6 +58,9 @@ class TypeDefinition {
   /// Only populated for Vector types.
   final d.int? vectorDimension;
 
+  /// If set, the type of the database json column type this type definition should use for custom serialization.
+  CustomSerialization? serialize;
+
   EnumDefinition? enumDefinition;
 
   /// Creates an [TypeDefinition] from a given [DartType].
@@ -116,6 +119,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
+    this.serialize,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -153,6 +157,8 @@ class TypeDefinition {
 
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
+
+  bool get isCustomSerializedType => columnType == 'ColumnSerializable';
 
   bool get isEnumType => enumDefinition != null;
 
@@ -213,6 +219,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serialize: serialize,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -227,6 +234,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serialize: serialize,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -241,6 +249,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serialize: serialize,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -397,6 +406,16 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
+
+    final customSerialization = serialize;
+    if (customSerialization != null && isCustomSerializedType) {
+      switch (customSerialization) {
+        case CustomSerialization.json:
+          return 'json';
+        case CustomSerialization.jsonb:
+          return 'jsonb';
+      }
+    }
 
     return 'json';
   }
@@ -639,6 +658,7 @@ class TypeDefinition {
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
+      serialize: serialize,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,

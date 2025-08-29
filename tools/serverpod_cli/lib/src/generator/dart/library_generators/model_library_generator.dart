@@ -14,6 +14,8 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
+import '../../../config/experimental_feature.dart';
+
 /// The name of the method used to convert a model to JSON.
 const String _toJsonMethodName = 'toJson';
 
@@ -2092,7 +2094,9 @@ class SerializableModelLibraryGenerator {
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
                     ? _buildModelTableEnumFieldTypeReference(field)
-                    : _buildModelTableGeneralFieldExpression(field))
+                    : (field.type.isCustomSerializedType
+                        ? _buildModelTableCustomSerializedFieldTypeReference(field)
+                        : _buildModelTableGeneralFieldExpression(field)))
                 .statement,
       ]);
     });
@@ -2140,6 +2144,42 @@ class SerializableModelLibraryGenerator {
       refer('this'),
       serializedAs,
     ], {
+      if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+    });
+  }
+
+  Expression _buildModelTableCustomSerializedFieldTypeReference(
+    SerializableModelFieldDefinition field,
+  ) {
+    assert(field.type.isCustomSerializedType);
+    var customSerializationType = refer('CustomSerialization', serverpodUrl(serverCode));
+
+    final isCustomSerializedType = field.type.isCustomSerializedType;
+    final serializeAsJsonb = config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb);
+    final serializeAsJsonbAsDefault =
+        config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonbAsDefault);
+    Expression? serializeAs;
+    if (isCustomSerializedType) {
+      field.type.serialize ??= serializeAsJsonbAsDefault ? CustomSerialization.jsonb : CustomSerialization.json;
+      switch (field.type.serialize!) {
+        case CustomSerialization.json:
+          serializeAs = customSerializationType.property('json');
+          break;
+        case CustomSerialization.jsonb:
+          serializeAs = customSerializationType.property('jsonb');
+          break;
+      }
+    }
+
+    return TypeReference((t) => t
+      ..symbol = field.type.columnType
+      ..url = serverpodUrl(true)
+      ..types.addAll([])).call([
+      literalString(field.name),
+      refer('this'),
+    ], {
+      if (isCustomSerializedType && serializeAsJsonb) 'serialize': serializeAs!,
+      if (field.type.isVectorType) 'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
     });
   }

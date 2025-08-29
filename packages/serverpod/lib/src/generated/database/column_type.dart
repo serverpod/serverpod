@@ -39,7 +39,7 @@ enum ColumnType implements _i1.SerializableModel {
   /// Dart type: [UuidValue]
   uuid,
 
-  /// Esp. for serializable objects.
+  /// Esp. for serializable objects as [json].
   json,
 
   /// Used for unknown types, that have never been
@@ -56,7 +56,10 @@ enum ColumnType implements _i1.SerializableModel {
   sparsevec,
 
   /// Dart type: [Bit]
-  bit;
+  bit,
+
+  /// Esp. for serializable objects as [jsonb].
+  jsonb;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -88,6 +91,8 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.sparsevec;
       case 13:
         return ColumnType.bit;
+      case 14:
+        return ColumnType.jsonb;
       default:
         throw ArgumentError(
             'Value "$index" cannot be converted to "ColumnType"');
