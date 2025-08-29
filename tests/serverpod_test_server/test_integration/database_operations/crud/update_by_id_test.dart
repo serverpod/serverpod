@@ -10,36 +10,43 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
-      group('Given an existing UniqueData entry', () {
-        late UniqueData existingEntry;
+      test(
+        'when updating by id for a single column then only that column is updated',
+        () async {
+          const originalNumber = 1;
+          const originalEmail = 'original@serverpod.dev';
+          const updatedNumber = 42;
 
-        setUp(() async {
-          existingEntry = await UniqueData.db.insertRow(
+          var existingEntry = await UniqueData.db.insertRow(
             session,
-            UniqueData(number: 1, email: 'original@serverpod.dev'),
+            UniqueData(number: originalNumber, email: originalEmail),
           );
-        });
 
-        test(
-            'when updating by id for a single column then only that column is updated',
-            () async {
           var updated = await UniqueData.db.updateById(
             session,
             existingEntry.id!,
-            columnValues: (t) => [t.number(42)],
+            columnValues: (t) => [t.number(updatedNumber)],
           );
 
           expect(updated, isNotNull);
-          expect(updated!.number, 42);
-          expect(updated.email, 'original@serverpod.dev');
-        });
-      });
+          expect(updated!.number, updatedNumber);
+          expect(updated.email, originalEmail);
+
+          var dbRow = await UniqueData.db.findById(session, existingEntry.id!);
+          expect(dbRow, isNotNull);
+          expect(dbRow!.number, updatedNumber);
+          expect(dbRow.email, originalEmail);
+        },
+      );
 
       test('when updating by non-existent id then null is returned', () async {
+        const nonExistentId = 999999;
+        const testNumber = 123;
+
         var updated = await UniqueData.db.updateById(
           session,
-          999999,
-          columnValues: (t) => [t.number(123)],
+          nonExistentId,
+          columnValues: (t) => [t.number(testNumber)],
         );
 
         expect(updated, isNull);
@@ -47,7 +54,6 @@ void main() {
 
       group('Given a Types entry', () {
         late Types existingEntry;
-        late Types existingNullEntry;
 
         setUp(() async {
           existingEntry = await Types.db.insertRow(
@@ -60,7 +66,68 @@ void main() {
               aDateTime: DateTime.utc(2024, 1, 1),
             ),
           );
+        });
 
+        test(
+          'when updating specific columns by id then only those columns are updated and others remain unchanged',
+          () async {
+            const updatedInt = 42;
+            const updatedString = 'updated';
+            var updated = await Types.db.updateById(
+              session,
+              existingEntry.id!,
+              columnValues: (t) =>
+                  [t.anInt(updatedInt), t.aString(updatedString)],
+            );
+
+            expect(updated, isNotNull);
+            expect(updated!.anInt, updatedInt);
+            expect(updated.aString, updatedString);
+            expect(updated.aBool, existingEntry.aBool);
+            expect(updated.aDouble, existingEntry.aDouble);
+            expect(updated.aDateTime, existingEntry.aDateTime);
+
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, updatedInt);
+            expect(dbRow.aString, updatedString);
+            expect(dbRow.aBool, existingEntry.aBool);
+            expect(dbRow.aDouble, existingEntry.aDouble);
+            expect(dbRow.aDateTime, existingEntry.aDateTime);
+          },
+        );
+
+        test(
+          'when updating a column to null then the column is set to null',
+          () async {
+            var updated = await Types.db.updateById(
+              session,
+              existingEntry.id!,
+              columnValues: (t) => [t.anInt(null), t.aString(null)],
+            );
+
+            expect(updated, isNotNull);
+            expect(updated!.anInt, isNull);
+            expect(updated.aString, isNull);
+            expect(updated.aBool, existingEntry.aBool);
+            expect(updated.aDouble, existingEntry.aDouble);
+            expect(updated.aDateTime, existingEntry.aDateTime);
+
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, isNull);
+            expect(dbRow.aString, isNull);
+            expect(dbRow.aBool, existingEntry.aBool);
+            expect(dbRow.aDouble, existingEntry.aDouble);
+            expect(dbRow.aDateTime, existingEntry.aDateTime);
+          },
+        );
+      });
+
+      group('Given a Types entry with null values', () {
+        late Types existingNullEntry;
+
+        setUp(() async {
           existingNullEntry = await Types.db.insertRow(
             session,
             Types(
@@ -74,91 +141,70 @@ void main() {
         });
 
         test(
-            'when updating specific columns by id then only those columns are updated and others remain unchanged',
-            () async {
-          var updated = await Types.db.updateById(
-            session,
-            existingEntry.id!,
-            columnValues: (t) => [t.anInt(42), t.aString('updated')],
-          );
+          'when updating null columns to non-null values then the columns are set correctly',
+          () async {
+            const updatedIntFromNull = 99;
+            const updatedStringFromNull = 'was_null';
 
-          expect(updated, isNotNull);
-          expect(updated!.anInt, 42);
-          expect(updated.aString, 'updated');
-          expect(updated.aBool, true);
-          expect(updated.aDouble, 1.5);
-          expect(updated.aDateTime, DateTime.utc(2024, 1, 1));
-        });
+            var updated = await Types.db.updateById(
+              session,
+              existingNullEntry.id!,
+              columnValues: (t) => [
+                t.anInt(updatedIntFromNull),
+                t.aString(updatedStringFromNull)
+              ],
+            );
 
-        test('when updating a column to null then the column is set to null',
-            () async {
-          var updated = await Types.db.updateById(
-            session,
-            existingEntry.id!,
-            columnValues: (t) => [t.anInt(null), t.aString(null)],
-          );
+            expect(updated, isNotNull);
+            expect(updated!.anInt, updatedIntFromNull);
+            expect(updated.aString, updatedStringFromNull);
+            expect(updated.aBool, existingNullEntry.aBool);
+            expect(updated.aDouble, existingNullEntry.aDouble);
+            expect(updated.aDateTime, existingNullEntry.aDateTime);
 
-          expect(updated, isNotNull);
-          expect(updated!.anInt, isNull);
-          expect(updated.aString, isNull);
-          // Other fields should remain unchanged
-          expect(updated.aBool, true);
-          expect(updated.aDouble, 1.5);
-          expect(updated.aDateTime, DateTime.utc(2024, 1, 1));
-        });
-
-        test(
-            'when updating null columns to non-null values then the columns are set correctly',
-            () async {
-          var updated = await Types.db.updateById(
-            session,
-            existingNullEntry.id!,
-            columnValues: (t) => [t.anInt(99), t.aString('was_null')],
-          );
-
-          expect(updated, isNotNull);
-          expect(updated!.anInt, 99);
-          expect(updated.aString, 'was_null');
-          // Other fields should remain null
-          expect(updated.aBool, isNull);
-          expect(updated.aDouble, isNull);
-          expect(updated.aDateTime, isNull);
-        });
+            var dbRow = await Types.db.findById(session, existingNullEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, updatedIntFromNull);
+            expect(dbRow.aString, updatedStringFromNull);
+            expect(dbRow.aBool, existingNullEntry.aBool);
+            expect(dbRow.aDouble, existingNullEntry.aDouble);
+            expect(dbRow.aDateTime, existingNullEntry.aDateTime);
+          },
+        );
       });
 
       test(
-          'when updating by id within an aborted transaction then update reverted as part of transaction',
-          () async {
-        var existingEntry = await UniqueData.db.insertRow(
-          session,
-          UniqueData(number: 1, email: 'original@serverpod.dev'),
-        );
+        'when updating by id within an aborted transaction then update reverted as part of transaction',
+        () async {
+          const originalNumber = 1;
+          const originalEmail = 'original@serverpod.dev';
+          const transactionUpdatedNumber = 42;
 
-        await expectLater(
-          session.db.transaction((transaction) async {
+          var existingEntry = await UniqueData.db.insertRow(
+            session,
+            UniqueData(number: originalNumber, email: originalEmail),
+          );
+
+          await session.db.transaction((transaction) async {
+            var savepoint = await transaction.createSavepoint();
+
             var updated = await UniqueData.db.updateById(
               session,
               existingEntry.id!,
-              columnValues: (t) => [t.number(42)],
+              columnValues: (t) => [t.number(transactionUpdatedNumber)],
               transaction: transaction,
             );
 
             expect(updated, isNotNull);
-            expect(updated!.number, 42);
+            expect(updated!.number, transactionUpdatedNumber);
 
-            // Note: We use an exception to rollback the transaction instead of
-            // transaction.cancel() because the withServerpod test framework
-            // wraps all tests in a transaction for automatic rollback.
-            // Using transaction.cancel() causes the underlying connection to close,
-            // which conflicts with the test framework's transaction management.
-            throw Exception('Rollback transaction');
-          }),
-          throwsA(isA<Exception>()),
-        );
+            await savepoint.rollback();
+          });
 
-        var result = await UniqueData.db.findById(session, existingEntry.id!);
-        expect(result!.number, 1);
-      });
+          var result = await UniqueData.db.findById(session, existingEntry.id!);
+          expect(result!.number, originalNumber);
+        },
+      );
     },
   );
 }
