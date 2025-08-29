@@ -188,7 +188,7 @@ class ModelParser {
       extraClasses: [],
     );
     var defaultEnumDefinitionValue =
-    _parseEnumDefaultValue(documentContents, values);
+        _parseEnumDefaultValue(documentContents, values);
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
