@@ -135,6 +135,8 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
+  bool get isCollectionType => isListType || isSetType || isMapType;
+
   static List<String> get vectorClassNames =>
       ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
 

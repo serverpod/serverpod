@@ -38,3 +38,4 @@ export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
 
 export 'package:meta/meta.dart' show useResult;
+export 'package:collection/collection.dart' show DeepCollectionEquality;
