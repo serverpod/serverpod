@@ -1,8 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '/src/storage/base.dart';
-import '/src/storage/cached.dart';
-import '/src/storage/key_value.dart';
+import 'client_auth_info_storage.dart';
+import 'cached_client_auth_info_storage.dart';
+import 'key_value_client_auth_info_storage.dart';
 
 /// Exposes the [FlutterSecureStorage] class for convenience.
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,11 +15,11 @@ class SecureClientAuthInfoStorage extends CachedClientAuthInfoStorage {
     FlutterSecureStorage? secureStorage,
 
     /// Override the default key name to store the auth info on the storage.
-    String? authInfoStorageKey,
+    String? authSuccessStorageKey,
   }) : super(
           delegate: KeyValueClientAuthInfoStorage(
             keyValueStorage: FlutterSecureKeyValueStorage(secureStorage),
-            authInfoStorageKey: authInfoStorageKey,
+            authSuccessStorageKey: authSuccessStorageKey,
           ),
         );
 }

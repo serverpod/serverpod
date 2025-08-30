@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
-import '/src/storage/base.dart';
-import '/src/storage/secure.dart';
+import 'storage/client_auth_info_storage.dart';
+import 'storage/secure_client_auth_info_storage.dart';
 
 /// The [ClientAuthSessionManager] keeps track of and manages the signed-in
 /// state of the user. Users are typically authenticated with Google, Apple,
@@ -31,8 +31,8 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
         storage = storage ?? SecureClientAuthInfoStorage();
 
   /// Sets the caller from the client's module lookup.
-  void setCallerFromClient(ServerpodClientShared client) {
-    _caller ??= client.getCaller();
+  void setCaller(Caller caller) {
+    _caller ??= caller;
   }
 
   /// The authentication module caller.
@@ -41,7 +41,7 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
     throw StateError(
       'Caller not set on this session manager. Either set this session manager '
       'to a client by using the "authSessionManager" extension, or call the '
-      '"setCallerFromClient" method before accessing the caller.',
+      '"setCaller" method before accessing the caller.',
     );
   }
 
@@ -131,8 +131,8 @@ extension ClientAuthSessionManagerExtension on ServerpodClientShared {
     }
     if (currentProvider is! ClientAuthSessionManager) {
       throw StateError(
-        'The "authKeyProvider" is set to an unsupported type. '
-        'Expected "ClientAuthSessionManager", got "$currentProvider".',
+        'The "authKeyProvider" is set to an unsupported type. Expected '
+        '"ClientAuthSessionManager", got "${currentProvider.runtimeType}".',
       );
     }
     return currentProvider;
@@ -140,7 +140,7 @@ extension ClientAuthSessionManagerExtension on ServerpodClientShared {
 
   /// Sets the authentication session manager for this client.
   set authSessionManager(ClientAuthSessionManager authSessionManager) {
-    authSessionManager.setCallerFromClient(this);
+    authSessionManager.setCaller(getCaller());
     authKeyProvider = authSessionManager;
   }
 }

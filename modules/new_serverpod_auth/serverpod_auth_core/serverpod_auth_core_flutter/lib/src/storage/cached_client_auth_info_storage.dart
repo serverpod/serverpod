@@ -1,4 +1,4 @@
-import '/src/storage/base.dart';
+import 'client_auth_info_storage.dart';
 
 /// Implements the cache layer for a [ClientAuthInfoStorage] implementation. The
 /// [get] methods return is cached, so the operation can be performed with no

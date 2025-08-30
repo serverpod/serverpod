@@ -1,5 +1,5 @@
-import 'package:serverpod_auth_core_flutter/src/storage/base.dart';
-import 'package:serverpod_auth_core_flutter/src/storage/key_value.dart';
+import 'package:serverpod_auth_core_flutter/src/storage/client_auth_info_storage.dart';
+import 'package:serverpod_auth_core_flutter/src/storage/key_value_client_auth_info_storage.dart';
 
 /// A [ClientAuthInfoStorage] implementation for testing.
 class TestClientAuthInfoStorage

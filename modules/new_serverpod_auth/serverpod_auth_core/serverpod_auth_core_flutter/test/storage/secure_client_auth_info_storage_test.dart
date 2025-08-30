@@ -6,7 +6,7 @@ void main() {
   late TestSecureKeyValueStorage storage;
 
   group('Given a SecureClientAuthInfoStorage created with default key', () {
-    const defaultKey = 'serverpod_userinfo_key';
+    const defaultKey = 'serverpod_auth_success_key';
 
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
@@ -34,7 +34,8 @@ void main() {
 
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
-      storage = TestSecureKeyValueStorage.create(authInfoStorageKey: customKey);
+      storage =
+          TestSecureKeyValueStorage.create(authSuccessStorageKey: customKey);
     });
 
     test('when calling set then it uses the custom key', () async {
@@ -56,7 +57,7 @@ void main() {
   group('Given an uninitialized SecureClientAuthInfoStorage', () {
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
-      storage = TestSecureKeyValueStorage.create(authInfoStorageKey: key);
+      storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
     });
 
     test('when calling get then it returns null', () async {
@@ -79,7 +80,7 @@ void main() {
   group('Given a SecureClientAuthInfoStorage with data in storage', () {
     setUp(() async {
       FlutterSecureStorage.setMockInitialValues({});
-      storage = TestSecureKeyValueStorage.create(authInfoStorageKey: key);
+      storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
       await storage.delegate.write(key: key, value: _authSuccess.toString());
     });
 
@@ -125,7 +126,7 @@ void main() {
       'Given a SecureClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
       () async {
     FlutterSecureStorage.setMockInitialValues({});
-    storage = TestSecureKeyValueStorage.create(authInfoStorageKey: key);
+    storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
 
     await storage.delegate.write(key: key, value: 'invalid-json');
 
@@ -141,14 +142,14 @@ class TestSecureKeyValueStorage extends SecureClientAuthInfoStorage {
   /// Creates a new [FlutterSecureKeyValueStorage].
   TestSecureKeyValueStorage._({
     super.secureStorage,
-    super.authInfoStorageKey,
+    super.authSuccessStorageKey,
   });
 
-  static TestSecureKeyValueStorage create({String? authInfoStorageKey}) {
+  static TestSecureKeyValueStorage create({String? authSuccessStorageKey}) {
     const delegate = FlutterSecureStorage();
     final testStorage = TestSecureKeyValueStorage._(
       secureStorage: delegate,
-      authInfoStorageKey: authInfoStorageKey,
+      authSuccessStorageKey: authSuccessStorageKey,
     );
     testStorage.delegate = delegate;
     return testStorage;

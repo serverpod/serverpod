@@ -3,7 +3,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 /// A [KeyValueClientAuthInfoStorage] implementation for testing that exposes
 /// the underlying delegate instance.
 class TestStorage extends KeyValueClientAuthInfoStorage {
-  TestStorage({super.authInfoStorageKey})
+  TestStorage({super.authSuccessStorageKey})
       : super(keyValueStorage: TestKeyValueStorage());
 }
 

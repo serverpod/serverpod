@@ -8,7 +8,7 @@ void main() {
   late TestKeyValueAuthInfoStorage storage;
 
   group('Given a KeyValueClientAuthInfoStorage created with default key', () {
-    const defaultKey = 'serverpod_userinfo_key';
+    const defaultKey = 'serverpod_auth_success_key';
 
     setUp(() {
       storage = TestKeyValueAuthInfoStorage.create();
@@ -34,7 +34,7 @@ void main() {
 
     setUp(() {
       storage =
-          TestKeyValueAuthInfoStorage.create(authInfoStorageKey: customKey);
+          TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: customKey);
     });
 
     test('when calling set then it uses the custom key', () async {
@@ -54,7 +54,7 @@ void main() {
 
   group('Given an uninitialized KeyValueClientAuthInfoStorage', () {
     setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create(authInfoStorageKey: key);
+      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
     });
 
     test('when calling get then it returns null', () async {
@@ -76,7 +76,7 @@ void main() {
 
   group('Given a KeyValueClientAuthInfoStorage with data in storage', () {
     setUp(() async {
-      storage = TestKeyValueAuthInfoStorage.create(authInfoStorageKey: key);
+      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
       await storage.delegate.set(key, _authSuccess.toString());
     });
 
@@ -121,7 +121,7 @@ void main() {
   test(
       'Given a KeyValueClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
       () async {
-    storage = TestKeyValueAuthInfoStorage.create(authInfoStorageKey: key);
+    storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
 
     await storage.delegate.set(key, 'invalid-json');
 
@@ -166,15 +166,15 @@ void main() {
 class TestKeyValueAuthInfoStorage extends KeyValueClientAuthInfoStorage {
   TestKeyValueAuthInfoStorage._({
     required super.keyValueStorage,
-    super.authInfoStorageKey,
+    super.authSuccessStorageKey,
   });
 
   TestKeyValueStorage get delegate => keyValueStorage as TestKeyValueStorage;
 
-  static TestKeyValueAuthInfoStorage create({String? authInfoStorageKey}) {
+  static TestKeyValueAuthInfoStorage create({String? authSuccessStorageKey}) {
     final testStorage = TestKeyValueAuthInfoStorage._(
       keyValueStorage: TestKeyValueStorage(),
-      authInfoStorageKey: authInfoStorageKey,
+      authSuccessStorageKey: authSuccessStorageKey,
     );
     return testStorage;
   }
