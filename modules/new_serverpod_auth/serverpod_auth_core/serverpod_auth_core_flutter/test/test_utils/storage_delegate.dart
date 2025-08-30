@@ -27,23 +27,21 @@ class TestKeyValueStorage
 
 mixin class _TestMapStorage<T> {
   final Map<String, T?> values = {};
-  T? lastSetValue;
-  bool shouldThrowOnGet = false;
-  bool shouldThrowOnSet = false;
+  int storageGetHitCount = 0;
+
+  Future<T?> Function()? getOverride;
+  Future<void> Function()? setOverride;
 
   Future<T?> _get(String key) async {
-    if (shouldThrowOnGet) {
-      throw Exception('Storage error on get');
-    }
+    if (getOverride != null) return getOverride!();
+
+    storageGetHitCount++;
     return values[key];
   }
 
   Future<void> _set(String key, T? value) async {
-    if (shouldThrowOnSet) {
-      throw Exception('Storage error on set');
-    }
+    if (setOverride != null) return setOverride!();
 
-    lastSetValue = value;
     if (value == null) {
       values.remove(key);
     } else {

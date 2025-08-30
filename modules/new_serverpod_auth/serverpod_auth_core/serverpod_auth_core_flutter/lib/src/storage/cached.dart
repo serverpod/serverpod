@@ -17,18 +17,6 @@ class CachedClientAuthInfoStorage implements ClientAuthInfoStorage {
 
   AuthSuccess? _cachedData;
 
-  /// Returns the cached [AuthSuccess] instance. Will raise an error if trying to
-  /// access this attributed before any call to [get] or [set].
-  AuthSuccess? get cachedAuthInfo {
-    if (!_cached) {
-      throw StateError(
-        'Tried to access the cached info before initializing. Call "set" or '
-        '"get" method to cache the value.',
-      );
-    }
-    return _cachedData;
-  }
-
   @override
   Future<void> set(AuthSuccess? data) async {
     await _delegate.set(data);
