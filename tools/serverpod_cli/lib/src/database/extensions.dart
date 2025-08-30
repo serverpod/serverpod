@@ -1,3 +1,4 @@
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -128,6 +129,7 @@ extension IndexComparisons on IndexDefinition {
         other.predicate == predicate &&
         other.tableSpace == tableSpace &&
         other.type == type &&
+        other.ginOperatorClass == ginOperatorClass &&
         other.vectorDistanceFunction == vectorDistanceFunction &&
         other.vectorColumnType == vectorColumnType &&
         _parametersMapEquals(other.parameters);
@@ -425,6 +427,12 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
+    String ginOperatorClassStr = '';
+
+    if (type == 'GIN' && ginOperatorClass != null) {
+      ginOperatorClassStr = ' ${ginOperatorClass!.asOperator()}';
+    }
+
     String distanceStr = '';
     String pgvectorParams = '';
 
@@ -439,7 +447,7 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     }
 
     out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
 
     return out;
   }
@@ -816,6 +824,12 @@ extension ColumnTypeComparison on ColumnType {
     }
 
     return this == other;
+  }
+}
+
+extension GinIndexOperatorClass on GinOperatorClass {
+  String asOperator() {
+    return '${name.snakeCase}_ops';
   }
 }
 

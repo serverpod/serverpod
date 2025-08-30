@@ -169,6 +169,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       }
 
       var parameters = <String, String>{};
+      GinOperatorClass? ginOperatorClass;
       VectorDistanceFunction? vectorDistanceFunction;
       ColumnType? vectorColumnType;
 
@@ -221,6 +222,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         isPrimary: index[3],
         //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
         predicate: index[6],
+        ginOperatorClass: ginOperatorClass,
         vectorDistanceFunction: vectorDistanceFunction,
         vectorColumnType: vectorColumnType,
         parameters: parameters.isEmpty ? null : parameters,

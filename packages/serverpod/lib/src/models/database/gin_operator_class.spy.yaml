@@ -1,0 +1,8 @@
+### Operator classes used by GIN indexes.
+enum: GinOperatorClass
+serialized: byName
+values:
+  - array
+  - jsonb
+  - jsonbPath
+  - tsvector
