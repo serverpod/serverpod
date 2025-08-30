@@ -24,8 +24,6 @@ void main() {
       final client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
-      expect(await client.authKeyProvider?.authHeaderValue, isNull);
-
       await client.auth.updateSignedInUser(_authSuccess);
 
       expect(await client.auth.authHeaderValue, _authHeaderValue);

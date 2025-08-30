@@ -109,7 +109,7 @@ void main() {
     });
 
     test(
-        'when first call fails with 401 and refresh succeeds '
+        'when first call fails with 401 but refresh succeeds '
         'then request is retried.', () async {
       shouldFailFirstCall = true;
 
@@ -127,7 +127,7 @@ void main() {
     });
 
     test(
-        'when first call fails with 401 but refresh fails '
+        'when first call fails with 401 and refresh fails '
         'then original exception is rethrown.', () async {
       shouldFailFirstCall = true;
       authKeyProvider.setRefreshResult(false);
@@ -142,7 +142,7 @@ void main() {
     });
 
     test(
-        'when first and second calls fails with 401 '
+        'when first call fails with 401, refresh succeeds and second call also fails with 401 '
         'then no second retry is attempted and original exception is rethrown.',
         () async {
       shouldFailFirstCall = true;

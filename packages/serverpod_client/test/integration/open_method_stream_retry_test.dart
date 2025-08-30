@@ -62,8 +62,8 @@ void main() {
     tearDown(() async => await closeServer());
 
     test(
-        'when first call fails with authenticationFailed then no retry is attempted.',
-        () async {
+        'when first open method stream connection fails with authenticationFailed '
+        'then no retry is attempted.', () async {
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
           .build();
@@ -88,14 +88,14 @@ void main() {
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
     late List<String> receivedCmds;
-    late bool shouldFailFirstCall;
-    late bool shouldFailSecondCall;
+    late bool shouldFailFirstConnection;
+    late bool shouldFailSecondConnection;
     late bool shouldFailOtherException;
 
     setUp(() async {
       receivedCmds = [];
-      shouldFailFirstCall = false;
-      shouldFailSecondCall = false;
+      shouldFailFirstConnection = false;
+      shouldFailSecondConnection = false;
       shouldFailOtherException = false;
       authKeyProvider = TestRefresherAuthKeyProvider(
         initialAuthKey: 'initial-token',
@@ -114,8 +114,9 @@ void main() {
 
               if (shouldFailOtherException) {
                 responseType = OpenMethodStreamResponseType.endpointNotFound;
-              } else if ((receivedCmds.length == 1 && shouldFailFirstCall) ||
-                  (receivedCmds.length == 2 && shouldFailSecondCall)) {
+              } else if ((receivedCmds.length == 1 &&
+                      shouldFailFirstConnection) ||
+                  (receivedCmds.length == 2 && shouldFailSecondConnection)) {
                 responseType =
                     OpenMethodStreamResponseType.authenticationFailed;
               } else {
@@ -144,7 +145,9 @@ void main() {
 
     tearDown(() async => await closeServer());
 
-    test('when first call succeeds then no retry is attempted.', () async {
+    test(
+        'when first open method stream connection succeeds '
+        'then no retry is attempted.', () async {
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
           .build();
@@ -156,9 +159,9 @@ void main() {
     });
 
     test(
-        'when first call fails with authenticationFailed and refresh succeeds '
+        'when first open method stream connection fails with authenticationFailed and refresh succeeds '
         'then request is retried.', () async {
-      shouldFailFirstCall = true;
+      shouldFailFirstConnection = true;
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -173,9 +176,9 @@ void main() {
     });
 
     test(
-        'when first call fails with authenticationFailed but refresh fails '
+        'when first open method stream connection fails with authenticationFailed but refresh fails '
         'then original exception is rethrown.', () async {
-      shouldFailFirstCall = true;
+      shouldFailFirstConnection = true;
       authKeyProvider.setRefreshResult(false);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
@@ -193,11 +196,11 @@ void main() {
     });
 
     test(
-        'when first and second calls fails with authenticationFailed '
+        'when first open method stream connection fails with authenticationFailed, refresh succeeds and second open method stream connection also fails with authenticationFailed '
         'then no second retry is attempted and original exception is rethrown.',
         () async {
-      shouldFailFirstCall = true;
-      shouldFailSecondCall = true;
+      shouldFailFirstConnection = true;
+      shouldFailSecondConnection = true;
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -216,7 +219,7 @@ void main() {
     });
 
     test(
-        'when first call fails with non-authenticationFailed error '
+        'when first open method stream connection fails with non-authenticationFailed error '
         'then no retry is attempted.', () async {
       shouldFailOtherException = true;
 
