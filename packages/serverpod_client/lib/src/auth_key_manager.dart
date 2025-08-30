@@ -1,7 +1,11 @@
-import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
 /// Manages keys for authentication with the server.
-abstract class AuthenticationKeyManager {
+abstract class AuthenticationKeyManager implements ClientAuthKeyProvider {
+  /// Backwards compatible authentication header value getter.
+  @override
+  Future<String?> get authHeaderValue => getHeaderValue();
+
   /// Retrieves an authentication key.
   Future<String?> get();
 
