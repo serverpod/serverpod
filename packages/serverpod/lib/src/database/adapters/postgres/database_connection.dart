@@ -737,7 +737,15 @@ class DatabaseConnection {
     if (column is ColumnHalfVector) return 'halfvec';
     if (column is ColumnSparseVector) return 'sparsevec';
     if (column is ColumnBit) return 'bit';
-    if (column is ColumnSerializable) return 'json';
+    if (column is ColumnSerializable) {
+      switch (column.serialize) {
+        case null:
+        case CustomSerialization.json:
+          return 'json';
+        case CustomSerialization.jsonb:
+          return 'jsonb';
+      }
+    }
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
         case EnumSerialization.byIndex:

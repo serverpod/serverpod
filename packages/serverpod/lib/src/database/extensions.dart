@@ -290,6 +290,16 @@ extension IndexComparisons on IndexDefinition {
       );
     }
 
+    if (ginOperatorClass != other.ginOperatorClass) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'GIN index operator class',
+          expected: ginOperatorClass?.name,
+          found: other.ginOperatorClass?.name,
+        ),
+      );
+    }
+
     if (vectorDistanceFunction != other.vectorDistanceFunction) {
       mismatches.add(
         IndexComparisonWarning(
