@@ -234,6 +234,12 @@ class ClassYamlDefinition {
                 valueRestriction: BooleanValueRestriction().validate,
               ),
               ValidateNode(
+                Keyword.operatorClass,
+                keyRestriction: restrictions.validateIndexOperatorClassKey,
+                valueRestriction: EnumValueRestriction(enums: GinOperatorClass.values).validate,
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
+              ),
+              ValidateNode(
                 Keyword.distanceFunction,
                 keyRestriction: restrictions.validateIndexDistanceFunctionKey,
                 valueRestriction:

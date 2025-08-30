@@ -628,7 +628,7 @@ END
               definition: fieldName,
             )
           ])
-          .withType('GIN')
+          .withType('gin')
           .withIsUnique(false)
           .withIsPrimary(false)
           .build();
@@ -654,7 +654,7 @@ END
               definition: fieldName,
             )
           ])
-          .withType('GIN')
+          .withType('gin')
           .withGinOperatorClass(GinOperatorClass.jsonbPath)
           .withIsUnique(false)
           .withIsPrimary(false)

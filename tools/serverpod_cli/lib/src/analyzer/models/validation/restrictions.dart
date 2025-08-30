@@ -768,6 +768,29 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateIndexOperatorClassKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isGinIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.operatorClass}" property can only be used with gin indexes.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateIndexDistanceFunctionKey(
     String parentNodeName,
     dynamic content,

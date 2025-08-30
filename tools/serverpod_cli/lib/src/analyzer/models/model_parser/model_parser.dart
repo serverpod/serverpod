@@ -629,6 +629,7 @@ class ModelParser {
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
+      var operatorClass = _parseOperatorClass(nodeDocument, type, indexFieldsTypes);
       var distanceFunction =
           _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
       var parameters = _parseParametersKey(nodeDocument);
@@ -638,6 +639,7 @@ class ModelParser {
         type: type,
         unique: unique,
         fields: indexFields,
+        ginOperatorClass: operatorClass,
         vectorDistanceFunction: distanceFunction,
         parameters: parameters,
       );
@@ -682,6 +684,24 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.unique];
     var nodeValue = node?.value;
     return nodeValue is bool ? nodeValue : false;
+  }
+
+  static GinOperatorClass? _parseOperatorClass(
+    YamlMap documentContents,
+    String indexType,
+    Iterable<SerializableModelFieldDefinition> indexFieldsTypes,
+  ) {
+    var node = documentContents.nodes[Keyword.operatorClass];
+    var nodeValue = node?.value;
+
+    try {
+      return unsafeConvertToEnum(
+        value: nodeValue,
+        enumValues: GinOperatorClass.values,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   static VectorDistanceFunction? _parseDistanceFunction(

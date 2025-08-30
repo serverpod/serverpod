@@ -18,6 +18,7 @@ class Keyword {
 
   static const String type = 'type';
   static const String unique = 'unique';
+  static const String operatorClass = 'operatorClass';
   static const String distanceFunction = 'distanceFunction';
   static const String parameters = 'parameters';
   static const String parent = 'parent';
