@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+// ignore: unnecessary_import (Flutter 3.29.0 does not export meta from foundation)
 import 'package:meta/meta.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_core_flutter/src/shared_preferences_key_value_storage.dart';
