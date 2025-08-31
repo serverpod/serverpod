@@ -87,7 +87,7 @@ class EndpointsAnalyzer {
       }
 
       for (var endpointClass in endpointClasses) {
-        var className = endpointClass.name;
+        var className = endpointClass.name!;
         endpointClassMap.update(
           className,
           (value) => value + 1,
@@ -133,7 +133,7 @@ class EndpointsAnalyzer {
 
     var errors = await session.getErrors(filePath);
     if (errors is ErrorsResult) {
-      errors.errors
+      errors.diagnostics
           .where((error) => error.severity == Severity.error)
           .forEach((error) => errorMessages.add(
                 '${error.problemMessage.filePath} Error: ${error.message}',
@@ -149,8 +149,7 @@ class EndpointsAnalyzer {
     String filePath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
-    var topElements = library.element.topLevelElements;
-    var classElements = topElements.whereType<ClassElement>();
+    var classElements = library.element.classes;
     var endpointClasses = classElements
         .where(EndpointClassAnalyzer.isEndpointClass)
         .where((element) => !validationErrors.containsKey(
@@ -166,7 +165,8 @@ class EndpointsAnalyzer {
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
-        var parameters = EndpointParameterAnalyzer.parse(method.parameters);
+        var parameters =
+            EndpointParameterAnalyzer.parse(method.formalParameters);
 
         methodDefs.add(EndpointMethodAnalyzer.parse(
           method,
@@ -233,7 +233,8 @@ class EndpointsAnalyzer {
           classElement.methods.where(EndpointMethodAnalyzer.isEndpointMethod);
       for (var method in endpointMethods) {
         errors = EndpointMethodAnalyzer.validate(method);
-        errors.addAll(EndpointParameterAnalyzer.validate(method.parameters));
+        errors.addAll(
+            EndpointParameterAnalyzer.validate(method.formalParameters));
         if (errors.isNotEmpty) {
           validationErrors[EndpointMethodAnalyzer.elementNamespace(
             classElement,
@@ -264,10 +265,7 @@ class EndpointsAnalyzer {
   }
 
   Iterable<ClassElement> _getEndpointClasses(ResolvedLibraryResult library) {
-    var topElements = library.element.topLevelElements;
-    return topElements
-        .whereType<ClassElement>()
-        .where(EndpointClassAnalyzer.isEndpointClass);
+    return library.element.classes.where(EndpointClassAnalyzer.isEndpointClass);
   }
 
   Map<String, List<SourceSpanSeverityException>> _filterNoFailExceptions(
@@ -308,7 +306,7 @@ extension on ClassElement {
         endPointMethods.add(method);
       }
 
-      handledMethods.add(method.name);
+      handledMethods.add(method.name!);
     }
 
     var inheritedMethods = allSupertypes
@@ -326,7 +324,7 @@ extension on ClassElement {
         endPointMethods.add(method);
       }
 
-      handledMethods.add(method.name);
+      handledMethods.add(method.name!);
     }
 
     return endPointMethods;
