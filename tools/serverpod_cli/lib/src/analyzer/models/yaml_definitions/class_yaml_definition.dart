@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/required.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -148,6 +149,12 @@ class ClassYamlDefinition {
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },
+              ),
+              ValidateNode(
+                Keyword.required,
+                valueRestriction: RequiredValueRestriction(
+                  restrictions: restrictions,
+                ).validate,
               ),
               ValidateNode(
                 Keyword.database,
