@@ -3,15 +3,13 @@ import 'package:serverpod_client/serverpod_client.dart';
 /// Test auth key provider that supports refresh functionality.
 class TestRefresherAuthKeyProvider extends RefresherClientAuthKeyProvider {
   String? _authKey;
-  bool _refreshResult;
+  bool? _refreshResult;
   final List<String> refreshLog = [];
   int refreshCallCount = 0;
 
   TestRefresherAuthKeyProvider({
     String? initialAuthKey,
-    bool refreshResult = true,
-  })  : _authKey = initialAuthKey?.wrapAsBearerAuthHeader(),
-        _refreshResult = refreshResult;
+  }) : _authKey = initialAuthKey?.wrapAsBearerAuthHeader();
 
   @override
   Future<String?> get notLockedAuthHeaderValue async => _authKey;
@@ -21,11 +19,17 @@ class TestRefresherAuthKeyProvider extends RefresherClientAuthKeyProvider {
     refreshCallCount++;
     refreshLog.add('Refresh attempt $refreshCallCount');
 
-    if (_refreshResult) {
+    final refreshResult = _refreshResult;
+    if (refreshResult == null) {
+      throw StateError(
+        'Refresh result not set. Call "setRefreshResult" on the test provider '
+        'before refreshing.',
+      );
+    } else if (refreshResult) {
       _authKey = 'refreshed-token-$refreshCallCount'.wrapAsBearerAuthHeader();
     }
 
-    return _refreshResult;
+    return refreshResult;
   }
 
   void setRefreshResult(bool result) {

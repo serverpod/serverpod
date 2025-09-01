@@ -88,15 +88,10 @@ void main() {
     late Uri webSocketHost;
     late Future<void> Function() closeServer;
     late List<String> receivedCmds;
-    late bool shouldFailFirstConnection;
-    late bool shouldFailSecondConnection;
-    late bool shouldFailOtherException;
+    late List<OpenMethodStreamResponseType> serverResponses;
 
     setUp(() async {
       receivedCmds = [];
-      shouldFailFirstConnection = false;
-      shouldFailSecondConnection = false;
-      shouldFailOtherException = false;
       authKeyProvider = TestRefresherAuthKeyProvider(
         initialAuthKey: 'initial-token',
       );
@@ -110,18 +105,11 @@ void main() {
               webSocket.sendText(PongCommand.buildMessage());
             } else if (message is OpenMethodStreamCommand) {
               receivedCmds.add(event);
-              OpenMethodStreamResponseType responseType;
 
-              if (shouldFailOtherException) {
-                responseType = OpenMethodStreamResponseType.endpointNotFound;
-              } else if ((receivedCmds.length == 1 &&
-                      shouldFailFirstConnection) ||
-                  (receivedCmds.length == 2 && shouldFailSecondConnection)) {
-                responseType =
-                    OpenMethodStreamResponseType.authenticationFailed;
-              } else {
-                responseType = OpenMethodStreamResponseType.success;
+              if (receivedCmds.length > serverResponses.length) {
+                throw Exception('No more responses configured');
               }
+              final responseType = serverResponses[receivedCmds.length - 1];
 
               var response = OpenMethodStreamResponse.buildMessage(
                 connectionId: message.connectionId,
@@ -148,6 +136,10 @@ void main() {
     test(
         'when first open method stream connection succeeds '
         'then no retry is attempted.', () async {
+      serverResponses = [
+        OpenMethodStreamResponseType.success,
+      ];
+
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
           .build();
@@ -161,7 +153,12 @@ void main() {
     test(
         'when first open method stream connection fails with authenticationFailed and refresh succeeds '
         'then request is retried.', () async {
-      shouldFailFirstConnection = true;
+      serverResponses = [
+        OpenMethodStreamResponseType.authenticationFailed,
+        OpenMethodStreamResponseType.success,
+      ];
+
+      authKeyProvider.setRefreshResult(true);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -178,7 +175,10 @@ void main() {
     test(
         'when first open method stream connection fails with authenticationFailed but refresh fails '
         'then original exception is rethrown.', () async {
-      shouldFailFirstConnection = true;
+      serverResponses = [
+        OpenMethodStreamResponseType.authenticationFailed,
+      ];
+
       authKeyProvider.setRefreshResult(false);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
@@ -199,8 +199,12 @@ void main() {
         'when first open method stream connection fails with authenticationFailed, refresh succeeds and second open method stream connection also fails with authenticationFailed '
         'then no second retry is attempted and original exception is rethrown.',
         () async {
-      shouldFailFirstConnection = true;
-      shouldFailSecondConnection = true;
+      serverResponses = [
+        OpenMethodStreamResponseType.authenticationFailed,
+        OpenMethodStreamResponseType.authenticationFailed,
+      ];
+
+      authKeyProvider.setRefreshResult(true);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -221,13 +225,9 @@ void main() {
     test(
         'when first open method stream connection fails with non-authenticationFailed error '
         'then no retry is attempted.', () async {
-      shouldFailOtherException = true;
-
-      streamManager = ClientMethodStreamManager(
-        connectionTimeout: const Duration(seconds: 5),
-        webSocketHost: webSocketHost,
-        serializationManager: TestSerializationManager(),
-      );
+      serverResponses = [
+        OpenMethodStreamResponseType.endpointNotFound,
+      ];
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
