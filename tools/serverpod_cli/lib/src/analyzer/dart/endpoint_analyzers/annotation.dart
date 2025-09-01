@@ -1,9 +1,21 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 
 abstract class AnnotationAnalyzer {
   static List<AnnotationDefinition> parseAnnotations(Element dartElement) {
-    return dartElement.metadata.annotations
+    var annotations = _parseElementAnnotations(dartElement);
+    for (var annotation in _parseInheritedAnnotations(dartElement)) {
+      if (!annotations.any((e) => e.name == annotation.name)) {
+        annotations.add(annotation);
+      }
+    }
+    return annotations;
+  }
+
+  /// Parses annotations directly from an element's metadata.
+  static List<AnnotationDefinition> _parseElementAnnotations(Element element) {
+    return element.metadata.annotations
         .expand<AnnotationDefinition>((annotation) {
       var annotationElement = annotation.element;
       var annotationName = annotationElement is ConstructorElement
@@ -48,6 +60,24 @@ abstract class AnnotationAnalyzer {
         _ => [],
       };
     }).toList();
+  }
+
+  /// Parses annotations inherited from parent classes. May contain duplicates.
+  static List<AnnotationDefinition> _parseInheritedAnnotations(
+    Element dartElement,
+  ) {
+    if (dartElement is! ClassElement) return [];
+
+    var parentClasses = dartElement.allSupertypes
+        .map((s) => s.element)
+        .whereType<ClassElement>()
+        .where(EndpointClassAnalyzer.isEndpointInterface);
+
+    return [
+      for (var parentClass in parentClasses)
+        for (var annotation in _parseElementAnnotations(parentClass))
+          if (annotation.name != 'doNotGenerate') annotation,
+    ];
   }
 
   static List<String>? _parseAnnotationStringArgument(
