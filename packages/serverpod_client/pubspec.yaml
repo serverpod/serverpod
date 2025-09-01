@@ -19,7 +19,10 @@ dependencies:
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
-  relic: ^0.4.1
+  relic: 
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: merged
   serverpod_lints: 3.0.0-alpha.1
   test: ^1.25.5
 
