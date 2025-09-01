@@ -3,7 +3,6 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/element_ignore_endpoint_extension.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].

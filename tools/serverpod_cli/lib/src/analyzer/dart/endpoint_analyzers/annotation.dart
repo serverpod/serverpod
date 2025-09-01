@@ -29,6 +29,17 @@ abstract class AnnotationAnalyzer {
                   'deprecated_member_use_from_same_package',
             ),
           ],
+        // @ignoreEndpoint is deprecated in favor of @doNotGenerate
+        'ignoreEndpoint' => [
+            const AnnotationDefinition(
+              name: 'doNotGenerate',
+            ),
+          ],
+        'doNotGenerate' => [
+            AnnotationDefinition(
+              name: annotationName,
+            ),
+          ],
         'unauthenticated' => [
             AnnotationDefinition(
               name: annotationName,
@@ -47,4 +58,9 @@ abstract class AnnotationAnalyzer {
         annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
     return argument != null ? ["'$argument'"] : null;
   }
+}
+
+extension ElementIgnoreEndpointExtensions on Element {
+  bool get markedAsIgnored =>
+      AnnotationAnalyzer.parseAnnotations(this).has('doNotGenerate');
 }
