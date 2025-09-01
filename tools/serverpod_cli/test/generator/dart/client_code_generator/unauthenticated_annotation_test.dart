@@ -203,6 +203,17 @@ void main() {
     });
 
     test(
+        'then annotated method has not propagated the @unauthenticated annotation.',
+        () {
+      var clientCode =
+          codeMap.values.where((code) => code.contains('hello')).first;
+
+      expect(clientCode, isNot(contains('''\
+  @unauthenticated
+  Future<String> hello() =>''')));
+    });
+
+    test(
         'then annotated streaming method call has the authenticated parameter set to false.',
         () {
       var clientCode =
@@ -218,6 +229,17 @@ void main() {
         authenticated: false,
       );
 '''));
+    });
+
+    test(
+        'then annotated streaming method has not propagated the @unauthenticated annotation.',
+        () {
+      var clientCode =
+          codeMap.values.where((code) => code.contains('streaming')).first;
+
+      expect(clientCode, isNot(contains('''\
+  @unauthenticated
+  Stream<String> streaming() =>''')));
     });
 
     test(

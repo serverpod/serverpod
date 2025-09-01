@@ -756,7 +756,9 @@ class LibraryGenerator {
 
   Iterable<Expression> _buildEndpointCallAnnotations(
       MethodDefinition methodDef) {
-    return methodDef.annotations.map((annotation) {
+    return methodDef.annotations
+        .where((e) => e.name != 'unauthenticated')
+        .map((annotation) {
       var args = annotation.arguments;
       return refer(args != null
           ? '${annotation.name}(${args.join(',')})'
