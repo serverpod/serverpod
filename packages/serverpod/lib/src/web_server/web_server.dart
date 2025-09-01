@@ -113,7 +113,7 @@ class WebServer {
       uri = request.requestedUri;
     } catch (e) {
       logDebug('Malformed call, invalid uri. Client IP: ${request.remoteInfo}');
-      return context.withResponse(Response.badRequest());
+      return context.respond(Response.badRequest());
     }
 
     String? authenticationKey;
@@ -143,7 +143,7 @@ class WebServer {
     }
 
     // No matching patch found
-    return context.withResponse(Response.notFound());
+    return context.respond(Response.notFound());
   }
 
   Future<HandledContext> _handleRouteCall(
@@ -164,7 +164,7 @@ class WebServer {
         request: request,
       );
 
-      return context.withResponse(Response.internalServerError());
+      return context.respond(Response.internalServerError());
     }
   }
 
@@ -293,7 +293,7 @@ abstract class WidgetRoute extends Route {
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.withResponse(Response.seeOther(uri));
+      return context.respond(Response.seeOther(uri));
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
@@ -305,7 +305,7 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    return context.withResponse(Response.ok(
+    return context.respond(Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
       headers: headers,
     ));
