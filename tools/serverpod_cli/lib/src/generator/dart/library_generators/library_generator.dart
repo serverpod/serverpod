@@ -817,7 +817,10 @@ class LibraryGenerator {
           // For the records we need to transform them into a map that can be handled by the shared (non-project specific) serialization code
           literalString(parameterDef.name): handleParameter(parameterDef)
       })
-    ], {}, [
+    ], {
+      if (_isMethodUnauthenticated(endpointDef, methodDef))
+        'authenticated': literalBool(false),
+    }, [
       methodDef.returnType.generics.first.reference(false, config: config)
     ]).code;
   }
@@ -847,10 +850,21 @@ class LibraryGenerator {
         for (var parameterDef in streamingParams)
           literalString(parameterDef.name): refer(parameterDef.name),
       }),
-    ], {}, [
+    ], {
+      if (_isMethodUnauthenticated(endpointDef, methodDef))
+        'authenticated': literalBool(false),
+    }, [
       methodDef.returnType.reference(false, config: config),
       methodDef.returnType.generics.first.reference(false, config: config),
     ]).code;
+  }
+
+  bool _isMethodUnauthenticated(
+    EndpointDefinition endpointDef,
+    MethodDefinition methodDef,
+  ) {
+    return (endpointDef.annotations.has('unauthenticated') ||
+        methodDef.annotations.has('unauthenticated'));
   }
 
   String? _generatedDirectoryPathCache;
@@ -1139,15 +1153,15 @@ class LibraryGenerator {
       ),
       Method((m) => m
         ..docs.add('''
-          /// Maps container types (like [List], [Map], [Set]) containing 
+          /// Maps container types (like [List], [Map], [Set]) containing
           /// [Record]s or non-String-keyed [Map]s to their JSON representation.
           ///
-          /// It should not be called for [SerializableModel] types. These 
+          /// It should not be called for [SerializableModel] types. These
           /// handle the "[Record] in container" mapping internally already.
           ///
           /// It is only supposed to be called from generated protocol code.
           ///
-          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with 
+          /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
           /// non-String keys) or a `Map<String, dynamic>` in case the input was
           /// a `Map<String, …>`.''')
         ..name = mapContainerToJsonFunctionName

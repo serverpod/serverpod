@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/element_ignore_endpoint_extension.dart';
@@ -33,7 +34,7 @@ abstract class EndpointMethodAnalyzer {
       return MethodStreamDefinition(
         name: method.displayName,
         documentationComment: method.documentationComment,
-        annotations: _parseAnnotations(dartElement: method),
+        annotations: AnnotationAnalyzer.parseAnnotations(method),
         parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
@@ -44,7 +45,7 @@ abstract class EndpointMethodAnalyzer {
     return MethodCallDefinition(
       name: method.displayName,
       documentationComment: method.documentationComment,
-      annotations: _parseAnnotations(dartElement: method),
+      annotations: AnnotationAnalyzer.parseAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
@@ -149,49 +150,6 @@ abstract class EndpointMethodAnalyzer {
     }
 
     return null;
-  }
-
-  static List<String>? _parseAnnotationStringArgument(
-    ElementAnnotation annotation,
-    String fieldName,
-  ) {
-    var argument =
-        annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
-    return argument != null ? ["'$argument'"] : null;
-  }
-
-  static List<AnnotationDefinition> _parseAnnotations({
-    required Element dartElement,
-  }) {
-    return dartElement.metadata.annotations
-        .expand<AnnotationDefinition>((annotation) {
-      var annotationElement = annotation.element;
-      var annotationName = annotationElement is ConstructorElement
-          ? annotationElement.enclosingElement.name
-          : annotationElement?.name;
-      if (annotationName == null) return [];
-      return switch (annotationName) {
-        'Deprecated' => [
-            AnnotationDefinition(
-              name: annotationName,
-              arguments: _parseAnnotationStringArgument(annotation, 'message'),
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            ),
-          ],
-        'deprecated' =>
-          // @deprecated is a shorthand for @Deprecated(..)
-          // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-          [
-            AnnotationDefinition(
-              name: annotationName,
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            ),
-          ],
-        _ => [],
-      };
-    }).toList();
   }
 }
 
