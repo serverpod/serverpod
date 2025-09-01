@@ -14,7 +14,7 @@ void main() {
 
       final email =
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
-      final password = 'Asdf123!!!!!';
+      const password = 'Asdf123!!!!!';
 
       final userId =
           await client.emailAccountBackwardsCompatibilityTest.createLegacyUser(

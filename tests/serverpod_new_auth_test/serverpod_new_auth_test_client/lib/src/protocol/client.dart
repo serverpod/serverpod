@@ -263,6 +263,7 @@ class EndpointGoogleAccount extends _i1.EndpointRef {
   @override
   String get name => 'googleAccount';
 
+  /// Logs in or registers an [AuthUser] for the given Google account ID.
   _i2.Future<_i5.AuthSuccess> authenticate({required String idToken}) =>
       caller.callServerEndpoint<_i5.AuthSuccess>(
         'googleAccount',

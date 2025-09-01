@@ -68,7 +68,7 @@ void main() {
       );
 
       expect(
-        (maybeIdField?.fields.type as NamedType).name2.toString(),
+        (maybeIdField?.fields.type as NamedType).name.toString(),
         'int',
         reason: 'Wrong type for the id field.',
       );
@@ -118,7 +118,7 @@ void main() {
       );
 
       expect(
-        (maybeIdField?.fields.type as NamedType).name2.toString(),
+        (maybeIdField?.fields.type as NamedType).name.toString(),
         'UuidValue',
         reason: 'Wrong type for the id field.',
       );

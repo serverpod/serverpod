@@ -14,7 +14,7 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
-  path: ^1.8.2
+  path: ^1.8.3
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
