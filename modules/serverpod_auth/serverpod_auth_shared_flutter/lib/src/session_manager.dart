@@ -62,13 +62,11 @@ class SessionManager with ChangeNotifier {
     var key = '$authenticationKeyId:$authenticationKey';
 
     // Store in key manager.
-    await keyManager.put(
-      key,
-    );
+    await keyManager.put(key);
     await _storeSharedPrefs();
 
     // Update streaming connection, if it's open.
-    await caller.client.updateStreamingConnectionAuthenticationKey(key);
+    await caller.client.updateStreamingConnectionAuthenticationKey();
     notifyListeners();
   }
 
@@ -97,11 +95,14 @@ class SessionManager with ChangeNotifier {
       } else {
         await caller.status.signOutDevice();
       }
-      await caller.client.updateStreamingConnectionAuthenticationKey(null);
 
       _signedInUser = null;
       await _storeSharedPrefs();
       await keyManager.remove();
+
+      // Must be called after updating the `keyManager`, since it will recover
+      // the auth key from it.
+      await caller.client.updateStreamingConnectionAuthenticationKey();
 
       notifyListeners();
       return true;
