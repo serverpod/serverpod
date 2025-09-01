@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
+import 'auth_key_providers/jwt_auth_key_provider.dart';
+import 'auth_key_providers/sas_auth_key_provider.dart';
 import 'storage/client_auth_info_storage.dart';
 import 'storage/secure_client_auth_info_storage.dart';
 
@@ -11,9 +13,12 @@ import 'storage/secure_client_auth_info_storage.dart';
 /// or other methods. Please refer to the documentation to see supported
 /// methods. Session information is stored in the secure shared preferences of
 /// the app and persists between restarts of the app.
-class ClientAuthSessionManager implements ClientAuthKeyProvider {
+class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// The auth module's caller.
   Caller? _caller;
+
+  /// The authentication key provider to use.
+  late final Map<AuthStrategy, ClientAuthKeyProvider> _authKeyProviderDelegates;
 
   /// The secure storage to keep user authentication info.
   final ClientAuthInfoStorage storage;
@@ -21,14 +26,20 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
   /// Creates a new [ClientAuthSessionManager].
   ClientAuthSessionManager({
     /// Optionally override the caller. If not provided directly, the caller
-    /// must be set before usage by calling [setCallerFromClient].
+    /// must be set before usage by calling [setCaller].
     Caller? caller,
+
+    /// The authentication key provider to use for each auth strategy. If not
+    /// provided, a default one will be created as needed.
+    Map<AuthStrategy, ClientAuthKeyProvider>? authKeyProviderDelegates,
 
     /// The secure storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
     ClientAuthInfoStorage? storage,
   })  : _caller = caller,
-        storage = storage ?? SecureClientAuthInfoStorage();
+        storage = storage ?? SecureClientAuthInfoStorage() {
+    _authKeyProviderDelegates = authKeyProviderDelegates ?? {};
+  }
 
   /// Sets the caller from the client's module lookup.
   void setCaller(Caller caller) {
@@ -53,17 +64,56 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
   /// Whether an user is currently signed in.
   bool get isAuthenticated => authInfo.value != null;
 
-  @override
-  Future<String?> get authHeaderValue async {
-    final currentAuth = authInfo.value;
-    if (currentAuth == null) return null;
-    return wrapAsBearerAuthHeaderValue(currentAuth.token);
+  /// The authentication key provider to use for the current auth strategy.
+  ClientAuthKeyProvider? get authKeyProviderDelegate {
+    final authStrategy = authInfo.value?.authStrategy;
+    if (authStrategy == null) return null;
+
+    var authKeyProvider = _authKeyProviderDelegates[authStrategy];
+    if (authKeyProvider != null) return authKeyProvider;
+
+    switch (authStrategy) {
+      case AuthStrategy.jwt:
+        authKeyProvider = JwtAuthKeyProvider(
+          getAuthInfo: () async => authInfo.value,
+          onRefreshAuthInfo: updateSignedInUser,
+          refreshEndpoint: caller.refreshJwtTokens,
+        );
+      case AuthStrategy.session:
+        authKeyProvider = SasAuthKeyProvider(
+          getAuthInfo: () async => authInfo.value,
+        );
+      default:
+        throw UnimplementedError(
+          'No authentication key provider found for auth strategy: $authStrategy',
+        );
+    }
+
+    _authKeyProviderDelegates[authStrategy] = authKeyProvider;
+    return authKeyProvider;
   }
 
-  /// Restores any existing session from the storage and perform a refresh.
+  @override
+  Future<String?> get authHeaderValue async =>
+      authKeyProviderDelegate?.authHeaderValue;
+
+  @override
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    final authKeyProvider = authKeyProviderDelegate;
+    if (authKeyProvider is! RefresherClientAuthKeyProvider) {
+      return RefreshAuthKeyResult.skipped;
+    }
+    return authKeyProvider.refreshAuthKey(force: force);
+  }
+
+  /// Restores any existing session from the storage and validates it. If the
+  /// authentication is no longer valid, the user is signed out from the current
+  /// device, updating the [authInfo] value. If the refresh fails due to other
+  /// reasons (network error, server error, etc.), returns false, but does not
+  /// sign out the user. Returns true if the authentication was validated.
   Future<bool> initialize() async {
     await restore();
-    return refreshAuthentication();
+    return validateAuthentication();
   }
 
   /// Restore the current sign in status from the storage.
@@ -78,27 +128,34 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
     await caller.client.updateStreamingConnectionAuthenticationKey();
   }
 
-  // MAYBE: Is this true/false return enough? A connection error could return
-  // false, but also a 401 due to a sign out on other device. What would be the
-  // best way for the app to know when to sign out forcefully, and when to just
-  // ignore safely and continue until next refresh?
   /// Verifies the current sign in status of the user with the server and
-  /// updates the information on the storage. Returns true if successful.
-  Future<bool> refreshAuthentication() async {
+  /// updates the authentication info, if needed. If the user authentication is
+  /// no longer valid, the user is signed out from the current device.
+  Future<bool> validateAuthentication() async {
     try {
-      // TODO: Add the actual call to the authentication endpoint. Depending on
-      // solving the code generation for the endpoints.
-      // await updateSignedInUser(await caller.status.getUserInfo());
+      if (isAuthenticated) {
+        final refreshResult = await refreshAuthKey(force: true);
+        if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
+            !await caller.status.isSignedIn()) {
+          return await signOutDevice();
+        }
+      }
       return true;
-    } catch (e) {
-      return false;
+    } on ServerpodClientException catch (_) {
+      // Other errors, like network errors, should not sign out the user.
     }
+    return false;
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
     try {
-      // TODO: Actually call the signout endpoint.
       await updateSignedInUser(null);
+      switch (allDevices) {
+        case true:
+          await caller.status.signOutAllDevices();
+        case false:
+          await caller.status.signOutDevice();
+      }
       return true;
     } catch (e) {
       return false;
