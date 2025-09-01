@@ -120,7 +120,7 @@ $payload''';
     };
 
     if (_sessionToken != null) {
-      headers['x-amz-security-token'] = _sessionToken!;
+      headers['x-amz-security-token'] = _sessionToken;
     }
 
     return SignedRequestParams(uri, headers);
