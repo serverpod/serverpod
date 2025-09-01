@@ -1,0 +1,89 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:test/test.dart';
+
+import '../../../../../test_util/builders/generator_config_builder.dart';
+import '../../../../../test_util/builders/model_source_builder.dart';
+
+void main() {
+  var config = GeneratorConfigBuilder().build();
+  
+  group('Given a class with a required nullable field', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: String
+            email: String?, required
+            phone: String?
+          ''',
+      ).build()
+    ];
+    var collector = CodeGenerationCollector();
+    var definitions = StatefulAnalyzer(config, models, onErrorsCollector(collector))
+        .validateAll();
+
+    test('then no errors are collected.', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
+    });
+
+    test('then the email field is marked as required.', () {
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition?.className, 'Example');
+      
+      var emailField = definition?.findField('email');
+      expect(emailField?.isRequired, isTrue);
+      expect(emailField?.type.nullable, isTrue);
+    });
+
+    test('then the phone field is not marked as required.', () {
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      var phoneField = definition?.findField('phone');
+      expect(phoneField?.isRequired, isFalse);
+      expect(phoneField?.type.nullable, isTrue);
+    });
+
+    test('then the name field is not marked as required (not nullable).', () {
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      var nameField = definition?.findField('name');
+      expect(nameField?.isRequired, isFalse);
+      expect(nameField?.type.nullable, isFalse);
+    });
+  });
+
+  group('Given a class with required on non-nullable field', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: String, required
+          ''',
+      ).build()
+    ];
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(config, models, onErrorsCollector(collector))
+        .validateAll();
+
+    test('then a validation error is collected.', () {
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected a validation error for required on non-nullable field.',
+      );
+      
+      expect(
+        collector.errors.first.message,
+        contains('required'),
+        reason: 'Error message should mention the required keyword.',
+      );
+    });
+  });
+}

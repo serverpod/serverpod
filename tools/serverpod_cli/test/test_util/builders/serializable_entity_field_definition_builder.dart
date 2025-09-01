@@ -12,6 +12,7 @@ class FieldDefinitionBuilder {
   List<String>? _documentation;
   dynamic _defaultModelValue;
   dynamic _defaultPersistValue;
+  bool _isRequired;
 
   FieldDefinitionBuilder()
       : _name = 'name',
@@ -22,7 +23,8 @@ class FieldDefinitionBuilder {
         _scope = ModelFieldScopeDefinition.all,
         _shouldPersist = true,
         _defaultModelValue = null,
-        _defaultPersistValue = null;
+        _defaultPersistValue = null,
+        _isRequired = false;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -131,6 +133,11 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withIsRequired(bool isRequired) {
+    _isRequired = isRequired;
+    return this;
+  }
+
   SerializableModelFieldDefinition build() {
     return SerializableModelFieldDefinition(
       name: _name,
@@ -141,6 +148,7 @@ class FieldDefinitionBuilder {
       documentation: _documentation,
       defaultModelValue: _defaultModelValue,
       defaultPersistValue: _defaultPersistValue,
+      isRequired: _isRequired,
     );
   }
 }

@@ -248,6 +248,7 @@ class ModelDependencyResolver {
       shouldPersist: true,
       scope: fieldDefinition.scope,
       type: relationFieldType,
+      isRequired: false,
     );
 
     _injectForeignRelationField(
@@ -401,6 +402,7 @@ class ModelDependencyResolver {
           containerField: null, // Will never be set on implicit list relations.
           foreignContainerField: fieldDefinition,
         ),
+        isRequired: false,
       );
 
       referenceClass.fields.add(
