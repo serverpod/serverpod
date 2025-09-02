@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the valueType property from the TypeDefinition class, for the Dart programming language.">
+  <title>valueType property - TypeDefinition class - analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">serverpod_cli</a></li>
+    <li><a href="../../analyzer/">analyzer.dart</a></li>
+    <li><a href="../../analyzer/TypeDefinition-class.html">TypeDefinition</a></li>
+    <li class="self-crumb">valueType property</li>
+  </ol>
+  <div class="self-name">valueType</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzer&#47;TypeDefinition-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-property">valueType</span> property 
+</h1></div>
+
+    
+
+    
+        
+  <section id="getter">
+    <section class="multi-line-signature">
+      
+      <span class="returntype">ValueType</span>
+      get
+      <span class="name ">valueType</span>
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>converts '<a href="../../analyzer/TypeDefinition/className.html">className</a>' string value to <code>ValueType</code></p>
+</section>
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">ValueType get valueType {
+  if (className == &#39;int&#39;) return ValueType.int;
+  if (className == &#39;double&#39;) return ValueType.double;
+  if (className == &#39;String&#39;) return ValueType.string;
+  if (className == &#39;bool&#39;) return ValueType.bool;
+  if (className == &#39;DateTime&#39;) return ValueType.dateTime;
+  if (className == &#39;Duration&#39;) return ValueType.duration;
+  if (className == &#39;Uri&#39;) return ValueType.uri;
+  if (className == &#39;ByteData&#39;) return ValueType.byteData;
+  if (className == &#39;UuidValue&#39;) return ValueType.uuidValue;
+  if (className == &#39;BigInt&#39;) return ValueType.bigInt;
+  if (className == &#39;Vector&#39;) return ValueType.vector;
+  if (className == &#39;HalfVector&#39;) return ValueType.halfVector;
+  if (className == &#39;SparseVector&#39;) return ValueType.sparseVector;
+  if (className == &#39;Bit&#39;) return ValueType.bit;
+  if (className == &#39;List&#39;) return ValueType.list;
+  if (className == &#39;Set&#39;) return ValueType.set;
+  if (className == &#39;Map&#39;) return ValueType.map;
+  if (className == &#39;_Record&#39;) return ValueType.record;
+  if (isEnumType) return ValueType.isEnum;
+  return ValueType.classType;
+}</code></pre>
+</section>
+
+  </section>
+
+
+</div> <!-- /.main-content -->
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">serverpod_cli</a></li>
+    <li><a href="../../analyzer/">analyzer</a></li>
+    <li><a href="../../analyzer/TypeDefinition-class.html">TypeDefinition</a></li>
+    <li class="self-crumb">valueType property</li>
+</ol>
+
+  <h5>TypeDefinition class</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    serverpod_cli
+      3.0.0-alpha.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

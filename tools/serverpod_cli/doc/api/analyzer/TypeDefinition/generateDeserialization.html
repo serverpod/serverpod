@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the generateDeserialization method from the TypeDefinition class, for the Dart programming language.">
+  <title>generateDeserialization method - TypeDefinition class - analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">serverpod_cli</a></li>
+    <li><a href="../../analyzer/">analyzer.dart</a></li>
+    <li><a href="../../analyzer/TypeDefinition-class.html">TypeDefinition</a></li>
+    <li class="self-crumb">generateDeserialization method</li>
+  </ol>
+  <div class="self-name">generateDeserialization</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzer&#47;TypeDefinition-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">generateDeserialization</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/MapEntry-class.html">MapEntry</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/code_builder/4.10.1/code_builder/Expression-class.html">Expression</a></span>, <span class="type-parameter"><a href="https://pub.dev/documentation/code_builder/4.10.1/code_builder/Code-class.html">Code</a></span>&gt;</span></span>&gt;</span></span>
+<span class="name ">generateDeserialization</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="generateDeserialization-param-serverCode"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">serverCode</span>, {</span></li>
+<li><span class="parameter" id="generateDeserialization-param-config"><span>required</span> <span class="type-annotation"><a href="../../analyzer/GeneratorConfig-class.html">GeneratorConfig</a></span> <span class="parameter-name">config</span>, </span></li>
+</ol>})
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Generates the constructors for List and Map types</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">List&lt;MapEntry&lt;Expression, Code&gt;&gt; generateDeserialization(
+  bool serverCode, {
+  required GeneratorConfig config,
+}) {
+  if (isRecordType) {
+    return [
+      MapEntry(
+        refer(&#39;getType&#39;, serverpodUrl(serverCode))
+            .call([], {}, [reference(serverCode, config: config)]),
+        Block.of(
+          [
+            if (nullable) const Code(&#39; (data == null) ? null as T : &#39;),
+            const Code(&#39;(&#39;),
+            for (final (i, positionalField)
+                in positionalRecordFields.indexed) ...[
+              if (positionalField.nullable)
+                Code(
+                    &quot;((data ${i == 0 ? &#39;as Map&#39; : &#39;&#39;})[&#39;p&#39;] as List)[$i] == null ? null : &quot;),
+              const Code(&#39;deserialize&lt;&#39;),
+              positionalField
+                  .reference(serverCode, config: config, nullable: false)
+                  .code,
+              const Code(&#39;&gt;(&#39;),
+              if (i == 0 &amp;&amp; !positionalField.nullable) ...[
+                Code(&quot;((data as Map)[&#39;p&#39;] as List)[$i]&quot;),
+              ] else
+                Code(&quot;data[&#39;p&#39;][$i]&quot;),
+              const Code(&#39;)&#39;),
+              const Code(&#39;,&#39;),
+            ],
+            if (namedRecordFields.isNotEmpty) ...[
+              for (final (i, namedField) in namedRecordFields.indexed) ...[
+                Code(namedField.recordFieldName!),
+                const Code(&#39;:&#39;),
+                if (namedField.nullable)
+                  Code(
+                      &quot;((data ${i == 0 &amp;&amp; positionalRecordFields.isEmpty ? &#39;as Map&#39; : &#39;&#39;})[&#39;n&#39;] as Map)[&#39;${namedField.recordFieldName!}&#39;] == null ? null : &quot;),
+                const Code(&#39;deserialize&lt;&#39;),
+                namedField
+                    .reference(serverCode, config: config, nullable: false)
+                    .code,
+                const Code(&#39;&gt;(&#39;),
+                if (i == 0 &amp;&amp;
+                    positionalRecordFields.isEmpty &amp;&amp;
+                    !namedField.nullable)
+                  Code(
+                      &quot;((data as Map)[&#39;n&#39;] as Map)[&#39;${namedField.recordFieldName!}&#39;]&quot;)
+                else
+                  Code(&quot;data[&#39;n&#39;][&#39;${namedField.recordFieldName!}&#39;]&quot;),
+                const Code(&#39;)&#39;),
+                const Code(&#39;,&#39;),
+              ],
+            ],
+            const Code(&#39;) as T&#39;),
+          ],
+        ),
+      ),
+    ];
+  } else if ((className == ListKeyword.className ||
+          className == SetKeyword.className) &amp;&amp;
+      generics.length == 1) {
+    return [
+      MapEntry(
+        nullable
+            ? refer(&#39;getType&#39;, serverpodUrl(serverCode))
+                .call([], {}, [reference(serverCode, config: config)])
+            : reference(serverCode, config: config),
+        Block.of([
+          nullable
+              ? Block.of([
+                  &#47;&#47; using Code.scope only sets the generic to List
+                  const Code(&#39;(data!=null?&#39;
+                      &#39;(data as List).map((e) =&gt;&#39;
+                      &#39;deserialize&lt;&#39;),
+                  generics.first.reference(serverCode, config: config).code,
+                  Code(&#39;&gt;(e))${className == &#39;Set&#39; ? &#39;.toSet()&#39; : &#39;.toList()&#39;}&#39;
+                      &#39;:null) as T&#39;)
+                ])
+              : Block.of([
+                  const Code(&#39;(data as List).map((e) =&gt;&#39;
+                      &#39;deserialize&lt;&#39;),
+                  generics.first.reference(serverCode, config: config).code,
+                  Code(
+                      &#39;&gt;(e))${className == &#39;Set&#39; ? &#39;.toSet()&#39; : &#39;.toList()&#39;} as T&#39;),
+                ])
+        ]),
+      ),
+      ...generics.first.generateDeserialization(serverCode, config: config),
+    ];
+  } else if (className == MapKeyword.className &amp;&amp; generics.length == 2) {
+    return [
+      MapEntry(
+        nullable
+            ? refer(&#39;getType&#39;, serverpodUrl(serverCode))
+                .call([], {}, [reference(serverCode, config: config)])
+            : reference(serverCode, config: config),
+        Block.of([
+          generics.first.className == &#39;String&#39;
+              ? nullable
+                  ? Block.of([
+                      &#47;&#47; using Code.scope only sets the generic to List
+                      const Code(&#39;(data!=null?&#39;
+                          &#39;(data as Map).map((k,v) =&gt;&#39;
+                          &#39;MapEntry(deserialize&lt;&#39;),
+                      generics.first
+                          .reference(serverCode, config: config)
+                          .code,
+                      const Code(&#39;&gt;(k),deserialize&lt;&#39;),
+                      generics[1].reference(serverCode, config: config).code,
+                      const Code(&#39;&gt;(v)))&#39; &#39;:null) as T&#39;)
+                    ])
+                  : Block.of([
+                      &#47;&#47; using Code.scope only sets the generic to List
+                      const Code(&#39;(data as Map).map((k,v) =&gt;&#39;
+                          &#39;MapEntry(deserialize&lt;&#39;),
+                      generics.first
+                          .reference(serverCode, config: config)
+                          .code,
+                      const Code(&#39;&gt;(k),deserialize&lt;&#39;),
+                      generics[1].reference(serverCode, config: config).code,
+                      const Code(&#39;&gt;(v))) as T&#39;)
+                    ])
+              : &#47;&#47; Key is not String -&gt; stored as list of map entries
+              nullable
+                  ? Block.of([
+                      &#47;&#47; using Code.scope only sets the generic to List
+                      const Code(&#39;(data!=null?&#39;
+                          &#39;Map.fromEntries((data as List).map((e) =&gt;&#39;
+                          &#39;MapEntry(deserialize&lt;&#39;),
+                      generics.first
+                          .reference(serverCode, config: config)
+                          .code,
+                      const Code(&#39;&gt;(e[\&#39;k\&#39;]),deserialize&lt;&#39;),
+                      generics[1].reference(serverCode, config: config).code,
+                      const Code(&#39;&gt;(e[\&#39;v\&#39;]))))&#39; &#39;:null) as T&#39;)
+                    ])
+                  : Block.of([
+                      &#47;&#47; using Code.scope only sets the generic to List
+                      const Code(&#39;Map.fromEntries((data as List).map((e) =&gt;&#39;
+                          &#39;MapEntry(deserialize&lt;&#39;),
+                      generics.first
+                          .reference(serverCode, config: config)
+                          .code,
+                      const Code(&#39;&gt;(e[\&#39;k\&#39;]),deserialize&lt;&#39;),
+                      generics[1].reference(serverCode, config: config).code,
+                      const Code(&#39;&gt;(e[\&#39;v\&#39;])))) as T&#39;)
+                    ])
+        ]),
+      ),
+      ...generics.first.generateDeserialization(serverCode, config: config),
+      ...generics[1].generateDeserialization(serverCode, config: config),
+    ];
+  } else if (customClass) {
+    &#47;&#47; This is the only place the customClass bool is used.
+    &#47;&#47; It could be moved as we already know that we are working on custom classes
+    &#47;&#47; when we generate the deserialization.
+    &#47;&#47; But the additional functionality we get here is that we generate resolves for lists and maps
+    &#47;&#47; if the custom class is used as a generic type. The day we create a more generic way to resolve generics
+    &#47;&#47; in lists, maps, etc the customClass bool can be removed which will simplify the code.
+    return [
+      MapEntry(
+          nullable
+              ? refer(&#39;getType&#39;, serverpodUrl(serverCode))
+                  .call([], {}, [reference(serverCode, config: config)])
+              : reference(serverCode, config: config),
+          Code.scope((a) =&gt; nullable
+              ? &#39;(data!=null?&#39;
+                  &#39;${a(reference(serverCode, config: config))}&#39;
+                  &#39;.fromJson(data):null)as T&#39;
+              : &#39;${a(reference(serverCode, config: config))}&#39;
+                  &#39;.fromJson(data) as T&#39;))
+    ];
+  } else {
+    return [];
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">serverpod_cli</a></li>
+    <li><a href="../../analyzer/">analyzer</a></li>
+    <li><a href="../../analyzer/TypeDefinition-class.html">TypeDefinition</a></li>
+    <li class="self-crumb">generateDeserialization method</li>
+</ol>
+
+    <h5>TypeDefinition class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    serverpod_cli
+      3.0.0-alpha.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
