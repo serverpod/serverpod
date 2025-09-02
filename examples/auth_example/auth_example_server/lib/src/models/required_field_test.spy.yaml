@@ -1,6 +1,0 @@
-class: RequiredFieldTest
-fields:
-  name: String
-  email: String?, required
-  phone: String?
-  age: int
