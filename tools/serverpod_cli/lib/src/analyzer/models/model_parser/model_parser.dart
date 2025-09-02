@@ -503,7 +503,7 @@ class ModelParser {
   }
 
   static bool _parseIsRequired(YamlMap node) {
-    return _parseBooleanKey(node, Keyword.required);
+    return _parseBooleanKey(node, Keyword.requiredKey);
   }
 
   static dynamic _parseDefaultValue(YamlMap node, String keyword) {

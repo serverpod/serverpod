@@ -81,8 +81,8 @@ void main() {
       
       expect(
         collector.errors.first.message,
-        contains('required'),
-        reason: 'Error message should mention the required keyword.',
+        'The "required" keyword can only be used with nullable fields. Non-nullable fields are already required by default.',
+        reason: 'Error message should match the exact validation message.',
       );
     });
   });
