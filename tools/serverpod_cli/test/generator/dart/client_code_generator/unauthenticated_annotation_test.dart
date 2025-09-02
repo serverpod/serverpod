@@ -43,7 +43,9 @@ void main() {
       config: config,
     );
 
-    test('then method calls have no authenticated parameter.', () {
+    test(
+        'then method calls does not have the "authenticated" parameter, as it defaults to true.',
+        () {
       var clientCode = codeMap.values
           .where((code) => code.contains('callServerEndpoint'))
           .first;
@@ -57,7 +59,9 @@ void main() {
 '''));
     });
 
-    test('then streaming method calls have no authenticated parameter.', () {
+    test(
+        'then streaming method calls does not have the "authenticated" parameter, as it defaults to true.',
+        () {
       var clientCode = codeMap.values
           .where((code) => code.contains('callStreamingServerEndpoint'))
           .first;
@@ -208,9 +212,8 @@ void main() {
       var clientCode =
           codeMap.values.where((code) => code.contains('hello')).first;
 
-      expect(clientCode, isNot(contains('''\
-  @unauthenticated
-  Future<String> hello() =>''')));
+      expect(clientCode,
+          matches(r'(?<!@unauthenticated)\n\s*Future<String> hello\(\)'));
     });
 
     test(
@@ -237,13 +240,12 @@ void main() {
       var clientCode =
           codeMap.values.where((code) => code.contains('streaming')).first;
 
-      expect(clientCode, isNot(contains('''\
-  @unauthenticated
-  Stream<String> streaming() =>''')));
+      expect(clientCode,
+          matches(r'(?<!@unauthenticated)\n\s*Stream<String> streaming\(\)'));
     });
 
     test(
-        'then non-annotated method call does not have the authenticated parameter.',
+        'then non-annotated method call does not have the "authenticated" parameter, as it defaults to true.',
         () {
       var clientCode =
           codeMap.values.where((code) => code.contains('authenticated')).first;
@@ -258,7 +260,7 @@ void main() {
     });
 
     test(
-        'then non-annotated streaming method call does not have the authenticated parameter.',
+        'then non-annotated streaming method call does not have the "authenticated" parameter, as it defaults to true.',
         () {
       var clientCode = codeMap.values
           .where((code) => code.contains('streamingAuthenticated'))
