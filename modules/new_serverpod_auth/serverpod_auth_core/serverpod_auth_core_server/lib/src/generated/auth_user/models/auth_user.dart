@@ -157,7 +157,7 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
       'createdAt',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -171,7 +171,7 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnDateTime createdAt;
 
   /// Set of scopes that this user can access.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// If `true` the user will be blocked from signing in.
   late final _i1.ColumnBool blocked;

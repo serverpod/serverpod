@@ -485,21 +485,22 @@ class TypesTable extends _i1.Table<int?> {
       this,
       _i1.EnumSerialization.byName,
     );
-    aList = _i1.ColumnSerializable(
+    aList = _i1.ColumnSerializable<List<int>>(
       'aList',
       this,
     );
-    aMap = _i1.ColumnSerializable(
+    aMap = _i1.ColumnSerializable<Map<int, int>>(
       'aMap',
       this,
     );
-    aSet = _i1.ColumnSerializable(
+    aSet = _i1.ColumnSerializable<Set<int>>(
       'aSet',
       this,
     );
-    aRecord = _i1.ColumnSerializable(
+    aRecord = _i1.ColumnSerializable<(String, {Uri? optionalUri})>(
       'aRecord',
       this,
+      encodeFn: (value) => _i5.mapRecordToJson(value),
     );
   }
 
@@ -535,13 +536,13 @@ class TypesTable extends _i1.Table<int?> {
 
   late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
 
-  late final _i1.ColumnSerializable aList;
+  late final _i1.ColumnSerializable<List<int>> aList;
 
-  late final _i1.ColumnSerializable aMap;
+  late final _i1.ColumnSerializable<Map<int, int>> aMap;
 
-  late final _i1.ColumnSerializable aSet;
+  late final _i1.ColumnSerializable<Set<int>> aSet;
 
-  late final _i1.ColumnSerializable aRecord;
+  late final _i1.ColumnSerializable<(String, {Uri? optionalUri})> aRecord;
 
   @override
   List<_i1.Column> get columns => [
