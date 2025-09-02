@@ -59,4 +59,109 @@ void main() {
       expect(ObjectWithBit.t.bitNullable.dimension, 512);
     });
   });
+
+  group('Given declared ObjectWithObject class', () {
+    test('then custom class fields are generated as ColumnSerializable.', () {
+      expect(ObjectWithObject.t.data, isA<ColumnSerializable<SimpleData>>());
+      expect(
+        ObjectWithObject.t.nullableData,
+        isA<ColumnSerializable<SimpleData>>(),
+      );
+    });
+
+    test('then container fields are generated as ColumnSerializable.', () {
+      expect(
+        ObjectWithObject.t.dataList,
+        isA<ColumnSerializable<List<SimpleData>>>(),
+      );
+      expect(
+        ObjectWithObject.t.nullableDataList,
+        isA<ColumnSerializable<List<SimpleData>>>(),
+      );
+      expect(
+        ObjectWithObject.t.listWithNullableData,
+        isA<ColumnSerializable<List<SimpleData?>>>(),
+      );
+      expect(
+        ObjectWithObject.t.nullableListWithNullableData,
+        isA<ColumnSerializable<List<SimpleData?>>>(),
+      );
+    });
+
+    test('then nested container fields are generated as ColumnSerializable.',
+        () {
+      expect(
+        ObjectWithObject.t.nestedDataList,
+        isA<ColumnSerializable<List<List<SimpleData>>>>(),
+      );
+      expect(
+        ObjectWithObject.t.nestedDataListInMap,
+        isA<
+            ColumnSerializable<
+                Map<String, List<List<Map<int, SimpleData>>?>>>>(),
+      );
+      expect(
+        ObjectWithObject.t.nestedDataMap,
+        isA<ColumnSerializable<Map<String, Map<int, SimpleData>>>>(),
+      );
+    });
+  });
+
+  group('Given declared Types class', () {
+    test('then record field is generated as ColumnSerializable.', () {
+      expect(
+        Types.t.aRecord,
+        isA<ColumnSerializable<(String, {Uri? optionalUri})>>(),
+      );
+    });
+
+    test('then container fields are generated as ColumnSerializable.', () {
+      expect(Types.t.aList, isA<ColumnSerializable<List<int>>>());
+      expect(Types.t.aMap, isA<ColumnSerializable<Map<int, int>>>());
+      expect(Types.t.aSet, isA<ColumnSerializable<Set<int>>>());
+    });
+
+    test('then record field has encoder function for record serialization.',
+        () {
+      expect(Types.t.aRecord.encodeFn, isNotNull);
+    });
+
+    test(
+        'then container fields do not have encoder function (use DatabasePoolManager.encoder.convert).',
+        () {
+      expect(Types.t.aList.encodeFn, isNull);
+      expect(Types.t.aMap.encodeFn, isNull);
+      expect(Types.t.aSet.encodeFn, isNull);
+    });
+  });
+
+  group('Given ColumnSerializable encoder function behavior', () {
+    test('then record field encoder function works correctly with all fields.',
+        () {
+      var optionalUri = Uri.parse('https://example.com');
+      var record = ('test', optionalUri: optionalUri);
+      var encoded = Types.t.aRecord.encodeFn!(record);
+      expect(encoded, isA<Map<String, dynamic>>());
+
+      expect(encoded['p'], isA<List>());
+      expect(encoded['p'][0], 'test');
+
+      expect(encoded['n'], isA<Map<String, dynamic>>());
+      expect(encoded['n']['optionalUri'], optionalUri);
+    });
+
+    test(
+        'then record field encoder function works correctly with null named field.',
+        () {
+      var record = ('test', optionalUri: null);
+      var encoded = Types.t.aRecord.encodeFn!(record);
+      expect(encoded, isA<Map<String, dynamic>>());
+
+      expect(encoded['p'], isA<List>());
+      expect(encoded['p'][0], 'test');
+
+      expect(encoded['n'], isA<Map<String, dynamic>>());
+      expect(encoded['n']['optionalUri'], isNull);
+    });
+  });
 }
