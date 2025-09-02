@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the ModelClassDefinition class from the analyzer library, for the Dart programming language.">
+  <title>ModelClassDefinition class - analyzer library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">serverpod_cli</a></li>
+    <li><a href="../analyzer/">analyzer.dart</a></li>
+    <li class="self-crumb">ModelClassDefinition class</li>
+  </ol>
+  <div class="self-name">ModelClassDefinition</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="analyzer&#47;analyzer-library-sidebar.html"
+    data-below-sidebar="analyzer&#47;ModelClassDefinition-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">ModelClassDefinition</span> class 
+    <a href="https://dart.dev/language/class-modifiers#final" class="feature feature-final" title="This class can neither be extended, implemented, nor mixed in.">final</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A <a href="../analyzer/ClassDefinition-class.html">ClassDefinition</a> specialization that represents a model class.</p>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></li>
+        <li><a href="../analyzer/SerializableModelDefinition-class.html">SerializableModelDefinition</a></li>
+        <li><a href="../analyzer/ClassDefinition-class.html">ClassDefinition</a></li>
+      <li>ModelClassDefinition</li>
+    </ul>
+  </dd>
+
+        
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="ModelClassDefinition.new" class="callable">
+          <span class="name"><a href="../analyzer/ModelClassDefinition/ModelClassDefinition.html">ModelClassDefinition.new</a></span><span class="signature">({<span class="parameter" id="-param-fileName"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">fileName</span>, </span><span class="parameter" id="-param-sourceFileName"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">sourceFileName</span>, </span><span class="parameter" id="-param-className"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">className</span>, </span><span class="parameter" id="-param-fields"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a></span>&gt;</span></span> <span class="parameter-name">fields</span>, </span><span class="parameter" id="-param-serverOnly"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">serverOnly</span>, </span><span class="parameter" id="-param-manageMigration"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">manageMigration</span>, </span><span class="parameter" id="-param-type"><span>required</span> <span class="type-annotation"><a href="../analyzer/TypeDefinition-class.html">TypeDefinition</a></span> <span class="parameter-name">type</span>, </span><span class="parameter" id="-param-isSealed"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">isSealed</span>, </span><span class="parameter" id="-param-childClasses"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">InheritanceDefinition</span>&gt;</span>?</span> <span class="parameter-name">childClasses</span>, </span><span class="parameter" id="-param-extendsClass"><span class="type-annotation">InheritanceDefinition?</span> <span class="parameter-name">extendsClass</span>, </span><span class="parameter" id="-param-tableName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">tableName</span>, </span><span class="parameter" id="-param-indexes"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelIndexDefinition-class.html">SerializableModelIndexDefinition</a></span>&gt;</span></span> <span class="parameter-name">indexes</span> = <span class="default-value">const []</span>, </span><span class="parameter" id="-param-subDirParts"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">subDirParts</span> = <span class="default-value">const []</span>, </span><span class="parameter" id="-param-documentation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span>?</span> <span class="parameter-name">documentation</span></span>})</span>
+        </dt>
+        <dd>
+          Create a new <a href="../analyzer/ModelClassDefinition-class.html">ModelClassDefinition</a>.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="childClasses" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/childClasses.html">childClasses</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">InheritanceDefinition</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  If set to a List of <code>InheritanceDefinitions</code> the class is a parent class and stores the child classes.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="className" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/className.html">className</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="descendantClasses" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/descendantClasses.html">descendantClasses</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/ModelClassDefinition-class.html">ModelClassDefinition</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Returns a list of all descendant classes.
+This includes all child classes and their descendants.
+If the class has no child classes, an empty list is returned.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="documentation" class="property inherited">
+  <span class="name"><a href="../analyzer/ClassDefinition/documentation.html">documentation</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span>?</span>
+  
+
+</dt>
+<dd class="inherited">
+  The documentation of this class, line by line.
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="everyParentIsSealed" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/everyParentIsSealed.html">everyParentIsSealed</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if all parent classes are sealed.
+Returns <code>true</code> if the class does not have a parent class.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="extendsClass" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/extendsClass.html">extendsClass</a></span>
+  <span class="signature">&#8596; InheritanceDefinition?</span>
+  
+
+</dt>
+<dd>
+  If set to <code>InheritanceDefinitions</code> the class extends another class and stores the <a href="../analyzer/ClassDefinition-class.html">ClassDefinition</a> of it's parent.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="fields" class="property inherited">
+  <span class="name"><a href="../analyzer/ClassDefinition/fields.html">fields</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  The fields of this class / exception.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="fieldsIncludingInherited" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/fieldsIncludingInherited.html">fieldsIncludingInherited</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Returns a list of all fields in this class, including inherited fields.
+It ensures that the 'id' field, if present, is always included at the beginning of the list.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="fileName" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/fileName.html">fileName</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="idField" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/idField.html">idField</a></span>
+  <span class="signature">&#8594; <a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a></span>
+  
+
+</dt>
+<dd>
+  Returns the <code>SerializableModelFieldDefinition</code> of the 'id' field.
+If the field is not present, an error is thrown.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="indexes" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/indexes.html">indexes</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelIndexDefinition-class.html">SerializableModelIndexDefinition</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  The indexes that should be created for the table <a href="../analyzer/ModelClassDefinition/tableName.html">tableName</a> representing
+this class.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="inheritedFields" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/inheritedFields.html">inheritedFields</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Returns a list of all fields in the parent class.
+If there is no parent class, an empty list is returned.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isParentClass" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/isParentClass.html">isParentClass</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if this class is a parent class or sealed.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isSealed" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/isSealed.html">isSealed</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  If set to true the class is sealed.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="isSealedTopNode" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/isSealedTopNode.html">isSealedTopNode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if this class is the top node of a sealed hierarchy.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="manageMigration" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/manageMigration.html">manageMigration</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="parentClass" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/parentClass.html">parentClass</a></span>
+  <span class="signature">&#8594; <a href="../analyzer/ModelClassDefinition-class.html">ModelClassDefinition</a>?</span>
+  
+
+</dt>
+<dd>
+  Returns the <code>ModelClassDefinition</code> of the parent class.
+If there is no parent class, <code>null</code> is returned.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="sealedTopNode" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/sealedTopNode.html">sealedTopNode</a></span>
+  <span class="signature">&#8594; <a href="../analyzer/ClassDefinition-class.html">ClassDefinition</a>?</span>
+  
+
+</dt>
+<dd>
+  Returns the top node of the sealed hierarchy. If the class is the top node it returns itself.
+If the class is not part of a sealed hierarchy, <code>null</code> is returned.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="serverOnly" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/serverOnly.html">serverOnly</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="sourceFileName" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/sourceFileName.html">sourceFileName</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="subDirParts" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/subDirParts.html">subDirParts</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="tableName" class="property">
+  <span class="name"><a href="../analyzer/ModelClassDefinition/tableName.html">tableName</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  If set, the name of the table, this class should be stored in, in the
+database.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="type" class="property inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/type.html">type</a></span>
+  <span class="signature">&#8594; <a href="../analyzer/TypeDefinition-class.html">TypeDefinition</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="fileRef" class="callable inherited">
+  <span class="name"><a href="../analyzer/SerializableModelDefinition/fileRef.html">fileRef</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Generate the file reference <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a> to this file.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findField" class="callable inherited">
+  <span class="name"><a href="../analyzer/ClassDefinition/findField.html">findField</a></span><span class="signature">(<wbr><span class="parameter" id="findField-param-name"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../analyzer/SerializableModelFieldDefinition-class.html">SerializableModelFieldDefinition</a>?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">serverpod_cli</a></li>
+    <li><a href="../analyzer/">analyzer</a></li>
+    <li class="self-crumb">ModelClassDefinition class</li>
+</ol>
+
+    <h5>analyzer library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    serverpod_cli
+      3.0.0-alpha.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
