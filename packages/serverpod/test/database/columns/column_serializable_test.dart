@@ -2,7 +2,7 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnSerializable', () {
+  group('Given a ColumnSerializable containing a String', () {
     var columnName = 'configuration';
     var column = ColumnSerializable<String>(
       columnName,
