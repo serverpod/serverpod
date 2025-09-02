@@ -64,18 +64,11 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
-    // Add temporary debug print to stderr so it's visible
-    stderr.writeln('DEBUG: ServerpodCommandRunner.runCommand called');
-    stderr.writeln('DEBUG: Version flag value: ${globalConfiguration.value(GlobalOption.version)}');
-    
     if (globalConfiguration.value(GlobalOption.version)) {
-      stderr.writeln('DEBUG: Version flag is true, running version command');
       await commands['version']?.run();
-      stderr.writeln('DEBUG: Version command completed, returning early');
       return; // Exit early to prevent showing help text
     }
 
-    stderr.writeln('DEBUG: No version flag, proceeding with normal execution');
     var experimentalFeatures = globalConfiguration.value(
       GlobalOption.experimentalFeatures,
     );
