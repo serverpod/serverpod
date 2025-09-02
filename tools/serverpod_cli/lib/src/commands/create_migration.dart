@@ -4,6 +4,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/migrations/migration_creation_result.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -12,7 +13,9 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  empty(CreateMigrationCommand.emptyOption),
+  check(CreateMigrationCommand.checkOption);
 
   const CreateMigrationOption(this.option);
 
@@ -38,6 +41,20 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Creates an empty migration without evaluating the state of the project.',
+  );
+
+  static const checkOption = FlagOption(
+    argName: 'check',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Returns with exit code 0 if no changes have been detected.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -61,6 +78,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool empty = commandConfig.value(CreateMigrationOption.empty);
+    bool check = commandConfig.value(CreateMigrationOption.check);
 
     GeneratorConfig config;
     try {
@@ -87,12 +106,15 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       projectName: projectName,
     );
 
-    MigrationVersion? migration;
+    MigrationCreationResult result = const MigrationCreationResult.error();
     await log.progress('Creating migration', () async {
       try {
-        migration = await generator.createMigration(
+        // Handle --empty flag: force creation of empty migration
+        var effectiveForce = force || empty;
+        
+        result = await generator.createMigrationWithResult(
           tag: tag,
-          force: force,
+          force: effectiveForce,
           config: config,
         );
       } on MigrationVersionLoadException catch (e) {
@@ -102,36 +124,49 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           'again. Migration version: "${e.versionName}".',
         );
         log.error(e.exception);
+        result = const MigrationCreationResult.error();
       } on GenerateMigrationDatabaseDefinitionException {
         log.error('Unable to generate database definition for project.');
+        result = const MigrationCreationResult.error();
       } on MigrationVersionAlreadyExistsException catch (e) {
         log.error(
           'Unable to create migration. A directory with the same name already '
           'exists: "${e.directoryPath}".',
         );
+        result = const MigrationCreationResult.error();
       }
 
-      return migration != null;
+      return result.isSuccess;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
+    // Handle the different result cases
+    if (result.isSuccess) {
+      var migration = result.migration!;
+      log.info(
+        'Migration created: ${path.relative(
+          MigrationConstants.migrationVersionDirectory(
+            migration.projectDirectory,
+            migration.versionName,
+          ).path,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+      log.info('Done.', type: TextLogType.success);
+    } else if (result.isNoChanges) {
+      // This is the key fix: when no changes are detected, don't throw an error
+      if (check) {
+        // With --check flag, we exit with code 0 for no changes (this is the desired behavior)
+        log.info('No changes detected.', type: TextLogType.success);
+        return;
+      } else {
+        // Without --check flag, we also exit with code 0 (this fixes the original issue)
+        log.info('No changes detected.', type: TextLogType.success);
+        return;
+      }
+    } else {
+      // result.isError - this is a real error, exit with non-zero code
       throw ExitException.error();
     }
-
-    log.info(
-      'Migration created: ${path.relative(
-        MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
-          migrationName,
-        ).path,
-        from: Directory.current.path,
-      )}',
-      type: TextLogType.bullet,
-    );
-    log.info('Done.', type: TextLogType.success);
   }
 }

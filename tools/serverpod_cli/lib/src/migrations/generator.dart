@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/migrations/migration_creation_result.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -141,6 +142,118 @@ class MigrationGenerator {
     }
 
     return migrationVersion;
+  }
+
+  /// Creates a new migration version with detailed result information.
+  /// This method provides better context about the operation result than [createMigration].
+  /// 
+  /// If [tag] is specified, the migration will be tagged with the given name.
+  /// If [force] is true, the migration will be created even if there are
+  /// warnings or no changes are detected.
+  /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// Returns a [MigrationCreationResult] that indicates whether the operation
+  /// succeeded, failed, or no changes were detected.
+  ///
+  /// Throws [MigrationVersionLoadException] if the a migration version
+  /// could not be loaded.
+  /// Throws [GenerateMigrationDatabaseDefinitionException] if the database
+  /// definition could not be created from project models.
+  /// Throws [MigrationVersionAlreadyExistsException] if the migration version
+  /// already exists.
+  Future<MigrationCreationResult> createMigrationWithResult({
+    String? tag,
+    required bool force,
+    required GeneratorConfig config,
+    bool write = true,
+  }) async {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+
+    var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
+      projectName,
+      migrationRegistry.getLatest(),
+    );
+
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
+      config,
+    );
+    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
+      collector.printErrors();
+
+      if (collector.hasSevereErrors) {
+        throw GenerateMigrationDatabaseDefinitionException();
+      }
+    }).validateAll();
+
+    var databaseDefinitionProject = createDatabaseDefinitionFromModels(
+      modelDefinitions,
+      config.name,
+      config.modulesAll,
+    );
+
+    var databaseDefinitions = await _loadModuleDatabaseDefinitions(
+      config.modulesDependent,
+      directory,
+    );
+
+    var versionName = createVersionName(tag);
+    var nextMigrationVersion = DatabaseMigrationVersion(
+      module: projectName,
+      version: versionName,
+    );
+
+    var databaseDefinitionNext = _mergeDatabaseDefinitions(
+      databaseDefinitionProject,
+      databaseDefinitions,
+      nextMigrationVersion,
+    );
+
+    var migration = generateDatabaseMigration(
+      databaseSource: databaseDefinitionLatest,
+      databaseTarget: databaseDefinitionNext,
+    );
+
+    var warnings = migration.warnings;
+    _printWarnings(warnings);
+
+    if (warnings.isNotEmpty && !force) {
+      log.info('Migration aborted. Use --force to ignore warnings.');
+      return const MigrationCreationResult.error('Migration aborted due to warnings.');
+    }
+
+    if (migration.isEmpty && !force) {
+      log.info(
+        'No changes detected. Use --force to create an empty migration.',
+      );
+      return const MigrationCreationResult.noChanges('No changes detected.');
+    }
+
+    var migrationVersion = MigrationVersion(
+      moduleName: projectName,
+      projectDirectory: directory,
+      versionName: versionName,
+      migration: migration,
+      databaseDefinitionProject: databaseDefinitionProject,
+      databaseDefinitionFull: databaseDefinitionNext,
+    );
+
+    if (write) {
+      var removedModules = _removedModulesDiff(
+        databaseDefinitionLatest.installedModules,
+        databaseDefinitionNext.installedModules,
+      );
+
+      await migrationVersion.write(
+        installedModules: databaseDefinitionNext.installedModules,
+        removedModules: removedModules,
+      );
+      migrationRegistry.add(versionName);
+      await migrationRegistry.write();
+    }
+
+    return MigrationCreationResult.success(migrationVersion);
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
