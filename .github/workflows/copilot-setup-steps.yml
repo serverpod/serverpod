@@ -31,14 +31,14 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'
+          flutter-version: '3.35.2'
           channel: 'stable'
           cache: true
 
       - name: Verify Dart version
         run: |
           dart --version
-          echo "Dart SDK version should be >= 3.5.0"
+          echo "Dart SDK version should be >= 3.9.0"
 
       - name: Install Melos
         run: dart pub global activate melos

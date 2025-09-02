@@ -1,11 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_bridge_flutter/serverpod_auth_bridge_flutter.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart'
-    as auth_session_flutter;
+import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart'
     as legacy_auth_flutter;
-import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_server_client.dart';
+import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
 import 'utils/test_storage.dart';
 
@@ -13,9 +12,7 @@ void main() {
   test(
     'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
     () async {
-      final client = Client(
-        'http://localhost:8080/',
-      );
+      final client = Client('http://localhost:8080/');
 
       final email =
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
@@ -89,16 +86,10 @@ void main() {
         isNull, // the session has not been migrated yet
       );
 
-      final newSessionManager = auth_session_flutter.SessionManager(
-        storage: TestStorage(),
-      );
+      final newSessionClient = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
-      final newSessionClient = Client(
-        'http://localhost:8080/',
-        authenticationKeyManager: newSessionManager,
-      );
-
-      await newSessionManager.initAndImportLegacySessionIfNeeded(
+      await newSessionClient.auth.initAndImportLegacySessionIfNeeded(
         newSessionClient.modules.serverpod_auth_bridge,
         legacyStringGetter: legacyStorage.getString,
       );
