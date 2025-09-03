@@ -199,7 +199,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
             final match = opClassRegex.firstMatch(opclassNames[0]);
             if (match != null && match.groupCount >= 1) {
               final ginOperatorClassNameDb = match.group(1)!;
-              ginOperatorClass = ginOperatorClassNameDb.fromDatabase();
+              ginOperatorClass = ginOperatorClassNameDb.toGinOperatorClass();
             }
           } else if (isPgVector) {
             final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
@@ -342,7 +342,7 @@ extension VectorColumnType on ColumnType {
 
 extension on String {
   /// Extension method to convert GIN operator class names as used in the database.
-  GinOperatorClass? fromDatabase() {
+  GinOperatorClass? toGinOperatorClass() {
     switch(this) {
       case 'array':
         return GinOperatorClass.array;
