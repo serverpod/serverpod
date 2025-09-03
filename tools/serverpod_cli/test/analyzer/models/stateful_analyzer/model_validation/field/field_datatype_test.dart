@@ -31,9 +31,6 @@ void main() {
       'HalfVector(256)?',
       'SparseVector(128)',
       'SparseVector(128)?',
-    ];
-
-    var bitTypes = [
       'Bit(64)',
       'Bit(64)?',
     ];
@@ -58,7 +55,6 @@ void main() {
     var datatypes = [
       ...builtInTypes,
       ...vectorTypes,
-      ...bitTypes,
       ...collectionTypes,
     ];
 
@@ -86,11 +82,15 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        test('then a class with that field type set to $datatype is generated.',
-            () {
-          var definition = definitions.first as ClassDefinition;
-          expect(definition.fields.first.type.toString(), datatype);
-        });
+        // ByteData is a special case that is handled separately below.
+        if (!datatype.startsWith('ByteData')) {
+          test(
+              'then a class with that field type set to $datatype is generated.',
+              () {
+            var definition = definitions.first as ClassDefinition;
+            expect(definition.fields.first.type.toString(), datatype);
+          });
+        }
 
         if (builtInTypes.contains(datatype)) {
           test('then the built-in type is NOT tagged as ColumnSerializable',
@@ -102,13 +102,6 @@ void main() {
 
         if (vectorTypes.contains(datatype)) {
           test('then the vector type is NOT tagged as ColumnSerializable', () {
-            var definition = definitions.first as ClassDefinition;
-            expect(definition.fields.first.type.isColumnSerializable, isFalse);
-          });
-        }
-
-        if (bitTypes.contains(datatype)) {
-          test('then the bit type is NOT tagged as ColumnSerializable', () {
             var definition = definitions.first as ClassDefinition;
             expect(definition.fields.first.type.isColumnSerializable, isFalse);
           });
