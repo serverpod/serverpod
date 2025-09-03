@@ -351,61 +351,68 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 class ObjectWithObjectTable extends _i1.Table<int?> {
   ObjectWithObjectTable({super.tableRelation})
       : super(tableName: 'object_with_object') {
-    data = _i1.ColumnSerializable(
+    data = _i1.ColumnSerializable<_i2.SimpleData>(
       'data',
       this,
     );
-    nullableData = _i1.ColumnSerializable(
+    nullableData = _i1.ColumnSerializable<_i2.SimpleData>(
       'nullableData',
       this,
     );
-    dataList = _i1.ColumnSerializable(
+    dataList = _i1.ColumnSerializable<List<_i2.SimpleData>>(
       'dataList',
       this,
     );
-    nullableDataList = _i1.ColumnSerializable(
+    nullableDataList = _i1.ColumnSerializable<List<_i2.SimpleData>>(
       'nullableDataList',
       this,
     );
-    listWithNullableData = _i1.ColumnSerializable(
+    listWithNullableData = _i1.ColumnSerializable<List<_i2.SimpleData?>>(
       'listWithNullableData',
       this,
     );
-    nullableListWithNullableData = _i1.ColumnSerializable(
+    nullableListWithNullableData =
+        _i1.ColumnSerializable<List<_i2.SimpleData?>>(
       'nullableListWithNullableData',
       this,
     );
-    nestedDataList = _i1.ColumnSerializable(
+    nestedDataList = _i1.ColumnSerializable<List<List<_i2.SimpleData>>>(
       'nestedDataList',
       this,
     );
-    nestedDataListInMap = _i1.ColumnSerializable(
+    nestedDataListInMap = _i1.ColumnSerializable<
+        Map<String, List<List<Map<int, _i2.SimpleData>>?>>>(
       'nestedDataListInMap',
       this,
     );
-    nestedDataMap = _i1.ColumnSerializable(
+    nestedDataMap =
+        _i1.ColumnSerializable<Map<String, Map<int, _i2.SimpleData>>>(
       'nestedDataMap',
       this,
     );
   }
 
-  late final _i1.ColumnSerializable data;
+  late final _i1.ColumnSerializable<_i2.SimpleData> data;
 
-  late final _i1.ColumnSerializable nullableData;
+  late final _i1.ColumnSerializable<_i2.SimpleData> nullableData;
 
-  late final _i1.ColumnSerializable dataList;
+  late final _i1.ColumnSerializable<List<_i2.SimpleData>> dataList;
 
-  late final _i1.ColumnSerializable nullableDataList;
+  late final _i1.ColumnSerializable<List<_i2.SimpleData>> nullableDataList;
 
-  late final _i1.ColumnSerializable listWithNullableData;
+  late final _i1.ColumnSerializable<List<_i2.SimpleData?>> listWithNullableData;
 
-  late final _i1.ColumnSerializable nullableListWithNullableData;
+  late final _i1.ColumnSerializable<List<_i2.SimpleData?>>
+      nullableListWithNullableData;
 
-  late final _i1.ColumnSerializable nestedDataList;
+  late final _i1.ColumnSerializable<List<List<_i2.SimpleData>>> nestedDataList;
 
-  late final _i1.ColumnSerializable nestedDataListInMap;
+  late final _i1
+      .ColumnSerializable<Map<String, List<List<Map<int, _i2.SimpleData>>?>>>
+      nestedDataListInMap;
 
-  late final _i1.ColumnSerializable nestedDataMap;
+  late final _i1.ColumnSerializable<Map<String, Map<int, _i2.SimpleData>>>
+      nestedDataMap;
 
   @override
   List<_i1.Column> get columns => [

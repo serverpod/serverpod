@@ -280,7 +280,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -324,7 +324,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// The scopes given to this session.
   ///
   /// These will also be added to each access token (JWT) created from this refresh token as a claim named "dev.serverpod.scopeNames".
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// Extra claims to be added to each access token created for this refresh token.
   ///

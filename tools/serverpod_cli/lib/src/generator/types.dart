@@ -71,7 +71,7 @@ class TypeDefinition {
     String? recordFieldName,
   }) {
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
-    var url = type.element?.librarySource?.uri.toString();
+    var url = type.element?.library?.identifier;
 
     if (type is RecordType) {
       var positionalField = type.positionalFields
@@ -161,6 +161,8 @@ class TypeDefinition {
   bool get isCustomSerializedType => columnType == 'ColumnSerializable';
 
   bool get isEnumType => enumDefinition != null;
+
+  bool get isColumnSerializable => columnType == 'ColumnSerializable';
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;

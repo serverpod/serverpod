@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:serverpod_client/serverpod_client.dart';
+
 /// Details for a method stream connection.
 class MethodStreamConnectionDetails {
   /// The endpoint to connect to.
@@ -17,8 +19,8 @@ class MethodStreamConnectionDetails {
   /// The controller for the output stream.
   final StreamController outputController;
 
-  /// The authentication token provider.
-  final Future<String?> Function() authenticationProvider;
+  /// The authentication key provider.
+  final ClientAuthKeyProvider? authKeyProvider;
 
   /// Creates a new [MethodStreamConnectionDetails].
   MethodStreamConnectionDetails({
@@ -27,6 +29,6 @@ class MethodStreamConnectionDetails {
     required this.args,
     required this.parameterStreams,
     required this.outputController,
-    required this.authenticationProvider,
+    required this.authKeyProvider,
   });
 }

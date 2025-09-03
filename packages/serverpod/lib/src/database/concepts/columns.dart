@@ -51,7 +51,7 @@ class ColumnByteData extends Column<ByteData> {
 
 /// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
-class ColumnSerializable extends Column<String> {
+class ColumnSerializable<T> extends Column<T> {
   /// Column serialization type.
   final JsonSerializationDataType? jsonSerializationDataType;
 

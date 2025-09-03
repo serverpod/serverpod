@@ -274,7 +274,7 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -316,7 +316,7 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   _i2.AuthUserTable? _authUser;
 
   /// The scopes this session provides access to.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// The time when this session was created.
   late final _i1.ColumnDateTime createdAt;

@@ -15,7 +15,7 @@ dependencies:
   serverpod_serialization: 3.0.0-alpha.1
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
-  path: ^1.8.2
+  path: ^1.8.3
 
 dev_dependencies:
   serverpod_lints: 3.0.0-alpha.1

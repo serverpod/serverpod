@@ -187,7 +187,7 @@ class LegacySessionTable extends _i1.Table<int?> {
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -207,7 +207,7 @@ class LegacySessionTable extends _i1.Table<int?> {
   _i2.AuthUserTable? _authUser;
 
   /// The scopes this session provides access to.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// The hashed version of the key (as the legacy `AuthKey`)
   late final _i1.ColumnString hash;

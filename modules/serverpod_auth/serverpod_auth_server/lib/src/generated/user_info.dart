@@ -249,7 +249,7 @@ class UserInfoTable extends _i1.Table<int?> {
       'imageUrl',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<List<String>>(
       'scopeNames',
       this,
     );
@@ -279,7 +279,7 @@ class UserInfoTable extends _i1.Table<int?> {
   late final _i1.ColumnString imageUrl;
 
   /// List of scopes that this user can access.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<List<String>> scopeNames;
 
   /// True if the user is blocked from signing in.
   late final _i1.ColumnBool blocked;
