@@ -10,6 +10,9 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
+  var configWithEnabledSerializeAsJsonbAsDefault = GeneratorConfigBuilder()
+      .withEnabledSerializeAsJsonbAsDefault()
+      .withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
 
   test(
     'Given a class with a field with serialize set to jsonb, then the generated field should be serialized as defined at field level.',
@@ -31,7 +34,7 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.serialize, CustomSerialization.jsonb);
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
     },
   );
 
@@ -81,7 +84,7 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.serialize, CustomSerialization.jsonb);
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
     },
   );
 
@@ -106,7 +109,80 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.serialize, CustomSerialization.json);
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
+    },
+  );
+
+  test(
+    'Given a class with a field with no serialize set but the default serialization for project is set, then the generated field should be serialized as defined at project level.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
+    },
+  );
+
+  test(
+    'Given a class with set serialize and a field with no serialize set but the default serialization for project is set, then the generated field should be serialized as defined at class level.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          serialize: json
+          fields:
+            tags: List<String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
+    },
+  );
+
+  test(
+    'Given a class with field with set serialize and the default serialization for project is set, then the generated field should be serialized as defined at field level.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            tags: List<String>, serialize=json
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ModelClassDefinition;
+      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
     },
   );
 }

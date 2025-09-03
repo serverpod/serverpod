@@ -4,7 +4,6 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
@@ -2093,9 +2092,7 @@ class SerializableModelLibraryGenerator {
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
                     ? _buildModelTableEnumFieldTypeReference(field)
-                    : (field.type.isCustomSerializedType
-                        ? _buildModelTableCustomSerializedFieldTypeReference(field)
-                        : _buildModelTableGeneralFieldExpression(field)))
+                    : _buildModelTableGeneralFieldExpression(field))
                 .statement,
       ]);
     });
@@ -2105,6 +2102,21 @@ class SerializableModelLibraryGenerator {
     SerializableModelFieldDefinition field,
   ) {
     assert(!field.type.isEnumType);
+
+    final isCustomSerializedType = field.type.isCustomSerializedType;
+    Expression? serializeAs;
+    if (isCustomSerializedType) {
+      final jsonSerializationDataTypeType = refer('JsonSerializationDataType', serverpodUrl(serverCode));
+      switch (field.type.jsonSerializationDataType!) {
+        case JsonSerializationDataType.json:
+          serializeAs = jsonSerializationDataTypeType.property('json');
+          break;
+        case JsonSerializationDataType.jsonb:
+          serializeAs = jsonSerializationDataTypeType.property('jsonb');
+          break;
+      }
+    }
+
     return TypeReference((t) => t
       ..symbol = field.type.columnType
       ..url = serverpodUrl(true)
@@ -2112,8 +2124,8 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
     ], {
-      if (field.type.isVectorType)
-        'dimension': literalNum(field.type.vectorDimension!),
+      if (isCustomSerializedType) 'serialize': serializeAs!,
+      if (field.type.isVectorType) 'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
     });
   }
@@ -2143,42 +2155,6 @@ class SerializableModelLibraryGenerator {
       refer('this'),
       serializedAs,
     ], {
-      if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
-    });
-  }
-
-  Expression _buildModelTableCustomSerializedFieldTypeReference(
-    SerializableModelFieldDefinition field,
-  ) {
-    assert(field.type.isCustomSerializedType);
-    var customSerializationType = refer('CustomSerialization', serverpodUrl(serverCode));
-
-    final isCustomSerializedType = field.type.isCustomSerializedType;
-    final serializeAsJsonb = config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb);
-    final serializeAsJsonbAsDefault =
-        config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonbAsDefault);
-    Expression? serializeAs;
-    if (isCustomSerializedType) {
-      field.type.serialize ??= serializeAsJsonbAsDefault ? CustomSerialization.jsonb : CustomSerialization.json;
-      switch (field.type.serialize!) {
-        case CustomSerialization.json:
-          serializeAs = customSerializationType.property('json');
-          break;
-        case CustomSerialization.jsonb:
-          serializeAs = customSerializationType.property('jsonb');
-          break;
-      }
-    }
-
-    return TypeReference((t) => t
-      ..symbol = field.type.columnType
-      ..url = serverpodUrl(true)
-      ..types.addAll([])).call([
-      literalString(field.name),
-      refer('this'),
-    ], {
-      if (isCustomSerializedType && serializeAsJsonb) 'serialize': serializeAs!,
-      if (field.type.isVectorType) 'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
     });
   }

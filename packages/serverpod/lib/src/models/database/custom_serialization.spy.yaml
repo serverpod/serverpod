@@ -1,4 +1,0 @@
-enum: CustomSerialization
-values:
-  - json
-  - jsonb

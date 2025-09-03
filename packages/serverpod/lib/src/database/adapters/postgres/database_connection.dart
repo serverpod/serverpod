@@ -738,11 +738,11 @@ class DatabaseConnection {
     if (column is ColumnSparseVector) return 'sparsevec';
     if (column is ColumnBit) return 'bit';
     if (column is ColumnSerializable) {
-      switch (column.serialize) {
+      switch (column.jsonSerializationDataType) {
         case null:
-        case CustomSerialization.json:
+        case JsonSerializationDataType.json:
           return 'json';
-        case CustomSerialization.jsonb:
+        case JsonSerializationDataType.jsonb:
           return 'jsonb';
       }
     }

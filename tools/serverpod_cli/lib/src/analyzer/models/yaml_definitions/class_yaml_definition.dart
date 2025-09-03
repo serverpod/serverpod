@@ -50,7 +50,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serialize,
-        valueRestriction: EnumValueRestriction(enums: CustomSerialization.values).validate,
+        valueRestriction: EnumValueRestriction(enums: JsonSerializationDataType.values).validate,
         isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
       ),
       ValidateNode(
@@ -157,7 +157,7 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.serialize,
                 keyRestriction: restrictions.validateSerializeKey,
-                valueRestriction: EnumValueRestriction(enums: CustomSerialization.values).validate,
+                valueRestriction: EnumValueRestriction(enums: JsonSerializationDataType.values).validate,
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },

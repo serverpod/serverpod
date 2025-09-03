@@ -58,8 +58,8 @@ class TypeDefinition {
   /// Only populated for Vector types.
   final d.int? vectorDimension;
 
-  /// If set, the type of the database json column type this type definition should use for custom serialization.
-  CustomSerialization? serialize;
+  /// If set, the data type of the database JSON column this type definition should use for serialization.
+  JsonSerializationDataType? jsonSerializationDataType;
 
   EnumDefinition? enumDefinition;
 
@@ -119,7 +119,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.serialize,
+    this.jsonSerializationDataType,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -219,7 +219,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serialize: serialize,
+        jsonSerializationDataType: jsonSerializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -234,7 +234,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serialize: serialize,
+        jsonSerializationDataType: jsonSerializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -249,7 +249,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serialize: serialize,
+        jsonSerializationDataType: jsonSerializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -407,16 +407,9 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
 
-    final customSerialization = serialize;
-    if (customSerialization != null && isCustomSerializedType) {
-      switch (customSerialization) {
-        case CustomSerialization.json:
-          return 'json';
-        case CustomSerialization.jsonb:
-          return 'jsonb';
-      }
+    if (isCustomSerializedType && jsonSerializationDataType == JsonSerializationDataType.jsonb) {
+      return 'jsonb';
     }
-
     return 'json';
   }
 
@@ -658,7 +651,7 @@ class TypeDefinition {
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
-      serialize: serialize,
+      jsonSerializationDataType: jsonSerializationDataType,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,

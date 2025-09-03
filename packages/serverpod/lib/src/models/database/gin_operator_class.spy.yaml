@@ -1,4 +1,5 @@
 ### Operator classes used by GIN indexes.
+### See: https://www.postgresql.org/docs/current/gin.html#GIN-BUILTIN-OPCLASSES
 enum: GinOperatorClass
 serialized: byName
 values:

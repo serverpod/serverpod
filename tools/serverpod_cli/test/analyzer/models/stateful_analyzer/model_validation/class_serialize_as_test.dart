@@ -10,6 +10,9 @@ import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
+  var configWithEnabledSerializeAsJsonbAsDefault = GeneratorConfigBuilder()
+      .withEnabledSerializeAsJsonbAsDefault()
+      .withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
 
   group('Given a valid class definition when validating', () {
     var modelSources = [
@@ -35,7 +38,7 @@ void main() {
     });
 
     test('then serialize is set to null.', () {
-      expect(definition.serialize, isNull);
+      expect(definition.jsonSerializationDataType, isNull);
     });
   });
 
@@ -64,7 +67,7 @@ void main() {
     });
 
     test('then serialize is set to jsonb.', () {
-      expect(definition.serialize, CustomSerialization.jsonb);
+      expect(definition.jsonSerializationDataType, JsonSerializationDataType.jsonb);
     });
   });
 
@@ -93,7 +96,36 @@ void main() {
     });
 
     test('then serialize is set to json.', () {
-      expect(definition.serialize, CustomSerialization.json);
+      expect(definition.jsonSerializationDataType, JsonSerializationDataType.json);
+    });
+  });
+
+  group('Given a valid class definition with serialize set and the default serialization for project is set, the field should be defined to serialize to json when validating', () {
+    var modelSources = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        serialize: json
+        fields:
+          tags: List<String>
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, modelSources, onErrorsCollector(collector));
+
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ModelClassDefinition;
+
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then serialize is set to jsonb.', () {
+      expect(definition.jsonSerializationDataType, JsonSerializationDataType.json);
     });
   });
 

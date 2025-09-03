@@ -10,21 +10,23 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-enum CustomSerialization implements _i1.SerializableModel {
+/// Serialization types for JSON columns.
+/// See: https://www.postgresql.org/docs/current/datatype-json.html
+enum JsonSerializationDataType implements _i1.SerializableModel {
   json,
   jsonb;
 
-  static CustomSerialization fromJson(int index) {
+  static JsonSerializationDataType fromJson(int index) {
     switch (index) {
       case 0:
-        return CustomSerialization.json;
+        return JsonSerializationDataType.json;
       case 1:
-        return CustomSerialization.jsonb;
+        return JsonSerializationDataType.jsonb;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "CustomSerialization"');
+            'Value "$index" cannot be converted to "JsonSerializationDataType"');
     }
   }
 

@@ -11,7 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'database/database_migration_version.dart' as _i2;
+import 'database/database_migration_warning.dart' as _i2;
 import 'caches_info.dart' as _i3;
 import 'cloud_storage.dart' as _i4;
 import 'cloud_storage_direct_upload.dart' as _i5;
@@ -24,26 +24,26 @@ import 'database/bulk_query_result.dart' as _i11;
 import 'database/column_definition.dart' as _i12;
 import 'database/column_migration.dart' as _i13;
 import 'database/column_type.dart' as _i14;
-import 'database/custom_serialization.dart' as _i15;
-import 'database/database_definition.dart' as _i16;
-import 'database/database_definitions.dart' as _i17;
-import 'database/database_migration.dart' as _i18;
-import 'database/database_migration_action.dart' as _i19;
-import 'database/database_migration_action_type.dart' as _i20;
+import 'database/database_definition.dart' as _i15;
+import 'database/database_definitions.dart' as _i16;
+import 'database/database_migration.dart' as _i17;
+import 'database/database_migration_action.dart' as _i18;
+import 'database/database_migration_action_type.dart' as _i19;
+import 'database/database_migration_version.dart' as _i20;
 import 'cache_info.dart' as _i21;
-import 'database/database_migration_warning.dart' as _i22;
-import 'database/database_migration_warning_type.dart' as _i23;
-import 'database/enum_serialization.dart' as _i24;
-import 'database/filter/filter.dart' as _i25;
-import 'database/filter/filter_constraint.dart' as _i26;
-import 'database/filter/filter_constraint_type.dart' as _i27;
-import 'database/foreign_key_action.dart' as _i28;
-import 'database/foreign_key_definition.dart' as _i29;
-import 'database/foreign_key_match_type.dart' as _i30;
-import 'database/gin_operator_class.dart' as _i31;
-import 'database/index_definition.dart' as _i32;
-import 'database/index_element_definition.dart' as _i33;
-import 'database/index_element_definition_type.dart' as _i34;
+import 'database/database_migration_warning_type.dart' as _i22;
+import 'database/enum_serialization.dart' as _i23;
+import 'database/filter/filter.dart' as _i24;
+import 'database/filter/filter_constraint.dart' as _i25;
+import 'database/filter/filter_constraint_type.dart' as _i26;
+import 'database/foreign_key_action.dart' as _i27;
+import 'database/foreign_key_definition.dart' as _i28;
+import 'database/foreign_key_match_type.dart' as _i29;
+import 'database/gin_operator_class.dart' as _i30;
+import 'database/index_definition.dart' as _i31;
+import 'database/index_element_definition.dart' as _i32;
+import 'database/index_element_definition_type.dart' as _i33;
+import 'database/json_serialization_datatype.dart' as _i34;
 import 'database/table_definition.dart' as _i35;
 import 'database/table_migration.dart' as _i36;
 import 'database/vector_distance_function.dart' as _i37;
@@ -84,7 +84,6 @@ export 'database/bulk_query_result.dart';
 export 'database/column_definition.dart';
 export 'database/column_migration.dart';
 export 'database/column_type.dart';
-export 'database/custom_serialization.dart';
 export 'database/database_definition.dart';
 export 'database/database_definitions.dart';
 export 'database/database_migration.dart';
@@ -104,6 +103,7 @@ export 'database/gin_operator_class.dart';
 export 'database/index_definition.dart';
 export 'database/index_element_definition.dart';
 export 'database/index_element_definition_type.dart';
+export 'database/json_serialization_datatype.dart';
 export 'database/table_definition.dart';
 export 'database/table_migration.dart';
 export 'database/vector_distance_function.dart';
@@ -144,8 +144,8 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i2.DatabaseMigrationVersion) {
-      return _i2.DatabaseMigrationVersion.fromJson(data) as T;
+    if (t == _i2.DatabaseMigrationWarning) {
+      return _i2.DatabaseMigrationWarning.fromJson(data) as T;
     }
     if (t == _i3.CachesInfo) {
       return _i3.CachesInfo.fromJson(data) as T;
@@ -183,65 +183,65 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i14.ColumnType) {
       return _i14.ColumnType.fromJson(data) as T;
     }
-    if (t == _i15.CustomSerialization) {
-      return _i15.CustomSerialization.fromJson(data) as T;
+    if (t == _i15.DatabaseDefinition) {
+      return _i15.DatabaseDefinition.fromJson(data) as T;
     }
-    if (t == _i16.DatabaseDefinition) {
-      return _i16.DatabaseDefinition.fromJson(data) as T;
+    if (t == _i16.DatabaseDefinitions) {
+      return _i16.DatabaseDefinitions.fromJson(data) as T;
     }
-    if (t == _i17.DatabaseDefinitions) {
-      return _i17.DatabaseDefinitions.fromJson(data) as T;
+    if (t == _i17.DatabaseMigration) {
+      return _i17.DatabaseMigration.fromJson(data) as T;
     }
-    if (t == _i18.DatabaseMigration) {
-      return _i18.DatabaseMigration.fromJson(data) as T;
+    if (t == _i18.DatabaseMigrationAction) {
+      return _i18.DatabaseMigrationAction.fromJson(data) as T;
     }
-    if (t == _i19.DatabaseMigrationAction) {
-      return _i19.DatabaseMigrationAction.fromJson(data) as T;
+    if (t == _i19.DatabaseMigrationActionType) {
+      return _i19.DatabaseMigrationActionType.fromJson(data) as T;
     }
-    if (t == _i20.DatabaseMigrationActionType) {
-      return _i20.DatabaseMigrationActionType.fromJson(data) as T;
+    if (t == _i20.DatabaseMigrationVersion) {
+      return _i20.DatabaseMigrationVersion.fromJson(data) as T;
     }
     if (t == _i21.CacheInfo) {
       return _i21.CacheInfo.fromJson(data) as T;
     }
-    if (t == _i22.DatabaseMigrationWarning) {
-      return _i22.DatabaseMigrationWarning.fromJson(data) as T;
+    if (t == _i22.DatabaseMigrationWarningType) {
+      return _i22.DatabaseMigrationWarningType.fromJson(data) as T;
     }
-    if (t == _i23.DatabaseMigrationWarningType) {
-      return _i23.DatabaseMigrationWarningType.fromJson(data) as T;
+    if (t == _i23.EnumSerialization) {
+      return _i23.EnumSerialization.fromJson(data) as T;
     }
-    if (t == _i24.EnumSerialization) {
-      return _i24.EnumSerialization.fromJson(data) as T;
+    if (t == _i24.Filter) {
+      return _i24.Filter.fromJson(data) as T;
     }
-    if (t == _i25.Filter) {
-      return _i25.Filter.fromJson(data) as T;
+    if (t == _i25.FilterConstraint) {
+      return _i25.FilterConstraint.fromJson(data) as T;
     }
-    if (t == _i26.FilterConstraint) {
-      return _i26.FilterConstraint.fromJson(data) as T;
+    if (t == _i26.FilterConstraintType) {
+      return _i26.FilterConstraintType.fromJson(data) as T;
     }
-    if (t == _i27.FilterConstraintType) {
-      return _i27.FilterConstraintType.fromJson(data) as T;
+    if (t == _i27.ForeignKeyAction) {
+      return _i27.ForeignKeyAction.fromJson(data) as T;
     }
-    if (t == _i28.ForeignKeyAction) {
-      return _i28.ForeignKeyAction.fromJson(data) as T;
+    if (t == _i28.ForeignKeyDefinition) {
+      return _i28.ForeignKeyDefinition.fromJson(data) as T;
     }
-    if (t == _i29.ForeignKeyDefinition) {
-      return _i29.ForeignKeyDefinition.fromJson(data) as T;
+    if (t == _i29.ForeignKeyMatchType) {
+      return _i29.ForeignKeyMatchType.fromJson(data) as T;
     }
-    if (t == _i30.ForeignKeyMatchType) {
-      return _i30.ForeignKeyMatchType.fromJson(data) as T;
+    if (t == _i30.GinOperatorClass) {
+      return _i30.GinOperatorClass.fromJson(data) as T;
     }
-    if (t == _i31.GinOperatorClass) {
-      return _i31.GinOperatorClass.fromJson(data) as T;
+    if (t == _i31.IndexDefinition) {
+      return _i31.IndexDefinition.fromJson(data) as T;
     }
-    if (t == _i32.IndexDefinition) {
-      return _i32.IndexDefinition.fromJson(data) as T;
+    if (t == _i32.IndexElementDefinition) {
+      return _i32.IndexElementDefinition.fromJson(data) as T;
     }
-    if (t == _i33.IndexElementDefinition) {
-      return _i33.IndexElementDefinition.fromJson(data) as T;
+    if (t == _i33.IndexElementDefinitionType) {
+      return _i33.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i34.IndexElementDefinitionType) {
-      return _i34.IndexElementDefinitionType.fromJson(data) as T;
+    if (t == _i34.JsonSerializationDataType) {
+      return _i34.JsonSerializationDataType.fromJson(data) as T;
     }
     if (t == _i35.TableDefinition) {
       return _i35.TableDefinition.fromJson(data) as T;
@@ -318,8 +318,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i59.AccessDeniedException) {
       return _i59.AccessDeniedException.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.DatabaseMigrationVersion?>()) {
-      return (data != null ? _i2.DatabaseMigrationVersion.fromJson(data) : null)
+    if (t == _i1.getType<_i2.DatabaseMigrationWarning?>()) {
+      return (data != null ? _i2.DatabaseMigrationWarning.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i3.CachesInfo?>()) {
@@ -362,80 +362,81 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i14.ColumnType?>()) {
       return (data != null ? _i14.ColumnType.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i15.CustomSerialization?>()) {
-      return (data != null ? _i15.CustomSerialization.fromJson(data) : null)
+    if (t == _i1.getType<_i15.DatabaseDefinition?>()) {
+      return (data != null ? _i15.DatabaseDefinition.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.DatabaseDefinition?>()) {
-      return (data != null ? _i16.DatabaseDefinition.fromJson(data) : null)
+    if (t == _i1.getType<_i16.DatabaseDefinitions?>()) {
+      return (data != null ? _i16.DatabaseDefinitions.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.DatabaseDefinitions?>()) {
-      return (data != null ? _i17.DatabaseDefinitions.fromJson(data) : null)
+    if (t == _i1.getType<_i17.DatabaseMigration?>()) {
+      return (data != null ? _i17.DatabaseMigration.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.DatabaseMigrationAction?>()) {
+      return (data != null ? _i18.DatabaseMigrationAction.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i18.DatabaseMigration?>()) {
-      return (data != null ? _i18.DatabaseMigration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.DatabaseMigrationAction?>()) {
-      return (data != null ? _i19.DatabaseMigrationAction.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i20.DatabaseMigrationActionType?>()) {
+    if (t == _i1.getType<_i19.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i20.DatabaseMigrationActionType.fromJson(data)
+          ? _i19.DatabaseMigrationActionType.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i20.DatabaseMigrationVersion?>()) {
+      return (data != null
+          ? _i20.DatabaseMigrationVersion.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i21.CacheInfo?>()) {
       return (data != null ? _i21.CacheInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.DatabaseMigrationWarning?>()) {
+    if (t == _i1.getType<_i22.DatabaseMigrationWarningType?>()) {
       return (data != null
-          ? _i22.DatabaseMigrationWarning.fromJson(data)
+          ? _i22.DatabaseMigrationWarningType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i23.DatabaseMigrationWarningType?>()) {
+    if (t == _i1.getType<_i23.EnumSerialization?>()) {
+      return (data != null ? _i23.EnumSerialization.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i24.Filter?>()) {
+      return (data != null ? _i24.Filter.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i25.FilterConstraint?>()) {
+      return (data != null ? _i25.FilterConstraint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.FilterConstraintType?>()) {
+      return (data != null ? _i26.FilterConstraintType.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i27.ForeignKeyAction?>()) {
+      return (data != null ? _i27.ForeignKeyAction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.ForeignKeyDefinition?>()) {
+      return (data != null ? _i28.ForeignKeyDefinition.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i29.ForeignKeyMatchType?>()) {
+      return (data != null ? _i29.ForeignKeyMatchType.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i30.GinOperatorClass?>()) {
+      return (data != null ? _i30.GinOperatorClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.IndexDefinition?>()) {
+      return (data != null ? _i31.IndexDefinition.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.IndexElementDefinition?>()) {
+      return (data != null ? _i32.IndexElementDefinition.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i33.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i23.DatabaseMigrationWarningType.fromJson(data)
+          ? _i33.IndexElementDefinitionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i24.EnumSerialization?>()) {
-      return (data != null ? _i24.EnumSerialization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.Filter?>()) {
-      return (data != null ? _i25.Filter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.FilterConstraint?>()) {
-      return (data != null ? _i26.FilterConstraint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i27.FilterConstraintType?>()) {
-      return (data != null ? _i27.FilterConstraintType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i28.ForeignKeyAction?>()) {
-      return (data != null ? _i28.ForeignKeyAction.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.ForeignKeyDefinition?>()) {
-      return (data != null ? _i29.ForeignKeyDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i30.ForeignKeyMatchType?>()) {
-      return (data != null ? _i30.ForeignKeyMatchType.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i31.GinOperatorClass?>()) {
-      return (data != null ? _i31.GinOperatorClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.IndexDefinition?>()) {
-      return (data != null ? _i32.IndexDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i33.IndexElementDefinition?>()) {
-      return (data != null ? _i33.IndexElementDefinition.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i34.IndexElementDefinitionType?>()) {
+    if (t == _i1.getType<_i34.JsonSerializationDataType?>()) {
       return (data != null
-          ? _i34.IndexElementDefinitionType.fromJson(data)
+          ? _i34.JsonSerializationDataType.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i35.TableDefinition?>()) {
@@ -524,6 +525,9 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i59.AccessDeniedException.fromJson(data) : null)
           as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     if (t == List<_i7.ClusterServerInfo>) {
       return (data as List)
           .map((e) => deserialize<_i7.ClusterServerInfo>(e))
@@ -539,19 +543,19 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i35.TableDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i2.DatabaseMigrationVersion>) {
+    if (t == List<_i20.DatabaseMigrationVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i2.DatabaseMigrationVersion>(e))
+          .map((e) => deserialize<_i20.DatabaseMigrationVersion>(e))
           .toList() as T;
     }
-    if (t == List<_i19.DatabaseMigrationAction>) {
+    if (t == List<_i18.DatabaseMigrationAction>) {
       return (data as List)
-          .map((e) => deserialize<_i19.DatabaseMigrationAction>(e))
+          .map((e) => deserialize<_i18.DatabaseMigrationAction>(e))
           .toList() as T;
     }
-    if (t == List<_i22.DatabaseMigrationWarning>) {
+    if (t == List<_i2.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i22.DatabaseMigrationWarning>(e))
+          .map((e) => deserialize<_i2.DatabaseMigrationWarning>(e))
           .toList() as T;
     }
     if (t == _i1.getType<List<String>?>()) {
@@ -559,17 +563,14 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == List<_i26.FilterConstraint>) {
+    if (t == List<_i25.FilterConstraint>) {
       return (data as List)
-          .map((e) => deserialize<_i26.FilterConstraint>(e))
+          .map((e) => deserialize<_i25.FilterConstraint>(e))
           .toList() as T;
     }
-    if (t == List<_i33.IndexElementDefinition>) {
+    if (t == List<_i32.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i33.IndexElementDefinition>(e))
+          .map((e) => deserialize<_i32.IndexElementDefinition>(e))
           .toList() as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
@@ -583,14 +584,14 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i12.ColumnDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i29.ForeignKeyDefinition>) {
+    if (t == List<_i28.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i29.ForeignKeyDefinition>(e))
+          .map((e) => deserialize<_i28.ForeignKeyDefinition>(e))
           .toList() as T;
     }
-    if (t == List<_i32.IndexDefinition>) {
+    if (t == List<_i31.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i32.IndexDefinition>(e))
+          .map((e) => deserialize<_i31.IndexDefinition>(e))
           .toList() as T;
     }
     if (t == List<_i13.ColumnMigration>) {
@@ -648,8 +649,8 @@ class Protocol extends _i1.SerializationManager {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i2.DatabaseMigrationVersion():
-        return 'DatabaseMigrationVersion';
+      case _i2.DatabaseMigrationWarning():
+        return 'DatabaseMigrationWarning';
       case _i3.CachesInfo():
         return 'CachesInfo';
       case _i4.CloudStorageEntry():
@@ -674,46 +675,46 @@ class Protocol extends _i1.SerializationManager {
         return 'ColumnMigration';
       case _i14.ColumnType():
         return 'ColumnType';
-      case _i15.CustomSerialization():
-        return 'CustomSerialization';
-      case _i16.DatabaseDefinition():
+      case _i15.DatabaseDefinition():
         return 'DatabaseDefinition';
-      case _i17.DatabaseDefinitions():
+      case _i16.DatabaseDefinitions():
         return 'DatabaseDefinitions';
-      case _i18.DatabaseMigration():
+      case _i17.DatabaseMigration():
         return 'DatabaseMigration';
-      case _i19.DatabaseMigrationAction():
+      case _i18.DatabaseMigrationAction():
         return 'DatabaseMigrationAction';
-      case _i20.DatabaseMigrationActionType():
+      case _i19.DatabaseMigrationActionType():
         return 'DatabaseMigrationActionType';
+      case _i20.DatabaseMigrationVersion():
+        return 'DatabaseMigrationVersion';
       case _i21.CacheInfo():
         return 'CacheInfo';
-      case _i22.DatabaseMigrationWarning():
-        return 'DatabaseMigrationWarning';
-      case _i23.DatabaseMigrationWarningType():
+      case _i22.DatabaseMigrationWarningType():
         return 'DatabaseMigrationWarningType';
-      case _i24.EnumSerialization():
+      case _i23.EnumSerialization():
         return 'EnumSerialization';
-      case _i25.Filter():
+      case _i24.Filter():
         return 'Filter';
-      case _i26.FilterConstraint():
+      case _i25.FilterConstraint():
         return 'FilterConstraint';
-      case _i27.FilterConstraintType():
+      case _i26.FilterConstraintType():
         return 'FilterConstraintType';
-      case _i28.ForeignKeyAction():
+      case _i27.ForeignKeyAction():
         return 'ForeignKeyAction';
-      case _i29.ForeignKeyDefinition():
+      case _i28.ForeignKeyDefinition():
         return 'ForeignKeyDefinition';
-      case _i30.ForeignKeyMatchType():
+      case _i29.ForeignKeyMatchType():
         return 'ForeignKeyMatchType';
-      case _i31.GinOperatorClass():
+      case _i30.GinOperatorClass():
         return 'GinOperatorClass';
-      case _i32.IndexDefinition():
+      case _i31.IndexDefinition():
         return 'IndexDefinition';
-      case _i33.IndexElementDefinition():
+      case _i32.IndexElementDefinition():
         return 'IndexElementDefinition';
-      case _i34.IndexElementDefinitionType():
+      case _i33.IndexElementDefinitionType():
         return 'IndexElementDefinitionType';
+      case _i34.JsonSerializationDataType():
+        return 'JsonSerializationDataType';
       case _i35.TableDefinition():
         return 'TableDefinition';
       case _i36.TableMigration():
@@ -774,8 +775,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'DatabaseMigrationVersion') {
-      return deserialize<_i2.DatabaseMigrationVersion>(data['data']);
+    if (dataClassName == 'DatabaseMigrationWarning') {
+      return deserialize<_i2.DatabaseMigrationWarning>(data['data']);
     }
     if (dataClassName == 'CachesInfo') {
       return deserialize<_i3.CachesInfo>(data['data']);
@@ -813,65 +814,65 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'ColumnType') {
       return deserialize<_i14.ColumnType>(data['data']);
     }
-    if (dataClassName == 'CustomSerialization') {
-      return deserialize<_i15.CustomSerialization>(data['data']);
-    }
     if (dataClassName == 'DatabaseDefinition') {
-      return deserialize<_i16.DatabaseDefinition>(data['data']);
+      return deserialize<_i15.DatabaseDefinition>(data['data']);
     }
     if (dataClassName == 'DatabaseDefinitions') {
-      return deserialize<_i17.DatabaseDefinitions>(data['data']);
+      return deserialize<_i16.DatabaseDefinitions>(data['data']);
     }
     if (dataClassName == 'DatabaseMigration') {
-      return deserialize<_i18.DatabaseMigration>(data['data']);
+      return deserialize<_i17.DatabaseMigration>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationAction') {
-      return deserialize<_i19.DatabaseMigrationAction>(data['data']);
+      return deserialize<_i18.DatabaseMigrationAction>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationActionType') {
-      return deserialize<_i20.DatabaseMigrationActionType>(data['data']);
+      return deserialize<_i19.DatabaseMigrationActionType>(data['data']);
+    }
+    if (dataClassName == 'DatabaseMigrationVersion') {
+      return deserialize<_i20.DatabaseMigrationVersion>(data['data']);
     }
     if (dataClassName == 'CacheInfo') {
       return deserialize<_i21.CacheInfo>(data['data']);
     }
-    if (dataClassName == 'DatabaseMigrationWarning') {
-      return deserialize<_i22.DatabaseMigrationWarning>(data['data']);
-    }
     if (dataClassName == 'DatabaseMigrationWarningType') {
-      return deserialize<_i23.DatabaseMigrationWarningType>(data['data']);
+      return deserialize<_i22.DatabaseMigrationWarningType>(data['data']);
     }
     if (dataClassName == 'EnumSerialization') {
-      return deserialize<_i24.EnumSerialization>(data['data']);
+      return deserialize<_i23.EnumSerialization>(data['data']);
     }
     if (dataClassName == 'Filter') {
-      return deserialize<_i25.Filter>(data['data']);
+      return deserialize<_i24.Filter>(data['data']);
     }
     if (dataClassName == 'FilterConstraint') {
-      return deserialize<_i26.FilterConstraint>(data['data']);
+      return deserialize<_i25.FilterConstraint>(data['data']);
     }
     if (dataClassName == 'FilterConstraintType') {
-      return deserialize<_i27.FilterConstraintType>(data['data']);
+      return deserialize<_i26.FilterConstraintType>(data['data']);
     }
     if (dataClassName == 'ForeignKeyAction') {
-      return deserialize<_i28.ForeignKeyAction>(data['data']);
+      return deserialize<_i27.ForeignKeyAction>(data['data']);
     }
     if (dataClassName == 'ForeignKeyDefinition') {
-      return deserialize<_i29.ForeignKeyDefinition>(data['data']);
+      return deserialize<_i28.ForeignKeyDefinition>(data['data']);
     }
     if (dataClassName == 'ForeignKeyMatchType') {
-      return deserialize<_i30.ForeignKeyMatchType>(data['data']);
+      return deserialize<_i29.ForeignKeyMatchType>(data['data']);
     }
     if (dataClassName == 'GinOperatorClass') {
-      return deserialize<_i31.GinOperatorClass>(data['data']);
+      return deserialize<_i30.GinOperatorClass>(data['data']);
     }
     if (dataClassName == 'IndexDefinition') {
-      return deserialize<_i32.IndexDefinition>(data['data']);
+      return deserialize<_i31.IndexDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinition') {
-      return deserialize<_i33.IndexElementDefinition>(data['data']);
+      return deserialize<_i32.IndexElementDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinitionType') {
-      return deserialize<_i34.IndexElementDefinitionType>(data['data']);
+      return deserialize<_i33.IndexElementDefinitionType>(data['data']);
+    }
+    if (dataClassName == 'JsonSerializationDataType') {
+      return deserialize<_i34.JsonSerializationDataType>(data['data']);
     }
     if (dataClassName == 'TableDefinition') {
       return deserialize<_i35.TableDefinition>(data['data']);

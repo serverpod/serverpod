@@ -53,13 +53,13 @@ class ColumnByteData extends Column<ByteData> {
 /// database as a json column.
 class ColumnSerializable extends Column<String> {
   /// Column serialization type.
-  final CustomSerialization? serialize;
+  final JsonSerializationDataType? jsonSerializationDataType;
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
     super.columnName,
     super.table, {
-    this.serialize,
+    this.jsonSerializationDataType,
     super.hasDefault,
   });
 

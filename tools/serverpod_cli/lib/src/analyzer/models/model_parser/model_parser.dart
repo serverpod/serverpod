@@ -3,7 +3,6 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -55,7 +54,7 @@ class ModelParser {
             extendsClass: extendsClass,
             sourceFileName: protocolSource.yamlSourceUri.path,
             tableName: tableName,
-            serialize: serializeAs,
+            jsonSerializationDataType: serializeAs,
             manageMigration: manageMigration,
             fileName: outFileName,
             fields: fields,
@@ -148,11 +147,14 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
+    var serializeAs = _parseSerializeAs(documentContents);
+
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
+      serializeAs,
       tableName != null,
       config,
       serverOnly,
@@ -229,14 +231,14 @@ class ModelParser {
     return serverOnly;
   }
 
-  static CustomSerialization? _parseSerializeAs(YamlMap documentContents) {
+  static JsonSerializationDataType? _parseSerializeAs(YamlMap documentContents) {
     if (documentContents.nodes[Keyword.serialize] == null) return null;
     final serializeAs = documentContents.nodes[Keyword.serialize]?.value;
 
-    return convertToEnum<CustomSerialization>(
+    return convertToEnum<JsonSerializationDataType>(
       value: serializeAs,
-      enumDefault: CustomSerialization.json,
-      enumValues: CustomSerialization.values,
+      enumDefault: JsonSerializationDataType.json,
+      enumValues: JsonSerializationDataType.values,
     );
   }
 
@@ -260,6 +262,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    JsonSerializationDataType? modelJsonSerializationDataType,
     bool hasTable,
     GeneratorConfig config,
     bool serverOnlyClass,
@@ -273,6 +276,7 @@ class ModelParser {
         return _parseModelFieldDefinition(
           fieldNode,
           docsExtractor,
+          modelJsonSerializationDataType,
           config,
           serverOnlyClass,
         );
@@ -328,6 +332,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
+    JsonSerializationDataType? modelJsonSerializationDataType,
     GeneratorConfig config,
     bool serverOnlyClass,
   ) {
@@ -365,12 +370,10 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.serialize = _parseClassFieldSerialize(node);
-    if (typeResult.serialize == null) {
-      final serializeAsJsonbAsDefault =
-          config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonbAsDefault);
-      if (serializeAsJsonbAsDefault) {
-        typeResult.serialize = CustomSerialization.jsonb;
+    typeResult.jsonSerializationDataType = _parseClassFieldSerialize(node);
+    if (typeResult.jsonSerializationDataType == null && typeResult.isCustomSerializedType) {
+      if (config.serializeAsJsonbAsDefault) {
+        typeResult.jsonSerializationDataType = modelJsonSerializationDataType ?? JsonSerializationDataType.jsonb;
       }
     }
 
@@ -567,7 +570,7 @@ class ModelParser {
     return _parseBooleanKey(relation, Keyword.optional);
   }
 
-  static CustomSerialization? _parseClassFieldSerialize(
+  static JsonSerializationDataType? _parseClassFieldSerialize(
     YamlMap documentContents,
   ) {
     return _parseSerializeAs(documentContents);

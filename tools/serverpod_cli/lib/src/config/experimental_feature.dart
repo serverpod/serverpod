@@ -18,8 +18,7 @@ enum ExperimentalFeature {
   inheritance,
 
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919
-  serializeAsJsonb,
-  serializeAsJsonbAsDefault;
+  serializeAsJsonb;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {
