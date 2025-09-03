@@ -2124,7 +2124,7 @@ class SerializableModelLibraryGenerator {
       literalString(field.name),
       refer('this'),
     ], {
-      if (isCustomSerializedType) 'serialize': serializeAs!,
+      if (isCustomSerializedType) 'jsonSerializationDataType': serializeAs!,
       if (field.type.isVectorType) 'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
     });
