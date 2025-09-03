@@ -14,7 +14,7 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-      'Given an endpoint with no @unauthenticated annotation when generating client code',
+      'Given an endpoint with no @unauthenticatedClientCall annotation when generating client code',
       () {
     var protocolDefinition = ProtocolDefinition(
       endpoints: [
@@ -79,7 +79,7 @@ void main() {
   });
 
   group(
-      'Given an endpoint class annotated as @unauthenticated with more than one method when generating client code',
+      'Given an endpoint class annotated as @unauthenticatedClientCall with more than one method when generating client code',
       () {
     var protocolDefinition = ProtocolDefinition(
       endpoints: [
@@ -88,7 +88,9 @@ void main() {
             .withName('example')
             .withFilePath('lib/src/endpoints/example_endpoint.dart')
             .withAnnotations([
-          AnnotationDefinitionBuilder().withName('unauthenticated').build()
+          AnnotationDefinitionBuilder()
+              .withName('unauthenticatedClientCall')
+              .build()
         ]).withMethods([
           MethodDefinitionBuilder()
               .withName('hello')
@@ -147,7 +149,7 @@ void main() {
   });
 
   group(
-      'Given an endpoint class with only a few methods annotated as @unauthenticated when generating client code',
+      'Given an endpoint class with only a few methods annotated as @unauthenticatedClientCall when generating client code',
       () {
     var protocolDefinition = ProtocolDefinition(
       endpoints: [
@@ -161,7 +163,9 @@ void main() {
               .withReturnType(
                   TypeDefinitionBuilder().withFutureOf('String').build())
               .withAnnotations([
-            AnnotationDefinitionBuilder().withName('unauthenticated').build()
+            AnnotationDefinitionBuilder()
+                .withName('unauthenticatedClientCall')
+                .build()
           ]).buildMethodCallDefinition(),
           MethodDefinitionBuilder()
               .withName('authenticated')
@@ -173,7 +177,9 @@ void main() {
               .withReturnType(
                   TypeDefinitionBuilder().withStreamOf('String').build())
               .withAnnotations([
-            AnnotationDefinitionBuilder().withName('unauthenticated').build()
+            AnnotationDefinitionBuilder()
+                .withName('unauthenticatedClientCall')
+                .build()
           ]).buildMethodStreamDefinition(),
           MethodDefinitionBuilder()
               .withName('streamingAuthenticated')
@@ -207,13 +213,15 @@ void main() {
     });
 
     test(
-        'then annotated method has not propagated the @unauthenticated annotation.',
+        'then annotated method has not propagated the @unauthenticatedClientCall annotation.',
         () {
       var clientCode =
           codeMap.values.where((code) => code.contains('hello')).first;
 
-      expect(clientCode,
-          matches(r'(?<!@unauthenticated)\n\s*Future<String> hello\(\)'));
+      expect(
+          clientCode,
+          matches(
+              r'(?<!@unauthenticatedClientCall)\n\s*Future<String> hello\(\)'));
     });
 
     test(
@@ -235,13 +243,15 @@ void main() {
     });
 
     test(
-        'then annotated streaming method has not propagated the @unauthenticated annotation.',
+        'then annotated streaming method has not propagated the @unauthenticatedClientCall annotation.',
         () {
       var clientCode =
           codeMap.values.where((code) => code.contains('streaming')).first;
 
-      expect(clientCode,
-          matches(r'(?<!@unauthenticated)\n\s*Stream<String> streaming\(\)'));
+      expect(
+          clientCode,
+          matches(
+              r'(?<!@unauthenticatedClientCall)\n\s*Stream<String> streaming\(\)'));
     });
 
     test(

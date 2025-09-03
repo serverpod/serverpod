@@ -757,7 +757,7 @@ class LibraryGenerator {
   Iterable<Expression> _buildEndpointCallAnnotations(
       MethodDefinition methodDef) {
     return methodDef.annotations
-        .where((e) => e.name != 'unauthenticated')
+        .where((e) => e.name != 'unauthenticatedClientCall')
         .map((annotation) {
       var args = annotation.arguments;
       return refer(args != null
@@ -865,8 +865,8 @@ class LibraryGenerator {
     EndpointDefinition endpointDef,
     MethodDefinition methodDef,
   ) {
-    return (endpointDef.annotations.has('unauthenticated') ||
-        methodDef.annotations.has('unauthenticated'));
+    return (endpointDef.annotations.has('unauthenticatedClientCall') ||
+        methodDef.annotations.has('unauthenticatedClientCall'));
   }
 
   String? _generatedDirectoryPathCache;

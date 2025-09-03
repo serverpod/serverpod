@@ -44,7 +44,7 @@ void main() {
 
   group('Given a signed in user ', () {
     test(
-        'when calling a method endpoint from a class annotated with @unauthenticated'
+        'when calling a method endpoint from a class annotated with @unauthenticatedClientCall'
         'then it correctly returns that the call was not authenticated.',
         () async {
       final authenticated =
@@ -54,7 +54,7 @@ void main() {
     });
 
     test(
-        'when calling a streaming endpoint annotated with @unauthenticated '
+        'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
         'then it correctly returns that the call was not authenticated.',
         () async {
       final authenticated =
@@ -64,7 +64,7 @@ void main() {
     });
 
     test(
-        'when calling a method endpoint annotated with @unauthenticated'
+        'when calling a method endpoint annotated with @unauthenticatedClientCall'
         'then it correctly returns that the call was not authenticated.',
         () async {
       final authenticated =
@@ -74,7 +74,7 @@ void main() {
     });
 
     test(
-        'when calling a streaming endpoint annotated with @unauthenticated '
+        'when calling a streaming endpoint annotated with @unauthenticatedClientCall '
         'then it correctly returns that the call was not authenticated.',
         () async {
       final authenticated =
@@ -84,7 +84,7 @@ void main() {
     });
 
     test(
-        'when calling a method endpoint not annotated with @unauthenticated '
+        'when calling a method endpoint not annotated with @unauthenticatedClientCall '
         'then it correctly returns that the call was authenticated.', () async {
       final authenticated =
           await client.partiallyUnauthenticated.authenticatedMethod();
@@ -93,7 +93,7 @@ void main() {
     });
 
     test(
-        'when calling a streaming endpoint not annotated with @unauthenticated '
+        'when calling a streaming endpoint not annotated with @unauthenticatedClientCall '
         'then it correctly returns that the call was authenticated.', () async {
       final authenticated =
           await client.partiallyUnauthenticated.authenticatedStream().first;
@@ -102,7 +102,7 @@ void main() {
     });
 
     test(
-        'when calling an endpoint from a class annotated with @unauthenticated that also require login '
+        'when calling an endpoint from a class annotated with @unauthenticatedClientCall that also require login '
         'then it throws unauthorized due to client not passing auth header.',
         () async {
       await expectLater(
@@ -112,7 +112,7 @@ void main() {
     });
 
     test(
-        'when calling a streaming endpoint from a class annotated with @unauthenticated that also require login '
+        'when calling a streaming endpoint from a class annotated with @unauthenticatedClientCall that also require login '
         'then it throws unauthorized due to client not passing auth header.',
         () async {
       await expectLater(
@@ -122,7 +122,7 @@ void main() {
     });
 
     test(
-        'when calling a method endpoint annotated with @unauthenticated from a class that requires login '
+        'when calling a method endpoint annotated with @unauthenticatedClientCall from a class that requires login '
         'then it throws unauthorized due to client not passing auth header.',
         () async {
       await expectLater(
@@ -132,7 +132,7 @@ void main() {
     });
 
     test(
-        'when calling a streaming endpoint annotated with @unauthenticated from a class that requires login '
+        'when calling a streaming endpoint annotated with @unauthenticatedClientCall from a class that requires login '
         'then it throws unauthorized due to client not passing auth header.',
         () async {
       await expectLater(

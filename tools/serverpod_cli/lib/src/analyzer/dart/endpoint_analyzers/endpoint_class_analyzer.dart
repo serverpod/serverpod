@@ -76,10 +76,10 @@ abstract class EndpointClassAnalyzer {
       errors.add(
         SourceSpanSeverityException(
           'The endpoint class "${classElement.name}" overrides "requireLogin" '
-          'getter and is annotated with @unauthenticated. Be aware that this '
-          'combination may lead to all endpoint calls failing due to client '
-          'not sending a signed in user. To fix this, either remove the getter '
-          'override or remove the @unauthenticated annotation.',
+          'getter and is annotated with @unauthenticatedClientCall. Be aware '
+          'that this combination may lead to all endpoint calls failing due to '
+          'client not sending a signed in user. To fix this, either remove the '
+          'getter override or remove the @unauthenticatedClientCall annotation.',
           classElement.span,
           severity: SourceSpanSeverity.info,
         ),

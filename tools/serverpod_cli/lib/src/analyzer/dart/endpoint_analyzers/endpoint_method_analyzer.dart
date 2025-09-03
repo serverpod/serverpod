@@ -162,12 +162,12 @@ abstract class EndpointMethodAnalyzer {
     if (classElement.overridesRequireLogin && method.markedAsUnauthenticated) {
       return SourceSpanSeverityException(
         'Method "${method.name}" in endpoint class "${classElement.name}" is '
-        'annotated with @unauthenticated, but the class overrides the '
-        '"requireLogin" getter. Be aware that this combination may lead to '
+        'annotated with @unauthenticatedClientCall, but the class overrides '
+        'the "requireLogin" getter. Be aware that this combination may lead to '
         'endpoint calls failing due to client not sending a signed in user. '
         'To fix this, either move this method to a separate endpoint class '
         'that does not override "requireLogin", remove the "requireLogin" '
-        'getter override or remove the @unauthenticated annotation.',
+        'getter override or remove the @unauthenticatedClientCall annotation.',
         method.span,
         severity: SourceSpanSeverity.info,
       );

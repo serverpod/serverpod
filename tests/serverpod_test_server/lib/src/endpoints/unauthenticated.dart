@@ -16,12 +16,12 @@ class RequireLoginEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  @unauthenticated
+  @unauthenticatedClientCall
   Future<bool> unauthenticatedMethod(Session session) async {
     return session.isUserSignedIn;
   }
 
-  @unauthenticated
+  @unauthenticatedClientCall
   Stream<bool> unauthenticatedStream(Session session) async* {
     yield await session.isUserSignedIn;
   }

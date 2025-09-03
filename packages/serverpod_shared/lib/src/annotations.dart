@@ -21,7 +21,8 @@ const ignoreEndpoint = doNotGenerate;
 ///
 /// If an endpoint (class or method) is annotated with this annotation:
 /// - No authentication will be added to the header on the client when calling it.
-const unauthenticated = _Unauthenticated();
+/// - The server will receive calls as if there is no user signed in.
+const unauthenticatedClientCall = _UnauthenticatedClientCall();
 
 /// Names of annotations used by the Serverpod framework.
 abstract final class ServerpodAnnotationClassNames {
@@ -29,9 +30,9 @@ abstract final class ServerpodAnnotationClassNames {
   /// Needs to be synchronized with the [_DoNotGenerate] annotation.
   static const String doNotGenerate = '_DoNotGenerate';
 
-  /// Name of the "unauthenticated" annotation class.
-  /// Needs to be synchronized with the [_Unauthenticated] annotation.
-  static const String unauthenticated = '_Unauthenticated';
+  /// Name of the "unauthenticatedClientCall" annotation class.
+  /// Needs to be synchronized with the [_UnauthenticatedClientCall] annotation.
+  static const String unauthenticatedClientCall = '_UnauthenticatedClientCall';
 }
 
 /// Name of the class needs to be synchronized with the
@@ -45,11 +46,11 @@ class _DoNotGenerate {
 }
 
 /// Name of the class needs to be synchronized with the
-/// [ServerpodAnnotationClassNames.unauthenticated] constant.
+/// [ServerpodAnnotationClassNames.unauthenticatedClientCall] constant.
 @Target({
   TargetKind.classType,
   TargetKind.method,
 })
-class _Unauthenticated {
-  const _Unauthenticated();
+class _UnauthenticatedClientCall {
+  const _UnauthenticatedClientCall();
 }

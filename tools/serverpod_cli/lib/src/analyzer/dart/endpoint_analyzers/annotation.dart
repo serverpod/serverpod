@@ -52,7 +52,7 @@ abstract class AnnotationAnalyzer {
               name: annotationName,
             ),
           ],
-        'unauthenticated' => [
+        'unauthenticatedClientCall' => [
             AnnotationDefinition(
               name: annotationName,
             ),
@@ -94,6 +94,6 @@ extension AnnotationExtensions on Element {
   bool get markedAsIgnored =>
       AnnotationAnalyzer.parseAnnotations(this).has('doNotGenerate');
 
-  bool get markedAsUnauthenticated =>
-      AnnotationAnalyzer.parseAnnotations(this).has('unauthenticated');
+  bool get markedAsUnauthenticated => AnnotationAnalyzer.parseAnnotations(this)
+      .has('unauthenticatedClientCall');
 }

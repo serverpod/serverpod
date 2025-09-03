@@ -29,7 +29,7 @@ void main() {
   });
 
   group(
-      'Given endpoint class with @unauthenticated annotation and child class when analyzed',
+      'Given endpoint class with @unauthenticatedClientCall annotation and child class when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -46,7 +46,7 @@ void main() {
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
 
-@unauthenticated
+@unauthenticatedClientCall
 abstract class BaseEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello \$name';
@@ -60,12 +60,13 @@ class ChildEndpoint extends BaseEndpoint {}
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then child endpoint inherits unauthenticated annotation.', () {
+    test('then child endpoint inherits unauthenticatedClientCall annotation.',
+        () {
       var childEndpoint =
           endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
 
       expect(childEndpoint.annotations, hasLength(1));
-      expect(childEndpoint.annotations.first.name, 'unauthenticated');
+      expect(childEndpoint.annotations.first.name, 'unauthenticatedClientCall');
     });
   });
 
@@ -127,7 +128,7 @@ class ChildEndpoint extends BaseEndpoint {}
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
 
-@unauthenticated
+@unauthenticatedClientCall
 abstract class BaseEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello \$name';
@@ -149,7 +150,8 @@ class ChildEndpoint extends BaseEndpoint {}
           endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
 
       expect(childEndpoint.annotations, hasLength(2));
-      expect(childEndpoint.annotations.has('unauthenticated'), isTrue);
+      expect(
+          childEndpoint.annotations.has('unauthenticatedClientCall'), isTrue);
       expect(childEndpoint.annotations.has('deprecated'), isTrue);
     });
   });
@@ -170,7 +172,7 @@ class ChildEndpoint extends BaseEndpoint {}
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
 
-@unauthenticated
+@unauthenticatedClientCall
 abstract class GrandparentEndpoint extends Endpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello \$name';
@@ -191,7 +193,7 @@ class ChildEndpoint extends ParentEndpoint {}
           endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
 
       expect(childEndpoint.annotations, hasLength(1));
-      expect(childEndpoint.annotations.first.name, 'unauthenticated');
+      expect(childEndpoint.annotations.first.name, 'unauthenticatedClientCall');
     });
   });
 }
