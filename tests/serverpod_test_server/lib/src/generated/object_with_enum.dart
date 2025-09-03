@@ -201,15 +201,15 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
       this,
       _i1.EnumSerialization.byIndex,
     );
-    enumList = _i1.ColumnSerializable(
+    enumList = _i1.ColumnSerializable<List<_i2.TestEnum>>(
       'enumList',
       this,
     );
-    nullableEnumList = _i1.ColumnSerializable(
+    nullableEnumList = _i1.ColumnSerializable<List<_i2.TestEnum?>>(
       'nullableEnumList',
       this,
     );
-    enumListList = _i1.ColumnSerializable(
+    enumListList = _i1.ColumnSerializable<List<List<_i2.TestEnum>>>(
       'enumListList',
       this,
     );
@@ -219,11 +219,11 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
 
   late final _i1.ColumnEnum<_i2.TestEnum> nullableEnum;
 
-  late final _i1.ColumnSerializable enumList;
+  late final _i1.ColumnSerializable<List<_i2.TestEnum>> enumList;
 
-  late final _i1.ColumnSerializable nullableEnumList;
+  late final _i1.ColumnSerializable<List<_i2.TestEnum?>> nullableEnumList;
 
-  late final _i1.ColumnSerializable enumListList;
+  late final _i1.ColumnSerializable<List<List<_i2.TestEnum>>> enumListList;
 
   @override
   List<_i1.Column> get columns => [

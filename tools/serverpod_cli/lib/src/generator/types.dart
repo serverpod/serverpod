@@ -156,6 +156,8 @@ class TypeDefinition {
 
   bool get isEnumType => enumDefinition != null;
 
+  bool get isColumnSerializable => columnType == 'ColumnSerializable';
+
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
     if (url == 'serverpod') return url;

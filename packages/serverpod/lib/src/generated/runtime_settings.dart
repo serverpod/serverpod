@@ -175,11 +175,12 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
 class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
       : super(tableName: 'serverpod_runtime_settings') {
-    logSettings = _i1.ColumnSerializable(
+    logSettings = _i1.ColumnSerializable<_i2.LogSettings>(
       'logSettings',
       this,
     );
-    logSettingsOverrides = _i1.ColumnSerializable(
+    logSettingsOverrides =
+        _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>(
       'logSettingsOverrides',
       this,
     );
@@ -194,10 +195,11 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
   }
 
   /// Log settings.
-  late final _i1.ColumnSerializable logSettings;
+  late final _i1.ColumnSerializable<_i2.LogSettings> logSettings;
 
   /// List of log setting overrides.
-  late final _i1.ColumnSerializable logSettingsOverrides;
+  late final _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>
+      logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   late final _i1.ColumnBool logServiceCalls;

@@ -147,7 +147,7 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
       'name',
       this,
     );
-    $object = _i1.ColumnSerializable(
+    $object = _i1.ColumnSerializable<_i2.SimpleData>(
       'object',
       this,
     );
@@ -155,7 +155,7 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString $name;
 
-  late final _i1.ColumnSerializable $object;
+  late final _i1.ColumnSerializable<_i2.SimpleData> $object;
 
   @override
   List<_i1.Column> get columns => [

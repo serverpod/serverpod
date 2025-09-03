@@ -189,7 +189,7 @@ class AuthKeyTable extends _i1.Table<int?> {
       'hash',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<List<String>>(
       'scopeNames',
       this,
     );
@@ -206,7 +206,7 @@ class AuthKeyTable extends _i1.Table<int?> {
   late final _i1.ColumnString hash;
 
   /// The scopes this key provides access to.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<List<String>> scopeNames;
 
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.

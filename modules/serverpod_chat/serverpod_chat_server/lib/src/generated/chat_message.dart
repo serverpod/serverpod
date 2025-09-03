@@ -267,7 +267,7 @@ class ChatMessageTable extends _i1.Table<int?> {
       'removed',
       this,
     );
-    attachments = _i1.ColumnSerializable(
+    attachments = _i1.ColumnSerializable<List<_i3.ChatMessageAttachment>>(
       'attachments',
       this,
     );
@@ -289,7 +289,8 @@ class ChatMessageTable extends _i1.Table<int?> {
   late final _i1.ColumnBool removed;
 
   /// List of attachments associated with this message.
-  late final _i1.ColumnSerializable attachments;
+  late final _i1.ColumnSerializable<List<_i3.ChatMessageAttachment>>
+      attachments;
 
   @override
   List<_i1.Column> get columns => [
