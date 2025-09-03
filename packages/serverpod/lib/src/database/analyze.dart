@@ -174,35 +174,50 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
       ColumnType? vectorColumnType;
 
       final indexType = index[7] as String;
-      if (['hnsw', 'ivfflat'].contains(indexType)) {
-        // Parse index parameters from reloptions
-        var reloptions = index[8];
-        if (reloptions != null && reloptions is List<String>) {
-          for (var option in reloptions) {
-            var parts = option.split('=');
-            if (parts.length == 2) {
-              parameters[parts[0]] = parts[1];
+      final isGin = indexType == 'gin';
+      final isPgVector = ['hnsw', 'ivfflat'].contains(indexType);
+      if (isGin || isPgVector) {
+        if (isPgVector) {
+          // Parse index parameters from reloptions
+          var reloptions = index[8];
+          if (reloptions != null && reloptions is List<String>) {
+            for (var option in reloptions) {
+              var parts = option.split('=');
+              if (parts.length == 2) {
+                parameters[parts[0]] = parts[1];
+              }
             }
           }
         }
 
-        // Extract pgvector distance metric from operator class
+        // Extract data from operator class
         var opclassNames = index[9];
         if (opclassNames is List<String> && opclassNames.isNotEmpty) {
-          // For pgvector, the first operator class contains the distance metric
-          final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
-          final match = opClassRegex.firstMatch(opclassNames[0]);
+          if (isGin) {
+            // For gin, the first operator class contains the gin operator class name
+            final opClassRegex = RegExp(r'(\w+)_ops');
+            final match = opClassRegex.firstMatch(opclassNames[0]);
+            if (match != null && match.groupCount >= 1) {
+              final ginOperatorClassNameDb = match.group(1)!;
+              ginOperatorClass = ginOperatorClassNameDb.fromDatabase();
+            }
+          } else if (isPgVector) {
+            final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
+            final match = opClassRegex.firstMatch(opclassNames[0]);
 
-          if (match != null && match.groupCount >= 1) {
-            vectorColumnType = VectorColumnType.vectorTypes
-                .where((c) => c.name == match.group(1))
-                .firstOrNull;
+            if (match != null && match.groupCount >= 1) {
+              // Extract pgvector distance metric from operator class
+              // For pgvector, the first operator class contains the distance metric
+              vectorColumnType = VectorColumnType.vectorTypes
+                  .where((c) => c.name == match.group(1))
+                  .firstOrNull;
 
-            var distanceMetric = match.group(2)!;
-            if (distanceMetric == 'ip') distanceMetric = 'innerProduct';
-            vectorDistanceFunction = VectorDistanceFunction.values
-                .where((e) => e.name == distanceMetric)
-                .firstOrNull;
+              var distanceMetric = match.group(2)!;
+              if (distanceMetric == 'ip') distanceMetric = 'innerProduct';
+              vectorDistanceFunction = VectorDistanceFunction.values
+                  .where((e) => e.name == distanceMetric)
+                  .firstOrNull;
+            }
           }
         }
       }
@@ -326,6 +341,22 @@ extension VectorColumnType on ColumnType {
 }
 
 extension on String {
+  /// Extension method to convert GIN operator class names as used in the database.
+  GinOperatorClass? fromDatabase() {
+    switch(this) {
+      case 'array':
+        return GinOperatorClass.array;
+      case 'jsonb':
+        return GinOperatorClass.jsonb;
+      case 'jsonb_path':
+        return GinOperatorClass.jsonbPath;
+      case 'tsvector':
+        return GinOperatorClass.tsvector;
+      default:
+        return null;
+    }
+  }
+
   ForeignKeyAction? toForeignKeyAction() {
     switch (this) {
       case 'a':
