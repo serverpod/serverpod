@@ -7,7 +7,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 // const _configFilePath = 'config/google_client_secret.json';
 
-/// Endpoint for handling Sign in with Google.
+/// Endpoint for handling Sign in with Email.
 class EmailEndpoint extends Endpoint {
   /// Authenticates a user with email and password. Returns an
   /// [AuthenticationResponse] with the users information.
