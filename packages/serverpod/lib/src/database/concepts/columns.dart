@@ -51,23 +51,13 @@ class ColumnByteData extends Column<ByteData> {
 
 /// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
-class ColumnSerializable<T> extends _ValueOperatorColumn<T> {
-  /// Function to encode a value to an object that can be serialized.
-  /// This is primarily used to encode records to a `Map<String, dynamic>`.
-  final dynamic Function(T)? encodeFn;
-
+class ColumnSerializable<T> extends Column<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
     super.columnName,
     super.table, {
-    this.encodeFn,
     super.hasDefault,
   });
-
-  @override
-  Expression _encodeValueForQuery(T value) {
-    return EscapedExpression(encodeFn?.call(value) ?? value);
-  }
 
 // TODO: Add comparisons and possibly other operations
 }
