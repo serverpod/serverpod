@@ -195,12 +195,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         if (opclassNames is List<String> && opclassNames.isNotEmpty) {
           if (isGin) {
             // For gin, the first operator class contains the gin operator class name
-            final opClassRegex = RegExp(r'(\w+)_ops');
-            final match = opClassRegex.firstMatch(opclassNames[0]);
-            if (match != null && match.groupCount >= 1) {
-              final ginOperatorClassNameDb = match.group(1)!;
-              ginOperatorClass = ginOperatorClassNameDb.toGinOperatorClass();
-            }
+            ginOperatorClass = opclassNames.first.toGinOperatorClass();
           } else if (isPgVector) {
             final opClassRegex = RegExp(r'(\w+)_(\w+)_ops');
             final match = opClassRegex.firstMatch(opclassNames[0]);
@@ -344,13 +339,13 @@ extension on String {
   /// Extension method to convert GIN operator class names as used in the database.
   GinOperatorClass? toGinOperatorClass() {
     switch(this) {
-      case 'array':
+      case 'array_ops':
         return GinOperatorClass.array;
-      case 'jsonb':
+      case 'jsonb_ops':
         return GinOperatorClass.jsonb;
-      case 'jsonb_path':
+      case 'jsonb_path_ops':
         return GinOperatorClass.jsonbPath;
-      case 'tsvector':
+      case 'tsvector_ops':
         return GinOperatorClass.tsvector;
       default:
         return null;
