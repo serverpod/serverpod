@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-/// An endpoint with all methods unauthenticatedClientCall.
+/// An endpoint class with all methods marked as unauthenticated.
 @unauthenticatedClientCall
 class UnauthenticatedEndpoint extends Endpoint {
   Future<bool> unauthenticatedMethod(Session session) async {
@@ -12,7 +12,7 @@ class UnauthenticatedEndpoint extends Endpoint {
   }
 }
 
-/// An endpoint with only one method unauthenticatedClientCall.
+/// An endpoint with only one method marked as unauthenticated.
 class PartiallyUnauthenticatedEndpoint extends Endpoint {
   @unauthenticatedClientCall
   Future<bool> unauthenticatedMethod(Session session) async {

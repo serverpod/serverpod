@@ -74,7 +74,7 @@ class EndpointStreaming extends _i1.EndpointRef {
       );
 }
 
-/// An endpoint with all methods unauthenticated.
+/// An endpoint class with all methods marked as unauthenticated.
 /// {@category Endpoint}
 class EndpointUnauthenticated extends _i1.EndpointRef {
   EndpointUnauthenticated(_i1.EndpointCaller caller) : super(caller);
@@ -99,7 +99,7 @@ class EndpointUnauthenticated extends _i1.EndpointRef {
       );
 }
 
-/// An endpoint with only one method unauthenticated.
+/// An endpoint with only one method marked as unauthenticated.
 /// {@category Endpoint}
 class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
   EndpointPartiallyUnauthenticated(_i1.EndpointCaller caller) : super(caller);
