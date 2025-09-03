@@ -243,6 +243,10 @@ class TestEndpoints {
 
   late final _PartiallyUnauthenticatedEndpoint partiallyUnauthenticated;
 
+  late final _UnauthenticatedRequireLoginEndpoint unauthenticatedRequireLogin;
+
+  late final _RequireLoginEndpoint requireLogin;
+
   late final _UploadEndpoint upload;
 
   late final _MyFeatureEndpoint myFeature;
@@ -472,6 +476,14 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     partiallyUnauthenticated = _PartiallyUnauthenticatedEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    unauthenticatedRequireLogin = _UnauthenticatedRequireLoginEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    requireLogin = _RequireLoginEndpoint(
       endpoints,
       serializationManager,
     );
@@ -12943,6 +12955,142 @@ class _PartiallyUnauthenticatedEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'partiallyUnauthenticated',
           methodName: 'authenticatedStream',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+}
+
+class _UnauthenticatedRequireLoginEndpoint {
+  _UnauthenticatedRequireLoginEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<bool> unauthenticatedMethod(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'unauthenticatedRequireLogin',
+        method: 'unauthenticatedMethod',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'unauthenticatedRequireLogin',
+          methodName: 'unauthenticatedMethod',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Stream<bool> unauthenticatedStream(
+      _i1.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _i1.TestStreamManager<bool>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'unauthenticatedRequireLogin',
+          method: 'unauthenticatedStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'unauthenticatedRequireLogin',
+          methodName: 'unauthenticatedStream',
+          arguments: {},
+          requestedInputStreams: [],
+          serializationManager: _serializationManager,
+        );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+}
+
+class _RequireLoginEndpoint {
+  _RequireLoginEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<bool> unauthenticatedMethod(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'requireLogin',
+        method: 'unauthenticatedMethod',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'requireLogin',
+          methodName: 'unauthenticatedMethod',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Stream<bool> unauthenticatedStream(
+      _i1.TestSessionBuilder sessionBuilder) {
+    var _localTestStreamManager = _i1.TestStreamManager<bool>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          endpoint: 'requireLogin',
+          method: 'unauthenticatedStream',
+        );
+        var _localCallContext =
+            await _endpointDispatch.getMethodStreamCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'requireLogin',
+          methodName: 'unauthenticatedStream',
           arguments: {},
           requestedInputStreams: [],
           serializationManager: _serializationManager,

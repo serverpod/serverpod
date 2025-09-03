@@ -90,7 +90,10 @@ abstract class AnnotationAnalyzer {
   }
 }
 
-extension ElementIgnoreEndpointExtensions on Element {
+extension AnnotationExtensions on Element {
   bool get markedAsIgnored =>
       AnnotationAnalyzer.parseAnnotations(this).has('doNotGenerate');
+
+  bool get markedAsUnauthenticated =>
+      AnnotationAnalyzer.parseAnnotations(this).has('unauthenticated');
 }

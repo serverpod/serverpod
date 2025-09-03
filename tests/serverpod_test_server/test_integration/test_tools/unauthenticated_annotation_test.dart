@@ -100,5 +100,45 @@ void main() {
 
       expect(authenticated, isTrue);
     });
+
+    test(
+        'when calling an endpoint from a class annotated with @unauthenticated that also require login '
+        'then it throws unauthorized due to client not passing auth header.',
+        () async {
+      await expectLater(
+        () => client.unauthenticatedRequireLogin.unauthenticatedMethod(),
+        throwsA(isA<ServerpodClientUnauthorized>()),
+      );
+    });
+
+    test(
+        'when calling a streaming endpoint from a class annotated with @unauthenticated that also require login '
+        'then it throws unauthorized due to client not passing auth header.',
+        () async {
+      await expectLater(
+        () => client.unauthenticatedRequireLogin.unauthenticatedStream().first,
+        throwsA(isA<ServerpodClientUnauthorized>()),
+      );
+    });
+
+    test(
+        'when calling a method endpoint annotated with @unauthenticated from a class that requires login '
+        'then it throws unauthorized due to client not passing auth header.',
+        () async {
+      await expectLater(
+        () => client.requireLogin.unauthenticatedMethod(),
+        throwsA(isA<ServerpodClientUnauthorized>()),
+      );
+    });
+
+    test(
+        'when calling a streaming endpoint annotated with @unauthenticated from a class that requires login '
+        'then it throws unauthorized due to client not passing auth header.',
+        () async {
+      await expectLater(
+        () => client.requireLogin.unauthenticatedStream().first,
+        throwsA(isA<ServerpodClientUnauthorized>()),
+      );
+    });
   });
 }

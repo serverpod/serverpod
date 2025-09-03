@@ -71,6 +71,21 @@ abstract class EndpointClassAnalyzer {
       );
     }
 
+    if (classElement.overridesRequireLogin &&
+        classElement.markedAsUnauthenticated) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The endpoint class "${classElement.name}" overrides "requireLogin" '
+          'getter and is annotated with @unauthenticated. Be aware that this '
+          'combination may lead to all endpoint calls failing due to client '
+          'not sending a signed in user. To fix this, either remove the getter '
+          'override or remove the @unauthenticated annotation.',
+          classElement.span,
+          severity: SourceSpanSeverity.info,
+        ),
+      );
+    }
+
     return errors;
   }
 
@@ -85,4 +100,8 @@ abstract class EndpointClassAnalyzer {
 
     return endpointName;
   }
+}
+
+extension EndpointClassExtensions on ClassElement {
+  bool get overridesRequireLogin => getGetter('requireLogin') != null;
 }

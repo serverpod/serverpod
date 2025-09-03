@@ -412,6 +412,18 @@ class Endpoints extends _i1.EndpointDispatch {
           'partiallyUnauthenticated',
           null,
         ),
+      'unauthenticatedRequireLogin': _i43.UnauthenticatedRequireLoginEndpoint()
+        ..initialize(
+          server,
+          'unauthenticatedRequireLogin',
+          null,
+        ),
+      'requireLogin': _i43.RequireLoginEndpoint()
+        ..initialize(
+          server,
+          'requireLogin',
+          null,
+        ),
       'upload': _i44.UploadEndpoint()
         ..initialize(
           server,
@@ -8222,6 +8234,66 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['partiallyUnauthenticated']
                       as _i43.PartiallyUnauthenticatedEndpoint)
                   .authenticatedStream(session),
+        ),
+      },
+    );
+    connectors['unauthenticatedRequireLogin'] = _i1.EndpointConnector(
+      name: 'unauthenticatedRequireLogin',
+      endpoint: endpoints['unauthenticatedRequireLogin']!,
+      methodConnectors: {
+        'unauthenticatedMethod': _i1.MethodConnector(
+          name: 'unauthenticatedMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['unauthenticatedRequireLogin']
+                      as _i43.UnauthenticatedRequireLoginEndpoint)
+                  .unauthenticatedMethod(session),
+        ),
+        'unauthenticatedStream': _i1.MethodStreamConnector(
+          name: 'unauthenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['unauthenticatedRequireLogin']
+                      as _i43.UnauthenticatedRequireLoginEndpoint)
+                  .unauthenticatedStream(session),
+        ),
+      },
+    );
+    connectors['requireLogin'] = _i1.EndpointConnector(
+      name: 'requireLogin',
+      endpoint: endpoints['requireLogin']!,
+      methodConnectors: {
+        'unauthenticatedMethod': _i1.MethodConnector(
+          name: 'unauthenticatedMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['requireLogin'] as _i43.RequireLoginEndpoint)
+                  .unauthenticatedMethod(session),
+        ),
+        'unauthenticatedStream': _i1.MethodStreamConnector(
+          name: 'unauthenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['requireLogin'] as _i43.RequireLoginEndpoint)
+                  .unauthenticatedStream(session),
         ),
       },
     );

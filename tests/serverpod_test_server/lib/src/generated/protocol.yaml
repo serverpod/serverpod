@@ -446,6 +446,12 @@ partiallyUnauthenticated:
   - unauthenticatedStream:
   - authenticatedMethod:
   - authenticatedStream:
+unauthenticatedRequireLogin:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
+requireLogin:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
 upload:
   - uploadByteData:
 myFeature:

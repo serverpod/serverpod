@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoints_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -122,6 +123,114 @@ class ExampleEndpoint extends Endpoint {
       var authenticatedMethod =
           endpoint.methods.firstWhere((m) => m.name == 'authenticated');
       expect(authenticatedMethod.annotations, isEmpty);
+    });
+  });
+
+  group(
+      'Given an endpoint class annotated with @unauthenticated and overriding requireLogin when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/annotations.dart';
+
+@unauthenticated
+class ExampleEndpoint extends Endpoint {
+  @override
+  bool get requireLogin => true;
+
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then a validation info message is reported.', () {
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.info);
+      expect(
+        error.message,
+        'The endpoint class "ExampleEndpoint" overrides "requireLogin" '
+        'getter and is annotated with @unauthenticated. Be aware that this '
+        'combination may lead to all endpoint calls failing due to client '
+        'not sending a signed in user. To fix this, either remove the getter '
+        'override or remove the @unauthenticated annotation.',
+      );
+    });
+
+    test('then the endpoint class definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+  });
+
+  group(
+      'Given an endpoint class overriding requireLogin with a method annotated with @unauthenticated when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_shared/annotations.dart';
+
+class ExampleEndpoint extends Endpoint {
+  @override
+  bool get requireLogin => true;
+
+  @unauthenticated
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+
+  Future<String> authenticated(Session session, String name) async {
+    return 'Hello authenticated \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then a validation info message is reported.', () {
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.info);
+      expect(
+        error.message,
+        'Method "hello" in endpoint class "ExampleEndpoint" is '
+        'annotated with @unauthenticated, but the class overrides the '
+        '"requireLogin" getter. Be aware that this combination may lead to '
+        'endpoint calls failing due to client not sending a signed in user. '
+        'To fix this, either move this method to a separate endpoint class '
+        'that does not override "requireLogin", remove the "requireLogin" '
+        'getter override or remove the @unauthenticated annotation.',
+      );
+    });
+
+    test('then the endpoint class definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
     });
   });
 }

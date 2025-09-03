@@ -78,13 +78,17 @@ abstract class EndpointMethodAnalyzer {
 
   /// Validates the [MethodElement] and returns a list of
   /// [SourceSpanSeverityException].
-  static List<SourceSpanSeverityException> validate(MethodElement method) {
+  static List<SourceSpanSeverityException> validate(
+    MethodElement method,
+    ClassElement classElement,
+  ) {
     List<SourceSpanSeverityException?> errors = [
       _validateReturnType(
         dartType: method.returnType,
         dartElement: method,
         hasStreamParameter: method.formalParameters._hasStream(),
-      )
+      ),
+      _validateUnauthenticatedAnnotation(method, classElement),
     ];
 
     return errors.whereType<SourceSpanSeverityException>().toList();
@@ -148,6 +152,26 @@ abstract class EndpointMethodAnalyzer {
       );
     }
 
+    return null;
+  }
+
+  static SourceSpanSeverityException? _validateUnauthenticatedAnnotation(
+    MethodElement method,
+    ClassElement classElement,
+  ) {
+    if (classElement.overridesRequireLogin && method.markedAsUnauthenticated) {
+      return SourceSpanSeverityException(
+        'Method "${method.name}" in endpoint class "${classElement.name}" is '
+        'annotated with @unauthenticated, but the class overrides the '
+        '"requireLogin" getter. Be aware that this combination may lead to '
+        'endpoint calls failing due to client not sending a signed in user. '
+        'To fix this, either move this method to a separate endpoint class '
+        'that does not override "requireLogin", remove the "requireLogin" '
+        'getter override or remove the @unauthenticated annotation.',
+        method.span,
+        severity: SourceSpanSeverity.info,
+      );
+    }
     return null;
   }
 }
