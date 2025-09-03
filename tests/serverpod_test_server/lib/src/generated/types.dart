@@ -500,7 +500,6 @@ class TypesTable extends _i1.Table<int?> {
     aRecord = _i1.ColumnSerializable<(String, {Uri? optionalUri})>(
       'aRecord',
       this,
-      encodeFn: (value) => _i5.mapRecordToJson(value),
     );
   }
 
