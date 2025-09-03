@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Operator classes used by GIN indexes.
+/// See: https://www.postgresql.org/docs/current/gin.html#GIN-BUILTIN-OPCLASSES
 enum GinOperatorClass implements _i1.SerializableModel {
   array,
   jsonb,
