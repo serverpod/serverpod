@@ -10,7 +10,7 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   group('Valid datatypes', () {
-    var datatypes = [
+    var builtInTypes = [
       'String',
       'String?',
       'bool',
@@ -21,6 +21,10 @@ void main() {
       'UuidValue',
       'Uri',
       'BigInt',
+      'ByteData',
+    ];
+
+    var vectorTypes = [
       'Vector(512)',
       'Vector(512)?',
       'HalfVector(256)',
@@ -29,6 +33,9 @@ void main() {
       'SparseVector(128)?',
       'Bit(64)',
       'Bit(64)?',
+    ];
+
+    var collectionTypes = [
       'List<String>',
       'List<String>?',
       'List<String?>?',
@@ -43,6 +50,12 @@ void main() {
       'Set<String>',
       'Set<String>?',
       'Set<String?>?',
+    ];
+
+    var datatypes = [
+      ...builtInTypes,
+      ...vectorTypes,
+      ...collectionTypes,
     ];
 
     for (var datatype in datatypes) {
@@ -69,11 +82,37 @@ void main() {
           expect(collector.errors, isEmpty);
         });
 
-        test('then a class with that field type set to $datatype is generated.',
-            () {
-          var definition = definitions.first as ClassDefinition;
-          expect(definition.fields.first.type.toString(), datatype);
-        });
+        // ByteData is a special case that is handled separately below.
+        if (!datatype.startsWith('ByteData')) {
+          test(
+              'then a class with that field type set to $datatype is generated.',
+              () {
+            var definition = definitions.first as ClassDefinition;
+            expect(definition.fields.first.type.toString(), datatype);
+          });
+        }
+
+        if (builtInTypes.contains(datatype)) {
+          test('then the built-in type is NOT tagged as ColumnSerializable',
+              () {
+            var definition = definitions.first as ClassDefinition;
+            expect(definition.fields.first.type.isColumnSerializable, isFalse);
+          });
+        }
+
+        if (vectorTypes.contains(datatype)) {
+          test('then the vector type is NOT tagged as ColumnSerializable', () {
+            var definition = definitions.first as ClassDefinition;
+            expect(definition.fields.first.type.isColumnSerializable, isFalse);
+          });
+        }
+
+        if (collectionTypes.contains(datatype)) {
+          test('then the collection type is tagged as ColumnSerializable', () {
+            var definition = definitions.first as ClassDefinition;
+            expect(definition.fields.first.type.isColumnSerializable, isTrue);
+          });
+        }
       });
     }
 
@@ -132,6 +171,11 @@ fields:
           testClassDefinition?.fields.first.type.projectModelDefinition,
           isNotNull,
         );
+      });
+
+      test('then the custom model type is tagged as ColumnSerializable', () {
+        expect(testClassDefinition?.fields.first.type.isColumnSerializable,
+            isTrue);
       });
     });
 
@@ -503,6 +547,11 @@ fields:
       test('then the type is tagged as an enum', () {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.isEnumType, isTrue);
+      });
+
+      test('then the type is NOT tagged as ColumnSerializable', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.isColumnSerializable, isFalse);
       });
 
       test('then the type has projectModelDefinition', () {

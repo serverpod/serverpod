@@ -1802,16 +1802,17 @@ class SerializableModelLibraryGenerator {
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
             ..url = serverpodUrl(true)
-            ..types.addAll(field.type.isEnumType
-                ? [
-                    field.type.reference(
-                      serverCode,
-                      nullable: false,
-                      subDirParts: subDirParts,
-                      config: config,
-                    )
-                  ]
-                : []))));
+            ..types
+                .addAll(field.type.isEnumType || field.type.isColumnSerializable
+                    ? [
+                        field.type.reference(
+                          serverCode,
+                          nullable: false,
+                          subDirParts: subDirParts,
+                          config: config,
+                        )
+                      ]
+                    : []))));
       } else if (field.relation is ObjectRelationDefinition) {
         // Add internal nullable table field
         tableFields.add(Field((f) => f
@@ -2092,7 +2093,8 @@ class SerializableModelLibraryGenerator {
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
                     ? _buildModelTableEnumFieldTypeReference(field)
-                    : _buildModelTableGeneralFieldExpression(field))
+                    : _buildModelTableGeneralFieldExpression(
+                        field, classDefinition))
                 .statement,
       ]);
     });
@@ -2100,15 +2102,28 @@ class SerializableModelLibraryGenerator {
 
   Expression _buildModelTableGeneralFieldExpression(
     SerializableModelFieldDefinition field,
+    ClassDefinition classDefinition,
   ) {
     assert(!field.type.isEnumType);
+
+    var constructorArgs = <Expression>[
+      literalString(field.name),
+      refer('this'),
+    ];
+
     return TypeReference((t) => t
       ..symbol = field.type.columnType
       ..url = serverpodUrl(true)
-      ..types.addAll([])).call([
-      literalString(field.name),
-      refer('this'),
-    ], {
+      ..types.addAll(field.type.isColumnSerializable
+          ? [
+              field.type.reference(
+                serverCode,
+                nullable: false,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+              )
+            ]
+          : [])).call(constructorArgs, {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
