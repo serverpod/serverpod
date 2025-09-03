@@ -371,7 +371,7 @@ class ModelParser {
     var shouldPersist = _parseShouldPersist(node);
 
     typeResult.jsonSerializationDataType = _parseClassFieldSerialize(node);
-    if (typeResult.jsonSerializationDataType == null && typeResult.isCustomSerializedType) {
+    if (typeResult.jsonSerializationDataType == null && typeResult.isColumnSerializable) {
       if (config.serializeAsJsonbAsDefault) {
         typeResult.jsonSerializationDataType = modelJsonSerializationDataType ?? JsonSerializationDataType.jsonb;
       }

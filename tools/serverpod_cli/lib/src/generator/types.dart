@@ -158,8 +158,6 @@ class TypeDefinition {
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
-  bool get isCustomSerializedType => columnType == 'ColumnSerializable';
-
   bool get isEnumType => enumDefinition != null;
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
@@ -409,7 +407,7 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
 
-    if (isCustomSerializedType && jsonSerializationDataType == JsonSerializationDataType.jsonb) {
+    if (isColumnSerializable && jsonSerializationDataType == JsonSerializationDataType.jsonb) {
       return 'jsonb';
     }
     return 'json';

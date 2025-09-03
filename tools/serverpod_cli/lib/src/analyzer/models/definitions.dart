@@ -105,7 +105,7 @@ final class ModelClassDefinition extends ClassDefinition {
     super.subDirParts,
     super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[] {
-    fields.where((field) => field.type.isCustomSerializedType).forEach((field) {
+    fields.where((field) => field.type.isColumnSerializable).forEach((field) {
       field.type.jsonSerializationDataType ??= jsonSerializationDataType;
     });
   }
