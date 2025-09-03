@@ -120,48 +120,5 @@ void main() {
       expect(Types.t.aMap, isA<ColumnSerializable<Map<int, int>>>());
       expect(Types.t.aSet, isA<ColumnSerializable<Set<int>>>());
     });
-
-    test('then record field has encoder function for record serialization.',
-        () {
-      expect(Types.t.aRecord.encodeFn, isNotNull);
-    });
-
-    test(
-        'then container fields do not have encoder function (use DatabasePoolManager.encoder.convert).',
-        () {
-      expect(Types.t.aList.encodeFn, isNull);
-      expect(Types.t.aMap.encodeFn, isNull);
-      expect(Types.t.aSet.encodeFn, isNull);
-    });
-  });
-
-  group('Given ColumnSerializable encoder function behavior', () {
-    test('then record field encoder function works correctly with all fields.',
-        () {
-      var optionalUri = Uri.parse('https://example.com');
-      var record = ('test', optionalUri: optionalUri);
-      var encoded = Types.t.aRecord.encodeFn!(record);
-      expect(encoded, isA<Map<String, dynamic>>());
-
-      expect(encoded['p'], isA<List>());
-      expect(encoded['p'][0], 'test');
-
-      expect(encoded['n'], isA<Map<String, dynamic>>());
-      expect(encoded['n']['optionalUri'], optionalUri);
-    });
-
-    test(
-        'then record field encoder function works correctly with null named field.',
-        () {
-      var record = ('test', optionalUri: null);
-      var encoded = Types.t.aRecord.encodeFn!(record);
-      expect(encoded, isA<Map<String, dynamic>>());
-
-      expect(encoded['p'], isA<List>());
-      expect(encoded['p'][0], 'test');
-
-      expect(encoded['n'], isA<Map<String, dynamic>>());
-      expect(encoded['n']['optionalUri'], isNull);
-    });
   });
 }

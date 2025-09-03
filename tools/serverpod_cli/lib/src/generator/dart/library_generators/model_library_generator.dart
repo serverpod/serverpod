@@ -2106,27 +2106,10 @@ class SerializableModelLibraryGenerator {
   ) {
     assert(!field.type.isEnumType);
 
-    // Build the constructor arguments list
     var constructorArgs = <Expression>[
       literalString(field.name),
       refer('this'),
     ];
-
-    // Add encoder function for ColumnSerializable types
-    Expression? encoderFunction;
-    if (field.type.isColumnSerializable) {
-      if (field.type.isRecordType) {
-        // For records, use mapRecordToJson
-        var mapRecordToJsonRef = refer(
-          mapRecordToJsonFuncName,
-          'package:${config.serverPackage}/src/generated/protocol.dart',
-        );
-        encoderFunction = Method((m) => m
-          ..lambda = true
-          ..requiredParameters.add(Parameter((p) => p..name = 'value'))
-          ..body = mapRecordToJsonRef.call([refer('value')]).code).closure;
-      }
-    }
 
     return TypeReference((t) => t
       ..symbol = field.type.columnType
@@ -2144,7 +2127,6 @@ class SerializableModelLibraryGenerator {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
-      if (encoderFunction != null) 'encodeFn': encoderFunction,
     });
   }
 
