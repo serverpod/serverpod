@@ -10,20 +10,36 @@ final Templates templates = Templates();
 class Templates {
   final Map<String, Template> _templates = {};
 
-  /// Loads all templates from web/templates
+  /// Loads all templates from web/templates recursively
   Future<void> loadAll(Directory templateDirectory) async {
     if (!await templateDirectory.exists()) return;
 
-    for (var entity in await templateDirectory.list().toList()) {
+    await _loadTemplatesRecursively(templateDirectory, '');
+  }
+
+  /// Recursively loads templates from subdirectories
+  Future<void> _loadTemplatesRecursively(
+      Directory dir, String relativePath) async {
+    for (var entity in await dir.list().toList()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
-        var name = basenameWithoutExtension(file.path);
+        var fileName = basenameWithoutExtension(file.path);
+
+        // Create template key with relative path
+        var templateKey =
+            relativePath.isEmpty ? fileName : '$relativePath/$fileName';
+
         var data = await file.readAsString();
 
-        _templates[name] = Template(
+        _templates[templateKey] = Template(
           data,
-          name: name,
+          name: templateKey,
         );
+      } else if (entity is Directory) {
+        var subDirName = basename(entity.path);
+        var newRelativePath =
+            relativePath.isEmpty ? subDirName : '$relativePath/$subDirName';
+        await _loadTemplatesRecursively(entity, newRelativePath);
       }
     }
   }
