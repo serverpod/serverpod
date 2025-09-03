@@ -7,7 +7,6 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:source_span/source_span.dart';
 
 class ClassYamlDefinition {
   late Set<ValidateNode> documentStructure;
