@@ -71,7 +71,7 @@ class EndpointApple extends _i1.EndpointRef {
       );
 }
 
-/// Endpoint for handling Sign in with Google.
+/// Endpoint for handling Sign in with Email.
 /// {@category Endpoint}
 class EndpointEmail extends _i1.EndpointRef {
   EndpointEmail(_i1.EndpointCaller caller) : super(caller);
