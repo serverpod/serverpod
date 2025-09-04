@@ -1,3 +1,6 @@
+@Timeout.none
+library;
+
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
@@ -7,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
 void main() {
-  var directory = Directory(path.join(Directory.current.path, 'web', 'static'));
+  var directory = Directory(
+      path.join(Directory.current.path, 'web', 'server_root_directory'));
   setUp(() async {
     await directory.create();
     await File(path.join(directory.path, 'file1.txt'))
@@ -35,7 +39,7 @@ void main() {
       setUp(() async {
         serverpod.webServer.addRoute(
           RouteStaticDirectory(
-            serverDirectory: '/static',
+            serverDirectory: 'server_root_directory',
             pathCachePatterns: [
               PathCacheMaxAge(
                 pathPattern: RegExp(r'.*\.txt'),
@@ -43,7 +47,7 @@ void main() {
               ),
             ],
           ),
-          '/static/*',
+          '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
@@ -55,7 +59,7 @@ void main() {
           'then the cache-control header is set to max-age=1', () async {
         var response = await http.get(
           Uri.parse(
-            'http://localhost:8082/static/file1.txt',
+            'http://localhost:8082/url_prefix/file1.txt',
           ),
         );
 
@@ -67,7 +71,7 @@ void main() {
           'then the cache-control header is set to default max age', () async {
         var response = await http.get(
           Uri.parse(
-            'http://localhost:8082/static/file2.test',
+            'http://localhost:8082/url_prefix/file2.test',
           ),
         );
 
@@ -82,15 +86,15 @@ void main() {
       setUp(() async {
         serverpod.webServer.addRoute(
           RouteStaticDirectory(
-            serverDirectory: '/static',
+            serverDirectory: 'server_root_directory',
             pathCachePatterns: [
               PathCacheMaxAge(
-                pathPattern: '/static/file1.txt',
+                pathPattern: '/file1.txt',
                 maxAge: Duration(seconds: 1),
               ),
             ],
           ),
-          '/static/*',
+          '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
@@ -102,7 +106,7 @@ void main() {
           'then the cache-control header is set to max-age=1', () async {
         var response = await http.get(
           Uri.parse(
-            'http://localhost:8082/static/file1.txt',
+            'http://localhost:8082/url_prefix/file1.txt',
           ),
         );
 
@@ -114,7 +118,7 @@ void main() {
           'then the cache-control header is set to default max age', () async {
         var response = await http.get(
           Uri.parse(
-            'http://localhost:8082/static/file2.test',
+            'http://localhost:8082/url_prefix/file2.test',
           ),
         );
 
