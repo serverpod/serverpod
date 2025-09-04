@@ -99,7 +99,7 @@ void main() {
     });
 
     test(
-        'Given deeply nested structure when loading templates then all levels are accessible',
+        'Given deeply nested structure when loading templates then full nested path key is preserved',
         () async {
       // Create deeply nested structure: admin/users/management/forms/edit.html
       var adminDir = Directory(path.join(tempDir.path, 'admin'));
