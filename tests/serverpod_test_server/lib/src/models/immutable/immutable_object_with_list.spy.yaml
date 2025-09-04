@@ -1,0 +1,4 @@
+class: ImmutableObjectWithList
+immutable: true
+fields:
+  listVariable: List<String>
