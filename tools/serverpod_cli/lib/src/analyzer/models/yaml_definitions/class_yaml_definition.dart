@@ -150,6 +150,11 @@ class ClassYamlDefinition {
                 },
               ),
               ValidateNode(
+                Keyword.requiredKey,
+                keyRestriction: restrictions.validateRequiredKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
                 Keyword.database,
                 isDeprecated: true,
                 isRemoved: true,
