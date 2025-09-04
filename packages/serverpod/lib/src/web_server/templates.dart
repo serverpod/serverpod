@@ -20,7 +20,7 @@ class Templates {
   /// Recursively loads templates from subdirectories
   Future<void> _loadTemplatesRecursively(
       Directory dir, String relativePath) async {
-    for (var entity in await dir.list().toList()) {
+    await for (var entity in dir.list()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var fileName = basenameWithoutExtension(file.path);
