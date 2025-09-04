@@ -352,6 +352,46 @@ class ObjectWithUuidRepository {
     );
   }
 
+  /// Updates a single [ObjectWithUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithUuid?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithUuidTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithUuid>(
+      id,
+      columnValues: columnValues(ObjectWithUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithUuidTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithUuid>(
+      columnValues: columnValues(ObjectWithUuid.t),
+      where: where(ObjectWithUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithUuid]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

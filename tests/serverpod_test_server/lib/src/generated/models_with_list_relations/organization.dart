@@ -478,6 +478,46 @@ class OrganizationRepository {
     );
   }
 
+  /// Updates a single [Organization] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Organization?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Organization>(
+      id,
+      columnValues: columnValues(Organization.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Organization]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Organization>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
+    required _i1.WhereExpressionBuilder<OrganizationTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Organization>(
+      columnValues: columnValues(Organization.t),
+      where: where(Organization.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Organization]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

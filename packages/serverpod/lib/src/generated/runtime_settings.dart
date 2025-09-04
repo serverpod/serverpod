@@ -406,6 +406,46 @@ class RuntimeSettingsRepository {
     );
   }
 
+  /// Updates a single [RuntimeSettings] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RuntimeSettings?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RuntimeSettings>(
+      id,
+      columnValues: columnValues(RuntimeSettings.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<RuntimeSettings>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
+    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RuntimeSettings>(
+      columnValues: columnValues(RuntimeSettings.t),
+      where: where(RuntimeSettings.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [RuntimeSettings]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

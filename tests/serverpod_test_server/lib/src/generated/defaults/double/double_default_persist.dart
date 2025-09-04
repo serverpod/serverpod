@@ -336,6 +336,46 @@ class DoubleDefaultPersistRepository {
     );
   }
 
+  /// Updates a single [DoubleDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultPersistTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefaultPersist>(
+      id,
+      columnValues: columnValues(DoubleDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultPersistTable> columnValues,
+    required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefaultPersist>(
+      columnValues: columnValues(DoubleDefaultPersist.t),
+      where: where(DoubleDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefaultPersist.t),
+      orderByList: orderByList?.call(DoubleDefaultPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [DoubleDefaultPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

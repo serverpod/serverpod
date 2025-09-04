@@ -410,6 +410,46 @@ class CustomerRepository {
     );
   }
 
+  /// Updates a single [Customer] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Customer?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Customer>(
+      id,
+      columnValues: columnValues(Customer.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Customer]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Customer>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
+    required _i1.WhereExpressionBuilder<CustomerTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CustomerTable>? orderBy,
+    _i1.OrderByListBuilder<CustomerTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Customer>(
+      columnValues: columnValues(Customer.t),
+      where: where(Customer.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Customer.t),
+      orderByList: orderByList?.call(Customer.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Customer]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -525,6 +525,46 @@ class MessageLogEntryRepository {
     );
   }
 
+  /// Updates a single [MessageLogEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<MessageLogEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<MessageLogEntry>(
+      id,
+      columnValues: columnValues(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [MessageLogEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<MessageLogEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
+    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<MessageLogEntry>(
+      columnValues: columnValues(MessageLogEntry.t),
+      where: where(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [MessageLogEntry]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

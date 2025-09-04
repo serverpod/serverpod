@@ -420,6 +420,46 @@ class UserNoteCollectionRepository {
     );
   }
 
+  /// Updates a single [UserNoteCollection] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNoteCollection?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNoteCollection>(
+      id,
+      columnValues: columnValues(UserNoteCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserNoteCollection>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNoteCollection>(
+      columnValues: columnValues(UserNoteCollection.t),
+      where: where(UserNoteCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserNoteCollection]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

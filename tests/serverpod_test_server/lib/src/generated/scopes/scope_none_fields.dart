@@ -357,6 +357,46 @@ class ScopeNoneFieldsRepository {
     );
   }
 
+  /// Updates a single [ScopeNoneFields] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ScopeNoneFields?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ScopeNoneFields>(
+      id,
+      columnValues: columnValues(ScopeNoneFields.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ScopeNoneFields]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ScopeNoneFields>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
+    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ScopeNoneFields>(
+      columnValues: columnValues(ScopeNoneFields.t),
+      where: where(ScopeNoneFields.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ScopeNoneFields]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

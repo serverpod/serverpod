@@ -450,6 +450,46 @@ class BlockingRepository {
     );
   }
 
+  /// Updates a single [Blocking] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Blocking?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BlockingTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Blocking>(
+      id,
+      columnValues: columnValues(Blocking.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Blocking>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BlockingTable> columnValues,
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Blocking>(
+      columnValues: columnValues(Blocking.t),
+      where: where(Blocking.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [Blocking]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

@@ -330,6 +330,46 @@ class ObjectWithDurationRepository {
     );
   }
 
+  /// Updates a single [ObjectWithDuration] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithDuration?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithDuration>(
+      id,
+      columnValues: columnValues(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithDuration]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithDuration>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithDuration>(
+      columnValues: columnValues(ObjectWithDuration.t),
+      where: where(ObjectWithDuration.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectWithDuration]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

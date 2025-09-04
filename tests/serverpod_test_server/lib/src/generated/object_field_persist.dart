@@ -357,6 +357,46 @@ class ObjectFieldPersistRepository {
     );
   }
 
+  /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectFieldPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectFieldPersist>(
+      id,
+      columnValues: columnValues(ObjectFieldPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectFieldPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectFieldPersist>(
+      columnValues: columnValues(ObjectFieldPersist.t),
+      where: where(ObjectFieldPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectFieldPersist]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

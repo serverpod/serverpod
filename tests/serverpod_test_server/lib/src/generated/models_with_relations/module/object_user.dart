@@ -401,6 +401,46 @@ class ObjectUserRepository {
     );
   }
 
+  /// Updates a single [ObjectUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectUser?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectUser>(
+      id,
+      columnValues: columnValues(ObjectUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectUser>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectUserTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectUser>(
+      columnValues: columnValues(ObjectUser.t),
+      where: where(ObjectUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectUser.t),
+      orderByList: orderByList?.call(ObjectUser.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [ObjectUser]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

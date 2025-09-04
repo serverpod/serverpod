@@ -452,6 +452,46 @@ class EnrollmentIntRepository {
     );
   }
 
+  /// Updates a single [EnrollmentInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnrollmentInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnrollmentIntTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnrollmentInt>(
+      id,
+      columnValues: columnValues(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnrollmentInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnrollmentInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnrollmentIntTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnrollmentInt>(
+      columnValues: columnValues(EnrollmentInt.t),
+      where: where(EnrollmentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnrollmentInt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

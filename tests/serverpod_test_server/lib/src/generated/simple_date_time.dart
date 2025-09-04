@@ -333,6 +333,46 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Updates a single [SimpleDateTime] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<SimpleDateTime?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<SimpleDateTime>(
+      id,
+      columnValues: columnValues(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SimpleDateTime]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<SimpleDateTime>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
+    required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<SimpleDateTime>(
+      columnValues: columnValues(SimpleDateTime.t),
+      where: where(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [SimpleDateTime]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

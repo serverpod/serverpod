@@ -449,6 +449,46 @@ class LegacySessionRepository {
     );
   }
 
+  /// Updates a single [LegacySession] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacySession?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<LegacySessionTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacySession>(
+      id,
+      columnValues: columnValues(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacySession]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LegacySession>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LegacySessionTable> columnValues,
+    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacySession>(
+      columnValues: columnValues(LegacySession.t),
+      where: where(LegacySession.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [LegacySession]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

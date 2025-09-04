@@ -385,6 +385,48 @@ class UserNoteWithALongNameRepository {
     );
   }
 
+  /// Updates a single [UserNoteWithALongName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNoteWithALongName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteWithALongNameTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNoteWithALongName>(
+      id,
+      columnValues: columnValues(UserNoteWithALongName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNoteWithALongName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserNoteWithALongName>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteWithALongNameTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNoteWithALongName>(
+      columnValues: columnValues(UserNoteWithALongName.t),
+      where: where(UserNoteWithALongName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UserNoteWithALongName]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

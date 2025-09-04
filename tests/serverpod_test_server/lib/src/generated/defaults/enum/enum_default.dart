@@ -416,6 +416,46 @@ class EnumDefaultRepository {
     );
   }
 
+  /// Updates a single [EnumDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefault>(
+      id,
+      columnValues: columnValues(EnumDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefault>(
+      columnValues: columnValues(EnumDefault.t),
+      where: where(EnumDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefault.t),
+      orderByList: orderByList?.call(EnumDefault.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EnumDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

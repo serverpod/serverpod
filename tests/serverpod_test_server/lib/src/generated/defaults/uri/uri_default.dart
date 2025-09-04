@@ -355,6 +355,46 @@ class UriDefaultRepository {
     );
   }
 
+  /// Updates a single [UriDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UriDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UriDefault>(
+      id,
+      columnValues: columnValues(UriDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UriDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UriDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
+    required _i1.WhereExpressionBuilder<UriDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UriDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<UriDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UriDefault>(
+      columnValues: columnValues(UriDefault.t),
+      where: where(UriDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UriDefault.t),
+      orderByList: orderByList?.call(UriDefault.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [UriDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

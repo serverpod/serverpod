@@ -361,6 +361,46 @@ class BigIntDefaultRepository {
     );
   }
 
+  /// Updates a single [BigIntDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefault>(
+      id,
+      columnValues: columnValues(BigIntDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultTable> columnValues,
+    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefault>(
+      columnValues: columnValues(BigIntDefault.t),
+      where: where(BigIntDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefault.t),
+      orderByList: orderByList?.call(BigIntDefault.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [BigIntDefault]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

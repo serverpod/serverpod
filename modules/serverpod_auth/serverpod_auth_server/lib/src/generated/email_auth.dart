@@ -374,6 +374,46 @@ class EmailAuthRepository {
     );
   }
 
+  /// Updates a single [EmailAuth] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAuth?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAuth>(
+      id,
+      columnValues: columnValues(EmailAuth.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAuth]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAuth>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
+    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAuth>(
+      columnValues: columnValues(EmailAuth.t),
+      where: where(EmailAuth.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAuth.t),
+      orderByList: orderByList?.call(EmailAuth.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAuth]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.

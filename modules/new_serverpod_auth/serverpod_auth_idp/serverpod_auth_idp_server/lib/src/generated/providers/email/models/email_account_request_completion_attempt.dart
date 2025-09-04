@@ -445,6 +445,53 @@ class EmailAccountRequestCompletionAttemptRepository {
     );
   }
 
+  /// Updates a single [EmailAccountRequestCompletionAttempt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountRequestCompletionAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountRequestCompletionAttemptTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountRequestCompletionAttempt>(
+      id,
+      columnValues: columnValues(EmailAccountRequestCompletionAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountRequestCompletionAttempt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountRequestCompletionAttempt>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountRequestCompletionAttemptTable>
+        columnValues,
+    required _i1
+        .WhereExpressionBuilder<EmailAccountRequestCompletionAttemptTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountRequestCompletionAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountRequestCompletionAttemptTable>?
+        orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountRequestCompletionAttempt>(
+      columnValues: columnValues(EmailAccountRequestCompletionAttempt.t),
+      where: where(EmailAccountRequestCompletionAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountRequestCompletionAttempt.t),
+      orderByList: orderByList?.call(EmailAccountRequestCompletionAttempt.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
   /// Deletes all [EmailAccountRequestCompletionAttempt]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
