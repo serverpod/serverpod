@@ -258,16 +258,16 @@ class Serverpod {
   /// Updates the runtime settings and writes the new settings to the database.
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _updateLogSettings(settings);
-    if (Features.enablePersistentLogging) {
+    if (Features.enableDatabase) {
       await _storeRuntimeSettings(settings);
     }
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    if (!Features.enablePersistentLogging) {
+    if (!Features.enableDatabase) {
       throw StateError(
-        'Persistent logging is disabled, runtime settings are not stored in '
+        'The database is disabled, runtime settings are not stored in '
         'the database.',
       );
     }
