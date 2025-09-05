@@ -49,6 +49,11 @@ class ClassYamlDefinition {
         },
       ),
       ValidateNode(
+        Keyword.serialize,
+        valueRestriction: EnumValueRestriction(enums: JsonSerializationDataType.values).validate,
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
+      ),
+      ValidateNode(
         Keyword.managedMigration,
         valueRestriction: BooleanValueRestriction().validate,
       ),
@@ -150,6 +155,15 @@ class ClassYamlDefinition {
                 },
               ),
               ValidateNode(
+                Keyword.serialize,
+                keyRestriction: restrictions.validateSerializeKey,
+                valueRestriction: EnumValueRestriction(enums: JsonSerializationDataType.values).validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
+              ),
+              ValidateNode(
                 Keyword.database,
                 isDeprecated: true,
                 isRemoved: true,
@@ -218,6 +232,12 @@ class ClassYamlDefinition {
                 Keyword.unique,
                 keyRestriction: restrictions.validateIndexUniqueKey,
                 valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
+                Keyword.operatorClass,
+                keyRestriction: restrictions.validateIndexOperatorClassKey,
+                valueRestriction: EnumValueRestriction(enums: GinOperatorClass.values).validate,
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb),
               ),
               ValidateNode(
                 Keyword.distanceFunction,
