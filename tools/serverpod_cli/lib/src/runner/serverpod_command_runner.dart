@@ -66,6 +66,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   Future<void> runCommand(ArgResults topLevelResults) async {
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
+      return; // Exit early to prevent showing help text
     }
 
     var experimentalFeatures = globalConfiguration.value(
