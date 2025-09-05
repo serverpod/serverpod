@@ -6,6 +6,7 @@ class EndpointDefinitionBuilder {
   String _className = 'ExampleEndpoint';
   String _filePath = 'example.dart';
   List<MethodDefinition> _methods = [];
+  List<AnnotationDefinition> _annotations = [];
 
   EndpointDefinitionBuilder();
 
@@ -35,6 +36,13 @@ class EndpointDefinitionBuilder {
     return this;
   }
 
+  EndpointDefinitionBuilder withAnnotations(
+    List<AnnotationDefinition> annotations,
+  ) {
+    _annotations = annotations;
+    return this;
+  }
+
   EndpointDefinition build() {
     return EndpointDefinition(
       name: _name,
@@ -42,6 +50,7 @@ class EndpointDefinitionBuilder {
       className: _className,
       filePath: _filePath,
       methods: _methods,
+      annotations: _annotations,
     );
   }
 }

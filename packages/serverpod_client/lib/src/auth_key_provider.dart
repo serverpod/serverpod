@@ -30,7 +30,7 @@ abstract class RefresherClientAuthKeyProvider implements ClientAuthKeyProvider {
 
   /// Refreshes the authentication key. If the refresh is successful, should
   /// return true to retry requests that failed due to authentication errors.
-  /// Be aware that the refresh endpoint must be annotated with @unauthenticated
+  /// Be sure to annotate the refresh endpoint with @unauthenticatedClientCall
   /// to avoid a deadlock on the [authHeaderValue] getter on refresh call.
   Future<bool> refreshAuthKey();
 }

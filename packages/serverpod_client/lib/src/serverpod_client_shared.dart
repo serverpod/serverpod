@@ -472,10 +472,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<T> callServerEndpoint<T>(
     String endpoint,
     String method,
-    Map<String, dynamic> args,
-  ) async {
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) async {
     try {
-      return await _callServerEndpoint(endpoint, method, args);
+      return await _callServerEndpoint(endpoint, method, args,
+          authenticated: authenticated);
     } on ServerpodClientUnauthorized catch (_) {
       final keyProvider = authKeyProvider;
 
@@ -486,7 +488,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
           await keyProvider.refreshAuthKey();
 
       if (shouldRefreshAuth) {
-        return _callServerEndpoint(endpoint, method, args);
+        return _callServerEndpoint(endpoint, method, args,
+            authenticated: authenticated);
       }
       rethrow;
     }
@@ -495,8 +498,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<T> _callServerEndpoint<T>(
     String endpoint,
     String method,
-    Map<String, dynamic> args,
-  ) async {
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) async {
     var callContext = MethodCallContext(
       endpointName: endpoint,
       methodName: method,
@@ -504,7 +508,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var authenticationValue = await authKeyProvider?.authHeaderValue;
+      var authenticationValue =
+          authenticated ? await authKeyProvider?.authHeaderValue : null;
       var body = formatArgs(args, method);
       var url = Uri.parse('$host$endpoint');
 
@@ -534,15 +539,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  ) {
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  }) {
     var connectionDetails = MethodStreamConnectionDetails(
       endpoint: endpoint,
       method: method,
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
-      authKeyProvider: authKeyProvider,
+      authKeyProvider: authenticated ? authKeyProvider : null,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
@@ -605,8 +611,17 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
 
   @override
   Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) {
-    return client.callServerEndpoint<T>(endpoint, method, args);
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) {
+    return client.callServerEndpoint<T>(
+      endpoint,
+      method,
+      args,
+      authenticated: authenticated,
+    );
   }
 
   @override
@@ -614,13 +629,15 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  ) {
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  }) {
     return client.callStreamingServerEndpoint<T, G>(
       endpoint,
       method,
       args,
       streams,
+      authenticated: authenticated,
     );
   }
 }
@@ -634,7 +651,11 @@ abstract class EndpointCaller {
   /// Calls a server endpoint method by its name, passing arguments in a map.
   /// Typically, this method is called by generated code.
   Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args);
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  });
 
   /// Calls a server endpoint method that supports streaming. The [streams]
   /// parameter is a map of stream names to stream objects. The method will
@@ -651,8 +672,9 @@ abstract class EndpointCaller {
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  );
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  });
 }
 
 /// This class connects endpoints on the server with the client, it also

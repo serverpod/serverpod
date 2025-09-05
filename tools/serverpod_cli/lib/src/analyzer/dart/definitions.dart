@@ -20,6 +20,9 @@ class EndpointDefinition {
   /// The methods this endpoint defines.
   final List<MethodDefinition> methods;
 
+  /// The annotations of this endpoint.
+  final List<AnnotationDefinition> annotations;
+
   /// Create a new [EndpointDefinition].
   const EndpointDefinition({
     required this.name,
@@ -27,6 +30,7 @@ class EndpointDefinition {
     required this.methods,
     required this.className,
     required this.filePath,
+    required this.annotations,
   });
 }
 
@@ -137,4 +141,8 @@ class AnnotationDefinition {
     this.arguments,
     this.methodCallAnalyzerIgnoreRule,
   });
+}
+
+extension HasAnnotation on List<AnnotationDefinition> {
+  bool has(String name) => any((e) => e.name == name);
 }

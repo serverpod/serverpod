@@ -232,7 +232,7 @@ class EndpointsAnalyzer {
       var endpointMethods =
           classElement.methods.where(EndpointMethodAnalyzer.isEndpointMethod);
       for (var method in endpointMethods) {
-        errors = EndpointMethodAnalyzer.validate(method);
+        errors = EndpointMethodAnalyzer.validate(method, classElement);
         errors.addAll(
             EndpointParameterAnalyzer.validate(method.formalParameters));
         if (errors.isNotEmpty) {
