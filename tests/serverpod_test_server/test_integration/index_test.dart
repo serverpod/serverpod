@@ -316,4 +316,46 @@ void main() async {
       expect(index.parameters, {'lists': '300'});
     });
   });
+
+  group('Given declared ObjectWithJsonb class when analyzing database schema',
+      () {
+    late List<IndexDefinition> indexes;
+
+    setUpAll(() async {
+      // final config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
+      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+      var table = databaseDefinition.tables.firstWhere(
+        (table) => table.name == 'object_with_jsonb',
+      );
+
+      indexes = table.indexes;
+    });
+
+    test('then the implicitly declared gin index exists.', () {
+      expect(indexes[0].indexName, 'object_with_index_test_index1');
+      expect(indexes[0].isPrimary, false);
+      expect(indexes[0].isUnique, false);
+      expect(indexes[0].predicate, isNull);
+      expect(indexes[0].tableSpace, isNull);
+      expect(indexes[0].type, 'gin');
+      expect(indexes[0].ginOperatorClass, isNull);
+      expect(indexes[0].elements, hasLength(1));
+      expect(indexes[0].elements[0].type, IndexElementDefinitionType.column);
+      expect(indexes[0].elements[0].definition, 'indexed');
+    });
+
+    test('then the implicitly declared gin index with operator class exists.', () {
+      expect(indexes[1].indexName, 'object_with_index_test_index2');
+      expect(indexes[1].isPrimary, false);
+      expect(indexes[1].isUnique, false);
+      expect(indexes[1].predicate, isNull);
+      expect(indexes[1].tableSpace, isNull);
+      expect(indexes[1].type, 'gin');
+      expect(indexes[1].ginOperatorClass, GinOperatorClass.jsonbPath);
+      expect(indexes[1].elements, hasLength(1));
+      expect(indexes[1].elements[0].type, IndexElementDefinitionType.column);
+      expect(indexes[1].elements[0].definition, 'indexed');
+    });
+  });
 }

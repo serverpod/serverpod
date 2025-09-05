@@ -1,0 +1,12 @@
+class: ObjectWithJsonb
+table: object_with_jsonb
+fields:
+  indexed: List<String>, serialize=jsonb
+indexes:
+  object_with_index_test_index1:
+    fields: indexed
+    type: gin
+  object_with_index_test_index2:
+    fields: indexed
+    type: gin
+    operatorClass: jsonbPath
