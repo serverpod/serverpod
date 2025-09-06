@@ -59,7 +59,7 @@ class MutexRefresherClientAuthKeyProvider
     final pendingRefresh = _pendingRefresh;
     if (pendingRefresh != null) return pendingRefresh;
 
-    final refreshFuture = _delegate.refreshAuthKey();
+    final refreshFuture = _refreshAuthKey();
     _pendingRefresh = refreshFuture;
 
     try {
@@ -69,5 +69,27 @@ class MutexRefresherClientAuthKeyProvider
         _pendingRefresh = null;
       }
     }
+  }
+
+  String? _lastAuthHeaderValue;
+  RefreshAuthKeyResult? _lastRefreshResult;
+
+  /// Actual refresh operation that is protected by the mutex lock. Will not
+  /// perform a refresh if the last refresh failed due to invalid credentials
+  /// and the auth header value has not changed. This prevents further request
+  /// failures due to invalid credentials when refresh credential is already
+  /// proven invalid.
+  Future<RefreshAuthKeyResult> _refreshAuthKey() async {
+    final currentAuthHeaderValue = await _delegate.authHeaderValue;
+    if (_lastAuthHeaderValue != null &&
+        _lastAuthHeaderValue == currentAuthHeaderValue &&
+        _lastRefreshResult == RefreshAuthKeyResult.failedUnauthorized) {
+      return RefreshAuthKeyResult.failedUnauthorized;
+    }
+
+    final result = await _delegate.refreshAuthKey();
+    _lastAuthHeaderValue = await _delegate.authHeaderValue;
+    _lastRefreshResult = result;
+    return result;
   }
 }

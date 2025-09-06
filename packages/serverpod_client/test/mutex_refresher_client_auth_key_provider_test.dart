@@ -109,6 +109,70 @@ void main() {
     });
 
     test(
+        'when first refresh fails with unauthorized and auth header value does not change '
+        'then subsequent refresh calls with same auth header value are skipped.',
+        () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      final firstResult = await provider.refreshAuthKey();
+      final secondResult = await provider.refreshAuthKey();
+
+      expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(secondResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 1);
+    });
+
+    test(
+        'when first refresh fails with other error and auth header value does not change '
+        'then subsequent refresh calls are allowed.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedOther);
+
+      final firstResult = await provider.refreshAuthKey();
+      expect(firstResult, RefreshAuthKeyResult.failedOther);
+      expect(delegate.refreshCallCount, 1);
+
+      delegate.setRefresh(() => RefreshAuthKeyResult.success);
+
+      final secondResult = await provider.refreshAuthKey();
+      expect(secondResult, RefreshAuthKeyResult.success);
+      expect(delegate.refreshCallCount, 2);
+    });
+
+    test(
+        'when first refresh fails with unauthorized and auth header value changes '
+        'then subsequent refresh calls are allowed.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      final firstResult = await provider.refreshAuthKey();
+      expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 1);
+
+      delegate.setAuthKey('new-login-token');
+      delegate.setRefresh(() => RefreshAuthKeyResult.skipped);
+
+      final secondResult = await provider.refreshAuthKey();
+      expect(secondResult, RefreshAuthKeyResult.skipped);
+      expect(delegate.refreshCallCount, 2);
+    });
+
+    test(
+        'when refresh fails with unauthorized and auth header value changes to null '
+        'then subsequent refresh calls are allowed.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      final firstResult = await provider.refreshAuthKey();
+      expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 1);
+
+      delegate.setAuthKey(null);
+      delegate.setRefresh(() => RefreshAuthKeyResult.skipped);
+
+      final secondResult = await provider.refreshAuthKey();
+      expect(secondResult, RefreshAuthKeyResult.skipped);
+      expect(delegate.refreshCallCount, 2);
+    });
+
+    test(
         'when refreshing throws an exception '
         'then refreshAuthKey rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
