@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/element_ignore_endpoint_extension.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -15,6 +15,7 @@ abstract class EndpointClassAnalyzer {
     var className = element.displayName;
     var endpointName = _formatEndpointName(className);
     var classDocumentationComment = element.documentationComment;
+    var annotations = AnnotationAnalyzer.parseAnnotations(element);
 
     return EndpointDefinition(
       name: endpointName,
@@ -22,6 +23,7 @@ abstract class EndpointClassAnalyzer {
       className: className,
       methods: methodDefinitions,
       filePath: filePath,
+      annotations: annotations,
     );
   }
 
@@ -69,6 +71,21 @@ abstract class EndpointClassAnalyzer {
       );
     }
 
+    if (classElement.overridesRequireLogin &&
+        classElement.markedAsUnauthenticated) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The endpoint class "${classElement.name}" overrides "requireLogin" '
+          'getter and is annotated with @unauthenticatedClientCall. Be aware '
+          'that this combination may lead to all endpoint calls failing due to '
+          'client not sending a signed in user. To fix this, either remove the '
+          'getter override or remove the @unauthenticatedClientCall annotation.',
+          classElement.span,
+          severity: SourceSpanSeverity.info,
+        ),
+      );
+    }
+
     return errors;
   }
 
@@ -83,4 +100,8 @@ abstract class EndpointClassAnalyzer {
 
     return endpointName;
   }
+}
+
+extension EndpointClassExtensions on ClassElement {
+  bool get overridesRequireLogin => getGetter('requireLogin') != null;
 }
