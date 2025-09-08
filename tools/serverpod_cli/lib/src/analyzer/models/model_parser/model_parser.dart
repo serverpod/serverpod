@@ -29,7 +29,7 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
-    var serializeAs = _parseSerializeAs(documentContents);
+    var serializationDataType = _parseSerializationDataType(documentContents);
 
     return _initializeFromClassFields(
         documentTypeName: documentTypeName,
@@ -54,7 +54,7 @@ class ModelParser {
             extendsClass: extendsClass,
             sourceFileName: protocolSource.yamlSourceUri.path,
             tableName: tableName,
-            jsonSerializationDataType: serializeAs,
+            serializationDataType: serializationDataType,
             manageMigration: manageMigration,
             fileName: outFileName,
             fields: fields,
@@ -147,14 +147,14 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
-    var serializeAs = _parseSerializeAs(documentContents);
+    var serializationDataType = _parseSerializationDataType(documentContents);
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      serializeAs,
+      serializationDataType,
       tableName != null,
       config,
       serverOnly,
@@ -231,14 +231,14 @@ class ModelParser {
     return serverOnly;
   }
 
-  static JsonSerializationDataType? _parseSerializeAs(YamlMap documentContents) {
-    if (documentContents.nodes[Keyword.serialize] == null) return null;
-    final serializeAs = documentContents.nodes[Keyword.serialize]?.value;
+  static SerializationDataType? _parseSerializationDataType(YamlMap documentContents) {
+    if (documentContents.nodes[Keyword.serializationDataType] == null) return null;
+    final serializationDataType = documentContents.nodes[Keyword.serializationDataType]?.value;
 
-    return convertToEnum<JsonSerializationDataType>(
-      value: serializeAs,
-      enumDefault: JsonSerializationDataType.json,
-      enumValues: JsonSerializationDataType.values,
+    return convertToEnum<SerializationDataType>(
+      value: serializationDataType,
+      enumDefault: SerializationDataType.json,
+      enumValues: SerializationDataType.values,
     );
   }
 
@@ -262,7 +262,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    JsonSerializationDataType? modelJsonSerializationDataType,
+    SerializationDataType? modelSerializationDataType,
     bool hasTable,
     GeneratorConfig config,
     bool serverOnlyClass,
@@ -276,7 +276,7 @@ class ModelParser {
         return _parseModelFieldDefinition(
           fieldNode,
           docsExtractor,
-          modelJsonSerializationDataType,
+          modelSerializationDataType,
           config,
           serverOnlyClass,
         );
@@ -332,7 +332,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
-    JsonSerializationDataType? modelJsonSerializationDataType,
+    SerializationDataType? modelSerializationDataType,
     GeneratorConfig config,
     bool serverOnlyClass,
   ) {
@@ -370,10 +370,10 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.jsonSerializationDataType = _parseClassFieldSerialize(node);
-    if (typeResult.jsonSerializationDataType == null && typeResult.isColumnSerializable) {
-      if (config.serializeAsJsonbAsDefault) {
-        typeResult.jsonSerializationDataType = modelJsonSerializationDataType ?? JsonSerializationDataType.jsonb;
+    typeResult.serializationDataType = _parseClassFieldSerializationDataType(node);
+    if (typeResult.serializationDataType == null && typeResult.isColumnSerializable) {
+      if (config.serializeAsJsonbByDefault) {
+        typeResult.serializationDataType = modelSerializationDataType ?? SerializationDataType.jsonb;
       }
     }
 
@@ -570,10 +570,10 @@ class ModelParser {
     return _parseBooleanKey(relation, Keyword.optional);
   }
 
-  static JsonSerializationDataType? _parseClassFieldSerialize(
+  static SerializationDataType? _parseClassFieldSerializationDataType(
     YamlMap documentContents,
   ) {
-    return _parseSerializeAs(documentContents);
+    return _parseSerializationDataType(documentContents);
   }
 
   static ModelFieldScopeDefinition _parseClassFieldScope(

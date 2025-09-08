@@ -79,7 +79,7 @@ class GeneratorConfig implements ModelLoadConfig {
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
-    this.serializeAsJsonbAsDefault = false,
+    this.serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
@@ -215,7 +215,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// True, if JSON fields use JSONB instead of JSON as a default serialization data type in model files.
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919
-  final bool serializeAsJsonbAsDefault;
+  final bool serializeAsJsonbByDefault;
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -372,14 +372,23 @@ class GeneratorConfig implements ModelLoadConfig {
       }
     }
 
-    var serializeAsJsonbAsDefault = _loadSerializeAsJsonbAsDefault(file, generatorConfig);
-
     var enabledFeatures = _enabledFeatures(file, generatorConfig);
 
     var enabledExperimentalFeatures = [
       ..._enabledExperimentalFeatures(file, generatorConfig),
       ...CommandLineExperimentalFeatures.instance.features,
     ];
+
+    var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(file, generatorConfig);
+    if (serializeAsJsonbByDefault) {
+      final isSerializeAsJsonbExperimentalFeatureEnabled =
+          enabledExperimentalFeatures.contains(ExperimentalFeature.serializeAsJsonb) ||
+              enabledExperimentalFeatures.contains(ExperimentalFeature.all);
+      if (!isSerializeAsJsonbExperimentalFeatureEnabled) {
+        throw Exception(
+            'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
+      }
+    }
 
     return GeneratorConfig(
       name: name,
@@ -390,7 +399,7 @@ class GeneratorConfig implements ModelLoadConfig {
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-      serializeAsJsonbAsDefault: serializeAsJsonbAsDefault,
+      serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
@@ -398,9 +407,9 @@ class GeneratorConfig implements ModelLoadConfig {
     );
   }
 
-  static bool _loadSerializeAsJsonbAsDefault(File file, Map config) {
+  static bool _loadSerializeAsJsonbByDefault(File file, Map config) {
     if (!file.existsSync()) return false;
-    return config['serializeAsJsonbAsDefault'] ?? false;
+    return config['serializeAsJsonbByDefault'] ?? false;
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, Map config) {

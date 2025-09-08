@@ -23,7 +23,7 @@ export 'package:serverpod/database.dart';
 // Serialization and logging
 export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'package:serverpod/src/util/request_extension.dart';
-export 'package:serverpod/src/generated/database/json_serialization_datatype.dart';
+export 'package:serverpod/src/generated/database/serialization_data_type.dart';
 export 'package:serverpod/src/generated/log_level.dart';
 export 'package:serverpod/src/util/migrate_session_logs.dart';
 

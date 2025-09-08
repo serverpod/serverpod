@@ -1,6 +1,0 @@
-### Serialization types for JSON columns.
-### See: https://www.postgresql.org/docs/current/datatype-json.html
-enum: JsonSerializationDataType
-values:
-  - json
-  - jsonb

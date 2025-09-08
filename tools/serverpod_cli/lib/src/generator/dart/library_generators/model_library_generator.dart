@@ -2111,23 +2111,6 @@ class SerializableModelLibraryGenerator {
       refer('this'),
     ];
 
-    final isColumnSerializable = field.type.isColumnSerializable;
-    Expression? serializeAs;
-    if (isColumnSerializable) {
-      final jsonSerializationDataTypeType = refer('JsonSerializationDataType', serverpodUrl(serverCode));
-      switch (field.type.jsonSerializationDataType) {
-        case null:
-          // Don't use [JsonSerializationDataType] for the existing Serverpod server models.
-          break;
-        case JsonSerializationDataType.json:
-          serializeAs = jsonSerializationDataTypeType.property('json');
-          break;
-        case JsonSerializationDataType.jsonb:
-          serializeAs = jsonSerializationDataTypeType.property('jsonb');
-          break;
-      }
-    }
-
     return TypeReference((t) => t
       ..symbol = field.type.columnType
       ..url = serverpodUrl(true)
@@ -2141,7 +2124,11 @@ class SerializableModelLibraryGenerator {
               )
             ]
           : [])).call(constructorArgs, {
-      if (serializeAs != null) 'jsonSerializationDataType': serializeAs,
+      if (field.type.isColumnSerializable && field.type.serializationDataType != null)
+        'serializationDataType': refer(
+          'SerializationDataType.${field.type.serializationDataType!.name}',
+          serverpodProtocolUrl(serverCode),
+        ),
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),

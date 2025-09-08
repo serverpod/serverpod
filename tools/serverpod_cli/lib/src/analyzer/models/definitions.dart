@@ -77,7 +77,7 @@ final class ModelClassDefinition extends ClassDefinition {
 
   /// If set, the default data type used for serialization of the JSON columns in this class.
   /// It can be overridden for each field.
-  final JsonSerializationDataType? jsonSerializationDataType;
+  final SerializationDataType? serializationDataType;
 
   /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
   List<InheritanceDefinition> childClasses;
@@ -100,13 +100,13 @@ final class ModelClassDefinition extends ClassDefinition {
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
-    this.jsonSerializationDataType,
+    this.serializationDataType,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[] {
     fields.where((field) => field.type.isColumnSerializable).forEach((field) {
-      field.type.jsonSerializationDataType ??= jsonSerializationDataType;
+      field.type.serializationDataType ??= serializationDataType;
     });
   }
 

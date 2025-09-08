@@ -38,11 +38,9 @@ import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
 import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i20;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i21;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
-    as _i22;
 import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
-    as _i23;
-import 'protocol.dart' as _i24;
+    as _i22;
+import 'protocol.dart' as _i23;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2932,22 +2930,6 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
-  EndpointServerOnlyScopedFieldChildModel(_i1.EndpointCaller caller)
-      : super(caller);
-
-  @override
-  String get name => 'serverOnlyScopedFieldChildModel';
-
-  _i2.Future<_i22.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i22.ScopeServerOnlyFieldChild>(
-        'serverOnlyScopedFieldChildModel',
-        'getProtocolField',
-        {},
-      );
-}
-
-/// {@category Endpoint}
 class EndpointSetParameters extends _i1.EndpointRef {
   EndpointSetParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -3732,8 +3714,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i23.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i23.MyFeatureModel>(
+  _i2.Future<_i22.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i22.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -3767,7 +3749,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i24.Protocol(),
+          _i23.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -3819,8 +3801,6 @@ class Client extends _i1.ServerpodClientShared {
     recordParameters = EndpointRecordParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
-    serverOnlyScopedFieldChildModel =
-        EndpointServerOnlyScopedFieldChildModel(this);
     setParameters = EndpointSetParameters(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
@@ -3920,9 +3900,6 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointServerOnlyScopedFieldModel serverOnlyScopedFieldModel;
 
-  late final EndpointServerOnlyScopedFieldChildModel
-      serverOnlyScopedFieldChildModel;
-
   late final EndpointSetParameters setParameters;
 
   late final EndpointSignInRequired signInRequired;
@@ -3993,7 +3970,6 @@ class Client extends _i1.ServerpodClientShared {
         'recordParameters': recordParameters,
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
-        'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
         'setParameters': setParameters,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,

@@ -47,7 +47,7 @@ import 'database/gin_operator_class.dart' as _i34;
 import 'database/index_definition.dart' as _i35;
 import 'database/index_element_definition.dart' as _i36;
 import 'database/index_element_definition_type.dart' as _i37;
-import 'database/json_serialization_datatype.dart' as _i38;
+import 'database/serialization_data_type.dart' as _i38;
 import 'database/table_definition.dart' as _i39;
 import 'database/table_migration.dart' as _i40;
 import 'database/vector_distance_function.dart' as _i41;
@@ -109,7 +109,7 @@ export 'database/gin_operator_class.dart';
 export 'database/index_definition.dart';
 export 'database/index_element_definition.dart';
 export 'database/index_element_definition_type.dart';
-export 'database/json_serialization_datatype.dart';
+export 'database/serialization_data_type.dart';
 export 'database/table_definition.dart';
 export 'database/table_migration.dart';
 export 'database/vector_distance_function.dart';
@@ -1425,8 +1425,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i37.IndexElementDefinitionType) {
       return _i37.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i38.JsonSerializationDataType) {
-      return _i38.JsonSerializationDataType.fromJson(data) as T;
+    if (t == _i38.SerializationDataType) {
+      return _i38.SerializationDataType.fromJson(data) as T;
     }
     if (t == _i39.TableDefinition) {
       return _i39.TableDefinition.fromJson(data) as T;
@@ -1635,10 +1635,9 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i37.IndexElementDefinitionType.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i38.JsonSerializationDataType?>()) {
-      return (data != null
-          ? _i38.JsonSerializationDataType.fromJson(data)
-          : null) as T;
+    if (t == _i1.getType<_i38.SerializationDataType?>()) {
+      return (data != null ? _i38.SerializationDataType.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i39.TableDefinition?>()) {
       return (data != null ? _i39.TableDefinition.fromJson(data) : null) as T;
@@ -1920,8 +1919,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'IndexElementDefinition';
       case _i37.IndexElementDefinitionType():
         return 'IndexElementDefinitionType';
-      case _i38.JsonSerializationDataType():
-        return 'JsonSerializationDataType';
+      case _i38.SerializationDataType():
+        return 'SerializationDataType';
       case _i39.TableDefinition():
         return 'TableDefinition';
       case _i40.TableMigration():
@@ -2087,8 +2086,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'IndexElementDefinitionType') {
       return deserialize<_i37.IndexElementDefinitionType>(data['data']);
     }
-    if (dataClassName == 'JsonSerializationDataType') {
-      return deserialize<_i38.JsonSerializationDataType>(data['data']);
+    if (dataClassName == 'SerializationDataType') {
+      return deserialize<_i38.SerializationDataType>(data['data']);
     }
     if (dataClassName == 'TableDefinition') {
       return deserialize<_i39.TableDefinition>(data['data']);

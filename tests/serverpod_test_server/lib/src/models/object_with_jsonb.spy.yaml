@@ -1,7 +1,7 @@
 class: ObjectWithJsonb
 table: object_with_jsonb
 fields:
-  indexed: List<String>, serialize=jsonb
+  indexed: List<String>, serializationDataType=jsonb
 indexes:
   object_with_index_test_index1:
     fields: indexed

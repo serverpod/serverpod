@@ -42,10 +42,8 @@ import 'dart:convert' as _i21;
 import 'package:serverpod_test_server/src/generated/types_record.dart' as _i22;
 import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field.dart'
     as _i23;
-import 'package:serverpod_test_server/src/generated/scopes/scope_server_only_field_child.dart'
-    as _i24;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
-    as _i25;
+    as _i24;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -215,9 +213,6 @@ class TestEndpoints {
   late final _RedisEndpoint redis;
 
   late final _ServerOnlyScopedFieldModelEndpoint serverOnlyScopedFieldModel;
-
-  late final _ServerOnlyScopedFieldChildModelEndpoint
-      serverOnlyScopedFieldChildModel;
 
   late final _SetParametersEndpoint setParameters;
 
@@ -416,10 +411,6 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     serverOnlyScopedFieldModel = _ServerOnlyScopedFieldModelEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    serverOnlyScopedFieldChildModel = _ServerOnlyScopedFieldChildModelEndpoint(
       endpoints,
       serializationManager,
     );
@@ -10275,44 +10266,6 @@ class _ServerOnlyScopedFieldModelEndpoint {
   }
 }
 
-class _ServerOnlyScopedFieldChildModelEndpoint {
-  _ServerOnlyScopedFieldChildModelEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
-
-  final _i2.EndpointDispatch _endpointDispatch;
-
-  final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<_i24.ScopeServerOnlyFieldChild> getProtocolField(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'serverOnlyScopedFieldChildModel',
-        method: 'getProtocolField',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'serverOnlyScopedFieldChildModel',
-          methodName: 'getProtocolField',
-          parameters: _i1.testObjectToJson({}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<_i24.ScopeServerOnlyFieldChild>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-}
-
 class _SetParametersEndpoint {
   _SetParametersEndpoint(
     this._endpointDispatch,
@@ -12836,7 +12789,7 @@ class _MyFeatureEndpoint {
     });
   }
 
-  _i3.Future<_i25.MyFeatureModel> myFeatureModel(
+  _i3.Future<_i24.MyFeatureModel> myFeatureModel(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -12855,7 +12808,7 @@ class _MyFeatureEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i25.MyFeatureModel>);
+        ) as _i3.Future<_i24.MyFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

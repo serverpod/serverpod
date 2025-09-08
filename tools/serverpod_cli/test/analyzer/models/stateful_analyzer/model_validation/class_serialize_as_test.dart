@@ -10,8 +10,8 @@ import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
-  var configWithEnabledSerializeAsJsonbAsDefault = GeneratorConfigBuilder()
-      .withEnabledSerializeAsJsonbAsDefault()
+  var configWithEnabledSerializeAsJsonbByDefault = GeneratorConfigBuilder()
+      .withEnabledSerializeAsJsonbByDefault()
       .withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
 
   group('Given a valid class definition when validating', () {
@@ -37,18 +37,18 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    test('then serialize is set to null.', () {
-      expect(definition.jsonSerializationDataType, isNull);
+    test('then serializationDataType is set to null.', () {
+      expect(definition.serializationDataType, isNull);
     });
   });
 
-  group('Given a valid class definition with serialize set to jsonb when validating', () {
+  group('Given a valid class definition with serializationDataType set to jsonb when validating', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
-        serialize: jsonb
+        serializationDataType: jsonb
         fields:
           tags: List<String>
         ''',
@@ -66,18 +66,18 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    test('then serialize is set to jsonb.', () {
-      expect(definition.jsonSerializationDataType, JsonSerializationDataType.jsonb);
+    test('then serializationDataType is set to jsonb.', () {
+      expect(definition.serializationDataType, SerializationDataType.jsonb);
     });
   });
 
-  group('Given a valid class definition with serialize set to json when validating', () {
+  group('Given a valid class definition with serializationDataType set to json when validating', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
-        serialize: json
+        serializationDataType: json
         fields:
           tags: List<String>
         ''',
@@ -95,18 +95,18 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    test('then serialize is set to json.', () {
-      expect(definition.jsonSerializationDataType, JsonSerializationDataType.json);
+    test('then serializationDataType is set to json.', () {
+      expect(definition.serializationDataType, SerializationDataType.json);
     });
   });
 
-  group('Given a valid class definition with serialize set and the default serialization for project is set, the field should be defined to serialize to json when validating', () {
+  group('Given a valid class definition with serializationDataType set and the default serialization for project is set, the field should be defined to serialize to json when validating', () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
-        serialize: json
+        serializationDataType: json
         fields:
           tags: List<String>
         ''',
@@ -114,7 +114,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, modelSources, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbByDefault, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -124,20 +124,20 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    test('then serialize is set to jsonb.', () {
-      expect(definition.jsonSerializationDataType, JsonSerializationDataType.json);
+    test('then serializationDataType is set to jsonb.', () {
+      expect(definition.serializationDataType, SerializationDataType.json);
     });
   });
 
   test(
-      'Given a valid class definition with serialize set to an invalid value when validating then collect an error that the serialize value is invalid.',
+      'Given a valid class definition with serializationDataType set to an invalid value when validating then collect an error that the serialize value is invalid.',
       () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
-        serialize: Invalid
+        serializationDataType: Invalid
         fields:
           tags: List<String>
         ''',

@@ -10,12 +10,12 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
-  var configWithEnabledSerializeAsJsonbAsDefault = GeneratorConfigBuilder()
-      .withEnabledSerializeAsJsonbAsDefault()
+  var configWithEnabledSerializeAsJsonbByDefault = GeneratorConfigBuilder()
+      .withEnabledSerializeAsJsonbByDefault()
       .withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
 
   test(
-    'Given a class with a field with serialize set to jsonb, then the generated field should be serialized as defined at field level.',
+    'Given a class with a field with serializationDataType set to jsonb, then the generated field should be serialized as defined at field level.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -23,7 +23,7 @@ void main() {
           class: Example
           table: example
           fields:
-            tags: List<String>, serialize=jsonb
+            tags: List<String>, serializationDataType=jsonb
           ''',
         ).build()
       ];
@@ -34,12 +34,12 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
     },
   );
 
   test(
-    'Given a class with a field with the serialize key set to an invalid value, then collect an error that the value has an invalid value.',
+    'Given a class with a field with the serializationDataType key set to an invalid value, then collect an error that the value has an invalid value.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -47,7 +47,7 @@ void main() {
           class: Example
           table: example
           fields:
-            tags: List<String>, serialize=Invalid
+            tags: List<String>, serializationDataType=Invalid
           ''',
         ).build()
       ];
@@ -64,14 +64,14 @@ void main() {
   );
 
   test(
-    'Given a class with a field with no serialize set but the class has a serialize set, then the generated field should be serialized as defined at class level.',
+    'Given a class with a field with no serializationDataType set but the class has a serializationDataType set, then the generated field should be serialized as defined at class level.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
-          serialize: jsonb
+          serializationDataType: jsonb
           fields:
             tags: List<String>
           ''',
@@ -84,21 +84,21 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
     },
   );
 
   test(
-    'Given a class with class and field with set serialize, then the generated field should be serialized as defined at field level.',
+    'Given a class with class and field with set serializationDataType, then the generated field should be serializationDataType as defined at field level.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
-          serialize: jsonb
+          serializationDataType: jsonb
           fields:
-            tags: List<String>, serialize=json
+            tags: List<String>, serializationDataType=json
           ''',
         ).build()
       ];
@@ -109,12 +109,12 @@ void main() {
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
     },
   );
 
   test(
-    'Given a class with a field with no serialize set but the default serialization for project is set, then the generated field should be serialized as defined at project level.',
+    'Given a class with a field with no serializationDataType set but the default serialization for project is set, then the generated field should be serialized as defined at project level.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -128,24 +128,24 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbByDefault, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.jsonb);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
     },
   );
 
   test(
-    'Given a class with set serialize and a field with no serialize set but the default serialization for project is set, then the generated field should be serialized as defined at class level.',
+    'Given a class with set serializationDataType and a field with no serializationDataType set but the default serialization for project is set, then the generated field should be serialized as defined at class level.',
         () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
-          serialize: json
+          serializationDataType: json
           fields:
             tags: List<String>
           ''',
@@ -153,17 +153,17 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbByDefault, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
     },
   );
 
   test(
-    'Given a class with field with set serialize and the default serialization for project is set, then the generated field should be serialized as defined at field level.',
+    'Given a class with field with set serializationDataType and the default serialization for project is set, then the generated field should be serialized as defined at field level.',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
@@ -171,18 +171,18 @@ void main() {
           class: Example
           table: example
           fields:
-            tags: List<String>, serialize=json
+            tags: List<String>, serializationDataType=json
           ''',
         ).build()
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbAsDefault, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(configWithEnabledSerializeAsJsonbByDefault, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ModelClassDefinition;
-      expect(definition.fields.last.type.jsonSerializationDataType, JsonSerializationDataType.json);
+      expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
     },
   );
 }

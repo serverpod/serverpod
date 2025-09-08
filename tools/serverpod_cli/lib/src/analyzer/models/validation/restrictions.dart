@@ -1533,7 +1533,7 @@ class Restrictions {
         (definition.tableName != null) &&
         (parentNodeName == defaultPrimaryKeyName)) {
       errors.add(SourceSpanSeverityException(
-        'The "${Keyword.serialize}" key is not allowed on the "id" field.',
+        'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
         span,
       ));
     }
