@@ -13,9 +13,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/module_endpoint.dart' as _i2;
 import '../endpoints/streaming.dart' as _i3;
-import '../module_feature/endpoints/my_feature_endpoint.dart' as _i4;
+import '../endpoints/unauthenticated.dart' as _i4;
+import '../module_feature/endpoints/my_feature_endpoint.dart' as _i5;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
-    as _i5;
+    as _i6;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -33,7 +34,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'streaming',
           'serverpod_test_module',
         ),
-      'myModuleFeature': _i4.MyModuleFeatureEndpoint()
+      'unauthenticated': _i4.UnauthenticatedEndpoint()
+        ..initialize(
+          server,
+          'unauthenticated',
+          'serverpod_test_module',
+        ),
+      'partiallyUnauthenticated': _i4.PartiallyUnauthenticatedEndpoint()
+        ..initialize(
+          server,
+          'partiallyUnauthenticated',
+          'serverpod_test_module',
+        ),
+      'myModuleFeature': _i5.MyModuleFeatureEndpoint()
         ..initialize(
           server,
           'myModuleFeature',
@@ -67,7 +80,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i5.ModuleClass>(),
+              type: _i1.getType<_i6.ModuleClass>(),
               nullable: false,
             )
           },
@@ -149,6 +162,91 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['unauthenticated'] = _i1.EndpointConnector(
+      name: 'unauthenticated',
+      endpoint: endpoints['unauthenticated']!,
+      methodConnectors: {
+        'unauthenticatedMethod': _i1.MethodConnector(
+          name: 'unauthenticatedMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['unauthenticated'] as _i4.UnauthenticatedEndpoint)
+                  .unauthenticatedMethod(session),
+        ),
+        'unauthenticatedStream': _i1.MethodStreamConnector(
+          name: 'unauthenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['unauthenticated'] as _i4.UnauthenticatedEndpoint)
+                  .unauthenticatedStream(session),
+        ),
+      },
+    );
+    connectors['partiallyUnauthenticated'] = _i1.EndpointConnector(
+      name: 'partiallyUnauthenticated',
+      endpoint: endpoints['partiallyUnauthenticated']!,
+      methodConnectors: {
+        'unauthenticatedMethod': _i1.MethodConnector(
+          name: 'unauthenticatedMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['partiallyUnauthenticated']
+                      as _i4.PartiallyUnauthenticatedEndpoint)
+                  .unauthenticatedMethod(session),
+        ),
+        'authenticatedMethod': _i1.MethodConnector(
+          name: 'authenticatedMethod',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['partiallyUnauthenticated']
+                      as _i4.PartiallyUnauthenticatedEndpoint)
+                  .authenticatedMethod(session),
+        ),
+        'unauthenticatedStream': _i1.MethodStreamConnector(
+          name: 'unauthenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['partiallyUnauthenticated']
+                      as _i4.PartiallyUnauthenticatedEndpoint)
+                  .unauthenticatedStream(session),
+        ),
+        'authenticatedStream': _i1.MethodStreamConnector(
+          name: 'authenticatedStream',
+          params: {},
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+            Map<String, Stream> streamParams,
+          ) =>
+              (endpoints['partiallyUnauthenticated']
+                      as _i4.PartiallyUnauthenticatedEndpoint)
+                  .authenticatedStream(session),
+        ),
+      },
+    );
     connectors['myModuleFeature'] = _i1.EndpointConnector(
       name: 'myModuleFeature',
       endpoint: endpoints['myModuleFeature']!,
@@ -160,7 +258,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['myModuleFeature'] as _i4.MyModuleFeatureEndpoint)
+              (endpoints['myModuleFeature'] as _i5.MyModuleFeatureEndpoint)
                   .myFeatureMethod(session),
         ),
         'myFeatureModel': _i1.MethodConnector(
@@ -170,7 +268,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['myModuleFeature'] as _i4.MyModuleFeatureEndpoint)
+              (endpoints['myModuleFeature'] as _i5.MyModuleFeatureEndpoint)
                   .myFeatureModel(session),
         ),
       },

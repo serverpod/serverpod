@@ -3681,6 +3681,117 @@ class EndpointAuthenticatedTestTools extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointUnauthenticated extends _i1.EndpointRef {
+  EndpointUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'unauthenticated';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'unauthenticated',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'unauthenticated',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+}
+
+/// {@category Endpoint}
+class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
+  EndpointPartiallyUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'partiallyUnauthenticated';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'partiallyUnauthenticated',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'partiallyUnauthenticated',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+
+  _i2.Future<bool> authenticatedMethod() => caller.callServerEndpoint<bool>(
+        'partiallyUnauthenticated',
+        'authenticatedMethod',
+        {},
+      );
+
+  _i2.Stream<bool> authenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'partiallyUnauthenticated',
+        'authenticatedStream',
+        {},
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointUnauthenticatedRequireLogin extends _i1.EndpointRef {
+  EndpointUnauthenticatedRequireLogin(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'unauthenticatedRequireLogin';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'unauthenticatedRequireLogin',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'unauthenticatedRequireLogin',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+}
+
+/// {@category Endpoint}
+class EndpointRequireLogin extends _i1.EndpointRef {
+  EndpointRequireLogin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'requireLogin';
+
+  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+        'requireLogin',
+        'unauthenticatedMethod',
+        {},
+        authenticated: false,
+      );
+
+  _i2.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'requireLogin',
+        'unauthenticatedStream',
+        {},
+        {},
+        authenticated: false,
+      );
+}
+
+/// {@category Endpoint}
 class EndpointUpload extends _i1.EndpointRef {
   EndpointUpload(_i1.EndpointCaller caller) : super(caller);
 
@@ -3811,6 +3922,10 @@ class Client extends _i1.ServerpodClientShared {
     subDirTest = EndpointSubDirTest(this);
     testTools = EndpointTestTools(this);
     authenticatedTestTools = EndpointAuthenticatedTestTools(this);
+    unauthenticated = EndpointUnauthenticated(this);
+    partiallyUnauthenticated = EndpointPartiallyUnauthenticated(this);
+    unauthenticatedRequireLogin = EndpointUnauthenticatedRequireLogin(this);
+    requireLogin = EndpointRequireLogin(this);
     upload = EndpointUpload(this);
     myFeature = EndpointMyFeature(this);
     modules = Modules(this);
@@ -3920,6 +4035,14 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedTestTools authenticatedTestTools;
 
+  late final EndpointUnauthenticated unauthenticated;
+
+  late final EndpointPartiallyUnauthenticated partiallyUnauthenticated;
+
+  late final EndpointUnauthenticatedRequireLogin unauthenticatedRequireLogin;
+
+  late final EndpointRequireLogin requireLogin;
+
   late final EndpointUpload upload;
 
   late final EndpointMyFeature myFeature;
@@ -3980,6 +4103,10 @@ class Client extends _i1.ServerpodClientShared {
         'subDirTest': subDirTest,
         'testTools': testTools,
         'authenticatedTestTools': authenticatedTestTools,
+        'unauthenticated': unauthenticated,
+        'partiallyUnauthenticated': partiallyUnauthenticated,
+        'unauthenticatedRequireLogin': unauthenticatedRequireLogin,
+        'requireLogin': requireLogin,
         'upload': upload,
         'myFeature': myFeature,
       };
