@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
 
+import 'test_utils/test_auth_key_providers.dart';
+
 void main() {
   late TestRefresherAuthKeyProvider delegate;
   late MutexRefresherClientAuthKeyProvider provider;
@@ -23,7 +25,7 @@ void main() {
 
       final result = await provider.authHeaderValue;
 
-      expect(result, 'initial-token');
+      expect(result, 'Bearer initial-token');
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -35,7 +37,7 @@ void main() {
 
       final result = await provider.authHeaderValue;
 
-      expect(result, 'refreshed-token-1');
+      expect(result, 'Bearer refreshed-token-1');
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -67,7 +69,7 @@ void main() {
       final futures = List.generate(3, (_) => provider.authHeaderValue);
       final results = await Future.wait(futures);
 
-      expect(results, everyElement('refreshed-token-1'));
+      expect(results, everyElement('Bearer refreshed-token-1'));
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -124,23 +126,4 @@ void main() {
       expect(delegate.refreshCallCount, 1);
     });
   });
-}
-
-class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
-  String? _authKey;
-  late FutureOr<bool> Function() _refresh;
-  int refreshCallCount = 0;
-
-  void setAuthKey(String? key) => _authKey = key;
-  void setRefresh(FutureOr<bool> Function() refresh) => _refresh = refresh;
-  void updateAuthKey() => _authKey = 'refreshed-token-$refreshCallCount';
-
-  @override
-  Future<String?> get authHeaderValue async => _authKey;
-
-  @override
-  Future<bool> refreshAuthKey() async {
-    refreshCallCount++;
-    return _refresh();
-  }
 }

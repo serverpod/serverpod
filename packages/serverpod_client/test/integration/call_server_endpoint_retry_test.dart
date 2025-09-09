@@ -73,9 +73,8 @@ void main() {
         onConnected: (host) => httpHost = host,
       );
 
-      authKeyProvider = TestRefresherAuthKeyProvider(
-        initialAuthKey: 'initial-token',
-      );
+      authKeyProvider = TestRefresherAuthKeyProvider();
+      authKeyProvider.setAuthKey('initial-token');
 
       client = TestServerpodClient(
         host: httpHost,
@@ -111,7 +110,10 @@ void main() {
         Response.ok(body: Body.fromString('"success"')),
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.updateAuthKey();
+        return true;
+      });
 
       final result = await client.callServerEndpoint<String>(
         'test',
@@ -133,7 +135,7 @@ void main() {
         Response.unauthorized(),
       ];
 
-      authKeyProvider.setRefreshResult(false);
+      authKeyProvider.setRefresh(() => false);
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
@@ -153,7 +155,10 @@ void main() {
         Response.unauthorized(),
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.updateAuthKey();
+        return true;
+      });
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),

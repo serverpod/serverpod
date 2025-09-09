@@ -92,9 +92,8 @@ void main() {
 
     setUp(() async {
       receivedCmds = [];
-      authKeyProvider = TestRefresherAuthKeyProvider(
-        initialAuthKey: 'initial-token',
-      );
+      authKeyProvider = TestRefresherAuthKeyProvider();
+      authKeyProvider.setAuthKey('initial-token');
 
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
@@ -158,7 +157,10 @@ void main() {
         OpenMethodStreamResponseType.success,
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.updateAuthKey();
+        return true;
+      });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -179,7 +181,7 @@ void main() {
         OpenMethodStreamResponseType.authenticationFailed,
       ];
 
-      authKeyProvider.setRefreshResult(false);
+      authKeyProvider.setRefresh(() => false);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -204,7 +206,10 @@ void main() {
         OpenMethodStreamResponseType.authenticationFailed,
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.updateAuthKey();
+        return true;
+      });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
