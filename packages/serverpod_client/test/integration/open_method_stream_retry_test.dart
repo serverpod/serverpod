@@ -159,7 +159,7 @@ void main() {
 
       authKeyProvider.setRefresh(() {
         authKeyProvider.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
@@ -181,7 +181,7 @@ void main() {
         OpenMethodStreamResponseType.authenticationFailed,
       ];
 
-      authKeyProvider.setRefresh(() => false);
+      authKeyProvider.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -208,7 +208,7 @@ void main() {
 
       authKeyProvider.setRefresh(() {
         authKeyProvider.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()

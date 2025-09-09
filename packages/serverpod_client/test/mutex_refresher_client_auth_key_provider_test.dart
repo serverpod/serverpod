@@ -21,7 +21,7 @@ void main() {
 
     test('when refresh fails then returns original auth header value.',
         () async {
-      delegate.setRefresh(() => false);
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
       final result = await provider.authHeaderValue;
 
@@ -32,7 +32,7 @@ void main() {
     test('when refresh succeeds then returns new auth header value.', () async {
       delegate.setRefresh(() {
         delegate.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       final result = await provider.authHeaderValue;
@@ -47,13 +47,13 @@ void main() {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
         delegate.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       final futures = List.generate(3, (_) => provider.refreshAuthKey());
       final results = await Future.wait(futures);
 
-      expect(results, everyElement(true));
+      expect(results, everyElement(RefreshAuthKeyResult.success));
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -63,7 +63,7 @@ void main() {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
         delegate.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       final futures = List.generate(3, (_) => provider.authHeaderValue);
@@ -80,7 +80,7 @@ void main() {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 200));
         delegate.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       final firstRefresh = provider.refreshAuthKey();
@@ -89,7 +89,7 @@ void main() {
       final secondRefresh = provider.refreshAuthKey();
       final results = await Future.wait([firstRefresh, secondRefresh]);
 
-      expect(results, [true, true]);
+      expect(results, everyElement(RefreshAuthKeyResult.success));
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -98,13 +98,13 @@ void main() {
         'then all calls return false and no new refresh is started.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
-        return false;
+        return RefreshAuthKeyResult.failedOther;
       });
 
       final futures = List.generate(3, (_) => provider.refreshAuthKey());
       final results = await Future.wait(futures);
 
-      expect(results, everyElement(false));
+      expect(results, everyElement(RefreshAuthKeyResult.failedOther));
       expect(delegate.refreshCallCount, 1);
     });
 

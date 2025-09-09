@@ -112,7 +112,7 @@ void main() {
 
       authKeyProvider.setRefresh(() {
         authKeyProvider.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       final result = await client.callServerEndpoint<String>(
@@ -135,7 +135,7 @@ void main() {
         Response.unauthorized(),
       ];
 
-      authKeyProvider.setRefresh(() => false);
+      authKeyProvider.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
@@ -157,7 +157,7 @@ void main() {
 
       authKeyProvider.setRefresh(() {
         authKeyProvider.updateAuthKey();
-        return true;
+        return RefreshAuthKeyResult.success;
       });
 
       await expectLater(

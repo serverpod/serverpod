@@ -11,11 +11,27 @@ abstract interface class ClientAuthKeyProvider {
 /// Provides the authentication key for the client, with a method to refresh it.
 abstract interface class RefresherClientAuthKeyProvider
     implements ClientAuthKeyProvider {
-  /// Refreshes the authentication key. If the refresh is successful, should
-  /// return true to retry requests that failed due to authentication errors.
-  /// Be sure to annotate the refresh endpoint with @unauthenticatedClientCall
-  /// to avoid a deadlock on the [authHeaderValue] getter on refresh call.
-  Future<bool> refreshAuthKey();
+  /// Refreshes the authentication key and returns the result of the operation.
+  /// If the refresh is successful, should return [RefreshAuthKeyResult.success]
+  /// to retry requests that failed due to authentication errors. Be sure to
+  /// annotate the refresh endpoint with @unauthenticatedClientCall to avoid a
+  /// deadlock on the [authHeaderValue] getter on a refresh call.
+  Future<RefreshAuthKeyResult> refreshAuthKey();
+}
+
+/// Represents the result of an authentication key refresh operation.
+enum RefreshAuthKeyResult {
+  /// Refresh was skipped because the key is not expiring.
+  skipped,
+
+  /// Refresh was successful and a new key was obtained.
+  success,
+
+  /// Refresh failed due to invalid refresh credentials (such as expired token).
+  failedUnauthorized,
+
+  /// Refresh failed due to other reasons (network, server error, etc.).
+  failedOther,
 }
 
 /// A [RefresherClientAuthKeyProvider] decorator that adds a mutex lock to
@@ -29,7 +45,7 @@ class MutexRefresherClientAuthKeyProvider
   MutexRefresherClientAuthKeyProvider(this._delegate);
 
   /// Shared future that serves as a lock to prevent concurrent refresh calls.
-  Future<bool>? _pendingRefresh;
+  Future<RefreshAuthKeyResult>? _pendingRefresh;
 
   @override
   Future<String?> get authHeaderValue async {
@@ -39,7 +55,7 @@ class MutexRefresherClientAuthKeyProvider
 
   /// Refreshes the authentication key with locking to prevent concurrent calls.
   @override
-  Future<bool> refreshAuthKey() async {
+  Future<RefreshAuthKeyResult> refreshAuthKey() async {
     final pendingRefresh = _pendingRefresh;
     if (pendingRefresh != null) return pendingRefresh;
 
