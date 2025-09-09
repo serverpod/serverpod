@@ -9,7 +9,7 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
   
-  group('Given a class with a required nullable field', () {
+  group('Given a class with mixed required nullable fields', () {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
