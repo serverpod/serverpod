@@ -4,10 +4,10 @@ import 'package:serverpod_cli/analyzer.dart';
 enum MigrationCreationStatus {
   /// Migration was created successfully.
   success,
-  
+
   /// No changes were detected, no migration was created.
   noChanges,
-  
+
   /// An error occurred during migration creation.
   error,
 }
@@ -16,15 +16,15 @@ enum MigrationCreationStatus {
 class MigrationCreationResult {
   /// The created migration version, null if no migration was created.
   final MigrationVersion? migration;
-  
+
   /// The status of the migration creation operation.
   final MigrationCreationStatus status;
-  
+
   /// Optional message describing the result.
   final String? message;
 
   /// Creates a successful result with the created migration.
-  MigrationCreationResult.success(this.migration) 
+  MigrationCreationResult.success(this.migration)
       : status = MigrationCreationStatus.success,
         message = null;
 

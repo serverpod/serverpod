@@ -45,7 +45,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     argName: 'empty',
     negatable: false,
     defaultsTo: false,
-    helpText: 'Creates an empty migration without evaluating the state of the project.',
+    helpText:
+        'Creates an empty migration without evaluating the state of the project.',
   );
 
   static const checkOption = FlagOption(
@@ -111,11 +112,12 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       try {
         // Handle --empty flag: force creation of empty migration
         var effectiveForce = force || empty;
-        
+
         result = await generator.createMigrationWithResult(
           tag: tag,
           force: effectiveForce,
           config: config,
+          write: !check, // Don't write to disk if --check flag is used
         );
       } on MigrationVersionLoadException catch (e) {
         log.error(
@@ -141,29 +143,29 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     // Handle the different result cases
     if (result.isSuccess) {
-      var migration = result.migration!;
-      log.info(
-        'Migration created: ${path.relative(
-          MigrationConstants.migrationVersionDirectory(
-            migration.projectDirectory,
-            migration.versionName,
-          ).path,
-          from: Directory.current.path,
-        )}',
-        type: TextLogType.bullet,
-      );
-      log.info('Done.', type: TextLogType.success);
+      if (check) {
+        // With --check flag, just report that changes were detected
+        log.info('Changes detected.', type: TextLogType.success);
+      } else {
+        // Normal mode: migration was actually created
+        var migration = result.migration!;
+        log.info(
+          'Migration created: ${path.relative(
+            MigrationConstants.migrationVersionDirectory(
+              migration.projectDirectory,
+              migration.versionName,
+            ).path,
+            from: Directory.current.path,
+          )}',
+          type: TextLogType.bullet,
+        );
+        log.info('Done.', type: TextLogType.success);
+      }
     } else if (result.isNoChanges) {
       // This is the key fix: when no changes are detected, don't throw an error
-      if (check) {
-        // With --check flag, we exit with code 0 for no changes (this is the desired behavior)
-        log.info('No changes detected.', type: TextLogType.success);
-        return;
-      } else {
-        // Without --check flag, we also exit with code 0 (this fixes the original issue)
-        log.info('No changes detected.', type: TextLogType.success);
-        return;
-      }
+      // Always exit with code 0 for no changes (this fixes the original issue)
+      log.info('No changes detected.', type: TextLogType.success);
+      return;
     } else {
       // result.isError - this is a real error, exit with non-zero code
       throw ExitException.error();

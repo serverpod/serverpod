@@ -146,7 +146,7 @@ class MigrationGenerator {
 
   /// Creates a new migration version with detailed result information.
   /// This method provides better context about the operation result than [createMigration].
-  /// 
+  ///
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
   /// warnings or no changes are detected.
@@ -220,7 +220,8 @@ class MigrationGenerator {
 
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
-      return const MigrationCreationResult.error('Migration aborted due to warnings.');
+      return const MigrationCreationResult.error(
+          'Migration aborted due to warnings.');
     }
 
     if (migration.isEmpty && !force) {
