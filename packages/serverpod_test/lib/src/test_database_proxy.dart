@@ -402,6 +402,8 @@ class TestDatabaseProxy implements Database {
       } on DatabaseException catch (_) {
         await _transactionManager.rollbackToPreviousSavepoint(unlock: true);
         rethrow;
+      } finally {
+        await _transactionManager.ensureTransactionIsUnlocked();
       }
     });
   }
