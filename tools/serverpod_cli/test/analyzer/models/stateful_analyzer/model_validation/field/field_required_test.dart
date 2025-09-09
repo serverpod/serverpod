@@ -49,7 +49,7 @@ void main() {
       expect(phoneField?.type.nullable, isTrue);
     });
 
-    test('then the name field is not marked as required (not nullable).', () {
+    test('then non-nullable field is not marked as required.', () {
       var definition = definitions.firstOrNull as ClassDefinition?;
       var nameField = definition?.findField('name');
       expect(nameField?.isRequired, isFalse);
