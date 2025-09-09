@@ -33,7 +33,7 @@ void main() {
       );
     });
 
-    test('then the email field is marked as required.', () {
+    test('then nullable required field is marked as required.', () {
       var definition = definitions.firstOrNull as ClassDefinition?;
       expect(definition?.className, 'Example');
       
