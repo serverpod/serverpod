@@ -22,35 +22,35 @@ class AuthenticationTokenSecrets {
   ///
   /// Supported options are `HS512` and `ES512`.
   static const String algorithmConfigurationKey =
-      'serverpod_auth_jwt.algorithm';
+      'serverpod_auth_jwt_algorithm';
 
   /// The configuration key for the secret key (for symmetric cryptography) to sign access and verify tokens with.
   static const String secretKeyConfigurationKey =
-      'serverpod_auth_jwt.secretKey';
+      'serverpod_auth_jwt_secretKey';
 
   /// The configuration key for the private key (for asymmetric cryptography) to sign access tokens with.
   static const String privateKeyConfigurationKey =
-      'serverpod_auth_jwt.privateKey';
+      'serverpod_auth_jwt_privateKey';
 
   /// The configuration key for the public key (for asymmetric cryptography) to verify access tokens with.
   static const String publicKeyConfigurationKey =
-      'serverpod_auth_jwt.publicKey';
+      'serverpod_auth_jwt_publicKey';
 
   /// Which algorithm to use for the fallback token verification (during key rotation).
   static const String fallbackAlgorithmConfigurationKey =
-      'serverpod_auth_jwt.fallback.algorithm';
+      'serverpod_auth_jwt_fallback_algorithm';
 
   /// The public key fallback to be used to verify access tokens with.
   static const String fallbackPublicKeyConfigurationKey =
-      'serverpod_auth_jwt.fallback.publicKey';
+      'serverpod_auth_jwt_fallback_publicKey';
 
   /// The configuration key for the fallback secret key to verify access tokens with.
   static const String fallbackSecretKeyConfigurationKey =
-      'serverpod_auth_jwt.fallback.secretKey';
+      'serverpod_auth_jwt_fallback_secretKey';
 
   /// The configuration key for the refresh token hash pepper.
   static const String refreshTokenHashPepperConfigurationKey =
-      'serverpod_auth_jwt.refreshTokenHashPepper';
+      'serverpod_auth_jwt_refreshTokenHashPepper';
 
   final AuthenticationTokenAlgorithmConfiguration algorithm;
 
