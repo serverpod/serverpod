@@ -6,6 +6,14 @@ streaming:
   - wasStreamClosedCalled:
   - intEchoStream:
   - simpleInputReturnStream:
+unauthenticated:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
+partiallyUnauthenticated:
+  - unauthenticatedMethod:
+  - unauthenticatedStream:
+  - authenticatedMethod:
+  - authenticatedStream:
 myModuleFeature:
   - myFeatureMethod:
   - myFeatureModel:
