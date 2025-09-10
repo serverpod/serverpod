@@ -1,3 +1,10 @@
+authTest:
+  - createTestUser:
+  - createSasToken:
+  - deleteSasTokens:
+  - createJwtToken:
+  - deleteJwtRefreshTokens:
+  - checkSession:
 emailAccountBackwardsCompatibilityTest:
   - createLegacyUser:
   - createLegacySession:
@@ -22,10 +29,6 @@ passwordImportingEmailAccount:
   - finishRegistration:
   - startPasswordReset:
   - finishPasswordReset:
-sessionTest:
-  - createTestUser:
-  - createSession:
-  - checkSession:
 userProfile:
   - get:
   - removeUserImage:
