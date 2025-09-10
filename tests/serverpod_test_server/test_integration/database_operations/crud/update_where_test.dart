@@ -706,9 +706,6 @@ void main() {
   withServerpod(
     'Given database entries with all supported data types',
     (sessionBuilder, endpoints) {
-      // Note: The following data types are not supported for database updates:
-      // - aVector, aHalfVector, aSparseVector, aBit (vector types)
-      // - aList, aMap, aSet, aRecord (complex collection types)
       var session = sessionBuilder.build();
 
       group('when updating all supported data types', () {
@@ -730,8 +727,19 @@ void main() {
                     '550e8400-e29b-41d4-a716-446655440000'),
                 aUri: Uri.parse('https://serverpod.dev'),
                 aBigInt: BigInt.from(123456789),
+                aVector: Vector([1.0, 2.0, 3.0]),
+                aHalfVector: HalfVector([1.0, 2.0, 3.0]),
+                aSparseVector: SparseVector([1.0, 2.0, 3.0]),
+                aBit: Bit([true, false, true]),
                 anEnum: TestEnum.one,
                 aStringifiedEnum: TestEnumStringified.one,
+                aList: [1, 2, 3],
+                aMap: {1: 10, 2: 20},
+                aSet: {1, 2, 3},
+                aRecord: (
+                  'original',
+                  optionalUri: Uri.parse('https://example.com')
+                ),
               ),
               Types(
                 anInt: 2,
@@ -745,8 +753,19 @@ void main() {
                     '456e7890-e12b-34c5-a678-901234567890'),
                 aUri: Uri.parse('https://example.com'),
                 aBigInt: BigInt.from(987654321),
+                aVector: Vector([7.0, 8.0, 9.0]),
+                aHalfVector: HalfVector([7.0, 8.0, 9.0]),
+                aSparseVector: SparseVector([7.0, 8.0, 9.0]),
+                // aBit: Bit([false, true, false]),
                 anEnum: TestEnum.two,
                 aStringifiedEnum: TestEnumStringified.two,
+                aList: [7, 8, 9],
+                aMap: {7: 70, 8: 80},
+                aSet: {7, 8, 9},
+                aRecord: (
+                  'second',
+                  optionalUri: Uri.parse('https://second.com')
+                ),
               ),
             ],
           );
@@ -765,8 +784,18 @@ void main() {
                   UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000')),
               t.aUri(Uri.parse('https://updated.com')),
               t.aBigInt(BigInt.from(555666777)),
+              t.aVector(Vector([4.0, 5.0, 6.0])),
+              t.aHalfVector(HalfVector([4.0, 5.0, 6.0])),
+              t.aSparseVector(SparseVector([4.0, 5.0, 6.0])),
+              // t.aBit(Bit([false, true, false])),
               t.anEnum(TestEnum.three),
               t.aStringifiedEnum(TestEnumStringified.three),
+              t.aList([4, 5, 6]),
+              t.aMap({3: 30, 4: 40}),
+              t.aSet({4, 5, 6}),
+              t.aRecord(
+                ('updated', optionalUri: Uri.parse('https://updated.com')),
+              ),
             ],
             where: (t) => t.anInt.equals(1),
           );
@@ -791,8 +820,17 @@ void main() {
               UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
           expect(updated.first.aUri, Uri.parse('https://updated.com'));
           expect(updated.first.aBigInt, BigInt.from(555666777));
+          expect(updated.first.aVector, Vector([4.0, 5.0, 6.0]));
+          expect(updated.first.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
+          expect(updated.first.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
+          // expect(updated.first.aBit, Bit([false, true, false]));
           expect(updated.first.anEnum, TestEnum.three);
           expect(updated.first.aStringifiedEnum, TestEnumStringified.three);
+          expect(updated.first.aList, [4, 5, 6]);
+          expect(updated.first.aMap, {3: 30, 4: 40});
+          expect(updated.first.aSet, {4, 5, 6});
+          expect(updated.first.aRecord,
+              ('updated', optionalUri: Uri.parse('https://updated.com')));
         });
 
         test('then all data types are updated in the database', () async {
@@ -818,8 +856,17 @@ void main() {
               UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
           expect(dbRow.aUri, Uri.parse('https://updated.com'));
           expect(dbRow.aBigInt, BigInt.from(555666777));
+          expect(dbRow.aVector, Vector([4.0, 5.0, 6.0]));
+          expect(dbRow.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
+          expect(dbRow.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
+          // expect(dbRow.aBit, Bit([false, true, false]));
           expect(dbRow.anEnum, TestEnum.three);
           expect(dbRow.aStringifiedEnum, TestEnumStringified.three);
+          expect(dbRow.aList, [4, 5, 6]);
+          expect(dbRow.aMap, {3: 30, 4: 40});
+          expect(dbRow.aSet, {4, 5, 6});
+          expect(dbRow.aRecord,
+              ('updated', optionalUri: Uri.parse('https://updated.com')));
         });
 
         test('then non-matching rows remain unchanged', () async {
