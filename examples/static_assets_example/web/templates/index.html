@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static Assets Example</title>
+    <!-- Cache-busted CSS -->
+    <link rel="stylesheet" href="{{ assetUrl('css/style.css') }}">
+</head>
+<body>
+    <h1>Static Assets Example</h1>
+    
+    <!-- Cache-busted images -->
+    <img src="{{ assetUrl('images/logo.png') }}" alt="Logo">
+    <img src="{{ assetUrl('images/hero.jpg') }}" alt="Hero Image">
+    
+    <!-- Cache-busted JavaScript -->
+    <script src="{{ assetUrl('js/app.js') }}"></script>
+    <script src="{{ assetUrl('js/vendor.js') }}"></script>
+</body>
+</html>
