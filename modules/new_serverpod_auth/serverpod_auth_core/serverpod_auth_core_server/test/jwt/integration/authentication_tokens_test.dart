@@ -134,17 +134,38 @@ void main() {
     test(
         'when rotating the tokens, then a new refresh and access token is returned.',
         () async {
-      final newTokenPair = await withClock(
-        // Need to more forward the clock, as otherwise the new access token has the same expiry date and thus looks equal.
-        Clock.fixed(DateTime.now().add(const Duration(seconds: 2))),
-        () => AuthenticationTokens.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        ),
+      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
       );
 
       expect(newTokenPair.accessToken, isNot(authSuccess.token));
       expect(newTokenPair.refreshToken, isNot(authSuccess.refreshToken));
+    });
+
+    test(
+        'when rotating tokens multiple times within the same second, then new tokens are returned.',
+        () async {
+      final newTokenPairs = await withClock(
+          Clock.fixed(DateTime.now()),
+          () => Future.wait(
+                List.generate(
+                  3,
+                  (final _) => AuthenticationTokens.rotateRefreshToken(
+                    session,
+                    refreshToken: authSuccess.refreshToken!,
+                  ),
+                ),
+              ));
+
+      final tokens = newTokenPairs.map((final t) => t.accessToken).toSet();
+      expect(tokens, hasLength(3));
+      expect(tokens.add(authSuccess.token), isTrue);
+
+      final refreshTokens =
+          newTokenPairs.map((final t) => t.refreshToken).toSet();
+      expect(refreshTokens, hasLength(3));
+      expect(refreshTokens.add(authSuccess.refreshToken!), isTrue);
     });
 
     test(
@@ -158,8 +179,28 @@ void main() {
       final decodedToken = JWT.decode(authSuccess.token);
       final newDecodedToken = JWT.decode(newTokenPair.accessToken);
 
+      UuidValue getRefreshToken(final JWT jwt) {
+        const claimName = 'dev.serverpod.refreshTokenId';
+        final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;
+        return UuidValue.withValidation(refreshTokenIdClaim);
+      }
+
+      expect(getRefreshToken(decodedToken), getRefreshToken(newDecodedToken));
+    });
+
+    test(
+        'when rotating the tokens, then the new access token has a different `jwtId`.',
+        () async {
+      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+
       expect(newDecodedToken.jwtId, isNotNull);
-      expect(decodedToken.jwtId, newDecodedToken.jwtId);
+      expect(decodedToken.jwtId, isNot(newDecodedToken.jwtId));
     });
 
     test(
