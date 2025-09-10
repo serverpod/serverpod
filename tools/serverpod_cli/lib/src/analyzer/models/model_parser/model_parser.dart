@@ -370,11 +370,9 @@ class ModelParser {
     var scope = _parseClassFieldScope(node, serverOnlyClass);
     var shouldPersist = _parseShouldPersist(node);
 
-    typeResult.serializationDataType = _parseClassFieldSerializationDataType(node);
-    if (typeResult.serializationDataType == null && typeResult.isColumnSerializable) {
-      if (config.serializeAsJsonbByDefault) {
-        typeResult.serializationDataType = modelSerializationDataType ?? SerializationDataType.jsonb;
-      }
+    typeResult.serializationDataType = _parseClassFieldSerializationDataType(node) ?? modelSerializationDataType;
+    if (typeResult.serializationDataType == null && typeResult.isColumnSerializable && config.serializeAsJsonbByDefault) {
+      typeResult.serializationDataType = SerializationDataType.jsonb;
     }
 
     var defaultModelValue = _parseDefaultValue(

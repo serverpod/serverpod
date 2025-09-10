@@ -104,11 +104,7 @@ final class ModelClassDefinition extends ClassDefinition {
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
-  }) : childClasses = childClasses ?? <InheritanceDefinition>[] {
-    fields.where((field) => field.type.isColumnSerializable).forEach((field) {
-      field.type.serializationDataType ??= serializationDataType;
-    });
-  }
+  }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
   /// If the field is not present, an error is thrown.
