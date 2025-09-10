@@ -147,14 +147,14 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
-    var serializationDataType = _parseSerializationDataType(documentContents);
+    var modelSerializationDataType = _parseSerializationDataType(documentContents);
 
     var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      serializationDataType,
+      modelSerializationDataType,
       tableName != null,
       config,
       serverOnly,
