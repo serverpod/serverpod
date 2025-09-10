@@ -144,9 +144,8 @@ void main() {
     });
 
     test(
-        'when rotating multiple new tokens in succession, then new tokens are returned.',
+        'when rotating tokens multiple times within the same second, then new tokens are returned.',
         () async {
-      // Pin the clock to ensure all tokens are created at the same time.
       final newTokenPairs = await withClock(
           Clock.fixed(DateTime.now()),
           () => Future.wait(
