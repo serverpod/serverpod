@@ -166,6 +166,7 @@ void main() async {
       aByteData: ByteData.view(Uint8List(8).buffer),
       aDuration: Duration(milliseconds: 1000),
       aUuid: UuidValue.fromString(Uuid().v4()),
+      aBit: Bit([true, false, true]),
       anEnum: TestEnum.one,
       aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
     );
@@ -285,6 +286,19 @@ void main() async {
     });
 
     test(
+        'when updating aBit to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBit: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBit, isNull);
+    });
+
+    test(
         'when updating anEnum to null then the database is updated with null value.',
         () async {
       var value = Types(
@@ -321,6 +335,7 @@ void main() async {
       aByteData: null,
       aDuration: null,
       aUuid: null,
+      aBit: null,
       anEnum: null,
       aRecord: null,
     );
@@ -448,6 +463,19 @@ void main() async {
       var updated = await Types.db.updateRow(session, value);
 
       expect(updated.aUuid, equals(uuidValue));
+    });
+
+    test(
+        'when updating aBit to a real value then the database is updated with the real value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBit: Bit([true, false, true]),
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBit, equals(Bit([true, false, true])));
     });
 
     test(
