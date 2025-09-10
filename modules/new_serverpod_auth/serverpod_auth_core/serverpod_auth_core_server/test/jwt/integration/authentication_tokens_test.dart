@@ -237,6 +237,21 @@ void main() {
     });
 
     test(
+        'when refreshing the tokens, then a new AuthSuccess is returned with new tokens, but same auth info.',
+        () async {
+      final newAuthSuccess = await AuthenticationTokens.refreshAccessToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      expect(newAuthSuccess.authStrategy, authSuccess.authStrategy);
+      expect(newAuthSuccess.authUserId, authSuccess.authUserId);
+      expect(newAuthSuccess.scopeNames, authSuccess.scopeNames);
+      expect(newAuthSuccess.token, isNot(authSuccess.token));
+      expect(newAuthSuccess.refreshToken, isNot(authSuccess.refreshToken));
+    });
+
+    test(
         'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
         () async {
       await AuthenticationTokens.destroyAllRefreshTokens(

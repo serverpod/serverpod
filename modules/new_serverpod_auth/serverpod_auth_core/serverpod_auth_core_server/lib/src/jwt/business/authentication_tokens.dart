@@ -136,6 +136,32 @@ abstract final class AuthenticationTokens {
     );
   }
 
+  /// Returns a access token while also rotating the refresh token.
+  ///
+  /// Invalidates the previous refresh token as security best practice.
+  static Future<AuthSuccess> refreshAccessToken(
+    final Session session, {
+    required final String refreshToken,
+    final Transaction? transaction,
+  }) async {
+    final refreshesTokenPair = await rotateRefreshToken(
+      session,
+      refreshToken: refreshToken,
+      transaction: transaction,
+    );
+
+    final jwtData = _jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
+
+    return AuthSuccess(
+      authStrategy: AuthStrategy.jwt,
+      token: refreshesTokenPair.accessToken,
+      tokenExpiresAt: jwtData.tokenExpiresAt,
+      refreshToken: refreshesTokenPair.refreshToken,
+      authUserId: jwtData.authUserId,
+      scopeNames: jwtData.scopes.names,
+    );
+  }
+
   /// Returns a new refresh / access token pair.
   ///
   /// This invalidates the previous refresh token.
