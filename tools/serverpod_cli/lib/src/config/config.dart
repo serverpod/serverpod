@@ -380,17 +380,8 @@ class GeneratorConfig implements ModelLoadConfig {
     ];
 
     var serializeAsJsonbByDefault = _loadSerializeAsJsonbByDefault(file, generatorConfig);
-    if (serializeAsJsonbByDefault) {
-      final isSerializeAsJsonbExperimentalFeatureEnabled =
-          enabledExperimentalFeatures.contains(ExperimentalFeature.serializeAsJsonb) ||
-              enabledExperimentalFeatures.contains(ExperimentalFeature.all);
-      if (!isSerializeAsJsonbExperimentalFeatureEnabled) {
-        throw Exception(
-            'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
-      }
-    }
 
-    return GeneratorConfig(
+    final config = GeneratorConfig(
       name: name,
       type: type,
       serverPackage: serverPackage,
@@ -405,6 +396,13 @@ class GeneratorConfig implements ModelLoadConfig {
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
     );
+
+    if (serializeAsJsonbByDefault && !config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb)) {
+      throw Exception(
+          'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
+    }
+
+    return config;
   }
 
   static bool _loadSerializeAsJsonbByDefault(File file, Map config) {

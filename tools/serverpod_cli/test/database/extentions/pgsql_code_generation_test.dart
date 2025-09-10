@@ -617,7 +617,32 @@ END
     var tableDefinition = databaseDefinition.tables.first;
 
     test(
-        'Given a table definition with an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.',
+        'when creating a default index on a jsonb field, then the SQL should include an implicit btree index type.',
+        () {
+      var indexName = '${modelName}_jsonb_idx';
+      var index = IndexDefinitionBuilder()
+          .withIndexName(indexName)
+          .withElements([
+            IndexElementDefinition(
+              type: IndexElementDefinitionType.column,
+              definition: fieldName,
+            )
+          ])
+          .withIsUnique(false)
+          .withIsPrimary(false)
+          .build();
+
+      var sql = index.toPgSql(tableName: tableDefinition.name);
+
+      expect(
+        sql,
+        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+        'USING btree ("$fieldName");\n',
+      );
+    });
+
+    test(
+        'when creating an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.',
         () {
       var indexName = '${modelName}_jsonb_idx';
       var index = IndexDefinitionBuilder()
@@ -643,7 +668,7 @@ END
     });
 
     test(
-        'Given a table definition with an GIN index with json_path_ops on a jsonb field, then the SQL should include the correct GIN parameters.',
+        'when creating an GIN index with json_path_ops on a jsonb field, then the SQL should include the correct GIN parameters.',
         () {
       var indexName = '${modelName}_jsonb_idx';
       var index = IndexDefinitionBuilder()

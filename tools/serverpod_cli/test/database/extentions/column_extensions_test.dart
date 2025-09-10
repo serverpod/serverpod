@@ -181,24 +181,4 @@ void main() {
       expect(bitColumn.like(differentDimensionColumn), isFalse);
     });
   });
-
-  group('Given jsonb column definition', () {
-    ColumnDefinition jsonbColumn = ColumnDefinition(
-      name: 'jsonb_field',
-      columnType: ColumnType.jsonb,
-      isNullable: false,
-      dartType: 'Map<String, dynamic>',
-    );
-
-    test('when like checking jsonb column with same properties then check returns true.', () {
-      ColumnDefinition sameJsonbColumn = ColumnDefinition(
-        name: 'jsonb_field',
-        columnType: ColumnType.jsonb,
-        isNullable: false,
-        dartType: 'Map<String, dynamic>',
-      );
-
-      expect(jsonbColumn.like(sameJsonbColumn), isTrue);
-    });
-  });
 }

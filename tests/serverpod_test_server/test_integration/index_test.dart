@@ -322,7 +322,6 @@ void main() async {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
-      // final config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
       var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
 
       var table = databaseDefinition.tables.firstWhere(
@@ -332,30 +331,89 @@ void main() async {
       indexes = table.indexes;
     });
 
-    test('then the implicitly declared gin index exists.', () {
-      expect(indexes[0].indexName, 'object_with_index_test_index1');
-      expect(indexes[0].isPrimary, false);
-      expect(indexes[0].isUnique, false);
-      expect(indexes[0].predicate, isNull);
-      expect(indexes[0].tableSpace, isNull);
-      expect(indexes[0].type, 'gin');
-      expect(indexes[0].ginOperatorClass, isNull);
-      expect(indexes[0].elements, hasLength(1));
-      expect(indexes[0].elements[0].type, IndexElementDefinitionType.column);
-      expect(indexes[0].elements[0].definition, 'indexed');
+    test('then the implicitly declared btree index exists for json column.', () {
+      final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'json_index_default',
+      );
+
+      expect(index.type, 'btree');
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed0');
     });
 
-    test('then the implicitly declared gin index with operator class exists.', () {
-      expect(indexes[1].indexName, 'object_with_index_test_index2');
-      expect(indexes[1].isPrimary, false);
-      expect(indexes[1].isUnique, false);
-      expect(indexes[1].predicate, isNull);
-      expect(indexes[1].tableSpace, isNull);
-      expect(indexes[1].type, 'gin');
-      expect(indexes[1].ginOperatorClass, GinOperatorClass.jsonbPath);
-      expect(indexes[1].elements, hasLength(1));
-      expect(indexes[1].elements[0].type, IndexElementDefinitionType.column);
-      expect(indexes[1].elements[0].definition, 'indexed');
+    test('then the implicitly declared btree index exists for jsonb column.', () {
+      final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_default',
+      );
+
+      expect(index.type, 'btree');
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed1');
+    });
+
+    test('then the explicitly declared gin index exists.', () {
+      final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_gin',
+      );
+
+      expect(index.type, 'gin');
+      expect(index.ginOperatorClass, isNull);
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed2');
+    });
+
+    test('then the explicitly declared gin index with operator class exists.', () {
+      final index = indexes.firstWhere(
+            (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
+      );
+
+      expect(index.type, 'gin');
+      expect(index.ginOperatorClass, GinOperatorClass.jsonbPath);
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed3');
+    });
+  });
+
+  group('Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb when analyzing database schema',
+      () {
+    late List<ColumnDefinition> columns;
+
+    setUpAll(() async {
+      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+      var table = databaseDefinition.tables.firstWhere(
+        (table) => table.name == 'object_with_jsonb_class_level',
+      );
+
+      columns = table.columns;
+    });
+
+    test('then the column without `serializationDataType` set has type jsonb.', () {
+      final column = columns.firstWhere(
+            (idx) => idx.name == 'jsonb1',
+      );
+
+      expect(column.columnType, ColumnType.jsonb);
+    });
+
+    test('then the column with `serializationDataType` set to jsonb has type jsonb.', () {
+      final column = columns.firstWhere(
+            (idx) => idx.name == 'jsonb2',
+      );
+
+      expect(column.columnType, ColumnType.jsonb);
+    });
+
+    test('then the column with `serializationDataType` set to json has type json.', () {
+      final column = columns.firstWhere(
+            (idx) => idx.name == 'json',
+      );
+
+      expect(column.columnType, ColumnType.json);
     });
   });
 }

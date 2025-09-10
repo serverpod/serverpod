@@ -252,7 +252,7 @@ void main() {
     });
   });
 
-  group('Given gin index column types', () {
+  group('Given gin index on jsonb serialized column types', () {
     test('when comparing gin indexes with different gin operator classes then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('gin_idx')
@@ -268,7 +268,7 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test('when comparing gin indexes with same gin operator classes then no mismatch is found.', () {
+    test('when comparing gin indexes with same gin operator class then no mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('gin_idx')
           .withType('gin')
