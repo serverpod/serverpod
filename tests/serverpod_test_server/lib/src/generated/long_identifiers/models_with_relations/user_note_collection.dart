@@ -148,14 +148,28 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   }
 }
 
+class UserNoteCollectionUpdateTable {
+  UserNoteCollectionUpdateTable(this.table);
+
+  final UserNoteCollectionTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class UserNoteCollectionTable extends _i1.Table<int?> {
   UserNoteCollectionTable({super.tableRelation})
       : super(tableName: 'user_note_collections') {
+    updateTable = UserNoteCollectionUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final UserNoteCollectionUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -425,12 +439,13 @@ class UserNoteCollectionRepository {
   Future<UserNoteCollection?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
+    required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteCollection>(
       id,
-      columnValues: columnValues(UserNoteCollection.t),
+      columnValues: columnValues(UserNoteCollection.t.updateTable),
       transaction: transaction,
     );
   }
@@ -439,7 +454,8 @@ class UserNoteCollectionRepository {
   /// Returns the list of updated rows.
   Future<List<UserNoteCollection>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UserNoteCollectionTable> columnValues,
+    required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     int? limit,
     int? offset,
@@ -449,7 +465,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteCollection>(
-      columnValues: columnValues(UserNoteCollection.t),
+      columnValues: columnValues(UserNoteCollection.t.updateTable),
       where: where(UserNoteCollection.t),
       limit: limit,
       offset: offset,

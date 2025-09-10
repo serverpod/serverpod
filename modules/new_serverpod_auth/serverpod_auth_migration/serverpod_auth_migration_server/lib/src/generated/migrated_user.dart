@@ -174,9 +174,28 @@ class _MigratedUserImpl extends MigratedUser {
   }
 }
 
+class MigratedUserUpdateTable {
+  MigratedUserUpdateTable(this.table);
+
+  final MigratedUserTable table;
+
+  _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
+        table.oldUserId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> newAuthUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.newAuthUserId,
+        value,
+      );
+}
+
 class MigratedUserTable extends _i1.Table<int?> {
   MigratedUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_migration_migrated_user') {
+    updateTable = MigratedUserUpdateTable(this);
     oldUserId = _i1.ColumnInt(
       'oldUserId',
       this,
@@ -186,6 +205,8 @@ class MigratedUserTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final MigratedUserUpdateTable updateTable;
 
   late final _i1.ColumnInt oldUserId;
 
@@ -457,12 +478,12 @@ class MigratedUserRepository {
   Future<MigratedUser?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MigratedUser>(
       id,
-      columnValues: columnValues(MigratedUser.t),
+      columnValues: columnValues(MigratedUser.t.updateTable),
       transaction: transaction,
     );
   }
@@ -471,7 +492,7 @@ class MigratedUserRepository {
   /// Returns the list of updated rows.
   Future<List<MigratedUser>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<MigratedUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     int? limit,
     int? offset,
@@ -481,7 +502,7 @@ class MigratedUserRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MigratedUser>(
-      columnValues: columnValues(MigratedUser.t),
+      columnValues: columnValues(MigratedUser.t.updateTable),
       where: where(MigratedUser.t),
       limit: limit,
       offset: offset,

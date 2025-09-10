@@ -152,14 +152,28 @@ class _RelationToMultipleMaxFieldNameImpl
   }
 }
 
+class RelationToMultipleMaxFieldNameUpdateTable {
+  RelationToMultipleMaxFieldNameUpdateTable(this.table);
+
+  final RelationToMultipleMaxFieldNameTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class RelationToMultipleMaxFieldNameTable extends _i1.Table<int?> {
   RelationToMultipleMaxFieldNameTable({super.tableRelation})
       : super(tableName: 'relation_to_multiple_max_field_name') {
+    updateTable = RelationToMultipleMaxFieldNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final RelationToMultipleMaxFieldNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -429,13 +443,14 @@ class RelationToMultipleMaxFieldNameRepository {
   Future<RelationToMultipleMaxFieldName?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable>
+    required _i1
+        .ColumnValueListBuilder<RelationToMultipleMaxFieldNameUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelationToMultipleMaxFieldName>(
       id,
-      columnValues: columnValues(RelationToMultipleMaxFieldName.t),
+      columnValues: columnValues(RelationToMultipleMaxFieldName.t.updateTable),
       transaction: transaction,
     );
   }
@@ -444,7 +459,8 @@ class RelationToMultipleMaxFieldNameRepository {
   /// Returns the list of updated rows.
   Future<List<RelationToMultipleMaxFieldName>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<RelationToMultipleMaxFieldNameTable>
+    required _i1
+        .ColumnValueListBuilder<RelationToMultipleMaxFieldNameUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
         where,
@@ -456,7 +472,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelationToMultipleMaxFieldName>(
-      columnValues: columnValues(RelationToMultipleMaxFieldName.t),
+      columnValues: columnValues(RelationToMultipleMaxFieldName.t.updateTable),
       where: where(RelationToMultipleMaxFieldName.t),
       limit: limit,
       offset: offset,

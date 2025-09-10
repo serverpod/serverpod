@@ -168,13 +168,27 @@ class _MemberImpl extends Member {
   }
 }
 
+class MemberUpdateTable {
+  MemberUpdateTable(this.table);
+
+  final MemberTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class MemberTable extends _i1.Table<int?> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
+    updateTable = MemberUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final MemberUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -483,12 +497,12 @@ class MemberRepository {
   Future<Member?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<MemberTable> columnValues,
+    required _i1.ColumnValueListBuilder<MemberUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Member>(
       id,
-      columnValues: columnValues(Member.t),
+      columnValues: columnValues(Member.t.updateTable),
       transaction: transaction,
     );
   }
@@ -497,7 +511,7 @@ class MemberRepository {
   /// Returns the list of updated rows.
   Future<List<Member>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<MemberTable> columnValues,
+    required _i1.ColumnValueListBuilder<MemberUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MemberTable> where,
     int? limit,
     int? offset,
@@ -507,7 +521,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Member>(
-      columnValues: columnValues(Member.t),
+      columnValues: columnValues(Member.t.updateTable),
       where: where(Member.t),
       limit: limit,
       offset: offset,

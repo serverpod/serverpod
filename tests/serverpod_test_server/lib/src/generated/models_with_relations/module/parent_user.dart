@@ -134,8 +134,25 @@ class _ParentUserImpl extends ParentUser {
   }
 }
 
+class ParentUserUpdateTable {
+  ParentUserUpdateTable(this.table);
+
+  final ParentUserTable table;
+
+  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> userInfoId(int? value) => _i1.ColumnValue(
+        table.userInfoId,
+        value,
+      );
+}
+
 class ParentUserTable extends _i1.Table<int?> {
   ParentUserTable({super.tableRelation}) : super(tableName: 'parent_user') {
+    updateTable = ParentUserUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -145,6 +162,8 @@ class ParentUserTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ParentUserUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -352,12 +371,12 @@ class ParentUserRepository {
   Future<ParentUser?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ParentUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ParentUser>(
       id,
-      columnValues: columnValues(ParentUser.t),
+      columnValues: columnValues(ParentUser.t.updateTable),
       transaction: transaction,
     );
   }
@@ -366,7 +385,7 @@ class ParentUserRepository {
   /// Returns the list of updated rows.
   Future<List<ParentUser>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ParentUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ParentUserTable> where,
     int? limit,
     int? offset,
@@ -376,7 +395,7 @@ class ParentUserRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ParentUser>(
-      columnValues: columnValues(ParentUser.t),
+      columnValues: columnValues(ParentUser.t.updateTable),
       where: where(ParentUser.t),
       limit: limit,
       offset: offset,

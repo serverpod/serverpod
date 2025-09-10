@@ -177,8 +177,25 @@ class _OrderImpl extends Order {
   }
 }
 
+class OrderUpdateTable {
+  OrderUpdateTable(this.table);
+
+  final OrderTable table;
+
+  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+        table.description,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
+        table.customerId,
+        value,
+      );
+}
+
 class OrderTable extends _i1.Table<int?> {
   OrderTable({super.tableRelation}) : super(tableName: 'order') {
+    updateTable = OrderUpdateTable(this);
     description = _i1.ColumnString(
       'description',
       this,
@@ -188,6 +205,8 @@ class OrderTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final OrderUpdateTable updateTable;
 
   late final _i1.ColumnString description;
 
@@ -479,12 +498,12 @@ class OrderRepository {
   Future<Order?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<OrderTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Order>(
       id,
-      columnValues: columnValues(Order.t),
+      columnValues: columnValues(Order.t.updateTable),
       transaction: transaction,
     );
   }
@@ -493,7 +512,7 @@ class OrderRepository {
   /// Returns the list of updated rows.
   Future<List<Order>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<OrderTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderTable> where,
     int? limit,
     int? offset,
@@ -503,7 +522,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Order>(
-      columnValues: columnValues(Order.t),
+      columnValues: columnValues(Order.t.updateTable),
       where: where(Order.t),
       limit: limit,
       offset: offset,

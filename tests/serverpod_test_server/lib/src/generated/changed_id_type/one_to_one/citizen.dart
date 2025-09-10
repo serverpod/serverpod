@@ -210,8 +210,34 @@ class _CitizenIntImpl extends CitizenInt {
   }
 }
 
+class CitizenIntUpdateTable {
+  CitizenIntUpdateTable(this.table);
+
+  final CitizenIntTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> companyId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.companyId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> oldCompanyId(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.oldCompanyId,
+        value,
+      );
+}
+
 class CitizenIntTable extends _i1.Table<int?> {
   CitizenIntTable({super.tableRelation}) : super(tableName: 'citizen_int') {
+    updateTable = CitizenIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -225,6 +251,8 @@ class CitizenIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CitizenIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -522,12 +550,12 @@ class CitizenIntRepository {
   Future<CitizenInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CitizenIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CitizenInt>(
       id,
-      columnValues: columnValues(CitizenInt.t),
+      columnValues: columnValues(CitizenInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -536,7 +564,7 @@ class CitizenIntRepository {
   /// Returns the list of updated rows.
   Future<List<CitizenInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CitizenIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CitizenIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenIntTable> where,
     int? limit,
     int? offset,
@@ -546,7 +574,7 @@ class CitizenIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CitizenInt>(
-      columnValues: columnValues(CitizenInt.t),
+      columnValues: columnValues(CitizenInt.t.updateTable),
       where: where(CitizenInt.t),
       limit: limit,
       offset: offset,

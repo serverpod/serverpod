@@ -151,9 +151,30 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   }
 }
 
+class DateTimeDefaultPersistUpdateTable {
+  DateTimeDefaultPersistUpdateTable(this.table);
+
+  final DateTimeDefaultPersistTable table;
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
+          DateTime? value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultPersistNow,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistStr(
+          DateTime? value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultPersistStr,
+        value,
+      );
+}
+
 class DateTimeDefaultPersistTable extends _i1.Table<int?> {
   DateTimeDefaultPersistTable({super.tableRelation})
       : super(tableName: 'datetime_default_persist') {
+    updateTable = DateTimeDefaultPersistUpdateTable(this);
     dateTimeDefaultPersistNow = _i1.ColumnDateTime(
       'dateTimeDefaultPersistNow',
       this,
@@ -165,6 +186,8 @@ class DateTimeDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DateTimeDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnDateTime dateTimeDefaultPersistNow;
 
@@ -372,13 +395,13 @@ class DateTimeDefaultPersistRepository {
   Future<DateTimeDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistTable>
+    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefaultPersist>(
       id,
-      columnValues: columnValues(DateTimeDefaultPersist.t),
+      columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -387,7 +410,7 @@ class DateTimeDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<DateTimeDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistTable>
+    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     int? limit,
@@ -398,7 +421,7 @@ class DateTimeDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DateTimeDefaultPersist>(
-      columnValues: columnValues(DateTimeDefaultPersist.t),
+      columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
       where: where(DateTimeDefaultPersist.t),
       limit: limit,
       offset: offset,

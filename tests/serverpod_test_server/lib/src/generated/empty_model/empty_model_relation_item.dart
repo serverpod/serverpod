@@ -161,9 +161,28 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   final int? _relationEmptyModelItemsRelationEmptyModelId;
 }
 
+class EmptyModelRelationItemUpdateTable {
+  EmptyModelRelationItemUpdateTable(this.table);
+
+  final EmptyModelRelationItemTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> $_relationEmptyModelItemsRelationEmptyModelId(
+          int? value) =>
+      _i1.ColumnValue(
+        table.$_relationEmptyModelItemsRelationEmptyModelId,
+        value,
+      );
+}
+
 class EmptyModelRelationItemTable extends _i1.Table<int?> {
   EmptyModelRelationItemTable({super.tableRelation})
       : super(tableName: 'empty_model_relation_item') {
+    updateTable = EmptyModelRelationItemUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -173,6 +192,8 @@ class EmptyModelRelationItemTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmptyModelRelationItemUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -386,13 +407,13 @@ class EmptyModelRelationItemRepository {
   Future<EmptyModelRelationItem?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmptyModelRelationItemTable>
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelRelationItem>(
       id,
-      columnValues: columnValues(EmptyModelRelationItem.t),
+      columnValues: columnValues(EmptyModelRelationItem.t.updateTable),
       transaction: transaction,
     );
   }
@@ -401,7 +422,7 @@ class EmptyModelRelationItemRepository {
   /// Returns the list of updated rows.
   Future<List<EmptyModelRelationItem>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmptyModelRelationItemTable>
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     int? limit,
@@ -412,7 +433,7 @@ class EmptyModelRelationItemRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmptyModelRelationItem>(
-      columnValues: columnValues(EmptyModelRelationItem.t),
+      columnValues: columnValues(EmptyModelRelationItem.t.updateTable),
       where: where(EmptyModelRelationItem.t),
       limit: limit,
       offset: offset,

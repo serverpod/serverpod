@@ -168,13 +168,27 @@ class _CityImpl extends City {
   }
 }
 
+class CityUpdateTable {
+  CityUpdateTable(this.table);
+
+  final CityTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CityTable extends _i1.Table<int?> {
   CityTable({super.tableRelation}) : super(tableName: 'city') {
+    updateTable = CityUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CityUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -487,12 +501,12 @@ class CityRepository {
   Future<City?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CityTable> columnValues,
+    required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<City>(
       id,
-      columnValues: columnValues(City.t),
+      columnValues: columnValues(City.t.updateTable),
       transaction: transaction,
     );
   }
@@ -501,7 +515,7 @@ class CityRepository {
   /// Returns the list of updated rows.
   Future<List<City>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CityTable> columnValues,
+    required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CityTable> where,
     int? limit,
     int? offset,
@@ -511,7 +525,7 @@ class CityRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<City>(
-      columnValues: columnValues(City.t),
+      columnValues: columnValues(City.t.updateTable),
       where: where(City.t),
       limit: limit,
       offset: offset,

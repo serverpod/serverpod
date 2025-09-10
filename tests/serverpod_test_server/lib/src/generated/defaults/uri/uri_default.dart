@@ -140,8 +140,25 @@ class _UriDefaultImpl extends UriDefault {
   }
 }
 
+class UriDefaultUpdateTable {
+  UriDefaultUpdateTable(this.table);
+
+  final UriDefaultTable table;
+
+  _i1.ColumnValue<Uri, Uri> uriDefault(Uri value) => _i1.ColumnValue(
+        table.uriDefault,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultNull(Uri? value) => _i1.ColumnValue(
+        table.uriDefaultNull,
+        value,
+      );
+}
+
 class UriDefaultTable extends _i1.Table<int?> {
   UriDefaultTable({super.tableRelation}) : super(tableName: 'uri_default') {
+    updateTable = UriDefaultUpdateTable(this);
     uriDefault = _i1.ColumnUri(
       'uriDefault',
       this,
@@ -153,6 +170,8 @@ class UriDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final UriDefaultUpdateTable updateTable;
 
   late final _i1.ColumnUri uriDefault;
 
@@ -360,12 +379,12 @@ class UriDefaultRepository {
   Future<UriDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefault>(
       id,
-      columnValues: columnValues(UriDefault.t),
+      columnValues: columnValues(UriDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -374,7 +393,7 @@ class UriDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<UriDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UriDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultTable> where,
     int? limit,
     int? offset,
@@ -384,7 +403,7 @@ class UriDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefault>(
-      columnValues: columnValues(UriDefault.t),
+      columnValues: columnValues(UriDefault.t.updateTable),
       where: where(UriDefault.t),
       limit: limit,
       offset: offset,

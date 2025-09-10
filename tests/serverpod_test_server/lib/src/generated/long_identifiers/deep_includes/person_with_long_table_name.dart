@@ -205,9 +205,35 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
   final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 }
 
+class PersonWithLongTableNameUpdateTable {
+  PersonWithLongTableNameUpdateTable(this.table);
+
+  final PersonWithLongTableNameTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
+        table.organizationId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int>
+      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id(
+              int? value) =>
+          _i1.ColumnValue(
+            table
+                .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+            value,
+          );
+}
+
 class PersonWithLongTableNameTable extends _i1.Table<int?> {
   PersonWithLongTableNameTable({super.tableRelation})
       : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
+    updateTable = PersonWithLongTableNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -222,6 +248,8 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final PersonWithLongTableNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -479,13 +507,13 @@ class PersonWithLongTableNameRepository {
   Future<PersonWithLongTableName?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<PersonWithLongTableNameTable>
+    required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<PersonWithLongTableName>(
       id,
-      columnValues: columnValues(PersonWithLongTableName.t),
+      columnValues: columnValues(PersonWithLongTableName.t.updateTable),
       transaction: transaction,
     );
   }
@@ -494,7 +522,7 @@ class PersonWithLongTableNameRepository {
   /// Returns the list of updated rows.
   Future<List<PersonWithLongTableName>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<PersonWithLongTableNameTable>
+    required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     int? limit,
@@ -505,7 +533,7 @@ class PersonWithLongTableNameRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<PersonWithLongTableName>(
-      columnValues: columnValues(PersonWithLongTableName.t),
+      columnValues: columnValues(PersonWithLongTableName.t.updateTable),
       where: where(PersonWithLongTableName.t),
       limit: limit,
       offset: offset,

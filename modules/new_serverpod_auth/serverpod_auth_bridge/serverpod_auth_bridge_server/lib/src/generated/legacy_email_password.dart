@@ -158,9 +158,28 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
   }
 }
 
+class LegacyEmailPasswordUpdateTable {
+  LegacyEmailPasswordUpdateTable(this.table);
+
+  final LegacyEmailPasswordTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.emailAccountId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+}
+
 class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
   LegacyEmailPasswordTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_bridge_email_password') {
+    updateTable = LegacyEmailPasswordUpdateTable(this);
     emailAccountId = _i1.ColumnUuid(
       'emailAccountId',
       this,
@@ -170,6 +189,8 @@ class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final LegacyEmailPasswordUpdateTable updateTable;
 
   late final _i1.ColumnUuid emailAccountId;
 
@@ -416,12 +437,13 @@ class LegacyEmailPasswordRepository {
   Future<LegacyEmailPassword?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<LegacyEmailPasswordTable> columnValues,
+    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyEmailPassword>(
       id,
-      columnValues: columnValues(LegacyEmailPassword.t),
+      columnValues: columnValues(LegacyEmailPassword.t.updateTable),
       transaction: transaction,
     );
   }
@@ -430,7 +452,8 @@ class LegacyEmailPasswordRepository {
   /// Returns the list of updated rows.
   Future<List<LegacyEmailPassword>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<LegacyEmailPasswordTable> columnValues,
+    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
     int? limit,
     int? offset,
@@ -440,7 +463,7 @@ class LegacyEmailPasswordRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacyEmailPassword>(
-      columnValues: columnValues(LegacyEmailPassword.t),
+      columnValues: columnValues(LegacyEmailPassword.t.updateTable),
       where: where(LegacyEmailPassword.t),
       limit: limit,
       offset: offset,

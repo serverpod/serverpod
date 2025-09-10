@@ -204,8 +204,30 @@ class _CitizenImpl extends Citizen {
   }
 }
 
+class CitizenUpdateTable {
+  CitizenUpdateTable(this.table);
+
+  final CitizenTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
+        table.companyId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
+        table.oldCompanyId,
+        value,
+      );
+}
+
 class CitizenTable extends _i1.Table<int?> {
   CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
+    updateTable = CitizenUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -219,6 +241,8 @@ class CitizenTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CitizenUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -516,12 +540,12 @@ class CitizenRepository {
   Future<Citizen?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CitizenTable> columnValues,
+    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Citizen>(
       id,
-      columnValues: columnValues(Citizen.t),
+      columnValues: columnValues(Citizen.t.updateTable),
       transaction: transaction,
     );
   }
@@ -530,7 +554,7 @@ class CitizenRepository {
   /// Returns the list of updated rows.
   Future<List<Citizen>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CitizenTable> columnValues,
+    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     int? limit,
     int? offset,
@@ -540,7 +564,7 @@ class CitizenRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Citizen>(
-      columnValues: columnValues(Citizen.t),
+      columnValues: columnValues(Citizen.t.updateTable),
       where: where(Citizen.t),
       limit: limit,
       offset: offset,

@@ -125,14 +125,29 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
   }
 }
 
+class SimpleDateTimeUpdateTable {
+  SimpleDateTimeUpdateTable(this.table);
+
+  final SimpleDateTimeTable table;
+
+  _i1.ColumnValue<DateTime, DateTime> dateTime(DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTime,
+        value,
+      );
+}
+
 class SimpleDateTimeTable extends _i1.Table<int?> {
   SimpleDateTimeTable({super.tableRelation})
       : super(tableName: 'simple_date_time') {
+    updateTable = SimpleDateTimeUpdateTable(this);
     dateTime = _i1.ColumnDateTime(
       'dateTime',
       this,
     );
   }
+
+  late final SimpleDateTimeUpdateTable updateTable;
 
   /// The only field of [SimpleDateTime]
   late final _i1.ColumnDateTime dateTime;
@@ -338,12 +353,12 @@ class SimpleDateTimeRepository {
   Future<SimpleDateTime?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
+    required _i1.ColumnValueListBuilder<SimpleDateTimeUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SimpleDateTime>(
       id,
-      columnValues: columnValues(SimpleDateTime.t),
+      columnValues: columnValues(SimpleDateTime.t.updateTable),
       transaction: transaction,
     );
   }
@@ -352,7 +367,7 @@ class SimpleDateTimeRepository {
   /// Returns the list of updated rows.
   Future<List<SimpleDateTime>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<SimpleDateTimeTable> columnValues,
+    required _i1.ColumnValueListBuilder<SimpleDateTimeUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     int? limit,
     int? offset,
@@ -362,7 +377,7 @@ class SimpleDateTimeRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SimpleDateTime>(
-      columnValues: columnValues(SimpleDateTime.t),
+      columnValues: columnValues(SimpleDateTime.t.updateTable),
       where: where(SimpleDateTime.t),
       limit: limit,
       offset: offset,

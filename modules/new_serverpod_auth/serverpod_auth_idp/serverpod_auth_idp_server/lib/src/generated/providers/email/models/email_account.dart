@@ -199,9 +199,48 @@ class _EmailAccountImpl extends EmailAccount {
   }
 }
 
+class EmailAccountUpdateTable {
+  EmailAccountUpdateTable(this.table);
+
+  final EmailAccountTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordHash(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.passwordHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordSalt(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.passwordSalt,
+        value,
+      );
+}
+
 class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_email_account') {
+    updateTable = EmailAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -223,6 +262,8 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final EmailAccountUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -483,12 +524,12 @@ class EmailAccountRepository {
   Future<EmailAccount?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccount>(
       id,
-      columnValues: columnValues(EmailAccount.t),
+      columnValues: columnValues(EmailAccount.t.updateTable),
       transaction: transaction,
     );
   }
@@ -497,7 +538,7 @@ class EmailAccountRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccount>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAccountTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountTable> where,
     int? limit,
     int? offset,
@@ -507,7 +548,7 @@ class EmailAccountRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccount>(
-      columnValues: columnValues(EmailAccount.t),
+      columnValues: columnValues(EmailAccount.t.updateTable),
       where: where(EmailAccount.t),
       limit: limit,
       offset: offset,

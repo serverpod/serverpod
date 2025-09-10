@@ -161,9 +161,36 @@ class _StringDefaultMixImpl extends StringDefaultMix {
   }
 }
 
+class StringDefaultMixUpdateTable {
+  StringDefaultMixUpdateTable(this.table);
+
+  final StringDefaultMixTable table;
+
+  _i1.ColumnValue<String, String> stringDefaultAndDefaultModel(String value) =>
+      _i1.ColumnValue(
+        table.stringDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stringDefaultAndDefaultPersist(
+          String value) =>
+      _i1.ColumnValue(
+        table.stringDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stringDefaultModelAndDefaultPersist(
+          String value) =>
+      _i1.ColumnValue(
+        table.stringDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class StringDefaultMixTable extends _i1.Table<int?> {
   StringDefaultMixTable({super.tableRelation})
       : super(tableName: 'string_default_mix') {
+    updateTable = StringDefaultMixUpdateTable(this);
     stringDefaultAndDefaultModel = _i1.ColumnString(
       'stringDefaultAndDefaultModel',
       this,
@@ -180,6 +207,8 @@ class StringDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final StringDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnString stringDefaultAndDefaultModel;
 
@@ -390,12 +419,13 @@ class StringDefaultMixRepository {
   Future<StringDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<StringDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultMix>(
       id,
-      columnValues: columnValues(StringDefaultMix.t),
+      columnValues: columnValues(StringDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -404,7 +434,8 @@ class StringDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<StringDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<StringDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -414,7 +445,7 @@ class StringDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultMix>(
-      columnValues: columnValues(StringDefaultMix.t),
+      columnValues: columnValues(StringDefaultMix.t.updateTable),
       where: where(StringDefaultMix.t),
       limit: limit,
       offset: offset,

@@ -138,9 +138,29 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   }
 }
 
+class ObjectWithUuidUpdateTable {
+  ObjectWithUuidUpdateTable(this.table);
+
+  final ObjectWithUuidTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuid(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuid,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidNullable(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidNullable,
+        value,
+      );
+}
+
 class ObjectWithUuidTable extends _i1.Table<int?> {
   ObjectWithUuidTable({super.tableRelation})
       : super(tableName: 'object_with_uuid') {
+    updateTable = ObjectWithUuidUpdateTable(this);
     uuid = _i1.ColumnUuid(
       'uuid',
       this,
@@ -150,6 +170,8 @@ class ObjectWithUuidTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectWithUuidUpdateTable updateTable;
 
   late final _i1.ColumnUuid uuid;
 
@@ -357,12 +379,12 @@ class ObjectWithUuidRepository {
   Future<ObjectWithUuid?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithUuid>(
       id,
-      columnValues: columnValues(ObjectWithUuid.t),
+      columnValues: columnValues(ObjectWithUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -371,7 +393,7 @@ class ObjectWithUuidRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     int? limit,
     int? offset,
@@ -381,7 +403,7 @@ class ObjectWithUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithUuid>(
-      columnValues: columnValues(ObjectWithUuid.t),
+      columnValues: columnValues(ObjectWithUuid.t.updateTable),
       where: where(ObjectWithUuid.t),
       limit: limit,
       offset: offset,

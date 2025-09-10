@@ -176,8 +176,25 @@ class _TeamImpl extends Team {
   }
 }
 
+class TeamUpdateTable {
+  TeamUpdateTable(this.table);
+
+  final TeamTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> arenaId(int? value) => _i1.ColumnValue(
+        table.arenaId,
+        value,
+      );
+}
+
 class TeamTable extends _i1.Table<int?> {
   TeamTable({super.tableRelation}) : super(tableName: 'team') {
+    updateTable = TeamUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -187,6 +204,8 @@ class TeamTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TeamUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -482,12 +501,12 @@ class TeamRepository {
   Future<Team?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<TeamTable> columnValues,
+    required _i1.ColumnValueListBuilder<TeamUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Team>(
       id,
-      columnValues: columnValues(Team.t),
+      columnValues: columnValues(Team.t.updateTable),
       transaction: transaction,
     );
   }
@@ -496,7 +515,7 @@ class TeamRepository {
   /// Returns the list of updated rows.
   Future<List<Team>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<TeamTable> columnValues,
+    required _i1.ColumnValueListBuilder<TeamUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamTable> where,
     int? limit,
     int? offset,
@@ -506,7 +525,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Team>(
-      columnValues: columnValues(Team.t),
+      columnValues: columnValues(Team.t.updateTable),
       where: where(Team.t),
       limit: limit,
       offset: offset,

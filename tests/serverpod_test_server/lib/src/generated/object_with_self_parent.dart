@@ -123,14 +123,28 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
   }
 }
 
+class ObjectWithSelfParentUpdateTable {
+  ObjectWithSelfParentUpdateTable(this.table);
+
+  final ObjectWithSelfParentTable table;
+
+  _i1.ColumnValue<int, int> other(int? value) => _i1.ColumnValue(
+        table.other,
+        value,
+      );
+}
+
 class ObjectWithSelfParentTable extends _i1.Table<int?> {
   ObjectWithSelfParentTable({super.tableRelation})
       : super(tableName: 'object_with_self_parent') {
+    updateTable = ObjectWithSelfParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
       this,
     );
   }
+
+  late final ObjectWithSelfParentUpdateTable updateTable;
 
   late final _i1.ColumnInt other;
 
@@ -335,12 +349,13 @@ class ObjectWithSelfParentRepository {
   Future<ObjectWithSelfParent?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithSelfParentTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithSelfParent>(
       id,
-      columnValues: columnValues(ObjectWithSelfParent.t),
+      columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
       transaction: transaction,
     );
   }
@@ -349,7 +364,8 @@ class ObjectWithSelfParentRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithSelfParent>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithSelfParentTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     int? limit,
     int? offset,
@@ -359,7 +375,7 @@ class ObjectWithSelfParentRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithSelfParent>(
-      columnValues: columnValues(ObjectWithSelfParent.t),
+      columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
       where: where(ObjectWithSelfParent.t),
       limit: limit,
       offset: offset,

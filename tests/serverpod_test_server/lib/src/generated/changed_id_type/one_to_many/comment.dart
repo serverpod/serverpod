@@ -153,8 +153,26 @@ class _CommentIntImpl extends CommentInt {
   }
 }
 
+class CommentIntUpdateTable {
+  CommentIntUpdateTable(this.table);
+
+  final CommentIntTable table;
+
+  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+        table.description,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> orderId(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.orderId,
+        value,
+      );
+}
+
 class CommentIntTable extends _i1.Table<int?> {
   CommentIntTable({super.tableRelation}) : super(tableName: 'comment_int') {
+    updateTable = CommentIntUpdateTable(this);
     description = _i1.ColumnString(
       'description',
       this,
@@ -164,6 +182,8 @@ class CommentIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CommentIntUpdateTable updateTable;
 
   late final _i1.ColumnString description;
 
@@ -406,12 +426,12 @@ class CommentIntRepository {
   Future<CommentInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CommentIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CommentInt>(
       id,
-      columnValues: columnValues(CommentInt.t),
+      columnValues: columnValues(CommentInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -420,7 +440,7 @@ class CommentIntRepository {
   /// Returns the list of updated rows.
   Future<List<CommentInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CommentIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CommentIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CommentIntTable> where,
     int? limit,
     int? offset,
@@ -430,7 +450,7 @@ class CommentIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CommentInt>(
-      columnValues: columnValues(CommentInt.t),
+      columnValues: columnValues(CommentInt.t.updateTable),
       where: where(CommentInt.t),
       limit: limit,
       offset: offset,

@@ -242,8 +242,66 @@ class _LogEntryImpl extends LogEntry {
   }
 }
 
+class LogEntryUpdateTable {
+  LogEntryUpdateTable(this.table);
+
+  final LogEntryTable table;
+
+  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
+        table.sessionLogId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
+        table.messageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> reference(String? value) => _i1.ColumnValue(
+        table.reference,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.LogLevel, _i2.LogLevel> logLevel(_i2.LogLevel value) =>
+      _i1.ColumnValue(
+        table.logLevel,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+        table.message,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+        table.error,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+        table.stackTrace,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
+        table.order,
+        value,
+      );
+}
+
 class LogEntryTable extends _i1.Table<int?> {
   LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
+    updateTable = LogEntryUpdateTable(this);
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
       this,
@@ -286,6 +344,8 @@ class LogEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final LogEntryUpdateTable updateTable;
 
   /// The id of the session this log entry is associated with.
   late final _i1.ColumnInt sessionLogId;
@@ -527,12 +587,12 @@ class LogEntryRepository {
   Future<LogEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<LogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LogEntry>(
       id,
-      columnValues: columnValues(LogEntry.t),
+      columnValues: columnValues(LogEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -541,7 +601,7 @@ class LogEntryRepository {
   /// Returns the list of updated rows.
   Future<List<LogEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<LogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
     int? limit,
     int? offset,
@@ -551,7 +611,7 @@ class LogEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LogEntry>(
-      columnValues: columnValues(LogEntry.t),
+      columnValues: columnValues(LogEntry.t.updateTable),
       where: where(LogEntry.t),
       limit: limit,
       offset: offset,

@@ -151,9 +151,33 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
+class EmailResetUpdateTable {
+  EmailResetUpdateTable(this.table);
+
+  final EmailResetTable table;
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> verificationCode(String value) =>
+      _i1.ColumnValue(
+        table.verificationCode,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
+      _i1.ColumnValue(
+        table.expiration,
+        value,
+      );
+}
+
 class EmailResetTable extends _i1.Table<int?> {
   EmailResetTable({super.tableRelation})
       : super(tableName: 'serverpod_email_reset') {
+    updateTable = EmailResetUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -167,6 +191,8 @@ class EmailResetTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailResetUpdateTable updateTable;
 
   /// The id of the user that is resetting his/her password.
   late final _i1.ColumnInt userId;
@@ -380,12 +406,12 @@ class EmailResetRepository {
   Future<EmailReset?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailResetTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailReset>(
       id,
-      columnValues: columnValues(EmailReset.t),
+      columnValues: columnValues(EmailReset.t.updateTable),
       transaction: transaction,
     );
   }
@@ -394,7 +420,7 @@ class EmailResetRepository {
   /// Returns the list of updated rows.
   Future<List<EmailReset>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailResetTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailResetTable> where,
     int? limit,
     int? offset,
@@ -404,7 +430,7 @@ class EmailResetRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailReset>(
-      columnValues: columnValues(EmailReset.t),
+      columnValues: columnValues(EmailReset.t.updateTable),
       where: where(EmailReset.t),
       limit: limit,
       offset: offset,

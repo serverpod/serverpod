@@ -151,9 +151,31 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
   }
 }
 
+class EmailFailedSignInUpdateTable {
+  EmailFailedSignInUpdateTable(this.table);
+
+  final EmailFailedSignInTable table;
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+        table.ipAddress,
+        value,
+      );
+}
+
 class EmailFailedSignInTable extends _i1.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
       : super(tableName: 'serverpod_email_failed_sign_in') {
+    updateTable = EmailFailedSignInUpdateTable(this);
     email = _i1.ColumnString(
       'email',
       this,
@@ -167,6 +189,8 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailFailedSignInUpdateTable updateTable;
 
   /// Email attempting to sign in with.
   late final _i1.ColumnString email;
@@ -380,12 +404,13 @@ class EmailFailedSignInRepository {
   Future<EmailFailedSignIn?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailFailedSignInTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailFailedSignIn>(
       id,
-      columnValues: columnValues(EmailFailedSignIn.t),
+      columnValues: columnValues(EmailFailedSignIn.t.updateTable),
       transaction: transaction,
     );
   }
@@ -394,7 +419,8 @@ class EmailFailedSignInRepository {
   /// Returns the list of updated rows.
   Future<List<EmailFailedSignIn>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailFailedSignInTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     int? limit,
     int? offset,
@@ -404,7 +430,7 @@ class EmailFailedSignInRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailFailedSignIn>(
-      columnValues: columnValues(EmailFailedSignIn.t),
+      columnValues: columnValues(EmailFailedSignIn.t.updateTable),
       where: where(EmailFailedSignIn.t),
       limit: limit,
       offset: offset,

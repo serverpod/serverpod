@@ -144,9 +144,28 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
   }
 }
 
+class BoolDefaultPersistUpdateTable {
+  BoolDefaultPersistUpdateTable(this.table);
+
+  final BoolDefaultPersistTable table;
+
+  _i1.ColumnValue<bool, bool> boolDefaultPersistTrue(bool? value) =>
+      _i1.ColumnValue(
+        table.boolDefaultPersistTrue,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultPersistFalse(bool? value) =>
+      _i1.ColumnValue(
+        table.boolDefaultPersistFalse,
+        value,
+      );
+}
+
 class BoolDefaultPersistTable extends _i1.Table<int?> {
   BoolDefaultPersistTable({super.tableRelation})
       : super(tableName: 'bool_default_persist') {
+    updateTable = BoolDefaultPersistUpdateTable(this);
     boolDefaultPersistTrue = _i1.ColumnBool(
       'boolDefaultPersistTrue',
       this,
@@ -158,6 +177,8 @@ class BoolDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final BoolDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnBool boolDefaultPersistTrue;
 
@@ -365,12 +386,13 @@ class BoolDefaultPersistRepository {
   Future<BoolDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultPersist>(
       id,
-      columnValues: columnValues(BoolDefaultPersist.t),
+      columnValues: columnValues(BoolDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -379,7 +401,8 @@ class BoolDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<BoolDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BoolDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -389,7 +412,7 @@ class BoolDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultPersist>(
-      columnValues: columnValues(BoolDefaultPersist.t),
+      columnValues: columnValues(BoolDefaultPersist.t.updateTable),
       where: where(BoolDefaultPersist.t),
       limit: limit,
       offset: offset,

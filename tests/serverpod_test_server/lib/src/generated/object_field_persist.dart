@@ -150,14 +150,28 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
   }
 }
 
+class ObjectFieldPersistUpdateTable {
+  ObjectFieldPersistUpdateTable(this.table);
+
+  final ObjectFieldPersistTable table;
+
+  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
+        table.normal,
+        value,
+      );
+}
+
 class ObjectFieldPersistTable extends _i1.Table<int?> {
   ObjectFieldPersistTable({super.tableRelation})
       : super(tableName: 'object_field_persist') {
+    updateTable = ObjectFieldPersistUpdateTable(this);
     normal = _i1.ColumnString(
       'normal',
       this,
     );
   }
+
+  late final ObjectFieldPersistUpdateTable updateTable;
 
   late final _i1.ColumnString normal;
 
@@ -362,12 +376,13 @@ class ObjectFieldPersistRepository {
   Future<ObjectFieldPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldPersist>(
       id,
-      columnValues: columnValues(ObjectFieldPersist.t),
+      columnValues: columnValues(ObjectFieldPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -376,7 +391,8 @@ class ObjectFieldPersistRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectFieldPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectFieldPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     int? limit,
     int? offset,
@@ -386,7 +402,7 @@ class ObjectFieldPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
-      columnValues: columnValues(ObjectFieldPersist.t),
+      columnValues: columnValues(ObjectFieldPersist.t.updateTable),
       where: where(ObjectFieldPersist.t),
       limit: limit,
       offset: offset,

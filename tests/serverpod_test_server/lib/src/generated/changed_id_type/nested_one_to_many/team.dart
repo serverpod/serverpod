@@ -179,8 +179,26 @@ class _TeamIntImpl extends TeamInt {
   }
 }
 
+class TeamIntUpdateTable {
+  TeamIntUpdateTable(this.table);
+
+  final TeamIntTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> arenaId(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.arenaId,
+        value,
+      );
+}
+
 class TeamIntTable extends _i1.Table<int?> {
   TeamIntTable({super.tableRelation}) : super(tableName: 'team_int') {
+    updateTable = TeamIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -190,6 +208,8 @@ class TeamIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TeamIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -485,12 +505,12 @@ class TeamIntRepository {
   Future<TeamInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<TeamInt>(
       id,
-      columnValues: columnValues(TeamInt.t),
+      columnValues: columnValues(TeamInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -499,7 +519,7 @@ class TeamIntRepository {
   /// Returns the list of updated rows.
   Future<List<TeamInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<TeamIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     int? limit,
     int? offset,
@@ -509,7 +529,7 @@ class TeamIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<TeamInt>(
-      columnValues: columnValues(TeamInt.t),
+      columnValues: columnValues(TeamInt.t.updateTable),
       where: where(TeamInt.t),
       limit: limit,
       offset: offset,

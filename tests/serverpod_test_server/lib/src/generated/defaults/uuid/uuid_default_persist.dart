@@ -169,9 +169,37 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }
 }
 
+class UuidDefaultPersistUpdateTable {
+  UuidDefaultPersistUpdateTable(this.table);
+
+  final UuidDefaultPersistTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandom(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultPersistRandom,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandomV7(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultPersistRandomV7,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistStr(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultPersistStr,
+        value,
+      );
+}
+
 class UuidDefaultPersistTable extends _i1.Table<int?> {
   UuidDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uuid_default_persist') {
+    updateTable = UuidDefaultPersistUpdateTable(this);
     uuidDefaultPersistRandom = _i1.ColumnUuid(
       'uuidDefaultPersistRandom',
       this,
@@ -188,6 +216,8 @@ class UuidDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final UuidDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnUuid uuidDefaultPersistRandom;
 
@@ -398,12 +428,13 @@ class UuidDefaultPersistRepository {
   Future<UuidDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultPersist>(
       id,
-      columnValues: columnValues(UuidDefaultPersist.t),
+      columnValues: columnValues(UuidDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -412,7 +443,8 @@ class UuidDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<UuidDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UuidDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -422,7 +454,7 @@ class UuidDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefaultPersist>(
-      columnValues: columnValues(UuidDefaultPersist.t),
+      columnValues: columnValues(UuidDefaultPersist.t.updateTable),
       where: where(UuidDefaultPersist.t),
       limit: limit,
       offset: offset,

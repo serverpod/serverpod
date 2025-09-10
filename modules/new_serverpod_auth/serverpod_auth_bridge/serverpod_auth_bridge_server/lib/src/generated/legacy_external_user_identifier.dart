@@ -159,9 +159,29 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   }
 }
 
+class LegacyExternalUserIdentifierUpdateTable {
+  LegacyExternalUserIdentifierUpdateTable(this.table);
+
+  final LegacyExternalUserIdentifierTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userIdentifier(String value) =>
+      _i1.ColumnValue(
+        table.userIdentifier,
+        value,
+      );
+}
+
 class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
   LegacyExternalUserIdentifierTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_bridge_external_user_id') {
+    updateTable = LegacyExternalUserIdentifierUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -171,6 +191,8 @@ class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final LegacyExternalUserIdentifierUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -418,13 +440,13 @@ class LegacyExternalUserIdentifierRepository {
   Future<LegacyExternalUserIdentifier?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable>
+    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyExternalUserIdentifier>(
       id,
-      columnValues: columnValues(LegacyExternalUserIdentifier.t),
+      columnValues: columnValues(LegacyExternalUserIdentifier.t.updateTable),
       transaction: transaction,
     );
   }
@@ -433,7 +455,7 @@ class LegacyExternalUserIdentifierRepository {
   /// Returns the list of updated rows.
   Future<List<LegacyExternalUserIdentifier>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierTable>
+    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
         where,
@@ -445,7 +467,7 @@ class LegacyExternalUserIdentifierRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LegacyExternalUserIdentifier>(
-      columnValues: columnValues(LegacyExternalUserIdentifier.t),
+      columnValues: columnValues(LegacyExternalUserIdentifier.t.updateTable),
       where: where(LegacyExternalUserIdentifier.t),
       limit: limit,
       offset: offset,

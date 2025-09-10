@@ -145,9 +145,26 @@ class _UriDefaultModelImpl extends UriDefaultModel {
   }
 }
 
+class UriDefaultModelUpdateTable {
+  UriDefaultModelUpdateTable(this.table);
+
+  final UriDefaultModelTable table;
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultModel(Uri value) => _i1.ColumnValue(
+        table.uriDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultModelNull(Uri? value) => _i1.ColumnValue(
+        table.uriDefaultModelNull,
+        value,
+      );
+}
+
 class UriDefaultModelTable extends _i1.Table<int?> {
   UriDefaultModelTable({super.tableRelation})
       : super(tableName: 'uri_default_model') {
+    updateTable = UriDefaultModelUpdateTable(this);
     uriDefaultModel = _i1.ColumnUri(
       'uriDefaultModel',
       this,
@@ -157,6 +174,8 @@ class UriDefaultModelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final UriDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnUri uriDefaultModel;
 
@@ -364,12 +383,13 @@ class UriDefaultModelRepository {
   Future<UriDefaultModel?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UriDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultModel>(
       id,
-      columnValues: columnValues(UriDefaultModel.t),
+      columnValues: columnValues(UriDefaultModel.t.updateTable),
       transaction: transaction,
     );
   }
@@ -378,7 +398,8 @@ class UriDefaultModelRepository {
   /// Returns the list of updated rows.
   Future<List<UriDefaultModel>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UriDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     int? limit,
     int? offset,
@@ -388,7 +409,7 @@ class UriDefaultModelRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefaultModel>(
-      columnValues: columnValues(UriDefaultModel.t),
+      columnValues: columnValues(UriDefaultModel.t.updateTable),
       where: where(UriDefaultModel.t),
       limit: limit,
       offset: offset,

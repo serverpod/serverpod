@@ -126,13 +126,27 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
+class SimpleDataUpdateTable {
+  SimpleDataUpdateTable(this.table);
+
+  final SimpleDataTable table;
+
+  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
+        table.num,
+        value,
+      );
+}
+
 class SimpleDataTable extends _i1.Table<int?> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
+    updateTable = SimpleDataUpdateTable(this);
     num = _i1.ColumnInt(
       'num',
       this,
     );
   }
+
+  late final SimpleDataUpdateTable updateTable;
 
   /// The only field of [SimpleData]
   ///
@@ -340,12 +354,12 @@ class SimpleDataRepository {
   Future<SimpleData?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<SimpleDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SimpleData>(
       id,
-      columnValues: columnValues(SimpleData.t),
+      columnValues: columnValues(SimpleData.t.updateTable),
       transaction: transaction,
     );
   }
@@ -354,7 +368,7 @@ class SimpleDataRepository {
   /// Returns the list of updated rows.
   Future<List<SimpleData>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<SimpleDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     int? limit,
     int? offset,
@@ -364,7 +378,7 @@ class SimpleDataRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SimpleData>(
-      columnValues: columnValues(SimpleData.t),
+      columnValues: columnValues(SimpleData.t.updateTable),
       where: where(SimpleData.t),
       limit: limit,
       offset: offset,

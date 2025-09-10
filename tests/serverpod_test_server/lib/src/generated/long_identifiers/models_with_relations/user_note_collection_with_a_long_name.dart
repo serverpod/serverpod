@@ -147,14 +147,28 @@ class _UserNoteCollectionWithALongNameImpl
   }
 }
 
+class UserNoteCollectionWithALongNameUpdateTable {
+  UserNoteCollectionWithALongNameUpdateTable(this.table);
+
+  final UserNoteCollectionWithALongNameTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class UserNoteCollectionWithALongNameTable extends _i1.Table<int?> {
   UserNoteCollectionWithALongNameTable({super.tableRelation})
       : super(tableName: 'user_note_collection_with_a_long_name') {
+    updateTable = UserNoteCollectionWithALongNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final UserNoteCollectionWithALongNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -425,13 +439,14 @@ class UserNoteCollectionWithALongNameRepository {
   Future<UserNoteCollectionWithALongName?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UserNoteCollectionWithALongNameTable>
+    required _i1
+        .ColumnValueListBuilder<UserNoteCollectionWithALongNameUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteCollectionWithALongName>(
       id,
-      columnValues: columnValues(UserNoteCollectionWithALongName.t),
+      columnValues: columnValues(UserNoteCollectionWithALongName.t.updateTable),
       transaction: transaction,
     );
   }
@@ -440,7 +455,8 @@ class UserNoteCollectionWithALongNameRepository {
   /// Returns the list of updated rows.
   Future<List<UserNoteCollectionWithALongName>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UserNoteCollectionWithALongNameTable>
+    required _i1
+        .ColumnValueListBuilder<UserNoteCollectionWithALongNameUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
         where,
@@ -452,7 +468,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserNoteCollectionWithALongName>(
-      columnValues: columnValues(UserNoteCollectionWithALongName.t),
+      columnValues: columnValues(UserNoteCollectionWithALongName.t.updateTable),
       where: where(UserNoteCollectionWithALongName.t),
       limit: limit,
       offset: offset,

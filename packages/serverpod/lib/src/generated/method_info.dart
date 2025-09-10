@@ -137,9 +137,26 @@ class _MethodInfoImpl extends MethodInfo {
   }
 }
 
+class MethodInfoUpdateTable {
+  MethodInfoUpdateTable(this.table);
+
+  final MethodInfoTable table;
+
+  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
+        table.endpoint,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class MethodInfoTable extends _i1.Table<int?> {
   MethodInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_method') {
+    updateTable = MethodInfoUpdateTable(this);
     endpoint = _i1.ColumnString(
       'endpoint',
       this,
@@ -149,6 +166,8 @@ class MethodInfoTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final MethodInfoUpdateTable updateTable;
 
   /// The endpoint of this method.
   late final _i1.ColumnString endpoint;
@@ -358,12 +377,12 @@ class MethodInfoRepository {
   Future<MethodInfo?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<MethodInfoTable> columnValues,
+    required _i1.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MethodInfo>(
       id,
-      columnValues: columnValues(MethodInfo.t),
+      columnValues: columnValues(MethodInfo.t.updateTable),
       transaction: transaction,
     );
   }
@@ -372,7 +391,7 @@ class MethodInfoRepository {
   /// Returns the list of updated rows.
   Future<List<MethodInfo>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<MethodInfoTable> columnValues,
+    required _i1.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     int? limit,
     int? offset,
@@ -382,7 +401,7 @@ class MethodInfoRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MethodInfo>(
-      columnValues: columnValues(MethodInfo.t),
+      columnValues: columnValues(MethodInfo.t.updateTable),
       where: where(MethodInfo.t),
       limit: limit,
       offset: offset,

@@ -157,9 +157,28 @@ class _DurationDefaultImpl extends DurationDefault {
   }
 }
 
+class DurationDefaultUpdateTable {
+  DurationDefaultUpdateTable(this.table);
+
+  final DurationDefaultTable table;
+
+  _i1.ColumnValue<Duration, Duration> durationDefault(Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefault,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultNull(Duration? value) =>
+      _i1.ColumnValue(
+        table.durationDefaultNull,
+        value,
+      );
+}
+
 class DurationDefaultTable extends _i1.Table<int?> {
   DurationDefaultTable({super.tableRelation})
       : super(tableName: 'duration_default') {
+    updateTable = DurationDefaultUpdateTable(this);
     durationDefault = _i1.ColumnDuration(
       'durationDefault',
       this,
@@ -171,6 +190,8 @@ class DurationDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefault;
 
@@ -378,12 +399,13 @@ class DurationDefaultRepository {
   Future<DurationDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DurationDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefault>(
       id,
-      columnValues: columnValues(DurationDefault.t),
+      columnValues: columnValues(DurationDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -392,7 +414,8 @@ class DurationDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<DurationDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DurationDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
     int? limit,
     int? offset,
@@ -402,7 +425,7 @@ class DurationDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefault>(
-      columnValues: columnValues(DurationDefault.t),
+      columnValues: columnValues(DurationDefault.t.updateTable),
       where: where(DurationDefault.t),
       limit: limit,
       offset: offset,

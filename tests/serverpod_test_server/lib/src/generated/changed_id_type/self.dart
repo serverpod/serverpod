@@ -232,9 +232,34 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   }
 }
 
+class ChangedIdTypeSelfUpdateTable {
+  ChangedIdTypeSelfUpdateTable(this.table);
+
+  final ChangedIdTypeSelfTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> nextId(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.nextId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> parentId(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.parentId,
+        value,
+      );
+}
+
 class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
   ChangedIdTypeSelfTable({super.tableRelation})
       : super(tableName: 'changed_id_type_self') {
+    updateTable = ChangedIdTypeSelfUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -248,6 +273,8 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final ChangedIdTypeSelfUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -592,12 +619,13 @@ class ChangedIdTypeSelfRepository {
   Future<ChangedIdTypeSelf?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ChangedIdTypeSelf>(
       id,
-      columnValues: columnValues(ChangedIdTypeSelf.t),
+      columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
       transaction: transaction,
     );
   }
@@ -606,7 +634,8 @@ class ChangedIdTypeSelfRepository {
   /// Returns the list of updated rows.
   Future<List<ChangedIdTypeSelf>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     int? limit,
     int? offset,
@@ -616,7 +645,7 @@ class ChangedIdTypeSelfRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ChangedIdTypeSelf>(
-      columnValues: columnValues(ChangedIdTypeSelf.t),
+      columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
       where: where(ChangedIdTypeSelf.t),
       limit: limit,
       offset: offset,

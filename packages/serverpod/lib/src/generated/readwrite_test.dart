@@ -125,14 +125,28 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
   }
 }
 
+class ReadWriteTestEntryUpdateTable {
+  ReadWriteTestEntryUpdateTable(this.table);
+
+  final ReadWriteTestEntryTable table;
+
+  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+        table.number,
+        value,
+      );
+}
+
 class ReadWriteTestEntryTable extends _i1.Table<int?> {
   ReadWriteTestEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_readwrite_test') {
+    updateTable = ReadWriteTestEntryUpdateTable(this);
     number = _i1.ColumnInt(
       'number',
       this,
     );
   }
+
+  late final ReadWriteTestEntryUpdateTable updateTable;
 
   /// A random number, to verify that the write/read was performed correctly.
   late final _i1.ColumnInt number;
@@ -338,12 +352,13 @@ class ReadWriteTestEntryRepository {
   Future<ReadWriteTestEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ReadWriteTestEntry>(
       id,
-      columnValues: columnValues(ReadWriteTestEntry.t),
+      columnValues: columnValues(ReadWriteTestEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -352,7 +367,8 @@ class ReadWriteTestEntryRepository {
   /// Returns the list of updated rows.
   Future<List<ReadWriteTestEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ReadWriteTestEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     int? limit,
     int? offset,
@@ -362,7 +378,7 @@ class ReadWriteTestEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ReadWriteTestEntry>(
-      columnValues: columnValues(ReadWriteTestEntry.t),
+      columnValues: columnValues(ReadWriteTestEntry.t.updateTable),
       where: where(ReadWriteTestEntry.t),
       limit: limit,
       offset: offset,

@@ -139,9 +139,28 @@ class _StringDefaultModelImpl extends StringDefaultModel {
   }
 }
 
+class StringDefaultModelUpdateTable {
+  StringDefaultModelUpdateTable(this.table);
+
+  final StringDefaultModelTable table;
+
+  _i1.ColumnValue<String, String> stringDefaultModel(String value) =>
+      _i1.ColumnValue(
+        table.stringDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stringDefaultModelNull(String value) =>
+      _i1.ColumnValue(
+        table.stringDefaultModelNull,
+        value,
+      );
+}
+
 class StringDefaultModelTable extends _i1.Table<int?> {
   StringDefaultModelTable({super.tableRelation})
       : super(tableName: 'string_default_model') {
+    updateTable = StringDefaultModelUpdateTable(this);
     stringDefaultModel = _i1.ColumnString(
       'stringDefaultModel',
       this,
@@ -151,6 +170,8 @@ class StringDefaultModelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final StringDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnString stringDefaultModel;
 
@@ -358,12 +379,13 @@ class StringDefaultModelRepository {
   Future<StringDefaultModel?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<StringDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultModel>(
       id,
-      columnValues: columnValues(StringDefaultModel.t),
+      columnValues: columnValues(StringDefaultModel.t.updateTable),
       transaction: transaction,
     );
   }
@@ -372,7 +394,8 @@ class StringDefaultModelRepository {
   /// Returns the list of updated rows.
   Future<List<StringDefaultModel>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<StringDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
     int? limit,
     int? offset,
@@ -382,7 +405,7 @@ class StringDefaultModelRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultModel>(
-      columnValues: columnValues(StringDefaultModel.t),
+      columnValues: columnValues(StringDefaultModel.t.updateTable),
       where: where(StringDefaultModel.t),
       limit: limit,
       offset: offset,

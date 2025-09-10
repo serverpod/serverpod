@@ -173,9 +173,44 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
   }
 }
 
+class ObjectWithSparseVectorUpdateTable {
+  ObjectWithSparseVectorUpdateTable(this.table);
+
+  final ObjectWithSparseVectorTable table;
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVector(
+          _i1.SparseVector value) =>
+      _i1.ColumnValue(
+        table.sparseVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorNullable(
+          _i1.SparseVector? value) =>
+      _i1.ColumnValue(
+        table.sparseVectorNullable,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorIndexedHnsw(
+          _i1.SparseVector value) =>
+      _i1.ColumnValue(
+        table.sparseVectorIndexedHnsw,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector>
+      sparseVectorIndexedHnswWithParams(_i1.SparseVector value) =>
+          _i1.ColumnValue(
+            table.sparseVectorIndexedHnswWithParams,
+            value,
+          );
+}
+
 class ObjectWithSparseVectorTable extends _i1.Table<int?> {
   ObjectWithSparseVectorTable({super.tableRelation})
       : super(tableName: 'object_with_sparse_vector') {
+    updateTable = ObjectWithSparseVectorUpdateTable(this);
     sparseVector = _i1.ColumnSparseVector(
       'sparseVector',
       this,
@@ -197,6 +232,8 @@ class ObjectWithSparseVectorTable extends _i1.Table<int?> {
       dimension: 512,
     );
   }
+
+  late final ObjectWithSparseVectorUpdateTable updateTable;
 
   late final _i1.ColumnSparseVector sparseVector;
 
@@ -410,13 +447,13 @@ class ObjectWithSparseVectorRepository {
   Future<ObjectWithSparseVector?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorTable>
+    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithSparseVector>(
       id,
-      columnValues: columnValues(ObjectWithSparseVector.t),
+      columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
       transaction: transaction,
     );
   }
@@ -425,7 +462,7 @@ class ObjectWithSparseVectorRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithSparseVector>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorTable>
+    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
     int? limit,
@@ -436,7 +473,7 @@ class ObjectWithSparseVectorRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithSparseVector>(
-      columnValues: columnValues(ObjectWithSparseVector.t),
+      columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
       where: where(ObjectWithSparseVector.t),
       limit: limit,
       offset: offset,

@@ -178,9 +178,42 @@ class _FutureCallEntryImpl extends FutureCallEntry {
   }
 }
 
+class FutureCallEntryUpdateTable {
+  FutureCallEntryUpdateTable(this.table);
+
+  final FutureCallEntryTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serializedObject(String? value) =>
+      _i1.ColumnValue(
+        table.serializedObject,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> identifier(String? value) => _i1.ColumnValue(
+        table.identifier,
+        value,
+      );
+}
+
 class FutureCallEntryTable extends _i1.Table<int?> {
   FutureCallEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_future_call') {
+    updateTable = FutureCallEntryUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -202,6 +235,8 @@ class FutureCallEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final FutureCallEntryUpdateTable updateTable;
 
   /// Name of the future call. Used to find the correct method to call.
   late final _i1.ColumnString name;
@@ -423,12 +458,13 @@ class FutureCallEntryRepository {
   Future<FutureCallEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallEntry>(
       id,
-      columnValues: columnValues(FutureCallEntry.t),
+      columnValues: columnValues(FutureCallEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -437,7 +473,8 @@ class FutureCallEntryRepository {
   /// Returns the list of updated rows.
   Future<List<FutureCallEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<FutureCallEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     int? limit,
     int? offset,
@@ -447,7 +484,7 @@ class FutureCallEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<FutureCallEntry>(
-      columnValues: columnValues(FutureCallEntry.t),
+      columnValues: columnValues(FutureCallEntry.t.updateTable),
       where: where(FutureCallEntry.t),
       limit: limit,
       offset: offset,

@@ -176,8 +176,25 @@ class _CatImpl extends Cat {
   }
 }
 
+class CatUpdateTable {
+  CatUpdateTable(this.table);
+
+  final CatTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> motherId(int? value) => _i1.ColumnValue(
+        table.motherId,
+        value,
+      );
+}
+
 class CatTable extends _i1.Table<int?> {
   CatTable({super.tableRelation}) : super(tableName: 'cat') {
+    updateTable = CatUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -187,6 +204,8 @@ class CatTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CatUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -482,12 +501,12 @@ class CatRepository {
   Future<Cat?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CatTable> columnValues,
+    required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Cat>(
       id,
-      columnValues: columnValues(Cat.t),
+      columnValues: columnValues(Cat.t.updateTable),
       transaction: transaction,
     );
   }
@@ -496,7 +515,7 @@ class CatRepository {
   /// Returns the list of updated rows.
   Future<List<Cat>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CatTable> columnValues,
+    required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CatTable> where,
     int? limit,
     int? offset,
@@ -506,7 +525,7 @@ class CatRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Cat>(
-      columnValues: columnValues(Cat.t),
+      columnValues: columnValues(Cat.t.updateTable),
       where: where(Cat.t),
       limit: limit,
       offset: offset,

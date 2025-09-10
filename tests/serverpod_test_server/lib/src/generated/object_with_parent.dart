@@ -122,14 +122,28 @@ class _ObjectWithParentImpl extends ObjectWithParent {
   }
 }
 
+class ObjectWithParentUpdateTable {
+  ObjectWithParentUpdateTable(this.table);
+
+  final ObjectWithParentTable table;
+
+  _i1.ColumnValue<int, int> other(int value) => _i1.ColumnValue(
+        table.other,
+        value,
+      );
+}
+
 class ObjectWithParentTable extends _i1.Table<int?> {
   ObjectWithParentTable({super.tableRelation})
       : super(tableName: 'object_with_parent') {
+    updateTable = ObjectWithParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
       this,
     );
   }
+
+  late final ObjectWithParentUpdateTable updateTable;
 
   late final _i1.ColumnInt other;
 
@@ -334,12 +348,13 @@ class ObjectWithParentRepository {
   Future<ObjectWithParent?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithParentTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithParent>(
       id,
-      columnValues: columnValues(ObjectWithParent.t),
+      columnValues: columnValues(ObjectWithParent.t.updateTable),
       transaction: transaction,
     );
   }
@@ -348,7 +363,8 @@ class ObjectWithParentRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithParent>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithParentTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     int? limit,
     int? offset,
@@ -358,7 +374,7 @@ class ObjectWithParentRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithParent>(
-      columnValues: columnValues(ObjectWithParent.t),
+      columnValues: columnValues(ObjectWithParent.t.updateTable),
       where: where(ObjectWithParent.t),
       limit: limit,
       offset: offset,

@@ -136,8 +136,25 @@ class _IntDefaultImpl extends IntDefault {
   }
 }
 
+class IntDefaultUpdateTable {
+  IntDefaultUpdateTable(this.table);
+
+  final IntDefaultTable table;
+
+  _i1.ColumnValue<int, int> intDefault(int value) => _i1.ColumnValue(
+        table.intDefault,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> intDefaultNull(int? value) => _i1.ColumnValue(
+        table.intDefaultNull,
+        value,
+      );
+}
+
 class IntDefaultTable extends _i1.Table<int?> {
   IntDefaultTable({super.tableRelation}) : super(tableName: 'int_default') {
+    updateTable = IntDefaultUpdateTable(this);
     intDefault = _i1.ColumnInt(
       'intDefault',
       this,
@@ -149,6 +166,8 @@ class IntDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final IntDefaultUpdateTable updateTable;
 
   late final _i1.ColumnInt intDefault;
 
@@ -356,12 +375,12 @@ class IntDefaultRepository {
   Future<IntDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<IntDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<IntDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<IntDefault>(
       id,
-      columnValues: columnValues(IntDefault.t),
+      columnValues: columnValues(IntDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -370,7 +389,7 @@ class IntDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<IntDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<IntDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<IntDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultTable> where,
     int? limit,
     int? offset,
@@ -380,7 +399,7 @@ class IntDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<IntDefault>(
-      columnValues: columnValues(IntDefault.t),
+      columnValues: columnValues(IntDefault.t.updateTable),
       where: where(IntDefault.t),
       limit: limit,
       offset: offset,

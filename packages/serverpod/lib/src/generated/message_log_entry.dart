@@ -243,9 +243,66 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
+class MessageLogEntryUpdateTable {
+  MessageLogEntryUpdateTable(this.table);
+
+  final MessageLogEntryTable table;
+
+  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
+        table.sessionLogId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> messageId(int value) => _i1.ColumnValue(
+        table.messageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
+        table.endpoint,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> messageName(String value) => _i1.ColumnValue(
+        table.messageName,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
+        table.duration,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+        table.error,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+        table.stackTrace,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
+        table.slow,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
+        table.order,
+        value,
+      );
+}
+
 class MessageLogEntryTable extends _i1.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_message_log') {
+    updateTable = MessageLogEntryUpdateTable(this);
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
       this,
@@ -287,6 +344,8 @@ class MessageLogEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final MessageLogEntryUpdateTable updateTable;
 
   /// Id of the session this entry is associated with.
   late final _i1.ColumnInt sessionLogId;
@@ -530,12 +589,13 @@ class MessageLogEntryRepository {
   Future<MessageLogEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MessageLogEntry>(
       id,
-      columnValues: columnValues(MessageLogEntry.t),
+      columnValues: columnValues(MessageLogEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -544,7 +604,8 @@ class MessageLogEntryRepository {
   /// Returns the list of updated rows.
   Future<List<MessageLogEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<MessageLogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     int? limit,
     int? offset,
@@ -554,7 +615,7 @@ class MessageLogEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
-      columnValues: columnValues(MessageLogEntry.t),
+      columnValues: columnValues(MessageLogEntry.t.updateTable),
       where: where(MessageLogEntry.t),
       limit: limit,
       offset: offset,

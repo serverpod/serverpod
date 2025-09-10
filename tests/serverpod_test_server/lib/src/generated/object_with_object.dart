@@ -348,9 +348,78 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
   }
 }
 
+class ObjectWithObjectUpdateTable {
+  ObjectWithObjectUpdateTable(this.table);
+
+  final ObjectWithObjectTable table;
+
+  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> data(_i2.SimpleData value) =>
+      _i1.ColumnValue(
+        table.data,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> nullableData(
+          _i2.SimpleData? value) =>
+      _i1.ColumnValue(
+        table.nullableData,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i2.SimpleData>, List<_i2.SimpleData>> dataList(
+          List<_i2.SimpleData> value) =>
+      _i1.ColumnValue(
+        table.dataList,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i2.SimpleData>, List<_i2.SimpleData>> nullableDataList(
+          List<_i2.SimpleData>? value) =>
+      _i1.ColumnValue(
+        table.nullableDataList,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i2.SimpleData?>, List<_i2.SimpleData?>>
+      listWithNullableData(List<_i2.SimpleData?> value) => _i1.ColumnValue(
+            table.listWithNullableData,
+            value,
+          );
+
+  _i1.ColumnValue<List<_i2.SimpleData?>, List<_i2.SimpleData?>>
+      nullableListWithNullableData(List<_i2.SimpleData?>? value) =>
+          _i1.ColumnValue(
+            table.nullableListWithNullableData,
+            value,
+          );
+
+  _i1.ColumnValue<List<List<_i2.SimpleData>>, List<List<_i2.SimpleData>>>
+      nestedDataList(List<List<_i2.SimpleData>>? value) => _i1.ColumnValue(
+            table.nestedDataList,
+            value,
+          );
+
+  _i1.ColumnValue<Map<String, List<List<Map<int, _i2.SimpleData>>?>>,
+      Map<String, List<List<Map<int, _i2.SimpleData>>?>>> nestedDataListInMap(
+          Map<String, List<List<Map<int, _i2.SimpleData>>?>>? value) =>
+      _i1.ColumnValue(
+        table.nestedDataListInMap,
+        value,
+      );
+
+  _i1.ColumnValue<Map<String, Map<int, _i2.SimpleData>>,
+      Map<String, Map<int, _i2.SimpleData>>> nestedDataMap(
+          Map<String, Map<int, _i2.SimpleData>>? value) =>
+      _i1.ColumnValue(
+        table.nestedDataMap,
+        value,
+      );
+}
+
 class ObjectWithObjectTable extends _i1.Table<int?> {
   ObjectWithObjectTable({super.tableRelation})
       : super(tableName: 'object_with_object') {
+    updateTable = ObjectWithObjectUpdateTable(this);
     data = _i1.ColumnSerializable<_i2.SimpleData>(
       'data',
       this,
@@ -391,6 +460,8 @@ class ObjectWithObjectTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectWithObjectUpdateTable updateTable;
 
   late final _i1.ColumnSerializable<_i2.SimpleData> data;
 
@@ -623,12 +694,13 @@ class ObjectWithObjectRepository {
   Future<ObjectWithObject?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithObjectTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithObject>(
       id,
-      columnValues: columnValues(ObjectWithObject.t),
+      columnValues: columnValues(ObjectWithObject.t.updateTable),
       transaction: transaction,
     );
   }
@@ -637,7 +709,8 @@ class ObjectWithObjectRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithObject>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithObjectTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
     int? limit,
     int? offset,
@@ -647,7 +720,7 @@ class ObjectWithObjectRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithObject>(
-      columnValues: columnValues(ObjectWithObject.t),
+      columnValues: columnValues(ObjectWithObject.t.updateTable),
       where: where(ObjectWithObject.t),
       limit: limit,
       offset: offset,

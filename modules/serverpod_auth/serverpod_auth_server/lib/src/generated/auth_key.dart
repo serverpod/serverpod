@@ -179,8 +179,36 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
+class AuthKeyUpdateTable {
+  AuthKeyUpdateTable(this.table);
+
+  final AuthKeyTable table;
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+
+  _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class AuthKeyTable extends _i1.Table<int?> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
+    updateTable = AuthKeyUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -198,6 +226,8 @@ class AuthKeyTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final AuthKeyUpdateTable updateTable;
 
   /// The id of the user to provide access to.
   late final _i1.ColumnInt userId;
@@ -416,12 +446,12 @@ class AuthKeyRepository {
   Future<AuthKey?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<AuthKeyTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthKey>(
       id,
-      columnValues: columnValues(AuthKey.t),
+      columnValues: columnValues(AuthKey.t.updateTable),
       transaction: transaction,
     );
   }
@@ -430,7 +460,7 @@ class AuthKeyRepository {
   /// Returns the list of updated rows.
   Future<List<AuthKey>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<AuthKeyTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     int? limit,
     int? offset,
@@ -440,7 +470,7 @@ class AuthKeyRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthKey>(
-      columnValues: columnValues(AuthKey.t),
+      columnValues: columnValues(AuthKey.t.updateTable),
       where: where(AuthKey.t),
       limit: limit,
       offset: offset,

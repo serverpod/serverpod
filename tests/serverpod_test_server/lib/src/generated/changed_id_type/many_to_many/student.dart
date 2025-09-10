@@ -147,13 +147,27 @@ class _StudentUuidImpl extends StudentUuid {
   }
 }
 
+class StudentUuidUpdateTable {
+  StudentUuidUpdateTable(this.table);
+
+  final StudentUuidTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
   StudentUuidTable({super.tableRelation}) : super(tableName: 'student_uuid') {
+    updateTable = StudentUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final StudentUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -415,12 +429,12 @@ class StudentUuidRepository {
   Future<StudentUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<StudentUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<StudentUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StudentUuid>(
       id,
-      columnValues: columnValues(StudentUuid.t),
+      columnValues: columnValues(StudentUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -429,7 +443,7 @@ class StudentUuidRepository {
   /// Returns the list of updated rows.
   Future<List<StudentUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<StudentUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<StudentUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<StudentUuidTable> where,
     int? limit,
     int? offset,
@@ -439,7 +453,7 @@ class StudentUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StudentUuid>(
-      columnValues: columnValues(StudentUuid.t),
+      columnValues: columnValues(StudentUuid.t.updateTable),
       where: where(StudentUuid.t),
       limit: limit,
       offset: offset,

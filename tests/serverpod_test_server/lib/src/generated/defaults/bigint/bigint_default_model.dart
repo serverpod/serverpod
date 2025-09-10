@@ -147,9 +147,28 @@ class _BigIntDefaultModelImpl extends BigIntDefaultModel {
   }
 }
 
+class BigIntDefaultModelUpdateTable {
+  BigIntDefaultModelUpdateTable(this.table);
+
+  final BigIntDefaultModelTable table;
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultModelStr(BigInt value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultModelStr,
+        value,
+      );
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultModelStrNull(BigInt? value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultModelStrNull,
+        value,
+      );
+}
+
 class BigIntDefaultModelTable extends _i1.Table<int?> {
   BigIntDefaultModelTable({super.tableRelation})
       : super(tableName: 'bigint_default_model') {
+    updateTable = BigIntDefaultModelUpdateTable(this);
     bigIntDefaultModelStr = _i1.ColumnBigInt(
       'bigIntDefaultModelStr',
       this,
@@ -159,6 +178,8 @@ class BigIntDefaultModelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final BigIntDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnBigInt bigIntDefaultModelStr;
 
@@ -366,12 +387,13 @@ class BigIntDefaultModelRepository {
   Future<BigIntDefaultModel?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<BigIntDefaultModelUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefaultModel>(
       id,
-      columnValues: columnValues(BigIntDefaultModel.t),
+      columnValues: columnValues(BigIntDefaultModel.t.updateTable),
       transaction: transaction,
     );
   }
@@ -380,7 +402,8 @@ class BigIntDefaultModelRepository {
   /// Returns the list of updated rows.
   Future<List<BigIntDefaultModel>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<BigIntDefaultModelUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultModelTable> where,
     int? limit,
     int? offset,
@@ -390,7 +413,7 @@ class BigIntDefaultModelRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefaultModel>(
-      columnValues: columnValues(BigIntDefaultModel.t),
+      columnValues: columnValues(BigIntDefaultModel.t.updateTable),
       where: where(BigIntDefaultModel.t),
       limit: limit,
       offset: offset,

@@ -152,8 +152,25 @@ class _CommentImpl extends Comment {
   }
 }
 
+class CommentUpdateTable {
+  CommentUpdateTable(this.table);
+
+  final CommentTable table;
+
+  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+        table.description,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> orderId(int value) => _i1.ColumnValue(
+        table.orderId,
+        value,
+      );
+}
+
 class CommentTable extends _i1.Table<int?> {
   CommentTable({super.tableRelation}) : super(tableName: 'comment') {
+    updateTable = CommentUpdateTable(this);
     description = _i1.ColumnString(
       'description',
       this,
@@ -163,6 +180,8 @@ class CommentTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CommentUpdateTable updateTable;
 
   late final _i1.ColumnString description;
 
@@ -405,12 +424,12 @@ class CommentRepository {
   Future<Comment?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CommentTable> columnValues,
+    required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Comment>(
       id,
-      columnValues: columnValues(Comment.t),
+      columnValues: columnValues(Comment.t.updateTable),
       transaction: transaction,
     );
   }
@@ -419,7 +438,7 @@ class CommentRepository {
   /// Returns the list of updated rows.
   Future<List<Comment>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CommentTable> columnValues,
+    required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CommentTable> where,
     int? limit,
     int? offset,
@@ -429,7 +448,7 @@ class CommentRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Comment>(
-      columnValues: columnValues(Comment.t),
+      columnValues: columnValues(Comment.t.updateTable),
       where: where(Comment.t),
       limit: limit,
       offset: offset,

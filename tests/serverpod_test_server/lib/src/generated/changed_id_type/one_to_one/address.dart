@@ -154,8 +154,25 @@ class _AddressUuidImpl extends AddressUuid {
   }
 }
 
+class AddressUuidUpdateTable {
+  AddressUuidUpdateTable(this.table);
+
+  final AddressUuidTable table;
+
+  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+        table.street,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
+        table.inhabitantId,
+        value,
+      );
+}
+
 class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
   AddressUuidTable({super.tableRelation}) : super(tableName: 'address_uuid') {
+    updateTable = AddressUuidUpdateTable(this);
     street = _i1.ColumnString(
       'street',
       this,
@@ -165,6 +182,8 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
       this,
     );
   }
+
+  late final AddressUuidUpdateTable updateTable;
 
   late final _i1.ColumnString street;
 
@@ -409,12 +428,12 @@ class AddressUuidRepository {
   Future<AddressUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AddressUuid>(
       id,
-      columnValues: columnValues(AddressUuid.t),
+      columnValues: columnValues(AddressUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -423,7 +442,7 @@ class AddressUuidRepository {
   /// Returns the list of updated rows.
   Future<List<AddressUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<AddressUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     int? limit,
     int? offset,
@@ -433,7 +452,7 @@ class AddressUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AddressUuid>(
-      columnValues: columnValues(AddressUuid.t),
+      columnValues: columnValues(AddressUuid.t.updateTable),
       where: where(AddressUuid.t),
       limit: limit,
       offset: offset,

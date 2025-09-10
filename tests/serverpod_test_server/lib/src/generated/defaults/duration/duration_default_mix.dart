@@ -182,9 +182,37 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
   }
 }
 
+class DurationDefaultMixUpdateTable {
+  DurationDefaultMixUpdateTable(this.table);
+
+  final DurationDefaultMixTable table;
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultPersist(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultModelAndDefaultPersist(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class DurationDefaultMixTable extends _i1.Table<int?> {
   DurationDefaultMixTable({super.tableRelation})
       : super(tableName: 'duration_default_mix') {
+    updateTable = DurationDefaultMixUpdateTable(this);
     durationDefaultAndDefaultModel = _i1.ColumnDuration(
       'durationDefaultAndDefaultModel',
       this,
@@ -201,6 +229,8 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefaultAndDefaultModel;
 
@@ -411,12 +441,13 @@ class DurationDefaultMixRepository {
   Future<DurationDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DurationDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefaultMix>(
       id,
-      columnValues: columnValues(DurationDefaultMix.t),
+      columnValues: columnValues(DurationDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -425,7 +456,8 @@ class DurationDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<DurationDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DurationDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -435,7 +467,7 @@ class DurationDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefaultMix>(
-      columnValues: columnValues(DurationDefaultMix.t),
+      columnValues: columnValues(DurationDefaultMix.t.updateTable),
       where: where(DurationDefaultMix.t),
       limit: limit,
       offset: offset,

@@ -152,9 +152,30 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }
 }
 
+class EnumDefaultPersistUpdateTable {
+  EnumDefaultPersistUpdateTable(this.table);
+
+  final EnumDefaultPersistTable table;
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultPersist(
+          _i2.ByNameEnum? value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultPersist(
+          _i3.ByIndexEnum? value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefaultPersist,
+        value,
+      );
+}
+
 class EnumDefaultPersistTable extends _i1.Table<int?> {
   EnumDefaultPersistTable({super.tableRelation})
       : super(tableName: 'enum_default_persist') {
+    updateTable = EnumDefaultPersistUpdateTable(this);
     byNameEnumDefaultPersist = _i1.ColumnEnum(
       'byNameEnumDefaultPersist',
       this,
@@ -168,6 +189,8 @@ class EnumDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final EnumDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultPersist;
 
@@ -375,12 +398,13 @@ class EnumDefaultPersistRepository {
   Future<EnumDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultPersist>(
       id,
-      columnValues: columnValues(EnumDefaultPersist.t),
+      columnValues: columnValues(EnumDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -389,7 +413,8 @@ class EnumDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<EnumDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -399,7 +424,7 @@ class EnumDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefaultPersist>(
-      columnValues: columnValues(EnumDefaultPersist.t),
+      columnValues: columnValues(EnumDefaultPersist.t.updateTable),
       where: where(EnumDefaultPersist.t),
       limit: limit,
       offset: offset,

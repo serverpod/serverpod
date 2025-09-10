@@ -178,8 +178,25 @@ class _OrderUuidImpl extends OrderUuid {
   }
 }
 
+class OrderUuidUpdateTable {
+  OrderUuidUpdateTable(this.table);
+
+  final OrderUuidTable table;
+
+  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+        table.description,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
+        table.customerId,
+        value,
+      );
+}
+
 class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
   OrderUuidTable({super.tableRelation}) : super(tableName: 'order_uuid') {
+    updateTable = OrderUuidUpdateTable(this);
     description = _i1.ColumnString(
       'description',
       this,
@@ -189,6 +206,8 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
       this,
     );
   }
+
+  late final OrderUuidUpdateTable updateTable;
 
   late final _i1.ColumnString description;
 
@@ -480,12 +499,12 @@ class OrderUuidRepository {
   Future<OrderUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<OrderUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<OrderUuid>(
       id,
-      columnValues: columnValues(OrderUuid.t),
+      columnValues: columnValues(OrderUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -494,7 +513,7 @@ class OrderUuidRepository {
   /// Returns the list of updated rows.
   Future<List<OrderUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<OrderUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderUuidTable> where,
     int? limit,
     int? offset,
@@ -504,7 +523,7 @@ class OrderUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrderUuid>(
-      columnValues: columnValues(OrderUuid.t),
+      columnValues: columnValues(OrderUuid.t.updateTable),
       where: where(OrderUuid.t),
       limit: limit,
       offset: offset,

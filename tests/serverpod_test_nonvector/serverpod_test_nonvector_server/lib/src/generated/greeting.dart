@@ -151,8 +151,31 @@ class _GreetingImpl extends Greeting {
   }
 }
 
+class GreetingUpdateTable {
+  GreetingUpdateTable(this.table);
+
+  final GreetingTable table;
+
+  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+        table.message,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> author(String value) => _i1.ColumnValue(
+        table.author,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _i1.ColumnValue(
+        table.timestamp,
+        value,
+      );
+}
+
 class GreetingTable extends _i1.Table<int?> {
   GreetingTable({super.tableRelation}) : super(tableName: 'greeting') {
+    updateTable = GreetingUpdateTable(this);
     message = _i1.ColumnString(
       'message',
       this,
@@ -166,6 +189,8 @@ class GreetingTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final GreetingUpdateTable updateTable;
 
   /// The greeting message.
   late final _i1.ColumnString message;
@@ -379,12 +404,12 @@ class GreetingRepository {
   Future<Greeting?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<GreetingTable> columnValues,
+    required _i1.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Greeting>(
       id,
-      columnValues: columnValues(Greeting.t),
+      columnValues: columnValues(Greeting.t.updateTable),
       transaction: transaction,
     );
   }
@@ -393,7 +418,7 @@ class GreetingRepository {
   /// Returns the list of updated rows.
   Future<List<Greeting>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<GreetingTable> columnValues,
+    required _i1.ColumnValueListBuilder<GreetingUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<GreetingTable> where,
     int? limit,
     int? offset,
@@ -403,7 +428,7 @@ class GreetingRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Greeting>(
-      columnValues: columnValues(Greeting.t),
+      columnValues: columnValues(Greeting.t.updateTable),
       where: where(Greeting.t),
       limit: limit,
       offset: offset,

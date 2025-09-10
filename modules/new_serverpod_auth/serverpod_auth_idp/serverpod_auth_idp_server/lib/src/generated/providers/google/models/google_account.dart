@@ -184,9 +184,40 @@ class _GoogleAccountImpl extends GoogleAccount {
   }
 }
 
+class GoogleAccountUpdateTable {
+  GoogleAccountUpdateTable(this.table);
+
+  final GoogleAccountTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _i1.ColumnValue(
+        table.created,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userIdentifier(String value) =>
+      _i1.ColumnValue(
+        table.userIdentifier,
+        value,
+      );
+}
+
 class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   GoogleAccountTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_google_account') {
+    updateTable = GoogleAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -204,6 +235,8 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final GoogleAccountUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -461,12 +494,12 @@ class GoogleAccountRepository {
   Future<GoogleAccount?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<GoogleAccountTable> columnValues,
+    required _i1.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<GoogleAccount>(
       id,
-      columnValues: columnValues(GoogleAccount.t),
+      columnValues: columnValues(GoogleAccount.t.updateTable),
       transaction: transaction,
     );
   }
@@ -475,7 +508,7 @@ class GoogleAccountRepository {
   /// Returns the list of updated rows.
   Future<List<GoogleAccount>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<GoogleAccountTable> columnValues,
+    required _i1.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
     int? limit,
     int? offset,
@@ -485,7 +518,7 @@ class GoogleAccountRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<GoogleAccount>(
-      columnValues: columnValues(GoogleAccount.t),
+      columnValues: columnValues(GoogleAccount.t.updateTable),
       where: where(GoogleAccount.t),
       limit: limit,
       offset: offset,

@@ -134,8 +134,25 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
+class UniqueDataUpdateTable {
+  UniqueDataUpdateTable(this.table);
+
+  final UniqueDataTable table;
+
+  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+        table.number,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+}
+
 class UniqueDataTable extends _i1.Table<int?> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
+    updateTable = UniqueDataUpdateTable(this);
     number = _i1.ColumnInt(
       'number',
       this,
@@ -145,6 +162,8 @@ class UniqueDataTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final UniqueDataUpdateTable updateTable;
 
   late final _i1.ColumnInt number;
 
@@ -352,12 +371,12 @@ class UniqueDataRepository {
   Future<UniqueData?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UniqueDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<UniqueDataUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UniqueData>(
       id,
-      columnValues: columnValues(UniqueData.t),
+      columnValues: columnValues(UniqueData.t.updateTable),
       transaction: transaction,
     );
   }
@@ -366,7 +385,7 @@ class UniqueDataRepository {
   /// Returns the list of updated rows.
   Future<List<UniqueData>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UniqueDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<UniqueDataUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<UniqueDataTable> where,
     int? limit,
     int? offset,
@@ -376,7 +395,7 @@ class UniqueDataRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UniqueData>(
-      columnValues: columnValues(UniqueData.t),
+      columnValues: columnValues(UniqueData.t.updateTable),
       where: where(UniqueData.t),
       limit: limit,
       offset: offset,

@@ -155,9 +155,34 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
   }
 }
 
+class BoolDefaultMixUpdateTable {
+  BoolDefaultMixUpdateTable(this.table);
+
+  final BoolDefaultMixTable table;
+
+  _i1.ColumnValue<bool, bool> boolDefaultAndDefaultModel(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultAndDefaultPersist(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultModelAndDefaultPersist(bool value) =>
+      _i1.ColumnValue(
+        table.boolDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class BoolDefaultMixTable extends _i1.Table<int?> {
   BoolDefaultMixTable({super.tableRelation})
       : super(tableName: 'bool_default_mix') {
+    updateTable = BoolDefaultMixUpdateTable(this);
     boolDefaultAndDefaultModel = _i1.ColumnBool(
       'boolDefaultAndDefaultModel',
       this,
@@ -174,6 +199,8 @@ class BoolDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final BoolDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnBool boolDefaultAndDefaultModel;
 
@@ -384,12 +411,12 @@ class BoolDefaultMixRepository {
   Future<BoolDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultMixUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultMix>(
       id,
-      columnValues: columnValues(BoolDefaultMix.t),
+      columnValues: columnValues(BoolDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -398,7 +425,7 @@ class BoolDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<BoolDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BoolDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultMixUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -408,7 +435,7 @@ class BoolDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefaultMix>(
-      columnValues: columnValues(BoolDefaultMix.t),
+      columnValues: columnValues(BoolDefaultMix.t.updateTable),
       where: where(BoolDefaultMix.t),
       limit: limit,
       offset: offset,

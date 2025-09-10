@@ -154,9 +154,26 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   }
 }
 
+class RelatedUniqueDataUpdateTable {
+  RelatedUniqueDataUpdateTable(this.table);
+
+  final RelatedUniqueDataTable table;
+
+  _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
+        table.uniqueDataId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+        table.number,
+        value,
+      );
+}
+
 class RelatedUniqueDataTable extends _i1.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
       : super(tableName: 'related_unique_data') {
+    updateTable = RelatedUniqueDataUpdateTable(this);
     uniqueDataId = _i1.ColumnInt(
       'uniqueDataId',
       this,
@@ -166,6 +183,8 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final RelatedUniqueDataUpdateTable updateTable;
 
   late final _i1.ColumnInt uniqueDataId;
 
@@ -408,12 +427,13 @@ class RelatedUniqueDataRepository {
   Future<RelatedUniqueData?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
       id,
-      columnValues: columnValues(RelatedUniqueData.t),
+      columnValues: columnValues(RelatedUniqueData.t.updateTable),
       transaction: transaction,
     );
   }
@@ -422,7 +442,8 @@ class RelatedUniqueDataRepository {
   /// Returns the list of updated rows.
   Future<List<RelatedUniqueData>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<RelatedUniqueDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     int? limit,
     int? offset,
@@ -432,7 +453,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelatedUniqueData>(
-      columnValues: columnValues(RelatedUniqueData.t),
+      columnValues: columnValues(RelatedUniqueData.t.updateTable),
       where: where(RelatedUniqueData.t),
       limit: limit,
       offset: offset,

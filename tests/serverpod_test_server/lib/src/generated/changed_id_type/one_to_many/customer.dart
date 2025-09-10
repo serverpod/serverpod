@@ -143,13 +143,27 @@ class _CustomerIntImpl extends CustomerInt {
   }
 }
 
+class CustomerIntUpdateTable {
+  CustomerIntUpdateTable(this.table);
+
+  final CustomerIntTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CustomerIntTable extends _i1.Table<int?> {
   CustomerIntTable({super.tableRelation}) : super(tableName: 'customer_int') {
+    updateTable = CustomerIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CustomerIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -415,12 +429,12 @@ class CustomerIntRepository {
   Future<CustomerInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CustomerIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CustomerIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CustomerInt>(
       id,
-      columnValues: columnValues(CustomerInt.t),
+      columnValues: columnValues(CustomerInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -429,7 +443,7 @@ class CustomerIntRepository {
   /// Returns the list of updated rows.
   Future<List<CustomerInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CustomerIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<CustomerIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
     int? limit,
     int? offset,
@@ -439,7 +453,7 @@ class CustomerIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CustomerInt>(
-      columnValues: columnValues(CustomerInt.t),
+      columnValues: columnValues(CustomerInt.t.updateTable),
       where: where(CustomerInt.t),
       limit: limit,
       offset: offset,

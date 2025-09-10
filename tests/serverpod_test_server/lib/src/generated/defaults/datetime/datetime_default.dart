@@ -160,9 +160,34 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
   }
 }
 
+class DateTimeDefaultUpdateTable {
+  DateTimeDefaultUpdateTable(this.table);
+
+  final DateTimeDefaultTable table;
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultNow(DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultNow,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultStr(DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultStr,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultStrNull(DateTime? value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultStrNull,
+        value,
+      );
+}
+
 class DateTimeDefaultTable extends _i1.Table<int?> {
   DateTimeDefaultTable({super.tableRelation})
       : super(tableName: 'datetime_default') {
+    updateTable = DateTimeDefaultUpdateTable(this);
     dateTimeDefaultNow = _i1.ColumnDateTime(
       'dateTimeDefaultNow',
       this,
@@ -179,6 +204,8 @@ class DateTimeDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DateTimeDefaultUpdateTable updateTable;
 
   late final _i1.ColumnDateTime dateTimeDefaultNow;
 
@@ -389,12 +416,13 @@ class DateTimeDefaultRepository {
   Future<DateTimeDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DateTimeDefaultUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefault>(
       id,
-      columnValues: columnValues(DateTimeDefault.t),
+      columnValues: columnValues(DateTimeDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -403,7 +431,8 @@ class DateTimeDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<DateTimeDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DateTimeDefaultUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     int? limit,
     int? offset,
@@ -413,7 +442,7 @@ class DateTimeDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DateTimeDefault>(
-      columnValues: columnValues(DateTimeDefault.t),
+      columnValues: columnValues(DateTimeDefault.t.updateTable),
       where: where(DateTimeDefault.t),
       limit: limit,
       offset: offset,

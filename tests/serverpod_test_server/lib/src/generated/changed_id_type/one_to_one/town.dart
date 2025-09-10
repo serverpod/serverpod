@@ -152,8 +152,25 @@ class _TownIntImpl extends TownInt {
   }
 }
 
+class TownIntUpdateTable {
+  TownIntUpdateTable(this.table);
+
+  final TownIntTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> mayorId(int? value) => _i1.ColumnValue(
+        table.mayorId,
+        value,
+      );
+}
+
 class TownIntTable extends _i1.Table<int?> {
   TownIntTable({super.tableRelation}) : super(tableName: 'town_int') {
+    updateTable = TownIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -163,6 +180,8 @@ class TownIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TownIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -407,12 +426,12 @@ class TownIntRepository {
   Future<TownInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<TownIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<TownIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<TownInt>(
       id,
-      columnValues: columnValues(TownInt.t),
+      columnValues: columnValues(TownInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -421,7 +440,7 @@ class TownIntRepository {
   /// Returns the list of updated rows.
   Future<List<TownInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<TownIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<TownIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TownIntTable> where,
     int? limit,
     int? offset,
@@ -431,7 +450,7 @@ class TownIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<TownInt>(
-      columnValues: columnValues(TownInt.t),
+      columnValues: columnValues(TownInt.t.updateTable),
       where: where(TownInt.t),
       limit: limit,
       offset: offset,

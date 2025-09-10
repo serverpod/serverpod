@@ -162,9 +162,36 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
   }
 }
 
+class BigIntDefaultMixUpdateTable {
+  BigIntDefaultMixUpdateTable(this.table);
+
+  final BigIntDefaultMixTable table;
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultModel(BigInt value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultPersist(
+          BigInt value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultModelAndDefaultPersist(
+          BigInt value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class BigIntDefaultMixTable extends _i1.Table<int?> {
   BigIntDefaultMixTable({super.tableRelation})
       : super(tableName: 'bigint_default_mix') {
+    updateTable = BigIntDefaultMixUpdateTable(this);
     bigIntDefaultAndDefaultModel = _i1.ColumnBigInt(
       'bigIntDefaultAndDefaultModel',
       this,
@@ -181,6 +208,8 @@ class BigIntDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final BigIntDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnBigInt bigIntDefaultAndDefaultModel;
 
@@ -391,12 +420,13 @@ class BigIntDefaultMixRepository {
   Future<BigIntDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefaultMix>(
       id,
-      columnValues: columnValues(BigIntDefaultMix.t),
+      columnValues: columnValues(BigIntDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -405,7 +435,8 @@ class BigIntDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<BigIntDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -415,7 +446,7 @@ class BigIntDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
-      columnValues: columnValues(BigIntDefaultMix.t),
+      columnValues: columnValues(BigIntDefaultMix.t.updateTable),
       where: where(BigIntDefaultMix.t),
       limit: limit,
       offset: offset,

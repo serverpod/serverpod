@@ -194,9 +194,49 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
+class CloudStorageEntryUpdateTable {
+  CloudStorageEntryUpdateTable(this.table);
+
+  final CloudStorageEntryTable table;
+
+  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+        table.storageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+        table.path,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
+      _i1.ColumnValue(
+        table.addedTime,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime? value) =>
+      _i1.ColumnValue(
+        table.expiration,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.byteData,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> verified(bool value) => _i1.ColumnValue(
+        table.verified,
+        value,
+      );
+}
+
 class CloudStorageEntryTable extends _i1.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage') {
+    updateTable = CloudStorageEntryUpdateTable(this);
     storageId = _i1.ColumnString(
       'storageId',
       this,
@@ -222,6 +262,8 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CloudStorageEntryUpdateTable updateTable;
 
   /// The storageId, typically `public` or `private`.
   late final _i1.ColumnString storageId;
@@ -447,12 +489,13 @@ class CloudStorageEntryRepository {
   Future<CloudStorageEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CloudStorageEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageEntry>(
       id,
-      columnValues: columnValues(CloudStorageEntry.t),
+      columnValues: columnValues(CloudStorageEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -461,7 +504,8 @@ class CloudStorageEntryRepository {
   /// Returns the list of updated rows.
   Future<List<CloudStorageEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CloudStorageEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     int? limit,
     int? offset,
@@ -471,7 +515,7 @@ class CloudStorageEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CloudStorageEntry>(
-      columnValues: columnValues(CloudStorageEntry.t),
+      columnValues: columnValues(CloudStorageEntry.t.updateTable),
       where: where(CloudStorageEntry.t),
       limit: limit,
       offset: offset,

@@ -150,9 +150,33 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
+class AuthUserUpdateTable {
+  AuthUserUpdateTable(this.table);
+
+  final AuthUserTable table;
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
+        table.blocked,
+        value,
+      );
+}
+
 class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_user') {
+    updateTable = AuthUserUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -166,6 +190,8 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final AuthUserUpdateTable updateTable;
 
   /// The time when this user was created.
   late final _i1.ColumnDateTime createdAt;
@@ -379,12 +405,12 @@ class AuthUserRepository {
   Future<AuthUser?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<AuthUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthUser>(
       id,
-      columnValues: columnValues(AuthUser.t),
+      columnValues: columnValues(AuthUser.t.updateTable),
       transaction: transaction,
     );
   }
@@ -393,7 +419,7 @@ class AuthUserRepository {
   /// Returns the list of updated rows.
   Future<List<AuthUser>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<AuthUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthUserTable> where,
     int? limit,
     int? offset,
@@ -403,7 +429,7 @@ class AuthUserRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthUser>(
-      columnValues: columnValues(AuthUser.t),
+      columnValues: columnValues(AuthUser.t.updateTable),
       where: where(AuthUser.t),
       limit: limit,
       offset: offset,

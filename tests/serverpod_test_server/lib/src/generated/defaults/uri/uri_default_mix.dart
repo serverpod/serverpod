@@ -159,9 +159,34 @@ class _UriDefaultMixImpl extends UriDefaultMix {
   }
 }
 
+class UriDefaultMixUpdateTable {
+  UriDefaultMixUpdateTable(this.table);
+
+  final UriDefaultMixTable table;
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultAndDefaultModel(Uri value) =>
+      _i1.ColumnValue(
+        table.uriDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultAndDefaultPersist(Uri value) =>
+      _i1.ColumnValue(
+        table.uriDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultModelAndDefaultPersist(Uri value) =>
+      _i1.ColumnValue(
+        table.uriDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class UriDefaultMixTable extends _i1.Table<int?> {
   UriDefaultMixTable({super.tableRelation})
       : super(tableName: 'uri_default_mix') {
+    updateTable = UriDefaultMixUpdateTable(this);
     uriDefaultAndDefaultModel = _i1.ColumnUri(
       'uriDefaultAndDefaultModel',
       this,
@@ -178,6 +203,8 @@ class UriDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final UriDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnUri uriDefaultAndDefaultModel;
 
@@ -388,12 +415,12 @@ class UriDefaultMixRepository {
   Future<UriDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UriDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultMixUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultMix>(
       id,
-      columnValues: columnValues(UriDefaultMix.t),
+      columnValues: columnValues(UriDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -402,7 +429,7 @@ class UriDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<UriDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UriDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<UriDefaultMixUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -412,7 +439,7 @@ class UriDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UriDefaultMix>(
-      columnValues: columnValues(UriDefaultMix.t),
+      columnValues: columnValues(UriDefaultMix.t.updateTable),
       where: where(UriDefaultMix.t),
       limit: limit,
       offset: offset,

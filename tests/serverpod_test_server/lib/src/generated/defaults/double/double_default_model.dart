@@ -138,9 +138,28 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
   }
 }
 
+class DoubleDefaultModelUpdateTable {
+  DoubleDefaultModelUpdateTable(this.table);
+
+  final DoubleDefaultModelTable table;
+
+  _i1.ColumnValue<double, double> doubleDefaultModel(double value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> doubleDefaultModelNull(double value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultModelNull,
+        value,
+      );
+}
+
 class DoubleDefaultModelTable extends _i1.Table<int?> {
   DoubleDefaultModelTable({super.tableRelation})
       : super(tableName: 'double_default_model') {
+    updateTable = DoubleDefaultModelUpdateTable(this);
     doubleDefaultModel = _i1.ColumnDouble(
       'doubleDefaultModel',
       this,
@@ -150,6 +169,8 @@ class DoubleDefaultModelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final DoubleDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnDouble doubleDefaultModel;
 
@@ -357,12 +378,13 @@ class DoubleDefaultModelRepository {
   Future<DoubleDefaultModel?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultModel>(
       id,
-      columnValues: columnValues(DoubleDefaultModel.t),
+      columnValues: columnValues(DoubleDefaultModel.t.updateTable),
       transaction: transaction,
     );
   }
@@ -371,7 +393,8 @@ class DoubleDefaultModelRepository {
   /// Returns the list of updated rows.
   Future<List<DoubleDefaultModel>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     int? limit,
     int? offset,
@@ -381,7 +404,7 @@ class DoubleDefaultModelRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
-      columnValues: columnValues(DoubleDefaultModel.t),
+      columnValues: columnValues(DoubleDefaultModel.t.updateTable),
       where: where(DoubleDefaultModel.t),
       limit: limit,
       offset: offset,

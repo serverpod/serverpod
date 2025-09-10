@@ -144,13 +144,27 @@ class _StudentImpl extends Student {
   }
 }
 
+class StudentUpdateTable {
+  StudentUpdateTable(this.table);
+
+  final StudentTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class StudentTable extends _i1.Table<int?> {
   StudentTable({super.tableRelation}) : super(tableName: 'student') {
+    updateTable = StudentUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final StudentUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -412,12 +426,12 @@ class StudentRepository {
   Future<Student?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<StudentTable> columnValues,
+    required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Student>(
       id,
-      columnValues: columnValues(Student.t),
+      columnValues: columnValues(Student.t.updateTable),
       transaction: transaction,
     );
   }
@@ -426,7 +440,7 @@ class StudentRepository {
   /// Returns the list of updated rows.
   Future<List<Student>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<StudentTable> columnValues,
+    required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<StudentTable> where,
     int? limit,
     int? offset,
@@ -436,7 +450,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Student>(
-      columnValues: columnValues(Student.t),
+      columnValues: columnValues(Student.t.updateTable),
       where: where(Student.t),
       limit: limit,
       offset: offset,

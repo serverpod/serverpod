@@ -143,13 +143,27 @@ class _BookImpl extends Book {
   }
 }
 
+class BookUpdateTable {
+  BookUpdateTable(this.table);
+
+  final BookTable table;
+
+  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+        table.title,
+        value,
+      );
+}
+
 class BookTable extends _i1.Table<int?> {
   BookTable({super.tableRelation}) : super(tableName: 'book') {
+    updateTable = BookUpdateTable(this);
     title = _i1.ColumnString(
       'title',
       this,
     );
   }
+
+  late final BookUpdateTable updateTable;
 
   late final _i1.ColumnString title;
 
@@ -415,12 +429,12 @@ class BookRepository {
   Future<Book?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BookTable> columnValues,
+    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Book>(
       id,
-      columnValues: columnValues(Book.t),
+      columnValues: columnValues(Book.t.updateTable),
       transaction: transaction,
     );
   }
@@ -429,7 +443,7 @@ class BookRepository {
   /// Returns the list of updated rows.
   Future<List<Book>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BookTable> columnValues,
+    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<BookTable> where,
     int? limit,
     int? offset,
@@ -439,7 +453,7 @@ class BookRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Book>(
-      columnValues: columnValues(Book.t),
+      columnValues: columnValues(Book.t.updateTable),
       where: where(Book.t),
       limit: limit,
       offset: offset,

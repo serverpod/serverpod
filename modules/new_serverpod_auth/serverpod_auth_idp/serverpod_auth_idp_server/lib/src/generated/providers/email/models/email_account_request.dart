@@ -215,9 +215,61 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   }
 }
 
+class EmailAccountRequestUpdateTable {
+  EmailAccountRequestUpdateTable(this.table);
+
+  final EmailAccountRequestTable table;
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> passwordHash(
+          _i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.passwordHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> passwordSalt(
+          _i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.passwordSalt,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> verificationCodeHash(
+          _i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.verificationCodeHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> verificationCodeSalt(
+          _i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.verificationCodeSalt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> verifiedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.verifiedAt,
+        value,
+      );
+}
+
 class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_email_account_request') {
+    updateTable = EmailAccountRequestUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -248,6 +300,8 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final EmailAccountRequestUpdateTable updateTable;
 
   /// The time when this authentication was created.
   late final _i1.ColumnDateTime createdAt;
@@ -483,12 +537,13 @@ class EmailAccountRequestRepository {
   Future<EmailAccountRequest?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountRequestTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountRequest>(
       id,
-      columnValues: columnValues(EmailAccountRequest.t),
+      columnValues: columnValues(EmailAccountRequest.t.updateTable),
       transaction: transaction,
     );
   }
@@ -497,7 +552,8 @@ class EmailAccountRequestRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccountRequest>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAccountRequestTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
     int? limit,
     int? offset,
@@ -507,7 +563,7 @@ class EmailAccountRequestRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountRequest>(
-      columnValues: columnValues(EmailAccountRequest.t),
+      columnValues: columnValues(EmailAccountRequest.t.updateTable),
       where: where(EmailAccountRequest.t),
       limit: limit,
       offset: offset,

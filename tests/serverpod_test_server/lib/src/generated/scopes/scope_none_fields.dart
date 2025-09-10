@@ -140,9 +140,28 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   final _i2.SimpleData? _object;
 }
 
+class ScopeNoneFieldsUpdateTable {
+  ScopeNoneFieldsUpdateTable(this.table);
+
+  final ScopeNoneFieldsTable table;
+
+  _i1.ColumnValue<String, String> $name(String? value) => _i1.ColumnValue(
+        table.$name,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> $object(
+          _i2.SimpleData? value) =>
+      _i1.ColumnValue(
+        table.$object,
+        value,
+      );
+}
+
 class ScopeNoneFieldsTable extends _i1.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
       : super(tableName: 'scope_none_fields') {
+    updateTable = ScopeNoneFieldsUpdateTable(this);
     $name = _i1.ColumnString(
       'name',
       this,
@@ -152,6 +171,8 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ScopeNoneFieldsUpdateTable updateTable;
 
   late final _i1.ColumnString $name;
 
@@ -362,12 +383,13 @@ class ScopeNoneFieldsRepository {
   Future<ScopeNoneFields?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ScopeNoneFields>(
       id,
-      columnValues: columnValues(ScopeNoneFields.t),
+      columnValues: columnValues(ScopeNoneFields.t.updateTable),
       transaction: transaction,
     );
   }
@@ -376,7 +398,8 @@ class ScopeNoneFieldsRepository {
   /// Returns the list of updated rows.
   Future<List<ScopeNoneFields>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ScopeNoneFieldsTable> columnValues,
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     int? limit,
     int? offset,
@@ -386,7 +409,7 @@ class ScopeNoneFieldsRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ScopeNoneFields>(
-      columnValues: columnValues(ScopeNoneFields.t),
+      columnValues: columnValues(ScopeNoneFields.t.updateTable),
       where: where(ScopeNoneFields.t),
       limit: limit,
       offset: offset,

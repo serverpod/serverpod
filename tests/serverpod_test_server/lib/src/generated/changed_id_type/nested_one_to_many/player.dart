@@ -154,8 +154,25 @@ class _PlayerUuidImpl extends PlayerUuid {
   }
 }
 
+class PlayerUuidUpdateTable {
+  PlayerUuidUpdateTable(this.table);
+
+  final PlayerUuidTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
+        table.teamId,
+        value,
+      );
+}
+
 class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
   PlayerUuidTable({super.tableRelation}) : super(tableName: 'player_uuid') {
+    updateTable = PlayerUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -165,6 +182,8 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final PlayerUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -409,12 +428,12 @@ class PlayerUuidRepository {
   Future<PlayerUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PlayerUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<PlayerUuid>(
       id,
-      columnValues: columnValues(PlayerUuid.t),
+      columnValues: columnValues(PlayerUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -423,7 +442,7 @@ class PlayerUuidRepository {
   /// Returns the list of updated rows.
   Future<List<PlayerUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<PlayerUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
     int? limit,
     int? offset,
@@ -433,7 +452,7 @@ class PlayerUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<PlayerUuid>(
-      columnValues: columnValues(PlayerUuid.t),
+      columnValues: columnValues(PlayerUuid.t.updateTable),
       where: where(PlayerUuid.t),
       limit: limit,
       offset: offset,

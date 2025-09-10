@@ -123,14 +123,29 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
   }
 }
 
+class ObjectWithDurationUpdateTable {
+  ObjectWithDurationUpdateTable(this.table);
+
+  final ObjectWithDurationTable table;
+
+  _i1.ColumnValue<Duration, Duration> duration(Duration value) =>
+      _i1.ColumnValue(
+        table.duration,
+        value,
+      );
+}
+
 class ObjectWithDurationTable extends _i1.Table<int?> {
   ObjectWithDurationTable({super.tableRelation})
       : super(tableName: 'object_with_duration') {
+    updateTable = ObjectWithDurationUpdateTable(this);
     duration = _i1.ColumnDuration(
       'duration',
       this,
     );
   }
+
+  late final ObjectWithDurationUpdateTable updateTable;
 
   late final _i1.ColumnDuration duration;
 
@@ -335,12 +350,13 @@ class ObjectWithDurationRepository {
   Future<ObjectWithDuration?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithDuration>(
       id,
-      columnValues: columnValues(ObjectWithDuration.t),
+      columnValues: columnValues(ObjectWithDuration.t.updateTable),
       transaction: transaction,
     );
   }
@@ -349,7 +365,8 @@ class ObjectWithDurationRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithDuration>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithDurationTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     int? limit,
     int? offset,
@@ -359,7 +376,7 @@ class ObjectWithDurationRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithDuration>(
-      columnValues: columnValues(ObjectWithDuration.t),
+      columnValues: columnValues(ObjectWithDuration.t.updateTable),
       where: where(ObjectWithDuration.t),
       limit: limit,
       offset: offset,

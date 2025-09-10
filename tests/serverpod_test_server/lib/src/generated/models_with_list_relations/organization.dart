@@ -177,8 +177,25 @@ class _OrganizationImpl extends Organization {
   }
 }
 
+class OrganizationUpdateTable {
+  OrganizationUpdateTable(this.table);
+
+  final OrganizationTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
+        table.cityId,
+        value,
+      );
+}
+
 class OrganizationTable extends _i1.Table<int?> {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
+    updateTable = OrganizationUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -188,6 +205,8 @@ class OrganizationTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final OrganizationUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -483,12 +502,12 @@ class OrganizationRepository {
   Future<Organization?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrganizationUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Organization>(
       id,
-      columnValues: columnValues(Organization.t),
+      columnValues: columnValues(Organization.t.updateTable),
       transaction: transaction,
     );
   }
@@ -497,7 +516,7 @@ class OrganizationRepository {
   /// Returns the list of updated rows.
   Future<List<Organization>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<OrganizationTable> columnValues,
+    required _i1.ColumnValueListBuilder<OrganizationUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     int? limit,
     int? offset,
@@ -507,7 +526,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Organization>(
-      columnValues: columnValues(Organization.t),
+      columnValues: columnValues(Organization.t.updateTable),
       where: where(Organization.t),
       limit: limit,
       offset: offset,

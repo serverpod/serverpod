@@ -132,9 +132,19 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   }
 }
 
+class RelationEmptyModelUpdateTable {
+  RelationEmptyModelUpdateTable(this.table);
+
+  final RelationEmptyModelTable table;
+}
+
 class RelationEmptyModelTable extends _i1.Table<int?> {
   RelationEmptyModelTable({super.tableRelation})
-      : super(tableName: 'relation_empty_model') {}
+      : super(tableName: 'relation_empty_model') {
+    updateTable = RelationEmptyModelUpdateTable(this);
+  }
+
+  late final RelationEmptyModelUpdateTable updateTable;
 
   _i2.EmptyModelRelationItemTable? ___items;
 
@@ -397,12 +407,13 @@ class RelationEmptyModelRepository {
   Future<RelationEmptyModel?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<RelationEmptyModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelationEmptyModel>(
       id,
-      columnValues: columnValues(RelationEmptyModel.t),
+      columnValues: columnValues(RelationEmptyModel.t.updateTable),
       transaction: transaction,
     );
   }
@@ -411,7 +422,8 @@ class RelationEmptyModelRepository {
   /// Returns the list of updated rows.
   Future<List<RelationEmptyModel>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<RelationEmptyModelTable> columnValues,
+    required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     int? limit,
     int? offset,
@@ -421,7 +433,7 @@ class RelationEmptyModelRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RelationEmptyModel>(
-      columnValues: columnValues(RelationEmptyModel.t),
+      columnValues: columnValues(RelationEmptyModel.t.updateTable),
       where: where(RelationEmptyModel.t),
       limit: limit,
       offset: offset,

@@ -143,13 +143,27 @@ class _CustomerImpl extends Customer {
   }
 }
 
+class CustomerUpdateTable {
+  CustomerUpdateTable(this.table);
+
+  final CustomerTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CustomerTable extends _i1.Table<int?> {
   CustomerTable({super.tableRelation}) : super(tableName: 'customer') {
+    updateTable = CustomerUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CustomerUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -415,12 +429,12 @@ class CustomerRepository {
   Future<Customer?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
+    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Customer>(
       id,
-      columnValues: columnValues(Customer.t),
+      columnValues: columnValues(Customer.t.updateTable),
       transaction: transaction,
     );
   }
@@ -429,7 +443,7 @@ class CustomerRepository {
   /// Returns the list of updated rows.
   Future<List<Customer>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CustomerTable> columnValues,
+    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     int? limit,
     int? offset,
@@ -439,7 +453,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Customer>(
-      columnValues: columnValues(Customer.t),
+      columnValues: columnValues(Customer.t.updateTable),
       where: where(Customer.t),
       limit: limit,
       offset: offset,

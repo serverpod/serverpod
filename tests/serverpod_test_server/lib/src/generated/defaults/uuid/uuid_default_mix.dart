@@ -159,9 +159,36 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
   }
 }
 
+class UuidDefaultMixUpdateTable {
+  UuidDefaultMixUpdateTable(this.table);
+
+  final UuidDefaultMixTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultModel(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultPersist(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue>
+      uuidDefaultModelAndDefaultPersist(_i1.UuidValue value) => _i1.ColumnValue(
+            table.uuidDefaultModelAndDefaultPersist,
+            value,
+          );
+}
+
 class UuidDefaultMixTable extends _i1.Table<int?> {
   UuidDefaultMixTable({super.tableRelation})
       : super(tableName: 'uuid_default_mix') {
+    updateTable = UuidDefaultMixUpdateTable(this);
     uuidDefaultAndDefaultModel = _i1.ColumnUuid(
       'uuidDefaultAndDefaultModel',
       this,
@@ -178,6 +205,8 @@ class UuidDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final UuidDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnUuid uuidDefaultAndDefaultModel;
 
@@ -388,12 +417,12 @@ class UuidDefaultMixRepository {
   Future<UuidDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<UuidDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultMix>(
       id,
-      columnValues: columnValues(UuidDefaultMix.t),
+      columnValues: columnValues(UuidDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -402,7 +431,7 @@ class UuidDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<UuidDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UuidDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -412,7 +441,7 @@ class UuidDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UuidDefaultMix>(
-      columnValues: columnValues(UuidDefaultMix.t),
+      columnValues: columnValues(UuidDefaultMix.t.updateTable),
       where: where(UuidDefaultMix.t),
       limit: limit,
       offset: offset,

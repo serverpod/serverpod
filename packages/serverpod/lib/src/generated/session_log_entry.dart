@@ -299,9 +299,87 @@ class _SessionLogEntryImpl extends SessionLogEntry {
   }
 }
 
+class SessionLogEntryUpdateTable {
+  SessionLogEntryUpdateTable(this.table);
+
+  final SessionLogEntryTable table;
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> module(String? value) => _i1.ColumnValue(
+        table.module,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> endpoint(String? value) => _i1.ColumnValue(
+        table.endpoint,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String? value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> duration(double? value) => _i1.ColumnValue(
+        table.duration,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> numQueries(int? value) => _i1.ColumnValue(
+        table.numQueries,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> slow(bool? value) => _i1.ColumnValue(
+        table.slow,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+        table.error,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+        table.stackTrace,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> authenticatedUserId(int? value) => _i1.ColumnValue(
+        table.authenticatedUserId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userId(String? value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> isOpen(bool? value) => _i1.ColumnValue(
+        table.isOpen,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
+      _i1.ColumnValue(
+        table.touched,
+        value,
+      );
+}
+
 class SessionLogEntryTable extends _i1.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_session_log') {
+    updateTable = SessionLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
       this,
@@ -359,6 +437,8 @@ class SessionLogEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final SessionLogEntryUpdateTable updateTable;
 
   /// The id of the server that handled this session.
   late final _i1.ColumnString serverId;
@@ -620,12 +700,13 @@ class SessionLogEntryRepository {
   Future<SessionLogEntry?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<SessionLogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SessionLogEntry>(
       id,
-      columnValues: columnValues(SessionLogEntry.t),
+      columnValues: columnValues(SessionLogEntry.t.updateTable),
       transaction: transaction,
     );
   }
@@ -634,7 +715,8 @@ class SessionLogEntryRepository {
   /// Returns the list of updated rows.
   Future<List<SessionLogEntry>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<SessionLogEntryTable> columnValues,
+    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     int? limit,
     int? offset,
@@ -644,7 +726,7 @@ class SessionLogEntryRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<SessionLogEntry>(
-      columnValues: columnValues(SessionLogEntry.t),
+      columnValues: columnValues(SessionLogEntry.t.updateTable),
       where: where(SessionLogEntry.t),
       limit: limit,
       offset: offset,

@@ -140,13 +140,27 @@ class _ArenaUuidImpl extends ArenaUuid {
   }
 }
 
+class ArenaUuidUpdateTable {
+  ArenaUuidUpdateTable(this.table);
+
+  final ArenaUuidTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
   ArenaUuidTable({super.tableRelation}) : super(tableName: 'arena_uuid') {
+    updateTable = ArenaUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final ArenaUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -388,12 +402,12 @@ class ArenaUuidRepository {
   Future<ArenaUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<ArenaUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<ArenaUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ArenaUuid>(
       id,
-      columnValues: columnValues(ArenaUuid.t),
+      columnValues: columnValues(ArenaUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -402,7 +416,7 @@ class ArenaUuidRepository {
   /// Returns the list of updated rows.
   Future<List<ArenaUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ArenaUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<ArenaUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
     int? limit,
     int? offset,
@@ -412,7 +426,7 @@ class ArenaUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ArenaUuid>(
-      columnValues: columnValues(ArenaUuid.t),
+      columnValues: columnValues(ArenaUuid.t.updateTable),
       where: where(ArenaUuid.t),
       limit: limit,
       offset: offset,

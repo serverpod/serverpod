@@ -174,8 +174,25 @@ class _EnrollmentImpl extends Enrollment {
   }
 }
 
+class EnrollmentUpdateTable {
+  EnrollmentUpdateTable(this.table);
+
+  final EnrollmentTable table;
+
+  _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
+        table.studentId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> courseId(int value) => _i1.ColumnValue(
+        table.courseId,
+        value,
+      );
+}
+
 class EnrollmentTable extends _i1.Table<int?> {
   EnrollmentTable({super.tableRelation}) : super(tableName: 'enrollment') {
+    updateTable = EnrollmentUpdateTable(this);
     studentId = _i1.ColumnInt(
       'studentId',
       this,
@@ -185,6 +202,8 @@ class EnrollmentTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EnrollmentUpdateTable updateTable;
 
   late final _i1.ColumnInt studentId;
 
@@ -454,12 +473,12 @@ class EnrollmentRepository {
   Future<Enrollment?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnrollmentTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Enrollment>(
       id,
-      columnValues: columnValues(Enrollment.t),
+      columnValues: columnValues(Enrollment.t.updateTable),
       transaction: transaction,
     );
   }
@@ -468,7 +487,7 @@ class EnrollmentRepository {
   /// Returns the list of updated rows.
   Future<List<Enrollment>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EnrollmentTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnrollmentTable> where,
     int? limit,
     int? offset,
@@ -478,7 +497,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Enrollment>(
-      columnValues: columnValues(Enrollment.t),
+      columnValues: columnValues(Enrollment.t.updateTable),
       where: where(Enrollment.t),
       limit: limit,
       offset: offset,

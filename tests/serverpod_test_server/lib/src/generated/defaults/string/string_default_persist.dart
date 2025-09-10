@@ -312,9 +312,78 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
   }
 }
 
+class StringDefaultPersistUpdateTable {
+  StringDefaultPersistUpdateTable(this.table);
+
+  final StringDefaultPersistTable table;
+
+  _i1.ColumnValue<String, String> stringDefaultPersist(String? value) =>
+      _i1.ColumnValue(
+        table.stringDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistSingleQuoteWithOneDoubleQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistSingleQuoteWithTwoDoubleQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistDoubleQuoteWithOneSingleQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+            value,
+          );
+
+  _i1.ColumnValue<String, String>
+      stringDefaultPersistDoubleQuoteWithTwoSingleQuote(String? value) =>
+          _i1.ColumnValue(
+            table.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+            value,
+          );
+}
+
 class StringDefaultPersistTable extends _i1.Table<int?> {
   StringDefaultPersistTable({super.tableRelation})
       : super(tableName: 'string_default_persist') {
+    updateTable = StringDefaultPersistUpdateTable(this);
     stringDefaultPersist = _i1.ColumnString(
       'stringDefaultPersist',
       this,
@@ -361,6 +430,8 @@ class StringDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final StringDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnString stringDefaultPersist;
 
@@ -593,12 +664,13 @@ class StringDefaultPersistRepository {
   Future<StringDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<StringDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultPersist>(
       id,
-      columnValues: columnValues(StringDefaultPersist.t),
+      columnValues: columnValues(StringDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -607,7 +679,8 @@ class StringDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<StringDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<StringDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<StringDefaultPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -617,7 +690,7 @@ class StringDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<StringDefaultPersist>(
-      columnValues: columnValues(StringDefaultPersist.t),
+      columnValues: columnValues(StringDefaultPersist.t.updateTable),
       where: where(StringDefaultPersist.t),
       limit: limit,
       offset: offset,

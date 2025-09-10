@@ -176,9 +176,29 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   }
 }
 
+class EnrollmentIntUpdateTable {
+  EnrollmentIntUpdateTable(this.table);
+
+  final EnrollmentIntTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> studentId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.studentId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> courseId(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.courseId,
+        value,
+      );
+}
+
 class EnrollmentIntTable extends _i1.Table<int?> {
   EnrollmentIntTable({super.tableRelation})
       : super(tableName: 'enrollment_int') {
+    updateTable = EnrollmentIntUpdateTable(this);
     studentId = _i1.ColumnUuid(
       'studentId',
       this,
@@ -188,6 +208,8 @@ class EnrollmentIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EnrollmentIntUpdateTable updateTable;
 
   late final _i1.ColumnUuid studentId;
 
@@ -457,12 +479,12 @@ class EnrollmentIntRepository {
   Future<EnrollmentInt?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnrollmentIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnrollmentInt>(
       id,
-      columnValues: columnValues(EnrollmentInt.t),
+      columnValues: columnValues(EnrollmentInt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -471,7 +493,7 @@ class EnrollmentIntRepository {
   /// Returns the list of updated rows.
   Future<List<EnrollmentInt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EnrollmentIntTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     int? limit,
     int? offset,
@@ -481,7 +503,7 @@ class EnrollmentIntRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnrollmentInt>(
-      columnValues: columnValues(EnrollmentInt.t),
+      columnValues: columnValues(EnrollmentInt.t.updateTable),
       where: where(EnrollmentInt.t),
       limit: limit,
       offset: offset,

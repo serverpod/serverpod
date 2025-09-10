@@ -153,11 +153,34 @@ class _EmailAccountFailedLoginAttemptImpl
   }
 }
 
+class EmailAccountFailedLoginAttemptUpdateTable {
+  EmailAccountFailedLoginAttemptUpdateTable(this.table);
+
+  final EmailAccountFailedLoginAttemptTable table;
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.attemptedAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+        table.ipAddress,
+        value,
+      );
+}
+
 class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountFailedLoginAttemptTable({super.tableRelation})
       : super(
             tableName:
                 'serverpod_auth_idp_email_account_failed_login_attempt') {
+    updateTable = EmailAccountFailedLoginAttemptUpdateTable(this);
     email = _i1.ColumnString(
       'email',
       this,
@@ -171,6 +194,8 @@ class EmailAccountFailedLoginAttemptTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final EmailAccountFailedLoginAttemptUpdateTable updateTable;
 
   /// Email attempting to sign in with.
   ///
@@ -386,13 +411,14 @@ class EmailAccountFailedLoginAttemptRepository {
   Future<EmailAccountFailedLoginAttempt?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable>
+    required _i1
+        .ColumnValueListBuilder<EmailAccountFailedLoginAttemptUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountFailedLoginAttempt>(
       id,
-      columnValues: columnValues(EmailAccountFailedLoginAttempt.t),
+      columnValues: columnValues(EmailAccountFailedLoginAttempt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -401,7 +427,8 @@ class EmailAccountFailedLoginAttemptRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccountFailedLoginAttempt>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAccountFailedLoginAttemptTable>
+    required _i1
+        .ColumnValueListBuilder<EmailAccountFailedLoginAttemptUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountFailedLoginAttemptTable>
         where,
@@ -413,7 +440,7 @@ class EmailAccountFailedLoginAttemptRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountFailedLoginAttempt>(
-      columnValues: columnValues(EmailAccountFailedLoginAttempt.t),
+      columnValues: columnValues(EmailAccountFailedLoginAttempt.t.updateTable),
       where: where(EmailAccountFailedLoginAttempt.t),
       limit: limit,
       offset: offset,

@@ -124,14 +124,29 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }
 }
 
+class ObjectWithByteDataUpdateTable {
+  ObjectWithByteDataUpdateTable(this.table);
+
+  final ObjectWithByteDataTable table;
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.byteData,
+        value,
+      );
+}
+
 class ObjectWithByteDataTable extends _i1.Table<int?> {
   ObjectWithByteDataTable({super.tableRelation})
       : super(tableName: 'object_with_bytedata') {
+    updateTable = ObjectWithByteDataUpdateTable(this);
     byteData = _i1.ColumnByteData(
       'byteData',
       this,
     );
   }
+
+  late final ObjectWithByteDataUpdateTable updateTable;
 
   late final _i1.ColumnByteData byteData;
 
@@ -336,12 +351,13 @@ class ObjectWithByteDataRepository {
   Future<ObjectWithByteData?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithByteDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithByteData>(
       id,
-      columnValues: columnValues(ObjectWithByteData.t),
+      columnValues: columnValues(ObjectWithByteData.t.updateTable),
       transaction: transaction,
     );
   }
@@ -350,7 +366,8 @@ class ObjectWithByteDataRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectWithByteData>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectWithByteDataTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     int? limit,
     int? offset,
@@ -360,7 +377,7 @@ class ObjectWithByteDataRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectWithByteData>(
-      columnValues: columnValues(ObjectWithByteData.t),
+      columnValues: columnValues(ObjectWithByteData.t.updateTable),
       where: where(ObjectWithByteData.t),
       limit: limit,
       offset: offset,

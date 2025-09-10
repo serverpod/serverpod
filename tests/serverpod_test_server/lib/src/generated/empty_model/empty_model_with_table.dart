@@ -90,9 +90,19 @@ class _EmptyModelWithTableImpl extends EmptyModelWithTable {
   }
 }
 
+class EmptyModelWithTableUpdateTable {
+  EmptyModelWithTableUpdateTable(this.table);
+
+  final EmptyModelWithTableTable table;
+}
+
 class EmptyModelWithTableTable extends _i1.Table<int?> {
   EmptyModelWithTableTable({super.tableRelation})
-      : super(tableName: 'empty_model_with_table') {}
+      : super(tableName: 'empty_model_with_table') {
+    updateTable = EmptyModelWithTableUpdateTable(this);
+  }
+
+  late final EmptyModelWithTableUpdateTable updateTable;
 
   @override
   List<_i1.Column> get columns => [id];
@@ -292,12 +302,13 @@ class EmptyModelWithTableRepository {
   Future<EmptyModelWithTable?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmptyModelWithTableTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelWithTable>(
       id,
-      columnValues: columnValues(EmptyModelWithTable.t),
+      columnValues: columnValues(EmptyModelWithTable.t.updateTable),
       transaction: transaction,
     );
   }
@@ -306,7 +317,8 @@ class EmptyModelWithTableRepository {
   /// Returns the list of updated rows.
   Future<List<EmptyModelWithTable>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmptyModelWithTableTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     int? limit,
     int? offset,
@@ -316,7 +328,7 @@ class EmptyModelWithTableRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmptyModelWithTable>(
-      columnValues: columnValues(EmptyModelWithTable.t),
+      columnValues: columnValues(EmptyModelWithTable.t.updateTable),
       where: where(EmptyModelWithTable.t),
       limit: limit,
       offset: offset,

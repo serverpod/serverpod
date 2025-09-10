@@ -124,15 +124,29 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
   }
 }
 
+class IntDefaultPersistUpdateTable {
+  IntDefaultPersistUpdateTable(this.table);
+
+  final IntDefaultPersistTable table;
+
+  _i1.ColumnValue<int, int> intDefaultPersist(int? value) => _i1.ColumnValue(
+        table.intDefaultPersist,
+        value,
+      );
+}
+
 class IntDefaultPersistTable extends _i1.Table<int?> {
   IntDefaultPersistTable({super.tableRelation})
       : super(tableName: 'int_default_persist') {
+    updateTable = IntDefaultPersistUpdateTable(this);
     intDefaultPersist = _i1.ColumnInt(
       'intDefaultPersist',
       this,
       hasDefault: true,
     );
   }
+
+  late final IntDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnInt intDefaultPersist;
 
@@ -337,12 +351,13 @@ class IntDefaultPersistRepository {
   Future<IntDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<IntDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<IntDefaultPersist>(
       id,
-      columnValues: columnValues(IntDefaultPersist.t),
+      columnValues: columnValues(IntDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -351,7 +366,8 @@ class IntDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<IntDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<IntDefaultPersistTable> columnValues,
+    required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -361,7 +377,7 @@ class IntDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<IntDefaultPersist>(
-      columnValues: columnValues(IntDefaultPersist.t),
+      columnValues: columnValues(IntDefaultPersist.t.updateTable),
       where: where(IntDefaultPersist.t),
       limit: limit,
       offset: offset,

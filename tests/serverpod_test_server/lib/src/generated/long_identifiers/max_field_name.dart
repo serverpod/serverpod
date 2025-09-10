@@ -132,15 +132,32 @@ class _MaxFieldNameImpl extends MaxFieldName {
   }
 }
 
+class MaxFieldNameUpdateTable {
+  MaxFieldNameUpdateTable(this.table);
+
+  final MaxFieldNameTable table;
+
+  _i1.ColumnValue<String, String>
+      thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo(
+              String value) =>
+          _i1.ColumnValue(
+            table.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+            value,
+          );
+}
+
 class MaxFieldNameTable extends _i1.Table<int?> {
   MaxFieldNameTable({super.tableRelation})
       : super(tableName: 'max_field_name') {
+    updateTable = MaxFieldNameUpdateTable(this);
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo =
         _i1.ColumnString(
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
       this,
     );
   }
+
+  late final MaxFieldNameUpdateTable updateTable;
 
   late final _i1.ColumnString
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
@@ -346,12 +363,12 @@ class MaxFieldNameRepository {
   Future<MaxFieldName?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<MaxFieldNameTable> columnValues,
+    required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MaxFieldName>(
       id,
-      columnValues: columnValues(MaxFieldName.t),
+      columnValues: columnValues(MaxFieldName.t.updateTable),
       transaction: transaction,
     );
   }
@@ -360,7 +377,7 @@ class MaxFieldNameRepository {
   /// Returns the list of updated rows.
   Future<List<MaxFieldName>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<MaxFieldNameTable> columnValues,
+    required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     int? limit,
     int? offset,
@@ -370,7 +387,7 @@ class MaxFieldNameRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<MaxFieldName>(
-      columnValues: columnValues(MaxFieldName.t),
+      columnValues: columnValues(MaxFieldName.t.updateTable),
       where: where(MaxFieldName.t),
       limit: limit,
       offset: offset,

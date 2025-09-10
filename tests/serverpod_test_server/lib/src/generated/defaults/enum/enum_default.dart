@@ -181,8 +181,43 @@ class _EnumDefaultImpl extends EnumDefault {
   }
 }
 
+class EnumDefaultUpdateTable {
+  EnumDefaultUpdateTable(this.table);
+
+  final EnumDefaultTable table;
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefault(
+          _i2.ByNameEnum value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefault,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultNull(
+          _i2.ByNameEnum? value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefaultNull,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefault(
+          _i3.ByIndexEnum value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefault,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultNull(
+          _i3.ByIndexEnum? value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefaultNull,
+        value,
+      );
+}
+
 class EnumDefaultTable extends _i1.Table<int?> {
   EnumDefaultTable({super.tableRelation}) : super(tableName: 'enum_default') {
+    updateTable = EnumDefaultUpdateTable(this);
     byNameEnumDefault = _i1.ColumnEnum(
       'byNameEnumDefault',
       this,
@@ -208,6 +243,8 @@ class EnumDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final EnumDefaultUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefault;
 
@@ -421,12 +458,12 @@ class EnumDefaultRepository {
   Future<EnumDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefault>(
       id,
-      columnValues: columnValues(EnumDefault.t),
+      columnValues: columnValues(EnumDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -435,7 +472,7 @@ class EnumDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<EnumDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
     int? limit,
     int? offset,
@@ -445,7 +482,7 @@ class EnumDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefault>(
-      columnValues: columnValues(EnumDefault.t),
+      columnValues: columnValues(EnumDefault.t.updateTable),
       where: where(EnumDefault.t),
       limit: limit,
       offset: offset,

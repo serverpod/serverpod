@@ -168,9 +168,36 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
   }
 }
 
+class EnumDefaultMixUpdateTable {
+  EnumDefaultMixUpdateTable(this.table);
+
+  final EnumDefaultMixTable table;
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultAndDefaultModel(_i2.ByNameEnum value) => _i1.ColumnValue(
+            table.byNameEnumDefaultAndDefaultModel,
+            value,
+          );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultAndDefaultPersist(_i2.ByNameEnum value) =>
+          _i1.ColumnValue(
+            table.byNameEnumDefaultAndDefaultPersist,
+            value,
+          );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultModelAndDefaultPersist(_i2.ByNameEnum value) =>
+          _i1.ColumnValue(
+            table.byNameEnumDefaultModelAndDefaultPersist,
+            value,
+          );
+}
+
 class EnumDefaultMixTable extends _i1.Table<int?> {
   EnumDefaultMixTable({super.tableRelation})
       : super(tableName: 'enum_default_mix') {
+    updateTable = EnumDefaultMixUpdateTable(this);
     byNameEnumDefaultAndDefaultModel = _i1.ColumnEnum(
       'byNameEnumDefaultAndDefaultModel',
       this,
@@ -190,6 +217,8 @@ class EnumDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final EnumDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultAndDefaultModel;
 
@@ -401,12 +430,12 @@ class EnumDefaultMixRepository {
   Future<EnumDefaultMix?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultMix>(
       id,
-      columnValues: columnValues(EnumDefaultMix.t),
+      columnValues: columnValues(EnumDefaultMix.t.updateTable),
       transaction: transaction,
     );
   }
@@ -415,7 +444,7 @@ class EnumDefaultMixRepository {
   /// Returns the list of updated rows.
   Future<List<EnumDefaultMix>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultMixTable> columnValues,
+    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -425,7 +454,7 @@ class EnumDefaultMixRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
-      columnValues: columnValues(EnumDefaultMix.t),
+      columnValues: columnValues(EnumDefaultMix.t.updateTable),
       where: where(EnumDefaultMix.t),
       limit: limit,
       offset: offset,

@@ -267,9 +267,72 @@ class _AuthSessionImpl extends AuthSession {
   }
 }
 
+class AuthSessionUpdateTable {
+  AuthSessionUpdateTable(this.table);
+
+  final AuthSessionTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.lastUsedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.expiresAt,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> expireAfterUnusedFor(Duration? value) =>
+      _i1.ColumnValue(
+        table.expireAfterUnusedFor,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeyHash(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.sessionKeyHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeySalt(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.sessionKeySalt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   AuthSessionTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_session') {
+    updateTable = AuthSessionUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -309,6 +372,8 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final AuthSessionUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -595,12 +660,12 @@ class AuthSessionRepository {
   Future<AuthSession?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<AuthSessionTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthSessionUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthSession>(
       id,
-      columnValues: columnValues(AuthSession.t),
+      columnValues: columnValues(AuthSession.t.updateTable),
       transaction: transaction,
     );
   }
@@ -609,7 +674,7 @@ class AuthSessionRepository {
   /// Returns the list of updated rows.
   Future<List<AuthSession>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<AuthSessionTable> columnValues,
+    required _i1.ColumnValueListBuilder<AuthSessionUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthSessionTable> where,
     int? limit,
     int? offset,
@@ -619,7 +684,7 @@ class AuthSessionRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<AuthSession>(
-      columnValues: columnValues(AuthSession.t),
+      columnValues: columnValues(AuthSession.t.updateTable),
       where: where(AuthSession.t),
       limit: limit,
       offset: offset,

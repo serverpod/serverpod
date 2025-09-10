@@ -131,15 +131,30 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   }
 }
 
+class DurationDefaultPersistUpdateTable {
+  DurationDefaultPersistUpdateTable(this.table);
+
+  final DurationDefaultPersistTable table;
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultPersist(Duration? value) =>
+      _i1.ColumnValue(
+        table.durationDefaultPersist,
+        value,
+      );
+}
+
 class DurationDefaultPersistTable extends _i1.Table<int?> {
   DurationDefaultPersistTable({super.tableRelation})
       : super(tableName: 'duration_default_persist') {
+    updateTable = DurationDefaultPersistUpdateTable(this);
     durationDefaultPersist = _i1.ColumnDuration(
       'durationDefaultPersist',
       this,
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefaultPersist;
 
@@ -344,13 +359,13 @@ class DurationDefaultPersistRepository {
   Future<DurationDefaultPersist?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DurationDefaultPersistTable>
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefaultPersist>(
       id,
-      columnValues: columnValues(DurationDefaultPersist.t),
+      columnValues: columnValues(DurationDefaultPersist.t.updateTable),
       transaction: transaction,
     );
   }
@@ -359,7 +374,7 @@ class DurationDefaultPersistRepository {
   /// Returns the list of updated rows.
   Future<List<DurationDefaultPersist>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DurationDefaultPersistTable>
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     int? limit,
@@ -370,7 +385,7 @@ class DurationDefaultPersistRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DurationDefaultPersist>(
-      columnValues: columnValues(DurationDefaultPersist.t),
+      columnValues: columnValues(DurationDefaultPersist.t.updateTable),
       where: where(DurationDefaultPersist.t),
       limit: limit,
       offset: offset,

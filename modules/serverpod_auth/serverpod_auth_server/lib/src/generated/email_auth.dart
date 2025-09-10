@@ -150,9 +150,31 @@ class _EmailAuthImpl extends EmailAuth {
   }
 }
 
+class EmailAuthUpdateTable {
+  EmailAuthUpdateTable(this.table);
+
+  final EmailAuthTable table;
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+}
+
 class EmailAuthTable extends _i1.Table<int?> {
   EmailAuthTable({super.tableRelation})
       : super(tableName: 'serverpod_email_auth') {
+    updateTable = EmailAuthUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -166,6 +188,8 @@ class EmailAuthTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailAuthUpdateTable updateTable;
 
   /// The id of the user, corresponds to the id field in [UserInfo].
   late final _i1.ColumnInt userId;
@@ -379,12 +403,12 @@ class EmailAuthRepository {
   Future<EmailAuth?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAuth>(
       id,
-      columnValues: columnValues(EmailAuth.t),
+      columnValues: columnValues(EmailAuth.t.updateTable),
       transaction: transaction,
     );
   }
@@ -393,7 +417,7 @@ class EmailAuthRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAuth>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAuthTable> columnValues,
+    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     int? limit,
     int? offset,
@@ -403,7 +427,7 @@ class EmailAuthRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAuth>(
-      columnValues: columnValues(EmailAuth.t),
+      columnValues: columnValues(EmailAuth.t.updateTable),
       where: where(EmailAuth.t),
       limit: limit,
       offset: offset,

@@ -138,9 +138,28 @@ class _DoubleDefaultImpl extends DoubleDefault {
   }
 }
 
+class DoubleDefaultUpdateTable {
+  DoubleDefaultUpdateTable(this.table);
+
+  final DoubleDefaultTable table;
+
+  _i1.ColumnValue<double, double> doubleDefault(double value) =>
+      _i1.ColumnValue(
+        table.doubleDefault,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> doubleDefaultNull(double? value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultNull,
+        value,
+      );
+}
+
 class DoubleDefaultTable extends _i1.Table<int?> {
   DoubleDefaultTable({super.tableRelation})
       : super(tableName: 'double_default') {
+    updateTable = DoubleDefaultUpdateTable(this);
     doubleDefault = _i1.ColumnDouble(
       'doubleDefault',
       this,
@@ -152,6 +171,8 @@ class DoubleDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DoubleDefaultUpdateTable updateTable;
 
   late final _i1.ColumnDouble doubleDefault;
 
@@ -359,12 +380,12 @@ class DoubleDefaultRepository {
   Future<DoubleDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefault>(
       id,
-      columnValues: columnValues(DoubleDefault.t),
+      columnValues: columnValues(DoubleDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -373,7 +394,7 @@ class DoubleDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<DoubleDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
     int? limit,
     int? offset,
@@ -383,7 +404,7 @@ class DoubleDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<DoubleDefault>(
-      columnValues: columnValues(DoubleDefault.t),
+      columnValues: columnValues(DoubleDefault.t.updateTable),
       where: where(DoubleDefault.t),
       limit: limit,
       offset: offset,

@@ -172,9 +172,40 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   }
 }
 
+class RuntimeSettingsUpdateTable {
+  RuntimeSettingsUpdateTable(this.table);
+
+  final RuntimeSettingsTable table;
+
+  _i1.ColumnValue<_i2.LogSettings, _i2.LogSettings> logSettings(
+          _i2.LogSettings value) =>
+      _i1.ColumnValue(
+        table.logSettings,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i3.LogSettingsOverride>, List<_i3.LogSettingsOverride>>
+      logSettingsOverrides(List<_i3.LogSettingsOverride> value) =>
+          _i1.ColumnValue(
+            table.logSettingsOverrides,
+            value,
+          );
+
+  _i1.ColumnValue<bool, bool> logServiceCalls(bool value) => _i1.ColumnValue(
+        table.logServiceCalls,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> logMalformedCalls(bool value) => _i1.ColumnValue(
+        table.logMalformedCalls,
+        value,
+      );
+}
+
 class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
       : super(tableName: 'serverpod_runtime_settings') {
+    updateTable = RuntimeSettingsUpdateTable(this);
     logSettings = _i1.ColumnSerializable<_i2.LogSettings>(
       'logSettings',
       this,
@@ -193,6 +224,8 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final RuntimeSettingsUpdateTable updateTable;
 
   /// Log settings.
   late final _i1.ColumnSerializable<_i2.LogSettings> logSettings;
@@ -411,12 +444,13 @@ class RuntimeSettingsRepository {
   Future<RuntimeSettings?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
+    required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RuntimeSettings>(
       id,
-      columnValues: columnValues(RuntimeSettings.t),
+      columnValues: columnValues(RuntimeSettings.t.updateTable),
       transaction: transaction,
     );
   }
@@ -425,7 +459,8 @@ class RuntimeSettingsRepository {
   /// Returns the list of updated rows.
   Future<List<RuntimeSettings>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<RuntimeSettingsTable> columnValues,
+    required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     int? limit,
     int? offset,
@@ -435,7 +470,7 @@ class RuntimeSettingsRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RuntimeSettings>(
-      columnValues: columnValues(RuntimeSettings.t),
+      columnValues: columnValues(RuntimeSettings.t.updateTable),
       where: where(RuntimeSettings.t),
       limit: limit,
       offset: offset,

@@ -152,8 +152,31 @@ class _BoolDefaultImpl extends BoolDefault {
   }
 }
 
+class BoolDefaultUpdateTable {
+  BoolDefaultUpdateTable(this.table);
+
+  final BoolDefaultTable table;
+
+  _i1.ColumnValue<bool, bool> boolDefaultTrue(bool value) => _i1.ColumnValue(
+        table.boolDefaultTrue,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultFalse(bool value) => _i1.ColumnValue(
+        table.boolDefaultFalse,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> boolDefaultNullFalse(bool? value) =>
+      _i1.ColumnValue(
+        table.boolDefaultNullFalse,
+        value,
+      );
+}
+
 class BoolDefaultTable extends _i1.Table<int?> {
   BoolDefaultTable({super.tableRelation}) : super(tableName: 'bool_default') {
+    updateTable = BoolDefaultUpdateTable(this);
     boolDefaultTrue = _i1.ColumnBool(
       'boolDefaultTrue',
       this,
@@ -170,6 +193,8 @@ class BoolDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final BoolDefaultUpdateTable updateTable;
 
   late final _i1.ColumnBool boolDefaultTrue;
 
@@ -380,12 +405,12 @@ class BoolDefaultRepository {
   Future<BoolDefault?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<BoolDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefault>(
       id,
-      columnValues: columnValues(BoolDefault.t),
+      columnValues: columnValues(BoolDefault.t.updateTable),
       transaction: transaction,
     );
   }
@@ -394,7 +419,7 @@ class BoolDefaultRepository {
   /// Returns the list of updated rows.
   Future<List<BoolDefault>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<BoolDefaultTable> columnValues,
+    required _i1.ColumnValueListBuilder<BoolDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultTable> where,
     int? limit,
     int? offset,
@@ -404,7 +429,7 @@ class BoolDefaultRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<BoolDefault>(
-      columnValues: columnValues(BoolDefault.t),
+      columnValues: columnValues(BoolDefault.t.updateTable),
       where: where(BoolDefault.t),
       limit: limit,
       offset: offset,

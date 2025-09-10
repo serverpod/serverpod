@@ -153,8 +153,25 @@ class _ObjectUserImpl extends ObjectUser {
   }
 }
 
+class ObjectUserUpdateTable {
+  ObjectUserUpdateTable(this.table);
+
+  final ObjectUserTable table;
+
+  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> userInfoId(int value) => _i1.ColumnValue(
+        table.userInfoId,
+        value,
+      );
+}
+
 class ObjectUserTable extends _i1.Table<int?> {
   ObjectUserTable({super.tableRelation}) : super(tableName: 'object_user') {
+    updateTable = ObjectUserUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -164,6 +181,8 @@ class ObjectUserTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectUserUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -406,12 +425,12 @@ class ObjectUserRepository {
   Future<ObjectUser?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectUser>(
       id,
-      columnValues: columnValues(ObjectUser.t),
+      columnValues: columnValues(ObjectUser.t.updateTable),
       transaction: transaction,
     );
   }
@@ -420,7 +439,7 @@ class ObjectUserRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectUser>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectUserTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
     int? limit,
     int? offset,
@@ -430,7 +449,7 @@ class ObjectUserRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectUser>(
-      columnValues: columnValues(ObjectUser.t),
+      columnValues: columnValues(ObjectUser.t.updateTable),
       where: where(ObjectUser.t),
       limit: limit,
       offset: offset,

@@ -181,11 +181,28 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
   }
 }
 
+class OrganizationWithLongTableNameUpdateTable {
+  OrganizationWithLongTableNameUpdateTable(this.table);
+
+  final OrganizationWithLongTableNameTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
+        table.cityId,
+        value,
+      );
+}
+
 class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
   OrganizationWithLongTableNameTable({super.tableRelation})
       : super(
             tableName:
                 'organization_with_long_table_name_that_is_still_valid') {
+    updateTable = OrganizationWithLongTableNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -195,6 +212,8 @@ class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final OrganizationWithLongTableNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -490,13 +509,14 @@ class OrganizationWithLongTableNameRepository {
   Future<OrganizationWithLongTableName?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+    required _i1
+        .ColumnValueListBuilder<OrganizationWithLongTableNameUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<OrganizationWithLongTableName>(
       id,
-      columnValues: columnValues(OrganizationWithLongTableName.t),
+      columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
       transaction: transaction,
     );
   }
@@ -505,7 +525,8 @@ class OrganizationWithLongTableNameRepository {
   /// Returns the list of updated rows.
   Future<List<OrganizationWithLongTableName>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<OrganizationWithLongTableNameTable>
+    required _i1
+        .ColumnValueListBuilder<OrganizationWithLongTableNameUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
         where,
@@ -517,7 +538,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<OrganizationWithLongTableName>(
-      columnValues: columnValues(OrganizationWithLongTableName.t),
+      columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
       where: where(OrganizationWithLongTableName.t),
       limit: limit,
       offset: offset,

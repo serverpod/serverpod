@@ -154,10 +154,33 @@ class _EmailAccountPasswordResetRequestAttemptImpl
   }
 }
 
+class EmailAccountPasswordResetRequestAttemptUpdateTable {
+  EmailAccountPasswordResetRequestAttemptUpdateTable(this.table);
+
+  final EmailAccountPasswordResetRequestAttemptTable table;
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.attemptedAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+        table.ipAddress,
+        value,
+      );
+}
+
 class EmailAccountPasswordResetRequestAttemptTable
     extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetRequestAttemptTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_email_account_pw_reset_request') {
+    updateTable = EmailAccountPasswordResetRequestAttemptUpdateTable(this);
     email = _i1.ColumnString(
       'email',
       this,
@@ -171,6 +194,8 @@ class EmailAccountPasswordResetRequestAttemptTable
       this,
     );
   }
+
+  late final EmailAccountPasswordResetRequestAttemptUpdateTable updateTable;
 
   /// Email the reset was attempted for.
   ///
@@ -394,14 +419,15 @@ class EmailAccountPasswordResetRequestAttemptRepository {
   Future<EmailAccountPasswordResetRequestAttempt?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1
-        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+    required _i1.ColumnValueListBuilder<
+            EmailAccountPasswordResetRequestAttemptUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequestAttempt>(
       id,
-      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
+      columnValues:
+          columnValues(EmailAccountPasswordResetRequestAttempt.t.updateTable),
       transaction: transaction,
     );
   }
@@ -410,8 +436,8 @@ class EmailAccountPasswordResetRequestAttemptRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequestAttempt>> updateWhere(
     _i1.Session session, {
-    required _i1
-        .ColumnValueListBuilder<EmailAccountPasswordResetRequestAttemptTable>
+    required _i1.ColumnValueListBuilder<
+            EmailAccountPasswordResetRequestAttemptUpdateTable>
         columnValues,
     required _i1
         .WhereExpressionBuilder<EmailAccountPasswordResetRequestAttemptTable>
@@ -425,7 +451,8 @@ class EmailAccountPasswordResetRequestAttemptRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequestAttempt>(
-      columnValues: columnValues(EmailAccountPasswordResetRequestAttempt.t),
+      columnValues:
+          columnValues(EmailAccountPasswordResetRequestAttempt.t.updateTable),
       where: where(EmailAccountPasswordResetRequestAttempt.t),
       limit: limit,
       offset: offset,

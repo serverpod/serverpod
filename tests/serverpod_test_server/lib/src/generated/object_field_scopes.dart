@@ -145,9 +145,26 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
   }
 }
 
+class ObjectFieldScopesUpdateTable {
+  ObjectFieldScopesUpdateTable(this.table);
+
+  final ObjectFieldScopesTable table;
+
+  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
+        table.normal,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> database(String? value) => _i1.ColumnValue(
+        table.database,
+        value,
+      );
+}
+
 class ObjectFieldScopesTable extends _i1.Table<int?> {
   ObjectFieldScopesTable({super.tableRelation})
       : super(tableName: 'object_field_scopes') {
+    updateTable = ObjectFieldScopesUpdateTable(this);
     normal = _i1.ColumnString(
       'normal',
       this,
@@ -157,6 +174,8 @@ class ObjectFieldScopesTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectFieldScopesUpdateTable updateTable;
 
   late final _i1.ColumnString normal;
 
@@ -364,12 +383,13 @@ class ObjectFieldScopesRepository {
   Future<ObjectFieldScopes?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
       id,
-      columnValues: columnValues(ObjectFieldScopes.t),
+      columnValues: columnValues(ObjectFieldScopes.t.updateTable),
       transaction: transaction,
     );
   }
@@ -378,7 +398,8 @@ class ObjectFieldScopesRepository {
   /// Returns the list of updated rows.
   Future<List<ObjectFieldScopes>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ObjectFieldScopesTable> columnValues,
+    required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     int? limit,
     int? offset,
@@ -388,7 +409,7 @@ class ObjectFieldScopesRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ObjectFieldScopes>(
-      columnValues: columnValues(ObjectFieldScopes.t),
+      columnValues: columnValues(ObjectFieldScopes.t.updateTable),
       where: where(ObjectFieldScopes.t),
       limit: limit,
       offset: offset,

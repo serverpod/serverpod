@@ -188,11 +188,45 @@ class _EmailAccountPasswordResetRequestImpl
   }
 }
 
+class EmailAccountPasswordResetRequestUpdateTable {
+  EmailAccountPasswordResetRequestUpdateTable(this.table);
+
+  final EmailAccountPasswordResetRequestTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.emailAccountId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> verificationCodeHash(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.verificationCodeHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> verificationCodeSalt(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.verificationCodeSalt,
+        value,
+      );
+}
+
 class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetRequestTable({super.tableRelation})
       : super(
             tableName:
                 'serverpod_auth_idp_email_account_password_reset_request') {
+    updateTable = EmailAccountPasswordResetRequestUpdateTable(this);
     emailAccountId = _i1.ColumnUuid(
       'emailAccountId',
       this,
@@ -211,6 +245,8 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final EmailAccountPasswordResetRequestUpdateTable updateTable;
 
   late final _i1.ColumnUuid emailAccountId;
 
@@ -465,13 +501,15 @@ class EmailAccountPasswordResetRequestRepository {
   Future<EmailAccountPasswordResetRequest?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable>
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequest>(
       id,
-      columnValues: columnValues(EmailAccountPasswordResetRequest.t),
+      columnValues:
+          columnValues(EmailAccountPasswordResetRequest.t.updateTable),
       transaction: transaction,
     );
   }
@@ -480,7 +518,8 @@ class EmailAccountPasswordResetRequestRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequest>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAccountPasswordResetRequestTable>
+    required _i1
+        .ColumnValueListBuilder<EmailAccountPasswordResetRequestUpdateTable>
         columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
         where,
@@ -492,7 +531,8 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
-      columnValues: columnValues(EmailAccountPasswordResetRequest.t),
+      columnValues:
+          columnValues(EmailAccountPasswordResetRequest.t.updateTable),
       where: where(EmailAccountPasswordResetRequest.t),
       limit: limit,
       offset: offset,

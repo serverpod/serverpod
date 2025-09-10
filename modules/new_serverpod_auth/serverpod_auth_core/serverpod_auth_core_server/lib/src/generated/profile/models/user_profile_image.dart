@@ -192,9 +192,44 @@ class _UserProfileImageImpl extends UserProfileImage {
   }
 }
 
+class UserProfileImageUpdateTable {
+  UserProfileImageUpdateTable(this.table);
+
+  final UserProfileImageTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> userProfileId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.userProfileId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+        table.storageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+        table.path,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> url(Uri value) => _i1.ColumnValue(
+        table.url,
+        value,
+      );
+}
+
 class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileImageTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_profile_image') {
+    updateTable = UserProfileImageUpdateTable(this);
     userProfileId = _i1.ColumnUuid(
       'userProfileId',
       this,
@@ -217,6 +252,8 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final UserProfileImageUpdateTable updateTable;
 
   late final _i1.ColumnUuid userProfileId;
 
@@ -473,12 +510,13 @@ class UserProfileImageRepository {
   Future<UserProfileImage?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
+    required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfileImage>(
       id,
-      columnValues: columnValues(UserProfileImage.t),
+      columnValues: columnValues(UserProfileImage.t.updateTable),
       transaction: transaction,
     );
   }
@@ -487,7 +525,8 @@ class UserProfileImageRepository {
   /// Returns the list of updated rows.
   Future<List<UserProfileImage>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<UserProfileImageTable> columnValues,
+    required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     int? limit,
     int? offset,
@@ -497,7 +536,7 @@ class UserProfileImageRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
-      columnValues: columnValues(UserProfileImage.t),
+      columnValues: columnValues(UserProfileImage.t.updateTable),
       where: where(UserProfileImage.t),
       limit: limit,
       offset: offset,

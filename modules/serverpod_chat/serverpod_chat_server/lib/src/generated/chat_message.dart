@@ -244,9 +244,49 @@ class _ChatMessageImpl extends ChatMessage {
   }
 }
 
+class ChatMessageUpdateTable {
+  ChatMessageUpdateTable(this.table);
+
+  final ChatMessageTable table;
+
+  _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
+        table.channel,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+        table.message,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> sender(int value) => _i1.ColumnValue(
+        table.sender,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> removed(bool value) => _i1.ColumnValue(
+        table.removed,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i3.ChatMessageAttachment>,
+      List<_i3.ChatMessageAttachment>> attachments(
+          List<_i3.ChatMessageAttachment>? value) =>
+      _i1.ColumnValue(
+        table.attachments,
+        value,
+      );
+}
+
 class ChatMessageTable extends _i1.Table<int?> {
   ChatMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_message') {
+    updateTable = ChatMessageUpdateTable(this);
     channel = _i1.ColumnString(
       'channel',
       this,
@@ -272,6 +312,8 @@ class ChatMessageTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ChatMessageUpdateTable updateTable;
 
   /// The channel this message was posted to.
   late final _i1.ColumnString channel;
@@ -498,12 +540,12 @@ class ChatMessageRepository {
   Future<ChatMessage?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ChatMessageTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChatMessageUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ChatMessage>(
       id,
-      columnValues: columnValues(ChatMessage.t),
+      columnValues: columnValues(ChatMessage.t.updateTable),
       transaction: transaction,
     );
   }
@@ -512,7 +554,7 @@ class ChatMessageRepository {
   /// Returns the list of updated rows.
   Future<List<ChatMessage>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ChatMessageTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChatMessageUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     int? limit,
     int? offset,
@@ -522,7 +564,7 @@ class ChatMessageRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ChatMessage>(
-      columnValues: columnValues(ChatMessage.t),
+      columnValues: columnValues(ChatMessage.t.updateTable),
       where: where(ChatMessage.t),
       limit: limit,
       offset: offset,

@@ -147,13 +147,27 @@ class _CourseUuidImpl extends CourseUuid {
   }
 }
 
+class CourseUuidUpdateTable {
+  CourseUuidUpdateTable(this.table);
+
+  final CourseUuidTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
   CourseUuidTable({super.tableRelation}) : super(tableName: 'course_uuid') {
+    updateTable = CourseUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CourseUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -419,12 +433,12 @@ class CourseUuidRepository {
   Future<CourseUuid?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<CourseUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CourseUuid>(
       id,
-      columnValues: columnValues(CourseUuid.t),
+      columnValues: columnValues(CourseUuid.t.updateTable),
       transaction: transaction,
     );
   }
@@ -433,7 +447,7 @@ class CourseUuidRepository {
   /// Returns the list of updated rows.
   Future<List<CourseUuid>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<CourseUuidTable> columnValues,
+    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     int? limit,
     int? offset,
@@ -443,7 +457,7 @@ class CourseUuidRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<CourseUuid>(
-      columnValues: columnValues(CourseUuid.t),
+      columnValues: columnValues(CourseUuid.t.updateTable),
       where: where(CourseUuid.t),
       limit: limit,
       offset: offset,

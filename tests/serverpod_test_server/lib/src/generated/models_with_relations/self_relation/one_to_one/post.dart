@@ -173,8 +173,25 @@ class _PostImpl extends Post {
   }
 }
 
+class PostUpdateTable {
+  PostUpdateTable(this.table);
+
+  final PostTable table;
+
+  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
+        table.content,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> nextId(int? value) => _i1.ColumnValue(
+        table.nextId,
+        value,
+      );
+}
+
 class PostTable extends _i1.Table<int?> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
+    updateTable = PostUpdateTable(this);
     content = _i1.ColumnString(
       'content',
       this,
@@ -184,6 +201,8 @@ class PostTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final PostUpdateTable updateTable;
 
   late final _i1.ColumnString content;
 
@@ -455,12 +474,12 @@ class PostRepository {
   Future<Post?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<PostTable> columnValues,
+    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Post>(
       id,
-      columnValues: columnValues(Post.t),
+      columnValues: columnValues(Post.t.updateTable),
       transaction: transaction,
     );
   }
@@ -469,7 +488,7 @@ class PostRepository {
   /// Returns the list of updated rows.
   Future<List<Post>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<PostTable> columnValues,
+    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<PostTable> where,
     int? limit,
     int? offset,
@@ -479,7 +498,7 @@ class PostRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Post>(
-      columnValues: columnValues(Post.t),
+      columnValues: columnValues(Post.t.updateTable),
       where: where(Post.t),
       limit: limit,
       offset: offset,

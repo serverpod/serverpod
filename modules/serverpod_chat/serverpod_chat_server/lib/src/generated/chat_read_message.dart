@@ -150,9 +150,31 @@ class _ChatReadMessageImpl extends ChatReadMessage {
   }
 }
 
+class ChatReadMessageUpdateTable {
+  ChatReadMessageUpdateTable(this.table);
+
+  final ChatReadMessageTable table;
+
+  _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
+        table.channel,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> lastReadMessageId(int value) => _i1.ColumnValue(
+        table.lastReadMessageId,
+        value,
+      );
+}
+
 class ChatReadMessageTable extends _i1.Table<int?> {
   ChatReadMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_read_message') {
+    updateTable = ChatReadMessageUpdateTable(this);
     channel = _i1.ColumnString(
       'channel',
       this,
@@ -166,6 +188,8 @@ class ChatReadMessageTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ChatReadMessageUpdateTable updateTable;
 
   /// The channel this that has been read.
   late final _i1.ColumnString channel;
@@ -379,12 +403,13 @@ class ChatReadMessageRepository {
   Future<ChatReadMessage?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<ChatReadMessageTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChatReadMessageUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ChatReadMessage>(
       id,
-      columnValues: columnValues(ChatReadMessage.t),
+      columnValues: columnValues(ChatReadMessage.t.updateTable),
       transaction: transaction,
     );
   }
@@ -393,7 +418,8 @@ class ChatReadMessageRepository {
   /// Returns the list of updated rows.
   Future<List<ChatReadMessage>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<ChatReadMessageTable> columnValues,
+    required _i1.ColumnValueListBuilder<ChatReadMessageUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     int? limit,
     int? offset,
@@ -403,7 +429,7 @@ class ChatReadMessageRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<ChatReadMessage>(
-      columnValues: columnValues(ChatReadMessage.t),
+      columnValues: columnValues(ChatReadMessage.t.updateTable),
       where: where(ChatReadMessage.t),
       limit: limit,
       offset: offset,

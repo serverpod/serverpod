@@ -153,8 +153,25 @@ class _AddressImpl extends Address {
   }
 }
 
+class AddressUpdateTable {
+  AddressUpdateTable(this.table);
+
+  final AddressTable table;
+
+  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+        table.street,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
+        table.inhabitantId,
+        value,
+      );
+}
+
 class AddressTable extends _i1.Table<int?> {
   AddressTable({super.tableRelation}) : super(tableName: 'address') {
+    updateTable = AddressUpdateTable(this);
     street = _i1.ColumnString(
       'street',
       this,
@@ -164,6 +181,8 @@ class AddressTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final AddressUpdateTable updateTable;
 
   late final _i1.ColumnString street;
 
@@ -408,12 +427,12 @@ class AddressRepository {
   Future<Address?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<AddressTable> columnValues,
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<Address>(
       id,
-      columnValues: columnValues(Address.t),
+      columnValues: columnValues(Address.t.updateTable),
       transaction: transaction,
     );
   }
@@ -422,7 +441,7 @@ class AddressRepository {
   /// Returns the list of updated rows.
   Future<List<Address>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<AddressTable> columnValues,
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressTable> where,
     int? limit,
     int? offset,
@@ -432,7 +451,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<Address>(
-      columnValues: columnValues(Address.t),
+      columnValues: columnValues(Address.t.updateTable),
       where: where(Address.t),
       limit: limit,
       offset: offset,

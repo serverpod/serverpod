@@ -162,9 +162,30 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 }
 
+class LongImplicitIdFieldUpdateTable {
+  LongImplicitIdFieldUpdateTable(this.table);
+
+  final LongImplicitIdFieldTable table;
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int>
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id(
+              int? value) =>
+          _i1.ColumnValue(
+            table
+                .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+            value,
+          );
+}
+
 class LongImplicitIdFieldTable extends _i1.Table<int?> {
   LongImplicitIdFieldTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field') {
+    updateTable = LongImplicitIdFieldUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -175,6 +196,8 @@ class LongImplicitIdFieldTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final LongImplicitIdFieldUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -389,12 +412,13 @@ class LongImplicitIdFieldRepository {
   Future<LongImplicitIdField?> updateById(
     _i1.Session session,
     int id, {
-    required _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columnValues,
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
+        columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LongImplicitIdField>(
       id,
-      columnValues: columnValues(LongImplicitIdField.t),
+      columnValues: columnValues(LongImplicitIdField.t.updateTable),
       transaction: transaction,
     );
   }
@@ -403,7 +427,8 @@ class LongImplicitIdFieldRepository {
   /// Returns the list of updated rows.
   Future<List<LongImplicitIdField>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<LongImplicitIdFieldTable> columnValues,
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
+        columnValues,
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
     int? limit,
     int? offset,
@@ -413,7 +438,7 @@ class LongImplicitIdFieldRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<LongImplicitIdField>(
-      columnValues: columnValues(LongImplicitIdField.t),
+      columnValues: columnValues(LongImplicitIdField.t.updateTable),
       where: where(LongImplicitIdField.t),
       limit: limit,
       offset: offset,

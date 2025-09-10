@@ -273,9 +273,71 @@ class _RefreshTokenImpl extends RefreshToken {
   }
 }
 
+class RefreshTokenUpdateTable {
+  RefreshTokenUpdateTable(this.table);
+
+  final RefreshTokenTable table;
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> extraClaims(String? value) => _i1.ColumnValue(
+        table.extraClaims,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> fixedSecret(_i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.fixedSecret,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretHash(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.rotatingSecretHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretSalt(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.rotatingSecretSalt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.lastUpdatedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+}
+
 class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   RefreshTokenTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
+    updateTable = RefreshTokenUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -315,6 +377,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       hasDefault: true,
     );
   }
+
+  late final RefreshTokenUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -614,12 +678,12 @@ class RefreshTokenRepository {
   Future<RefreshToken?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<RefreshTokenTable> columnValues,
+    required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RefreshToken>(
       id,
-      columnValues: columnValues(RefreshToken.t),
+      columnValues: columnValues(RefreshToken.t.updateTable),
       transaction: transaction,
     );
   }
@@ -628,7 +692,7 @@ class RefreshTokenRepository {
   /// Returns the list of updated rows.
   Future<List<RefreshToken>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<RefreshTokenTable> columnValues,
+    required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     int? limit,
     int? offset,
@@ -638,7 +702,7 @@ class RefreshTokenRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<RefreshToken>(
-      columnValues: columnValues(RefreshToken.t),
+      columnValues: columnValues(RefreshToken.t.updateTable),
       where: where(RefreshToken.t),
       limit: limit,
       offset: offset,
