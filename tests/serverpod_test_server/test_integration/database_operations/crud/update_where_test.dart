@@ -756,7 +756,7 @@ void main() {
                 aVector: Vector([7.0, 8.0, 9.0]),
                 aHalfVector: HalfVector([7.0, 8.0, 9.0]),
                 aSparseVector: SparseVector([7.0, 8.0, 9.0]),
-                // aBit: Bit([false, true, false]),
+                aBit: Bit([false, true, false]),
                 anEnum: TestEnum.two,
                 aStringifiedEnum: TestEnumStringified.two,
                 aList: [7, 8, 9],
@@ -787,7 +787,7 @@ void main() {
               t.aVector(Vector([4.0, 5.0, 6.0])),
               t.aHalfVector(HalfVector([4.0, 5.0, 6.0])),
               t.aSparseVector(SparseVector([4.0, 5.0, 6.0])),
-              // t.aBit(Bit([false, true, false])),
+              t.aBit(Bit([false, true, false])),
               t.anEnum(TestEnum.three),
               t.aStringifiedEnum(TestEnumStringified.three),
               t.aList([4, 5, 6]),
@@ -823,7 +823,7 @@ void main() {
           expect(updated.first.aVector, Vector([4.0, 5.0, 6.0]));
           expect(updated.first.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(updated.first.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
-          // expect(updated.first.aBit, Bit([false, true, false]));
+          expect(updated.first.aBit, Bit([false, true, false]));
           expect(updated.first.anEnum, TestEnum.three);
           expect(updated.first.aStringifiedEnum, TestEnumStringified.three);
           expect(updated.first.aList, [4, 5, 6]);
@@ -859,7 +859,7 @@ void main() {
           expect(dbRow.aVector, Vector([4.0, 5.0, 6.0]));
           expect(dbRow.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(dbRow.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
-          // expect(dbRow.aBit, Bit([false, true, false]));
+          expect(dbRow.aBit, Bit([false, true, false]));
           expect(dbRow.anEnum, TestEnum.three);
           expect(dbRow.aStringifiedEnum, TestEnumStringified.three);
           expect(dbRow.aList, [4, 5, 6]);

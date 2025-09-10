@@ -8,7 +8,6 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    runMode: ServerpodRunMode.development,
     'Given a database entry',
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
@@ -202,7 +201,7 @@ void main() {
               aVector: Vector([1.0, 2.0, 3.0]),
               aHalfVector: HalfVector([1.0, 2.0, 3.0]),
               aSparseVector: SparseVector([1.0, 2.0, 3.0]),
-              // aBit: Bit([true, false, true]),
+              aBit: Bit([true, false, true]),
               anEnum: TestEnum.one,
               aStringifiedEnum: TestEnumStringified.one,
               aList: [1, 2, 3],
@@ -233,7 +232,7 @@ void main() {
               t.aVector(Vector([4.0, 5.0, 6.0])),
               t.aHalfVector(HalfVector([4.0, 5.0, 6.0])),
               t.aSparseVector(SparseVector([4.0, 5.0, 6.0])),
-              // t.aBit(Bit([false, true, false])),
+              t.aBit(Bit([false, true, false])),
               t.anEnum(TestEnum.two),
               t.aStringifiedEnum(TestEnumStringified.two),
               t.aList([4, 5, 6]),
@@ -268,7 +267,7 @@ void main() {
           expect(updated!.aVector, Vector([4.0, 5.0, 6.0]));
           expect(updated!.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(updated!.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
-          // expect(updated!.aBit, Bit([false, true, false]));
+          expect(updated!.aBit, Bit([false, true, false]));
           expect(updated!.anEnum, TestEnum.two);
           expect(updated!.aStringifiedEnum, TestEnumStringified.two);
           expect(updated!.aList, [4, 5, 6]);
@@ -301,7 +300,7 @@ void main() {
           expect(dbRow.aVector, Vector([4.0, 5.0, 6.0]));
           expect(dbRow.aHalfVector, HalfVector([4.0, 5.0, 6.0]));
           expect(dbRow.aSparseVector, SparseVector([4.0, 5.0, 6.0]));
-          // expect(dbRow.aBit, Bit([false, true, false]));
+          expect(dbRow.aBit, Bit([false, true, false]));
           expect(dbRow.anEnum, TestEnum.two);
           expect(dbRow.aStringifiedEnum, TestEnumStringified.two);
           expect(dbRow.aList, [4, 5, 6]);
