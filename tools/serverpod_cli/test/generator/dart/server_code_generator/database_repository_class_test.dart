@@ -717,7 +717,7 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}Table> columnValues'),
+                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
           );
         });
 
@@ -768,7 +768,7 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}Table> columnValues'),
+                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
           );
         });
 

@@ -731,7 +731,7 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter((p) => p
             ..type = TypeReference((b) => b
-              ..symbol = 'ColumnValueListBuilder<${className}Table>'
+              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
               ..url = 'package:serverpod/serverpod.dart')
             ..name = 'columnValues'
             ..named = true
@@ -752,7 +752,7 @@ class BuildRepositoryClass {
               refer('id'),
             ], {
               'columnValues': refer('columnValues').call([
-                refer(className).property('t'),
+                refer(className).property('t').property('updateTable'),
               ]),
               'transaction': refer('transaction'),
             }, [
@@ -787,7 +787,7 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter((p) => p
             ..type = TypeReference((b) => b
-              ..symbol = 'ColumnValueListBuilder<${className}Table>'
+              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
               ..url = 'package:serverpod/serverpod.dart')
             ..name = 'columnValues'
             ..named = true
@@ -840,7 +840,7 @@ class BuildRepositoryClass {
             .property('updateWhere')
             .call([], {
               'columnValues': refer('columnValues').call([
-                refer(className).property('t'),
+                refer(className).property('t').property('updateTable'),
               ]),
               'where': refer('where').call([
                 refer(className).property('t'),

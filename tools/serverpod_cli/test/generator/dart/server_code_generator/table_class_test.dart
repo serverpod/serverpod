@@ -471,4 +471,295 @@ void main() {
       });
     });
   });
+
+  group('Given a class with table name when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withClassName(testClassName)
+          .withTableName(tableName)
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExampleUpdateTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}UpdateTable',
+    );
+
+    late final maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
+
+    test('then a class named ${testClassName}UpdateTable is generated.', () {
+      expect(
+        maybeClassNamedExampleUpdateTable,
+        isNotNull,
+        reason:
+            'Missing definition for class named ${testClassName}UpdateTable',
+      );
+    });
+
+    group('then the class named ${testClassName}UpdateTable', () {
+      test('has a table field of type ${testClassName}Table.', () {
+        expect(
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExampleUpdateTable!,
+            name: 'table',
+            type: '${testClassName}Table',
+            isFinal: true,
+          ),
+          isTrue,
+          reason: 'Missing table field declaration.',
+        );
+      });
+
+      test('has a constructor that takes table as parameter.', () {
+        expect(
+          CompilationUnitHelpers.hasConstructorDeclaration(
+            maybeClassNamedExampleUpdateTable!,
+            name: null,
+            parameters: ['this.table'],
+          ),
+          isTrue,
+          reason: 'Missing constructor with table parameter.',
+        );
+      });
+    });
+
+    group('then the class named ${testClassName}Table', () {
+      test('has an updateTable field.', () {
+        expect(
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExampleTable!,
+            name: 'updateTable',
+            type: '${testClassName}UpdateTable',
+            isFinal: true,
+            isLate: true,
+          ),
+          isTrue,
+          reason: 'Missing updateTable field declaration.',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a class with table name and persistent field when generating UpdateTable',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExampleUpdateTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}UpdateTable',
+    );
+
+    group('then the class named ${testClassName}UpdateTable', () {
+      test('has a method for the field.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExampleUpdateTable!,
+            name: 'title',
+          ),
+          isTrue,
+          reason: 'Missing title method declaration.',
+        );
+      });
+
+      test('title method returns ColumnValue with correct type parameters.',
+          () {
+        var titleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleUpdateTable!,
+          name: 'title',
+        );
+
+        expect(titleMethod, isNotNull);
+        expect(
+          titleMethod!.toSource(),
+          contains('ColumnValue<String, String>'),
+          reason: 'title method should return ColumnValue<String, String>.',
+        );
+      });
+
+      test('title method takes nullable parameter.', () {
+        var titleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleUpdateTable!,
+          name: 'title',
+        );
+
+        expect(titleMethod, isNotNull);
+        expect(
+          titleMethod!.toSource(),
+          contains('String? value'),
+          reason: 'title method should take nullable String parameter.',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a class with table name and record field when generating UpdateTable',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('record')
+                .withType(TypeDefinition(
+                  className: '_Record',
+                  generics: [
+                    TypeDefinition(className: 'String', nullable: false),
+                    TypeDefinition(className: 'int', nullable: false),
+                  ],
+                  nullable: true,
+                ))
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExampleUpdateTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}UpdateTable',
+    );
+
+    group('then the class named ${testClassName}UpdateTable', () {
+      test('has a method for the record field.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExampleUpdateTable!,
+            name: 'record',
+          ),
+          isTrue,
+          reason: 'Missing record method declaration.',
+        );
+      });
+
+      test(
+          'record method returns ColumnValue with Map<String, dynamic>? as second type parameter.',
+          () {
+        var recordMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleUpdateTable!,
+          name: 'record',
+        );
+
+        expect(recordMethod, isNotNull);
+        expect(
+          recordMethod!.toSource(),
+          contains('ColumnValue<(String, int), Map<String, dynamic>?>'),
+          reason:
+              'record method should return ColumnValue with Map<String, dynamic>? as second type parameter.',
+        );
+      });
+
+      test('record method uses mapRecordToJson for value conversion.', () {
+        var recordMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleUpdateTable!,
+          name: 'record',
+        );
+
+        expect(recordMethod, isNotNull);
+        expect(
+          recordMethod!.toSource(),
+          contains('mapRecordToJson(value)'),
+          reason:
+              'record method should use mapRecordToJson for value conversion.',
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a class with table name and NON persistent field when generating UpdateTable',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(false)
+                .build(),
+          )
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExampleUpdateTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}UpdateTable',
+    );
+
+    group('then the class named ${testClassName}UpdateTable', () {
+      test('does NOT have a method for non-persistent field.', () {
+        expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExampleUpdateTable!,
+            name: 'title',
+          ),
+          isFalse,
+          reason: 'Should not have method for non-persistent field.',
+        );
+      });
+    });
+  });
 }
