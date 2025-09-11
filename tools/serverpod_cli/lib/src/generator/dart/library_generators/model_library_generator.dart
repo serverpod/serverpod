@@ -1743,15 +1743,17 @@ class SerializableModelLibraryGenerator {
     return Class((c) {
       c.name = '${className}UpdateTable';
 
-      c.fields.add(Field((f) => f
-        ..name = 'table'
-        ..modifier = FieldModifier.final$
-        ..type = refer('${className}Table')));
+      // Extend UpdateTable<T> base class
+      c.extend = TypeReference((t) => t
+        ..symbol = 'UpdateTable'
+        ..url = serverpodUrl(serverCode)
+        ..types.add(refer('${className}Table')));
 
+      // Use super constructor
       c.constructors.add(Constructor((constructor) {
         constructor.requiredParameters.add(Parameter((p) => p
           ..name = 'table'
-          ..toThis = true));
+          ..toSuper = true));
       }));
 
       // Add a method for each column that returns a ColumnValue

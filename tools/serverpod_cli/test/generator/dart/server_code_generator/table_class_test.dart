@@ -511,28 +511,26 @@ void main() {
     });
 
     group('then the class named ${testClassName}UpdateTable', () {
-      test('has a table field of type ${testClassName}Table.', () {
+      test('extends UpdateTable<${testClassName}Table>.', () {
         expect(
-          CompilationUnitHelpers.hasFieldDeclaration(
+          CompilationUnitHelpers.hasExtendsClause(
             maybeClassNamedExampleUpdateTable!,
-            name: 'table',
-            type: '${testClassName}Table',
-            isFinal: true,
+            name: 'UpdateTable',
           ),
           isTrue,
-          reason: 'Missing table field declaration.',
+          reason: 'Missing extends clause for UpdateTable.',
         );
       });
 
-      test('has a constructor that takes table as parameter.', () {
+      test('has a constructor that takes super parameter.', () {
         expect(
           CompilationUnitHelpers.hasConstructorDeclaration(
             maybeClassNamedExampleUpdateTable!,
             name: null,
-            parameters: ['this.table'],
+            parameters: ['super.table'],
           ),
           isTrue,
-          reason: 'Missing constructor with table parameter.',
+          reason: 'Missing constructor with super.table parameter.',
         );
       });
     });
