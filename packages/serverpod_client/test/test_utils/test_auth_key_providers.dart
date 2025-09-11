@@ -1,39 +1,25 @@
+import 'dart:async';
+
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Test auth key provider that supports refresh functionality.
-class TestRefresherAuthKeyProvider extends RefresherClientAuthKeyProvider {
+class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   String? _authKey;
-  bool? _refreshResult;
-  final List<String> refreshLog = [];
+  late FutureOr<RefreshAuthKeyResult> Function() _refresh;
   int refreshCallCount = 0;
 
-  TestRefresherAuthKeyProvider({
-    String? initialAuthKey,
-  }) : _authKey = initialAuthKey?.wrapAsBearerAuthHeader();
-
-  @override
-  Future<String?> get notLockedAuthHeaderValue async => _authKey;
-
-  @override
-  Future<bool> refreshAuthKey() async {
-    refreshCallCount++;
-    refreshLog.add('Refresh attempt $refreshCallCount');
-
-    final refreshResult = _refreshResult;
-    if (refreshResult == null) {
-      throw StateError(
-        'Refresh result not set. Call "setRefreshResult" on the test provider '
-        'before refreshing.',
-      );
-    } else if (refreshResult) {
-      _authKey = 'refreshed-token-$refreshCallCount'.wrapAsBearerAuthHeader();
-    }
-
-    return refreshResult;
+  void setAuthKey(String? key) => _authKey = key?.wrapAsBearerAuthHeader();
+  void setRefresh(FutureOr<RefreshAuthKeyResult> Function() refresh) {
+    _refresh = refresh;
   }
 
-  void setRefreshResult(bool result) {
-    _refreshResult = result;
+  @override
+  Future<String?> get authHeaderValue async => _authKey;
+
+  @override
+  Future<RefreshAuthKeyResult> refreshAuthKey() async {
+    refreshCallCount++;
+    return _refresh();
   }
 }
 

@@ -73,9 +73,8 @@ void main() {
         onConnected: (host) => httpHost = host,
       );
 
-      authKeyProvider = TestRefresherAuthKeyProvider(
-        initialAuthKey: 'initial-token',
-      );
+      authKeyProvider = TestRefresherAuthKeyProvider();
+      authKeyProvider.setAuthKey('initial-token');
 
       client = TestServerpodClient(
         host: httpHost,
@@ -111,7 +110,10 @@ void main() {
         Response.ok(body: Body.fromString('"success"')),
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.setAuthKey('refreshed-token');
+        return RefreshAuthKeyResult.success;
+      });
 
       final result = await client.callServerEndpoint<String>(
         'test',
@@ -123,7 +125,7 @@ void main() {
       expect(requestCount, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedAuthHeaders[0], contains('initial-token'));
-      expect(receivedAuthHeaders[1], contains('refreshed-token-1'));
+      expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
     test(
@@ -133,7 +135,7 @@ void main() {
         Response.unauthorized(),
       ];
 
-      authKeyProvider.setRefreshResult(false);
+      authKeyProvider.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
@@ -153,7 +155,10 @@ void main() {
         Response.unauthorized(),
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.setAuthKey('refreshed-token');
+        return RefreshAuthKeyResult.success;
+      });
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
@@ -163,7 +168,7 @@ void main() {
       expect(requestCount, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedAuthHeaders[0], contains('initial-token'));
-      expect(receivedAuthHeaders[1], contains('refreshed-token-1'));
+      expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
     test(

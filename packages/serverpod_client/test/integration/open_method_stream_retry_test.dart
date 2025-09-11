@@ -92,9 +92,8 @@ void main() {
 
     setUp(() async {
       receivedCmds = [];
-      authKeyProvider = TestRefresherAuthKeyProvider(
-        initialAuthKey: 'initial-token',
-      );
+      authKeyProvider = TestRefresherAuthKeyProvider();
+      authKeyProvider.setAuthKey('initial-token');
 
       closeServer = await TestWebSocketServer.startServer(
         webSocketHandler: (webSocket) {
@@ -158,7 +157,10 @@ void main() {
         OpenMethodStreamResponseType.success,
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.setAuthKey('refreshed-token');
+        return RefreshAuthKeyResult.success;
+      });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -169,7 +171,7 @@ void main() {
       expect(receivedCmds.length, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedCmds[0], contains('initial-token'));
-      expect(receivedCmds[1], contains('refreshed-token-1'));
+      expect(receivedCmds[1], contains('refreshed-token'));
     });
 
     test(
@@ -179,7 +181,7 @@ void main() {
         OpenMethodStreamResponseType.authenticationFailed,
       ];
 
-      authKeyProvider.setRefreshResult(false);
+      authKeyProvider.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -204,7 +206,10 @@ void main() {
         OpenMethodStreamResponseType.authenticationFailed,
       ];
 
-      authKeyProvider.setRefreshResult(true);
+      authKeyProvider.setRefresh(() {
+        authKeyProvider.setAuthKey('refreshed-token');
+        return RefreshAuthKeyResult.success;
+      });
 
       var connectionDetails = MethodStreamConnectionDetailsBuilder()
           .withAuthKeyProvider(authKeyProvider)
@@ -219,7 +224,7 @@ void main() {
       expect(receivedCmds.length, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedCmds[0], contains('initial-token'));
-      expect(receivedCmds[1], contains('refreshed-token-1'));
+      expect(receivedCmds[1], contains('refreshed-token'));
     });
 
     test(
