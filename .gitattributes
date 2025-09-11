@@ -1,0 +1,2 @@
+# Hide all generated files in any 'generated' folder across the repo
+**/generated/** linguist-generated
