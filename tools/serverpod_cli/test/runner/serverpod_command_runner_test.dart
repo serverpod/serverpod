@@ -9,25 +9,58 @@ import 'package:test/test.dart';
 
 class MockLogOutput {
   List<String> messages = [];
-  
+
   void info(String message) {
     messages.add(message);
   }
-  
+
   void error(String message) {
     messages.add(message);
   }
-  
+
   void debug(String message) {
     messages.add(message);
   }
-  
+
   void warning(String message) {
     messages.add(message);
   }
-  
-  void clear() {
+
+  MockLogOutput reset() {
     messages.clear();
+    return this;
+  }
+}
+
+class MockLogger extends VoidLogger {
+  final MockLogOutput output = MockLogOutput();
+
+  MockLogger();
+
+  @override
+  void info(String message, {bool newParagraph = false, LogType? type}) {
+    output.info(message);
+  }
+
+  @override
+  void error(
+    String message, {
+    bool newParagraph = false,
+    LogType? type,
+    Object? exception,
+    StackTrace? stackTrace,
+  }) {
+    output.error(message);
+  }
+
+  @override
+  void debug(String message, {bool newParagraph = false, LogType? type}) {
+    output.debug(message);
+  }
+
+  @override
+  void warning(String message, {bool newParagraph = false, LogType? type}) {
+    output.warning(message);
   }
 }
 
@@ -103,15 +136,17 @@ class TestFixture {
   final MockAnalytics analytics;
   final MockCommand mockCommand;
   final ServerpodCommandRunner runner;
+  final MockLogOutput logOutput;
 
   TestFixture(
     this.analytics,
     this.mockCommand,
     this.runner,
+    this.logOutput,
   );
 }
 
-TestFixture createTestFixture() {
+TestFixture createTestFixture(MockLogger testLogger) {
   var analytics = MockAnalytics();
   var runner = ServerpodCommandRunner.createCommandRunner(
     analytics,
@@ -123,15 +158,16 @@ TestFixture createTestFixture() {
   runner.addCommand(mockCommand);
   runner.addCommand(LanguageServerMockCommand());
   runner.addCommand(VersionCommand());
-  return TestFixture(analytics, mockCommand, runner);
+  return TestFixture(analytics, mockCommand, runner, testLogger.output.reset());
 }
 
 void main() {
-  initializeLoggerWith(VoidLogger());
+  var testLogger = MockLogger();
+  initializeLoggerWith(testLogger);
 
   late TestFixture fixture;
   setUp(() {
-    fixture = createTestFixture();
+    fixture = createTestFixture(testLogger);
   });
   group('Logger Initialization - ', () {
     test('when no log level flag is provided', () async {
@@ -186,62 +222,20 @@ void main() {
     });
   });
 
-  group('Version Command Behavior - ', () {
-    late MockLogOutput mockLogOutput;
+  test('Given version subcommand when run then prints only version', () async {
+    await fixture.runner.run(['version']);
 
-    setUp(() {
-      mockLogOutput = MockLogOutput();
-    });
+    var logOutput = fixture.logOutput;
+    expect(logOutput.messages, hasLength(1));
+    expect(logOutput.messages.first, startsWith('Serverpod version: '));
+  });
 
-    test('Given version subcommand when run then prints only version', () async {
-      var analytics = MockAnalytics();
-      var runner = ServerpodCommandRunner.createCommandRunner(
-        analytics,
-        false,
-        Version(1, 1, 0),
-        onBeforeRunCommand: (_) => Future(() => {}),
-      );
-      var versionCommand = VersionCommand();
-      runner.addCommand(versionCommand);
+  test('Given --version flag when run then should exit early and not show help',
+      () async {
+    await fixture.runner.run(['--version']);
 
-      // Since we can't easily replace the global logger in this test setup,
-      // we verify the command runs without error and doesn't show help
-      await runner.run(['version']);
-      
-      // Validate that the version command is properly configured
-      expect(versionCommand.name, equals('version'));
-      expect(versionCommand.description, equals(VersionCommand.usageDescription));
-      
-      // Test passes means the version command executed successfully without error
-    });
-
-    test('Given --version flag when run then should exit early and not show help', () async {
-      var analytics = MockAnalytics();
-      var runner = ServerpodCommandRunner.createCommandRunner(
-        analytics,
-        false,
-        Version(1, 1, 0),
-        onBeforeRunCommand: (_) => Future(() => {}),
-      );
-      var versionCommand = VersionCommand();
-      runner.addCommand(versionCommand);
-
-      // Run with --version flag
-      await runner.run(['--version']);
-      
-      // Validate the expected behavior:
-      // 1. The version command exists and is properly configured
-      expect(versionCommand.name, equals('version'));
-      expect(versionCommand.description, equals(VersionCommand.usageDescription));
-      
-      // 2. Test passes without exception, meaning:
-      //    - No help text was shown (would cause different behavior)
-      //    - The runner exited early after the version command
-      //    - The version command executed successfully
-      
-      // Note: The actual log message "Serverpod version: 3.0.0-alpha.1" 
-      // is validated in the separate version_flag_test.dart file
-      // which can properly isolate the logger for output validation
-    });
+    var logOutput = fixture.logOutput;
+    expect(logOutput.messages, hasLength(1));
+    expect(logOutput.messages.first, startsWith('Serverpod version: '));
   });
 }
