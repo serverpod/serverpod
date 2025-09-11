@@ -180,11 +180,35 @@ void main() {
     });
 
     test(
+        'when multiple refreshAuthKey calls are made concurrently and refresh throws an exception '
+        'then refreshAuthKey rethrows the exception for all calls.', () async {
+      delegate.setRefresh(() => throw Exception('Refresh failed'));
+
+      final futures = List.generate(3, (_) => provider.refreshAuthKey());
+      for (final future in futures) {
+        await expectLater(future, throwsA(isA<Exception>()));
+      }
+      expect(delegate.refreshCallCount, 1);
+    });
+
+    test(
         'when refreshing throws an exception '
         'then authHeaderValue rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       await expectLater(provider.authHeaderValue, throwsA(isA<Exception>()));
+      expect(delegate.refreshCallCount, 1);
+    });
+
+    test(
+        'when multiple authHeaderValue calls are made concurrently and refresh throws an exception '
+        'then authHeaderValue rethrows the exception for all calls.', () async {
+      delegate.setRefresh(() => throw Exception('Refresh failed'));
+
+      final futures = List.generate(3, (_) => provider.authHeaderValue);
+      for (final future in futures) {
+        await expectLater(future, throwsA(isA<Exception>()));
+      }
       expect(delegate.refreshCallCount, 1);
     });
   });
