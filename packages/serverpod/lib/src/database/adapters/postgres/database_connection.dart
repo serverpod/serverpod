@@ -241,7 +241,7 @@ class DatabaseConnection {
   /// Throws [ArgumentError] if [columnValues] is empty.
   ///
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> updateById<T extends TableRow>(
+  Future<T> updateById<T extends TableRow>(
     Session session,
     Object id, {
     required List<ColumnValue> columnValues,
@@ -269,7 +269,9 @@ class DatabaseConnection {
     );
 
     if (result.isEmpty) {
-      return null;
+      throw _PgDatabaseUpdateRowException(
+        'Failed to update row, no rows updated',
+      );
     }
 
     return _poolManager.serializationManager.deserialize<T>(result.first);

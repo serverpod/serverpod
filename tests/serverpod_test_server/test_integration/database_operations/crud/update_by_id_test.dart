@@ -350,14 +350,16 @@ void main() {
     (testSession, endpoints) {
       var session = testSession.build();
 
-      test('when updating by non-existent id then null is returned', () async {
-        var updated = await Types.db.updateById(
+      test(
+          'when updating by non-existent id then DatabaseUpdateRowException is thrown',
+          () async {
+        var updated = Types.db.updateById(
           session,
           999999,
           columnValues: (t) => [t.anInt(123)],
         );
 
-        expect(updated, isNull);
+        expect(updated, throwsA(isA<DatabaseUpdateRowException>()));
       });
     },
   );
