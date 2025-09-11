@@ -204,8 +204,28 @@ class _CitizenImpl extends Citizen {
   }
 }
 
+class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
+  CitizenUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
+        table.companyId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
+        table.oldCompanyId,
+        value,
+      );
+}
+
 class CitizenTable extends _i1.Table<int?> {
   CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
+    updateTable = CitizenUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -219,6 +239,8 @@ class CitizenTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CitizenUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -507,6 +529,46 @@ class CitizenRepository {
     return session.db.updateRow<Citizen>(
       row,
       columns: columns?.call(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Citizen] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Citizen?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Citizen>(
+      id,
+      columnValues: columnValues(Citizen.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Citizen>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CitizenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Citizen>(
+      columnValues: columnValues(Citizen.t.updateTable),
+      where: where(Citizen.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -204,9 +204,56 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   }
 }
 
+class ObjectWithHalfVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithHalfVectorTable> {
+  ObjectWithHalfVectorUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVector(
+          _i1.HalfVector value) =>
+      _i1.ColumnValue(
+        table.halfVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorNullable(
+          _i1.HalfVector? value) =>
+      _i1.ColumnValue(
+        table.halfVectorNullable,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorIndexedHnsw(
+          _i1.HalfVector value) =>
+      _i1.ColumnValue(
+        table.halfVectorIndexedHnsw,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector>
+      halfVectorIndexedHnswWithParams(_i1.HalfVector value) => _i1.ColumnValue(
+            table.halfVectorIndexedHnswWithParams,
+            value,
+          );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorIndexedIvfflat(
+          _i1.HalfVector value) =>
+      _i1.ColumnValue(
+        table.halfVectorIndexedIvfflat,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector>
+      halfVectorIndexedIvfflatWithParams(_i1.HalfVector value) =>
+          _i1.ColumnValue(
+            table.halfVectorIndexedIvfflatWithParams,
+            value,
+          );
+}
+
 class ObjectWithHalfVectorTable extends _i1.Table<int?> {
   ObjectWithHalfVectorTable({super.tableRelation})
       : super(tableName: 'object_with_half_vector') {
+    updateTable = ObjectWithHalfVectorUpdateTable(this);
     halfVector = _i1.ColumnHalfVector(
       'halfVector',
       this,
@@ -238,6 +285,8 @@ class ObjectWithHalfVectorTable extends _i1.Table<int?> {
       dimension: 512,
     );
   }
+
+  late final ObjectWithHalfVectorUpdateTable updateTable;
 
   late final _i1.ColumnHalfVector halfVector;
 
@@ -448,6 +497,48 @@ class ObjectWithHalfVectorRepository {
     return session.db.updateRow<ObjectWithHalfVector>(
       row,
       columns: columns?.call(ObjectWithHalfVector.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithHalfVector] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithHalfVector?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithHalfVector>(
+      id,
+      columnValues: columnValues(ObjectWithHalfVector.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithHalfVector]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithHalfVector>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithHalfVector>(
+      columnValues: columnValues(ObjectWithHalfVector.t.updateTable),
+      where: where(ObjectWithHalfVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithHalfVector.t),
+      orderByList: orderByList?.call(ObjectWithHalfVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

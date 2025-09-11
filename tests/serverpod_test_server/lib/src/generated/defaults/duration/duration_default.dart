@@ -157,9 +157,26 @@ class _DurationDefaultImpl extends DurationDefault {
   }
 }
 
+class DurationDefaultUpdateTable extends _i1.UpdateTable<DurationDefaultTable> {
+  DurationDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<Duration, Duration> durationDefault(Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefault,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultNull(Duration? value) =>
+      _i1.ColumnValue(
+        table.durationDefaultNull,
+        value,
+      );
+}
+
 class DurationDefaultTable extends _i1.Table<int?> {
   DurationDefaultTable({super.tableRelation})
       : super(tableName: 'duration_default') {
+    updateTable = DurationDefaultUpdateTable(this);
     durationDefault = _i1.ColumnDuration(
       'durationDefault',
       this,
@@ -171,6 +188,8 @@ class DurationDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefault;
 
@@ -369,6 +388,48 @@ class DurationDefaultRepository {
     return session.db.updateRow<DurationDefault>(
       row,
       columns: columns?.call(DurationDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DurationDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefault>(
+      id,
+      columnValues: columnValues(DurationDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefault>(
+      columnValues: columnValues(DurationDefault.t.updateTable),
+      where: where(DurationDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefault.t),
+      orderByList: orderByList?.call(DurationDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

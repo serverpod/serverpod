@@ -131,15 +131,29 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   }
 }
 
+class DurationDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DurationDefaultPersistTable> {
+  DurationDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultPersist(Duration? value) =>
+      _i1.ColumnValue(
+        table.durationDefaultPersist,
+        value,
+      );
+}
+
 class DurationDefaultPersistTable extends _i1.Table<int?> {
   DurationDefaultPersistTable({super.tableRelation})
       : super(tableName: 'duration_default_persist') {
+    updateTable = DurationDefaultPersistUpdateTable(this);
     durationDefaultPersist = _i1.ColumnDuration(
       'durationDefaultPersist',
       this,
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefaultPersist;
 
@@ -335,6 +349,48 @@ class DurationDefaultPersistRepository {
     return session.db.updateRow<DurationDefaultPersist>(
       row,
       columns: columns?.call(DurationDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DurationDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefaultPersist>(
+      id,
+      columnValues: columnValues(DurationDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefaultPersist>(
+      columnValues: columnValues(DurationDefaultPersist.t.updateTable),
+      where: where(DurationDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultPersist.t),
+      orderByList: orderByList?.call(DurationDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

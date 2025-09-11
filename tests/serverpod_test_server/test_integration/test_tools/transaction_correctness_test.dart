@@ -180,6 +180,49 @@ void main() {
         );
       });
 
+      group('when non-database exception occurs', () {
+        late Future<Never> throwingTransactionFuture;
+
+        setUp(() {
+          throwingTransactionFuture =
+              session.db.transaction((transaction) async {
+            await SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 1),
+              transaction: transaction,
+            );
+
+            throw ArgumentError('Custom error that is not a DatabaseException');
+          });
+        });
+
+        test('then the non-database exception should be thrown', () async {
+          await expectLater(
+            throwingTransactionFuture,
+            throwsA(
+              isA<ArgumentError>().having((e) => e.message, 'message',
+                  'Custom error that is not a DatabaseException'),
+            ),
+          );
+        });
+
+        test('then subsequent queries should work correctly', () async {
+          // We need to wait for the transaction to complete and rollback
+          // before executing another query to the database.
+          // This expectLater is used for that purpose and is not supposed to
+          // actually test anything since we already tested this above.
+          await expectLater(
+            throwingTransactionFuture,
+            throwsA(isA<ArgumentError>()),
+          );
+
+          await expectLater(
+            SimpleData.db.insertRow(session, SimpleData(num: 10)),
+            completes,
+          );
+        });
+      });
+
       test(
           'when next test is run '
           'then database operations should still work', () async {

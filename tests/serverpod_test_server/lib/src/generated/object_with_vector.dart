@@ -194,9 +194,54 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
   }
 }
 
+class ObjectWithVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithVectorTable> {
+  ObjectWithVectorUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vector(_i1.Vector value) =>
+      _i1.ColumnValue(
+        table.vector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorNullable(_i1.Vector? value) =>
+      _i1.ColumnValue(
+        table.vectorNullable,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnsw(_i1.Vector value) =>
+      _i1.ColumnValue(
+        table.vectorIndexedHnsw,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnswWithParams(
+          _i1.Vector value) =>
+      _i1.ColumnValue(
+        table.vectorIndexedHnswWithParams,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflat(
+          _i1.Vector value) =>
+      _i1.ColumnValue(
+        table.vectorIndexedIvfflat,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflatWithParams(
+          _i1.Vector value) =>
+      _i1.ColumnValue(
+        table.vectorIndexedIvfflatWithParams,
+        value,
+      );
+}
+
 class ObjectWithVectorTable extends _i1.Table<int?> {
   ObjectWithVectorTable({super.tableRelation})
       : super(tableName: 'object_with_vector') {
+    updateTable = ObjectWithVectorUpdateTable(this);
     vector = _i1.ColumnVector(
       'vector',
       this,
@@ -228,6 +273,8 @@ class ObjectWithVectorTable extends _i1.Table<int?> {
       dimension: 512,
     );
   }
+
+  late final ObjectWithVectorUpdateTable updateTable;
 
   late final _i1.ColumnVector vector;
 
@@ -438,6 +485,48 @@ class ObjectWithVectorRepository {
     return session.db.updateRow<ObjectWithVector>(
       row,
       columns: columns?.call(ObjectWithVector.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithVector] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithVector?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithVector>(
+      id,
+      columnValues: columnValues(ObjectWithVector.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithVector]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithVector>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithVector>(
+      columnValues: columnValues(ObjectWithVector.t.updateTable),
+      where: where(ObjectWithVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithVector.t),
+      orderByList: orderByList?.call(ObjectWithVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

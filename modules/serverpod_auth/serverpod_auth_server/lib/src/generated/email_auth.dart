@@ -150,9 +150,29 @@ class _EmailAuthImpl extends EmailAuth {
   }
 }
 
+class EmailAuthUpdateTable extends _i1.UpdateTable<EmailAuthTable> {
+  EmailAuthUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+}
+
 class EmailAuthTable extends _i1.Table<int?> {
   EmailAuthTable({super.tableRelation})
       : super(tableName: 'serverpod_email_auth') {
+    updateTable = EmailAuthUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -166,6 +186,8 @@ class EmailAuthTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailAuthUpdateTable updateTable;
 
   /// The id of the user, corresponds to the id field in [UserInfo].
   late final _i1.ColumnInt userId;
@@ -370,6 +392,46 @@ class EmailAuthRepository {
     return session.db.updateRow<EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmailAuth] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAuth?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAuth>(
+      id,
+      columnValues: columnValues(EmailAuth.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAuth]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAuth>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAuth>(
+      columnValues: columnValues(EmailAuth.t.updateTable),
+      where: where(EmailAuth.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAuth.t),
+      orderByList: orderByList?.call(EmailAuth.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

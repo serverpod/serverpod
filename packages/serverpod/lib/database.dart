@@ -1,4 +1,5 @@
 export 'src/database/concepts/columns.dart';
+export 'src/database/concepts/column_value.dart';
 export 'src/database/concepts/database_result.dart';
 export 'src/database/concepts/exceptions.dart';
 export 'src/database/concepts/expressions.dart';
@@ -7,6 +8,7 @@ export 'src/database/concepts/many_relation.dart';
 export 'src/database/concepts/order.dart';
 export 'src/database/concepts/runtime_parameters.dart';
 export 'src/database/concepts/table.dart';
+export 'src/database/concepts/update_table.dart';
 export 'src/database/concepts/transaction.dart';
 export 'src/database/query_parameters.dart';
 export 'src/database/postgres_error_codes.dart';

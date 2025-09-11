@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -164,6 +165,50 @@ class Database {
       _session,
       row,
       columns: columns,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
+  /// Updates a single [TableRow] by its [id] with the specified column values.
+  /// Returns the updated row or null if no row with the given id exists.
+  @internal
+  Future<T?> updateById<T extends TableRow>(
+    Object id, {
+    required List<ColumnValue> columnValues,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.updateById<T>(
+      _session,
+      id,
+      columnValues: columnValues,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
+  /// Updates all [TableRow]s matching the [where] expression with the specified column values.
+  /// Returns the list of updated rows.
+  @internal
+  Future<List<T>> updateWhere<T extends TableRow>({
+    required List<ColumnValue> columnValues,
+    required Expression where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.updateWhere<T>(
+      _session,
+      columnValues: columnValues,
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
     );

@@ -137,9 +137,25 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
   }
 }
 
+class GoogleRefreshTokenUpdateTable
+    extends _i1.UpdateTable<GoogleRefreshTokenTable> {
+  GoogleRefreshTokenUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> refreshToken(String value) => _i1.ColumnValue(
+        table.refreshToken,
+        value,
+      );
+}
+
 class GoogleRefreshTokenTable extends _i1.Table<int?> {
   GoogleRefreshTokenTable({super.tableRelation})
       : super(tableName: 'serverpod_google_refresh_token') {
+    updateTable = GoogleRefreshTokenUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -149,6 +165,8 @@ class GoogleRefreshTokenTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final GoogleRefreshTokenUpdateTable updateTable;
 
   /// The user id associated with the token.
   late final _i1.ColumnInt userId;
@@ -349,6 +367,48 @@ class GoogleRefreshTokenRepository {
     return session.db.updateRow<GoogleRefreshToken>(
       row,
       columns: columns?.call(GoogleRefreshToken.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [GoogleRefreshToken] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<GoogleRefreshToken?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<GoogleRefreshToken>(
+      id,
+      columnValues: columnValues(GoogleRefreshToken.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [GoogleRefreshToken]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<GoogleRefreshToken>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<GoogleRefreshToken>(
+      columnValues: columnValues(GoogleRefreshToken.t.updateTable),
+      where: where(GoogleRefreshToken.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

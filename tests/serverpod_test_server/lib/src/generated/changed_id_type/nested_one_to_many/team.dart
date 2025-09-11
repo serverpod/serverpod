@@ -179,8 +179,24 @@ class _TeamIntImpl extends TeamInt {
   }
 }
 
+class TeamIntUpdateTable extends _i1.UpdateTable<TeamIntTable> {
+  TeamIntUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> arenaId(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.arenaId,
+        value,
+      );
+}
+
 class TeamIntTable extends _i1.Table<int?> {
   TeamIntTable({super.tableRelation}) : super(tableName: 'team_int') {
+    updateTable = TeamIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -190,6 +206,8 @@ class TeamIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TeamIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -476,6 +494,46 @@ class TeamIntRepository {
     return session.db.updateRow<TeamInt>(
       row,
       columns: columns?.call(TeamInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [TeamInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<TeamInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<TeamInt>(
+      id,
+      columnValues: columnValues(TeamInt.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [TeamInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<TeamInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<TeamIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TeamIntTable>? orderBy,
+    _i1.OrderByListBuilder<TeamIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<TeamInt>(
+      columnValues: columnValues(TeamInt.t.updateTable),
+      where: where(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

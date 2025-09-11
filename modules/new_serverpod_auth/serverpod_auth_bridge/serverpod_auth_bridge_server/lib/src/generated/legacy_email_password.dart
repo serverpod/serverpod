@@ -158,9 +158,27 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
   }
 }
 
+class LegacyEmailPasswordUpdateTable
+    extends _i1.UpdateTable<LegacyEmailPasswordTable> {
+  LegacyEmailPasswordUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.emailAccountId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+}
+
 class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
   LegacyEmailPasswordTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_bridge_email_password') {
+    updateTable = LegacyEmailPasswordUpdateTable(this);
     emailAccountId = _i1.ColumnUuid(
       'emailAccountId',
       this,
@@ -170,6 +188,8 @@ class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final LegacyEmailPasswordUpdateTable updateTable;
 
   late final _i1.ColumnUuid emailAccountId;
 
@@ -407,6 +427,48 @@ class LegacyEmailPasswordRepository {
     return session.db.updateRow<LegacyEmailPassword>(
       row,
       columns: columns?.call(LegacyEmailPassword.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [LegacyEmailPassword] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacyEmailPassword?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacyEmailPassword>(
+      id,
+      columnValues: columnValues(LegacyEmailPassword.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacyEmailPassword]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LegacyEmailPassword>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacyEmailPassword>(
+      columnValues: columnValues(LegacyEmailPassword.t.updateTable),
+      where: where(LegacyEmailPassword.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacyEmailPassword.t),
+      orderByList: orderByList?.call(LegacyEmailPassword.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

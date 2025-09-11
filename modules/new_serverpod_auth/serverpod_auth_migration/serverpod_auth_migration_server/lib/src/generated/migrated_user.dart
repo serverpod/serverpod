@@ -174,9 +174,26 @@ class _MigratedUserImpl extends MigratedUser {
   }
 }
 
+class MigratedUserUpdateTable extends _i1.UpdateTable<MigratedUserTable> {
+  MigratedUserUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
+        table.oldUserId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> newAuthUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.newAuthUserId,
+        value,
+      );
+}
+
 class MigratedUserTable extends _i1.Table<int?> {
   MigratedUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_migration_migrated_user') {
+    updateTable = MigratedUserUpdateTable(this);
     oldUserId = _i1.ColumnInt(
       'oldUserId',
       this,
@@ -186,6 +203,8 @@ class MigratedUserTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final MigratedUserUpdateTable updateTable;
 
   late final _i1.ColumnInt oldUserId;
 
@@ -448,6 +467,46 @@ class MigratedUserRepository {
     return session.db.updateRow<MigratedUser>(
       row,
       columns: columns?.call(MigratedUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<MigratedUser?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<MigratedUser>(
+      id,
+      columnValues: columnValues(MigratedUser.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<MigratedUser>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
+    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<MigratedUser>(
+      columnValues: columnValues(MigratedUser.t.updateTable),
+      where: where(MigratedUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

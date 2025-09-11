@@ -144,13 +144,25 @@ class _StudentImpl extends Student {
   }
 }
 
+class StudentUpdateTable extends _i1.UpdateTable<StudentTable> {
+  StudentUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class StudentTable extends _i1.Table<int?> {
   StudentTable({super.tableRelation}) : super(tableName: 'student') {
+    updateTable = StudentUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final StudentUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -403,6 +415,46 @@ class StudentRepository {
     return session.db.updateRow<Student>(
       row,
       columns: columns?.call(Student.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Student] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Student?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Student>(
+      id,
+      columnValues: columnValues(Student.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Student]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Student>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StudentUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<StudentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Student>(
+      columnValues: columnValues(Student.t.updateTable),
+      where: where(Student.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

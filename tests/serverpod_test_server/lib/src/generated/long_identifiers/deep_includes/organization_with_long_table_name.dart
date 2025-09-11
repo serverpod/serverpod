@@ -181,11 +181,27 @@ class _OrganizationWithLongTableNameImpl extends OrganizationWithLongTableName {
   }
 }
 
+class OrganizationWithLongTableNameUpdateTable
+    extends _i1.UpdateTable<OrganizationWithLongTableNameTable> {
+  OrganizationWithLongTableNameUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
+        table.cityId,
+        value,
+      );
+}
+
 class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
   OrganizationWithLongTableNameTable({super.tableRelation})
       : super(
             tableName:
                 'organization_with_long_table_name_that_is_still_valid') {
+    updateTable = OrganizationWithLongTableNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -195,6 +211,8 @@ class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final OrganizationWithLongTableNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -481,6 +499,51 @@ class OrganizationWithLongTableNameRepository {
     return session.db.updateRow<OrganizationWithLongTableName>(
       row,
       columns: columns?.call(OrganizationWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [OrganizationWithLongTableName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<OrganizationWithLongTableName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1
+        .ColumnValueListBuilder<OrganizationWithLongTableNameUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<OrganizationWithLongTableName>(
+      id,
+      columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [OrganizationWithLongTableName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<OrganizationWithLongTableName>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<OrganizationWithLongTableNameUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<OrganizationWithLongTableName>(
+      columnValues: columnValues(OrganizationWithLongTableName.t.updateTable),
+      where: where(OrganizationWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(OrganizationWithLongTableName.t),
+      orderByList: orderByList?.call(OrganizationWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

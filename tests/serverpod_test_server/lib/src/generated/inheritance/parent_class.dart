@@ -106,9 +106,25 @@ class ParentClass extends _i1.GrandparentClass
 
 class _Undefined {}
 
+class ParentClassUpdateTable extends _i2.UpdateTable<ParentClassTable> {
+  ParentClassUpdateTable(super.table);
+
+  _i2.ColumnValue<String, String> grandParentField(String value) =>
+      _i2.ColumnValue(
+        table.grandParentField,
+        value,
+      );
+
+  _i2.ColumnValue<String, String> parentField(String value) => _i2.ColumnValue(
+        table.parentField,
+        value,
+      );
+}
+
 class ParentClassTable extends _i2.Table<int?> {
   ParentClassTable({super.tableRelation})
       : super(tableName: 'parent_class_table') {
+    updateTable = ParentClassUpdateTable(this);
     grandParentField = _i2.ColumnString(
       'grandParentField',
       this,
@@ -118,6 +134,8 @@ class ParentClassTable extends _i2.Table<int?> {
       this,
     );
   }
+
+  late final ParentClassUpdateTable updateTable;
 
   late final _i2.ColumnString grandParentField;
 
@@ -316,6 +334,46 @@ class ParentClassRepository {
     return session.db.updateRow<ParentClass>(
       row,
       columns: columns?.call(ParentClass.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ParentClass] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ParentClass?> updateById(
+    _i2.Session session,
+    int id, {
+    required _i2.ColumnValueListBuilder<ParentClassUpdateTable> columnValues,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ParentClass>(
+      id,
+      columnValues: columnValues(ParentClass.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ParentClass]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ParentClass>> updateWhere(
+    _i2.Session session, {
+    required _i2.ColumnValueListBuilder<ParentClassUpdateTable> columnValues,
+    required _i2.WhereExpressionBuilder<ParentClassTable> where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<ParentClassTable>? orderBy,
+    _i2.OrderByListBuilder<ParentClassTable>? orderByList,
+    bool orderDescending = false,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ParentClass>(
+      columnValues: columnValues(ParentClass.t.updateTable),
+      where: where(ParentClass.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

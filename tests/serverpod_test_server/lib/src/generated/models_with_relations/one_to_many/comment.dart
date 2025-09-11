@@ -152,8 +152,23 @@ class _CommentImpl extends Comment {
   }
 }
 
+class CommentUpdateTable extends _i1.UpdateTable<CommentTable> {
+  CommentUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+        table.description,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> orderId(int value) => _i1.ColumnValue(
+        table.orderId,
+        value,
+      );
+}
+
 class CommentTable extends _i1.Table<int?> {
   CommentTable({super.tableRelation}) : super(tableName: 'comment') {
+    updateTable = CommentUpdateTable(this);
     description = _i1.ColumnString(
       'description',
       this,
@@ -163,6 +178,8 @@ class CommentTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CommentUpdateTable updateTable;
 
   late final _i1.ColumnString description;
 
@@ -396,6 +413,46 @@ class CommentRepository {
     return session.db.updateRow<Comment>(
       row,
       columns: columns?.call(Comment.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Comment] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Comment?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Comment>(
+      id,
+      columnValues: columnValues(Comment.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Comment]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Comment>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CommentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CommentTable>? orderBy,
+    _i1.OrderByListBuilder<CommentTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Comment>(
+      columnValues: columnValues(Comment.t.updateTable),
+      where: where(Comment.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

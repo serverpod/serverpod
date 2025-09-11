@@ -148,14 +148,27 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   }
 }
 
+class UserNoteCollectionUpdateTable
+    extends _i1.UpdateTable<UserNoteCollectionTable> {
+  UserNoteCollectionUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class UserNoteCollectionTable extends _i1.Table<int?> {
   UserNoteCollectionTable({super.tableRelation})
       : super(tableName: 'user_note_collections') {
+    updateTable = UserNoteCollectionUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final UserNoteCollectionUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -416,6 +429,48 @@ class UserNoteCollectionRepository {
     return session.db.updateRow<UserNoteCollection>(
       row,
       columns: columns?.call(UserNoteCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UserNoteCollection] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNoteCollection?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNoteCollection>(
+      id,
+      columnValues: columnValues(UserNoteCollection.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNoteCollection]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserNoteCollection>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteCollectionTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNoteCollection>(
+      columnValues: columnValues(UserNoteCollection.t.updateTable),
+      where: where(UserNoteCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollection.t),
+      orderByList: orderByList?.call(UserNoteCollection.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

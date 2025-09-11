@@ -176,9 +176,27 @@ class _EnrollmentIntImpl extends EnrollmentInt {
   }
 }
 
+class EnrollmentIntUpdateTable extends _i1.UpdateTable<EnrollmentIntTable> {
+  EnrollmentIntUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> studentId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.studentId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> courseId(_i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.courseId,
+        value,
+      );
+}
+
 class EnrollmentIntTable extends _i1.Table<int?> {
   EnrollmentIntTable({super.tableRelation})
       : super(tableName: 'enrollment_int') {
+    updateTable = EnrollmentIntUpdateTable(this);
     studentId = _i1.ColumnUuid(
       'studentId',
       this,
@@ -188,6 +206,8 @@ class EnrollmentIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EnrollmentIntUpdateTable updateTable;
 
   late final _i1.ColumnUuid studentId;
 
@@ -448,6 +468,46 @@ class EnrollmentIntRepository {
     return session.db.updateRow<EnrollmentInt>(
       row,
       columns: columns?.call(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EnrollmentInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnrollmentInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnrollmentInt>(
+      id,
+      columnValues: columnValues(EnrollmentInt.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnrollmentInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnrollmentInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _i1.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnrollmentInt>(
+      columnValues: columnValues(EnrollmentInt.t.updateTable),
+      where: where(EnrollmentInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

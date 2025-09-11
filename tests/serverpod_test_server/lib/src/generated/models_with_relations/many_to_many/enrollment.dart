@@ -174,8 +174,23 @@ class _EnrollmentImpl extends Enrollment {
   }
 }
 
+class EnrollmentUpdateTable extends _i1.UpdateTable<EnrollmentTable> {
+  EnrollmentUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
+        table.studentId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> courseId(int value) => _i1.ColumnValue(
+        table.courseId,
+        value,
+      );
+}
+
 class EnrollmentTable extends _i1.Table<int?> {
   EnrollmentTable({super.tableRelation}) : super(tableName: 'enrollment') {
+    updateTable = EnrollmentUpdateTable(this);
     studentId = _i1.ColumnInt(
       'studentId',
       this,
@@ -185,6 +200,8 @@ class EnrollmentTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EnrollmentUpdateTable updateTable;
 
   late final _i1.ColumnInt studentId;
 
@@ -445,6 +462,46 @@ class EnrollmentRepository {
     return session.db.updateRow<Enrollment>(
       row,
       columns: columns?.call(Enrollment.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Enrollment] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Enrollment?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Enrollment>(
+      id,
+      columnValues: columnValues(Enrollment.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Enrollment]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Enrollment>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnrollmentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
+    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Enrollment>(
+      columnValues: columnValues(Enrollment.t.updateTable),
+      where: where(Enrollment.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Enrollment.t),
+      orderByList: orderByList?.call(Enrollment.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

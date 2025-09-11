@@ -125,14 +125,27 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
   }
 }
 
+class SimpleDateTimeUpdateTable extends _i1.UpdateTable<SimpleDateTimeTable> {
+  SimpleDateTimeUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> dateTime(DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTime,
+        value,
+      );
+}
+
 class SimpleDateTimeTable extends _i1.Table<int?> {
   SimpleDateTimeTable({super.tableRelation})
       : super(tableName: 'simple_date_time') {
+    updateTable = SimpleDateTimeUpdateTable(this);
     dateTime = _i1.ColumnDateTime(
       'dateTime',
       this,
     );
   }
+
+  late final SimpleDateTimeUpdateTable updateTable;
 
   /// The only field of [SimpleDateTime]
   late final _i1.ColumnDateTime dateTime;
@@ -329,6 +342,46 @@ class SimpleDateTimeRepository {
     return session.db.updateRow<SimpleDateTime>(
       row,
       columns: columns?.call(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [SimpleDateTime] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<SimpleDateTime?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<SimpleDateTime>(
+      id,
+      columnValues: columnValues(SimpleDateTime.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SimpleDateTime]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<SimpleDateTime>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<SimpleDateTimeUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<SimpleDateTime>(
+      columnValues: columnValues(SimpleDateTime.t.updateTable),
+      where: where(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

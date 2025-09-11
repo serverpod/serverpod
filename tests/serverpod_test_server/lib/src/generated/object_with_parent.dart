@@ -122,14 +122,27 @@ class _ObjectWithParentImpl extends ObjectWithParent {
   }
 }
 
+class ObjectWithParentUpdateTable
+    extends _i1.UpdateTable<ObjectWithParentTable> {
+  ObjectWithParentUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> other(int value) => _i1.ColumnValue(
+        table.other,
+        value,
+      );
+}
+
 class ObjectWithParentTable extends _i1.Table<int?> {
   ObjectWithParentTable({super.tableRelation})
       : super(tableName: 'object_with_parent') {
+    updateTable = ObjectWithParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
       this,
     );
   }
+
+  late final ObjectWithParentUpdateTable updateTable;
 
   late final _i1.ColumnInt other;
 
@@ -325,6 +338,48 @@ class ObjectWithParentRepository {
     return session.db.updateRow<ObjectWithParent>(
       row,
       columns: columns?.call(ObjectWithParent.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithParent] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithParent?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithParent>(
+      id,
+      columnValues: columnValues(ObjectWithParent.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithParent]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithParent>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithParent>(
+      columnValues: columnValues(ObjectWithParent.t.updateTable),
+      where: where(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

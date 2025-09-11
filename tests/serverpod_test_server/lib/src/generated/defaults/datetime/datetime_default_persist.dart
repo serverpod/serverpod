@@ -151,9 +151,29 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   }
 }
 
+class DateTimeDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DateTimeDefaultPersistTable> {
+  DateTimeDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
+          DateTime? value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultPersistNow,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistStr(
+          DateTime? value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultPersistStr,
+        value,
+      );
+}
+
 class DateTimeDefaultPersistTable extends _i1.Table<int?> {
   DateTimeDefaultPersistTable({super.tableRelation})
       : super(tableName: 'datetime_default_persist') {
+    updateTable = DateTimeDefaultPersistUpdateTable(this);
     dateTimeDefaultPersistNow = _i1.ColumnDateTime(
       'dateTimeDefaultPersistNow',
       this,
@@ -165,6 +185,8 @@ class DateTimeDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DateTimeDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnDateTime dateTimeDefaultPersistNow;
 
@@ -363,6 +385,48 @@ class DateTimeDefaultPersistRepository {
     return session.db.updateRow<DateTimeDefaultPersist>(
       row,
       columns: columns?.call(DateTimeDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DateTimeDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DateTimeDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DateTimeDefaultPersist>(
+      id,
+      columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DateTimeDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DateTimeDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DateTimeDefaultPersist>(
+      columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
+      where: where(DateTimeDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultPersist.t),
+      orderByList: orderByList?.call(DateTimeDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

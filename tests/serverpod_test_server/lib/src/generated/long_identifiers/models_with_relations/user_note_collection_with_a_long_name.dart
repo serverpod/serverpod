@@ -147,14 +147,27 @@ class _UserNoteCollectionWithALongNameImpl
   }
 }
 
+class UserNoteCollectionWithALongNameUpdateTable
+    extends _i1.UpdateTable<UserNoteCollectionWithALongNameTable> {
+  UserNoteCollectionWithALongNameUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class UserNoteCollectionWithALongNameTable extends _i1.Table<int?> {
   UserNoteCollectionWithALongNameTable({super.tableRelation})
       : super(tableName: 'user_note_collection_with_a_long_name') {
+    updateTable = UserNoteCollectionWithALongNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final UserNoteCollectionWithALongNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -416,6 +429,51 @@ class UserNoteCollectionWithALongNameRepository {
     return session.db.updateRow<UserNoteCollectionWithALongName>(
       row,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UserNoteCollectionWithALongName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserNoteCollectionWithALongName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1
+        .ColumnValueListBuilder<UserNoteCollectionWithALongNameUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserNoteCollectionWithALongName>(
+      id,
+      columnValues: columnValues(UserNoteCollectionWithALongName.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserNoteCollectionWithALongName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserNoteCollectionWithALongName>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<UserNoteCollectionWithALongNameUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
+    _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserNoteCollectionWithALongName>(
+      columnValues: columnValues(UserNoteCollectionWithALongName.t.updateTable),
+      where: where(UserNoteCollectionWithALongName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
+      orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

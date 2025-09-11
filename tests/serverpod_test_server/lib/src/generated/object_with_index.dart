@@ -134,9 +134,24 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
+class ObjectWithIndexUpdateTable extends _i1.UpdateTable<ObjectWithIndexTable> {
+  ObjectWithIndexUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> indexed(int value) => _i1.ColumnValue(
+        table.indexed,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> indexed2(int value) => _i1.ColumnValue(
+        table.indexed2,
+        value,
+      );
+}
+
 class ObjectWithIndexTable extends _i1.Table<int?> {
   ObjectWithIndexTable({super.tableRelation})
       : super(tableName: 'object_with_index') {
+    updateTable = ObjectWithIndexUpdateTable(this);
     indexed = _i1.ColumnInt(
       'indexed',
       this,
@@ -146,6 +161,8 @@ class ObjectWithIndexTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectWithIndexUpdateTable updateTable;
 
   late final _i1.ColumnInt indexed;
 
@@ -344,6 +361,48 @@ class ObjectWithIndexRepository {
     return session.db.updateRow<ObjectWithIndex>(
       row,
       columns: columns?.call(ObjectWithIndex.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithIndex] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithIndex?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithIndex>(
+      id,
+      columnValues: columnValues(ObjectWithIndex.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithIndex]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithIndex>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithIndex>(
+      columnValues: columnValues(ObjectWithIndex.t.updateTable),
+      where: where(ObjectWithIndex.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithIndex.t),
+      orderByList: orderByList?.call(ObjectWithIndex.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

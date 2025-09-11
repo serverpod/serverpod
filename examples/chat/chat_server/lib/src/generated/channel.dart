@@ -137,8 +137,23 @@ class _ChannelImpl extends Channel {
   }
 }
 
+class ChannelUpdateTable extends _i1.UpdateTable<ChannelTable> {
+  ChannelUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
+        table.channel,
+        value,
+      );
+}
+
 class ChannelTable extends _i1.Table<int?> {
   ChannelTable({super.tableRelation}) : super(tableName: 'channel') {
+    updateTable = ChannelUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -148,6 +163,8 @@ class ChannelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ChannelUpdateTable updateTable;
 
   /// The name of the channel.
   late final _i1.ColumnString name;
@@ -348,6 +365,46 @@ class ChannelRepository {
     return session.db.updateRow<Channel>(
       row,
       columns: columns?.call(Channel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Channel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Channel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ChannelUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Channel>(
+      id,
+      columnValues: columnValues(Channel.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Channel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Channel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChannelUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ChannelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChannelTable>? orderBy,
+    _i1.OrderByListBuilder<ChannelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Channel>(
+      columnValues: columnValues(Channel.t.updateTable),
+      where: where(Channel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Channel.t),
+      orderByList: orderByList?.call(Channel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

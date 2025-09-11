@@ -143,13 +143,25 @@ class _BookImpl extends Book {
   }
 }
 
+class BookUpdateTable extends _i1.UpdateTable<BookTable> {
+  BookUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+        table.title,
+        value,
+      );
+}
+
 class BookTable extends _i1.Table<int?> {
   BookTable({super.tableRelation}) : super(tableName: 'book') {
+    updateTable = BookUpdateTable(this);
     title = _i1.ColumnString(
       'title',
       this,
     );
   }
+
+  late final BookUpdateTable updateTable;
 
   late final _i1.ColumnString title;
 
@@ -406,6 +418,46 @@ class BookRepository {
     return session.db.updateRow<Book>(
       row,
       columns: columns?.call(Book.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Book] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Book?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Book>(
+      id,
+      columnValues: columnValues(Book.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Book]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Book>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<BookTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BookTable>? orderBy,
+    _i1.OrderByListBuilder<BookTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Book>(
+      columnValues: columnValues(Book.t.updateTable),
+      where: where(Book.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
