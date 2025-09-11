@@ -8,30 +8,29 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given database entries with matching criteria',
+    'Given database entries with basic matching criteria',
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      setUp(() async {
+        await Types.db.insert(
+          session,
+          [
+            Types(anInt: 1, aString: 'first', aBool: true, aDouble: 1.5),
+            Types(anInt: 2, aString: 'second', aBool: false, aDouble: 2.5),
+            Types(anInt: 3, aString: 'third', aBool: true, aDouble: 3.5),
+            Types(anInt: 1, aString: 'duplicate', aBool: false, aDouble: 4.5),
+          ],
+        );
+      });
+
       group('when updating where with no columns specified', () {
-        const originalInt = 1;
-        const originalString = 'original';
-
-        setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(anInt: originalInt, aString: originalString),
-              Types(anInt: 2, aString: 'second'),
-            ],
-          );
-        });
-
         test('then ArgumentError is thrown', () {
           expect(
             () => Types.db.updateWhere(
               session,
               columnValues: (t) => [],
-              where: (t) => t.anInt.equals(originalInt),
+              where: (t) => t.anInt.equals(1),
             ),
             throwsA(isA<ArgumentError>()),
           );
@@ -40,39 +39,25 @@ void main() {
         test('then the rows remain unchanged in the database', () async {
           var dbRow = await Types.db.findFirstRow(
             session,
-            where: (t) => t.anInt.equals(originalInt),
+            where: (t) => t.anInt.equals(1),
           );
           expect(dbRow, isNotNull);
-          expect(dbRow!.anInt, originalInt);
-          expect(dbRow.aString, originalString);
+          expect(dbRow!.anInt, 1);
+          expect(dbRow.aString, 'first');
         });
       });
 
       group(
           'when updating where number equals specific value for a single column',
           () {
-        const originalNumber1 = 1;
-        const originalNumber2 = 2;
-        const originalNumber3 = 3;
         const updatedNumber = 42;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(anInt: originalNumber1, aString: 'first'),
-              Types(anInt: originalNumber2, aString: 'second'),
-              Types(anInt: originalNumber3, aString: 'third'),
-              Types(anInt: originalNumber1, aString: 'duplicate'),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.anInt(updatedNumber)],
-            where: (t) => t.anInt.equals(originalNumber1),
+            where: (t) => t.anInt.equals(1),
           );
         });
 
@@ -104,30 +89,14 @@ void main() {
       group(
           'when updating where number matches complex criteria for a single column',
           () {
-        const originalNumber1 = 1;
-        const originalNumber2 = 2;
-        const originalNumber3 = 3;
         const updatedComplexNumber = 200;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(anInt: originalNumber1, aString: 'first'),
-              Types(anInt: originalNumber2, aString: 'second'),
-              Types(anInt: originalNumber3, aString: 'third'),
-              Types(anInt: originalNumber1, aString: 'duplicate'),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.anInt(updatedComplexNumber)],
-            where: (t) =>
-                t.anInt.equals(originalNumber2) |
-                t.anInt.equals(originalNumber3),
+            where: (t) => t.anInt.equals(2) | t.anInt.equals(3),
           );
         });
 
@@ -160,46 +129,18 @@ void main() {
       });
 
       group('when updating where criteria matches for multiple columns', () {
-        const originalInt1 = 1;
-        const originalInt2 = 2;
         const updatedInt = 42;
         const updatedString = 'updated';
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: originalInt1,
-                aBool: true,
-                aDouble: 1.5,
-                aString: 'first',
-                aDateTime: DateTime(2024, 1, 1),
-              ),
-              Types(
-                anInt: originalInt2,
-                aBool: false,
-                aDouble: 2.5,
-                aString: 'second',
-                aDateTime: DateTime(2024, 2, 1),
-              ),
-              Types(
-                anInt: originalInt1,
-                aBool: true,
-                aDouble: 3.5,
-                aString: 'third',
-                aDateTime: DateTime(2024, 3, 1),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
-            columnValues: (t) =>
-                [t.anInt(updatedInt), t.aString(updatedString)],
-            where: (t) => t.anInt.equals(originalInt1),
+            columnValues: (t) => [
+              t.anInt(updatedInt),
+              t.aString(updatedString),
+            ],
+            where: (t) => t.anInt.equals(1),
           );
         });
 
@@ -228,33 +169,41 @@ void main() {
         test('then non-matching rows remain unchanged', () async {
           var nonMatching = await Types.db.findFirstRow(
             session,
-            where: (t) => t.anInt.equals(originalInt2),
+            where: (t) => t.anInt.equals(2),
           );
           expect(nonMatching!.aString, 'second');
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given database entries for transaction testing',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      setUp(() async {
+        await Types.db.insert(
+          session,
+          [
+            Types(anInt: 1, aString: 'first'),
+            Types(anInt: 2, aString: 'second'),
+            Types(anInt: 1, aString: 'duplicate'),
+          ],
+        );
+      });
 
       group('when updating within an aborted transaction', () {
         const transactionUpdatedInt = 999;
-        const originalInt = 1;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(anInt: originalInt, aString: 'first'),
-              Types(anInt: 2, aString: 'second'),
-              Types(anInt: originalInt, aString: 'duplicate'),
-            ],
-          );
-
           await session.db.transaction((transaction) async {
             var savepoint = await transaction.createSavepoint();
 
             var updated = await Types.db.updateWhere(
               session,
               columnValues: (t) => [t.anInt(transactionUpdatedInt)],
-              where: (t) => t.anInt.equals(originalInt),
+              where: (t) => t.anInt.equals(1),
               transaction: transaction,
             );
 
@@ -271,10 +220,10 @@ void main() {
         test('then update is reverted as part of transaction', () async {
           var results = await Types.db.find(
             session,
-            where: (t) => t.anInt.equals(originalInt),
+            where: (t) => t.anInt.equals(1),
           );
           expect(results, hasLength(2));
-          expect(results.every((row) => row.anInt == originalInt), isTrue);
+          expect(results.every((row) => row.anInt == 1), isTrue);
         });
       });
     },
@@ -285,16 +234,18 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      setUp(() async {
+        await Types.db.insert(
+          session,
+          [
+            Types(anInt: 1, aString: 'test'),
+          ],
+        );
+      });
+
       test(
         'when updating where no rows match then empty list is returned',
         () async {
-          await Types.db.insert(
-            session,
-            [
-              Types(anInt: 1, aString: 'test'),
-            ],
-          );
-
           var updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.anInt(999)],
@@ -312,26 +263,25 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      setUp(() async {
+        await Types.db.insertRow(
+          session,
+          Types(
+            anInt: null,
+            aBool: null,
+            aDouble: null,
+            aString: null,
+            aDateTime: null,
+          ),
+        );
+      });
+
       group('when updating where column to non-null value', () {
         const updatedIntFromNull = 99;
         const updatedStringFromNull = 'was_null';
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: null,
-                aBool: null,
-                aDouble: null,
-                aString: null,
-                aDateTime: null,
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) =>
@@ -364,26 +314,28 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
-      group('when updating non-null values to null values', () {
-        const originalInt = 1;
-        const originalString = 'value';
-        const originalBool = true;
-        const originalDouble = 1.5;
+      const originalInt = 1;
+      const originalString = 'value';
+      const originalBool = true;
+      const originalDouble = 1.5;
 
+      setUp(() async {
+        await Types.db.insertRow(
+          session,
+          Types(
+            anInt: originalInt,
+            aBool: originalBool,
+            aDouble: originalDouble,
+            aString: originalString,
+            aDateTime: DateTime(2024, 1, 1),
+          ),
+        );
+      });
+
+      group('when updating non-null values to null values', () {
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insertRow(
-            session,
-            Types(
-              anInt: originalInt,
-              aBool: originalBool,
-              aDouble: originalDouble,
-              aString: originalString,
-              aDateTime: DateTime(2024, 1, 1),
-            ),
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.anInt(null), t.aString(null)],
@@ -430,55 +382,57 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      const matchingInt = 100;
+
+      setUp(() async {
+        await Types.db.insert(
+          session,
+          [
+            Types(
+              anInt: matchingInt,
+              aBool: true,
+              aDouble: 1.0,
+              aString: 'entry1',
+              aDateTime: DateTime(2024, 1, 1),
+            ),
+            Types(
+              anInt: matchingInt,
+              aBool: false,
+              aDouble: 2.0,
+              aString: 'entry2',
+              aDateTime: DateTime(2024, 1, 2),
+            ),
+            Types(
+              anInt: matchingInt,
+              aBool: true,
+              aDouble: 3.0,
+              aString: 'entry3',
+              aDateTime: DateTime(2024, 1, 3),
+            ),
+            Types(
+              anInt: matchingInt,
+              aBool: false,
+              aDouble: 4.0,
+              aString: 'entry4',
+              aDateTime: DateTime(2024, 1, 4),
+            ),
+            Types(
+              anInt: matchingInt,
+              aBool: true,
+              aDouble: 5.0,
+              aString: 'entry5',
+              aDateTime: DateTime(2024, 1, 5),
+            ),
+          ],
+        );
+      });
+
       group('when updating with limit', () {
-        const matchingInt = 100;
         const limitedUpdateString = 'limited_update';
         const limit = 3;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 1.0,
-                aString: 'entry1',
-                aDateTime: DateTime(2024, 1, 1),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 2.0,
-                aString: 'entry2',
-                aDateTime: DateTime(2024, 1, 2),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 3.0,
-                aString: 'entry3',
-                aDateTime: DateTime(2024, 1, 3),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 4.0,
-                aString: 'entry4',
-                aDateTime: DateTime(2024, 1, 4),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 5.0,
-                aString: 'entry5',
-                aDateTime: DateTime(2024, 1, 5),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.aString(limitedUpdateString)],
@@ -521,52 +475,9 @@ void main() {
       });
 
       group('when updating with orderDescending', () {
-        const matchingInt = 100;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 1.0,
-                aString: 'entry1',
-                aDateTime: DateTime(2024, 1, 1),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 2.0,
-                aString: 'entry2',
-                aDateTime: DateTime(2024, 1, 2),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 3.0,
-                aString: 'entry3',
-                aDateTime: DateTime(2024, 1, 3),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 4.0,
-                aString: 'entry4',
-                aDateTime: DateTime(2024, 1, 4),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 5.0,
-                aString: 'entry5',
-                aDateTime: DateTime(2024, 1, 5),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.aString('ordered_update')],
@@ -585,52 +496,9 @@ void main() {
       });
 
       group('when updating with offset', () {
-        const matchingInt = 100;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 1.0,
-                aString: 'entry1',
-                aDateTime: DateTime(2024, 1, 1),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 2.0,
-                aString: 'entry2',
-                aDateTime: DateTime(2024, 1, 2),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 3.0,
-                aString: 'entry3',
-                aDateTime: DateTime(2024, 1, 3),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 4.0,
-                aString: 'entry4',
-                aDateTime: DateTime(2024, 1, 4),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 5.0,
-                aString: 'entry5',
-                aDateTime: DateTime(2024, 1, 5),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.aString('offset_update')],
@@ -675,52 +543,9 @@ void main() {
       });
 
       group('when updating with limit and offset', () {
-        const matchingInt = 100;
-
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 1.0,
-                aString: 'entry1',
-                aDateTime: DateTime(2024, 1, 1),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 2.0,
-                aString: 'entry2',
-                aDateTime: DateTime(2024, 1, 2),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 3.0,
-                aString: 'entry3',
-                aDateTime: DateTime(2024, 1, 3),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: false,
-                aDouble: 4.0,
-                aString: 'entry4',
-                aDateTime: DateTime(2024, 1, 4),
-              ),
-              Types(
-                anInt: matchingInt,
-                aBool: true,
-                aDouble: 5.0,
-                aString: 'entry5',
-                aDateTime: DateTime(2024, 1, 5),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [t.aString('window_update')],
@@ -744,68 +569,67 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      setUp(() async {
+        await Types.db.insert(
+          session,
+          [
+            Types(
+              anInt: 1,
+              aBool: true,
+              aDouble: 1.5,
+              aDateTime: DateTime(2024, 1, 1),
+              aString: 'first',
+              aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+              aDuration: Duration(seconds: 30),
+              aUuid:
+                  UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+              aUri: Uri.parse('https://serverpod.dev'),
+              aBigInt: BigInt.from(123456789),
+              aVector: Vector([1.0, 2.0, 3.0]),
+              aHalfVector: HalfVector([1.0, 2.0, 3.0]),
+              aSparseVector: SparseVector([1.0, 2.0, 3.0]),
+              aBit: Bit([true, false, true]),
+              anEnum: TestEnum.one,
+              aStringifiedEnum: TestEnumStringified.one,
+              aList: [1, 2, 3],
+              aMap: {1: 10, 2: 20},
+              aSet: {1, 2, 3},
+              aRecord: (
+                'original',
+                optionalUri: Uri.parse('https://example.com')
+              ),
+            ),
+            Types(
+              anInt: 2,
+              aBool: false,
+              aDouble: 2.5,
+              aDateTime: DateTime(2024, 2, 1),
+              aString: 'second',
+              aByteData: ByteData.view(Uint8List.fromList([7, 8, 9]).buffer),
+              aDuration: Duration(minutes: 1),
+              aUuid:
+                  UuidValue.fromString('456e7890-e12b-34c5-a678-901234567890'),
+              aUri: Uri.parse('https://example.com'),
+              aBigInt: BigInt.from(987654321),
+              aVector: Vector([7.0, 8.0, 9.0]),
+              aHalfVector: HalfVector([7.0, 8.0, 9.0]),
+              aSparseVector: SparseVector([7.0, 8.0, 9.0]),
+              aBit: Bit([false, true, false]),
+              anEnum: TestEnum.two,
+              aStringifiedEnum: TestEnumStringified.two,
+              aList: [7, 8, 9],
+              aMap: {7: 70, 8: 80},
+              aSet: {7, 8, 9},
+              aRecord: ('second', optionalUri: Uri.parse('https://second.com')),
+            ),
+          ],
+        );
+      });
+
       group('when updating all supported data types', () {
         late List<Types> updated;
 
         setUp(() async {
-          await Types.db.insert(
-            session,
-            [
-              Types(
-                anInt: 1,
-                aBool: true,
-                aDouble: 1.5,
-                aDateTime: DateTime(2024, 1, 1),
-                aString: 'first',
-                aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
-                aDuration: Duration(seconds: 30),
-                aUuid: UuidValue.fromString(
-                    '550e8400-e29b-41d4-a716-446655440000'),
-                aUri: Uri.parse('https://serverpod.dev'),
-                aBigInt: BigInt.from(123456789),
-                aVector: Vector([1.0, 2.0, 3.0]),
-                aHalfVector: HalfVector([1.0, 2.0, 3.0]),
-                aSparseVector: SparseVector([1.0, 2.0, 3.0]),
-                aBit: Bit([true, false, true]),
-                anEnum: TestEnum.one,
-                aStringifiedEnum: TestEnumStringified.one,
-                aList: [1, 2, 3],
-                aMap: {1: 10, 2: 20},
-                aSet: {1, 2, 3},
-                aRecord: (
-                  'original',
-                  optionalUri: Uri.parse('https://example.com')
-                ),
-              ),
-              Types(
-                anInt: 2,
-                aBool: false,
-                aDouble: 2.5,
-                aDateTime: DateTime(2024, 2, 1),
-                aString: 'second',
-                aByteData: ByteData.view(Uint8List.fromList([7, 8, 9]).buffer),
-                aDuration: Duration(minutes: 1),
-                aUuid: UuidValue.fromString(
-                    '456e7890-e12b-34c5-a678-901234567890'),
-                aUri: Uri.parse('https://example.com'),
-                aBigInt: BigInt.from(987654321),
-                aVector: Vector([7.0, 8.0, 9.0]),
-                aHalfVector: HalfVector([7.0, 8.0, 9.0]),
-                aSparseVector: SparseVector([7.0, 8.0, 9.0]),
-                aBit: Bit([false, true, false]),
-                anEnum: TestEnum.two,
-                aStringifiedEnum: TestEnumStringified.two,
-                aList: [7, 8, 9],
-                aMap: {7: 70, 8: 80},
-                aSet: {7, 8, 9},
-                aRecord: (
-                  'second',
-                  optionalUri: Uri.parse('https://second.com')
-                ),
-              ),
-            ],
-          );
-
           updated = await Types.db.updateWhere(
             session,
             columnValues: (t) => [

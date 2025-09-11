@@ -8,28 +8,28 @@ import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given a database entry',
+    'Given a database entry with all basic fields',
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      const originalBool = true;
+      const originalInt = 1;
+      const originalString = 'original';
+
+      late Types existingEntry;
+
+      setUp(() async {
+        existingEntry = await Types.db.insertRow(
+          session,
+          Types(
+            aBool: originalBool,
+            anInt: originalInt,
+            aString: originalString,
+          ),
+        );
+      });
+
       group('when updating by id with no columns specified', () {
-        const originalBool = true;
-        const originalInt = 1;
-        const originalString = 'original';
-
-        late Types existingEntry;
-
-        setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(
-              aBool: originalBool,
-              anInt: originalInt,
-              aString: originalString,
-            ),
-          );
-        });
-
         test('then ArgumentError is thrown', () {
           expect(
             () => Types.db.updateById(
@@ -54,22 +54,10 @@ void main() {
       });
 
       group('when updating by id for a single column', () {
-        const originalBool = true;
-        const originalInt = 1;
         const updatedInt = 42;
-
-        late Types existingEntry;
         late Types? updated;
 
         setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(
-              aBool: originalBool,
-              anInt: originalInt,
-            ),
-          );
-
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
@@ -81,7 +69,7 @@ void main() {
           expect(updated, isNotNull);
           expect(updated!.anInt, updatedInt);
           expect(updated!.aBool, originalBool);
-          expect(updated!.aString, isNull);
+          expect(updated!.aString, originalString);
         });
 
         test(
@@ -99,35 +87,24 @@ void main() {
             var dbRow = await Types.db.findById(session, existingEntry.id!);
             expect(dbRow, isNotNull);
             expect(dbRow!.aBool, originalBool);
-            expect(dbRow.aString, isNull);
+            expect(dbRow.aString, originalString);
           },
         );
       });
 
       group('when updating by id for multiple columns', () {
-        const originalBool = true;
-        const originalInt = 1;
-        const originalString = 'original';
         const updatedInt = 42;
         const updatedString = 'updated';
-
-        late Types existingEntry;
         late Types? updated;
 
         setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(
-                aBool: originalBool,
-                anInt: originalInt,
-                aString: originalString),
-          );
-
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
-            columnValues: (t) =>
-                [t.anInt(updatedInt), t.aString(updatedString)],
+            columnValues: (t) => [
+              t.anInt(updatedInt),
+              t.aString(updatedString),
+            ],
           );
         });
 
@@ -158,19 +135,53 @@ void main() {
         );
       });
 
-      group('when updating non-null columns to null values', () {
-        const originalInt = 1;
-        const originalString = 'original';
+      group('when updating within an aborted transaction', () {
+        const transactionUpdatedInt = 42;
 
-        late Types existingEntry;
+        setUp(() async {
+          await session.db.transaction((transaction) async {
+            var savepoint = await transaction.createSavepoint();
+
+            await Types.db.updateById(
+              session,
+              existingEntry.id!,
+              columnValues: (t) => [t.anInt(transactionUpdatedInt)],
+              transaction: transaction,
+            );
+
+            await savepoint.rollback();
+          });
+        });
+
+        test('then update is reverted as part of transaction', () async {
+          var result = await Types.db.findById(session, existingEntry.id!);
+          expect(result!.anInt, originalInt);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given a database entry with non-null values',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      const originalInt = 1;
+      const originalString = 'original';
+
+      late Types existingEntry;
+
+      setUp(() async {
+        existingEntry = await Types.db.insertRow(
+          session,
+          Types(anInt: originalInt, aString: originalString),
+        );
+      });
+
+      group('when updating non-null columns to null values', () {
         late Types? updated;
 
         setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(anInt: originalInt, aString: originalString),
-          );
-
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
@@ -178,7 +189,7 @@ void main() {
           );
         });
 
-        test('then the column is set to null', () async {
+        test('then the column is set to null', () {
           expect(updated, isNotNull);
           expect(updated!.anInt, isNull);
           expect(updated!.aString, isNull);
@@ -191,20 +202,29 @@ void main() {
           expect(dbRow.aString, isNull);
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given a database entry with null values',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      late Types existingEntry;
+
+      setUp(() async {
+        existingEntry = await Types.db.insertRow(
+          session,
+          Types(anInt: null, aString: null),
+        );
+      });
 
       group('when updating null columns to non-null values', () {
         const updatedInt = 1;
         const updatedString = 'updated';
-
-        late Types existingEntry;
         late Types? updated;
 
         setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(anInt: null, aString: null),
-          );
-
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
@@ -219,42 +239,51 @@ void main() {
           expect(updated!.aString, updatedString);
         });
       });
+    },
+  );
+
+  withServerpod(
+    'Given a database entry with all supported data types',
+    (sessionBuilder, endpoints) {
+      var session = sessionBuilder.build();
+
+      late Types existingEntry;
+
+      setUp(() async {
+        existingEntry = await Types.db.insertRow(
+          session,
+          Types(
+            anInt: 1,
+            aBool: true,
+            aDouble: 1.5,
+            aDateTime: DateTime(2024, 1, 1),
+            aString: 'original',
+            aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
+            aDuration: Duration(seconds: 30),
+            aUuid: UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+            aUri: Uri.parse('https://serverpod.dev'),
+            aBigInt: BigInt.from(123456789),
+            aVector: Vector([1.0, 2.0, 3.0]),
+            aHalfVector: HalfVector([1.0, 2.0, 3.0]),
+            aSparseVector: SparseVector([1.0, 2.0, 3.0]),
+            aBit: Bit([true, false, true]),
+            anEnum: TestEnum.one,
+            aStringifiedEnum: TestEnumStringified.one,
+            aList: [1, 2, 3],
+            aMap: {1: 10, 2: 20},
+            aSet: {1, 2, 3},
+            aRecord: (
+              'original',
+              optionalUri: Uri.parse('https://example.com')
+            ),
+          ),
+        );
+      });
 
       group('when updating all supported data types', () {
-        late Types existingEntry;
         late Types? updated;
 
         setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(
-              anInt: 1,
-              aBool: true,
-              aDouble: 1.5,
-              aDateTime: DateTime(2024, 1, 1),
-              aString: 'original',
-              aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
-              aDuration: Duration(seconds: 30),
-              aUuid:
-                  UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
-              aUri: Uri.parse('https://serverpod.dev'),
-              aBigInt: BigInt.from(123456789),
-              aVector: Vector([1.0, 2.0, 3.0]),
-              aHalfVector: HalfVector([1.0, 2.0, 3.0]),
-              aSparseVector: SparseVector([1.0, 2.0, 3.0]),
-              aBit: Bit([true, false, true]),
-              anEnum: TestEnum.one,
-              aStringifiedEnum: TestEnumStringified.one,
-              aList: [1, 2, 3],
-              aMap: {1: 10, 2: 20},
-              aSet: {1, 2, 3},
-              aRecord: (
-                'original',
-                optionalUri: Uri.parse('https://example.com')
-              ),
-            ),
-          );
-
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
@@ -349,38 +378,6 @@ void main() {
           expect(dbRow.aSet, {4, 5, 6});
           expect(dbRow.aRecord,
               ('updated', optionalUri: Uri.parse('https://updated.com')));
-        });
-      });
-
-      group('when updating within an aborted transaction', () {
-        const originalInt = 1;
-        const transactionUpdatedInt = 42;
-
-        late Types existingEntry;
-
-        setUp(() async {
-          existingEntry = await Types.db.insertRow(
-            session,
-            Types(anInt: originalInt),
-          );
-
-          await session.db.transaction((transaction) async {
-            var savepoint = await transaction.createSavepoint();
-
-            await Types.db.updateById(
-              session,
-              existingEntry.id!,
-              columnValues: (t) => [t.anInt(transactionUpdatedInt)],
-              transaction: transaction,
-            );
-
-            await savepoint.rollback();
-          });
-        });
-
-        test('then update is reverted as part of transaction', () async {
-          var result = await Types.db.findById(session, existingEntry.id!);
-          expect(result!.anInt, originalInt);
         });
       });
     },
