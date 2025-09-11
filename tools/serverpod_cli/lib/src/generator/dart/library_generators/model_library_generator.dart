@@ -1513,7 +1513,8 @@ class SerializableModelLibraryGenerator {
         p
           ..named = true
           ..name = field.name
-          ..required = !(field.type.nullable || hasDefaults);
+          ..required = !(field.type.nullable || hasDefaults) ||
+              (field.type.nullable && field.isRequired);
 
         if (shouldIncludeType) {
           p.type = type;
