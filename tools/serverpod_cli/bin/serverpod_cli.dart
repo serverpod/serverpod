@@ -64,10 +64,11 @@ Future<void> _main(List<String> args) async {
 }
 
 ServerpodCommandRunner buildCommandRunner() {
+  final version = Version.parse(templateVersion);
   return ServerpodCommandRunner.createCommandRunner(
     _analytics,
     productionMode,
-    Version.parse(templateVersion),
+    version,
   )..addCommands([
       AnalyzePubspecsCommand(),
       CreateCommand(),
@@ -77,7 +78,7 @@ ServerpodCommandRunner buildCommandRunner() {
       CreateMigrationCommand(),
       CreateRepairMigrationCommand(),
       UpgradeCommand(),
-      VersionCommand(),
+      VersionCommand(version),
     ]);
 }
 

@@ -146,28 +146,29 @@ class TestFixture {
   );
 }
 
-TestFixture createTestFixture(MockLogger testLogger) {
+TestFixture createTestFixture(MockLogger testLogger, Version version) {
   var analytics = MockAnalytics();
   var runner = ServerpodCommandRunner.createCommandRunner(
     analytics,
     false,
-    Version(1, 1, 0),
+    version,
     onBeforeRunCommand: (_) => Future(() => {}),
   );
   var mockCommand = MockCommand();
   runner.addCommand(mockCommand);
   runner.addCommand(LanguageServerMockCommand());
-  runner.addCommand(VersionCommand());
+  runner.addCommand(VersionCommand(version));
   return TestFixture(analytics, mockCommand, runner, testLogger.output.reset());
 }
 
 void main() {
+  final version = Version(1, 1, 0);
   var testLogger = MockLogger();
   initializeLoggerWith(testLogger);
 
   late TestFixture fixture;
   setUp(() {
-    fixture = createTestFixture(testLogger);
+    fixture = createTestFixture(testLogger, version);
   });
   group('Logger Initialization - ', () {
     test('when no log level flag is provided', () async {
@@ -227,7 +228,7 @@ void main() {
 
     var logOutput = fixture.logOutput;
     expect(logOutput.messages, hasLength(1));
-    expect(logOutput.messages.first, startsWith('Serverpod version: '));
+    expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
   });
 
   test('Given --version flag when run then should exit early and not show help',
@@ -236,6 +237,6 @@ void main() {
 
     var logOutput = fixture.logOutput;
     expect(logOutput.messages, hasLength(1));
-    expect(logOutput.messages.first, startsWith('Serverpod version: '));
+    expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
   });
 }
