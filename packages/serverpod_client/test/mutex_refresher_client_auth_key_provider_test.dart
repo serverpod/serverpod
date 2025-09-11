@@ -210,6 +210,9 @@ void main() {
         await expectLater(future, throwsA(isA<Exception>()));
       }
       expect(delegate.refreshCallCount, 1);
-    });
+    },
+        skip: const bool.fromEnvironment('dart.tool.dart2wasm')
+            ? 'Failing on WASM due to https://github.com/dart-lang/sdk/issues/61483'
+            : null);
   });
 }
