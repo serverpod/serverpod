@@ -1,2 +1,6 @@
-# Hide all generated files in any 'generated' folder across the repo
-**/generated/** linguist-generated
+**/generated/** linguist-generated=true
+**/protocol/** linguist-generated=true
+**/serverpod_test_tools.dart linguist-generated=true
+
+# Compensate for too broad protocol pattern
+tools/serverpod_cli/test/generator/dart/**/protocol/** linguist-generated=false

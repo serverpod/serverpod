@@ -34,6 +34,15 @@ void main() {
           isNotEmpty,
         );
       });
+
+      test(
+          'when two JWTs are created within the same second, then they are unique.',
+          () {
+        final refreshToken = _createRefreshToken();
+        final jwt1 = jwtUtil.createJwt(refreshToken);
+        final jwt2 = jwtUtil.createJwt(refreshToken);
+        expect(jwt1, isNot(jwt2));
+      });
     });
 
     group('a refresh token containing a reserved claim,', () {
@@ -109,10 +118,17 @@ void main() {
       });
 
       test(
-          "when the JWT is decoded, then it will contain the `RefreshToken`'s ID as `jwtId`.",
+          'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
+          () {
+        expect(JWT.decode(jwt).jwtId, isNotNull);
+        expect(JWT.decode(jwt).jwtId, isNot(refreshToken.id!.toString()));
+      });
+
+      test(
+          'when the JWT is decoded, then it contains the refresh token ID claim.',
           () {
         expect(
-          JWT.decode(jwt).jwtId,
+          (JWT.decode(jwt).payload as Map)['dev.serverpod.refreshTokenId'],
           refreshToken.id!.toString(),
         );
       });

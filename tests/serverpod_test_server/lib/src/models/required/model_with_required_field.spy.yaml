@@ -1,0 +1,5 @@
+class: ModelWithRequiredField
+fields:
+    name: String
+    email: String?, required
+    phone: String?
