@@ -9,7 +9,6 @@ class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   int refreshCallCount = 0;
 
   void setAuthKey(String? key) => _authKey = key?.wrapAsBearerAuthHeader();
-  void updateAuthKey() => setAuthKey('refreshed-token-$refreshCallCount');
   void setRefresh(FutureOr<RefreshAuthKeyResult> Function() refresh) {
     _refresh = refresh;
   }

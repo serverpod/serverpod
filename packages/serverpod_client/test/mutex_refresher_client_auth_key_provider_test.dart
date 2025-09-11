@@ -31,13 +31,13 @@ void main() {
 
     test('when refresh succeeds then returns new auth header value.', () async {
       delegate.setRefresh(() {
-        delegate.updateAuthKey();
+        delegate.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
       });
 
       final result = await provider.authHeaderValue;
 
-      expect(result, 'Bearer refreshed-token-1');
+      expect(result, 'Bearer refreshed-token');
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -46,7 +46,6 @@ void main() {
         'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
-        delegate.updateAuthKey();
         return RefreshAuthKeyResult.success;
       });
 
@@ -62,14 +61,14 @@ void main() {
         'then only one call performs refresh due to locking.', () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 50));
-        delegate.updateAuthKey();
+        delegate.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
       });
 
       final futures = List.generate(3, (_) => provider.authHeaderValue);
       final results = await Future.wait(futures);
 
-      expect(results, everyElement('Bearer refreshed-token-1'));
+      expect(results, everyElement('Bearer refreshed-token'));
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -79,7 +78,6 @@ void main() {
         () async {
       delegate.setRefresh(() async {
         await Future.delayed(const Duration(milliseconds: 200));
-        delegate.updateAuthKey();
         return RefreshAuthKeyResult.success;
       });
 

@@ -111,7 +111,7 @@ void main() {
       ];
 
       authKeyProvider.setRefresh(() {
-        authKeyProvider.updateAuthKey();
+        authKeyProvider.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
       });
 
@@ -125,7 +125,7 @@ void main() {
       expect(requestCount, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedAuthHeaders[0], contains('initial-token'));
-      expect(receivedAuthHeaders[1], contains('refreshed-token-1'));
+      expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
     test(
@@ -156,7 +156,7 @@ void main() {
       ];
 
       authKeyProvider.setRefresh(() {
-        authKeyProvider.updateAuthKey();
+        authKeyProvider.setAuthKey('refreshed-token');
         return RefreshAuthKeyResult.success;
       });
 
@@ -168,7 +168,7 @@ void main() {
       expect(requestCount, 2);
       expect(authKeyProvider.refreshCallCount, 1);
       expect(receivedAuthHeaders[0], contains('initial-token'));
-      expect(receivedAuthHeaders[1], contains('refreshed-token-1'));
+      expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
     test(
