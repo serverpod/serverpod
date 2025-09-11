@@ -89,13 +89,12 @@ final class ClientMethodStreamManager {
       // A first failure here with 401 can be due to an access token expiration.
       // We will retry only once in such case, and only if the `authKeyProvider`
       // exposes a `refreshAuthKey` method (like JWT).
-      final shouldRefreshAuth =
-          e.responseType == OpenMethodStreamResponseType.authenticationFailed &&
-              authKeyProvider is RefresherClientAuthKeyProvider &&
-              await authKeyProvider.refreshAuthKey();
-
-      if (shouldRefreshAuth) {
-        return _openMethodStream(connectionDetails);
+      if (e.responseType == OpenMethodStreamResponseType.authenticationFailed &&
+          authKeyProvider is RefresherClientAuthKeyProvider) {
+        final refreshResult = await authKeyProvider.refreshAuthKey();
+        if (refreshResult == RefreshAuthKeyResult.success) {
+          return _openMethodStream(connectionDetails);
+        }
       }
       rethrow;
     }

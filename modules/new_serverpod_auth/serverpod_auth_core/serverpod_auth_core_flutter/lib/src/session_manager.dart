@@ -32,7 +32,7 @@ class ClientAuthSessionManager implements ClientAuthKeyProvider {
 
   /// Sets the caller from the client's module lookup.
   void setCaller(Caller caller) {
-    _caller ??= caller;
+    _caller = caller;
   }
 
   /// The authentication module caller.
