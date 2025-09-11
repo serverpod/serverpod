@@ -47,6 +47,11 @@ class MutexRefresherClientAuthKeyProvider
   /// Shared future that serves as a lock to prevent concurrent refresh calls.
   Future<RefreshAuthKeyResult>? _pendingRefresh;
 
+  /// Retrieves the authentication header value, performing a refresh if needed.
+  /// The [refreshAuthKey] call ensure that the auth header value can be eagerly
+  /// refreshed to avoid failing requests due to expired tokens. Make sure to
+  /// implement a [refreshAuthKey] method on the delegate that first checks if
+  /// the token is expired and returning [RefreshAuthKeyResult.skipped] if not.
   @override
   Future<String?> get authHeaderValue async {
     await refreshAuthKey();
