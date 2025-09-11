@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Static Assets Example</title>
-    <!-- Cache-busted CSS -->
-    <link rel="stylesheet" href="{{ assetUrl('css/style.css') }}">
+    <title>{{{title}}}</title>
+    <!-- Cache-busted CSS - using direct paths since RouteStaticDirectory handles cache busting -->
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>Static Assets Example</h1>
+    <h1>{{{title}}}</h1>
+    <p>{{{message}}}</p>
     
-    <!-- Cache-busted images -->
-    <img src="{{ assetUrl('images/logo.png') }}" alt="Logo">
-    <img src="{{ assetUrl('images/hero.jpg') }}" alt="Hero Image">
+    <!-- Cache-busted images - using direct paths since RouteStaticDirectory handles cache busting -->
+    <img src="/images/logo.png" alt="Logo">
+    <img src="/images/hero.jpg" alt="Hero Image">
     
-    <!-- Cache-busted JavaScript -->
-    <script src="{{ assetUrl('js/app.js') }}"></script>
-    <script src="{{ assetUrl('js/vendor.js') }}"></script>
+    <!-- Cache-busted JavaScript - using direct paths since RouteStaticDirectory handles cache busting -->
+    <script src="/js/app.js"></script>
+    <script src="/js/vendor.js"></script>
 </body>
 </html>

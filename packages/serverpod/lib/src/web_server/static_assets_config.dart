@@ -17,8 +17,11 @@ class StaticAssetsConfig {
   /// Whether to enable automatic cache busting for static files.
   final bool enableCacheBusting;
 
+  /// The configured static asset manager instance.
+  late final StaticAssetManager _manager;
+
   /// Creates a new [StaticAssetsConfig].
-  const StaticAssetsConfig({
+  StaticAssetsConfig({
     this.staticDirectories = const ['web/static'],
     this.cdnUrlPrefix,
     this.enableCacheBusting = true,
@@ -26,10 +29,13 @@ class StaticAssetsConfig {
 
   /// Configure the static asset manager with this configuration.
   void configure() {
-    var manager = StaticAssetManager();
-    manager.configureStaticDirectories(staticDirectories);
-    manager.configureCdnUrl(cdnUrlPrefix);
+    _manager = StaticAssetManager();
+    _manager.configureStaticDirectories(staticDirectories);
+    _manager.configureCdnUrl(cdnUrlPrefix);
   }
+
+  /// Get the configured static asset manager.
+  StaticAssetManager get manager => _manager;
 }
 
 /// Extension on Serverpod to easily configure static assets.

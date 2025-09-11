@@ -1,0 +1,19 @@
+name: static_assets_example_server
+version: 1.0.0
+description: Example server demonstrating static asset cache busting
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_shared: 3.0.0-alpha.1
+  serverpod_serialization: 3.0.0-alpha.1
+
+dependency_overrides:
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization

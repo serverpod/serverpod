@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
 /// Manages static assets with automatic cache busting.
@@ -11,16 +13,11 @@ import 'package:path/path.dart' as p;
 /// - Invalidate cache when files change
 /// - Support CDN URLs
 class StaticAssetManager {
-  static final StaticAssetManager _instance = StaticAssetManager._internal();
-
   /// Creates a new instance of [StaticAssetManager].
-  /// Returns the singleton instance.
-  factory StaticAssetManager() => _instance;
-
-  StaticAssetManager._internal();
+  StaticAssetManager();
 
   /// Cache of file hashes: file path -> (hash, last modified)
-  final Map<String, _HashCacheEntry> _hashCache = {};
+  final LinkedHashMap<String, _HashCacheEntry> _hashCache = LinkedHashMap();
 
   /// Static directories configured for serving
   final List<String> _staticDirectories = [];
@@ -107,6 +104,10 @@ class StaticAssetManager {
       // Check if we have a cached hash that's still valid
       var cached = _hashCache[filePath];
       if (cached != null && cached.lastModified == lastModified) {
+        // Move to end of LinkedHashMap (most recently used)
+        _hashCache.remove(filePath);
+        _hashCache[filePath] =
+            _HashCacheEntry(cached.hash, lastModified, DateTime.now());
         return cached.hash;
       }
 
@@ -116,8 +117,9 @@ class StaticAssetManager {
         return null;
       }
 
-      // Cache the result
-      _hashCache[filePath] = _HashCacheEntry(hash, lastModified);
+      // Cache the result (new entries go to end of LinkedHashMap)
+      _hashCache[filePath] =
+          _HashCacheEntry(hash, lastModified, DateTime.now());
 
       // Clean up cache if it gets too large
       _cleanupCache();
@@ -128,12 +130,12 @@ class StaticAssetManager {
     }
   }
 
-  /// Compute the content hash of a file.
+  /// Compute the content hash of a file using streaming.
   Future<String?> _computeFileHash(File file) async {
     try {
-      var bytes = await file.readAsBytes();
-      var hash = _sha256(bytes);
-      return hash.substring(0, 8); // Use first 8 characters
+      var inputStream = file.openRead();
+      var digest = await sha256.bind(inputStream).first;
+      return digest.toString().substring(0, 8); // Use first 8 characters
     } catch (e) {
       return null;
     }
@@ -159,14 +161,13 @@ class StaticAssetManager {
   void _cleanupCache() {
     if (_hashCache.length <= _maxCacheEntries) return;
 
-    // Remove oldest entries (simple LRU-like behavior)
-    var entries = _hashCache.entries.toList();
-    entries
-        .sort((a, b) => a.value.lastModified.compareTo(b.value.lastModified));
+    // Remove oldest entries (LRU behavior using LinkedHashMap insertion order)
+    // LinkedHashMap maintains insertion order, so first entries are least recently used
+    var entriesToRemove = _hashCache.length - _maxCacheEntries + 100;
+    var keysToRemove = _hashCache.keys.take(entriesToRemove).toList();
 
-    var toRemove = entries.take(_hashCache.length - _maxCacheEntries + 100);
-    for (var entry in toRemove) {
-      _hashCache.remove(entry.key);
+    for (var key in keysToRemove) {
+      _hashCache.remove(key);
     }
   }
 
@@ -184,21 +185,13 @@ class StaticAssetManager {
       'cdnUrlPrefix': _cdnUrlPrefix,
     };
   }
-
-  /// Simple SHA-256-like hash implementation.
-  String _sha256(List<int> bytes) {
-    var hash = 0;
-    for (var byte in bytes) {
-      hash = ((hash << 5) - hash + byte) & 0xffffffff;
-    }
-    return hash.abs().toRadixString(16).padLeft(8, '0');
-  }
 }
 
 /// Cache entry for file hashes.
 class _HashCacheEntry {
   final String hash;
   final DateTime lastModified;
+  final DateTime lastAccessed;
 
-  _HashCacheEntry(this.hash, this.lastModified);
+  _HashCacheEntry(this.hash, this.lastModified, this.lastAccessed);
 }
