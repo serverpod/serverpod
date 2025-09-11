@@ -12,6 +12,47 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      group('when updating by id with no columns specified', () {
+        const originalBool = true;
+        const originalInt = 1;
+        const originalString = 'original';
+
+        late Types existingEntry;
+
+        setUp(() async {
+          existingEntry = await Types.db.insertRow(
+            session,
+            Types(
+              aBool: originalBool,
+              anInt: originalInt,
+              aString: originalString,
+            ),
+          );
+        });
+
+        test('then ArgumentError is thrown', () {
+          expect(
+            () => Types.db.updateById(
+              session,
+              existingEntry.id!,
+              columnValues: (t) => [],
+            ),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
+
+        test(
+          'then the row remains unchanged in the database',
+          () async {
+            var dbRow = await Types.db.findById(session, existingEntry.id!);
+            expect(dbRow, isNotNull);
+            expect(dbRow!.anInt, originalInt);
+            expect(dbRow.aBool, originalBool);
+            expect(dbRow.aString, originalString);
+          },
+        );
+      });
+
       group('when updating by id for a single column', () {
         const originalBool = true;
         const originalInt = 1;

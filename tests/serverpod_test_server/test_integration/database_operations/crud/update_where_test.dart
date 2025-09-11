@@ -12,6 +12,42 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
+      group('when updating where with no columns specified', () {
+        const originalInt = 1;
+        const originalString = 'original';
+
+        setUp(() async {
+          await Types.db.insert(
+            session,
+            [
+              Types(anInt: originalInt, aString: originalString),
+              Types(anInt: 2, aString: 'second'),
+            ],
+          );
+        });
+
+        test('then ArgumentError is thrown', () {
+          expect(
+            () => Types.db.updateWhere(
+              session,
+              columnValues: (t) => [],
+              where: (t) => t.anInt.equals(originalInt),
+            ),
+            throwsA(isA<ArgumentError>()),
+          );
+        });
+
+        test('then the rows remain unchanged in the database', () async {
+          var dbRow = await Types.db.findFirstRow(
+            session,
+            where: (t) => t.anInt.equals(originalInt),
+          );
+          expect(dbRow, isNotNull);
+          expect(dbRow!.anInt, originalInt);
+          expect(dbRow.aString, originalString);
+        });
+      });
+
       group(
           'when updating where number equals specific value for a single column',
           () {
