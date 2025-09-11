@@ -150,10 +150,8 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
-class AuthUserUpdateTable {
-  AuthUserUpdateTable(this.table);
-
-  final AuthUserTable table;
+class AuthUserUpdateTable extends _i1.UpdateTable<AuthUserTable> {
+  AuthUserUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(

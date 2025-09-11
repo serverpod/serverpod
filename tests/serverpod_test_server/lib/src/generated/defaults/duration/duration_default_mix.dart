@@ -182,10 +182,9 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
   }
 }
 
-class DurationDefaultMixUpdateTable {
-  DurationDefaultMixUpdateTable(this.table);
-
-  final DurationDefaultMixTable table;
+class DurationDefaultMixUpdateTable
+    extends _i1.UpdateTable<DurationDefaultMixTable> {
+  DurationDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
           Duration value) =>

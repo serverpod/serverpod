@@ -273,10 +273,8 @@ class _RefreshTokenImpl extends RefreshToken {
   }
 }
 
-class RefreshTokenUpdateTable {
-  RefreshTokenUpdateTable(this.table);
-
-  final RefreshTokenTable table;
+class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
+  RefreshTokenUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
           _i1.UuidValue value) =>

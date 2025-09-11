@@ -152,10 +152,9 @@ class _RelationToMultipleMaxFieldNameImpl
   }
 }
 
-class RelationToMultipleMaxFieldNameUpdateTable {
-  RelationToMultipleMaxFieldNameUpdateTable(this.table);
-
-  final RelationToMultipleMaxFieldNameTable table;
+class RelationToMultipleMaxFieldNameUpdateTable
+    extends _i1.UpdateTable<RelationToMultipleMaxFieldNameTable> {
+  RelationToMultipleMaxFieldNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

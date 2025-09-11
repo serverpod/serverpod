@@ -137,10 +137,9 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
   }
 }
 
-class GoogleRefreshTokenUpdateTable {
-  GoogleRefreshTokenUpdateTable(this.table);
-
-  final GoogleRefreshTokenTable table;
+class GoogleRefreshTokenUpdateTable
+    extends _i1.UpdateTable<GoogleRefreshTokenTable> {
+  GoogleRefreshTokenUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
         table.userId,

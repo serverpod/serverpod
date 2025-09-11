@@ -161,10 +161,9 @@ class _StringDefaultMixImpl extends StringDefaultMix {
   }
 }
 
-class StringDefaultMixUpdateTable {
-  StringDefaultMixUpdateTable(this.table);
-
-  final StringDefaultMixTable table;
+class StringDefaultMixUpdateTable
+    extends _i1.UpdateTable<StringDefaultMixTable> {
+  StringDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> stringDefaultAndDefaultModel(String value) =>
       _i1.ColumnValue(

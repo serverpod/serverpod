@@ -194,10 +194,9 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
   }
 }
 
-class ServerHealthConnectionInfoUpdateTable {
-  ServerHealthConnectionInfoUpdateTable(this.table);
-
-  final ServerHealthConnectionInfoTable table;
+class ServerHealthConnectionInfoUpdateTable
+    extends _i1.UpdateTable<ServerHealthConnectionInfoTable> {
+  ServerHealthConnectionInfoUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
         table.serverId,

@@ -159,10 +159,9 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   }
 }
 
-class LegacyExternalUserIdentifierUpdateTable {
-  LegacyExternalUserIdentifierUpdateTable(this.table);
-
-  final LegacyExternalUserIdentifierTable table;
+class LegacyExternalUserIdentifierUpdateTable
+    extends _i1.UpdateTable<LegacyExternalUserIdentifierTable> {
+  LegacyExternalUserIdentifierUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
           _i1.UuidValue value) =>

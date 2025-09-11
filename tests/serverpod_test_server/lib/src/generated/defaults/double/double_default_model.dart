@@ -138,10 +138,9 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
   }
 }
 
-class DoubleDefaultModelUpdateTable {
-  DoubleDefaultModelUpdateTable(this.table);
-
-  final DoubleDefaultModelTable table;
+class DoubleDefaultModelUpdateTable
+    extends _i1.UpdateTable<DoubleDefaultModelTable> {
+  DoubleDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefaultModel(double value) =>
       _i1.ColumnValue(

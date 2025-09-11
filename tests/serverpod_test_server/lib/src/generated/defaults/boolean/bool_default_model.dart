@@ -151,10 +151,9 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
   }
 }
 
-class BoolDefaultModelUpdateTable {
-  BoolDefaultModelUpdateTable(this.table);
-
-  final BoolDefaultModelTable table;
+class BoolDefaultModelUpdateTable
+    extends _i1.UpdateTable<BoolDefaultModelTable> {
+  BoolDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<bool, bool> boolDefaultModelTrue(bool value) =>
       _i1.ColumnValue(

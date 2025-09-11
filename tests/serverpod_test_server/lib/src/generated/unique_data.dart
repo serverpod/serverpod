@@ -134,10 +134,8 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
-class UniqueDataUpdateTable {
-  UniqueDataUpdateTable(this.table);
-
-  final UniqueDataTable table;
+class UniqueDataUpdateTable extends _i1.UpdateTable<UniqueDataTable> {
+  UniqueDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
         table.number,

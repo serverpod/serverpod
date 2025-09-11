@@ -205,10 +205,9 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
   final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 }
 
-class PersonWithLongTableNameUpdateTable {
-  PersonWithLongTableNameUpdateTable(this.table);
-
-  final PersonWithLongTableNameTable table;
+class PersonWithLongTableNameUpdateTable
+    extends _i1.UpdateTable<PersonWithLongTableNameTable> {
+  PersonWithLongTableNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

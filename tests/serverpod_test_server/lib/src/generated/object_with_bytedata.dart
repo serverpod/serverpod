@@ -124,10 +124,9 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }
 }
 
-class ObjectWithByteDataUpdateTable {
-  ObjectWithByteDataUpdateTable(this.table);
-
-  final ObjectWithByteDataTable table;
+class ObjectWithByteDataUpdateTable
+    extends _i1.UpdateTable<ObjectWithByteDataTable> {
+  ObjectWithByteDataUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
       _i1.ColumnValue(

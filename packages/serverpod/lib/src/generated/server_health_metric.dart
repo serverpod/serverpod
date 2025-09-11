@@ -193,10 +193,9 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
   }
 }
 
-class ServerHealthMetricUpdateTable {
-  ServerHealthMetricUpdateTable(this.table);
-
-  final ServerHealthMetricTable table;
+class ServerHealthMetricUpdateTable
+    extends _i1.UpdateTable<ServerHealthMetricTable> {
+  ServerHealthMetricUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

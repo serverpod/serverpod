@@ -348,10 +348,9 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
   }
 }
 
-class ObjectWithObjectUpdateTable {
-  ObjectWithObjectUpdateTable(this.table);
-
-  final ObjectWithObjectTable table;
+class ObjectWithObjectUpdateTable
+    extends _i1.UpdateTable<ObjectWithObjectTable> {
+  ObjectWithObjectUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> data(_i2.SimpleData value) =>
       _i1.ColumnValue(

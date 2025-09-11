@@ -154,10 +154,8 @@ class _AddressUuidImpl extends AddressUuid {
   }
 }
 
-class AddressUuidUpdateTable {
-  AddressUuidUpdateTable(this.table);
-
-  final AddressUuidTable table;
+class AddressUuidUpdateTable extends _i1.UpdateTable<AddressUuidTable> {
+  AddressUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
         table.street,

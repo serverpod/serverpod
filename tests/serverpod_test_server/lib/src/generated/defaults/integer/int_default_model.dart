@@ -135,10 +135,8 @@ class _IntDefaultModelImpl extends IntDefaultModel {
   }
 }
 
-class IntDefaultModelUpdateTable {
-  IntDefaultModelUpdateTable(this.table);
-
-  final IntDefaultModelTable table;
+class IntDefaultModelUpdateTable extends _i1.UpdateTable<IntDefaultModelTable> {
+  IntDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultModel(int value) => _i1.ColumnValue(
         table.intDefaultModel,

@@ -152,10 +152,8 @@ class _TownIntImpl extends TownInt {
   }
 }
 
-class TownIntUpdateTable {
-  TownIntUpdateTable(this.table);
-
-  final TownIntTable table;
+class TownIntUpdateTable extends _i1.UpdateTable<TownIntTable> {
+  TownIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

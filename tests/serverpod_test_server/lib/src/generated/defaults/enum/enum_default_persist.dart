@@ -152,10 +152,9 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }
 }
 
-class EnumDefaultPersistUpdateTable {
-  EnumDefaultPersistUpdateTable(this.table);
-
-  final EnumDefaultPersistTable table;
+class EnumDefaultPersistUpdateTable
+    extends _i1.UpdateTable<EnumDefaultPersistTable> {
+  EnumDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultPersist(
           _i2.ByNameEnum? value) =>

@@ -312,10 +312,9 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
   }
 }
 
-class StringDefaultPersistUpdateTable {
-  StringDefaultPersistUpdateTable(this.table);
-
-  final StringDefaultPersistTable table;
+class StringDefaultPersistUpdateTable
+    extends _i1.UpdateTable<StringDefaultPersistTable> {
+  StringDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> stringDefaultPersist(String? value) =>
       _i1.ColumnValue(

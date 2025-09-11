@@ -232,10 +232,9 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   }
 }
 
-class ChangedIdTypeSelfUpdateTable {
-  ChangedIdTypeSelfUpdateTable(this.table);
-
-  final ChangedIdTypeSelfTable table;
+class ChangedIdTypeSelfUpdateTable
+    extends _i1.UpdateTable<ChangedIdTypeSelfTable> {
+  ChangedIdTypeSelfUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

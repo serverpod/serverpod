@@ -175,10 +175,8 @@ class _BlockingImpl extends Blocking {
   }
 }
 
-class BlockingUpdateTable {
-  BlockingUpdateTable(this.table);
-
-  final BlockingTable table;
+class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
+  BlockingUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
         table.blockedId,

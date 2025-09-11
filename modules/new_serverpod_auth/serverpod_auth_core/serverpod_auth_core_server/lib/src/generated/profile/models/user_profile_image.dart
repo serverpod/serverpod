@@ -192,10 +192,9 @@ class _UserProfileImageImpl extends UserProfileImage {
   }
 }
 
-class UserProfileImageUpdateTable {
-  UserProfileImageUpdateTable(this.table);
-
-  final UserProfileImageTable table;
+class UserProfileImageUpdateTable
+    extends _i1.UpdateTable<UserProfileImageTable> {
+  UserProfileImageUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> userProfileId(
           _i1.UuidValue value) =>

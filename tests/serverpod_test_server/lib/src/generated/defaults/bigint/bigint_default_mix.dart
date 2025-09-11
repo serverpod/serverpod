@@ -162,10 +162,9 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
   }
 }
 
-class BigIntDefaultMixUpdateTable {
-  BigIntDefaultMixUpdateTable(this.table);
-
-  final BigIntDefaultMixTable table;
+class BigIntDefaultMixUpdateTable
+    extends _i1.UpdateTable<BigIntDefaultMixTable> {
+  BigIntDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultModel(BigInt value) =>
       _i1.ColumnValue(

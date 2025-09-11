@@ -204,10 +204,9 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   }
 }
 
-class ObjectWithHalfVectorUpdateTable {
-  ObjectWithHalfVectorUpdateTable(this.table);
-
-  final ObjectWithHalfVectorTable table;
+class ObjectWithHalfVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithHalfVectorTable> {
+  ObjectWithHalfVectorUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVector(
           _i1.HalfVector value) =>

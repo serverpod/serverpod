@@ -215,10 +215,9 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
   }
 }
 
-class EmailAccountRequestUpdateTable {
-  EmailAccountRequestUpdateTable(this.table);
-
-  final EmailAccountRequestTable table;
+class EmailAccountRequestUpdateTable
+    extends _i1.UpdateTable<EmailAccountRequestTable> {
+  EmailAccountRequestUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(

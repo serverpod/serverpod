@@ -123,10 +123,9 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
   }
 }
 
-class ObjectWithDurationUpdateTable {
-  ObjectWithDurationUpdateTable(this.table);
-
-  final ObjectWithDurationTable table;
+class ObjectWithDurationUpdateTable
+    extends _i1.UpdateTable<ObjectWithDurationTable> {
+  ObjectWithDurationUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> duration(Duration value) =>
       _i1.ColumnValue(

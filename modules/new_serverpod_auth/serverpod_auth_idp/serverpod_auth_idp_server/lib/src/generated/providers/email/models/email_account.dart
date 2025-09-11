@@ -199,10 +199,8 @@ class _EmailAccountImpl extends EmailAccount {
   }
 }
 
-class EmailAccountUpdateTable {
-  EmailAccountUpdateTable(this.table);
-
-  final EmailAccountTable table;
+class EmailAccountUpdateTable extends _i1.UpdateTable<EmailAccountTable> {
+  EmailAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
           _i1.UuidValue value) =>

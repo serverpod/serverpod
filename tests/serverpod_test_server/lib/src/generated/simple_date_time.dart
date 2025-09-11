@@ -125,10 +125,8 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
   }
 }
 
-class SimpleDateTimeUpdateTable {
-  SimpleDateTimeUpdateTable(this.table);
-
-  final SimpleDateTimeTable table;
+class SimpleDateTimeUpdateTable extends _i1.UpdateTable<SimpleDateTimeTable> {
+  SimpleDateTimeUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTime(DateTime value) =>
       _i1.ColumnValue(

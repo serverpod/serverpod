@@ -154,10 +154,9 @@ class _EmailAccountPasswordResetRequestAttemptImpl
   }
 }
 
-class EmailAccountPasswordResetRequestAttemptUpdateTable {
-  EmailAccountPasswordResetRequestAttemptUpdateTable(this.table);
-
-  final EmailAccountPasswordResetRequestAttemptTable table;
+class EmailAccountPasswordResetRequestAttemptUpdateTable
+    extends _i1.UpdateTable<EmailAccountPasswordResetRequestAttemptTable> {
+  EmailAccountPasswordResetRequestAttemptUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
         table.email,

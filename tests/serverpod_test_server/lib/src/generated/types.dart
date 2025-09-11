@@ -413,10 +413,8 @@ class _TypesImpl extends Types {
   }
 }
 
-class TypesUpdateTable {
-  TypesUpdateTable(this.table);
-
-  final TypesTable table;
+class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
+  TypesUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> anInt(int? value) => _i1.ColumnValue(
         table.anInt,

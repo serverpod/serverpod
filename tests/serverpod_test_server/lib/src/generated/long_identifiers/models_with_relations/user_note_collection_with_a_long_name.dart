@@ -147,10 +147,9 @@ class _UserNoteCollectionWithALongNameImpl
   }
 }
 
-class UserNoteCollectionWithALongNameUpdateTable {
-  UserNoteCollectionWithALongNameUpdateTable(this.table);
-
-  final UserNoteCollectionWithALongNameTable table;
+class UserNoteCollectionWithALongNameUpdateTable
+    extends _i1.UpdateTable<UserNoteCollectionWithALongNameTable> {
+  UserNoteCollectionWithALongNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

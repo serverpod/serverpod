@@ -129,10 +129,9 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }
 }
 
-class UriDefaultPersistUpdateTable {
-  UriDefaultPersistUpdateTable(this.table);
-
-  final UriDefaultPersistTable table;
+class UriDefaultPersistUpdateTable
+    extends _i1.UpdateTable<UriDefaultPersistTable> {
+  UriDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultPersist(Uri? value) => _i1.ColumnValue(
         table.uriDefaultPersist,

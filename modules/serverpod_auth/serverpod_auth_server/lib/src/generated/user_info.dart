@@ -222,10 +222,8 @@ class _UserInfoImpl extends UserInfo {
   }
 }
 
-class UserInfoUpdateTable {
-  UserInfoUpdateTable(this.table);
-
-  final UserInfoTable table;
+class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
+  UserInfoUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
       _i1.ColumnValue(

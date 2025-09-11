@@ -177,10 +177,8 @@ class _OrganizationImpl extends Organization {
   }
 }
 
-class OrganizationUpdateTable {
-  OrganizationUpdateTable(this.table);
-
-  final OrganizationTable table;
+class OrganizationUpdateTable extends _i1.UpdateTable<OrganizationTable> {
+  OrganizationUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

@@ -194,10 +194,9 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
-class CloudStorageEntryUpdateTable {
-  CloudStorageEntryUpdateTable(this.table);
-
-  final CloudStorageEntryTable table;
+class CloudStorageEntryUpdateTable
+    extends _i1.UpdateTable<CloudStorageEntryTable> {
+  CloudStorageEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
         table.storageId,

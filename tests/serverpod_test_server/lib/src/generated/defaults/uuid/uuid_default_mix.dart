@@ -159,10 +159,8 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
   }
 }
 
-class UuidDefaultMixUpdateTable {
-  UuidDefaultMixUpdateTable(this.table);
-
-  final UuidDefaultMixTable table;
+class UuidDefaultMixUpdateTable extends _i1.UpdateTable<UuidDefaultMixTable> {
+  UuidDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultModel(
           _i1.UuidValue value) =>

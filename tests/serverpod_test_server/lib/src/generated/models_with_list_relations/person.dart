@@ -193,10 +193,8 @@ class PersonImplicit extends _PersonImpl {
   final int? _cityCitizensCityId;
 }
 
-class PersonUpdateTable {
-  PersonUpdateTable(this.table);
-
-  final PersonTable table;
+class PersonUpdateTable extends _i1.UpdateTable<PersonTable> {
+  PersonUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

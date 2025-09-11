@@ -153,10 +153,9 @@ class _EmailAccountFailedLoginAttemptImpl
   }
 }
 
-class EmailAccountFailedLoginAttemptUpdateTable {
-  EmailAccountFailedLoginAttemptUpdateTable(this.table);
-
-  final EmailAccountFailedLoginAttemptTable table;
+class EmailAccountFailedLoginAttemptUpdateTable
+    extends _i1.UpdateTable<EmailAccountFailedLoginAttemptTable> {
+  EmailAccountFailedLoginAttemptUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
         table.email,

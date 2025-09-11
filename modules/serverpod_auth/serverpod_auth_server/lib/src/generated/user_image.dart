@@ -150,10 +150,8 @@ class _UserImageImpl extends UserImage {
   }
 }
 
-class UserImageUpdateTable {
-  UserImageUpdateTable(this.table);
-
-  final UserImageTable table;
+class UserImageUpdateTable extends _i1.UpdateTable<UserImageTable> {
+  UserImageUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
         table.userId,

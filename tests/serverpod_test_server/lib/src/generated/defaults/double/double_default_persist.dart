@@ -128,10 +128,9 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }
 }
 
-class DoubleDefaultPersistUpdateTable {
-  DoubleDefaultPersistUpdateTable(this.table);
-
-  final DoubleDefaultPersistTable table;
+class DoubleDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DoubleDefaultPersistTable> {
+  DoubleDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefaultPersist(double? value) =>
       _i1.ColumnValue(

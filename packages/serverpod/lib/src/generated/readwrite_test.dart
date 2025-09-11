@@ -125,10 +125,9 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
   }
 }
 
-class ReadWriteTestEntryUpdateTable {
-  ReadWriteTestEntryUpdateTable(this.table);
-
-  final ReadWriteTestEntryTable table;
+class ReadWriteTestEntryUpdateTable
+    extends _i1.UpdateTable<ReadWriteTestEntryTable> {
+  ReadWriteTestEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
         table.number,

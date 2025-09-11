@@ -193,10 +193,8 @@ class _UuidDefaultImpl extends UuidDefault {
   }
 }
 
-class UuidDefaultUpdateTable {
-  UuidDefaultUpdateTable(this.table);
-
-  final UuidDefaultTable table;
+class UuidDefaultUpdateTable extends _i1.UpdateTable<UuidDefaultTable> {
+  UuidDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultRandom(
           _i1.UuidValue value) =>

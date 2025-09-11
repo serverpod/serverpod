@@ -155,10 +155,8 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
   }
 }
 
-class BoolDefaultMixUpdateTable {
-  BoolDefaultMixUpdateTable(this.table);
-
-  final BoolDefaultMixTable table;
+class BoolDefaultMixUpdateTable extends _i1.UpdateTable<BoolDefaultMixTable> {
+  BoolDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<bool, bool> boolDefaultAndDefaultModel(bool value) =>
       _i1.ColumnValue(

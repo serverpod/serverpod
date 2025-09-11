@@ -244,10 +244,8 @@ class _ChatMessageImpl extends ChatMessage {
   }
 }
 
-class ChatMessageUpdateTable {
-  ChatMessageUpdateTable(this.table);
-
-  final ChatMessageTable table;
+class ChatMessageUpdateTable extends _i1.UpdateTable<ChatMessageTable> {
+  ChatMessageUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
         table.channel,

@@ -151,10 +151,8 @@ class _PlayerImpl extends Player {
   }
 }
 
-class PlayerUpdateTable {
-  PlayerUpdateTable(this.table);
-
-  final PlayerTable table;
+class PlayerUpdateTable extends _i1.UpdateTable<PlayerTable> {
+  PlayerUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

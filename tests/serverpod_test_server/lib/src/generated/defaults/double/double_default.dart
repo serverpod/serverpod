@@ -138,10 +138,8 @@ class _DoubleDefaultImpl extends DoubleDefault {
   }
 }
 
-class DoubleDefaultUpdateTable {
-  DoubleDefaultUpdateTable(this.table);
-
-  final DoubleDefaultTable table;
+class DoubleDefaultUpdateTable extends _i1.UpdateTable<DoubleDefaultTable> {
+  DoubleDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefault(double value) =>
       _i1.ColumnValue(

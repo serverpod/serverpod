@@ -144,10 +144,9 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
   }
 }
 
-class BoolDefaultPersistUpdateTable {
-  BoolDefaultPersistUpdateTable(this.table);
-
-  final BoolDefaultPersistTable table;
+class BoolDefaultPersistUpdateTable
+    extends _i1.UpdateTable<BoolDefaultPersistTable> {
+  BoolDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<bool, bool> boolDefaultPersistTrue(bool? value) =>
       _i1.ColumnValue(

@@ -126,10 +126,8 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
-class SimpleDataUpdateTable {
-  SimpleDataUpdateTable(this.table);
-
-  final SimpleDataTable table;
+class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
+  SimpleDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
         table.num,

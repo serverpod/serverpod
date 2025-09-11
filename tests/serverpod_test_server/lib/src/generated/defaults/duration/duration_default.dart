@@ -157,10 +157,8 @@ class _DurationDefaultImpl extends DurationDefault {
   }
 }
 
-class DurationDefaultUpdateTable {
-  DurationDefaultUpdateTable(this.table);
-
-  final DurationDefaultTable table;
+class DurationDefaultUpdateTable extends _i1.UpdateTable<DurationDefaultTable> {
+  DurationDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> durationDefault(Duration value) =>
       _i1.ColumnValue(

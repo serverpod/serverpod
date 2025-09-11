@@ -230,10 +230,8 @@ class _UserProfileImpl extends UserProfile {
   }
 }
 
-class UserProfileUpdateTable {
-  UserProfileUpdateTable(this.table);
-
-  final UserProfileTable table;
+class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
+  UserProfileUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
           _i1.UuidValue value) =>

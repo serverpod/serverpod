@@ -210,10 +210,8 @@ class _CitizenIntImpl extends CitizenInt {
   }
 }
 
-class CitizenIntUpdateTable {
-  CitizenIntUpdateTable(this.table);
-
-  final CitizenIntTable table;
+class CitizenIntUpdateTable extends _i1.UpdateTable<CitizenIntTable> {
+  CitizenIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

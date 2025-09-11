@@ -154,10 +154,9 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   }
 }
 
-class RelatedUniqueDataUpdateTable {
-  RelatedUniqueDataUpdateTable(this.table);
-
-  final RelatedUniqueDataTable table;
+class RelatedUniqueDataUpdateTable
+    extends _i1.UpdateTable<RelatedUniqueDataTable> {
+  RelatedUniqueDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
         table.uniqueDataId,

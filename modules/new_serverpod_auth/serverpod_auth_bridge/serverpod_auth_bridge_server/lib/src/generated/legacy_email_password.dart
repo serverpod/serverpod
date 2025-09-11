@@ -158,10 +158,9 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
   }
 }
 
-class LegacyEmailPasswordUpdateTable {
-  LegacyEmailPasswordUpdateTable(this.table);
-
-  final LegacyEmailPasswordTable table;
+class LegacyEmailPasswordUpdateTable
+    extends _i1.UpdateTable<LegacyEmailPasswordTable> {
+  LegacyEmailPasswordUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
           _i1.UuidValue value) =>

@@ -134,10 +134,8 @@ class _ParentUserImpl extends ParentUser {
   }
 }
 
-class ParentUserUpdateTable {
-  ParentUserUpdateTable(this.table);
-
-  final ParentUserTable table;
+class ParentUserUpdateTable extends _i1.UpdateTable<ParentUserTable> {
+  ParentUserUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
         table.name,

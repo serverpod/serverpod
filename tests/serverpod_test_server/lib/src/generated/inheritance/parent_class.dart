@@ -106,10 +106,8 @@ class ParentClass extends _i1.GrandparentClass
 
 class _Undefined {}
 
-class ParentClassUpdateTable {
-  ParentClassUpdateTable(this.table);
-
-  final ParentClassTable table;
+class ParentClassUpdateTable extends _i2.UpdateTable<ParentClassTable> {
+  ParentClassUpdateTable(super.table);
 
   _i2.ColumnValue<String, String> grandParentField(String value) =>
       _i2.ColumnValue(

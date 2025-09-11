@@ -194,10 +194,9 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
   }
 }
 
-class ObjectWithVectorUpdateTable {
-  ObjectWithVectorUpdateTable(this.table);
-
-  final ObjectWithVectorTable table;
+class ObjectWithVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithVectorTable> {
+  ObjectWithVectorUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vector(_i1.Vector value) =>
       _i1.ColumnValue(

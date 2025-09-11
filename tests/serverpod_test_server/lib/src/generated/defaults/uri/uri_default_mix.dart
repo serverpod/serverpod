@@ -159,10 +159,8 @@ class _UriDefaultMixImpl extends UriDefaultMix {
   }
 }
 
-class UriDefaultMixUpdateTable {
-  UriDefaultMixUpdateTable(this.table);
-
-  final UriDefaultMixTable table;
+class UriDefaultMixUpdateTable extends _i1.UpdateTable<UriDefaultMixTable> {
+  UriDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultAndDefaultModel(Uri value) =>
       _i1.ColumnValue(

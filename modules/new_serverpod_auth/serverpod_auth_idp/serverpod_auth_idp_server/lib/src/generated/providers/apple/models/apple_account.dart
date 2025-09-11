@@ -291,10 +291,8 @@ class _AppleAccountImpl extends AppleAccount {
   }
 }
 
-class AppleAccountUpdateTable {
-  AppleAccountUpdateTable(this.table);
-
-  final AppleAccountTable table;
+class AppleAccountUpdateTable extends _i1.UpdateTable<AppleAccountTable> {
+  AppleAccountUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
       _i1.ColumnValue(

@@ -132,10 +132,9 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   }
 }
 
-class RelationEmptyModelUpdateTable {
-  RelationEmptyModelUpdateTable(this.table);
-
-  final RelationEmptyModelTable table;
+class RelationEmptyModelUpdateTable
+    extends _i1.UpdateTable<RelationEmptyModelTable> {
+  RelationEmptyModelUpdateTable(super.table);
 }
 
 class RelationEmptyModelTable extends _i1.Table<int?> {

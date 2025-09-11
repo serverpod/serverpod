@@ -176,10 +176,8 @@ class _TeamImpl extends Team {
   }
 }
 
-class TeamUpdateTable {
-  TeamUpdateTable(this.table);
-
-  final TeamTable table;
+class TeamUpdateTable extends _i1.UpdateTable<TeamTable> {
+  TeamUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

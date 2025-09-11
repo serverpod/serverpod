@@ -165,10 +165,9 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
   }
 }
 
-class EmailCreateAccountRequestUpdateTable {
-  EmailCreateAccountRequestUpdateTable(this.table);
-
-  final EmailCreateAccountRequestTable table;
+class EmailCreateAccountRequestUpdateTable
+    extends _i1.UpdateTable<EmailCreateAccountRequestTable> {
+  EmailCreateAccountRequestUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> userName(String value) => _i1.ColumnValue(
         table.userName,

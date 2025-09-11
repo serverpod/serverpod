@@ -243,10 +243,8 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
-class MessageLogEntryUpdateTable {
-  MessageLogEntryUpdateTable(this.table);
-
-  final MessageLogEntryTable table;
+class MessageLogEntryUpdateTable extends _i1.UpdateTable<MessageLogEntryTable> {
+  MessageLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
         table.sessionLogId,

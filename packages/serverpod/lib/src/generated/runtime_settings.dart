@@ -172,10 +172,8 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   }
 }
 
-class RuntimeSettingsUpdateTable {
-  RuntimeSettingsUpdateTable(this.table);
-
-  final RuntimeSettingsTable table;
+class RuntimeSettingsUpdateTable extends _i1.UpdateTable<RuntimeSettingsTable> {
+  RuntimeSettingsUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.LogSettings, _i2.LogSettings> logSettings(
           _i2.LogSettings value) =>

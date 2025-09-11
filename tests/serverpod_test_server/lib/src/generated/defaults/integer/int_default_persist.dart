@@ -124,10 +124,9 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
   }
 }
 
-class IntDefaultPersistUpdateTable {
-  IntDefaultPersistUpdateTable(this.table);
-
-  final IntDefaultPersistTable table;
+class IntDefaultPersistUpdateTable
+    extends _i1.UpdateTable<IntDefaultPersistTable> {
+  IntDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultPersist(int? value) => _i1.ColumnValue(
         table.intDefaultPersist,

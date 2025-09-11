@@ -138,10 +138,8 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
   }
 }
 
-class ObjectWithUuidUpdateTable {
-  ObjectWithUuidUpdateTable(this.table);
-
-  final ObjectWithUuidTable table;
+class ObjectWithUuidUpdateTable extends _i1.UpdateTable<ObjectWithUuidTable> {
+  ObjectWithUuidUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuid(_i1.UuidValue value) =>
       _i1.ColumnValue(

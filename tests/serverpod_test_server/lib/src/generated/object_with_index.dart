@@ -134,10 +134,8 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-class ObjectWithIndexUpdateTable {
-  ObjectWithIndexUpdateTable(this.table);
-
-  final ObjectWithIndexTable table;
+class ObjectWithIndexUpdateTable extends _i1.UpdateTable<ObjectWithIndexTable> {
+  ObjectWithIndexUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> indexed(int value) => _i1.ColumnValue(
         table.indexed,

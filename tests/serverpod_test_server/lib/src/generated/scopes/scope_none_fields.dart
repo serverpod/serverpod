@@ -140,10 +140,8 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   final _i2.SimpleData? _object;
 }
 
-class ScopeNoneFieldsUpdateTable {
-  ScopeNoneFieldsUpdateTable(this.table);
-
-  final ScopeNoneFieldsTable table;
+class ScopeNoneFieldsUpdateTable extends _i1.UpdateTable<ScopeNoneFieldsTable> {
+  ScopeNoneFieldsUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> $name(String? value) => _i1.ColumnValue(
         table.$name,

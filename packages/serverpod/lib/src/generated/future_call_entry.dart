@@ -178,10 +178,8 @@ class _FutureCallEntryImpl extends FutureCallEntry {
   }
 }
 
-class FutureCallEntryUpdateTable {
-  FutureCallEntryUpdateTable(this.table);
-
-  final FutureCallEntryTable table;
+class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
+  FutureCallEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

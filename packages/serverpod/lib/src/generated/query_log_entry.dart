@@ -243,10 +243,8 @@ class _QueryLogEntryImpl extends QueryLogEntry {
   }
 }
 
-class QueryLogEntryUpdateTable {
-  QueryLogEntryUpdateTable(this.table);
-
-  final QueryLogEntryTable table;
+class QueryLogEntryUpdateTable extends _i1.UpdateTable<QueryLogEntryTable> {
+  QueryLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
         table.serverId,

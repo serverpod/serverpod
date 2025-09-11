@@ -168,10 +168,8 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
   }
 }
 
-class EnumDefaultMixUpdateTable {
-  EnumDefaultMixUpdateTable(this.table);
-
-  final EnumDefaultMixTable table;
+class EnumDefaultMixUpdateTable extends _i1.UpdateTable<EnumDefaultMixTable> {
+  EnumDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
       byNameEnumDefaultAndDefaultModel(_i2.ByNameEnum value) => _i1.ColumnValue(

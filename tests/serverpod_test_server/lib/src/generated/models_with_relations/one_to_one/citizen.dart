@@ -204,10 +204,8 @@ class _CitizenImpl extends Citizen {
   }
 }
 
-class CitizenUpdateTable {
-  CitizenUpdateTable(this.table);
-
-  final CitizenTable table;
+class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
+  CitizenUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

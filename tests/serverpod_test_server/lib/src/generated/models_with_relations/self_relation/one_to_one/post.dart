@@ -173,10 +173,8 @@ class _PostImpl extends Post {
   }
 }
 
-class PostUpdateTable {
-  PostUpdateTable(this.table);
-
-  final PostTable table;
+class PostUpdateTable extends _i1.UpdateTable<PostTable> {
+  PostUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
         table.content,

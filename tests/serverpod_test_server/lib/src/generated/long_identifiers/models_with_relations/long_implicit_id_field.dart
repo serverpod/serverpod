@@ -162,10 +162,9 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 }
 
-class LongImplicitIdFieldUpdateTable {
-  LongImplicitIdFieldUpdateTable(this.table);
-
-  final LongImplicitIdFieldTable table;
+class LongImplicitIdFieldUpdateTable
+    extends _i1.UpdateTable<LongImplicitIdFieldTable> {
+  LongImplicitIdFieldUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

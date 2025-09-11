@@ -145,10 +145,9 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
   }
 }
 
-class ObjectFieldScopesUpdateTable {
-  ObjectFieldScopesUpdateTable(this.table);
-
-  final ObjectFieldScopesTable table;
+class ObjectFieldScopesUpdateTable
+    extends _i1.UpdateTable<ObjectFieldScopesTable> {
+  ObjectFieldScopesUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
         table.normal,

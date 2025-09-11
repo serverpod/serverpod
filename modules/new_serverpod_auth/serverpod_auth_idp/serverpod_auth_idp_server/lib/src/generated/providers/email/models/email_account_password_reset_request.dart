@@ -188,10 +188,9 @@ class _EmailAccountPasswordResetRequestImpl
   }
 }
 
-class EmailAccountPasswordResetRequestUpdateTable {
-  EmailAccountPasswordResetRequestUpdateTable(this.table);
-
-  final EmailAccountPasswordResetRequestTable table;
+class EmailAccountPasswordResetRequestUpdateTable
+    extends _i1.UpdateTable<EmailAccountPasswordResetRequestTable> {
+  EmailAccountPasswordResetRequestUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
           _i1.UuidValue value) =>

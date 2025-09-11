@@ -160,10 +160,8 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
   }
 }
 
-class DateTimeDefaultUpdateTable {
-  DateTimeDefaultUpdateTable(this.table);
-
-  final DateTimeDefaultTable table;
+class DateTimeDefaultUpdateTable extends _i1.UpdateTable<DateTimeDefaultTable> {
+  DateTimeDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultNow(DateTime value) =>
       _i1.ColumnValue(

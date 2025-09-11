@@ -131,10 +131,9 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
   }
 }
 
-class DurationDefaultPersistUpdateTable {
-  DurationDefaultPersistUpdateTable(this.table);
-
-  final DurationDefaultPersistTable table;
+class DurationDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DurationDefaultPersistTable> {
+  DurationDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> durationDefaultPersist(Duration? value) =>
       _i1.ColumnValue(

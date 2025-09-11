@@ -163,10 +163,9 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
   final int? _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 }
 
-class UserNoteWithALongNameUpdateTable {
-  UserNoteWithALongNameUpdateTable(this.table);
-
-  final UserNoteWithALongNameTable table;
+class UserNoteWithALongNameUpdateTable
+    extends _i1.UpdateTable<UserNoteWithALongNameTable> {
+  UserNoteWithALongNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

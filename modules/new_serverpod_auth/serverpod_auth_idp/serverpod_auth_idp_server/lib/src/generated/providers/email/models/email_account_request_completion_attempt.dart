@@ -177,10 +177,9 @@ class _EmailAccountRequestCompletionAttemptImpl
   }
 }
 
-class EmailAccountRequestCompletionAttemptUpdateTable {
-  EmailAccountRequestCompletionAttemptUpdateTable(this.table);
-
-  final EmailAccountRequestCompletionAttemptTable table;
+class EmailAccountRequestCompletionAttemptUpdateTable
+    extends _i1.UpdateTable<EmailAccountRequestCompletionAttemptTable> {
+  EmailAccountRequestCompletionAttemptUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
       _i1.ColumnValue(

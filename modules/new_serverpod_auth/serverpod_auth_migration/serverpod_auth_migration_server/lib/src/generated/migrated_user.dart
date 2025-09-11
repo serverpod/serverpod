@@ -174,10 +174,8 @@ class _MigratedUserImpl extends MigratedUser {
   }
 }
 
-class MigratedUserUpdateTable {
-  MigratedUserUpdateTable(this.table);
-
-  final MigratedUserTable table;
+class MigratedUserUpdateTable extends _i1.UpdateTable<MigratedUserTable> {
+  MigratedUserUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
         table.oldUserId,

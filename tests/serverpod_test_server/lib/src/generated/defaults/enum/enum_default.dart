@@ -181,10 +181,8 @@ class _EnumDefaultImpl extends EnumDefault {
   }
 }
 
-class EnumDefaultUpdateTable {
-  EnumDefaultUpdateTable(this.table);
-
-  final EnumDefaultTable table;
+class EnumDefaultUpdateTable extends _i1.UpdateTable<EnumDefaultTable> {
+  EnumDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefault(
           _i2.ByNameEnum value) =>

@@ -178,10 +178,8 @@ class _OrderUuidImpl extends OrderUuid {
   }
 }
 
-class OrderUuidUpdateTable {
-  OrderUuidUpdateTable(this.table);
-
-  final OrderUuidTable table;
+class OrderUuidUpdateTable extends _i1.UpdateTable<OrderUuidTable> {
+  OrderUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
         table.description,

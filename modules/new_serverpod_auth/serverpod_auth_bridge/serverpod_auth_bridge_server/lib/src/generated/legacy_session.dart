@@ -180,10 +180,8 @@ class _LegacySessionImpl extends LegacySession {
   }
 }
 
-class LegacySessionUpdateTable {
-  LegacySessionUpdateTable(this.table);
-
-  final LegacySessionTable table;
+class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
+  LegacySessionUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
           _i1.UuidValue value) =>

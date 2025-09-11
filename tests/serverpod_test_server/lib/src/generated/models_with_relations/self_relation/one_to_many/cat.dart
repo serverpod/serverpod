@@ -176,10 +176,8 @@ class _CatImpl extends Cat {
   }
 }
 
-class CatUpdateTable {
-  CatUpdateTable(this.table);
-
-  final CatTable table;
+class CatUpdateTable extends _i1.UpdateTable<CatTable> {
+  CatUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

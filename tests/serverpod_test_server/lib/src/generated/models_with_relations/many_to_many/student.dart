@@ -144,10 +144,8 @@ class _StudentImpl extends Student {
   }
 }
 
-class StudentUpdateTable {
-  StudentUpdateTable(this.table);
-
-  final StudentTable table;
+class StudentUpdateTable extends _i1.UpdateTable<StudentTable> {
+  StudentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

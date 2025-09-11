@@ -153,10 +153,8 @@ class _CommentIntImpl extends CommentInt {
   }
 }
 
-class CommentIntUpdateTable {
-  CommentIntUpdateTable(this.table);
-
-  final CommentIntTable table;
+class CommentIntUpdateTable extends _i1.UpdateTable<CommentIntTable> {
+  CommentIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
         table.description,

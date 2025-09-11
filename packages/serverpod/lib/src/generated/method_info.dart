@@ -137,10 +137,8 @@ class _MethodInfoImpl extends MethodInfo {
   }
 }
 
-class MethodInfoUpdateTable {
-  MethodInfoUpdateTable(this.table);
-
-  final MethodInfoTable table;
+class MethodInfoUpdateTable extends _i1.UpdateTable<MethodInfoTable> {
+  MethodInfoUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
         table.endpoint,

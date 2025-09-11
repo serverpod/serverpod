@@ -164,10 +164,9 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
   }
 }
 
-class DateTimeDefaultMixUpdateTable {
-  DateTimeDefaultMixUpdateTable(this.table);
-
-  final DateTimeDefaultMixTable table;
+class DateTimeDefaultMixUpdateTable
+    extends _i1.UpdateTable<DateTimeDefaultMixTable> {
+  DateTimeDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultModel(
           DateTime value) =>

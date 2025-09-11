@@ -150,10 +150,9 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
   }
 }
 
-class ObjectFieldPersistUpdateTable {
-  ObjectFieldPersistUpdateTable(this.table);
-
-  final ObjectFieldPersistTable table;
+class ObjectFieldPersistUpdateTable
+    extends _i1.UpdateTable<ObjectFieldPersistTable> {
+  ObjectFieldPersistUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
         table.normal,

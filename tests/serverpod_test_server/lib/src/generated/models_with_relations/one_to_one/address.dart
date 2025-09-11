@@ -153,10 +153,8 @@ class _AddressImpl extends Address {
   }
 }
 
-class AddressUpdateTable {
-  AddressUpdateTable(this.table);
-
-  final AddressTable table;
+class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
+  AddressUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
         table.street,

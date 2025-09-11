@@ -151,10 +151,8 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
-class EmailResetUpdateTable {
-  EmailResetUpdateTable(this.table);
-
-  final EmailResetTable table;
+class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
+  EmailResetUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
         table.userId,

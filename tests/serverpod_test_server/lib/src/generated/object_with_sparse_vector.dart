@@ -173,10 +173,9 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
   }
 }
 
-class ObjectWithSparseVectorUpdateTable {
-  ObjectWithSparseVectorUpdateTable(this.table);
-
-  final ObjectWithSparseVectorTable table;
+class ObjectWithSparseVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithSparseVectorTable> {
+  ObjectWithSparseVectorUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVector(
           _i1.SparseVector value) =>

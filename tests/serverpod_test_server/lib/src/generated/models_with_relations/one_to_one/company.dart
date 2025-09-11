@@ -152,10 +152,8 @@ class _CompanyImpl extends Company {
   }
 }
 
-class CompanyUpdateTable {
-  CompanyUpdateTable(this.table);
-
-  final CompanyTable table;
+class CompanyUpdateTable extends _i1.UpdateTable<CompanyTable> {
+  CompanyUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

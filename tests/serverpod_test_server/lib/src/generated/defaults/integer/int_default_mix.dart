@@ -155,10 +155,8 @@ class _IntDefaultMixImpl extends IntDefaultMix {
   }
 }
 
-class IntDefaultMixUpdateTable {
-  IntDefaultMixUpdateTable(this.table);
-
-  final IntDefaultMixTable table;
+class IntDefaultMixUpdateTable extends _i1.UpdateTable<IntDefaultMixTable> {
+  IntDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultAndDefaultModel(int value) =>
       _i1.ColumnValue(

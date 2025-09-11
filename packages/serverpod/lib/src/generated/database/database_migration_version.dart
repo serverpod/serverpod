@@ -153,10 +153,9 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
   }
 }
 
-class DatabaseMigrationVersionUpdateTable {
-  DatabaseMigrationVersionUpdateTable(this.table);
-
-  final DatabaseMigrationVersionTable table;
+class DatabaseMigrationVersionUpdateTable
+    extends _i1.UpdateTable<DatabaseMigrationVersionTable> {
+  DatabaseMigrationVersionUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> module(String value) => _i1.ColumnValue(
         table.module,

@@ -139,10 +139,9 @@ class _StringDefaultModelImpl extends StringDefaultModel {
   }
 }
 
-class StringDefaultModelUpdateTable {
-  StringDefaultModelUpdateTable(this.table);
-
-  final StringDefaultModelTable table;
+class StringDefaultModelUpdateTable
+    extends _i1.UpdateTable<StringDefaultModelTable> {
+  StringDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> stringDefaultModel(String value) =>
       _i1.ColumnValue(

@@ -154,10 +154,8 @@ class _PlayerUuidImpl extends PlayerUuid {
   }
 }
 
-class PlayerUuidUpdateTable {
-  PlayerUuidUpdateTable(this.table);
-
-  final PlayerUuidTable table;
+class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
+  PlayerUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

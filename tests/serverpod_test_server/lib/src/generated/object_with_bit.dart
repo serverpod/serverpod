@@ -191,10 +191,8 @@ class _ObjectWithBitImpl extends ObjectWithBit {
   }
 }
 
-class ObjectWithBitUpdateTable {
-  ObjectWithBitUpdateTable(this.table);
-
-  final ObjectWithBitTable table;
+class ObjectWithBitUpdateTable extends _i1.UpdateTable<ObjectWithBitTable> {
+  ObjectWithBitUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bit(_i1.Bit value) => _i1.ColumnValue(
         table.bit,

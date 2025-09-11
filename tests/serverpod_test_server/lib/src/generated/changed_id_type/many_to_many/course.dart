@@ -147,10 +147,8 @@ class _CourseUuidImpl extends CourseUuid {
   }
 }
 
-class CourseUuidUpdateTable {
-  CourseUuidUpdateTable(this.table);
-
-  final CourseUuidTable table;
+class CourseUuidUpdateTable extends _i1.UpdateTable<CourseUuidTable> {
+  CourseUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

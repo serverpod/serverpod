@@ -177,10 +177,8 @@ class _OrderImpl extends Order {
   }
 }
 
-class OrderUpdateTable {
-  OrderUpdateTable(this.table);
-
-  final OrderTable table;
+class OrderUpdateTable extends _i1.UpdateTable<OrderTable> {
+  OrderUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
         table.description,

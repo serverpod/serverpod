@@ -151,10 +151,8 @@ class _GreetingImpl extends Greeting {
   }
 }
 
-class GreetingUpdateTable {
-  GreetingUpdateTable(this.table);
-
-  final GreetingTable table;
+class GreetingUpdateTable extends _i1.UpdateTable<GreetingTable> {
+  GreetingUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
         table.message,

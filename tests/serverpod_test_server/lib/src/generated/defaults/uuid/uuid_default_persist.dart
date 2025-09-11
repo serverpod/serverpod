@@ -169,10 +169,9 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }
 }
 
-class UuidDefaultPersistUpdateTable {
-  UuidDefaultPersistUpdateTable(this.table);
-
-  final UuidDefaultPersistTable table;
+class UuidDefaultPersistUpdateTable
+    extends _i1.UpdateTable<UuidDefaultPersistTable> {
+  UuidDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandom(
           _i1.UuidValue? value) =>

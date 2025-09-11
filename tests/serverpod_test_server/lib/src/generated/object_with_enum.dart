@@ -188,10 +188,8 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
   }
 }
 
-class ObjectWithEnumUpdateTable {
-  ObjectWithEnumUpdateTable(this.table);
-
-  final ObjectWithEnumTable table;
+class ObjectWithEnumUpdateTable extends _i1.UpdateTable<ObjectWithEnumTable> {
+  ObjectWithEnumUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> testEnum(_i2.TestEnum value) =>
       _i1.ColumnValue(

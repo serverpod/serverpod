@@ -132,10 +132,8 @@ class _MaxFieldNameImpl extends MaxFieldName {
   }
 }
 
-class MaxFieldNameUpdateTable {
-  MaxFieldNameUpdateTable(this.table);
-
-  final MaxFieldNameTable table;
+class MaxFieldNameUpdateTable extends _i1.UpdateTable<MaxFieldNameTable> {
+  MaxFieldNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String>
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo(

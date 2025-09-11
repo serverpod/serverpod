@@ -137,10 +137,8 @@ class _StringDefaultImpl extends StringDefault {
   }
 }
 
-class StringDefaultUpdateTable {
-  StringDefaultUpdateTable(this.table);
-
-  final StringDefaultTable table;
+class StringDefaultUpdateTable extends _i1.UpdateTable<StringDefaultTable> {
+  StringDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> stringDefault(String value) =>
       _i1.ColumnValue(

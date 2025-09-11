@@ -123,10 +123,9 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
   }
 }
 
-class ObjectWithSelfParentUpdateTable {
-  ObjectWithSelfParentUpdateTable(this.table);
-
-  final ObjectWithSelfParentTable table;
+class ObjectWithSelfParentUpdateTable
+    extends _i1.UpdateTable<ObjectWithSelfParentTable> {
+  ObjectWithSelfParentUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> other(int? value) => _i1.ColumnValue(
         table.other,

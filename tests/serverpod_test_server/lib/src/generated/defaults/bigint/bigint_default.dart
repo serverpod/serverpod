@@ -145,10 +145,8 @@ class _BigIntDefaultImpl extends BigIntDefault {
   }
 }
 
-class BigIntDefaultUpdateTable {
-  BigIntDefaultUpdateTable(this.table);
-
-  final BigIntDefaultTable table;
+class BigIntDefaultUpdateTable extends _i1.UpdateTable<BigIntDefaultTable> {
+  BigIntDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<BigInt, BigInt> bigintDefaultStr(BigInt value) =>
       _i1.ColumnValue(

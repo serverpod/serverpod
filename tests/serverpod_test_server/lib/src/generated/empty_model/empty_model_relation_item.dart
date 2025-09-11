@@ -161,10 +161,9 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   final int? _relationEmptyModelItemsRelationEmptyModelId;
 }
 
-class EmptyModelRelationItemUpdateTable {
-  EmptyModelRelationItemUpdateTable(this.table);
-
-  final EmptyModelRelationItemTable table;
+class EmptyModelRelationItemUpdateTable
+    extends _i1.UpdateTable<EmptyModelRelationItemTable> {
+  EmptyModelRelationItemUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

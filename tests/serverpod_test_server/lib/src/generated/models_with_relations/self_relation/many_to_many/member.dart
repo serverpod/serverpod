@@ -168,10 +168,8 @@ class _MemberImpl extends Member {
   }
 }
 
-class MemberUpdateTable {
-  MemberUpdateTable(this.table);
-
-  final MemberTable table;
+class MemberUpdateTable extends _i1.UpdateTable<MemberTable> {
+  MemberUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

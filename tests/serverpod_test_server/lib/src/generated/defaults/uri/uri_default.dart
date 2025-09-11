@@ -140,10 +140,8 @@ class _UriDefaultImpl extends UriDefault {
   }
 }
 
-class UriDefaultUpdateTable {
-  UriDefaultUpdateTable(this.table);
-
-  final UriDefaultTable table;
+class UriDefaultUpdateTable extends _i1.UpdateTable<UriDefaultTable> {
+  UriDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefault(Uri value) => _i1.ColumnValue(
         table.uriDefault,

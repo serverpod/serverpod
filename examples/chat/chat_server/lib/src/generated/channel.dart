@@ -137,10 +137,8 @@ class _ChannelImpl extends Channel {
   }
 }
 
-class ChannelUpdateTable {
-  ChannelUpdateTable(this.table);
-
-  final ChannelTable table;
+class ChannelUpdateTable extends _i1.UpdateTable<ChannelTable> {
+  ChannelUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

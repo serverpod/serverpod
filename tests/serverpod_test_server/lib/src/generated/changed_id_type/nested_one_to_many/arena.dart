@@ -140,10 +140,8 @@ class _ArenaUuidImpl extends ArenaUuid {
   }
 }
 
-class ArenaUuidUpdateTable {
-  ArenaUuidUpdateTable(this.table);
-
-  final ArenaUuidTable table;
+class ArenaUuidUpdateTable extends _i1.UpdateTable<ArenaUuidTable> {
+  ArenaUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

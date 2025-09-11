@@ -206,10 +206,9 @@ class MultipleMaxFieldNameImplicit extends _MultipleMaxFieldNameImpl {
   final int? _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId;
 }
 
-class MultipleMaxFieldNameUpdateTable {
-  MultipleMaxFieldNameUpdateTable(this.table);
-
-  final MultipleMaxFieldNameTable table;
+class MultipleMaxFieldNameUpdateTable
+    extends _i1.UpdateTable<MultipleMaxFieldNameTable> {
+  MultipleMaxFieldNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String>
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1(

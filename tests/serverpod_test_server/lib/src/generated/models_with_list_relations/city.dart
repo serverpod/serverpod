@@ -168,10 +168,8 @@ class _CityImpl extends City {
   }
 }
 
-class CityUpdateTable {
-  CityUpdateTable(this.table);
-
-  final CityTable table;
+class CityUpdateTable extends _i1.UpdateTable<CityTable> {
+  CityUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

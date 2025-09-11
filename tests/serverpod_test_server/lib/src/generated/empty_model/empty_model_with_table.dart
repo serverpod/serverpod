@@ -90,10 +90,9 @@ class _EmptyModelWithTableImpl extends EmptyModelWithTable {
   }
 }
 
-class EmptyModelWithTableUpdateTable {
-  EmptyModelWithTableUpdateTable(this.table);
-
-  final EmptyModelWithTableTable table;
+class EmptyModelWithTableUpdateTable
+    extends _i1.UpdateTable<EmptyModelWithTableTable> {
+  EmptyModelWithTableUpdateTable(super.table);
 }
 
 class EmptyModelWithTableTable extends _i1.Table<int?> {

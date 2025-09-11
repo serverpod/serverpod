@@ -179,10 +179,8 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
-class AuthKeyUpdateTable {
-  AuthKeyUpdateTable(this.table);
-
-  final AuthKeyTable table;
+class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
+  AuthKeyUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
         table.userId,

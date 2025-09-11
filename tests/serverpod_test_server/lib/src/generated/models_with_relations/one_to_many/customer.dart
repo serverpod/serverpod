@@ -143,10 +143,8 @@ class _CustomerImpl extends Customer {
   }
 }
 
-class CustomerUpdateTable {
-  CustomerUpdateTable(this.table);
-
-  final CustomerTable table;
+class CustomerUpdateTable extends _i1.UpdateTable<CustomerTable> {
+  CustomerUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

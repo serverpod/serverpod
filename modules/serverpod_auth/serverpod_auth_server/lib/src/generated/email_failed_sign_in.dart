@@ -151,10 +151,9 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
   }
 }
 
-class EmailFailedSignInUpdateTable {
-  EmailFailedSignInUpdateTable(this.table);
-
-  final EmailFailedSignInTable table;
+class EmailFailedSignInUpdateTable
+    extends _i1.UpdateTable<EmailFailedSignInTable> {
+  EmailFailedSignInUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
         table.email,

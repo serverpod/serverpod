@@ -153,10 +153,8 @@ class _ObjectUserImpl extends ObjectUser {
   }
 }
 
-class ObjectUserUpdateTable {
-  ObjectUserUpdateTable(this.table);
-
-  final ObjectUserTable table;
+class ObjectUserUpdateTable extends _i1.UpdateTable<ObjectUserTable> {
+  ObjectUserUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
         table.name,

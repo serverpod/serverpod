@@ -174,10 +174,8 @@ class _EnrollmentImpl extends Enrollment {
   }
 }
 
-class EnrollmentUpdateTable {
-  EnrollmentUpdateTable(this.table);
-
-  final EnrollmentTable table;
+class EnrollmentUpdateTable extends _i1.UpdateTable<EnrollmentTable> {
+  EnrollmentUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
         table.studentId,

@@ -161,10 +161,9 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
   }
 }
 
-class DoubleDefaultMixUpdateTable {
-  DoubleDefaultMixUpdateTable(this.table);
-
-  final DoubleDefaultMixTable table;
+class DoubleDefaultMixUpdateTable
+    extends _i1.UpdateTable<DoubleDefaultMixTable> {
+  DoubleDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefaultAndDefaultModel(double value) =>
       _i1.ColumnValue(

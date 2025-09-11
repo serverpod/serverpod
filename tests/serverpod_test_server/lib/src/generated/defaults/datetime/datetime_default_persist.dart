@@ -151,10 +151,9 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   }
 }
 
-class DateTimeDefaultPersistUpdateTable {
-  DateTimeDefaultPersistUpdateTable(this.table);
-
-  final DateTimeDefaultPersistTable table;
+class DateTimeDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DateTimeDefaultPersistTable> {
+  DateTimeDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
           DateTime? value) =>

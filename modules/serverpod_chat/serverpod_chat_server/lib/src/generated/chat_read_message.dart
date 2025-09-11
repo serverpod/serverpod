@@ -150,10 +150,8 @@ class _ChatReadMessageImpl extends ChatReadMessage {
   }
 }
 
-class ChatReadMessageUpdateTable {
-  ChatReadMessageUpdateTable(this.table);
-
-  final ChatReadMessageTable table;
+class ChatReadMessageUpdateTable extends _i1.UpdateTable<ChatReadMessageTable> {
+  ChatReadMessageUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
         table.channel,

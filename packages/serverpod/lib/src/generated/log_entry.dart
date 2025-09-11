@@ -242,10 +242,8 @@ class _LogEntryImpl extends LogEntry {
   }
 }
 
-class LogEntryUpdateTable {
-  LogEntryUpdateTable(this.table);
-
-  final LogEntryTable table;
+class LogEntryUpdateTable extends _i1.UpdateTable<LogEntryTable> {
+  LogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
         table.sessionLogId,

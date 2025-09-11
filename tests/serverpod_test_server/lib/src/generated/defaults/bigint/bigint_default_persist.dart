@@ -131,10 +131,9 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   }
 }
 
-class BigIntDefaultPersistUpdateTable {
-  BigIntDefaultPersistUpdateTable(this.table);
-
-  final BigIntDefaultPersistTable table;
+class BigIntDefaultPersistUpdateTable
+    extends _i1.UpdateTable<BigIntDefaultPersistTable> {
+  BigIntDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<BigInt, BigInt> bigIntDefaultPersistStr(BigInt? value) =>
       _i1.ColumnValue(

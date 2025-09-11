@@ -143,10 +143,8 @@ class _BookImpl extends Book {
   }
 }
 
-class BookUpdateTable {
-  BookUpdateTable(this.table);
-
-  final BookTable table;
+class BookUpdateTable extends _i1.UpdateTable<BookTable> {
+  BookUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
         table.title,

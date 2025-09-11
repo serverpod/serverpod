@@ -154,10 +154,8 @@ class ChapterImplicit extends _ChapterImpl {
   final int? _bookChaptersBookId;
 }
 
-class ChapterUpdateTable {
-  ChapterUpdateTable(this.table);
-
-  final ChapterTable table;
+class ChapterUpdateTable extends _i1.UpdateTable<ChapterTable> {
+  ChapterUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
         table.title,

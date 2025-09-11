@@ -152,10 +152,8 @@ class _CommentImpl extends Comment {
   }
 }
 
-class CommentUpdateTable {
-  CommentUpdateTable(this.table);
-
-  final CommentTable table;
+class CommentUpdateTable extends _i1.UpdateTable<CommentTable> {
+  CommentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
         table.description,

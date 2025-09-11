@@ -165,10 +165,9 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
   }
 }
 
-class CloudStorageDirectUploadEntryUpdateTable {
-  CloudStorageDirectUploadEntryUpdateTable(this.table);
-
-  final CloudStorageDirectUploadEntryTable table;
+class CloudStorageDirectUploadEntryUpdateTable
+    extends _i1.UpdateTable<CloudStorageDirectUploadEntryTable> {
+  CloudStorageDirectUploadEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
         table.storageId,

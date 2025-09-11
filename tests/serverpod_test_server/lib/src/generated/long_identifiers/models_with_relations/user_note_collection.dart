@@ -148,10 +148,9 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   }
 }
 
-class UserNoteCollectionUpdateTable {
-  UserNoteCollectionUpdateTable(this.table);
-
-  final UserNoteCollectionTable table;
+class UserNoteCollectionUpdateTable
+    extends _i1.UpdateTable<UserNoteCollectionTable> {
+  UserNoteCollectionUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,

@@ -174,10 +174,9 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
   }
 }
 
-class CityWithLongTableNameUpdateTable {
-  CityWithLongTableNameUpdateTable(this.table);
-
-  final CityWithLongTableNameTable table;
+class CityWithLongTableNameUpdateTable
+    extends _i1.UpdateTable<CityWithLongTableNameTable> {
+  CityWithLongTableNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
         table.name,
