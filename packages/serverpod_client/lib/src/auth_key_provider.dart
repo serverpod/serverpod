@@ -65,9 +65,10 @@ class MutexRefresherClientAuthKeyProvider
     try {
       return await refreshFuture;
     } finally {
-      if (identical(_pendingRefresh, refreshFuture)) {
-        _pendingRefresh = null;
+      if (!identical(_pendingRefresh, refreshFuture)) {
+        throw StateError('Concurrent refresh calls detected.');
       }
+      _pendingRefresh = null;
     }
   }
 
