@@ -316,27 +316,22 @@ class DatabaseConnection {
         orderByList != null;
 
     if (requiresFilteredSubquery) {
+      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
       var subquery = SelectQueryBuilder(table: table)
           .withSelectFields([table.id])
           .withWhere(where)
-          .withOrderBy(_resolveOrderBy(orderByList, orderBy, orderDescending))
+          .withOrderBy(orders)
           .withLimit(limit)
           .withOffset(offset)
           .build();
 
       var idAlias = '${table.tableName}.${table.id.columnName}';
 
-      var orderByClause = '';
-      if (orderBy != null || orderByList != null) {
-        var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
-        if (orders != null && orders.isNotEmpty) {
-          var orderStrings = orders.map((o) {
-            var orderStr = o.toString();
-            return orderStr.replaceAll('"${table.tableName}".', '');
-          }).join(', ');
-          orderByClause = ' ORDER BY $orderStrings';
-        }
-      }
+      var orderByClause = switch (orders) {
+        != null when orders.isNotEmpty => ' ORDER BY '
+            '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+        _ => '',
+      };
 
       updateQuery = 'WITH rows_to_update AS ($subquery), '
           'updated AS ('
