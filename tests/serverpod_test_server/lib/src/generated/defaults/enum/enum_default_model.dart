@@ -188,9 +188,43 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
   }
 }
 
+class EnumDefaultModelUpdateTable
+    extends _i1.UpdateTable<EnumDefaultModelTable> {
+  EnumDefaultModelUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultModel(
+          _i2.ByNameEnum value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultModelNull(
+          _i2.ByNameEnum? value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefaultModelNull,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultModel(
+          _i3.ByIndexEnum value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultModelNull(
+          _i3.ByIndexEnum? value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefaultModelNull,
+        value,
+      );
+}
+
 class EnumDefaultModelTable extends _i1.Table<int?> {
   EnumDefaultModelTable({super.tableRelation})
       : super(tableName: 'enum_default_model') {
+    updateTable = EnumDefaultModelUpdateTable(this);
     byNameEnumDefaultModel = _i1.ColumnEnum(
       'byNameEnumDefaultModel',
       this,
@@ -212,6 +246,8 @@ class EnumDefaultModelTable extends _i1.Table<int?> {
       _i1.EnumSerialization.byIndex,
     );
   }
+
+  late final EnumDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultModel;
 
@@ -416,6 +452,48 @@ class EnumDefaultModelRepository {
     return session.db.updateRow<EnumDefaultModel>(
       row,
       columns: columns?.call(EnumDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EnumDefaultModel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultModel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultModelUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultModel>(
+      id,
+      columnValues: columnValues(EnumDefaultModel.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultModel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultModel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultModelUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultModel>(
+      columnValues: columnValues(EnumDefaultModel.t.updateTable),
+      where: where(EnumDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultModel.t),
+      orderByList: orderByList?.call(EnumDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

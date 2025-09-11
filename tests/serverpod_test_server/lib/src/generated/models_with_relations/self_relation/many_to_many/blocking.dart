@@ -175,8 +175,23 @@ class _BlockingImpl extends Blocking {
   }
 }
 
+class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
+  BlockingUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
+        table.blockedId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> blockedById(int value) => _i1.ColumnValue(
+        table.blockedById,
+        value,
+      );
+}
+
 class BlockingTable extends _i1.Table<int?> {
   BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
+    updateTable = BlockingUpdateTable(this);
     blockedId = _i1.ColumnInt(
       'blockedId',
       this,
@@ -186,6 +201,8 @@ class BlockingTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final BlockingUpdateTable updateTable;
 
   late final _i1.ColumnInt blockedId;
 
@@ -446,6 +463,46 @@ class BlockingRepository {
     return session.db.updateRow<Blocking>(
       row,
       columns: columns?.call(Blocking.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Blocking] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Blocking?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Blocking>(
+      id,
+      columnValues: columnValues(Blocking.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Blocking>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Blocking>(
+      columnValues: columnValues(Blocking.t.updateTable),
+      where: where(Blocking.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

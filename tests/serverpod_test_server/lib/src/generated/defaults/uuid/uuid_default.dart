@@ -193,8 +193,48 @@ class _UuidDefaultImpl extends UuidDefault {
   }
 }
 
+class UuidDefaultUpdateTable extends _i1.UpdateTable<UuidDefaultTable> {
+  UuidDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultRandom(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultRandom,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultRandomV7(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultRandomV7,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultRandomNull(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultRandomNull,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultStr(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultStr,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultStrNull(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.uuidDefaultStrNull,
+        value,
+      );
+}
+
 class UuidDefaultTable extends _i1.Table<int?> {
   UuidDefaultTable({super.tableRelation}) : super(tableName: 'uuid_default') {
+    updateTable = UuidDefaultUpdateTable(this);
     uuidDefaultRandom = _i1.ColumnUuid(
       'uuidDefaultRandom',
       this,
@@ -221,6 +261,8 @@ class UuidDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final UuidDefaultUpdateTable updateTable;
 
   late final _i1.ColumnUuid uuidDefaultRandom;
 
@@ -428,6 +470,46 @@ class UuidDefaultRepository {
     return session.db.updateRow<UuidDefault>(
       row,
       columns: columns?.call(UuidDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UuidDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UuidDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UuidDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UuidDefault>(
+      id,
+      columnValues: columnValues(UuidDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UuidDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UuidDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UuidDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UuidDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UuidDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<UuidDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UuidDefault>(
+      columnValues: columnValues(UuidDefault.t.updateTable),
+      where: where(UuidDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefault.t),
+      orderByList: orderByList?.call(UuidDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

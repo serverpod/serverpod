@@ -291,9 +291,76 @@ class _AppleAccountImpl extends AppleAccount {
   }
 }
 
+class AppleAccountUpdateTable extends _i1.UpdateTable<AppleAccountTable> {
+  AppleAccountUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> userIdentifier(String value) =>
+      _i1.ColumnValue(
+        table.userIdentifier,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> refreshToken(String value) => _i1.ColumnValue(
+        table.refreshToken,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> refreshTokenRequestedWithBundleIdentifier(
+          bool value) =>
+      _i1.ColumnValue(
+        table.refreshTokenRequestedWithBundleIdentifier,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> lastRefreshedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.lastRefreshedAt,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> isEmailVerified(bool? value) => _i1.ColumnValue(
+        table.isEmailVerified,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> isPrivateEmail(bool? value) => _i1.ColumnValue(
+        table.isPrivateEmail,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> firstName(String? value) => _i1.ColumnValue(
+        table.firstName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> lastName(String? value) => _i1.ColumnValue(
+        table.lastName,
+        value,
+      );
+}
+
 class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
   AppleAccountTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_apple_account') {
+    updateTable = AppleAccountUpdateTable(this);
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
       this,
@@ -340,6 +407,8 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final AppleAccountUpdateTable updateTable;
 
   /// The Apple-provided user identifier
   late final _i1.ColumnString userIdentifier;
@@ -628,6 +697,46 @@ class AppleAccountRepository {
     return session.db.updateRow<AppleAccount>(
       row,
       columns: columns?.call(AppleAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [AppleAccount] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AppleAccount?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AppleAccountUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AppleAccount>(
+      id,
+      columnValues: columnValues(AppleAccount.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AppleAccount]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AppleAccount>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AppleAccountUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AppleAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AppleAccountTable>? orderBy,
+    _i1.OrderByListBuilder<AppleAccountTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AppleAccount>(
+      columnValues: columnValues(AppleAccount.t.updateTable),
+      where: where(AppleAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

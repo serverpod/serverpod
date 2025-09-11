@@ -150,9 +150,29 @@ class _UserImageImpl extends UserImage {
   }
 }
 
+class UserImageUpdateTable extends _i1.UpdateTable<UserImageTable> {
+  UserImageUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> version(int value) => _i1.ColumnValue(
+        table.version,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> url(String value) => _i1.ColumnValue(
+        table.url,
+        value,
+      );
+}
+
 class UserImageTable extends _i1.Table<int?> {
   UserImageTable({super.tableRelation})
       : super(tableName: 'serverpod_user_image') {
+    updateTable = UserImageUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -166,6 +186,8 @@ class UserImageTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final UserImageUpdateTable updateTable;
 
   /// The id of the user.
   late final _i1.ColumnInt userId;
@@ -370,6 +392,46 @@ class UserImageRepository {
     return session.db.updateRow<UserImage>(
       row,
       columns: columns?.call(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UserImage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserImage?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserImageUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserImage>(
+      id,
+      columnValues: columnValues(UserImage.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserImage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserImage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserImageUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserImageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserImage>(
+      columnValues: columnValues(UserImage.t.updateTable),
+      where: where(UserImage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

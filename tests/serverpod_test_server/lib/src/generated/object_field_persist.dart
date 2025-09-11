@@ -150,14 +150,27 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
   }
 }
 
+class ObjectFieldPersistUpdateTable
+    extends _i1.UpdateTable<ObjectFieldPersistTable> {
+  ObjectFieldPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
+        table.normal,
+        value,
+      );
+}
+
 class ObjectFieldPersistTable extends _i1.Table<int?> {
   ObjectFieldPersistTable({super.tableRelation})
       : super(tableName: 'object_field_persist') {
+    updateTable = ObjectFieldPersistUpdateTable(this);
     normal = _i1.ColumnString(
       'normal',
       this,
     );
   }
+
+  late final ObjectFieldPersistUpdateTable updateTable;
 
   late final _i1.ColumnString normal;
 
@@ -353,6 +366,48 @@ class ObjectFieldPersistRepository {
     return session.db.updateRow<ObjectFieldPersist>(
       row,
       columns: columns?.call(ObjectFieldPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectFieldPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectFieldPersist>(
+      id,
+      columnValues: columnValues(ObjectFieldPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectFieldPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectFieldPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectFieldPersist>(
+      columnValues: columnValues(ObjectFieldPersist.t.updateTable),
+      where: where(ObjectFieldPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

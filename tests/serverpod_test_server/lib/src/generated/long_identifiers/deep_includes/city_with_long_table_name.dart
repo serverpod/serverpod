@@ -174,14 +174,27 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
   }
 }
 
+class CityWithLongTableNameUpdateTable
+    extends _i1.UpdateTable<CityWithLongTableNameTable> {
+  CityWithLongTableNameUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CityWithLongTableNameTable extends _i1.Table<int?> {
   CityWithLongTableNameTable({super.tableRelation})
       : super(tableName: 'city_with_long_table_name_that_is_still_valid') {
+    updateTable = CityWithLongTableNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CityWithLongTableNameUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -489,6 +502,48 @@ class CityWithLongTableNameRepository {
     return session.db.updateRow<CityWithLongTableName>(
       row,
       columns: columns?.call(CityWithLongTableName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [CityWithLongTableName] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CityWithLongTableName?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CityWithLongTableNameUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CityWithLongTableName>(
+      id,
+      columnValues: columnValues(CityWithLongTableName.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CityWithLongTableName]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CityWithLongTableName>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CityWithLongTableNameUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    _i1.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CityWithLongTableName>(
+      columnValues: columnValues(CityWithLongTableName.t.updateTable),
+      where: where(CityWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

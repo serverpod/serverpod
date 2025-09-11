@@ -232,9 +232,33 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   }
 }
 
+class ChangedIdTypeSelfUpdateTable
+    extends _i1.UpdateTable<ChangedIdTypeSelfTable> {
+  ChangedIdTypeSelfUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> nextId(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.nextId,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> parentId(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.parentId,
+        value,
+      );
+}
+
 class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
   ChangedIdTypeSelfTable({super.tableRelation})
       : super(tableName: 'changed_id_type_self') {
+    updateTable = ChangedIdTypeSelfUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -248,6 +272,8 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final ChangedIdTypeSelfUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -583,6 +609,48 @@ class ChangedIdTypeSelfRepository {
     return session.db.updateRow<ChangedIdTypeSelf>(
       row,
       columns: columns?.call(ChangedIdTypeSelf.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ChangedIdTypeSelf] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChangedIdTypeSelf?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChangedIdTypeSelf>(
+      id,
+      columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChangedIdTypeSelf]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ChangedIdTypeSelf>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChangedIdTypeSelf>(
+      columnValues: columnValues(ChangedIdTypeSelf.t.updateTable),
+      where: where(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

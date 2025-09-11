@@ -193,9 +193,46 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
   }
 }
 
+class ServerHealthMetricUpdateTable
+    extends _i1.UpdateTable<ServerHealthMetricTable> {
+  ServerHealthMetricUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _i1.ColumnValue(
+        table.timestamp,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> isHealthy(bool value) => _i1.ColumnValue(
+        table.isHealthy,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> value(double value) => _i1.ColumnValue(
+        table.value,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
+        table.granularity,
+        value,
+      );
+}
+
 class ServerHealthMetricTable extends _i1.Table<int?> {
   ServerHealthMetricTable({super.tableRelation})
       : super(tableName: 'serverpod_health_metric') {
+    updateTable = ServerHealthMetricUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -221,6 +258,8 @@ class ServerHealthMetricTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ServerHealthMetricUpdateTable updateTable;
 
   /// The name of the metric.
   late final _i1.ColumnString name;
@@ -438,6 +477,48 @@ class ServerHealthMetricRepository {
     return session.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ServerHealthMetric] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ServerHealthMetric?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ServerHealthMetric>(
+      id,
+      columnValues: columnValues(ServerHealthMetric.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ServerHealthMetric]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ServerHealthMetric>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ServerHealthMetric>(
+      columnValues: columnValues(ServerHealthMetric.t.updateTable),
+      where: where(ServerHealthMetric.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

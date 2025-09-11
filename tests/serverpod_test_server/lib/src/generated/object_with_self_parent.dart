@@ -123,14 +123,27 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
   }
 }
 
+class ObjectWithSelfParentUpdateTable
+    extends _i1.UpdateTable<ObjectWithSelfParentTable> {
+  ObjectWithSelfParentUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> other(int? value) => _i1.ColumnValue(
+        table.other,
+        value,
+      );
+}
+
 class ObjectWithSelfParentTable extends _i1.Table<int?> {
   ObjectWithSelfParentTable({super.tableRelation})
       : super(tableName: 'object_with_self_parent') {
+    updateTable = ObjectWithSelfParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
       this,
     );
   }
+
+  late final ObjectWithSelfParentUpdateTable updateTable;
 
   late final _i1.ColumnInt other;
 
@@ -326,6 +339,48 @@ class ObjectWithSelfParentRepository {
     return session.db.updateRow<ObjectWithSelfParent>(
       row,
       columns: columns?.call(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithSelfParent] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithSelfParent?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithSelfParent>(
+      id,
+      columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithSelfParent]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithSelfParent>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithSelfParent>(
+      columnValues: columnValues(ObjectWithSelfParent.t.updateTable),
+      where: where(ObjectWithSelfParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

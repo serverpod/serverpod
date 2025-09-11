@@ -188,9 +188,47 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
   }
 }
 
+class ObjectWithEnumUpdateTable extends _i1.UpdateTable<ObjectWithEnumTable> {
+  ObjectWithEnumUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> testEnum(_i2.TestEnum value) =>
+      _i1.ColumnValue(
+        table.testEnum,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> nullableEnum(
+          _i2.TestEnum? value) =>
+      _i1.ColumnValue(
+        table.nullableEnum,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i2.TestEnum>, List<_i2.TestEnum>> enumList(
+          List<_i2.TestEnum> value) =>
+      _i1.ColumnValue(
+        table.enumList,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i2.TestEnum?>, List<_i2.TestEnum?>> nullableEnumList(
+          List<_i2.TestEnum?> value) =>
+      _i1.ColumnValue(
+        table.nullableEnumList,
+        value,
+      );
+
+  _i1.ColumnValue<List<List<_i2.TestEnum>>, List<List<_i2.TestEnum>>>
+      enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
+            table.enumListList,
+            value,
+          );
+}
+
 class ObjectWithEnumTable extends _i1.Table<int?> {
   ObjectWithEnumTable({super.tableRelation})
       : super(tableName: 'object_with_enum') {
+    updateTable = ObjectWithEnumUpdateTable(this);
     testEnum = _i1.ColumnEnum(
       'testEnum',
       this,
@@ -214,6 +252,8 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ObjectWithEnumUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.TestEnum> testEnum;
 
@@ -421,6 +461,46 @@ class ObjectWithEnumRepository {
     return session.db.updateRow<ObjectWithEnum>(
       row,
       columns: columns?.call(ObjectWithEnum.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithEnum] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithEnum?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithEnum>(
+      id,
+      columnValues: columnValues(ObjectWithEnum.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithEnum]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithEnum>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithEnum>(
+      columnValues: columnValues(ObjectWithEnum.t.updateTable),
+      where: where(ObjectWithEnum.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

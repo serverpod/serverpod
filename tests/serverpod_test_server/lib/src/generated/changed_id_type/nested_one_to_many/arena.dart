@@ -140,13 +140,25 @@ class _ArenaUuidImpl extends ArenaUuid {
   }
 }
 
+class ArenaUuidUpdateTable extends _i1.UpdateTable<ArenaUuidTable> {
+  ArenaUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
   ArenaUuidTable({super.tableRelation}) : super(tableName: 'arena_uuid') {
+    updateTable = ArenaUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final ArenaUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -379,6 +391,46 @@ class ArenaUuidRepository {
     return session.db.updateRow<ArenaUuid>(
       row,
       columns: columns?.call(ArenaUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ArenaUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ArenaUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<ArenaUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ArenaUuid>(
+      id,
+      columnValues: columnValues(ArenaUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ArenaUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ArenaUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ArenaUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ArenaUuid>(
+      columnValues: columnValues(ArenaUuid.t.updateTable),
+      where: where(ArenaUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

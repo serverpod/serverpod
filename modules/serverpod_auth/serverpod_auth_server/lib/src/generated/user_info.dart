@@ -222,9 +222,57 @@ class _UserInfoImpl extends UserInfo {
   }
 }
 
+class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
+  UserInfoUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> userIdentifier(String value) =>
+      _i1.ColumnValue(
+        table.userIdentifier,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
+        table.userName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
+        table.fullName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _i1.ColumnValue(
+        table.created,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> imageUrl(String? value) => _i1.ColumnValue(
+        table.imageUrl,
+        value,
+      );
+
+  _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
+        table.blocked,
+        value,
+      );
+}
+
 class UserInfoTable extends _i1.Table<int?> {
   UserInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_user_info') {
+    updateTable = UserInfoUpdateTable(this);
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
       this,
@@ -258,6 +306,8 @@ class UserInfoTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final UserInfoUpdateTable updateTable;
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
@@ -483,6 +533,46 @@ class UserInfoRepository {
     return session.db.updateRow<UserInfo>(
       row,
       columns: columns?.call(UserInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UserInfo] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserInfo?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserInfo>(
+      id,
+      columnValues: columnValues(UserInfo.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserInfo]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserInfo>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserInfoTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserInfoTable>? orderBy,
+    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserInfo>(
+      columnValues: columnValues(UserInfo.t.updateTable),
+      where: where(UserInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserInfo.t),
+      orderByList: orderByList?.call(UserInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

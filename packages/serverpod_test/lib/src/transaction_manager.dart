@@ -122,4 +122,18 @@ class TransactionManager {
 
     await savepoint.release();
   }
+
+  /// Ensures the transaction stack is unlocked and cleans up any remaining savepoints.
+  Future<void> ensureTransactionIsUnlocked() async {
+    if (_isTransactionStackLocked) {
+      _isTransactionStackLocked = false;
+
+      // If there are savepoints remaining, pop the last one that was locked
+      // This handles cases where an exception other than DatabaseException occurred
+      if (_savepoints.isNotEmpty) {
+        var lastSavepoint = _savepoints.removeLast();
+        await lastSavepoint.rollback();
+      }
+    }
+  }
 }

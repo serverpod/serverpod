@@ -151,9 +151,30 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
   }
 }
 
+class EmailFailedSignInUpdateTable
+    extends _i1.UpdateTable<EmailFailedSignInTable> {
+  EmailFailedSignInUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+        table.ipAddress,
+        value,
+      );
+}
+
 class EmailFailedSignInTable extends _i1.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
       : super(tableName: 'serverpod_email_failed_sign_in') {
+    updateTable = EmailFailedSignInUpdateTable(this);
     email = _i1.ColumnString(
       'email',
       this,
@@ -167,6 +188,8 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailFailedSignInUpdateTable updateTable;
 
   /// Email attempting to sign in with.
   late final _i1.ColumnString email;
@@ -371,6 +394,48 @@ class EmailFailedSignInRepository {
     return session.db.updateRow<EmailFailedSignIn>(
       row,
       columns: columns?.call(EmailFailedSignIn.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmailFailedSignIn] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailFailedSignIn?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailFailedSignIn>(
+      id,
+      columnValues: columnValues(EmailFailedSignIn.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailFailedSignIn]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailFailedSignIn>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailFailedSignIn>(
+      columnValues: columnValues(EmailFailedSignIn.t.updateTable),
+      where: where(EmailFailedSignIn.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

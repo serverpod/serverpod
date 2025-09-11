@@ -139,13 +139,25 @@ class _ArenaImpl extends Arena {
   }
 }
 
+class ArenaUpdateTable extends _i1.UpdateTable<ArenaTable> {
+  ArenaUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class ArenaTable extends _i1.Table<int?> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
+    updateTable = ArenaUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final ArenaUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -378,6 +390,46 @@ class ArenaRepository {
     return session.db.updateRow<Arena>(
       row,
       columns: columns?.call(Arena.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Arena] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Arena?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Arena>(
+      id,
+      columnValues: columnValues(Arena.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Arena]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Arena>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ArenaTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Arena>(
+      columnValues: columnValues(Arena.t.updateTable),
+      where: where(Arena.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

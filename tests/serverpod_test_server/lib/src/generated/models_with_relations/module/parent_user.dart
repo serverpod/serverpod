@@ -134,8 +134,23 @@ class _ParentUserImpl extends ParentUser {
   }
 }
 
+class ParentUserUpdateTable extends _i1.UpdateTable<ParentUserTable> {
+  ParentUserUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> userInfoId(int? value) => _i1.ColumnValue(
+        table.userInfoId,
+        value,
+      );
+}
+
 class ParentUserTable extends _i1.Table<int?> {
   ParentUserTable({super.tableRelation}) : super(tableName: 'parent_user') {
+    updateTable = ParentUserUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -145,6 +160,8 @@ class ParentUserTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ParentUserUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -343,6 +360,46 @@ class ParentUserRepository {
     return session.db.updateRow<ParentUser>(
       row,
       columns: columns?.call(ParentUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ParentUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ParentUser?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ParentUser>(
+      id,
+      columnValues: columnValues(ParentUser.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ParentUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ParentUser>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ParentUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ParentUserTable>? orderBy,
+    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ParentUser>(
+      columnValues: columnValues(ParentUser.t.updateTable),
+      where: where(ParentUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentUser.t),
+      orderByList: orderByList?.call(ParentUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

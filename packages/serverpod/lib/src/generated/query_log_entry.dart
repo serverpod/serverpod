@@ -243,9 +243,64 @@ class _QueryLogEntryImpl extends QueryLogEntry {
   }
 }
 
+class QueryLogEntryUpdateTable extends _i1.UpdateTable<QueryLogEntryTable> {
+  QueryLogEntryUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
+        table.sessionLogId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
+        table.messageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> query(String value) => _i1.ColumnValue(
+        table.query,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
+        table.duration,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> numRows(int? value) => _i1.ColumnValue(
+        table.numRows,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+        table.error,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+        table.stackTrace,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
+        table.slow,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
+        table.order,
+        value,
+      );
+}
+
 class QueryLogEntryTable extends _i1.Table<int?> {
   QueryLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_query_log') {
+    updateTable = QueryLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
       this,
@@ -287,6 +342,8 @@ class QueryLogEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final QueryLogEntryUpdateTable updateTable;
 
   /// The id of the server that handled the query.
   late final _i1.ColumnString serverId;
@@ -521,6 +578,46 @@ class QueryLogEntryRepository {
     return session.db.updateRow<QueryLogEntry>(
       row,
       columns: columns?.call(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [QueryLogEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<QueryLogEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<QueryLogEntryUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<QueryLogEntry>(
+      id,
+      columnValues: columnValues(QueryLogEntry.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [QueryLogEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<QueryLogEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<QueryLogEntryUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<QueryLogEntry>(
+      columnValues: columnValues(QueryLogEntry.t.updateTable),
+      where: where(QueryLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

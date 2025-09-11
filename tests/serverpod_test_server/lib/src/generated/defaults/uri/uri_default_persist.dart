@@ -129,15 +129,28 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }
 }
 
+class UriDefaultPersistUpdateTable
+    extends _i1.UpdateTable<UriDefaultPersistTable> {
+  UriDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<Uri, Uri> uriDefaultPersist(Uri? value) => _i1.ColumnValue(
+        table.uriDefaultPersist,
+        value,
+      );
+}
+
 class UriDefaultPersistTable extends _i1.Table<int?> {
   UriDefaultPersistTable({super.tableRelation})
       : super(tableName: 'uri_default_persist') {
+    updateTable = UriDefaultPersistUpdateTable(this);
     uriDefaultPersist = _i1.ColumnUri(
       'uriDefaultPersist',
       this,
       hasDefault: true,
     );
   }
+
+  late final UriDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnUri uriDefaultPersist;
 
@@ -333,6 +346,48 @@ class UriDefaultPersistRepository {
     return session.db.updateRow<UriDefaultPersist>(
       row,
       columns: columns?.call(UriDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UriDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UriDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UriDefaultPersist>(
+      id,
+      columnValues: columnValues(UriDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UriDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UriDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UriDefaultPersist>(
+      columnValues: columnValues(UriDefaultPersist.t.updateTable),
+      where: where(UriDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UriDefaultPersist.t),
+      orderByList: orderByList?.call(UriDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

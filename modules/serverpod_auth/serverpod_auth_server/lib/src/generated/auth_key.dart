@@ -179,8 +179,34 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
+class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
+  AuthKeyUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+
+  _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class AuthKeyTable extends _i1.Table<int?> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
+    updateTable = AuthKeyUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -198,6 +224,8 @@ class AuthKeyTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final AuthKeyUpdateTable updateTable;
 
   /// The id of the user to provide access to.
   late final _i1.ColumnInt userId;
@@ -407,6 +435,46 @@ class AuthKeyRepository {
     return session.db.updateRow<AuthKey>(
       row,
       columns: columns?.call(AuthKey.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [AuthKey] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AuthKey?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AuthKey>(
+      id,
+      columnValues: columnValues(AuthKey.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AuthKey]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AuthKey>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AuthKey>(
+      columnValues: columnValues(AuthKey.t.updateTable),
+      where: where(AuthKey.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

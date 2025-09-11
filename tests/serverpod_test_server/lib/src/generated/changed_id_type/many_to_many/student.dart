@@ -147,13 +147,25 @@ class _StudentUuidImpl extends StudentUuid {
   }
 }
 
+class StudentUuidUpdateTable extends _i1.UpdateTable<StudentUuidTable> {
+  StudentUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
   StudentUuidTable({super.tableRelation}) : super(tableName: 'student_uuid') {
+    updateTable = StudentUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final StudentUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -406,6 +418,46 @@ class StudentUuidRepository {
     return session.db.updateRow<StudentUuid>(
       row,
       columns: columns?.call(StudentUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [StudentUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<StudentUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<StudentUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<StudentUuid>(
+      id,
+      columnValues: columnValues(StudentUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [StudentUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<StudentUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StudentUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<StudentUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StudentUuidTable>? orderBy,
+    _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<StudentUuid>(
+      columnValues: columnValues(StudentUuid.t.updateTable),
+      where: where(StudentUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StudentUuid.t),
+      orderByList: orderByList?.call(StudentUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

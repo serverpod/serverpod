@@ -194,9 +194,46 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
   }
 }
 
+class ServerHealthConnectionInfoUpdateTable
+    extends _i1.UpdateTable<ServerHealthConnectionInfoTable> {
+  ServerHealthConnectionInfoUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
+      _i1.ColumnValue(
+        table.timestamp,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> active(int value) => _i1.ColumnValue(
+        table.active,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> closing(int value) => _i1.ColumnValue(
+        table.closing,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> idle(int value) => _i1.ColumnValue(
+        table.idle,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
+        table.granularity,
+        value,
+      );
+}
+
 class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
   ServerHealthConnectionInfoTable({super.tableRelation})
       : super(tableName: 'serverpod_health_connection_info') {
+    updateTable = ServerHealthConnectionInfoUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
       this,
@@ -222,6 +259,8 @@ class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ServerHealthConnectionInfoUpdateTable updateTable;
 
   /// The server associated with this connection info.
   late final _i1.ColumnString serverId;
@@ -439,6 +478,48 @@ class ServerHealthConnectionInfoRepository {
     return session.db.updateRow<ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ServerHealthConnectionInfo] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ServerHealthConnectionInfo?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ServerHealthConnectionInfo>(
+      id,
+      columnValues: columnValues(ServerHealthConnectionInfo.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ServerHealthConnectionInfo]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ServerHealthConnectionInfo>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ServerHealthConnectionInfo>(
+      columnValues: columnValues(ServerHealthConnectionInfo.t.updateTable),
+      where: where(ServerHealthConnectionInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
