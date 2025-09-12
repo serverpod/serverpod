@@ -30,9 +30,5 @@ for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
     echo "### $path"
     cd "$BASE/$path"
 
-    if [[ " ${SERVERPOD_SERVER_EXPERIMENTAL_PATHS[@]} " =~ " $path " ]]; then
-        dart $CLI create-migration --no-analytics --experimental-features=all $TAG_ARG
-    else
-        dart $CLI create-migration --no-analytics $TAG_ARG
-    fi
+    dart $CLI create-migration --no-analytics $TAG_ARG
 done

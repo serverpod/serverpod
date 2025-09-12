@@ -1,5 +1,8 @@
 type: module
 nickname: server_test_module
 
+experimental_features:
+  all: true # Enables all experimental features
+
 client_package_path: ../serverpod_test_module_client
 server_test_tools_path: test/integration/test_tools
