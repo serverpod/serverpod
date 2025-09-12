@@ -143,8 +143,7 @@ void main() async {
           .deleteWhere(session, where: (t) => Constant.bool(true));
     });
 
-    test('Given model with required field when inserting then it is created',
-        () async {
+    test('when inserting then it is created', () async {
       var model = ModelWithRequiredField(name: 'John', email: null);
       var inserted = await ModelWithRequiredField.db.insertRow(session, model);
 
