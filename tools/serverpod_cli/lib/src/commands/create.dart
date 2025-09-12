@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';

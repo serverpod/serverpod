@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class ServerpodCommand<O extends OptionDefinition>
