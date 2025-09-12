@@ -12,7 +12,9 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  empty(CreateMigrationCommand.emptyOption),
+  check(CreateMigrationCommand.checkOption);
 
   const CreateMigrationOption(this.option);
 
@@ -38,6 +40,26 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    argAbbrev: 'e',
+    negatable: false,
+    defaultsTo: false,
+    helpText:
+        'Creates an empty migration without evaluating the state of the project. '
+        'Advanced use case for manual migration creation.',
+  );
+
+  static const checkOption = FlagOption(
+    argName: 'check',
+    argAbbrev: 'c',
+    negatable: false,
+    defaultsTo: false,
+    helpText:
+        'Returns with exit code 0 if no changes have been detected. '
+        'Useful for CI/CD pipelines to check if migrations are needed.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -61,6 +83,25 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool empty = commandConfig.value(CreateMigrationOption.empty);
+    bool check = commandConfig.value(CreateMigrationOption.check);
+
+    // Validate flag combinations
+    if (empty && check) {
+      log.error(
+        'The --empty and --check flags cannot be used together. '
+        'Use --empty to create an empty migration, or --check to verify if changes are needed.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
+    if (empty && force) {
+      log.error(
+        'The --empty and --force flags cannot be used together. '
+        'The --empty flag already creates a migration without evaluation.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
 
     GeneratorConfig config;
     try {
@@ -90,34 +131,55 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     MigrationVersion? migration;
     bool hasError = false;
     
-    await log.progress('Creating migration', () async {
-      try {
-        migration = await generator.createMigration(
-          tag: tag,
-          force: force,
-          config: config,
-        );
-      } on MigrationVersionLoadException catch (e) {
-        hasError = true;
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}".',
-        );
-        log.error(e.exception);
-      } on GenerateMigrationDatabaseDefinitionException {
-        hasError = true;
-        log.error('Unable to generate database definition for project.');
-      } on MigrationVersionAlreadyExistsException catch (e) {
-        hasError = true;
-        log.error(
-          'Unable to create migration. A directory with the same name already '
-          'exists: "${e.directoryPath}".',
-        );
-      }
+    // Handle --empty flag: create empty migration without evaluation
+    if (empty) {
+      await log.progress('Creating empty migration', () async {
+        try {
+          migration = await generator.createEmptyMigration(
+            tag: tag,
+            config: config,
+          );
+        } on MigrationVersionAlreadyExistsException catch (e) {
+          hasError = true;
+          log.error(
+            'Unable to create migration. A directory with the same name already '
+            'exists: "${e.directoryPath}".',
+          );
+        }
+        return migration != null;
+      });
+    } else {
+      // Handle normal migration creation or --check flag
+      String progressMessage = check ? 'Checking for changes' : 'Creating migration';
+      await log.progress(progressMessage, () async {
+        try {
+          migration = await generator.createMigration(
+            tag: tag,
+            force: force,
+            config: config,
+          );
+        } on MigrationVersionLoadException catch (e) {
+          hasError = true;
+          log.error(
+            'Unable to determine latest database definition due to a corrupted '
+            'migration. Please re-create or remove the migration version and try '
+            'again. Migration version: "${e.versionName}".',
+          );
+          log.error(e.exception);
+        } on GenerateMigrationDatabaseDefinitionException {
+          hasError = true;
+          log.error('Unable to generate database definition for project.');
+        } on MigrationVersionAlreadyExistsException catch (e) {
+          hasError = true;
+          log.error(
+            'Unable to create migration. A directory with the same name already '
+            'exists: "${e.directoryPath}".',
+          );
+        }
 
-      return migration != null;
-    });
+        return migration != null;
+      });
+    }
 
     // Handle the case where we had actual errors
     if (hasError) {
@@ -129,16 +191,23 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       var projectDirectory = migration!.projectDirectory;
       var migrationName = migration!.versionName;
       
-      log.info(
-        'Migration created: ${path.relative(
-          MigrationConstants.migrationVersionDirectory(
-            projectDirectory,
-            migrationName,
-          ).path,
-          from: Directory.current.path,
-        )}',
-        type: TextLogType.bullet,
-      );
+      if (check) {
+        log.info('Changes detected. Migration would be created.', type: TextLogType.bullet);
+      } else {
+        log.info(
+          'Migration created: ${path.relative(
+            MigrationConstants.migrationVersionDirectory(
+              projectDirectory,
+              migrationName,
+            ).path,
+            from: Directory.current.path,
+          )}',
+          type: TextLogType.bullet,
+        );
+      }
+    } else if (check) {
+      // For --check flag, no changes detected is the desired outcome
+      log.info('No changes detected.', type: TextLogType.bullet);
     }
 
     // Both "migration created" and "no changes detected" are successful outcomes
