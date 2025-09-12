@@ -1,4 +1,5 @@
 class: ModelWithRequiredField
+table: model_with_required_field
 fields:
     name: String
     email: String?, required
