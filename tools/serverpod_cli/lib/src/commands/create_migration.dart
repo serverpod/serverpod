@@ -88,6 +88,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
+    bool hasError = false;
+    
     await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
@@ -96,6 +98,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           config: config,
         );
       } on MigrationVersionLoadException catch (e) {
+        hasError = true;
         log.error(
           'Unable to determine latest database definition due to a corrupted '
           'migration. Please re-create or remove the migration version and try '
@@ -103,8 +106,10 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         );
         log.error(e.exception);
       } on GenerateMigrationDatabaseDefinitionException {
+        hasError = true;
         log.error('Unable to generate database definition for project.');
       } on MigrationVersionAlreadyExistsException catch (e) {
+        hasError = true;
         log.error(
           'Unable to create migration. A directory with the same name already '
           'exists: "${e.directoryPath}".',
@@ -114,24 +119,29 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       return migration != null;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
+    // Handle the case where we had actual errors
+    if (hasError) {
       throw ExitException.error();
     }
 
-    log.info(
-      'Migration created: ${path.relative(
-        MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
-          migrationName,
-        ).path,
-        from: Directory.current.path,
-      )}',
-      type: TextLogType.bullet,
-    );
+    // Handle successful migration creation
+    if (migration != null) {
+      var projectDirectory = migration!.projectDirectory;
+      var migrationName = migration!.versionName;
+      
+      log.info(
+        'Migration created: ${path.relative(
+          MigrationConstants.migrationVersionDirectory(
+            projectDirectory,
+            migrationName,
+          ).path,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+    }
+
+    // Both "migration created" and "no changes detected" are successful outcomes
     log.info('Done.', type: TextLogType.success);
   }
 }
