@@ -24,11 +24,7 @@ for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
     echo "### $path"
     cd "$BASE/$path"
 
-    if [[ " ${SERVERPOD_SERVER_EXPERIMENTAL_PATHS[@]} " =~ " $path " ]]; then
-        dart $CLI generate --no-analytics --experimental-features=all
-    else
-        dart $CLI generate --no-analytics
-    fi
+    dart $CLI generate --no-analytics
 done
 
 

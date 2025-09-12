@@ -13,6 +13,8 @@ void main() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
     await SimpleData.db.deleteWhere(session, where: (_) => Constant.bool(true));
     await Types.db.deleteWhere(session, where: (_) => Constant.bool(true));
+    await ModelWithRequiredField.db
+        .deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
   test(
@@ -408,5 +410,19 @@ void main() async {
     );
 
     expect(retrieved?.aStringifiedEnum, TestEnumStringified.three);
+  });
+
+  test('Given model with required field when inserting then it is created',
+      () async {
+    var model = ModelWithRequiredField(name: 'John', email: null);
+    var inserted = await ModelWithRequiredField.db.insertRow(session, model);
+
+    var retrieved = await ModelWithRequiredField.db.findById(
+      session,
+      inserted.id!,
+    );
+
+    expect(retrieved?.name, 'John');
+    expect(retrieved?.email, null);
   });
 }

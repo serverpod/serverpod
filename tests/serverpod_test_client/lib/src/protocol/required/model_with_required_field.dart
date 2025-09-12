@@ -14,12 +14,14 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ModelWithRequiredField implements _i1.SerializableModel {
   ModelWithRequiredField._({
+    this.id,
     required this.name,
     required this.email,
     this.phone,
   });
 
   factory ModelWithRequiredField({
+    int? id,
     required String name,
     required String? email,
     String? phone,
@@ -28,11 +30,17 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   factory ModelWithRequiredField.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return ModelWithRequiredField(
+      id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       email: jsonSerialization['email'] as String?,
       phone: jsonSerialization['phone'] as String?,
     );
   }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
 
   String name;
 
@@ -44,6 +52,7 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   ModelWithRequiredField copyWith({
+    int? id,
     String? name,
     String? email,
     String? phone,
@@ -51,6 +60,7 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       'name': name,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
@@ -67,10 +77,12 @@ class _Undefined {}
 
 class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
   _ModelWithRequiredFieldImpl({
+    int? id,
     required String name,
     required String? email,
     String? phone,
   }) : super._(
+          id: id,
           name: name,
           email: email,
           phone: phone,
@@ -81,11 +93,13 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
   @_i1.useResult
   @override
   ModelWithRequiredField copyWith({
+    Object? id = _Undefined,
     String? name,
     Object? email = _Undefined,
     Object? phone = _Undefined,
   }) {
     return ModelWithRequiredField(
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
       email: email is String? ? email : this.email,
       phone: phone is String? ? phone : this.phone,
