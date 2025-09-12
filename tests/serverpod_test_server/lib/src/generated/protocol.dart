@@ -3245,6 +3245,57 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'model_with_required_field',
+      dartName: 'ModelWithRequiredField',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'model_with_required_field_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phone',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'model_with_required_field_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'multiple_max_field_name',
       dartName: 'MultipleMaxFieldName',
       schema: 'public',
@@ -11430,6 +11481,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i130.ObjectWithVector.t;
       case _i132.RelatedUniqueData:
         return _i132.RelatedUniqueData.t;
+      case _i134.ModelWithRequiredField:
+        return _i134.ModelWithRequiredField.t;
       case _i135.ScopeNoneFields:
         return _i135.ScopeNoneFields.t;
       case _i146.SimpleData:
