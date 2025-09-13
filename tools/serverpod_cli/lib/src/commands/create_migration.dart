@@ -13,8 +13,8 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
-  empty(CreateMigrationCommand.emptyOption),
-  check(CreateMigrationCommand.checkOption);
+  check(CreateMigrationCommand.checkOption),
+  empty(CreateMigrationCommand.emptyOption);
 
   const CreateMigrationOption(this.option);
 
@@ -40,6 +40,15 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const checkOption = FlagOption(
+    argName: 'check',
+    argAbbrev: 'c',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Check if there are changes without creating a migration. '
+        'Returns exit code 0 if no changes detected, 1 if changes exist.',
+  );
+
   static const emptyOption = FlagOption(
     argName: 'empty',
     argAbbrev: 'e',
@@ -48,16 +57,6 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     helpText:
         'Creates an empty migration without evaluating the state of the project. '
         'Advanced use case for manual migration creation.',
-  );
-
-  static const checkOption = FlagOption(
-    argName: 'check',
-    argAbbrev: 'c',
-    negatable: false,
-    defaultsTo: false,
-    helpText:
-        'Returns with exit code 0 if no changes have been detected. '
-        'Useful for CI/CD pipelines to check if migrations are needed.',
   );
 
   static void _validateTag(String tag) {
@@ -83,25 +82,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
-    bool empty = commandConfig.value(CreateMigrationOption.empty);
     bool check = commandConfig.value(CreateMigrationOption.check);
-
-    // Validate flag combinations
-    if (empty && check) {
-      log.error(
-        'The --empty and --check flags cannot be used together. '
-        'Use --empty to create an empty migration, or --check to verify if changes are needed.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    if (empty && force) {
-      log.error(
-        'The --empty and --force flags cannot be used together. '
-        'The --empty flag already creates a migration without evaluation.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
+    bool empty = commandConfig.value(CreateMigrationOption.empty);
 
     GeneratorConfig config;
     try {
@@ -129,88 +111,83 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
-    bool hasError = false;
-    
-    // Handle --empty flag: create empty migration without evaluation
-    if (empty) {
-      await log.progress('Creating empty migration', () async {
-        try {
+    await log.progress(
+        check
+            ? 'Checking for changes'
+            : (empty ? 'Creating empty migration' : 'Creating migration'),
+        () async {
+      try {
+        if (empty) {
           migration = await generator.createEmptyMigration(
             tag: tag,
-            config: config,
+            write: !check, // Don't write files in check mode
           );
-        } on MigrationVersionAlreadyExistsException catch (e) {
-          hasError = true;
-          log.error(
-            'Unable to create migration. A directory with the same name already '
-            'exists: "${e.directoryPath}".',
-          );
-        }
-        return migration != null;
-      });
-    } else {
-      // Handle normal migration creation or --check flag
-      String progressMessage = check ? 'Checking for changes' : 'Creating migration';
-      await log.progress(progressMessage, () async {
-        try {
+        } else {
           migration = await generator.createMigration(
             tag: tag,
             force: force,
             config: config,
-          );
-        } on MigrationVersionLoadException catch (e) {
-          hasError = true;
-          log.error(
-            'Unable to determine latest database definition due to a corrupted '
-            'migration. Please re-create or remove the migration version and try '
-            'again. Migration version: "${e.versionName}".',
-          );
-          log.error(e.exception);
-        } on GenerateMigrationDatabaseDefinitionException {
-          hasError = true;
-          log.error('Unable to generate database definition for project.');
-        } on MigrationVersionAlreadyExistsException catch (e) {
-          hasError = true;
-          log.error(
-            'Unable to create migration. A directory with the same name already '
-            'exists: "${e.directoryPath}".',
+            write: !check, // Don't write files in check mode
           );
         }
+      } on MigrationVersionLoadException catch (e) {
+        log.error(
+          'Unable to determine latest database definition due to a corrupted '
+          'migration. Please re-create or remove the migration version and try '
+          'again. Migration version: "${e.versionName}".',
+        );
+        log.error(e.exception);
+      } on GenerateMigrationDatabaseDefinitionException {
+        log.error('Unable to generate database definition for project.');
+      } on MigrationVersionAlreadyExistsException catch (e) {
+        log.error(
+          'Unable to create migration. A directory with the same name already '
+          'exists: "${e.directoryPath}".',
+        );
+      }
 
-        return migration != null;
-      });
+      return migration != null;
+    });
+
+    if (check) {
+      // In check mode, exit with appropriate code based on whether changes were detected
+      if (empty) {
+        // Empty migrations always create a migration, so always indicate changes exist
+        log.info('Empty migration would be created.', type: TextLogType.bullet);
+        // Exit with code 1 (changes exist)
+        throw ExitException(1);
+      } else if (migration == null) {
+        // No changes detected
+        log.info('No changes detected.', type: TextLogType.success);
+        // Exit with code 0 (success)
+        return;
+      } else {
+        // Changes detected
+        log.info('Changes detected.', type: TextLogType.bullet);
+        // Exit with code 1 (changes exist)
+        throw ExitException(1);
+      }
     }
 
-    // Handle the case where we had actual errors
-    if (hasError) {
+    // Normal mode - create migration
+    var projectDirectory = migration?.projectDirectory;
+    var migrationName = migration?.versionName;
+    if (migration == null ||
+        projectDirectory == null ||
+        migrationName == null) {
       throw ExitException.error();
     }
 
-    // Handle successful migration creation
-    if (migration != null) {
-      var projectDirectory = migration!.projectDirectory;
-      var migrationName = migration!.versionName;
-      
-      if (check) {
-        log.info('Changes detected. Migration would be created.', type: TextLogType.bullet);
-      } else {
-        log.info(
-          'Migration created: ${path.relative(
-            MigrationConstants.migrationVersionDirectory(
-              projectDirectory,
-              migrationName,
-            ).path,
-            from: Directory.current.path,
-          )}',
-          type: TextLogType.bullet,
-        );
-      }
-    } else if (check) {
-      // For --check flag, no changes detected is the desired outcome
-      log.info('No changes detected.', type: TextLogType.bullet);
-    }
-
-    // Both "migration created" and "no changes detected" are successful outcomes
+    log.info(
+      'Migration created: ${path.relative(
+        MigrationConstants.migrationVersionDirectory(
+          projectDirectory,
+          migrationName,
+        ).path,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
     log.info('Done.', type: TextLogType.success);
   }
 }
