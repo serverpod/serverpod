@@ -1,0 +1,7 @@
+**/generated/** linguist-generated=true
+**/protocol/** linguist-generated=true
+**/serverpod_test_tools.dart linguist-generated=true
+**/migrations/** linguist-generated=true
+
+# Compensate for too broad protocol pattern
+tools/serverpod_cli/test/generator/dart/**/protocol/** linguist-generated=false

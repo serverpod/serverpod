@@ -152,9 +152,29 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }
 }
 
+class EnumDefaultPersistUpdateTable
+    extends _i1.UpdateTable<EnumDefaultPersistTable> {
+  EnumDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultPersist(
+          _i2.ByNameEnum? value) =>
+      _i1.ColumnValue(
+        table.byNameEnumDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultPersist(
+          _i3.ByIndexEnum? value) =>
+      _i1.ColumnValue(
+        table.byIndexEnumDefaultPersist,
+        value,
+      );
+}
+
 class EnumDefaultPersistTable extends _i1.Table<int?> {
   EnumDefaultPersistTable({super.tableRelation})
       : super(tableName: 'enum_default_persist') {
+    updateTable = EnumDefaultPersistUpdateTable(this);
     byNameEnumDefaultPersist = _i1.ColumnEnum(
       'byNameEnumDefaultPersist',
       this,
@@ -168,6 +188,8 @@ class EnumDefaultPersistTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final EnumDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultPersist;
 
@@ -366,6 +388,48 @@ class EnumDefaultPersistRepository {
     return session.db.updateRow<EnumDefaultPersist>(
       row,
       columns: columns?.call(EnumDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EnumDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultPersist>(
+      id,
+      columnValues: columnValues(EnumDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultPersist>(
+      columnValues: columnValues(EnumDefaultPersist.t.updateTable),
+      where: where(EnumDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultPersist.t),
+      orderByList: orderByList?.call(EnumDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

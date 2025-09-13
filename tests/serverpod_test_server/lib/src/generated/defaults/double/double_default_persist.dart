@@ -128,15 +128,29 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }
 }
 
+class DoubleDefaultPersistUpdateTable
+    extends _i1.UpdateTable<DoubleDefaultPersistTable> {
+  DoubleDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<double, double> doubleDefaultPersist(double? value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultPersist,
+        value,
+      );
+}
+
 class DoubleDefaultPersistTable extends _i1.Table<int?> {
   DoubleDefaultPersistTable({super.tableRelation})
       : super(tableName: 'double_default_persist') {
+    updateTable = DoubleDefaultPersistUpdateTable(this);
     doubleDefaultPersist = _i1.ColumnDouble(
       'doubleDefaultPersist',
       this,
       hasDefault: true,
     );
   }
+
+  late final DoubleDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnDouble doubleDefaultPersist;
 
@@ -332,6 +346,48 @@ class DoubleDefaultPersistRepository {
     return session.db.updateRow<DoubleDefaultPersist>(
       row,
       columns: columns?.call(DoubleDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DoubleDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefaultPersist>(
+      id,
+      columnValues: columnValues(DoubleDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefaultPersist>(
+      columnValues: columnValues(DoubleDefaultPersist.t.updateTable),
+      where: where(DoubleDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefaultPersist.t),
+      orderByList: orderByList?.call(DoubleDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -168,9 +168,34 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
   }
 }
 
+class EnumDefaultMixUpdateTable extends _i1.UpdateTable<EnumDefaultMixTable> {
+  EnumDefaultMixUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultAndDefaultModel(_i2.ByNameEnum value) => _i1.ColumnValue(
+            table.byNameEnumDefaultAndDefaultModel,
+            value,
+          );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultAndDefaultPersist(_i2.ByNameEnum value) =>
+          _i1.ColumnValue(
+            table.byNameEnumDefaultAndDefaultPersist,
+            value,
+          );
+
+  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
+      byNameEnumDefaultModelAndDefaultPersist(_i2.ByNameEnum value) =>
+          _i1.ColumnValue(
+            table.byNameEnumDefaultModelAndDefaultPersist,
+            value,
+          );
+}
+
 class EnumDefaultMixTable extends _i1.Table<int?> {
   EnumDefaultMixTable({super.tableRelation})
       : super(tableName: 'enum_default_mix') {
+    updateTable = EnumDefaultMixUpdateTable(this);
     byNameEnumDefaultAndDefaultModel = _i1.ColumnEnum(
       'byNameEnumDefaultAndDefaultModel',
       this,
@@ -190,6 +215,8 @@ class EnumDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final EnumDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultAndDefaultModel;
 
@@ -392,6 +419,46 @@ class EnumDefaultMixRepository {
     return session.db.updateRow<EnumDefaultMix>(
       row,
       columns: columns?.call(EnumDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EnumDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EnumDefaultMix?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EnumDefaultMix>(
+      id,
+      columnValues: columnValues(EnumDefaultMix.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EnumDefaultMix>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EnumDefaultMix>(
+      columnValues: columnValues(EnumDefaultMix.t.updateTable),
+      where: where(EnumDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

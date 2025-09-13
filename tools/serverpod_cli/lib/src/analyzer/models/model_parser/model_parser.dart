@@ -322,6 +322,7 @@ class ModelParser {
           defaultPersistValue: defaultPersistValue ?? defaultModelValue,
           shouldPersist: true,
           documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
+          isRequired: false, // ID fields are typically optional
         ),
       );
     }
@@ -390,6 +391,8 @@ class ModelParser {
       node,
     );
 
+    var isRequired = _parseIsRequired(node);
+
     return [
       SerializableModelFieldDefinition(
         name: fieldName,
@@ -400,6 +403,7 @@ class ModelParser {
         documentation: fieldDocumentation,
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
+        isRequired: isRequired,
       )
     ];
   }
@@ -525,6 +529,10 @@ class ModelParser {
     if (!node.containsKey(Keyword.persist)) return true;
 
     return _parseBooleanKey(node, Keyword.persist);
+  }
+
+  static bool _parseIsRequired(YamlMap node) {
+    return _parseBooleanKey(node, Keyword.requiredKey);
   }
 
   static dynamic _parseDefaultValue(YamlMap node, String keyword) {

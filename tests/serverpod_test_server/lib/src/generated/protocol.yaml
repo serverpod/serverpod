@@ -98,6 +98,9 @@ diagnosticEventTest:
 echoRequest:
   - echoAuthenticationKey:
   - echoHttpHeader:
+echoRequiredField:
+  - echoModel:
+  - throwException:
 emailAuthTestMethods:
   - findVerificationCode:
   - findResetCode:

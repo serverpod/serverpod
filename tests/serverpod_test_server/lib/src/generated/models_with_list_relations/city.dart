@@ -168,13 +168,25 @@ class _CityImpl extends City {
   }
 }
 
+class CityUpdateTable extends _i1.UpdateTable<CityTable> {
+  CityUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CityTable extends _i1.Table<int?> {
   CityTable({super.tableRelation}) : super(tableName: 'city') {
+    updateTable = CityUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CityUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -478,6 +490,46 @@ class CityRepository {
     return session.db.updateRow<City>(
       row,
       columns: columns?.call(City.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [City] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<City?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<City>(
+      id,
+      columnValues: columnValues(City.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [City]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<City>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CityUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CityTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CityTable>? orderBy,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<City>(
+      columnValues: columnValues(City.t.updateTable),
+      where: where(City.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

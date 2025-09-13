@@ -161,9 +161,27 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
   final int? _relationEmptyModelItemsRelationEmptyModelId;
 }
 
+class EmptyModelRelationItemUpdateTable
+    extends _i1.UpdateTable<EmptyModelRelationItemTable> {
+  EmptyModelRelationItemUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> $_relationEmptyModelItemsRelationEmptyModelId(
+          int? value) =>
+      _i1.ColumnValue(
+        table.$_relationEmptyModelItemsRelationEmptyModelId,
+        value,
+      );
+}
+
 class EmptyModelRelationItemTable extends _i1.Table<int?> {
   EmptyModelRelationItemTable({super.tableRelation})
       : super(tableName: 'empty_model_relation_item') {
+    updateTable = EmptyModelRelationItemUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -173,6 +191,8 @@ class EmptyModelRelationItemTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmptyModelRelationItemUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -377,6 +397,48 @@ class EmptyModelRelationItemRepository {
     return session.db.updateRow<EmptyModelRelationItem>(
       row,
       columns: columns?.call(EmptyModelRelationItem.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmptyModelRelationItem] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmptyModelRelationItem?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmptyModelRelationItem>(
+      id,
+      columnValues: columnValues(EmptyModelRelationItem.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmptyModelRelationItem]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmptyModelRelationItem>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmptyModelRelationItem>(
+      columnValues: columnValues(EmptyModelRelationItem.t.updateTable),
+      where: where(EmptyModelRelationItem.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmptyModelRelationItem.t),
+      orderByList: orderByList?.call(EmptyModelRelationItem.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

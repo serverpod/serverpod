@@ -154,8 +154,23 @@ class _AddressUuidImpl extends AddressUuid {
   }
 }
 
+class AddressUuidUpdateTable extends _i1.UpdateTable<AddressUuidTable> {
+  AddressUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+        table.street,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
+        table.inhabitantId,
+        value,
+      );
+}
+
 class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
   AddressUuidTable({super.tableRelation}) : super(tableName: 'address_uuid') {
+    updateTable = AddressUuidUpdateTable(this);
     street = _i1.ColumnString(
       'street',
       this,
@@ -165,6 +180,8 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
       this,
     );
   }
+
+  late final AddressUuidUpdateTable updateTable;
 
   late final _i1.ColumnString street;
 
@@ -400,6 +417,46 @@ class AddressUuidRepository {
     return session.db.updateRow<AddressUuid>(
       row,
       columns: columns?.call(AddressUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [AddressUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AddressUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AddressUuid>(
+      id,
+      columnValues: columnValues(AddressUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AddressUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AddressUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AddressUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressUuidTable>? orderBy,
+    _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AddressUuid>(
+      columnValues: columnValues(AddressUuid.t.updateTable),
+      where: where(AddressUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

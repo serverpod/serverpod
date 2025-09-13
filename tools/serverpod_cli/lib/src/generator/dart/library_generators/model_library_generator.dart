@@ -153,6 +153,11 @@ class SerializableModelLibraryGenerator {
           ) as TypeReference;
 
           libraryBuilder.body.addAll([
+            _buildModelUpdateTableClass(
+              className,
+              fields,
+              classDefinition,
+            ),
             _buildModelTableClass(
               className,
               tableName,
@@ -1513,7 +1518,8 @@ class SerializableModelLibraryGenerator {
         p
           ..named = true
           ..name = field.name
-          ..required = !(field.type.nullable || hasDefaults);
+          ..required = !(field.type.nullable || hasDefaults) ||
+              (field.type.nullable && field.isRequired);
 
         if (shouldIncludeType) {
           p.type = type;
@@ -1688,6 +1694,12 @@ class SerializableModelLibraryGenerator {
       c.constructors.add(
           _buildModelTableClassConstructor(tableName, fields, classDefinition));
 
+      c.fields.add(Field((f) => f
+        ..name = 'updateTable'
+        ..late = true
+        ..modifier = FieldModifier.final$
+        ..type = refer('${className}UpdateTable')));
+
       c.fields.addAll(
         _buildModelTableClassFields(fields, classDefinition.subDirParts),
       );
@@ -1716,6 +1728,100 @@ class SerializableModelLibraryGenerator {
       if (relationFields.isNotEmpty) {
         c.methods.add(_buildModelTableClassGetRelationTable(
             relationFields, idTypeReference));
+      }
+    });
+  }
+
+  Class _buildModelUpdateTableClass(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    var serializedFields = fields
+        .where((f) => f.shouldSerializeFieldForDatabase(serverCode))
+        .where((f) => !(f.name == 'id' && serverCode));
+
+    return Class((c) {
+      c.name = '${className}UpdateTable';
+
+      // Extend UpdateTable<T> base class
+      c.extend = TypeReference((t) => t
+        ..symbol = 'UpdateTable'
+        ..url = serverpodUrl(serverCode)
+        ..types.add(refer('${className}Table')));
+
+      // Use super constructor
+      c.constructors.add(Constructor((constructor) {
+        constructor.requiredParameters.add(Parameter((p) => p
+          ..name = 'table'
+          ..toSuper = true));
+      }));
+
+      // Add a method for each column that returns a ColumnValue
+      for (var field in serializedFields) {
+        c.methods.add(Method((m) {
+          var fieldType = field.type.reference(
+            serverCode,
+            nullable: field.type.nullable,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          );
+
+          // For records, the second type parameter should be Map<String, dynamic>?
+          var secondTypeParam = field.type.isRecordType
+              ? TypeReference((t) => t
+                ..symbol = 'Map'
+                ..types.addAll([
+                  refer('String'),
+                  refer('dynamic'),
+                ])
+                ..isNullable = true)
+              : field.type.reference(
+                  serverCode,
+                  nullable: false,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                );
+
+          m
+            ..name = createFieldName(serverCode, field)
+            ..returns = TypeReference((t) => t
+              ..symbol = 'ColumnValue'
+              ..url = serverpodUrl(serverCode)
+              ..types.addAll([
+                field.type.reference(
+                  serverCode,
+                  nullable: false,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                ),
+                secondTypeParam,
+              ]))
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = 'value'
+              ..type = fieldType))
+            ..lambda = true;
+
+          // For records, we need to call mapRecordToJson
+          if (field.type.isRecordType) {
+            var mapRecordToJsonRef = refer(
+              mapRecordToJsonFuncName,
+              serverCode
+                  ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+                  : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+            );
+
+            m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
+              refer('table').property(createFieldName(serverCode, field)),
+              mapRecordToJsonRef.call([refer('value')])
+            ]).code;
+          } else {
+            m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
+              refer('table').property(createFieldName(serverCode, field)),
+              refer('value')
+            ]).code;
+          }
+        }));
       }
     });
   }
@@ -2087,6 +2193,10 @@ class SerializableModelLibraryGenerator {
           .call([], {'tableName': literalString(tableName)}).code);
 
       constructorBuilder.body = Block.of([
+        refer('updateTable')
+            .assign(refer('${classDefinition.className}UpdateTable')
+                .call([refer('this')]))
+            .statement,
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))

@@ -140,9 +140,26 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   final _i2.SimpleData? _object;
 }
 
+class ScopeNoneFieldsUpdateTable extends _i1.UpdateTable<ScopeNoneFieldsTable> {
+  ScopeNoneFieldsUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> $name(String? value) => _i1.ColumnValue(
+        table.$name,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> $object(
+          _i2.SimpleData? value) =>
+      _i1.ColumnValue(
+        table.$object,
+        value,
+      );
+}
+
 class ScopeNoneFieldsTable extends _i1.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
       : super(tableName: 'scope_none_fields') {
+    updateTable = ScopeNoneFieldsUpdateTable(this);
     $name = _i1.ColumnString(
       'name',
       this,
@@ -152,6 +169,8 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ScopeNoneFieldsUpdateTable updateTable;
 
   late final _i1.ColumnString $name;
 
@@ -353,6 +372,48 @@ class ScopeNoneFieldsRepository {
     return session.db.updateRow<ScopeNoneFields>(
       row,
       columns: columns?.call(ScopeNoneFields.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ScopeNoneFields] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ScopeNoneFields?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ScopeNoneFields>(
+      id,
+      columnValues: columnValues(ScopeNoneFields.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ScopeNoneFields]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ScopeNoneFields>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ScopeNoneFields>(
+      columnValues: columnValues(ScopeNoneFields.t.updateTable),
+      where: where(ScopeNoneFields.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

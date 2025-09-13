@@ -153,8 +153,23 @@ class _AddressImpl extends Address {
   }
 }
 
+class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
+  AddressUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+        table.street,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
+        table.inhabitantId,
+        value,
+      );
+}
+
 class AddressTable extends _i1.Table<int?> {
   AddressTable({super.tableRelation}) : super(tableName: 'address') {
+    updateTable = AddressUpdateTable(this);
     street = _i1.ColumnString(
       'street',
       this,
@@ -164,6 +179,8 @@ class AddressTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final AddressUpdateTable updateTable;
 
   late final _i1.ColumnString street;
 
@@ -399,6 +416,46 @@ class AddressRepository {
     return session.db.updateRow<Address>(
       row,
       columns: columns?.call(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Address] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Address?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Address>(
+      id,
+      columnValues: columnValues(Address.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Address]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Address>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AddressUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AddressTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Address>(
+      columnValues: columnValues(Address.t.updateTable),
+      where: where(Address.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

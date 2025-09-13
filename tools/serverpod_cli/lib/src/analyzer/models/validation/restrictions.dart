@@ -1482,6 +1482,31 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateRequiredKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    // The 'required' keyword should only be used with nullable fields
+    if (!field.type.nullable) {
+      return [
+        SourceSpanSeverityException(
+          'The "required" keyword can only be used with nullable fields. '
+          'Non-nullable fields are already required by default.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validatePersistKey(
     String parentNodeName,
     String relation,

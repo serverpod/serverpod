@@ -180,9 +180,37 @@ class _LegacySessionImpl extends LegacySession {
   }
 }
 
+class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
+  LegacySessionUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class LegacySessionTable extends _i1.Table<int?> {
   LegacySessionTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_bridge_session') {
+    updateTable = LegacySessionUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -200,6 +228,8 @@ class LegacySessionTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final LegacySessionUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -445,6 +475,46 @@ class LegacySessionRepository {
     return session.db.updateRow<LegacySession>(
       row,
       columns: columns?.call(LegacySession.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [LegacySession] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LegacySession?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LegacySession>(
+      id,
+      columnValues: columnValues(LegacySession.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LegacySession]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LegacySession>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
+    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LegacySession>(
+      columnValues: columnValues(LegacySession.t.updateTable),
+      where: where(LegacySession.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

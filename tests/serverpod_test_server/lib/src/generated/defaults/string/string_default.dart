@@ -137,9 +137,26 @@ class _StringDefaultImpl extends StringDefault {
   }
 }
 
+class StringDefaultUpdateTable extends _i1.UpdateTable<StringDefaultTable> {
+  StringDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> stringDefault(String value) =>
+      _i1.ColumnValue(
+        table.stringDefault,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stringDefaultNull(String? value) =>
+      _i1.ColumnValue(
+        table.stringDefaultNull,
+        value,
+      );
+}
+
 class StringDefaultTable extends _i1.Table<int?> {
   StringDefaultTable({super.tableRelation})
       : super(tableName: 'string_default') {
+    updateTable = StringDefaultUpdateTable(this);
     stringDefault = _i1.ColumnString(
       'stringDefault',
       this,
@@ -151,6 +168,8 @@ class StringDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final StringDefaultUpdateTable updateTable;
 
   late final _i1.ColumnString stringDefault;
 
@@ -349,6 +368,46 @@ class StringDefaultRepository {
     return session.db.updateRow<StringDefault>(
       row,
       columns: columns?.call(StringDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [StringDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<StringDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<StringDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<StringDefault>(
+      id,
+      columnValues: columnValues(StringDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [StringDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<StringDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<StringDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<StringDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<StringDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<StringDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<StringDefault>(
+      columnValues: columnValues(StringDefault.t.updateTable),
+      where: where(StringDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefault.t),
+      orderByList: orderByList?.call(StringDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

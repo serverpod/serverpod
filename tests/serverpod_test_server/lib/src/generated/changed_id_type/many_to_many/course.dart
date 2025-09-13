@@ -147,13 +147,25 @@ class _CourseUuidImpl extends CourseUuid {
   }
 }
 
+class CourseUuidUpdateTable extends _i1.UpdateTable<CourseUuidTable> {
+  CourseUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
   CourseUuidTable({super.tableRelation}) : super(tableName: 'course_uuid') {
+    updateTable = CourseUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CourseUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -410,6 +422,46 @@ class CourseUuidRepository {
     return session.db.updateRow<CourseUuid>(
       row,
       columns: columns?.call(CourseUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [CourseUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CourseUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CourseUuid>(
+      id,
+      columnValues: columnValues(CourseUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CourseUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CourseUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
+    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CourseUuid>(
+      columnValues: columnValues(CourseUuid.t.updateTable),
+      where: where(CourseUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

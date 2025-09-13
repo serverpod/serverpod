@@ -173,8 +173,23 @@ class _PostImpl extends Post {
   }
 }
 
+class PostUpdateTable extends _i1.UpdateTable<PostTable> {
+  PostUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
+        table.content,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> nextId(int? value) => _i1.ColumnValue(
+        table.nextId,
+        value,
+      );
+}
+
 class PostTable extends _i1.Table<int?> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
+    updateTable = PostUpdateTable(this);
     content = _i1.ColumnString(
       'content',
       this,
@@ -184,6 +199,8 @@ class PostTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final PostUpdateTable updateTable;
 
   late final _i1.ColumnString content;
 
@@ -446,6 +463,46 @@ class PostRepository {
     return session.db.updateRow<Post>(
       row,
       columns: columns?.call(Post.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Post] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Post?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Post>(
+      id,
+      columnValues: columnValues(Post.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Post]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Post>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<PostTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PostTable>? orderBy,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Post>(
+      columnValues: columnValues(Post.t.updateTable),
+      where: where(Post.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

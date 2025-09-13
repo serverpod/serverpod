@@ -138,9 +138,26 @@ class _DoubleDefaultImpl extends DoubleDefault {
   }
 }
 
+class DoubleDefaultUpdateTable extends _i1.UpdateTable<DoubleDefaultTable> {
+  DoubleDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<double, double> doubleDefault(double value) =>
+      _i1.ColumnValue(
+        table.doubleDefault,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> doubleDefaultNull(double? value) =>
+      _i1.ColumnValue(
+        table.doubleDefaultNull,
+        value,
+      );
+}
+
 class DoubleDefaultTable extends _i1.Table<int?> {
   DoubleDefaultTable({super.tableRelation})
       : super(tableName: 'double_default') {
+    updateTable = DoubleDefaultUpdateTable(this);
     doubleDefault = _i1.ColumnDouble(
       'doubleDefault',
       this,
@@ -152,6 +169,8 @@ class DoubleDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DoubleDefaultUpdateTable updateTable;
 
   late final _i1.ColumnDouble doubleDefault;
 
@@ -350,6 +369,46 @@ class DoubleDefaultRepository {
     return session.db.updateRow<DoubleDefault>(
       row,
       columns: columns?.call(DoubleDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DoubleDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DoubleDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DoubleDefault>(
+      id,
+      columnValues: columnValues(DoubleDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DoubleDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DoubleDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DoubleDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<DoubleDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DoubleDefault>(
+      columnValues: columnValues(DoubleDefault.t.updateTable),
+      where: where(DoubleDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

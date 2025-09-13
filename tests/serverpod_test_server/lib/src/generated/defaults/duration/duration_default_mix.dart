@@ -182,9 +182,36 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
   }
 }
 
+class DurationDefaultMixUpdateTable
+    extends _i1.UpdateTable<DurationDefaultMixTable> {
+  DurationDefaultMixUpdateTable(super.table);
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultPersist(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultModelAndDefaultPersist(
+          Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class DurationDefaultMixTable extends _i1.Table<int?> {
   DurationDefaultMixTable({super.tableRelation})
       : super(tableName: 'duration_default_mix') {
+    updateTable = DurationDefaultMixUpdateTable(this);
     durationDefaultAndDefaultModel = _i1.ColumnDuration(
       'durationDefaultAndDefaultModel',
       this,
@@ -201,6 +228,8 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DurationDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefaultAndDefaultModel;
 
@@ -402,6 +431,48 @@ class DurationDefaultMixRepository {
     return session.db.updateRow<DurationDefaultMix>(
       row,
       columns: columns?.call(DurationDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DurationDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefaultMix?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefaultMix>(
+      id,
+      columnValues: columnValues(DurationDefaultMix.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefaultMix>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefaultMix>(
+      columnValues: columnValues(DurationDefaultMix.t.updateTable),
+      where: where(DurationDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultMix.t),
+      orderByList: orderByList?.call(DurationDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -1,0 +1,5 @@
+exception: ExceptionWithRequiredField
+fields:
+    name: String
+    email: String?, required
+    phone: String?

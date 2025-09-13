@@ -193,8 +193,28 @@ class PersonImplicit extends _PersonImpl {
   final int? _cityCitizensCityId;
 }
 
+class PersonUpdateTable extends _i1.UpdateTable<PersonTable> {
+  PersonUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
+        table.organizationId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> $_cityCitizensCityId(int? value) => _i1.ColumnValue(
+        table.$_cityCitizensCityId,
+        value,
+      );
+}
+
 class PersonTable extends _i1.Table<int?> {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
+    updateTable = PersonUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -208,6 +228,8 @@ class PersonTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final PersonUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -453,6 +475,46 @@ class PersonRepository {
     return session.db.updateRow<Person>(
       row,
       columns: columns?.call(Person.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Person] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Person?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<PersonUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Person>(
+      id,
+      columnValues: columnValues(Person.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Person]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Person>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PersonUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<PersonTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PersonTable>? orderBy,
+    _i1.OrderByListBuilder<PersonTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Person>(
+      columnValues: columnValues(Person.t.updateTable),
+      where: where(Person.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Person.t),
+      orderByList: orderByList?.call(Person.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

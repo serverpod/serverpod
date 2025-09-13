@@ -154,8 +154,23 @@ class _CompanyUuidImpl extends CompanyUuid {
   }
 }
 
+class CompanyUuidUpdateTable extends _i1.UpdateTable<CompanyUuidTable> {
+  CompanyUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
+        table.townId,
+        value,
+      );
+}
+
 class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
   CompanyUuidTable({super.tableRelation}) : super(tableName: 'company_uuid') {
+    updateTable = CompanyUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -165,6 +180,8 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final CompanyUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -398,6 +415,46 @@ class CompanyUuidRepository {
     return session.db.updateRow<CompanyUuid>(
       row,
       columns: columns?.call(CompanyUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [CompanyUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CompanyUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<CompanyUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CompanyUuid>(
+      id,
+      columnValues: columnValues(CompanyUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CompanyUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CompanyUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CompanyUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CompanyUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CompanyUuidTable>? orderBy,
+    _i1.OrderByListBuilder<CompanyUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CompanyUuid>(
+      columnValues: columnValues(CompanyUuid.t.updateTable),
+      where: where(CompanyUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CompanyUuid.t),
+      orderByList: orderByList?.call(CompanyUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

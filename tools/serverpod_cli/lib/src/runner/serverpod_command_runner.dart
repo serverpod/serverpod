@@ -1,5 +1,6 @@
 import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -66,6 +67,7 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   Future<void> runCommand(ArgResults topLevelResults) async {
     if (globalConfiguration.value(GlobalOption.version)) {
       await commands['version']?.run();
+      return; // Exit early to prevent showing help text
     }
 
     var experimentalFeatures = globalConfiguration.value(

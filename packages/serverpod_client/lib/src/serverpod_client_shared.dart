@@ -484,12 +484,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
       // A first failure here with 401 can be due to an access token expiration.
       // We will retry only once in such case, and only if the `authKeyProvider`
       // exposes a `refreshAuthKey` method (like JWT).
-      final shouldRefreshAuth = keyProvider is RefresherClientAuthKeyProvider &&
-          await keyProvider.refreshAuthKey();
-
-      if (shouldRefreshAuth) {
-        return _callServerEndpoint(endpoint, method, args,
-            authenticated: authenticated);
+      if (keyProvider is RefresherClientAuthKeyProvider) {
+        final refreshResult = await keyProvider.refreshAuthKey();
+        if (refreshResult == RefreshAuthKeyResult.success) {
+          return _callServerEndpoint(endpoint, method, args,
+              authenticated: authenticated);
+        }
       }
       rethrow;
     }

@@ -136,8 +136,23 @@ class _IntDefaultImpl extends IntDefault {
   }
 }
 
+class IntDefaultUpdateTable extends _i1.UpdateTable<IntDefaultTable> {
+  IntDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> intDefault(int value) => _i1.ColumnValue(
+        table.intDefault,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> intDefaultNull(int? value) => _i1.ColumnValue(
+        table.intDefaultNull,
+        value,
+      );
+}
+
 class IntDefaultTable extends _i1.Table<int?> {
   IntDefaultTable({super.tableRelation}) : super(tableName: 'int_default') {
+    updateTable = IntDefaultUpdateTable(this);
     intDefault = _i1.ColumnInt(
       'intDefault',
       this,
@@ -149,6 +164,8 @@ class IntDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final IntDefaultUpdateTable updateTable;
 
   late final _i1.ColumnInt intDefault;
 
@@ -347,6 +364,46 @@ class IntDefaultRepository {
     return session.db.updateRow<IntDefault>(
       row,
       columns: columns?.call(IntDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [IntDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<IntDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<IntDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<IntDefault>(
+      id,
+      columnValues: columnValues(IntDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [IntDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<IntDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<IntDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<IntDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<IntDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<IntDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<IntDefault>(
+      columnValues: columnValues(IntDefault.t.updateTable),
+      where: where(IntDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(IntDefault.t),
+      orderByList: orderByList?.call(IntDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -254,6 +254,10 @@ class SerializableModelFieldDefinition {
   /// The documentation of this field, line by line.
   final List<String>? documentation;
 
+  /// Whether this nullable field should be required in constructor parameters.
+  /// When true, nullable fields will be marked as required named parameters.
+  final bool isRequired;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
@@ -267,6 +271,7 @@ class SerializableModelFieldDefinition {
     this.defaultPersistValue,
     this.relation,
     this.documentation,
+    this.isRequired = false,
   });
 
   /// Returns true, if classes should include this field.

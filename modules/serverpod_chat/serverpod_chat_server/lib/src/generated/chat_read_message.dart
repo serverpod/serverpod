@@ -150,9 +150,29 @@ class _ChatReadMessageImpl extends ChatReadMessage {
   }
 }
 
+class ChatReadMessageUpdateTable extends _i1.UpdateTable<ChatReadMessageTable> {
+  ChatReadMessageUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
+        table.channel,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> lastReadMessageId(int value) => _i1.ColumnValue(
+        table.lastReadMessageId,
+        value,
+      );
+}
+
 class ChatReadMessageTable extends _i1.Table<int?> {
   ChatReadMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_read_message') {
+    updateTable = ChatReadMessageUpdateTable(this);
     channel = _i1.ColumnString(
       'channel',
       this,
@@ -166,6 +186,8 @@ class ChatReadMessageTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final ChatReadMessageUpdateTable updateTable;
 
   /// The channel this that has been read.
   late final _i1.ColumnString channel;
@@ -370,6 +392,48 @@ class ChatReadMessageRepository {
     return session.db.updateRow<ChatReadMessage>(
       row,
       columns: columns?.call(ChatReadMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ChatReadMessage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChatReadMessage?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ChatReadMessageUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChatReadMessage>(
+      id,
+      columnValues: columnValues(ChatReadMessage.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChatReadMessage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ChatReadMessage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChatReadMessageUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChatReadMessageTable>? orderBy,
+    _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChatReadMessage>(
+      columnValues: columnValues(ChatReadMessage.t.updateTable),
+      where: where(ChatReadMessage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChatReadMessage.t),
+      orderByList: orderByList?.call(ChatReadMessage.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

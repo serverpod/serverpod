@@ -64,4 +64,24 @@ void main() {
       expect(client.auth.caller, isNotNull);
     });
   });
+
+  group('Given more than one Client sharing the same auth session manager', () {
+    final sharedSessionManager = ClientAuthSessionManager(storage: storage);
+
+    final client1 = Client('http://localhost:8080/')
+      ..authSessionManager = sharedSessionManager;
+    final client2 = Client('http://localhost:8080/')
+      ..authSessionManager = sharedSessionManager;
+
+    test('when accessing `client.auth` then it is the same instance.', () {
+      expect(client1.auth, sharedSessionManager);
+      expect(client1.auth, client2.auth);
+    });
+
+    test(
+        'when retrieving caller from `client.auth` '
+        'then it is the caller from the latest configured client.', () {
+      expect(sharedSessionManager.caller, client2.modules.serverpod_auth_core);
+    });
+  });
 }

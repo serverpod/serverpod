@@ -164,9 +164,36 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
   }
 }
 
+class DateTimeDefaultMixUpdateTable
+    extends _i1.UpdateTable<DateTimeDefaultMixTable> {
+  DateTimeDefaultMixUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultModel(
+          DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultAndDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultPersist(
+          DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultAndDefaultPersist,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultModelAndDefaultPersist(
+          DateTime value) =>
+      _i1.ColumnValue(
+        table.dateTimeDefaultModelAndDefaultPersist,
+        value,
+      );
+}
+
 class DateTimeDefaultMixTable extends _i1.Table<int?> {
   DateTimeDefaultMixTable({super.tableRelation})
       : super(tableName: 'datetime_default_mix') {
+    updateTable = DateTimeDefaultMixUpdateTable(this);
     dateTimeDefaultAndDefaultModel = _i1.ColumnDateTime(
       'dateTimeDefaultAndDefaultModel',
       this,
@@ -183,6 +210,8 @@ class DateTimeDefaultMixTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final DateTimeDefaultMixUpdateTable updateTable;
 
   late final _i1.ColumnDateTime dateTimeDefaultAndDefaultModel;
 
@@ -384,6 +413,48 @@ class DateTimeDefaultMixRepository {
     return session.db.updateRow<DateTimeDefaultMix>(
       row,
       columns: columns?.call(DateTimeDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DateTimeDefaultMix] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DateTimeDefaultMix?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DateTimeDefaultMix>(
+      id,
+      columnValues: columnValues(DateTimeDefaultMix.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DateTimeDefaultMix]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DateTimeDefaultMix>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DateTimeDefaultMix>(
+      columnValues: columnValues(DateTimeDefaultMix.t.updateTable),
+      where: where(DateTimeDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultMix.t),
+      orderByList: orderByList?.call(DateTimeDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

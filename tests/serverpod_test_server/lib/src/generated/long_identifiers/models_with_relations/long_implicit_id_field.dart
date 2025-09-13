@@ -162,9 +162,29 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
   final int? _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 }
 
+class LongImplicitIdFieldUpdateTable
+    extends _i1.UpdateTable<LongImplicitIdFieldTable> {
+  LongImplicitIdFieldUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int>
+      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id(
+              int? value) =>
+          _i1.ColumnValue(
+            table
+                .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+            value,
+          );
+}
+
 class LongImplicitIdFieldTable extends _i1.Table<int?> {
   LongImplicitIdFieldTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field') {
+    updateTable = LongImplicitIdFieldUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -175,6 +195,8 @@ class LongImplicitIdFieldTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final LongImplicitIdFieldUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -380,6 +402,48 @@ class LongImplicitIdFieldRepository {
     return session.db.updateRow<LongImplicitIdField>(
       row,
       columns: columns?.call(LongImplicitIdField.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [LongImplicitIdField] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LongImplicitIdField?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LongImplicitIdField>(
+      id,
+      columnValues: columnValues(LongImplicitIdField.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LongImplicitIdField]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LongImplicitIdField>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
+    _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LongImplicitIdField>(
+      columnValues: columnValues(LongImplicitIdField.t.updateTable),
+      where: where(LongImplicitIdField.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LongImplicitIdField.t),
+      orderByList: orderByList?.call(LongImplicitIdField.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

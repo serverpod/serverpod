@@ -71,6 +71,8 @@ class BuildRepositoryClass {
           _buildInsertRowMethod(className),
           _buildUpdateMethod(className),
           _buildUpdateRowMethod(className),
+          _buildUpdateByIdMethod(className, idTypeReference),
+          _buildUpdateWhereMethod(className),
           _buildDeleteMethod(className),
           _buildDeleteRowMethod(className),
           _buildDeleteWhereMethod(className),
@@ -692,6 +694,166 @@ class BuildRepositoryClass {
               'columns': refer('columns').nullSafeProperty('call').call([
                 refer(className).property('t'),
               ]),
+              'transaction': refer('transaction'),
+            }, [
+              refer(className)
+            ])
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpdateByIdMethod(
+      String className, TypeReference idTypeReference) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Updates a single [$className] by its [id] with the specified [columnValues].
+/// Returns the updated row or null if no row with the given id exists.''')
+        ..name = 'updateById'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = className
+                ..isNullable = true,
+            )),
+        )
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
+            ..name = 'session'),
+          Parameter((p) => p
+            ..type = idTypeReference.rebuild((u) => u.isNullable = false)
+            ..name = 'id'),
+        ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'columnValues'
+            ..named = true
+            ..required = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('updateById')
+            .call([
+              refer('id'),
+            ], {
+              'columnValues': refer('columnValues').call([
+                refer(className).property('t').property('updateTable'),
+              ]),
+              'transaction': refer('transaction'),
+            }, [
+              refer(className)
+            ])
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpdateWhereMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Updates all [$className]s matching the [where] expression with the specified [columnValues].
+/// Returns the list of updated rows.''')
+        ..name = 'updateWhere'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(TypeReference(
+              (r) => r
+                ..symbol = 'List'
+                ..types.add(refer(className)),
+            )),
+        )
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
+            ..name = 'session'),
+        ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'columnValues'
+            ..named = true
+            ..required = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'WhereExpressionBuilder<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'where'
+            ..named = true
+            ..required = true),
+          Parameter((p) => p
+            ..type = refer('int?', 'dart:core')
+            ..name = 'limit'
+            ..named = true),
+          Parameter((p) => p
+            ..type = refer('int?', 'dart:core')
+            ..name = 'offset'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'OrderByBuilder<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart'
+              ..isNullable = true)
+            ..name = 'orderBy'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..symbol = 'OrderByListBuilder<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart'
+              ..isNullable = true)
+            ..name = 'orderByList'
+            ..named = true),
+          Parameter((p) => p
+            ..type = refer('bool', 'dart:core')
+            ..name = 'orderDescending'
+            ..named = true
+            ..defaultTo = const Code('false')),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('updateWhere')
+            .call([], {
+              'columnValues': refer('columnValues').call([
+                refer(className).property('t').property('updateTable'),
+              ]),
+              'where': refer('where').call([
+                refer(className).property('t'),
+              ]),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy')
+                  .nullSafeProperty('call')
+                  .call([refer(className).property('t')]),
+              'orderByList': refer('orderByList')
+                  .nullSafeProperty('call')
+                  .call([refer(className).property('t')]),
+              'orderDescending': refer('orderDescending'),
               'transaction': refer('transaction'),
             }, [
               refer(className)

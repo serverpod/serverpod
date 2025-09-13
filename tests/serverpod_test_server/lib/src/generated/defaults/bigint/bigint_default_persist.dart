@@ -131,15 +131,29 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   }
 }
 
+class BigIntDefaultPersistUpdateTable
+    extends _i1.UpdateTable<BigIntDefaultPersistTable> {
+  BigIntDefaultPersistUpdateTable(super.table);
+
+  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultPersistStr(BigInt? value) =>
+      _i1.ColumnValue(
+        table.bigIntDefaultPersistStr,
+        value,
+      );
+}
+
 class BigIntDefaultPersistTable extends _i1.Table<int?> {
   BigIntDefaultPersistTable({super.tableRelation})
       : super(tableName: 'bigint_default_persist') {
+    updateTable = BigIntDefaultPersistUpdateTable(this);
     bigIntDefaultPersistStr = _i1.ColumnBigInt(
       'bigIntDefaultPersistStr',
       this,
       hasDefault: true,
     );
   }
+
+  late final BigIntDefaultPersistUpdateTable updateTable;
 
   late final _i1.ColumnBigInt bigIntDefaultPersistStr;
 
@@ -335,6 +349,48 @@ class BigIntDefaultPersistRepository {
     return session.db.updateRow<BigIntDefaultPersist>(
       row,
       columns: columns?.call(BigIntDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [BigIntDefaultPersist] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefaultPersist?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultPersistUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefaultPersist>(
+      id,
+      columnValues: columnValues(BigIntDefaultPersist.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefaultPersist]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefaultPersist>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultPersistUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultPersistTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefaultPersist>(
+      columnValues: columnValues(BigIntDefaultPersist.t.updateTable),
+      where: where(BigIntDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultPersist.t),
+      orderByList: orderByList?.call(BigIntDefaultPersist.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

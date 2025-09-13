@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
+import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -13,9 +14,9 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/generated/database/enum_serialization.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../generated/protocol.dart';
 import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
@@ -232,6 +233,128 @@ class DatabaseConnection {
     }
 
     return updated.first;
+  }
+
+  /// Updates a single row by its ID with the specified column values.
+  ///
+  /// Returns the updated row or null if no row with the given ID exists.
+  /// Throws [ArgumentError] if [columnValues] is empty.
+  ///
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T> updateById<T extends TableRow>(
+    Session session,
+    Object id, {
+    required List<ColumnValue> columnValues,
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'updateById');
+
+    if (columnValues.isEmpty) {
+      throw ArgumentError('columnValues cannot be empty');
+    }
+
+    var setClause = columnValues.map((cv) {
+      var value = DatabasePoolManager.encoder.convert(cv.value);
+      return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+    }).join(', ');
+
+    var query = 'UPDATE "${table.tableName}" SET $setClause '
+        'WHERE "${table.id.columnName}" = ${DatabasePoolManager.encoder.convert(id)} '
+        'RETURNING *';
+
+    var result = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      throw _PgDatabaseUpdateRowException(
+        'Failed to update row, no rows updated',
+      );
+    }
+
+    return _poolManager.serializationManager.deserialize<T>(result.first);
+  }
+
+  /// Updates all rows matching the WHERE expression with the specified column values.
+  ///
+  /// Returns a list of all updated rows. Returns an empty list if no rows match.
+  /// Throws [ArgumentError] if [columnValues] is empty.
+  ///
+  /// When [limit], [offset], [orderBy], [orderByList], or [orderDescending] are provided,
+  /// only the rows selected by these parameters will be updated.
+  ///
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> updateWhere<T extends TableRow>(
+    Session session, {
+    required List<ColumnValue> columnValues,
+    required Expression where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
+
+    if (columnValues.isEmpty) {
+      throw ArgumentError('columnValues cannot be empty');
+    }
+
+    var setClause = columnValues.map((cv) {
+      var value = DatabasePoolManager.encoder.convert(cv.value);
+      return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+    }).join(', ');
+
+    String updateQuery;
+
+    var requiresFilteredSubquery = limit != null ||
+        offset != null ||
+        orderBy != null ||
+        orderByList != null;
+
+    if (requiresFilteredSubquery) {
+      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+      var subquery = SelectQueryBuilder(table: table)
+          .withSelectFields([table.id])
+          .withWhere(where)
+          .withOrderBy(orders)
+          .withLimit(limit)
+          .withOffset(offset)
+          .build();
+
+      var idAlias = '${table.tableName}.${table.id.columnName}';
+
+      var orderByClause = switch (orders) {
+        != null when orders.isNotEmpty => ' ORDER BY '
+            '${orders.map((o) => o.toString().replaceAll('"${table.tableName}".', '')).join(', ')}',
+        _ => '',
+      };
+
+      updateQuery = 'WITH rows_to_update AS ($subquery), '
+          'updated AS ('
+          'UPDATE "${table.tableName}" SET $setClause '
+          'WHERE "${table.id.columnName}" IN (SELECT "$idAlias" FROM rows_to_update) '
+          'RETURNING *'
+          ') '
+          'SELECT * FROM updated$orderByClause';
+    } else {
+      updateQuery = 'UPDATE "${table.tableName}" SET $setClause'
+          ' WHERE $where'
+          ' RETURNING *';
+    }
+
+    var result = await _mappedResultsQuery(
+      session,
+      updateQuery,
+      transaction: transaction,
+    );
+
+    return result
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -733,10 +856,10 @@ class DatabaseConnection {
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnUri) return 'text';
     if (column is ColumnBigInt) return 'text';
-    if (column is ColumnVector) return 'vector';
-    if (column is ColumnHalfVector) return 'halfvec';
-    if (column is ColumnSparseVector) return 'sparsevec';
-    if (column is ColumnBit) return 'bit';
+    if (column is ColumnVector) return 'vector(${column.dimension})';
+    if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
+    if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
+    if (column is ColumnBit) return 'bit(${column.dimension})';
     if (column is ColumnSerializable) return column.serializationDataType?.name ?? 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {

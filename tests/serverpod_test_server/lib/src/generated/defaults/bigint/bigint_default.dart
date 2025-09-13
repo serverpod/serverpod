@@ -145,9 +145,26 @@ class _BigIntDefaultImpl extends BigIntDefault {
   }
 }
 
+class BigIntDefaultUpdateTable extends _i1.UpdateTable<BigIntDefaultTable> {
+  BigIntDefaultUpdateTable(super.table);
+
+  _i1.ColumnValue<BigInt, BigInt> bigintDefaultStr(BigInt value) =>
+      _i1.ColumnValue(
+        table.bigintDefaultStr,
+        value,
+      );
+
+  _i1.ColumnValue<BigInt, BigInt> bigintDefaultStrNull(BigInt? value) =>
+      _i1.ColumnValue(
+        table.bigintDefaultStrNull,
+        value,
+      );
+}
+
 class BigIntDefaultTable extends _i1.Table<int?> {
   BigIntDefaultTable({super.tableRelation})
       : super(tableName: 'bigint_default') {
+    updateTable = BigIntDefaultUpdateTable(this);
     bigintDefaultStr = _i1.ColumnBigInt(
       'bigintDefaultStr',
       this,
@@ -159,6 +176,8 @@ class BigIntDefaultTable extends _i1.Table<int?> {
       hasDefault: true,
     );
   }
+
+  late final BigIntDefaultUpdateTable updateTable;
 
   late final _i1.ColumnBigInt bigintDefaultStr;
 
@@ -357,6 +376,46 @@ class BigIntDefaultRepository {
     return session.db.updateRow<BigIntDefault>(
       row,
       columns: columns?.call(BigIntDefault.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [BigIntDefault] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<BigIntDefault?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<BigIntDefault>(
+      id,
+      columnValues: columnValues(BigIntDefault.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [BigIntDefault]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<BigIntDefault>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<BigIntDefault>(
+      columnValues: columnValues(BigIntDefault.t.updateTable),
+      where: where(BigIntDefault.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefault.t),
+      orderByList: orderByList?.call(BigIntDefault.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

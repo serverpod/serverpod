@@ -176,8 +176,23 @@ class _TeamImpl extends Team {
   }
 }
 
+class TeamUpdateTable extends _i1.UpdateTable<TeamTable> {
+  TeamUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> arenaId(int? value) => _i1.ColumnValue(
+        table.arenaId,
+        value,
+      );
+}
+
 class TeamTable extends _i1.Table<int?> {
   TeamTable({super.tableRelation}) : super(tableName: 'team') {
+    updateTable = TeamUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -187,6 +202,8 @@ class TeamTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TeamUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -473,6 +490,46 @@ class TeamRepository {
     return session.db.updateRow<Team>(
       row,
       columns: columns?.call(Team.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Team] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Team?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<TeamUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Team>(
+      id,
+      columnValues: columnValues(Team.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Team]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Team>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TeamUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<TeamTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TeamTable>? orderBy,
+    _i1.OrderByListBuilder<TeamTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Team>(
+      columnValues: columnValues(Team.t.updateTable),
+      where: where(Team.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
