@@ -12,7 +12,9 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  check(CreateMigrationCommand.checkOption),
+  empty(CreateMigrationCommand.emptyOption);
 
   const CreateMigrationOption(this.option);
 
@@ -38,6 +40,25 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const checkOption = FlagOption(
+    argName: 'check',
+    argAbbrev: 'c',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Check if there are changes without creating a migration. '
+        'Returns exit code 0 if no changes detected, 1 if changes exist.',
+  );
+
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    argAbbrev: 'e',
+    negatable: false,
+    defaultsTo: false,
+    helpText:
+        'Creates an empty migration without evaluating the state of the project. '
+        'Advanced use case for manual migration creation.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -61,6 +82,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool check = commandConfig.value(CreateMigrationOption.check);
+    bool empty = commandConfig.value(CreateMigrationOption.empty);
 
     GeneratorConfig config;
     try {
@@ -88,13 +111,25 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
-    await log.progress('Creating migration', () async {
+    await log.progress(
+        check
+            ? 'Checking for changes'
+            : (empty ? 'Creating empty migration' : 'Creating migration'),
+        () async {
       try {
-        migration = await generator.createMigration(
-          tag: tag,
-          force: force,
-          config: config,
-        );
+        if (empty) {
+          migration = await generator.createEmptyMigration(
+            tag: tag,
+            write: !check, // Don't write files in check mode
+          );
+        } else {
+          migration = await generator.createMigration(
+            tag: tag,
+            force: force,
+            config: config,
+            write: !check, // Don't write files in check mode
+          );
+        }
       } on MigrationVersionLoadException catch (e) {
         log.error(
           'Unable to determine latest database definition due to a corrupted '
@@ -114,6 +149,27 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       return migration != null;
     });
 
+    if (check) {
+      // In check mode, exit with appropriate code based on whether changes were detected
+      if (empty) {
+        // Empty migrations always create a migration, so always indicate changes exist
+        log.info('Empty migration would be created.', type: TextLogType.bullet);
+        // Exit with code 1 (changes exist)
+        throw ExitException(1);
+      } else if (migration == null) {
+        // No changes detected
+        log.info('No changes detected.', type: TextLogType.success);
+        // Exit with code 0 (success)
+        return;
+      } else {
+        // Changes detected
+        log.info('Changes detected.', type: TextLogType.bullet);
+        // Exit with code 1 (changes exist)
+        throw ExitException(1);
+      }
+    }
+
+    // Normal mode - create migration
     var projectDirectory = migration?.projectDirectory;
     var migrationName = migration?.versionName;
     if (migration == null ||

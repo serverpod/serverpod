@@ -34,6 +34,68 @@ class MigrationGenerator {
     return versionName;
   }
 
+  /// Creates an empty migration without evaluating the project state.
+  /// This is useful for manual migration creation or advanced use cases.
+  ///
+  /// If [tag] is specified, the migration will be tagged with the given name.
+  /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// Returns the migration version, or null if no migration was created.
+  ///
+  /// Throws [MigrationVersionAlreadyExistsException] if the migration version
+  /// already exists.
+  Future<MigrationVersion?> createEmptyMigration({
+    String? tag,
+    bool write = true,
+  }) async {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+
+    var versionName = createVersionName(tag);
+    var nextMigrationVersion = DatabaseMigrationVersion(
+      module: projectName,
+      version: versionName,
+    );
+
+    // Create an empty migration
+    var migration = DatabaseMigration(
+      actions: [],
+      warnings: [],
+      migrationApiVersion: DatabaseConstants.migrationApiVersion,
+    );
+
+    var migrationVersion = MigrationVersion(
+      moduleName: projectName,
+      projectDirectory: directory,
+      versionName: versionName,
+      migration: migration,
+      databaseDefinitionProject: DatabaseDefinition(
+        moduleName: projectName,
+        tables: [],
+        installedModules: [nextMigrationVersion],
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      ),
+      databaseDefinitionFull: DatabaseDefinition(
+        moduleName: projectName,
+        tables: [],
+        installedModules: [nextMigrationVersion],
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      ),
+    );
+
+    if (write) {
+      await migrationVersion.write(
+        installedModules: [nextMigrationVersion],
+        removedModules: [],
+      );
+      migrationRegistry.add(versionName);
+      await migrationRegistry.write();
+    }
+
+    return migrationVersion;
+  }
+
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
