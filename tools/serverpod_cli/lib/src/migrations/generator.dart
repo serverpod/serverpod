@@ -205,54 +205,6 @@ class MigrationGenerator {
     return migrationVersion;
   }
 
-  /// Creates an empty migration without evaluating the state of the project.
-  /// This is useful for advanced use cases where manual migration creation is needed.
-  Future<MigrationVersion?> createEmptyMigration({
-    String? tag,
-    required GeneratorConfig config,
-    bool write = true,
-  }) async {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
-
-    var versionName = createVersionName(tag);
-    
-    // Create an empty migration
-    var migration = DatabaseMigration(
-      actions: [],
-      warnings: [],
-      migrationApiVersion: DatabaseConstants.migrationApiVersion,
-    );
-    
-    // Create empty database definitions
-    var emptyDatabaseDefinition = DatabaseDefinition(
-      moduleName: projectName,
-      tables: [],
-      installedModules: [],
-      migrationApiVersion: DatabaseConstants.migrationApiVersion,
-    );
-    
-    var migrationVersion = MigrationVersion(
-      moduleName: projectName,
-      projectDirectory: directory,
-      versionName: versionName,
-      migration: migration,
-      databaseDefinitionProject: emptyDatabaseDefinition,
-      databaseDefinitionFull: emptyDatabaseDefinition,
-    );
-
-    if (write) {
-      await migrationVersion.write(
-        installedModules: [],
-        removedModules: [],
-      );
-      migrationRegistry.add(versionName);
-      await migrationRegistry.write();
-    }
-
-    return migrationVersion;
-  }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
     List<ModuleConfig> modules,
