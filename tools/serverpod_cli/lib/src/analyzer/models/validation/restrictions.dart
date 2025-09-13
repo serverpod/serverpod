@@ -1544,7 +1544,7 @@ class Restrictions {
     return errors;
   }
 
-  List<SourceSpanSeverityException> validateSerializeKey(
+  List<SourceSpanSeverityException> validateFieldSerializationDataTypeKey(
     String parentNodeName,
     String key,
     SourceSpan? span,
