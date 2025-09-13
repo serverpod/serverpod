@@ -1,4 +1,5 @@
 import 'package:cli_tools/cli_tools.dart';
+import 'package:config/config.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 

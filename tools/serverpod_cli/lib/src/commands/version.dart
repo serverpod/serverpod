@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cli_tools/config.dart';
+import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';

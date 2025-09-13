@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cli_tools/config.dart';
+import 'package:config/config.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
