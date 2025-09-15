@@ -25,6 +25,12 @@ scripts:
     run: melos analyze --no-fatal-warnings --category="noTemplates"
   lint_strict:
     run: melos analyze --fatal-infos --fatal-warnings --category="noTemplates"
+  upgrade_flutter:
+    run: melos exec --flutter --category="noTemplates" -- flutter pub upgrade
+  upgrade_dart:
+    run: melos exec --no-flutter --category="noTemplates" -- dart pub upgrade
+  upgrade:
+    run: melos upgrade_flutter && melos upgrade_dart
   downgrade_flutter:
     run: melos exec --flutter --category="noTemplates" -c 1 -- flutter pub downgrade
   downgrade_dart:
