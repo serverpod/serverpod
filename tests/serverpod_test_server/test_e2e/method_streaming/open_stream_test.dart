@@ -17,9 +17,9 @@ void main() {
       streamCompleteFutures.add(stream.last);
     }
 
-    for (var future in streamCompleteFutures) {
-      await expectLater(future, completes);
-    }
+    await [
+      for (var future in streamCompleteFutures) expectLater(future, completes)
+    ].wait;
   });
 
   test(
@@ -50,8 +50,8 @@ void main() {
       );
     }
 
-    for (var future in streamCompleteFutures) {
-      await expectLater(future, completes);
-    }
+    await [
+      for (var future in streamCompleteFutures) expectLater(future, completes)
+    ].wait;
   });
 }
