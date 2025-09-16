@@ -170,6 +170,16 @@ void main() {
       );
       expect(firstObject, isNot(equals(secondObject)));
     });
+
+    test(
+        'Given an immutable object and a immutable child object with identical fields when comparing equality then equality comparison returns false',
+        () {
+      final firstObject = ImmutableObject(variable: 'value');
+      final secondObject = ImmutableChildObjectWithNoAdditionalFields(
+        variable: 'value',
+      );
+      expect(firstObject, isNot(equals(secondObject)));
+    });
   });
 
   group('copyWith', () {
