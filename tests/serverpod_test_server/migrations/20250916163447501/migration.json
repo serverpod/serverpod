@@ -55,30 +55,6 @@
             "isPrimary": true
           },
           {
-            "indexName": "json_index_default",
-            "elements": [
-              {
-                "type": 0,
-                "definition": "indexed0"
-              }
-            ],
-            "type": "btree",
-            "isUnique": false,
-            "isPrimary": false
-          },
-          {
-            "indexName": "jsonb_index_default",
-            "elements": [
-              {
-                "type": 0,
-                "definition": "indexed1"
-              }
-            ],
-            "type": "btree",
-            "isUnique": false,
-            "isPrimary": false
-          },
-          {
             "indexName": "jsonb_index_gin",
             "elements": [
               {

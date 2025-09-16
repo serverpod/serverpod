@@ -3683,30 +3683,6 @@
           "isPrimary": true
         },
         {
-          "indexName": "json_index_default",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "indexed0"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "indexName": "jsonb_index_default",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "indexed1"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
           "indexName": "jsonb_index_gin",
           "elements": [
             {
@@ -8239,7 +8215,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20250916150321329"
+      "version": "20250916163447501"
     },
     {
       "module": "serverpod",

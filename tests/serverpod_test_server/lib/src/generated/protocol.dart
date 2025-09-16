@@ -4063,32 +4063,6 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'json_index_default',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed0',
-            )
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'jsonb_index_default',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed1',
-            )
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
           indexName: 'jsonb_index_gin',
           tableSpace: null,
           elements: [
