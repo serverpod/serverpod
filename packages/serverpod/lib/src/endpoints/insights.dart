@@ -101,9 +101,8 @@ class InsightsEndpoint extends Endpoint {
         orderBy: MessageLogEntry.t.order,
       );
 
-      var logRows = await futureLogRows;
-      var queryRows = await futureQueryRows;
-      var messageRows = await futureMessageRows;
+      final (logRows, queryRows, messageRows) =
+          await (futureLogRows, futureQueryRows, futureMessageRows).wait;
 
       sessionLogInfo.add(
         SessionLogInfo(
