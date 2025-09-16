@@ -43,6 +43,9 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.isImmutable,
         valueRestriction: BooleanValueRestriction().validate,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
       ),
       ValidateNode(
         Keyword.table,
@@ -50,6 +53,7 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateTableName,
         mutuallyExclusiveKeys: {
           Keyword.isSealed,
+          Keyword.isImmutable,
         },
       ),
       ValidateNode(
