@@ -317,8 +317,7 @@ void main() async {
     });
   });
 
-  group('Given declared ObjectWithJsonb class when analyzing database schema',
-      () {
+  group('Given declared ObjectWithJsonb class when analyzing database schema', () {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
@@ -333,7 +332,7 @@ void main() async {
 
     test('then the implicitly declared btree index exists for json column.', () {
       final index = indexes.firstWhere(
-            (idx) => idx.indexName == 'json_index_default',
+        (idx) => idx.indexName == 'json_index_default',
       );
 
       expect(index.type, 'btree');
@@ -344,7 +343,7 @@ void main() async {
 
     test('then the implicitly declared btree index exists for jsonb column.', () {
       final index = indexes.firstWhere(
-            (idx) => idx.indexName == 'jsonb_index_default',
+        (idx) => idx.indexName == 'jsonb_index_default',
       );
 
       expect(index.type, 'btree');
@@ -355,7 +354,7 @@ void main() async {
 
     test('then the explicitly declared gin index exists.', () {
       final index = indexes.firstWhere(
-            (idx) => idx.indexName == 'jsonb_index_gin',
+        (idx) => idx.indexName == 'jsonb_index_gin',
       );
 
       expect(index.type, 'gin');
@@ -367,7 +366,7 @@ void main() async {
 
     test('then the explicitly declared gin index with operator class exists.', () {
       final index = indexes.firstWhere(
-            (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
+        (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
       );
 
       expect(index.type, 'gin');
@@ -378,7 +377,8 @@ void main() async {
     });
   });
 
-  group('Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb when analyzing database schema',
+  group(
+      'Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb when analyzing database schema',
       () {
     late List<ColumnDefinition> columns;
 
@@ -394,7 +394,7 @@ void main() async {
 
     test('then the column without `serializationDataType` set has type jsonb.', () {
       final column = columns.firstWhere(
-            (idx) => idx.name == 'jsonb1',
+        (idx) => idx.name == 'jsonb1',
       );
 
       expect(column.columnType, ColumnType.jsonb);
@@ -402,7 +402,7 @@ void main() async {
 
     test('then the column with `serializationDataType` set to jsonb has type jsonb.', () {
       final column = columns.firstWhere(
-            (idx) => idx.name == 'jsonb2',
+        (idx) => idx.name == 'jsonb2',
       );
 
       expect(column.columnType, ColumnType.jsonb);
@@ -410,7 +410,7 @@ void main() async {
 
     test('then the column with `serializationDataType` set to json has type json.', () {
       final column = columns.firstWhere(
-            (idx) => idx.name == 'json',
+        (idx) => idx.name == 'json',
       );
 
       expect(column.columnType, ColumnType.json);

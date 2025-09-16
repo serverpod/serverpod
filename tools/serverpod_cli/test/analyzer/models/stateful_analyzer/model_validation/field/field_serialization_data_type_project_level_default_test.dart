@@ -30,8 +30,7 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
@@ -55,8 +54,7 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
@@ -108,8 +106,7 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
@@ -134,8 +131,7 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 

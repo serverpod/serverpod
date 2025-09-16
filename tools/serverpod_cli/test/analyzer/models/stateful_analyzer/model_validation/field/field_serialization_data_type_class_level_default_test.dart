@@ -18,51 +18,51 @@ void main() {
         'with a field with no `serializationDataType` set, then the generated field should be serialized as defined at class level.',
         () {
           var models = [
-              ModelSourceBuilder().withYaml(
-                '''
+            ModelSourceBuilder().withYaml(
+              '''
                 class: Example
                 table: example
                 serializationDataType: jsonb
                 fields:
                   tags: List<String>
                 ''',
-              ).build()
-            ];
+            ).build()
+          ];
 
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
-            var definitions = analyzer.validateAll();
+          var definitions = analyzer.validateAll();
 
-            var definition = definitions.first as ModelClassDefinition;
-            expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
-          },
-        );
+          var definition = definitions.first as ModelClassDefinition;
+          expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
+        },
+      );
 
-        test(
-          'with a field with set `serializationDataType`, then the generated field should be serialized as defined at field level.',
-          () {
-            var models = [
-              ModelSourceBuilder().withYaml(
-                '''
+      test(
+        'with a field with set `serializationDataType`, then the generated field should be serialized as defined at field level.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
                 class: Example
                 table: example
                 serializationDataType: jsonb
                 fields:
                   tags: List<String>, serializationDataType=json
                 ''',
-              ).build()
-            ];
+            ).build()
+          ];
 
-            var collector = CodeGenerationCollector();
-            var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
-            var definitions = analyzer.validateAll();
+          var definitions = analyzer.validateAll();
 
-            var definition = definitions.first as ModelClassDefinition;
-            expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
-          },
-        );
-      });
+          var definition = definitions.first as ModelClassDefinition;
+          expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
+        },
+      );
+    });
   });
 }

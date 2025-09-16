@@ -2203,8 +2203,7 @@ class SerializableModelLibraryGenerator {
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
                     ? _buildModelTableEnumFieldTypeReference(field)
-                    : _buildModelTableGeneralFieldExpression(
-                        field, classDefinition))
+                    : _buildModelTableGeneralFieldExpression(field, classDefinition))
                 .statement,
       ]);
     });

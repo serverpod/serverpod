@@ -616,8 +616,7 @@ END
     var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
     var tableDefinition = databaseDefinition.tables.first;
 
-    test(
-        'when creating a default index on a jsonb field, then the SQL should include an implicit btree index type.',
+    test('when creating a default index on a jsonb field, then the SQL should include an implicit btree index type.',
         () {
       var indexName = '${modelName}_jsonb_idx';
       var index = IndexDefinitionBuilder()
@@ -641,9 +640,7 @@ END
       );
     });
 
-    test(
-        'when creating an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.',
-        () {
+    test('when creating an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.', () {
       var indexName = '${modelName}_jsonb_idx';
       var index = IndexDefinitionBuilder()
           .withIndexName(indexName)

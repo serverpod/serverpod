@@ -338,7 +338,7 @@ extension VectorColumnType on ColumnType {
 extension on String {
   /// Extension method to convert GIN operator class names as used in the database.
   GinOperatorClass? toGinOperatorClass() {
-    switch(this) {
+    switch (this) {
       case 'array_ops':
         return GinOperatorClass.array;
       case 'jsonb_ops':
