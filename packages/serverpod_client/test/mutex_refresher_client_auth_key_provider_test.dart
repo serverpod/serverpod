@@ -185,9 +185,11 @@ void main() {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       final futures = List.generate(3, (_) => provider.refreshAuthKey());
-      for (final future in futures) {
-        await expectLater(future, throwsA(isA<Exception>()));
-      }
+
+      await [
+        for (final future in futures)
+          expectLater(future, throwsA(isA<Exception>()))
+      ].wait;
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -206,13 +208,12 @@ void main() {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       final futures = List.generate(3, (_) => provider.authHeaderValue);
-      for (final future in futures) {
-        await expectLater(future, throwsA(isA<Exception>()));
-      }
+
+      await [
+        for (final future in futures)
+          expectLater(future, throwsA(isA<Exception>()))
+      ].wait;
       expect(delegate.refreshCallCount, 1);
-    },
-        skip: const bool.fromEnvironment('dart.tool.dart2wasm')
-            ? 'Failing on WASM due to https://github.com/dart-lang/sdk/issues/61483'
-            : null);
+    });
   });
 }
