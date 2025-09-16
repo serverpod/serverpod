@@ -352,6 +352,8 @@ redis:
   - countSubscribedChannels:
 serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
+serverOnlyScopedFieldChildModel:
+  - getProtocolField:
 setParameters:
   - returnIntSet:
   - returnIntSetSet:

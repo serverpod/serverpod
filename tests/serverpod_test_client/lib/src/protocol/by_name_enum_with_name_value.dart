@@ -30,7 +30,6 @@ enum ByNameEnumWithNameValue implements _i1.SerializableModel {
 
   @override
   String toJson() => this.name;
-
   @override
   String toString() => this.name;
 }
