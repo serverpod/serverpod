@@ -12,12 +12,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ImmutableObject
+class ImmutableObject
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  const ImmutableObject._({required this.variable});
-
-  const factory ImmutableObject({required String variable}) =
-      _ImmutableObjectImpl;
+  const ImmutableObject({required this.variable});
 
   factory ImmutableObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return ImmutableObject(variable: jsonSerialization['variable'] as String);
@@ -28,7 +25,10 @@ abstract class ImmutableObject
   /// Returns a shallow copy of this [ImmutableObject]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ImmutableObject copyWith({String? variable});
+  ImmutableObject copyWith({String? variable}) {
+    return ImmutableObject(variable: variable ?? this.variable);
+  }
+
   @override
   bool operator ==(Object other) {
     return identical(
@@ -65,18 +65,5 @@ abstract class ImmutableObject
   @override
   String toString() {
     return _i1.SerializationManager.encode(this);
-  }
-}
-
-class _ImmutableObjectImpl extends ImmutableObject {
-  const _ImmutableObjectImpl({required String variable})
-      : super._(variable: variable);
-
-  /// Returns a shallow copy of this [ImmutableObject]
-  /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  @override
-  ImmutableObject copyWith({String? variable}) {
-    return ImmutableObject(variable: variable ?? this.variable);
   }
 }

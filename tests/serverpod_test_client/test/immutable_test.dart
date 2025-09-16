@@ -142,6 +142,34 @@ void main() {
       );
       expect(firstObject, isNot(equals(secondObject)));
     });
+
+    test(
+        'Given two immutable child objects with identical fields when comparing equality then equality comparison returns false',
+        () {
+      final firstObject = ImmutableChildObject(
+        variable: 'value',
+        childVariable: 'childValue',
+      );
+      final secondObject = ImmutableChildObject(
+        variable: 'value',
+        childVariable: 'childValue',
+      );
+      expect(firstObject, equals(secondObject));
+    });
+
+    test(
+        'Given two immutable child objects with different fields when comparing equality then equality comparison returns false',
+        () {
+      final firstObject = ImmutableChildObject(
+        variable: 'value1',
+        childVariable: 'childValue',
+      );
+      final secondObject = ImmutableChildObject(
+        variable: 'value2',
+        childVariable: 'childValue',
+      );
+      expect(firstObject, isNot(equals(secondObject)));
+    });
   });
 
   group('copyWith', () {
@@ -220,6 +248,21 @@ void main() {
       expect(original.aBool, equals(true));
       expect(original.aDouble, equals(1.0));
 
+      expect(copy, isNot(equals(original)));
+    });
+
+    test(
+        'Given an immutable child object when creating a copy with a new scalar value then returned object has updated value original remains unchanged and objects are not equal',
+        () {
+      final original = ImmutableChildObject(
+        variable: 'original',
+        childVariable: 'childOriginal',
+      );
+      final copy = original.copyWith(variable: 'updated');
+      expect(copy.variable, equals('updated'));
+      expect(copy.childVariable, equals('childOriginal'));
+      expect(original.variable, equals('original'));
+      expect(original.childVariable, equals('childOriginal'));
       expect(copy, isNot(equals(original)));
     });
   });
