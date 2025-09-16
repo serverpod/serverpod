@@ -1,0 +1,165 @@
+{
+  "actions": [
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_jsonb",
+        "dartName": "ObjectWithJsonb",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_jsonb_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "indexed0",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "indexed1",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "indexed2",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "indexed3",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_jsonb_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "json_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "indexed0"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "jsonb_index_default",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "indexed1"
+              }
+            ],
+            "type": "btree",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "jsonb_index_gin",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "indexed2"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "indexName": "jsonb_index_gin_with_operator_class",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "indexed3"
+              }
+            ],
+            "type": "gin",
+            "isUnique": false,
+            "isPrimary": false,
+            "ginOperatorClass": "jsonbPath"
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "object_with_jsonb_class_level",
+        "dartName": "ObjectWithJsonbClassLevel",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_jsonb_class_level_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "jsonb1",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "jsonb2",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "List<String>"
+          },
+          {
+            "name": "json",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<String>"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "object_with_jsonb_class_level_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
