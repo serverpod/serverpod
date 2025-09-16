@@ -12,12 +12,17 @@ import 'package:path/path.dart' as path;
 void main() {
   var directory = Directory(
       path.join(Directory.current.path, 'web', 'server_root_directory'));
+  var nestedDirectory = Directory(path.join(directory.path, 'nested_dir'));
+
   setUp(() async {
-    await directory.create();
+    await directory.create(recursive: true);
+    await nestedDirectory.create(recursive: true);
     await File(path.join(directory.path, 'file1.txt'))
         .writeAsString('contents');
     await File(path.join(directory.path, 'file2.test'))
         .writeAsString('contents');
+    await File(path.join(nestedDirectory.path, 'file3.txt'))
+        .writeAsString('nested contents');
   });
 
   tearDownAll(() async {
@@ -122,6 +127,33 @@ void main() {
           ),
         );
 
+        expect(
+          response.headers['cache-control'],
+          'max-age=${PathCacheMaxAge.oneYear.inSeconds}',
+        );
+      });
+    });
+
+    group('when requesting a nested static file', () {
+      setUp(() async {
+        serverpod.webServer.addRoute(
+          RouteStaticDirectory(
+            serverDirectory: 'server_root_directory',
+          ),
+          '/url_prefix/**',
+        );
+        await serverpod.start();
+      });
+
+      test('then the file is served correctly', () async {
+        var response = await http.get(
+          Uri.parse(
+            'http://localhost:8082/url_prefix/nested_dir/file3.txt',
+          ),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'nested contents');
         expect(
           response.headers['cache-control'],
           'max-age=${PathCacheMaxAge.oneYear.inSeconds}',
