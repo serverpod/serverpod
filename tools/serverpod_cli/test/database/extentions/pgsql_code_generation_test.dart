@@ -54,9 +54,7 @@ void main() {
 
     group('then pgsql file for migration', () {
       var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
-      test(
-          'has foreign key creation for citizen after company table is created.',
-          () {
+      test('has foreign key creation for citizen after company table is created.', () {
         var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "company"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "citizen"
@@ -71,8 +69,7 @@ ALTER TABLE ONLY "citizen"
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
 
-      test('has foreign key creation for company after town table is created.',
-          () {
+      test('has foreign key creation for company after town table is created.', () {
         var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "town"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "company"
@@ -87,8 +84,7 @@ ALTER TABLE ONLY "company"
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
 
-      test('has foreign key creation for town after citizen table is created.',
-          () {
+      test('has foreign key creation for town after citizen table is created.', () {
         var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "citizen"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "town"
@@ -102,20 +98,13 @@ ALTER TABLE ONLY "town"
         expect(createCompanyIndex, isNot(-1));
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
-    },
-        skip: databaseDefinition.tables.length != 3
-            ? 'Unexpected number of tables were created'
-            : false);
+    }, skip: databaseDefinition.tables.length != 3 ? 'Unexpected number of tables were created' : false);
   });
 
-  test(
-      'Given a database definition with only an un-managed table then no sql definition for that table is created.',
+  test('Given a database definition with only an un-managed table then no sql definition for that table is created.',
       () {
     var databaseDefinition = DatabaseDefinitionBuilder()
-        .withTable(TableDefinitionBuilder()
-            .withName('example_table')
-            .withManaged(false)
-            .build())
+        .withTable(TableDefinitionBuilder().withName('example_table').withManaged(false).build())
         .build();
 
     var pgsql = databaseDefinition.toPgSql(installedModules: []);
@@ -223,8 +212,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition =
-        createDatabaseDefinitionFromModels(models, 'example', []);
+    var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
     var tableDefinition = databaseDefinition.tables.first;
 
     test('then code for creating vector extension is generated.', () {
@@ -233,9 +221,7 @@ END
       expect(pgsql, contains(createVectorExtension));
     });
 
-    test(
-        'when defining an HNSW index with no custom parameters, then the SQL should have no parameters.',
-        () {
+    test('when defining an HNSW index with no custom parameters, then the SQL should have no parameters.', () {
       var indexName = '${modelName}_embedding_hnsw_idx';
       var index = IndexDefinitionBuilder()
           .withIndexName(indexName)
@@ -260,9 +246,7 @@ END
       );
     });
 
-    test(
-        'when defining an IVFFlat index with custom parameters, then the SQL should have no parameters.',
-        () {
+    test('when defining an IVFFlat index with custom parameters, then the SQL should have no parameters.', () {
       var indexName = '${modelName}_embedding_ivfflat_idx';
       var index = IndexDefinitionBuilder()
           .withIndexName(indexName)
@@ -385,9 +369,7 @@ END
       }
     });
 
-    test(
-        'when defining a BTREE index on a vector field, then the SQL should not include any vector distance ops.',
-        () {
+    test('when defining a BTREE index on a vector field, then the SQL should not include any vector distance ops.', () {
       var indexName = '${modelName}_embedding_btree_idx';
       var index = IndexDefinitionBuilder()
           .withIndexName(indexName)
@@ -419,13 +401,11 @@ END
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
           .withTableName(modelName)
-          .withVectorField('embedding',
-              dimension: 1536, vectorType: 'HalfVector')
+          .withVectorField('embedding', dimension: 1536, vectorType: 'HalfVector')
           .build(),
     ];
 
-    var databaseDefinition =
-        createDatabaseDefinitionFromModels(models, 'example', []);
+    var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
     var tableDefinition = databaseDefinition.tables.first;
 
     test('then code for creating vector extension is generated.', () {
@@ -482,13 +462,11 @@ END
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
           .withTableName(modelName)
-          .withVectorField('embedding',
-              dimension: 1536, vectorType: 'SparseVector')
+          .withVectorField('embedding', dimension: 1536, vectorType: 'SparseVector')
           .build(),
     ];
 
-    var databaseDefinition =
-        createDatabaseDefinitionFromModels(models, 'example', []);
+    var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
     var tableDefinition = databaseDefinition.tables.first;
 
     test('then code for creating vector extension is generated.', () {
@@ -549,8 +527,7 @@ END
           .build(),
     ];
 
-    var databaseDefinition =
-        createDatabaseDefinitionFromModels(models, 'example', []);
+    var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
     var tableDefinition = databaseDefinition.tables.first;
 
     test('then code for creating vector extension is generated.', () {

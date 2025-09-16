@@ -24,8 +24,7 @@ class ModelParser {
 
     var extendsClass = _parseExtendsClass(documentContents);
 
-    var migrationValue =
-        documentContents.nodes[Keyword.managedMigration]?.value;
+    var migrationValue = documentContents.nodes[Keyword.managedMigration]?.value;
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
@@ -189,8 +188,7 @@ class ModelParser {
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
     );
-    var defaultEnumDefinitionValue =
-        _parseEnumDefaultValue(documentContents, values);
+    var defaultEnumDefinitionValue = _parseEnumDefaultValue(documentContents, values);
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -286,14 +284,11 @@ class ModelParser {
     if (hasTable) {
       final defaultIdType = SupportedIdType.int;
 
-      var maybeIdField =
-          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
+      var maybeIdField = fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
 
       var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
 
-      var defaultPersistValue = (maybeIdField != null)
-          ? maybeIdField.defaultPersistValue
-          : defaultIdType.defaultValue;
+      var defaultPersistValue = (maybeIdField != null) ? maybeIdField.defaultPersistValue : defaultIdType.defaultValue;
 
       // The 'int' id type can be specified without a default value.
       if (maybeIdField?.type.className == 'int') {
@@ -538,8 +533,7 @@ class ModelParser {
   }
 
   static dynamic _parseDefaultValue(YamlMap node, String keyword) {
-    var value =
-        node.nodes[keyword]?.value ?? node.nodes[Keyword.defaultKey]?.value;
+    var value = node.nodes[keyword]?.value ?? node.nodes[Keyword.defaultKey]?.value;
 
     /// If the value is a string and is enclosed in double quotes,
     /// convert it to a single-quoted string with proper escaping.
@@ -636,13 +630,11 @@ class ModelParser {
       var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
       var type = _parseIndexType(
         nodeDocument,
-        onlyVectorFields: indexFieldsTypes.isNotEmpty &&
-            indexFieldsTypes.every((f) => f.type.isVectorType),
+        onlyVectorFields: indexFieldsTypes.isNotEmpty && indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
       var operatorClass = _parseOperatorClass(nodeDocument, type, indexFieldsTypes);
-      var distanceFunction =
-          _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
+      var distanceFunction = _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
       var parameters = _parseParametersKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
@@ -656,10 +648,7 @@ class ModelParser {
       );
     });
 
-    return indexes
-        .where((index) => index != null)
-        .cast<SerializableModelIndexDefinition>()
-        .toList();
+    return indexes.where((index) => index != null).cast<SerializableModelIndexDefinition>().toList();
   }
 
   static List<String> _parseIndexFields(
@@ -762,8 +751,7 @@ class ModelParser {
     YamlMap documentContents,
     List<ProtocolEnumValueDefinition> values,
   ) {
-    final defaultValue =
-        _parseDefaultValue(documentContents, Keyword.defaultKey);
+    final defaultValue = _parseDefaultValue(documentContents, Keyword.defaultKey);
     return values.where((value) => value.name == defaultValue).firstOrNull;
   }
 
@@ -781,18 +769,12 @@ class ModelParser {
       var start = node.span.start;
       // 2 is the length of '- ' in '- enumValue'
       var valueDocumentation = docsExtractor.getDocumentation(
-        SourceLocation(start.offset - 2,
-            column: start.column - 2,
-            line: start.line,
-            sourceUrl: start.sourceUrl),
+        SourceLocation(start.offset - 2, column: start.column - 2, line: start.line, sourceUrl: start.sourceUrl),
       );
 
       return ProtocolEnumValueDefinition(value, valueDocumentation);
     });
 
-    return values
-        .where((value) => value != null)
-        .cast<ProtocolEnumValueDefinition>()
-        .toList();
+    return values.where((value) => value != null).cast<ProtocolEnumValueDefinition>().toList();
   }
 }

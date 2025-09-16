@@ -12,10 +12,7 @@ class ClassYamlDefinition {
   late Set<ValidateNode> documentStructure;
 
   ValidateNode get fieldStructure {
-    return documentStructure
-        .firstWhere((element) => element.key == Keyword.fields)
-        .nested
-        .first;
+    return documentStructure.firstWhere((element) => element.key == Keyword.fields).nested.first;
   }
 
   ClassYamlDefinition(Restrictions restrictions) {
@@ -31,14 +28,12 @@ class ClassYamlDefinition {
         mutuallyExclusiveKeys: {
           Keyword.table,
         },
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
       ),
       ValidateNode(
         Keyword.extendsClass,
         valueRestriction: restrictions.validateExtendingClassName,
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
       ),
       ValidateNode(
         Keyword.table,
@@ -89,8 +84,7 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.relation,
                 keyRestriction: restrictions.validateRelationKey,
-                valueRestriction:
-                    restrictions.validateRelationInterdependencies,
+                valueRestriction: restrictions.validateRelationInterdependencies,
                 allowEmptyNestedValue: true,
                 mutuallyExclusiveKeys: {
                   Keyword.defaultKey,
@@ -247,8 +241,7 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.distanceFunction,
                 keyRestriction: restrictions.validateIndexDistanceFunctionKey,
-                valueRestriction:
-                    restrictions.validateIndexDistanceFunctionValue,
+                valueRestriction: restrictions.validateIndexDistanceFunctionValue,
               ),
               ValidateNode(
                 Keyword.parameters,

@@ -83,8 +83,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
-  })  : _relativeDartClientPackagePathParts =
-            relativeDartClientPackagePathParts,
+  })  : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
         _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
         _modules = modules;
 
@@ -120,38 +119,32 @@ class GeneratorConfig implements ModelLoadConfig {
   final List<String> serverPackageDirectoryPathParts;
 
   @override
-  List<String> get libSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib'];
+  List<String> get libSourcePathParts => [...serverPackageDirectoryPathParts, 'lib'];
 
   @override
   List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
 
   @override
-  List<String> get relativeProtocolSourcePathParts =>
-      ['lib', 'src', 'protocol'];
+  List<String> get relativeProtocolSourcePathParts => ['lib', 'src', 'protocol'];
 
   @override
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+  List<String> get protocolSourcePathParts => [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
 
   @override
   List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
   @override
-  List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
+  List<String> get modelSourcePathParts => [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
 
   /// The path parts of the generated endpoint file.
-  List<String> get generatedServerEndpointFilePathParts =>
-      [...generatedServeModelPathParts, 'endpoints.dart'];
+  List<String> get generatedServerEndpointFilePathParts => [...generatedServeModelPathParts, 'endpoints.dart'];
 
   /// The path parts of the generated protocol file.
-  List<String> get generatedServerProtocolFilePathParts =>
-      [...generatedServeModelPathParts, 'protocol.dart'];
+  List<String> get generatedServerProtocolFilePathParts => [...generatedServeModelPathParts, 'protocol.dart'];
 
   /// The path parts of the generated protocol file.
   List<String> get generatedServerEndpointDescriptionFilePathParts =>
@@ -159,52 +152,35 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServeModelPathParts => [
-        ...serverPackageDirectoryPathParts,
-        'lib',
-        ...generatedServeModelPackagePathParts
-      ];
+  List<String> get generatedServeModelPathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', ...generatedServeModelPackagePathParts];
 
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
 
   /// Path parts to the client package.
-  List<String> get clientPackagePathParts => [
-        ...serverPackageDirectoryPathParts,
-        ..._relativeDartClientPackagePathParts
-      ];
+  List<String> get clientPackagePathParts =>
+      [...serverPackageDirectoryPathParts, ..._relativeDartClientPackagePathParts];
 
   final List<String>? _relativeServerTestToolsPathParts;
-  static const _defaultRelativeServerTestToolsPathParts = [
-    'test',
-    'integration',
-    'test_tools'
-  ];
+  static const _defaultRelativeServerTestToolsPathParts = ['test', 'integration', 'test_tools'];
 
   List<String>? get generatedServerTestToolsPathParts {
-    var localRelativeServerTestToolsPathParts =
-        _relativeServerTestToolsPathParts;
+    var localRelativeServerTestToolsPathParts = _relativeServerTestToolsPathParts;
     if (localRelativeServerTestToolsPathParts != null) {
-      return [
-        ...serverPackageDirectoryPathParts,
-        ...localRelativeServerTestToolsPathParts
-      ];
+      return [...serverPackageDirectoryPathParts, ...localRelativeServerTestToolsPathParts];
     }
 
     var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
     if (isServerpodMini) {
-      return [
-        ...serverPackageDirectoryPathParts,
-        ..._defaultRelativeServerTestToolsPathParts
-      ];
+      return [...serverPackageDirectoryPathParts, ..._defaultRelativeServerTestToolsPathParts];
     }
 
     return null;
   }
 
   /// The path parts to the protocol directory in the dart client package.
-  List<String> get generatedDartClientModelPathParts =>
-      [...clientPackagePathParts, 'lib', 'src', 'protocol'];
+  List<String> get generatedDartClientModelPathParts => [...clientPackagePathParts, 'lib', 'src', 'protocol'];
 
   /// All the modules defined in the config.
   final List<ModuleConfig> _modules;
@@ -220,24 +196,19 @@ class GeneratorConfig implements ModelLoadConfig {
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
 
-  bool isFeatureEnabled(ServerpodFeature feature) =>
-      enabledFeatures.contains(feature);
+  bool isFeatureEnabled(ServerpodFeature feature) => enabledFeatures.contains(feature);
 
   final List<ExperimentalFeature> experimentalFeatures;
 
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
-      experimentalFeatures.contains(feature) ||
-      experimentalFeatures.contains(ExperimentalFeature.all);
+      experimentalFeatures.contains(feature) || experimentalFeatures.contains(ExperimentalFeature.all);
 
   /// All the modules defined in the config (of type module).
-  List<ModuleConfig> get modules => _modules
-      .where((module) => module.type == PackageType.module)
-      .where((module) => module.name != name)
-      .toList();
+  List<ModuleConfig> get modules =>
+      _modules.where((module) => module.type == PackageType.module).where((module) => module.name != name).toList();
 
   /// All the modules excluding my self
-  List<ModuleConfig> get modulesDependent =>
-      _modules.where((module) => module.name != name).toList();
+  List<ModuleConfig> get modulesDependent => _modules.where((module) => module.name != name).toList();
 
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
@@ -269,38 +240,31 @@ class GeneratorConfig implements ModelLoadConfig {
     var name = _stripPackage(serverPackage);
 
     var file = File(p.join(serverRootDir, 'config', 'generator.yaml'));
-    YamlMap generatorConfig = await file.exists()
-        ? loadYamlMap(await file.readAsString(), sourceUrl: file.uri)
-        : YamlMap();
+    YamlMap generatorConfig =
+        await file.exists() ? loadYamlMap(await file.readAsString(), sourceUrl: file.uri) : YamlMap();
     var type = getPackageType(generatorConfig);
 
     var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
     if (generatorConfig['client_package_path'] != null) {
-      relativeDartClientPackagePathParts =
-          p.split(generatorConfig['client_package_path']);
+      relativeDartClientPackagePathParts = p.split(generatorConfig['client_package_path']);
     }
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
-      relativeServerTestToolsPathParts =
-          p.split(generatorConfig['server_test_tools_path']);
+      relativeServerTestToolsPathParts = p.split(generatorConfig['server_test_tools_path']);
     }
 
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
 
     try {
-      var file = File(p.joinAll([
-        ...serverPackageDirectoryPathParts,
-        ...relativeDartClientPackagePathParts,
-        'pubspec.yaml'
-      ]));
+      var file =
+          File(p.joinAll([...serverPackageDirectoryPathParts, ...relativeDartClientPackagePathParts, 'pubspec.yaml']));
       var yamlStr = file.readAsStringSync();
       Map yaml = loadYaml(yamlStr);
       dartClientPackage = yaml['name'];
-      dartClientDependsOnServiceClient =
-          (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
+      dartClientDependsOnServiceClient = (yaml['dependencies'] as Map).containsKey('serverpod_service_client');
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml. If you are using a none default '
@@ -317,8 +281,7 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    if (relativeServerTestToolsPathParts != null &&
-        packageConfig['serverpod_test'] == null) {
+    if (relativeServerTestToolsPathParts != null && packageConfig['serverpod_test'] == null) {
       log.warning(
         'A `server_test_tools_path` was set in the generator config, '
         'but the `serverpod_test` package is not installed. '
@@ -327,8 +290,8 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
-    var allPackagesAreInstalled = pubspec.dependencies.keys
-        .every((dependencyName) => packageConfig[dependencyName] != null);
+    var allPackagesAreInstalled =
+        pubspec.dependencies.keys.every((dependencyName) => packageConfig[dependencyName] != null);
     if (!allPackagesAreInstalled) {
       log.warning(
           'Not all dependencies are installed, which might cause errors in your Serverpod code. Run `dart pub get`.');
@@ -367,8 +330,7 @@ class GeneratorConfig implements ModelLoadConfig {
         rethrow;
       } catch (e) {
         throw SourceSpanFormatException(
-            'Failed to load \'extraClasses\' config',
-            configExtraClasses is YamlNode ? configExtraClasses.span : null);
+            'Failed to load \'extraClasses\' config', configExtraClasses is YamlNode ? configExtraClasses.span : null);
       }
     }
 
@@ -422,9 +384,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
     if (features is! Map) return enabledFeatures;
 
-    return ServerpodFeature.values
-        .where((feature) => features[feature.name.toString()] == true)
-        .toList();
+    return ServerpodFeature.values.where((feature) => features[feature.name.toString()] == true).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(
@@ -442,9 +402,7 @@ class GeneratorConfig implements ModelLoadConfig {
 
     if (features is! Map) return enabledFeatures;
 
-    return ExperimentalFeature.values
-        .where((feature) => features[feature.name.toString()] == true)
-        .toList();
+    return ExperimentalFeature.values.where((feature) => features[feature.name.toString()] == true).toList();
   }
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
@@ -499,26 +457,22 @@ class ModuleConfig implements ModelLoadConfig {
   final List<String> serverPackageDirectoryPathParts;
 
   @override
-  List<String> get libSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib'];
+  List<String> get libSourcePathParts => [...serverPackageDirectoryPathParts, 'lib'];
 
   @override
   List<String> get srcSourcePathParts => [...libSourcePathParts, 'src'];
 
   @override
-  List<String> get relativeProtocolSourcePathParts =>
-      ['lib', 'src', 'protocol'];
+  List<String> get relativeProtocolSourcePathParts => ['lib', 'src', 'protocol'];
 
   @override
-  List<String> get protocolSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
+  List<String> get protocolSourcePathParts => [...serverPackageDirectoryPathParts, ...relativeProtocolSourcePathParts];
 
   @override
   List<String> get relativeModelSourcePathParts => ['lib', 'src', 'models'];
 
   @override
-  List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
+  List<String> get modelSourcePathParts => [...serverPackageDirectoryPathParts, ...relativeModelSourcePathParts];
 
   /// The migration versions of the module.
   List<String> migrationVersions;

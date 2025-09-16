@@ -6,17 +6,13 @@ import '../../test_util/builders/database/index_definition_builder.dart';
 
 void main() {
   group('Given vector index definitions', () {
-    test(
-        'when comparing identical vector indexes then no mismatches are found.',
-        () {
+    test('when comparing identical vector indexes then no mismatches are found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith();
 
@@ -24,17 +20,13 @@ void main() {
       expect(index1.like(index2), isTrue);
     });
 
-    test(
-        'when comparing vector indexes with different distance functions then mismatch is found.',
-        () {
+    test('when comparing vector indexes with different distance functions then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         vectorDistanceFunction: VectorDistanceFunction.l2,
@@ -43,17 +35,13 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test(
-        'when comparing vector indexes with one null distance function then mismatch is found.',
-        () {
+    test('when comparing vector indexes with one null distance function then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         vectorDistanceFunction: null,
@@ -64,17 +52,13 @@ void main() {
   });
 
   group('Given vector index types', () {
-    test(
-        'when comparing different vector index types with same distance function then mismatch is found.',
-        () {
+    test('when comparing different vector index types with same distance function then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.l2)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         type: 'ivfflat',
@@ -83,17 +67,13 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test(
-        'when comparing vector index to non-vector index then mismatch is found.',
-        () {
+    test('when comparing vector index to non-vector index then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.l2)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         type: 'btree',
@@ -104,19 +84,13 @@ void main() {
   });
 
   group('Given vector index parameters', () {
-    test(
-        'when comparing vector indexes with equal parameters then mismatches are found.',
-        () {
+    test('when comparing vector indexes with equal parameters then mismatches are found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withParameters({'m': '16', 'ef.construction': '100'})
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-            IndexElementDefinition(
-                definition: 'vector_col',
-                type: IndexElementDefinitionType.column)
-          ])
+          .withElements([IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)])
           .build();
 
       var index2 = index1.copyWith();
@@ -124,19 +98,13 @@ void main() {
       expect(index1, isNot(index2));
       expect(index1.like(index2), isTrue);
     });
-    test(
-        'when comparing vector indexes with different parameter values then mismatches are found.',
-        () {
+    test('when comparing vector indexes with different parameter values then mismatches are found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withParameters({'m': '16', 'ef.construction': '100'})
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-            IndexElementDefinition(
-                definition: 'vector_col',
-                type: IndexElementDefinitionType.column)
-          ])
+          .withElements([IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)])
           .build();
 
       var index2 = index1.copyWith(
@@ -146,19 +114,13 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test(
-        'when comparing vector indexes with missing parameters then mismatches are found.',
-        () {
+    test('when comparing vector indexes with missing parameters then mismatches are found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withParameters({'m': '16', 'ef.construction': '100'})
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-            IndexElementDefinition(
-                definition: 'vector_col',
-                type: IndexElementDefinitionType.column)
-          ])
+          .withElements([IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)])
           .build();
 
       var index2 = index1.copyWith(
@@ -168,19 +130,13 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test(
-        'when comparing vector indexes with extra parameters then mismatches are found.',
-        () {
+    test('when comparing vector indexes with extra parameters then mismatches are found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withParameters({'ef.construction': '100'})
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-            IndexElementDefinition(
-                definition: 'vector_col',
-                type: IndexElementDefinitionType.column)
-          ])
+          .withElements([IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)])
           .build();
 
       var index2 = index1.copyWith(
@@ -192,17 +148,13 @@ void main() {
   });
 
   group('Given vector distance functions', () {
-    test(
-        'when comparing indexes with different distance functions then appropriate mismatches are reported.',
-        () {
+    test('when comparing indexes with different distance functions then appropriate mismatches are reported.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         vectorDistanceFunction: VectorDistanceFunction.innerProduct,
@@ -213,18 +165,14 @@ void main() {
   });
 
   group('Given vector index column types', () {
-    test(
-        'when comparing vector indexes with different column vector types then mismatch is found.',
-        () {
+    test('when comparing vector indexes with different column vector types then mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
           .withVectorColumnType(ColumnType.vector)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith(
         vectorColumnType: ColumnType.halfvec,
@@ -233,18 +181,14 @@ void main() {
       expect(index1.like(index2), isFalse);
     });
 
-    test(
-        'when comparing vector indexes with same column vector types then no mismatch is found.',
-        () {
+    test('when comparing vector indexes with same column vector types then no mismatch is found.', () {
       var index1 = IndexDefinitionBuilder()
           .withIndexName('vector_idx')
           .withType('hnsw')
           .withVectorDistanceFunction(VectorDistanceFunction.cosine)
           .withVectorColumnType(ColumnType.vector)
-          .withElements([
-        IndexElementDefinition(
-            definition: 'vector_col', type: IndexElementDefinitionType.column)
-      ]).build();
+          .withElements(
+              [IndexElementDefinition(definition: 'vector_col', type: IndexElementDefinitionType.column)]).build();
 
       var index2 = index1.copyWith();
 
