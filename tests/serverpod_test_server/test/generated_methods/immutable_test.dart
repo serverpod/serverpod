@@ -58,6 +58,90 @@ void main() {
           ImmutableObjectWithMap(mapVariable: {'k1': 'v1', 'k2': 'DIFFERENT'});
       expect(firstObject, isNot(equals(secondObject)));
     });
+
+    test(
+        'Given two immutable objects each containing identical records when comparing equality then equality comparison returns true',
+        () {
+      final firstObject =
+          ImmutableObjectWithRecord(recordVariable: (1, 'value'));
+      final secondObject =
+          ImmutableObjectWithRecord(recordVariable: (1, 'value'));
+      expect(firstObject, equals(secondObject));
+    });
+
+    test(
+        'Given two immutable objects each containing different records when comparing equality then equality comparison returns false',
+        () {
+      final firstObject =
+          ImmutableObjectWithRecord(recordVariable: (1, 'value1'));
+      final secondObject =
+          ImmutableObjectWithRecord(recordVariable: (1, 'value2'));
+      expect(firstObject, isNot(equals(secondObject)));
+    });
+
+    test(
+        'Given two immutable objects containing identical immutable objects when comparing equality then equality comparison returns true',
+        () {
+      final firstObject = ImmutableObjectWithImmutableObject(
+          immutableVariable: ImmutableObject(variable: 'value'));
+      final secondObject = ImmutableObjectWithImmutableObject(
+          immutableVariable: ImmutableObject(variable: 'value'));
+      expect(firstObject, equals(secondObject));
+    });
+
+    test(
+        'Given two immutable objects containing different immutable objects when comparing equality then equality comparison returns false',
+        () {
+      final firstObject = ImmutableObjectWithImmutableObject(
+          immutableVariable: ImmutableObject(variable: 'value1'));
+      final secondObject = ImmutableObjectWithImmutableObject(
+          immutableVariable: ImmutableObject(variable: 'value2'));
+      expect(firstObject, isNot(equals(secondObject)));
+    });
+
+    test(
+        'Given two identical immutable objects with no fields when comparing equality then equality comparison returns true',
+        () {
+      final firstObject = ImmutableObjectWithNoFields();
+      final secondObject = ImmutableObjectWithNoFields();
+      expect(firstObject, equals(secondObject));
+    });
+
+    test(
+        'Given two immutable objects with multiple identical fields when comparing equality then equality comparison returns true',
+        () {
+      final firstObject = ImmutableObjectWithMultipleFields(
+        anInt: 1,
+        aString: 'value',
+        aBool: true,
+        aDouble: 1.0,
+      );
+      final secondObject = ImmutableObjectWithMultipleFields(
+        anInt: 1,
+        aString: 'value',
+        aBool: true,
+        aDouble: 1.0,
+      );
+      expect(firstObject, equals(secondObject));
+    });
+
+    test(
+        'Given two immutable objects with multiple different fields when comparing equality then equality comparison returns false',
+        () {
+      final firstObject = ImmutableObjectWithMultipleFields(
+        anInt: 1,
+        aString: 'value1',
+        aBool: true,
+        aDouble: 1.0,
+      );
+      final secondObject = ImmutableObjectWithMultipleFields(
+        anInt: 1,
+        aString: 'value2',
+        aBool: true,
+        aDouble: 1.0,
+      );
+      expect(firstObject, isNot(equals(secondObject)));
+    });
   });
 
   group('copyWith', () {
@@ -88,6 +172,54 @@ void main() {
       final copy = original.copyWith(mapVariable: {'k': 'new'});
       expect(copy.mapVariable, equals({'k': 'new'}));
       expect(original.mapVariable, equals({'k': 'v'}));
+      expect(copy, isNot(equals(original)));
+    });
+
+    test(
+        'Given an immutable object containing a record when creating a copy with a new record then returned object has updated record original remains unchanged and objects are not equal',
+        () {
+      final original = ImmutableObjectWithRecord(recordVariable: (1, 'a'));
+      final copy = original.copyWith(recordVariable: (2, 'b'));
+      expect(copy.recordVariable, equals((2, 'b')));
+      expect(original.recordVariable, equals((1, 'a')));
+      expect(copy, isNot(equals(original)));
+    });
+
+    test(
+        'Given an immutable object containing another immutable object when creating a copy with a new immutable object then returned object has updated immutable object original remains unchanged and objects are not equal',
+        () {
+      final original = ImmutableObjectWithImmutableObject(
+          immutableVariable: ImmutableObject(variable: 'original'));
+      final copy = original.copyWith(
+          immutableVariable: ImmutableObject(variable: 'updated'));
+      expect(copy.immutableVariable.variable, equals('updated'));
+      expect(original.immutableVariable.variable, equals('original'));
+      expect(copy, isNot(equals(original)));
+    });
+
+    test(
+        'Given an immutable object with multiple fields when creating a copy with some updated fields then returned object has updated fields original remains unchanged and objects are not equal',
+        () {
+      final original = ImmutableObjectWithMultipleFields(
+        anInt: 1,
+        aString: 'original',
+        aBool: true,
+        aDouble: 1.0,
+      );
+      final copy = original.copyWith(
+        aString: 'updated',
+        aBool: false,
+      );
+      expect(copy.anInt, equals(1));
+      expect(copy.aString, equals('updated'));
+      expect(copy.aBool, equals(false));
+      expect(copy.aDouble, equals(1.0));
+
+      expect(original.anInt, equals(1));
+      expect(original.aString, equals('original'));
+      expect(original.aBool, equals(true));
+      expect(original.aDouble, equals(1.0));
+
       expect(copy, isNot(equals(original)));
     });
   });
