@@ -866,7 +866,9 @@ class SerializableModelLibraryGenerator {
         var hashCode = switch (expressions.length) {
           1 => expressions.first.property('hashCode'),
           <= 20 => refer('Object').property('hash').call(expressions),
-          _ => refer('Object').property('hashAll').call(expressions),
+          _ => refer('Object').property('hashAll').call([
+              literalList(expressions),
+            ]),
         };
 
         m.returns = refer('int');
