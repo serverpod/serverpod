@@ -204,26 +204,17 @@ class WebServer {
   }
 }
 
-/// Defines HTTP call methods for routes.
-enum RouteMethod {
-  /// HTTP get.
-  get,
-
-  /// HTTP post.
-  post,
-}
-
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
 abstract class Route {
-  /// The method this route will respond to, i.e. HTTP get or post.
-  final RouteMethod method;
+  /// The methods this route will respond to, i.e. HTTP get or post.
+  final Set<Method> methods;
   String? _matchPath;
 
   /// Creates a new [Route].
-  Route({this.method = RouteMethod.get});
+  Route({this.methods = const {Method.get}});
 
   /// Handles a call to this route.
   FutureOr<HandledContext> handleCall(Session session, NewContext context);
@@ -298,7 +289,7 @@ extension type ServerpodRouter._(Router<Route> _router) {
 
   /// Adds a [Route] to the router.
   void add(Route route) =>
-      _router.add(route.method.toMethod(), route._matchPath!, route);
+      _router.anyOf(route.methods, route._matchPath!, route);
 
   /// Looks up a [Route] in the router based on the HTTP method and path.
   LookupResult<Route>? lookup(Method method, String path) =>
@@ -306,12 +297,4 @@ extension type ServerpodRouter._(Router<Route> _router) {
 
   /// Checks if the router is empty.
   bool get isEmpty => _router.isEmpty;
-}
-
-// Temporary helper method
-extension on RouteMethod {
-  Method toMethod() => switch (this) {
-        RouteMethod.get => Method.get,
-        RouteMethod.post => Method.post,
-      };
 }
