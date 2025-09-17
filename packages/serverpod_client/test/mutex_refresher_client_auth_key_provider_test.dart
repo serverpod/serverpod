@@ -171,6 +171,21 @@ void main() {
     });
 
     test(
+        'when first refresh fails with unauthorized and auth header value does not change, but force parameter is true '
+        'then refresh is performed regardless of the previous refresh result.',
+        () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      final firstResult = await provider.refreshAuthKey();
+      expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 1);
+
+      final secondResult = await provider.refreshAuthKey(force: true);
+      expect(secondResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 2);
+    });
+
+    test(
         'when refreshing throws an exception '
         'then refreshAuthKey rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));

@@ -17,7 +17,7 @@ class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   Future<String?> get authHeaderValue async => _authKey;
 
   @override
-  Future<RefreshAuthKeyResult> refreshAuthKey() async {
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
     refreshCallCount++;
     return _refresh();
   }
