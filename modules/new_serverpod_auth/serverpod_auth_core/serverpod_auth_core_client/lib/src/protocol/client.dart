@@ -15,6 +15,36 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart'
     as _i3;
 
+/// Endpoint for getting status and managing a signed in user.
+/// {@category Endpoint}
+class EndpointStatus extends _i1.EndpointRef {
+  EndpointStatus(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_core.status';
+
+  /// Returns true if the client user is signed in.
+  _i2.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
+        'serverpod_auth_core.status',
+        'isSignedIn',
+        {},
+      );
+
+  /// Signs out a user from the current device.
+  _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
+        'serverpod_auth_core.status',
+        'signOutDevice',
+        {},
+      );
+
+  /// Signs out a user from all active devices.
+  _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
+        'serverpod_auth_core.status',
+        'signOutAllDevices',
+        {},
+      );
+}
+
 /// Endpoint for JWT tokens management.
 /// {@category Endpoint}
 class EndpointRefreshJwtTokens extends _i1.EndpointRef {
@@ -53,12 +83,17 @@ class EndpointRefreshJwtTokens extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
+    status = EndpointStatus(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
   }
+
+  late final EndpointStatus status;
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup =>
-      {'serverpod_auth_core.refreshJwtTokens': refreshJwtTokens};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'serverpod_auth_core.status': status,
+        'serverpod_auth_core.refreshJwtTokens': refreshJwtTokens,
+      };
 }

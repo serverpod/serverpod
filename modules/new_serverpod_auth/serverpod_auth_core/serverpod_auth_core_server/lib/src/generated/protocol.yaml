@@ -1,2 +1,6 @@
+status:
+  - isSignedIn:
+  - signOutDevice:
+  - signOutAllDevices:
 refreshJwtTokens:
   - refreshAccessToken:
