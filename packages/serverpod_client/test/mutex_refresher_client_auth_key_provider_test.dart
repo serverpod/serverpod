@@ -230,5 +230,25 @@ void main() {
       ].wait;
       expect(delegate.refreshCallCount, 1);
     });
+
+    test(
+        'when calling refreshAuthKey without setting force parameter '
+        'then delegate is called with force set to false.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      await provider.refreshAuthKey();
+      expect(delegate.refreshCallCount, 1);
+      expect(delegate.forcedRefresh, false);
+    });
+
+    test(
+        'when calling refreshAuthKey with force parameter set to true '
+        'then delegate is also called with force set to true.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      await provider.refreshAuthKey(force: true);
+      expect(delegate.refreshCallCount, 1);
+      expect(delegate.forcedRefresh, true);
+    });
   });
 }
