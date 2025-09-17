@@ -56,7 +56,7 @@ class RouteStaticDirectory extends Route {
   RouteStaticDirectory({
     required this.serverDirectory,
     List<PathCacheMaxAge>? pathCachePatterns,
-  }) {
+  }) : super(methods: {Method.get, Method.head}) {
     _pathCachePatterns = pathCachePatterns;
     _handler = createStaticHandler(
       p.join('web', serverDirectory),
