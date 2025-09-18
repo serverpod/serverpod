@@ -46,7 +46,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     negatable: false,
     defaultsTo: false,
     helpText: 'Check if there are changes without creating a migration. '
-        'Returns exit code 0 if no changes detected, 1 if changes exist.',
+        'Returns exit code 0 if no changes detected, 1 if changes exist. '
+        'Cannot be used with --empty flag.',
   );
 
   static const emptyOption = FlagOption(
@@ -56,7 +57,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     defaultsTo: false,
     helpText:
         'Creates an empty migration without evaluating the state of the project. '
-        'Advanced use case for manual migration creation.',
+        'Advanced use case for manual migration creation. '
+        'Cannot be used with --check flag.',
   );
 
   static void _validateTag(String tag) {
@@ -85,6 +87,16 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     bool check = commandConfig.value(CreateMigrationOption.check);
     bool empty = commandConfig.value(CreateMigrationOption.empty);
 
+    // Validate that check and empty flags are not used together
+    if (check && empty) {
+      log.error(
+        'Cannot use both --check and --empty flags together. '
+        'The --check flag checks for changes without creating migrations, '
+        'while --empty creates an empty migration.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();
@@ -111,25 +123,26 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
-    await log.progress(
-        check
-            ? 'Checking for changes'
-            : (empty ? 'Creating empty migration' : 'Creating migration'),
-        () async {
+
+    // Determine the progress message based on command options
+    String progressMessage;
+    if (check) {
+      progressMessage = 'Checking for changes';
+    } else if (empty) {
+      progressMessage = 'Creating empty migration';
+    } else {
+      progressMessage = 'Creating migration';
+    }
+
+    await log.progress(progressMessage, () async {
       try {
-        if (empty) {
-          migration = await generator.createEmptyMigration(
-            tag: tag,
-            write: !check, // Don't write files in check mode
-          );
-        } else {
-          migration = await generator.createMigration(
-            tag: tag,
-            force: force,
-            config: config,
-            write: !check, // Don't write files in check mode
-          );
-        }
+        migration = await generator.createMigration(
+          tag: tag,
+          force: force,
+          config: config,
+          write: !check, // Don't write files in check mode
+          empty: empty,
+        );
       } on MigrationVersionLoadException catch (e) {
         log.error(
           'Unable to determine latest database definition due to a corrupted '
@@ -151,12 +164,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     if (check) {
       // In check mode, exit with appropriate code based on whether changes were detected
-      if (empty) {
-        // Empty migrations always create a migration, so always indicate changes exist
-        log.info('Empty migration would be created.', type: TextLogType.bullet);
-        // Exit with code 1 (changes exist)
-        throw ExitException(1);
-      } else if (migration == null) {
+      if (migration == null) {
         // No changes detected
         log.info('No changes detected.', type: TextLogType.success);
         // Exit with code 0 (success)
@@ -165,18 +173,19 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         // Changes detected
         log.info('Changes detected.', type: TextLogType.bullet);
         // Exit with code 1 (changes exist)
-        throw ExitException(1);
+        throw ExitException.error();
       }
     }
 
     // Normal mode - create migration
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
-      throw ExitException.error();
+    if (migration == null) {
+      // No changes detected, exit gracefully
+      log.info('No changes detected.', type: TextLogType.success);
+      return;
     }
+
+    var projectDirectory = migration!.projectDirectory;
+    var migrationName = migration!.versionName;
 
     log.info(
       'Migration created: ${path.relative(
