@@ -1,13 +1,9 @@
-@Timeout.none
-library;
-
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/io_client.dart' as http;
 import 'package:path/path.dart' as path;
 
 void main() {
@@ -17,9 +13,7 @@ void main() {
 
   late http.Client client;
   setUpAll(() async {
-    client = http.IOClient(HttpClient()
-      ..connectionTimeout = Duration(hours: 5)
-      ..idleTimeout = Duration(hours: 5));
+    client = http.Client();
 
     await directory.create(recursive: true);
     await nestedDirectory.create(recursive: true);
@@ -243,7 +237,7 @@ void main() {
           var response = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
             headers: {
-              'If-Modified-Since': lastModified!,
+              'If-Modified-Since': lastModified,
             },
           );
 
