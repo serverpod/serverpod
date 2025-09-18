@@ -81,7 +81,7 @@ class Emails {
       );
       if (validationResponse is PasswordValidationFailed) {
         session.log(
-          ' - ${validationResponse.passwordHash} saved: ${validationResponse.storedHash}',
+          ' - password validation failed',
           level: LogLevel.debug,
         );
 

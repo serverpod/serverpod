@@ -47,7 +47,7 @@ Future<AuthenticationInfo?> authenticationHandler(
       authId: keyIdStr,
     );
   } catch (exception, stackTrace) {
-    stderr.writeln('Failed authentication: $exception');
+    stderr.writeln('Failed authentication: ${exception.runtimeType}');
     stderr.writeln('$stackTrace');
     return null;
   }

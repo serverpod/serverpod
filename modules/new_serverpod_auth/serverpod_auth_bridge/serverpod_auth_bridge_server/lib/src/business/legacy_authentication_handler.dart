@@ -34,7 +34,7 @@ Future<LegacySession?> resolveLegacySession(
 
     return legacySession;
   } catch (exception, stackTrace) {
-    stderr.writeln('Failed authentication: $exception');
+    stderr.writeln('Failed authentication: ${exception.runtimeType}');
     stderr.writeln('$stackTrace');
     return null;
   }
