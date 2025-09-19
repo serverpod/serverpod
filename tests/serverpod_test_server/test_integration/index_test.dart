@@ -331,33 +331,6 @@ void main() async {
       indexes = table.indexes;
     });
 
-    /// TODO: Test if PostgreSQL doesn't allow a default index on `json` column.
-    /// Serverpod E2E IO tests (3.29.0)
-    /// ERROR:  data type json has no default operator class for access method "btree"
-    /// HINT:  You must specify an operator class for the index or define a default operator class for the data type.
-
-    // test('then the implicitly declared btree index exists for json column.', () {
-    //   final index = indexes.firstWhere(
-    //     (idx) => idx.indexName == 'json_index_default',
-    //   );
-    //
-    //   expect(index.type, 'btree');
-    //   expect(index.elements.length, 1);
-    //   expect(index.elements.first.type, IndexElementDefinitionType.column);
-    //   expect(index.elements.first.definition, 'indexed0');
-    // });
-    //
-    // test('then the implicitly declared btree index exists for jsonb column.', () {
-    //   final index = indexes.firstWhere(
-    //     (idx) => idx.indexName == 'jsonb_index_default',
-    //   );
-    //
-    //   expect(index.type, 'btree');
-    //   expect(index.elements.length, 1);
-    //   expect(index.elements.first.type, IndexElementDefinitionType.column);
-    //   expect(index.elements.first.definition, 'indexed1');
-    // });
-
     test('then the explicitly declared gin index exists.', () {
       final index = indexes.firstWhere(
         (idx) => idx.indexName == 'jsonb_index_gin',

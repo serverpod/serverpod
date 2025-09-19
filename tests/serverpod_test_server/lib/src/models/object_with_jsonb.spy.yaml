@@ -6,11 +6,6 @@ fields:
   indexed2: List<String>, serializationDataType=jsonb
   indexed3: List<String>, serializationDataType=jsonb
 indexes:
-# TODO: Test if PostgreSQL doesn't allow a default index on `json` column.
-#  json_index_default:
-#    fields: indexed0
-#  jsonb_index_default:
-#    fields: indexed1
   jsonb_index_gin:
     fields: indexed2
     type: gin
