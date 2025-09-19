@@ -10,8 +10,8 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
   group('Given `serializeAsJsonb` disabled at project-level', () {
-    var config =
-        GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
+    var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+        [ExperimentalFeature.serializeAsJsonb]).build();
 
     group('when a class with no `serializationDataType` set', () {
       test(
@@ -29,7 +29,8 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer =
+              StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
@@ -53,12 +54,14 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer =
+              StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
           var definition = definitions.first as ModelClassDefinition;
-          expect(definition.fields.last.type.serializationDataType, SerializationDataType.jsonb);
+          expect(definition.fields.last.type.serializationDataType,
+              SerializationDataType.jsonb);
         },
       );
 
@@ -77,12 +80,14 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          var analyzer = StatefulAnalyzer(config, models, onErrorsCollector(collector));
+          var analyzer =
+              StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
           var definitions = analyzer.validateAll();
 
           var definition = definitions.first as ModelClassDefinition;
-          expect(definition.fields.last.type.serializationDataType, SerializationDataType.json);
+          expect(definition.fields.last.type.serializationDataType,
+              SerializationDataType.json);
         },
       );
 
@@ -101,13 +106,15 @@ void main() {
           ];
 
           var collector = CodeGenerationCollector();
-          StatefulAnalyzer(config, models, onErrorsCollector(collector)).validateAll();
+          StatefulAnalyzer(config, models, onErrorsCollector(collector))
+              .validateAll();
 
           expect(collector.errors, isNotEmpty);
 
           var error = collector.errors.last;
 
-          expect(error.message, '"Invalid" is not a valid property. Valid properties are (json, jsonb).');
+          expect(error.message,
+              '"Invalid" is not a valid property. Valid properties are (json, jsonb).');
         },
       );
     });

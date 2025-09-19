@@ -16,7 +16,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
 ) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
-      if (classDefinition is ModelClassDefinition && classDefinition.tableName != null)
+      if (classDefinition is ModelClassDefinition &&
+          classDefinition.tableName != null)
         TableDefinition(
           module: moduleName,
           name: classDefinition.tableName!,
@@ -27,7 +28,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
                   name: column.name,
-                  columnType: ColumnType.values.byName(column.type.databaseTypeEnum),
+                  columnType:
+                      ColumnType.values.byName(column.type.databaseTypeEnum),
                   // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
@@ -43,7 +45,10 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           indexes: [
             IndexDefinition(
               indexName: '${classDefinition.tableName!}_pkey',
-              elements: [IndexElementDefinition(definition: 'id', type: IndexElementDefinitionType.column)],
+              elements: [
+                IndexElementDefinition(
+                    definition: 'id', type: IndexElementDefinitionType.column)
+              ],
               type: 'btree',
               isUnique: true,
               isPrimary: true,
@@ -53,18 +58,25 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 indexName: index.name,
                 elements: [
                   for (var field in index.fields)
-                    IndexElementDefinition(type: IndexElementDefinitionType.column, definition: field)
+                    IndexElementDefinition(
+                        type: IndexElementDefinitionType.column,
+                        definition: field)
                 ],
                 type: index.type,
                 isUnique: index.unique,
                 isPrimary: false,
-                ginOperatorClass: index.isGinIndex ? index.ginOperatorClass : null,
-                vectorDistanceFunction:
-                    index.isVectorIndex ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2 : null,
+                ginOperatorClass:
+                    index.isGinIndex ? index.ginOperatorClass : null,
+                vectorDistanceFunction: index.isVectorIndex
+                    ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
+                    : null,
                 vectorColumnType: index.isVectorIndex
                     ? ColumnType.values.firstWhere((type) =>
                         type.name ==
-                        classDefinition.fields.firstWhere((f) => index.fields.contains(f.name)).type.databaseTypeEnum)
+                        classDefinition.fields
+                            .firstWhere((f) => index.fields.contains(f.name))
+                            .type
+                            .databaseTypeEnum)
                     : null,
                 parameters: index.parameters,
               ),
@@ -80,7 +92,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
     moduleName: moduleName,
     tables: tables,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
-    installedModules: allModules.where((module) => module.migrationVersions.isNotEmpty).map(
+    installedModules:
+        allModules.where((module) => module.migrationVersions.isNotEmpty).map(
       (module) {
         return DatabaseMigrationVersion(
           module: module.name,
@@ -91,8 +104,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   );
 }
 
-List<ForeignKeyDefinition> _createForeignKeys(ModelClassDefinition classDefinition) {
-  var fields = classDefinition.fields.where((field) => field.relation is ForeignRelationDefinition).toList();
+List<ForeignKeyDefinition> _createForeignKeys(
+    ModelClassDefinition classDefinition) {
+  var fields = classDefinition.fields
+      .where((field) => field.relation is ForeignRelationDefinition)
+      .toList();
 
   List<ForeignKeyDefinition> foreignKeys = [];
   for (var i = 0; i < fields.length; i++) {
@@ -169,7 +185,8 @@ String? getColumnDefault(
       if (enumDefinition == null) return null;
       var values = enumDefinition.values;
       return switch (enumDefinition.serialized) {
-        EnumSerialization.byIndex => '${values.indexWhere((e) => e.name == defaultValue)}',
+        EnumSerialization.byIndex =>
+          '${values.indexWhere((e) => e.name == defaultValue)}',
         EnumSerialization.byName => '\'$defaultValue\'::text',
       };
   }

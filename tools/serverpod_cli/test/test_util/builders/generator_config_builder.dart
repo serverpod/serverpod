@@ -63,17 +63,20 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withDartClientDependsOnServiceClient(bool dartClientDependsOnServiceClient) {
+  GeneratorConfigBuilder withDartClientDependsOnServiceClient(
+      bool dartClientDependsOnServiceClient) {
     _dartClientDependsOnServiceClient = dartClientDependsOnServiceClient;
     return this;
   }
 
-  GeneratorConfigBuilder withServerPackageDirectoryPathParts(List<String> serverPackageDirectoryPathParts) {
+  GeneratorConfigBuilder withServerPackageDirectoryPathParts(
+      List<String> serverPackageDirectoryPathParts) {
     _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
     return this;
   }
 
-  GeneratorConfigBuilder withRelativeDartClientPackagePathParts(List<String> relativeDartClientPackagePathParts) {
+  GeneratorConfigBuilder withRelativeDartClientPackagePathParts(
+      List<String> relativeDartClientPackagePathParts) {
     _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
     return this;
   }
@@ -142,7 +145,9 @@ class GeneratorConfigBuilder {
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
 
-    if (_serializeAsJsonbByDefault && !config.isExperimentalFeatureEnabled(ExperimentalFeature.serializeAsJsonb)) {
+    if (_serializeAsJsonbByDefault &&
+        !config.isExperimentalFeatureEnabled(
+            ExperimentalFeature.serializeAsJsonb)) {
       throw Exception(
           'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
     }

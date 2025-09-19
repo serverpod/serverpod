@@ -74,9 +74,13 @@ class TypeDefinition {
     var url = type.element?.library?.identifier;
 
     if (type is RecordType) {
-      var positionalField = type.positionalFields.map((f) => TypeDefinition.fromDartType(f.type)).toList();
-      var namedFields =
-          type.namedFields.map((f) => TypeDefinition.fromDartType(f.type, recordFieldName: f.name)).toList();
+      var positionalField = type.positionalFields
+          .map((f) => TypeDefinition.fromDartType(f.type))
+          .toList();
+      var namedFields = type.namedFields
+          .map((f) =>
+              TypeDefinition.fromDartType(f.type, recordFieldName: f.name))
+          .toList();
 
       return TypeDefinition(
         className: recordTypeClassName,
@@ -126,7 +130,8 @@ class TypeDefinition {
 
   bool get isSerializedValue => autoSerializedTypes.contains(className);
 
-  bool get isSerializedByExtension => extensionSerializedTypes.contains(className);
+  bool get isSerializedByExtension =>
+      extensionSerializedTypes.contains(className);
 
   bool get isListType => className == ListKeyword.className;
 
@@ -134,13 +139,15 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
-  static List<String> get vectorClassNames => ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
+  static List<String> get vectorClassNames =>
+      ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
 
   bool get isVectorType => vectorClassNames.contains(className);
 
   bool get isRecordType => className == recordTypeClassName;
 
-  bool get isIdType => SupportedIdType.all.any((e) => e.type.className == className);
+  bool get isIdType =>
+      SupportedIdType.all.any((e) => e.type.className == className);
 
   bool get isVoidType => className == 'void';
 
@@ -148,7 +155,8 @@ class TypeDefinition {
 
   bool get isFutureType => className == 'Future';
 
-  bool get isModuleType => url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
+  bool get isModuleType =>
+      url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 
   bool get isEnumType => enumDefinition != null;
 
@@ -180,7 +188,9 @@ class TypeDefinition {
   }) {
     var parts = mixed.split(':');
     var classname = parts.last;
-    var url = mixed != 'ByteData' ? (parts..removeLast()).join(':') : 'dart:typed_data';
+    var url = mixed != 'ByteData'
+        ? (parts..removeLast()).join(':')
+        : 'dart:typed_data';
 
     return TypeDefinition(
       className: classname,
@@ -198,7 +208,8 @@ class TypeDefinition {
 
   /// A convenience variable for getting a [TypeDefinition] of a non null
   /// UuidValue quickly.
-  static TypeDefinition uuid = TypeDefinition(className: 'UuidValue', nullable: false);
+  static TypeDefinition uuid =
+      TypeDefinition(className: 'UuidValue', nullable: false);
 
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
@@ -304,11 +315,15 @@ class TypeDefinition {
                 orElse: () => null,
               );
           if (module == null) {
-            throw FormatException('Module with nickname $moduleName not found in config!');
+            throw FormatException(
+                'Module with nickname $moduleName not found in config!');
           }
-          var packageName = serverCode ? module.serverPackage : module.dartClientPackage;
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
-        } else if (url == 'serverpod' || (url == null && (['UuidValue', ...vectorClassNames]).contains(className))) {
+        } else if (url == 'serverpod' ||
+            (url == null &&
+                (['UuidValue', ...vectorClassNames]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -322,26 +337,33 @@ class TypeDefinition {
           var localProjectModelDefinition = projectModelDefinition;
           String reference = switch (localProjectModelDefinition) {
             // Import model directly
-            SerializableModelDefinition modelDefinition => getRef(modelDefinition),
+            SerializableModelDefinition modelDefinition =>
+              getRef(modelDefinition),
             // Import model through generated protocol file
             null => 'protocol.dart',
           };
 
           t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
-        } else if (!serverCode && (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+        } else if (!serverCode &&
+            (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
           t.url = url
-              ?.replaceFirst('package:${config.serverPackage}', 'package:${config.dartClientPackage}')
+              ?.replaceFirst('package:${config.serverPackage}',
+                  'package:${config.dartClientPackage}')
               .replaceFirst('src/generated/', 'src/protocol/');
-        } else if (config.modules.any((m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
+        } else if (config.modules.any(
+            (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
           // endpoint definition references from an module
-          var module = config.modules.firstWhere((m) => url?.startsWith('package:${m.serverPackage}') ?? false);
-          var packageName = serverCode ? module.serverPackage : module.dartClientPackage;
+          var module = config.modules.firstWhere(
+              (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
               ? 'package:$packageName/$packageName.dart'
               : serverCode
                   ? url
-                  : url?.replaceFirst('package:${module.serverPackage}', 'package:${module.dartClientPackage}');
+                  : url?.replaceFirst('package:${module.serverPackage}',
+                      'package:${module.dartClientPackage}');
         } else {
           t.url = url;
         }
@@ -385,7 +407,8 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
 
-    if (isColumnSerializable && serializationDataType == SerializationDataType.jsonb) {
+    if (isColumnSerializable &&
+        serializationDataType == SerializationDataType.jsonb) {
       return 'jsonb';
     }
     return 'json';
@@ -437,16 +460,21 @@ class TypeDefinition {
     if (isRecordType) {
       return [
         MapEntry(
-          refer('getType', serverpodUrl(serverCode)).call([], {}, [reference(serverCode, config: config)]),
+          refer('getType', serverpodUrl(serverCode))
+              .call([], {}, [reference(serverCode, config: config)]),
           Block.of(
             [
               if (nullable) const Code(' (data == null) ? null as T : '),
               const Code('('),
-              for (final (i, positionalField) in positionalRecordFields.indexed) ...[
+              for (final (i, positionalField)
+                  in positionalRecordFields.indexed) ...[
                 if (positionalField.nullable)
-                  Code("((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
+                  Code(
+                      "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
                 const Code('deserialize<'),
-                positionalField.reference(serverCode, config: config, nullable: false).code,
+                positionalField
+                    .reference(serverCode, config: config, nullable: false)
+                    .code,
                 const Code('>('),
                 if (i == 0 && !positionalField.nullable) ...[
                   Code("((data as Map)['p'] as List)[$i]"),
@@ -463,10 +491,15 @@ class TypeDefinition {
                     Code(
                         "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
                   const Code('deserialize<'),
-                  namedField.reference(serverCode, config: config, nullable: false).code,
+                  namedField
+                      .reference(serverCode, config: config, nullable: false)
+                      .code,
                   const Code('>('),
-                  if (i == 0 && positionalRecordFields.isEmpty && !namedField.nullable)
-                    Code("((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
+                  if (i == 0 &&
+                      positionalRecordFields.isEmpty &&
+                      !namedField.nullable)
+                    Code(
+                        "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
                   else
                     Code("data['n']['${namedField.recordFieldName!}']"),
                   const Code(')'),
@@ -478,11 +511,14 @@ class TypeDefinition {
           ),
         ),
       ];
-    } else if ((className == ListKeyword.className || className == SetKeyword.className) && generics.length == 1) {
+    } else if ((className == ListKeyword.className ||
+            className == SetKeyword.className) &&
+        generics.length == 1) {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode)).call([], {}, [reference(serverCode, config: config)])
+              ? refer('getType', serverpodUrl(serverCode))
+                  .call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             nullable
@@ -499,7 +535,8 @@ class TypeDefinition {
                     const Code('(data as List).map((e) =>'
                         'deserialize<'),
                     generics.first.reference(serverCode, config: config).code,
-                    Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
+                    Code(
+                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
                   ])
           ]),
         ),
@@ -509,7 +546,8 @@ class TypeDefinition {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode)).call([], {}, [reference(serverCode, config: config)])
+              ? refer('getType', serverpodUrl(serverCode))
+                  .call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             generics.first.className == 'String'
@@ -519,7 +557,9 @@ class TypeDefinition {
                         const Code('(data!=null?'
                             '(data as Map).map((k,v) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode, config: config).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
                         const Code('>(v)))' ':null) as T')
@@ -528,7 +568,9 @@ class TypeDefinition {
                         // using Code.scope only sets the generic to List
                         const Code('(data as Map).map((k,v) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode, config: config).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(k),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
                         const Code('>(v))) as T')
@@ -540,7 +582,9 @@ class TypeDefinition {
                         const Code('(data!=null?'
                             'Map.fromEntries((data as List).map((e) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode, config: config).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
                         const Code('>(e[\'v\']))))' ':null) as T')
@@ -549,7 +593,9 @@ class TypeDefinition {
                         // using Code.scope only sets the generic to List
                         const Code('Map.fromEntries((data as List).map((e) =>'
                             'MapEntry(deserialize<'),
-                        generics.first.reference(serverCode, config: config).code,
+                        generics.first
+                            .reference(serverCode, config: config)
+                            .code,
                         const Code('>(e[\'k\']),deserialize<'),
                         generics[1].reference(serverCode, config: config).code,
                         const Code('>(e[\'v\'])))) as T')
@@ -569,7 +615,8 @@ class TypeDefinition {
       return [
         MapEntry(
             nullable
-                ? refer('getType', serverpodUrl(serverCode)).call([], {}, [reference(serverCode, config: config)])
+                ? refer('getType', serverpodUrl(serverCode))
+                    .call([], {}, [reference(serverCode, config: config)])
                 : reference(serverCode, config: config),
             Code.scope((a) => nullable
                 ? '(data!=null?'
@@ -594,14 +641,17 @@ class TypeDefinition {
         .where((c) => c.className == className)
         .where((c) => c.type.moduleAlias == defaultModuleAlias)
         .firstOrNull;
-    bool isProjectModel = url == defaultModuleAlias || (url == null && modelDefinition != null);
+    bool isProjectModel =
+        url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
       className: className,
       nullable: nullable,
       customClass: customClass,
       dartType: dartType,
       projectModelDefinition: isProjectModel ? modelDefinition : null,
-      generics: generics.map((e) => e.applyProtocolReferences(classDefinitions)).toList(),
+      generics: generics
+          .map((e) => e.applyProtocolReferences(classDefinitions))
+          .toList(),
       serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
@@ -668,7 +718,9 @@ class TypeDefinition {
       return [
         '(',
         positionalRecordFields.map((t) => t.toString()).join(', '),
-        if (positionalRecordFields.isNotEmpty || positionalRecordFields.length == 1) ',',
+        if (positionalRecordFields.isNotEmpty ||
+            positionalRecordFields.length == 1)
+          ',',
         if (namedRecordFields.isNotEmpty) ...[
           ' {',
           namedRecordFields.map((f) => '$f ${f.recordFieldName!}').join(', '),
@@ -777,7 +829,9 @@ TypeDefinition parseType(
 
     var genericsInputs = splitIgnoringBracketsAndBracesAndQuotes(internalTypes);
 
-    generics = genericsInputs.map((generic) => parseType(generic, extraClasses: extraClasses)).toList();
+    generics = genericsInputs
+        .map((generic) => parseType(generic, extraClasses: extraClasses))
+        .toList();
   }
 
   bool isNullable = trimmedInput[trimmedInput.length - 1] == '?';
@@ -787,11 +841,13 @@ TypeDefinition parseType(
 
   var vectorDimension = (TypeDefinition.vectorClassNames.contains(className) &&
           (trimmedInput.count('(') == 1 && trimmedInput.count(')') == 1))
-      ? int.tryParse(trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
+      ? int.tryParse(
+          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
       : null;
 
-  var extraClass =
-      extraClasses?.cast<TypeDefinition?>().firstWhere((c) => c?.className == className, orElse: () => null);
+  var extraClass = extraClasses
+      ?.cast<TypeDefinition?>()
+      .firstWhere((c) => c?.className == className, orElse: () => null);
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
@@ -875,14 +931,16 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       return null;
     }
 
-    if (recordDescription.positionalFieldTypes.isEmpty && recordDescription.namedFields.isEmpty) {
+    if (recordDescription.positionalFieldTypes.isEmpty &&
+        recordDescription.namedFields.isEmpty) {
       return null;
     }
 
     var recordFields = [
       for (var positionalFieldType in recordDescription.positionalFieldTypes)
         parseType(positionalFieldType, extraClasses: extraClasses),
-      for (var MapEntry(key: name, value: type) in recordDescription.namedFields.entries)
+      for (var MapEntry(key: name, value: type)
+          in recordDescription.namedFields.entries)
         parseType(type, extraClasses: extraClasses).asNamedRecordField(name),
     ];
 
@@ -904,7 +962,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       return null;
     }
 
-    if (!trimmedRecordInput.endsWith(')') && !trimmedRecordInput.replaceAll(' ', '').endsWith(')?')) {
+    if (!trimmedRecordInput.endsWith(')') &&
+        !trimmedRecordInput.replaceAll(' ', '').endsWith(')?')) {
       return null;
     }
 
@@ -958,11 +1017,16 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
       }
     }
 
-    if (positionalFieldStrings.length == 1 && namedFieldsString == null && !recordBody.contains(',')) {
+    if (positionalFieldStrings.length == 1 &&
+        namedFieldsString == null &&
+        !recordBody.contains(',')) {
       return null;
     }
 
-    return (positionalFieldStrings: positionalFieldStrings, namedFieldsString: namedFieldsString);
+    return (
+      positionalFieldStrings: positionalFieldStrings,
+      namedFieldsString: namedFieldsString
+    );
   }
 
   static List<String> _getTypesFromPositionalFields(
@@ -1010,7 +1074,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
         return null;
       }
 
-      var typeDescription = namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+      var typeDescription =
+          namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
       var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
 
       namedFields[name] = typeDescription;

@@ -9,9 +9,12 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([ExperimentalFeature.serializeAsJsonb]).build();
+  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures(
+      [ExperimentalFeature.serializeAsJsonb]).build();
 
-  group('Given class definition with no `serializationDataType` key when validating', () {
+  group(
+      'Given class definition with no `serializationDataType` key when validating',
+      () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -24,7 +27,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -39,7 +43,9 @@ void main() {
     });
   });
 
-  group('Given a valid class definition with `serializationDataType` set to jsonb when validating', () {
+  group(
+      'Given a valid class definition with `serializationDataType` set to jsonb when validating',
+      () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -53,7 +59,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -68,7 +75,9 @@ void main() {
     });
   });
 
-  group('Given a valid class definition with `serializationDataType` set to json when validating', () {
+  group(
+      'Given a valid class definition with `serializationDataType` set to json when validating',
+      () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -82,7 +91,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -97,7 +107,9 @@ void main() {
     });
   });
 
-  group('Given a valid class definition with `serializationDataType` set to an invalid value when validating', () {
+  group(
+      'Given a valid class definition with `serializationDataType` set to an invalid value when validating',
+      () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
@@ -111,11 +123,14 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     analyzer.validateAll();
 
-    test('then collect an error that the `serializationDataType` value is invalid.', () {
+    test(
+        'then collect an error that the `serializationDataType` value is invalid.',
+        () {
       expect(collector.errors, isNotEmpty);
       expect(
         collector.errors.first.message,

@@ -51,8 +51,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> find<T extends TableRow>(
-    Session session, {
+  Future<List<T>> find<T extends TableRow>(Session session, {
     Expression? where,
     int? limit,
     int? offset,
@@ -85,8 +84,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findFirstRow<T extends TableRow>(
-    Session session, {
+  Future<T?> findFirstRow<T extends TableRow>(Session session, {
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -114,12 +112,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findById<T extends TableRow>(
-    Session session,
-    Object id, {
-    Transaction? transaction,
-    Include? include,
-  }) async {
+  Future<T?> findById<T extends TableRow>(Session session,
+      Object id, {
+        Transaction? transaction,
+        Include? include,
+      }) async {
     var table = _getTableOrAssert<T>(session, operation: 'findById');
     return await findFirstRow<T>(
       session,
@@ -130,11 +127,10 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> insert<T extends TableRow>(
-    Session session,
-    List<T> rows, {
-    Transaction? transaction,
-  }) async {
+  Future<List<T>> insert<T extends TableRow>(Session session,
+      List<T> rows, {
+        Transaction? transaction,
+      }) async {
     if (rows.isEmpty) return [];
 
     var table = rows.first.table;
@@ -145,17 +141,16 @@ class DatabaseConnection {
     ).build();
 
     return (await _mappedResultsQuery(session, query, transaction: transaction)
-            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .then((_mergeResultsWithNonPersistedFields(rows))))
         .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> insertRow<T extends TableRow>(
-    Session session,
-    T row, {
-    Transaction? transaction,
-  }) async {
+  Future<T> insertRow<T extends TableRow>(Session session,
+      T row, {
+        Transaction? transaction,
+      }) async {
     var result = await insert<T>(
       session,
       [row],
@@ -172,12 +167,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> update<T extends TableRow>(
-    Session session,
-    List<T> rows, {
-    List<Column>? columns,
-    Transaction? transaction,
-  }) async {
+  Future<List<T>> update<T extends TableRow>(Session session,
+      List<T> rows, {
+        List<Column>? columns,
+        Transaction? transaction,
+      }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
       throw ArgumentError.notNull('row.id');
@@ -201,21 +195,21 @@ class DatabaseConnection {
     var setColumns = selectedColumnNames.map((columnName) => '"$columnName" = data."$columnName"').join(', ');
 
     var query =
-        'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+        'UPDATE "${table
+        .tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     return (await _mappedResultsQuery(session, query, transaction: transaction)
-            .then((_mergeResultsWithNonPersistedFields(rows))))
+        .then((_mergeResultsWithNonPersistedFields(rows))))
         .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> updateRow<T extends TableRow>(
-    Session session,
-    T row, {
-    List<Column>? columns,
-    Transaction? transaction,
-  }) async {
+  Future<T> updateRow<T extends TableRow>(Session session,
+      T row, {
+        List<Column>? columns,
+        Transaction? transaction,
+      }) async {
     var updated = await update<T>(
       session,
       [row],
@@ -238,12 +232,11 @@ class DatabaseConnection {
   /// Throws [ArgumentError] if [columnValues] is empty.
   ///
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> updateById<T extends TableRow>(
-    Session session,
-    Object id, {
-    required List<ColumnValue> columnValues,
-    Transaction? transaction,
-  }) async {
+  Future<T> updateById<T extends TableRow>(Session session,
+      Object id, {
+        required List<ColumnValue> columnValues,
+        Transaction? transaction,
+      }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateById');
 
     if (columnValues.isEmpty) {
@@ -283,8 +276,7 @@ class DatabaseConnection {
   /// only the rows selected by these parameters will be updated.
   ///
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> updateWhere<T extends TableRow>(
-    Session session, {
+  Future<List<T>> updateWhere<T extends TableRow>(Session session, {
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -350,11 +342,10 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> delete<T extends TableRow>(
-    Session session,
-    List<T> rows, {
-    Transaction? transaction,
-  }) async {
+  Future<List<T>> delete<T extends TableRow>(Session session,
+      List<T> rows, {
+        Transaction? transaction,
+      }) async {
     if (rows.isEmpty) return [];
     if (rows.any((column) => column.id == null)) {
       throw ArgumentError.notNull('row.id');
@@ -370,11 +361,10 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> deleteRow<T extends TableRow>(
-    Session session,
-    T row, {
-    Transaction? transaction,
-  }) async {
+  Future<T> deleteRow<T extends TableRow>(Session session,
+      T row, {
+        Transaction? transaction,
+      }) async {
     var result = await delete<T>(
       session,
       [row],
@@ -391,11 +381,10 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> deleteWhere<T extends TableRow>(
-    Session session,
-    Expression where, {
-    Transaction? transaction,
-  }) async {
+  Future<List<T>> deleteWhere<T extends TableRow>(Session session,
+      Expression where, {
+        Transaction? transaction,
+      }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
     var query = DeleteQueryBuilder(table: table).withReturn(Returning.all).withWhere(where).build();
@@ -409,8 +398,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count<T extends TableRow>(
-    Session session, {
+  Future<int> count<T extends TableRow>(Session session, {
     Expression? where,
     int? limit,
     Transaction? transaction,
@@ -434,12 +422,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<PostgresDatabaseResult> simpleQuery(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-  }) async {
+  Future<PostgresDatabaseResult> simpleQuery(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        Transaction? transaction,
+      }) async {
     var result = await _query(
       session,
       query,
@@ -452,13 +439,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<PostgresDatabaseResult> query(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-    QueryParameters? parameters,
-  }) async {
+  Future<PostgresDatabaseResult> query(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        Transaction? transaction,
+        QueryParameters? parameters,
+      }) async {
     var result = await _query(
       session,
       query,
@@ -470,18 +456,17 @@ class DatabaseConnection {
     return PostgresDatabaseResult(result);
   }
 
-  static Future<pg.Result> _query(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    bool ignoreRows = false,
-    bool simpleQueryMode = false,
-    QueryParameters? parameters,
-    required pg.Session context,
-  }) async {
+  static Future<pg.Result> _query(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        bool ignoreRows = false,
+        bool simpleQueryMode = false,
+        QueryParameters? parameters,
+        required pg.Session context,
+      }) async {
     assert(
-      simpleQueryMode == false || (simpleQueryMode == true && parameters == null),
-      'simpleQueryMode does not support parameters',
+    simpleQueryMode == false || (simpleQueryMode == true && parameters == null),
+    'simpleQueryMode does not support parameters',
     );
 
     var timeout = timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
@@ -506,7 +491,7 @@ class DatabaseConnection {
     } on pg.ServerException catch (exception, trace) {
       var message = switch (exception.code) {
         (PgErrorCode.undefinedTable) =>
-          'Table not found, have you applied the database migration? (${exception.message})',
+        'Table not found, have you applied the database migration? (${exception.message})',
         (_) => exception.message,
       };
 
@@ -540,13 +525,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> execute(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-    QueryParameters? parameters,
-  }) async {
+  Future<int> execute(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        Transaction? transaction,
+        QueryParameters? parameters,
+      }) async {
     var result = await _query(
       session,
       query,
@@ -560,12 +544,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> simpleExecute(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-  }) async {
+  Future<int> simpleExecute(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        Transaction? transaction,
+      }) async {
     var result = await _query(
       session,
       query,
@@ -579,12 +562,11 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    required Transaction? transaction,
-  }) async {
+  Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(Session session,
+      String query, {
+        int? timeoutInSeconds,
+        required Transaction? transaction,
+      }) async {
     var result = await _query(
       session,
       query,
@@ -594,10 +576,12 @@ class DatabaseConnection {
 
     return result.map((row) {
       return {
-        for (final entry in row.toColumnMap().entries)
-          // Serverpod serialization already knows the type of the target
-          // class, so we can remove `UndecodedBytes` here to avoid the
-          // dependency of serverpod_serialization on the `postgres` package.
+        for (final entry in row
+            .toColumnMap()
+            .entries)
+        // Serverpod serialization already knows the type of the target
+        // class, so we can remove `UndecodedBytes` here to avoid the
+        // dependency of serverpod_serialization on the `postgres` package.
           entry.key: entry.value is pg.UndecodedBytes ? (entry.value as pg.UndecodedBytes).bytes : entry.value
       };
     });
@@ -608,14 +592,13 @@ class DatabaseConnection {
     return postgresTransaction?.executionContext ?? _postgresConnection;
   }
 
-  Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
-    Session session,
-    String query, {
-    required Table table,
-    int? timeoutInSeconds,
-    required Transaction? transaction,
-    Include? include,
-  }) async {
+  Future<List<T>> _deserializedMappedQuery<T extends TableRow>(Session session,
+      String query, {
+        required Table table,
+        int? timeoutInSeconds,
+        required Transaction? transaction,
+        Include? include,
+      }) async {
     var result = await _mappedResultsQuery(
       session,
       query,
@@ -632,24 +615,24 @@ class DatabaseConnection {
     );
 
     return result
-        .map((rawRow) => resolvePrefixedQueryRow(
-              table,
-              rawRow,
-              resolvedListRelations,
-              include: include,
-            ))
+        .map((rawRow) =>
+        resolvePrefixedQueryRow(
+          table,
+          rawRow,
+          resolvedListRelations,
+          include: include,
+        ))
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
         .toList();
   }
 
-  static void _logQuery(
-    Session session,
-    String query,
-    DateTime startTime, {
-    int? numRowsAffected,
-    dynamic exception,
-    StackTrace? trace,
-  }) {
+  static void _logQuery(Session session,
+      String query,
+      DateTime startTime, {
+        int? numRowsAffected,
+        dynamic exception,
+        StackTrace? trace,
+      }) {
     var duration = DateTime.now().difference(startTime);
 
     // Use the current stack trace if there is no exception.
@@ -665,8 +648,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(
-    TransactionFunction<R> transactionFunction, {
+  Future<R> transaction<R>(TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,
     required Session session,
   }) {
@@ -681,7 +663,7 @@ class DatabaseConnection {
     );
 
     return _postgresConnection.runTx<R>(
-      (ctx) {
+          (ctx) {
         var transaction = _PostgresTransaction(
           ctx,
           session,
@@ -692,13 +674,11 @@ class DatabaseConnection {
     );
   }
 
-  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>> _queryIncludedLists(
-    Session session,
-    Table table,
-    Include? include,
-    Iterable<Map<String, dynamic>> previousResultSet,
-    Transaction? transaction,
-  ) async {
+  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>> _queryIncludedLists(Session session,
+      Table table,
+      Include? include,
+      Iterable<Map<String, dynamic>> previousResultSet,
+      Transaction? transaction,) async {
     if (include == null) return {};
 
     Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations = {};
@@ -754,12 +734,13 @@ class DatabaseConnection {
         );
 
         var resolvedList = includeListResult
-            .map((rawRow) => resolvePrefixedQueryRow(
-                  relationTable,
-                  rawRow,
-                  resolvedLists,
-                  include: nestedInclude,
-                ))
+            .map((rawRow) =>
+            resolvePrefixedQueryRow(
+              relationTable,
+              rawRow,
+              resolvedLists,
+              include: nestedInclude,
+            ))
             .whereType<Map<String, dynamic>>()
             .toList();
 
@@ -805,10 +786,8 @@ class DatabaseConnection {
     return orderByList;
   }
 
-  String _createQueryValueList(
-    Iterable<TableRow> rows,
-    Iterable<Column> column,
-  ) {
+  String _createQueryValueList(Iterable<TableRow> rows,
+      Iterable<Column> column,) {
     return rows.map((row) => row.toJson() as Map<String, dynamic>).map((row) {
       var values = column.map((column) {
         var unformattedValue = row[column.columnName];
@@ -853,17 +832,16 @@ class DatabaseConnection {
   /// Merges the database result with the original non-persisted fields.
   /// Database fields take precedence for common fields, while non-persisted fields are retained.
   List<Map<String, dynamic>> Function(Iterable<Map<String, dynamic>>)
-      _mergeResultsWithNonPersistedFields<T extends TableRow>(
-    List<T> rows,
-  ) {
-    return (Iterable<Map<String, dynamic>> dbResults) => List<Map<String, dynamic>>.generate(dbResults.length, (i) {
-          return {
-            // Add non-persisted fields from the original object
-            ...rows[i].toJson(),
-            // Override with database fields (common fields)
-            ...dbResults.elementAt(i),
-          };
-        });
+  _mergeResultsWithNonPersistedFields<T extends TableRow>(List<T> rows,) {
+    return (Iterable<Map<String, dynamic>> dbResults) =>
+    List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+      return {
+        // Add non-persisted fields from the original object
+        ...rows[i].toJson(),
+        // Override with database fields (common fields)
+        ...dbResults.elementAt(i),
+      };
+    });
   }
 }
 
@@ -877,9 +855,7 @@ Current type was $T''');
 }
 
 /// Throws an exception if the given [transaction] is not a Postgres transaction.
-_PostgresTransaction? _castToPostgresTransaction(
-  Transaction? transaction,
-) {
+_PostgresTransaction? _castToPostgresTransaction(Transaction? transaction,) {
   if (transaction == null) return null;
   if (transaction is! _PostgresTransaction) {
     throw ArgumentError.value(
@@ -919,10 +895,8 @@ class _PostgresTransaction implements Transaction {
   @override
   final Map<String, dynamic> runtimeParameters = {};
 
-  _PostgresTransaction(
-    this.executionContext,
-    this._session,
-  );
+  _PostgresTransaction(this.executionContext,
+      this._session,);
 
   @override
   Future<void> cancel() async {
@@ -947,9 +921,7 @@ class _PostgresTransaction implements Transaction {
   }
 
   @override
-  Future<void> setRuntimeParameters(
-    RuntimeParametersListBuilder builder,
-  ) async {
+  Future<void> setRuntimeParameters(RuntimeParametersListBuilder builder,) async {
     final parameters = builder(RuntimeParametersBuilder());
     for (var group in parameters) {
       for (var statement in group.buildStatements(isLocal: true)) {
@@ -962,10 +934,8 @@ class _PostgresTransaction implements Transaction {
 
 /// Extracts all the primary keys from the result set that are referenced by
 /// the given [relationTable].
-Set<T> _extractPrimaryKeyForRelation<T>(
-  Iterable<Map<String, dynamic>> resultSet,
-  TableRelation tableRelation,
-) {
+Set<T> _extractPrimaryKeyForRelation<T>(Iterable<Map<String, dynamic>> resultSet,
+    TableRelation tableRelation,) {
   var idFieldName = tableRelation.fieldQueryAliasWithJoins;
 
   var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
