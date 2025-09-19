@@ -1,0 +1,4 @@
+class: ImmutableObjectWithImmutableObject
+immutable: true
+fields:
+  immutableVariable: ImmutableObject

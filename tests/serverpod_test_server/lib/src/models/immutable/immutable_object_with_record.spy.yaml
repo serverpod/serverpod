@@ -1,0 +1,4 @@
+class: ImmutableObjectWithRecord
+immutable: true
+fields:
+  recordVariable: (int, String)

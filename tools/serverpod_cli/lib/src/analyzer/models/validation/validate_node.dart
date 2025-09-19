@@ -7,10 +7,10 @@ class ValidateNode {
   /// If true, the key must be present in the document.
   bool isRequired;
 
-  // If true, the key will be marked as deprecated with a warning.
+  /// If true, the key will be marked as deprecated with a warning.
   bool isDeprecated;
 
-  // If true, the key will be marked as deprecated with an error.
+  /// If true, the key will be marked as deprecated with an error.
   bool isRemoved;
 
   /// Set to communicate what the alternative implementation of a deprecated
@@ -27,7 +27,7 @@ class ValidateNode {
   List<SourceSpanException>? Function(String, dynamic, SourceSpan?)?
       valueRestriction;
 
-  // A set of keys that are mutually exclusive with this key.
+  /// A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;
 
   /// If true, the value can be a stringified comma separated version of

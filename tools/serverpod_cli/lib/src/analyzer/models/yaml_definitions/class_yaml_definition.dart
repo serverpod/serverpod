@@ -41,11 +41,19 @@ class ClassYamlDefinition {
             .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
       ),
       ValidateNode(
+        Keyword.isImmutable,
+        valueRestriction: BooleanValueRestriction().validate,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+      ),
+      ValidateNode(
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
         mutuallyExclusiveKeys: {
           Keyword.isSealed,
+          Keyword.isImmutable,
         },
       ),
       ValidateNode(
