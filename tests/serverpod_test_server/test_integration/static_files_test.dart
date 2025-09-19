@@ -134,7 +134,7 @@ void main() {
       });
     });
 
-    group('when requesting a nested static file', () {
+    group('when a nested static file is requested', () {
       setUp(() async {
         serverpod.webServer.addRoute(
           RouteStaticDirectory(
@@ -161,7 +161,7 @@ void main() {
       });
     });
 
-    group('a request with', () {
+    group('when a request is made with specific headers', () {
       setUp(() async {
         serverpod.webServer.addRoute(
           RouteStaticDirectory(
@@ -172,8 +172,8 @@ void main() {
         await serverpod.start();
       });
 
-      group('If-None-Match header', () {
-        test('should return ETag header with initial request', () async {
+      group('and an If-None-Match header', () {
+        test('then ETag header is returned with initial request', () async {
           var response = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
           );
@@ -183,7 +183,7 @@ void main() {
           expect(response.body, 'contents');
         });
 
-        test('should return 304 Not Modified when If-None-Match matches ETag',
+        test('then 304 Not Modified is returned when If-None-Match matches ETag',
             () async {
           // First request to get ETag
           var initialResponse = await client.get(
@@ -205,8 +205,8 @@ void main() {
         });
       });
 
-      group('If-Modified-Since header', () {
-        test('should return Last-Modified header with initial request',
+      group('and an If-Modified-Since header', () {
+        test('then Last-Modified header is returned with initial request',
             () async {
           var response = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
@@ -218,7 +218,7 @@ void main() {
         });
 
         test(
-            'should return 304 Not Modified when If-Modified-Since is after last modification',
+            'then 304 Not Modified is returned when If-Modified-Since is after last modification',
             () async {
           // First request to get Last-Modified
           var initialResponse = await client.get(
@@ -246,8 +246,8 @@ void main() {
         });
       });
 
-      group('Range header for partial content', () {
-        test('should support byte range requests', () async {
+      group('and a Range header for partial content', () {
+        test('then byte range requests are supported', () async {
           var response = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
             headers: {
@@ -260,7 +260,7 @@ void main() {
           expect(response.body, 'cont'); // First 4 bytes of 'contents'
         });
 
-        test('should support range request for end of file', () async {
+        test('then range request for end of file is supported', () async {
           var response = await http.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
             headers: {
@@ -273,7 +273,7 @@ void main() {
           expect(response.body, 'ents'); // Last 4 bytes of 'contents'
         });
 
-        test('should return 416 for invalid range', () async {
+        test('then 416 is returned for invalid range', () async {
           var response = await http.get(
               Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
               headers: {
@@ -284,8 +284,8 @@ void main() {
         });
       });
 
-      group('Content-Type header', () {
-        test('should set correct content-type for text files', () async {
+      group('and Content-Type header validation', () {
+        test('then correct content-type is set for text files', () async {
           var response = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
           );
@@ -295,8 +295,8 @@ void main() {
         });
       });
 
-      group('HEAD method support', () {
-        test('should support HEAD requests with same headers as GET', () async {
+      group('and HEAD method is used', () {
+        test('then HEAD requests are supported with same headers as GET', () async {
           // GET request for comparison
           var getResponse = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
