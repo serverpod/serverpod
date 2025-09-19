@@ -103,20 +103,10 @@ class WebServer {
     return (ctx) {
       final request = ctx.request;
 
-      String? authenticationKey;
-      for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
-        if (cookie.name == 'auth') {
-          authenticationKey = cookie.value;
-        }
-      }
-
-      var queryParameters = request.url.queryParameters;
-      authenticationKey ??= queryParameters['auth'];
-
       final session = WebCallSession(
         server: serverpod.server,
         endpoint: request.requestedUri.path,
-        authenticationKey: authenticationKey,
+        authenticationKey: request.headers.authorization?.headerValue,
         remoteInfo: request.remoteInfo,
       );
 
