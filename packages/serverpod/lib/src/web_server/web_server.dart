@@ -71,12 +71,17 @@ class WebServer {
     }
 
     try {
-      var context = _securityContext;
       final server = await serve(
-        _handleRequest,
+        const Pipeline()
+            .addMiddleware(
+              routeWith(router as Router<Route>, toHandler: _routeToHandler),
+            )
+            .addHandler(
+              respondWith((_) => Response.notFound()),
+            ),
         InternetAddress.anyIPv6,
         _config.port,
-        context: context,
+        securityContext: _securityContext,
       );
       _server = server;
       _actualPort = (server.adapter as IOAdapter).port;
@@ -94,56 +99,29 @@ class WebServer {
     return _running;
   }
 
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
-    final request = context.request;
+  Handler _routeToHandler(Route route) {
+    return (ctx) {
+      final request = ctx.request;
 
-    var headers = Headers.empty();
-    if (serverpod.runMode == ServerpodRunMode.production) {
-      headers = headers.transform((mh) {
-        mh.strictTransportSecurity = StrictTransportSecurityHeader(
-          maxAge: 63072000,
-          includeSubDomains: true,
-          preload: true,
-        );
-      });
-    }
-
-    Uri uri;
-    try {
-      uri = request.requestedUri;
-    } catch (e) {
-      logDebug('Malformed call, invalid uri. Client IP: ${request.remoteInfo}');
-      return context.withResponse(Response.badRequest());
-    }
-
-    String? authenticationKey;
-    for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
-      if (cookie.name == 'auth') {
-        authenticationKey = cookie.value;
+      String? authenticationKey;
+      for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
+        if (cookie.name == 'auth') {
+          authenticationKey = cookie.value;
+        }
       }
-    }
 
-    var queryParameters = request.url.queryParameters;
-    authenticationKey ??= queryParameters['auth'];
+      var queryParameters = request.url.queryParameters;
+      authenticationKey ??= queryParameters['auth'];
 
-    WebCallSession session = WebCallSession(
-      server: serverpod.server,
-      endpoint: uri.path,
-      authenticationKey: authenticationKey,
-      remoteInfo: request.remoteInfo,
-    );
+      final session = WebCallSession(
+        server: serverpod.server,
+        endpoint: request.requestedUri.path,
+        authenticationKey: authenticationKey,
+        remoteInfo: request.remoteInfo,
+      );
 
-    final match = router.lookup(
-      request.method.toMethod(),
-      uri.path,
-    );
-    if (match != null) {
-      final route = match.value;
-      return await _handleRouteCall(route, session, context);
-    }
-
-    // No matching patch found
-    return context.withResponse(Response.notFound());
+      return _handleRouteCall(route, session, ctx);
+    };
   }
 
   Future<HandledContext> _handleRouteCall(
@@ -164,7 +142,7 @@ class WebServer {
         request: request,
       );
 
-      return context.withResponse(Response.internalServerError());
+      return context.respond(Response.internalServerError());
     }
   }
 
@@ -226,26 +204,17 @@ class WebServer {
   }
 }
 
-/// Defines HTTP call methods for routes.
-enum RouteMethod {
-  /// HTTP get.
-  get,
-
-  /// HTTP post.
-  post,
-}
-
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
 abstract class Route {
-  /// The method this route will respond to, i.e. HTTP get or post.
-  final RouteMethod method;
+  /// The methods this route will respond to, i.e. HTTP get or post.
+  final Set<Method> methods;
   String? _matchPath;
 
   /// Creates a new [Route].
-  Route({this.method = RouteMethod.get});
+  Route({this.methods = const {Method.get}});
 
   /// Handles a call to this route.
   FutureOr<HandledContext> handleCall(Session session, NewContext context);
@@ -293,7 +262,7 @@ abstract class WidgetRoute extends Route {
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.withResponse(Response.seeOther(uri));
+      return context.respond(Response.seeOther(uri));
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
@@ -305,7 +274,7 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    return context.withResponse(Response.ok(
+    return context.respond(Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
       headers: headers,
     ));
@@ -320,7 +289,7 @@ extension type ServerpodRouter._(Router<Route> _router) {
 
   /// Adds a [Route] to the router.
   void add(Route route) =>
-      _router.add(route.method.toMethod(), route._matchPath!, route);
+      _router.anyOf(route.methods, route._matchPath!, route);
 
   /// Looks up a [Route] in the router based on the HTTP method and path.
   LookupResult<Route>? lookup(Method method, String path) =>
@@ -328,28 +297,4 @@ extension type ServerpodRouter._(Router<Route> _router) {
 
   /// Checks if the router is empty.
   bool get isEmpty => _router.isEmpty;
-}
-
-// Temporary helper method
-extension on RouteMethod {
-  Method toMethod() => switch (this) {
-        RouteMethod.get => Method.get,
-        RouteMethod.post => Method.post,
-      };
-}
-
-// Temporary helper method
-extension on RequestMethod {
-  Method toMethod() => switch (this) {
-        RequestMethod.get => Method.get,
-        RequestMethod.head => Method.head,
-        RequestMethod.post => Method.post,
-        RequestMethod.put => Method.put,
-        RequestMethod.delete => Method.delete,
-        RequestMethod.patch => Method.patch,
-        RequestMethod.options => Method.options,
-        RequestMethod.trace => Method.trace,
-        RequestMethod.connect => Method.connect,
-        _ => throw UnimplementedError(),
-      };
 }

@@ -38,7 +38,7 @@ abstract class TestHttpServer {
     HttpRequestHandler httpRequestHandler,
   ) async {
     FutureOr<HandledContext> requestHandler(NewContext context) async {
-      return context.withResponse(await httpRequestHandler(context.request));
+      return context.respond(await httpRequestHandler(context.request));
     }
 
     final adapter = IOAdapter(await HttpServer.bind(
