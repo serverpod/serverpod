@@ -1,0 +1,16 @@
+### Serialization types for `ColumnSerializable` columns.
+### The `json` and `jsonb` data types accept almost identical sets of values as input.
+### The major practical difference is one of efficiency.
+### See: https://www.postgresql.org/docs/current/datatype-json.html
+enum: SerializationDataType
+serialized: byName
+values:
+  ### The `json` data type stores an exact copy of the input text,
+  ### which processing functions must reparse on each execution
+  - json
+
+  ### The `jsonb` data is stored in a decomposed binary format
+  ### that makes it slightly slower to input due to added conversion overhead,
+  ### but significantly faster to process, since no reparsing is needed.
+  ### `jsonb` also supports indexing, which can be a significant advantage.
+  - jsonb

@@ -1703,4 +1703,299 @@ void main() {
       },
     );
   });
+
+  group('Given tables with gin indexes', () {
+    test(
+      'when gin indexes have different operator classes then mismatches include operator class mismatch.',
+          () {
+        var tableA = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonb,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonbPath,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('jsonb'));
+        expect(mismatches.first.subs.first.found, equals('jsonbPath'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+
+    test(
+      'when one index is gin type and the other is not then mismatches include type mismatch.',
+          () {
+        var tableA = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonbPath,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'btree',
+              isUnique: false,
+              isPrimary: false,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 2);
+        expect(mismatches.first.subs.first.expected, 'gin');
+        expect(mismatches.first.subs.first.found, 'btree');
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+        expect(mismatches.first.subs.last.expected, 'jsonbPath');
+        expect(mismatches.first.subs.last.found, isNull);
+        expect(mismatches.first.subs.last.isMissing, isTrue);
+      },
+    );
+
+    test(
+      'when gin indexes are identical then no mismatches are reported.',
+          () {
+        var tableA = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonbPath,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonbPath,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 0);
+      },
+    );
+
+    test(
+      'when gin indexes have different operator classes then mismatches include gin operator class mismatch.',
+          () {
+        var tableA = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonb,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var tableB = TableDefinition(
+          name: 'gin_table',
+          schema: 'public',
+          columns: [
+            ColumnDefinition(
+              name: 'jsonDoc',
+              columnType: ColumnType.jsonb,
+              isNullable: false,
+              dartType: 'List<String>',
+            ),
+          ],
+          indexes: [
+            IndexDefinition(
+              indexName: 'idx_jsonDoc',
+              elements: [
+                IndexElementDefinition(
+                  type: IndexElementDefinitionType.column,
+                  definition: 'jsonDoc',
+                ),
+              ],
+              type: 'gin',
+              isUnique: false,
+              isPrimary: false,
+              ginOperatorClass: GinOperatorClass.jsonbPath,
+            ),
+          ],
+          foreignKeys: [],
+          managed: true,
+        );
+
+        var mismatches = tableA.like(tableB);
+
+        expect(mismatches.length, 1);
+        expect(mismatches.first, isA<IndexComparisonWarning>());
+        expect(mismatches.first.subs.length, 1);
+        expect(mismatches.first.subs.first.expected, equals('jsonb'));
+        expect(mismatches.first.subs.first.found, equals('jsonbPath'));
+        expect(mismatches.first.subs.first.isMismatch, isTrue);
+      },
+    );
+  });
 }

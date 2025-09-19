@@ -7,6 +7,7 @@ class IndexDefinitionBuilder {
   bool _isUnique;
   bool _isPrimary;
   String? _predicate;
+  GinOperatorClass? _ginOperatorClass;
   VectorDistanceFunction? _vectorDistanceFunction;
   ColumnType? _vectorColumnType;
   Map<String, String>? _parameters;
@@ -18,6 +19,7 @@ class IndexDefinitionBuilder {
         _isUnique = false,
         _isPrimary = false,
         _predicate = null,
+        _ginOperatorClass = null,
         _vectorDistanceFunction = null,
         _vectorColumnType = null,
         _parameters = null;
@@ -30,6 +32,7 @@ class IndexDefinitionBuilder {
       isUnique: _isUnique,
       isPrimary: _isPrimary,
       predicate: _predicate,
+      ginOperatorClass: _ginOperatorClass,
       vectorDistanceFunction: _vectorDistanceFunction,
       vectorColumnType: _vectorColumnType,
       parameters: _parameters,
@@ -79,6 +82,13 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withPredicate(String? predicate) {
     _predicate = predicate;
+    return this;
+  }
+
+  IndexDefinitionBuilder withGinOperatorClass(
+    GinOperatorClass? ginOperatorClass,
+  ) {
+    _ginOperatorClass = ginOperatorClass;
     return this;
   }
 

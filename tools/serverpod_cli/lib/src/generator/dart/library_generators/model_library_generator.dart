@@ -2234,6 +2234,12 @@ class SerializableModelLibraryGenerator {
               )
             ]
           : [])).call(constructorArgs, {
+      if (field.type.isColumnSerializable &&
+          field.type.serializationDataType != null)
+        'serializationDataType': refer(
+          'SerializationDataType.${field.type.serializationDataType!.name}',
+          serverpodProtocolUrl(serverCode),
+        ),
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
