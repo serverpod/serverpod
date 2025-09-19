@@ -30,9 +30,9 @@ CREATE TABLE "object_with_jsonb_class_level" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250916163447501', now())
+    VALUES ('serverpod_test', '20250919124540937', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250916163447501', "timestamp" = now();
+    DO UPDATE SET "version" = '20250919124540937', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

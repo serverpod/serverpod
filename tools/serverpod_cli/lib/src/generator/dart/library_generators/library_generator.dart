@@ -1656,6 +1656,11 @@ extension on DatabaseDefinition {
                   'ginOperatorClass': refer(
                       'GinOperatorClass.${index.ginOperatorClass!.name}',
                       serverpodProtocolUrl(serverCode)),
+                if (index.type == 'gin' && index.ginOperatorClass == null)
+                  // PostgreSQL implicitly adds the `jsonb_ops` operator class to the gin index if none is specified
+                  'ginOperatorClass': refer(
+                      'GinOperatorClass.${GinOperatorClass.jsonb.name}',
+                      serverpodProtocolUrl(serverCode)),
                 if (index.vectorDistanceFunction != null)
                   'vectorDistanceFunction': refer(
                       'VectorDistanceFunction.${index.vectorDistanceFunction!.name}',

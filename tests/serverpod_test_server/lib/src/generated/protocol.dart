@@ -4074,6 +4074,7 @@ class Protocol extends _i1.SerializationManagerServer {
           type: 'gin',
           isUnique: false,
           isPrimary: false,
+          ginOperatorClass: _i2.GinOperatorClass.jsonb,
         ),
         _i2.IndexDefinition(
           indexName: 'jsonb_index_gin_with_operator_class',
