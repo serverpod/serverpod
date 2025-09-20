@@ -18,7 +18,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   Caller? _caller;
 
   /// The authentication key provider to use.
-  late final Map<AuthStrategy, ClientAuthKeyProvider> _authKeyProviderDelegates;
+  late final Map<String, ClientAuthKeyProvider> _authKeyProviderDelegates;
 
   /// The secure storage to keep user authentication info.
   final ClientAuthInfoStorage storage;
@@ -31,7 +31,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
     /// The authentication key provider to use for each auth strategy. If not
     /// provided, a default one will be created as needed.
-    Map<AuthStrategy, ClientAuthKeyProvider>? authKeyProviderDelegates,
+    Map<String, ClientAuthKeyProvider>? authKeyProviderDelegates,
 
     /// The secure storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
@@ -66,13 +66,13 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// The authentication key provider to use for the current auth strategy.
   ClientAuthKeyProvider? get authKeyProviderDelegate {
-    final authStrategy = authInfo.value?.authStrategy;
-    if (authStrategy == null) return null;
+    final authStrategyName = authInfo.value?.authStrategy;
+    if (authStrategyName == null) return null;
 
-    var authKeyProvider = _authKeyProviderDelegates[authStrategy];
+    var authKeyProvider = _authKeyProviderDelegates[authStrategyName];
     if (authKeyProvider != null) return authKeyProvider;
 
-    switch (authStrategy) {
+    switch (AuthStrategy.fromJson(authStrategyName)) {
       case AuthStrategy.jwt:
         authKeyProvider = JwtAuthKeyProvider(
           getAuthInfo: () async => authInfo.value,
@@ -85,11 +85,11 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         );
       default:
         throw UnimplementedError(
-          'No authentication key provider found for auth strategy: $authStrategy',
+          'No authentication key provider found for auth strategy: $authStrategyName',
         );
     }
 
-    _authKeyProviderDelegates[authStrategy] = authKeyProvider;
+    _authKeyProviderDelegates[authStrategyName] = authKeyProvider;
     return authKeyProvider;
   }
 

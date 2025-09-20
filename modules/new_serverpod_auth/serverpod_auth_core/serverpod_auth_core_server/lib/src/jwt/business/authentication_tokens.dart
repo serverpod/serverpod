@@ -124,7 +124,7 @@ abstract final class AuthenticationTokens {
     final token = _jwtUtil.createJwt(refreshToken);
 
     return AuthSuccess(
-      authStrategy: AuthStrategy.jwt,
+      authStrategy: AuthStrategy.jwt.name,
       token: token,
       tokenExpiresAt: _jwtUtil.extractExpirationDate(token),
       refreshToken: RefreshTokenString.buildRefreshTokenString(
@@ -153,7 +153,7 @@ abstract final class AuthenticationTokens {
     final jwtData = _jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
 
     return AuthSuccess(
-      authStrategy: AuthStrategy.jwt,
+      authStrategy: AuthStrategy.jwt.name,
       token: refreshesTokenPair.accessToken,
       tokenExpiresAt: jwtData.tokenExpiresAt,
       refreshToken: refreshesTokenPair.refreshToken,

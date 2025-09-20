@@ -186,7 +186,7 @@ abstract final class AuthSessions {
     );
 
     return AuthSuccess(
-      authStrategy: AuthStrategy.session,
+      authStrategy: AuthStrategy.session.name,
       token: buildSessionKey(
         secret: secret,
         authSessionId: authSession.id!,

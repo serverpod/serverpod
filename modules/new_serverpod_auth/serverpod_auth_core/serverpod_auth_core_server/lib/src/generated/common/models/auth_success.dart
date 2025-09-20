@@ -11,7 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../common/models/auth_strategy.dart' as _i2;
 
 abstract class AuthSuccess
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -25,7 +24,7 @@ abstract class AuthSuccess
   });
 
   factory AuthSuccess({
-    required _i2.AuthStrategy authStrategy,
+    required String authStrategy,
     required String token,
     DateTime? tokenExpiresAt,
     String? refreshToken,
@@ -35,8 +34,7 @@ abstract class AuthSuccess
 
   factory AuthSuccess.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthSuccess(
-      authStrategy: _i2.AuthStrategy.fromJson(
-          (jsonSerialization['authStrategy'] as String)),
+      authStrategy: jsonSerialization['authStrategy'] as String,
       token: jsonSerialization['token'] as String,
       tokenExpiresAt: jsonSerialization['tokenExpiresAt'] == null
           ? null
@@ -52,7 +50,10 @@ abstract class AuthSuccess
   }
 
   /// The authentication strategy used for this session.
-  _i2.AuthStrategy authStrategy;
+  ///
+  /// Stores the [AuthStrategy] used to generate this authentication response.
+  /// Stored as string to allow users to extend with custom authentication methods.
+  String authStrategy;
 
   /// The authentication token, in the case of JWT this is the access token.
   String token;
@@ -75,7 +76,7 @@ abstract class AuthSuccess
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   AuthSuccess copyWith({
-    _i2.AuthStrategy? authStrategy,
+    String? authStrategy,
     String? token,
     DateTime? tokenExpiresAt,
     String? refreshToken,
@@ -85,7 +86,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJson() {
     return {
-      'authStrategy': authStrategy.toJson(),
+      'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
       if (refreshToken != null) 'refreshToken': refreshToken,
@@ -97,7 +98,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      'authStrategy': authStrategy.toJson(),
+      'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
       if (refreshToken != null) 'refreshToken': refreshToken,
@@ -116,7 +117,7 @@ class _Undefined {}
 
 class _AuthSuccessImpl extends AuthSuccess {
   _AuthSuccessImpl({
-    required _i2.AuthStrategy authStrategy,
+    required String authStrategy,
     required String token,
     DateTime? tokenExpiresAt,
     String? refreshToken,
@@ -136,7 +137,7 @@ class _AuthSuccessImpl extends AuthSuccess {
   @_i1.useResult
   @override
   AuthSuccess copyWith({
-    _i2.AuthStrategy? authStrategy,
+    String? authStrategy,
     String? token,
     Object? tokenExpiresAt = _Undefined,
     Object? refreshToken = _Undefined,

@@ -198,6 +198,7 @@ void main() {
   group('Given a ClientAuthSessionManager with custom provider delegates', () {
     late JwtAuthKeyProvider customJwtProvider;
     late SasAuthKeyProvider customSasProvider;
+    late UsrAuthKeyProvider customUsrProvider;
 
     setUp(() {
       customJwtProvider = JwtAuthKeyProvider(
@@ -210,11 +211,14 @@ void main() {
         getAuthInfo: () async => sasAuthSuccess,
       );
 
+      customUsrProvider = UsrAuthKeyProvider();
+
       client.authSessionManager = ClientAuthSessionManager(
         storage: TestStorage(),
         authKeyProviderDelegates: {
-          AuthStrategy.jwt: customJwtProvider,
-          AuthStrategy.session: customSasProvider,
+          AuthStrategy.jwt.name: customJwtProvider,
+          AuthStrategy.session.name: customSasProvider,
+          'custom': customUsrProvider,
         },
       );
     });
@@ -236,5 +240,35 @@ void main() {
 
       expect(identical(delegate, customSasProvider), isTrue);
     });
+
+    test(
+        'when getting auth key provider delegate for custom auth info '
+        'then it returns the custom provider instance.', () async {
+      await client.auth.updateSignedInUser(
+        sasAuthSuccess.copyWith(authStrategy: 'custom'),
+      );
+
+      final delegate = client.auth.authKeyProviderDelegate;
+
+      expect(identical(delegate, customUsrProvider), isTrue);
+    });
+
+    test(
+        'when getting auth key provider delegate for unsupported auth info '
+        'then it throws an exception.', () async {
+      await client.auth.updateSignedInUser(
+        sasAuthSuccess.copyWith(authStrategy: 'unsupported'),
+      );
+
+      await expectLater(
+        () => client.auth.authKeyProviderDelegate,
+        throwsA(isA<UnimplementedError>()),
+      );
+    });
   });
+}
+
+class UsrAuthKeyProvider implements ClientAuthKeyProvider {
+  @override
+  Future<String?> get authHeaderValue async => 'token';
 }

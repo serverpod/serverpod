@@ -138,7 +138,7 @@ class TestCachedAuthInfoStorage extends CachedClientAuthInfoStorage {
 }
 
 final _authSuccess = AuthSuccess(
-  authStrategy: AuthStrategy.session,
+  authStrategy: AuthStrategy.session.name,
   token: 'session-key',
   authUserId: UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
   scopeNames: {'test1', 'test2'},
