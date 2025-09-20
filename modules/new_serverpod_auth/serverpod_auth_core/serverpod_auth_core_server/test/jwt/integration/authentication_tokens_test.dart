@@ -44,6 +44,29 @@ void main() {
       );
     });
 
+    test('when requesting a new token pair, then expiration date is returned.',
+        () async {
+      final now = DateTime.now();
+      late AuthSuccess authSuccess;
+
+      await withClock(Clock.fixed(now), () async {
+        authSuccess = await AuthenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        );
+      });
+
+      final expirationExpected = now
+          .toUtc()
+          .add(AuthenticationTokens.config.accessTokenLifetime)
+          .truncatedToSecond();
+
+      expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+      expect(authSuccess.tokenExpiresAt, expirationExpected);
+    });
+
     test(
         'when requesting a new token pair with scopes, then those are visible on the initial access token.',
         () async {
@@ -176,16 +199,10 @@ void main() {
         refreshToken: authSuccess.refreshToken!,
       );
 
-      final decodedToken = JWT.decode(authSuccess.token);
-      final newDecodedToken = JWT.decode(newTokenPair.accessToken);
-
-      UuidValue getRefreshToken(final JWT jwt) {
-        const claimName = 'dev.serverpod.refreshTokenId';
-        final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;
-        return UuidValue.withValidation(refreshTokenIdClaim);
-      }
-
-      expect(getRefreshToken(decodedToken), getRefreshToken(newDecodedToken));
+      expect(
+        _extractRefreshTokenId(authSuccess.token),
+        _extractRefreshTokenId(newTokenPair.accessToken),
+      );
     });
 
     test(
@@ -215,6 +232,67 @@ void main() {
 
       expect((newDecodedToken.payload as Map)['string'], 'foo');
       expect((newDecodedToken.payload as Map)['int'], 1);
+    });
+
+    test(
+        'when refreshing the tokens, then a new AuthSuccess is returned with new tokens, but same auth info.',
+        () async {
+      final newAuthSuccess = await AuthenticationTokens.refreshAccessToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      expect(newAuthSuccess.authStrategy, authSuccess.authStrategy);
+      expect(newAuthSuccess.authUserId, authSuccess.authUserId);
+      expect(newAuthSuccess.scopeNames, authSuccess.scopeNames);
+      expect(newAuthSuccess.token, isNot(authSuccess.token));
+      expect(newAuthSuccess.refreshToken, isNot(authSuccess.refreshToken));
+    });
+
+    test(
+        'when calling `destroyRefreshToken` with a valid refresh token ID, then it returns true.',
+        () async {
+      final deleted = await AuthenticationTokens.destroyRefreshToken(
+        session,
+        refreshTokenId: _extractRefreshTokenId(authSuccess.token),
+      );
+
+      expect(deleted, isTrue);
+    });
+
+    test(
+        'when calling `destroyRefreshToken` with an invalid refresh token ID, then it returns false.',
+        () async {
+      final deleted = await AuthenticationTokens.destroyRefreshToken(
+        session,
+        refreshTokenId: const Uuid().v4obj(),
+      );
+
+      expect(deleted, isFalse);
+    });
+
+    test(
+        'when calling `destroyAllRefreshTokens`, then it returns the list of deleted token IDs.',
+        () async {
+      final newAuthSuccesses = await List.generate(
+        3,
+        (final _) async => AuthenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+        ),
+      ).wait;
+
+      final deletedIds = await AuthenticationTokens.destroyAllRefreshTokens(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(deletedIds.toSet(), {
+        _extractRefreshTokenId(authSuccess.token),
+        for (final authSuccess in newAuthSuccesses)
+          _extractRefreshTokenId(authSuccess.token),
+      });
     });
 
     test(
@@ -557,4 +635,16 @@ void main() {
       expect(authSuccess, isNotNull);
     });
   });
+}
+
+UuidValue _extractRefreshTokenId(final String accessToken) {
+  final jwt = JWT.decode(accessToken);
+  const claimName = 'dev.serverpod.refreshTokenId';
+  final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;
+  return UuidValue.withValidation(refreshTokenIdClaim);
+}
+
+extension on DateTime {
+  DateTime truncatedToSecond() =>
+      DateTime.utc(year, month, day, hour, minute, second);
 }

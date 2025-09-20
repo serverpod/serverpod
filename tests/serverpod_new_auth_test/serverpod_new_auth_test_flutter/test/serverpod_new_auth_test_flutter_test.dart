@@ -11,14 +11,14 @@ void main() {
       final client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
 
-      final testUser = await client.sessionTest.createTestUser();
-      final authentication = await client.sessionTest.createSession(testUser);
+      final testUser = await client.authTest.createTestUser();
+      final authentication = await client.authTest.createSasToken(testUser);
 
-      expect(await client.sessionTest.checkSession(testUser), isFalse);
+      expect(await client.authTest.checkSession(testUser), isFalse);
 
       await client.auth.updateSignedInUser(authentication);
 
-      expect(await client.sessionTest.checkSession(testUser), isTrue);
+      expect(await client.authTest.checkSession(testUser), isTrue);
     },
   );
 }

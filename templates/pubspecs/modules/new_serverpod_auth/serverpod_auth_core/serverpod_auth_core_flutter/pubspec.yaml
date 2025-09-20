@@ -14,6 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  clock: ^1.1.1
   flutter_secure_storage: ^9.2.4
   meta: ^1.15.0
   serverpod_auth_core_client: SERVERPOD_VERSION

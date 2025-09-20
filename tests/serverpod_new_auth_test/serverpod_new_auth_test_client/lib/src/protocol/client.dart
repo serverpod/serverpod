@@ -12,10 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i5;
+    as _i4;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
 import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i7;
@@ -24,6 +24,62 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i9;
 import 'protocol.dart' as _i10;
+
+/// Endpoint for testing authentication.
+/// {@category Endpoint}
+class EndpointAuthTest extends _i1.EndpointRef {
+  EndpointAuthTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'authTest';
+
+  /// Creates a new test user.
+  _i2.Future<_i3.UuidValue> createTestUser() =>
+      caller.callServerEndpoint<_i3.UuidValue>(
+        'authTest',
+        'createTestUser',
+        {},
+      );
+
+  /// Creates a new session authentication for the test user.
+  _i2.Future<_i4.AuthSuccess> createSasToken(_i3.UuidValue authUserId) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'authTest',
+        'createSasToken',
+        {'authUserId': authUserId},
+      );
+
+  _i2.Future<void> deleteSasTokens(_i3.UuidValue authUserId) =>
+      caller.callServerEndpoint<void>(
+        'authTest',
+        'deleteSasTokens',
+        {'authUserId': authUserId},
+      );
+
+  /// Creates a new JWT token for the test user.
+  _i2.Future<_i4.AuthSuccess> createJwtToken(_i3.UuidValue authUserId) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'authTest',
+        'createJwtToken',
+        {'authUserId': authUserId},
+      );
+
+  /// Deletes all refresh tokens for the test user.
+  _i2.Future<void> deleteJwtRefreshTokens(_i3.UuidValue authUserId) =>
+      caller.callServerEndpoint<void>(
+        'authTest',
+        'deleteJwtRefreshTokens',
+        {'authUserId': authUserId},
+      );
+
+  /// Checks if the session is authenticated for the test user.
+  _i2.Future<bool> checkSession(_i3.UuidValue authUserId) =>
+      caller.callServerEndpoint<bool>(
+        'authTest',
+        'checkSession',
+        {'authUserId': authUserId},
+      );
+}
 
 /// {@category Endpoint}
 class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
@@ -46,11 +102,11 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i3.AuthKey> createLegacySession({
+  _i2.Future<_i5.AuthKey> createLegacySession({
     required int userId,
     required Set<String> scopes,
   }) =>
-      caller.callServerEndpoint<_i3.AuthKey>(
+      caller.callServerEndpoint<_i5.AuthKey>(
         'emailAccountBackwardsCompatibilityTest',
         'createLegacySession',
         {
@@ -73,8 +129,8 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
       );
 
   /// Returns the new auth user ID.
-  _i2.Future<_i4.UuidValue?> getNewAuthUserId({required int userId}) =>
-      caller.callServerEndpoint<_i4.UuidValue?>(
+  _i2.Future<_i3.UuidValue?> getNewAuthUserId({required int userId}) =>
+      caller.callServerEndpoint<_i3.UuidValue?>(
         'emailAccountBackwardsCompatibilityTest',
         'getNewAuthUserId',
         {'userId': userId},
@@ -128,11 +184,11 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// In case an expected error occurs, this throws a
   /// [EmailAccountLoginException].
   /// {@endtemplate}
-  _i2.Future<_i5.AuthSuccess> login({
+  _i2.Future<_i4.AuthSuccess> login({
     required String email,
     required String password,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'emailAccount',
         'login',
         {
@@ -177,11 +233,11 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
-  _i2.Future<_i5.AuthSuccess> finishRegistration({
-    required _i4.UuidValue accountRequestId,
+  _i2.Future<_i4.AuthSuccess> finishRegistration({
+    required _i3.UuidValue accountRequestId,
     required String verificationCode,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'emailAccount',
         'finishRegistration',
         {
@@ -221,12 +277,12 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// If the reset was successful, a new session is returned and
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
-  _i2.Future<_i5.AuthSuccess> finishPasswordReset({
-    required _i4.UuidValue passwordResetRequestId,
+  _i2.Future<_i4.AuthSuccess> finishPasswordReset({
+    required _i3.UuidValue passwordResetRequestId,
     required String verificationCode,
     required String newPassword,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'emailAccount',
         'finishPasswordReset',
         {
@@ -247,8 +303,8 @@ class EndpointGoogleAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
   @override
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
-  _i2.Future<_i5.AuthSuccess> authenticate({required String idToken}) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+  _i2.Future<_i4.AuthSuccess> authenticate({required String idToken}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
         'authenticate',
         {'idToken': idToken},
@@ -264,8 +320,8 @@ class EndpointGoogleAccount extends _i1.EndpointRef {
   String get name => 'googleAccount';
 
   /// Logs in or registers an [AuthUser] for the given Google account ID.
-  _i2.Future<_i5.AuthSuccess> authenticate({required String idToken}) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+  _i2.Future<_i4.AuthSuccess> authenticate({required String idToken}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleAccount',
         'authenticate',
         {'idToken': idToken},
@@ -284,11 +340,11 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
-  _i2.Future<_i5.AuthSuccess> login({
+  _i2.Future<_i4.AuthSuccess> login({
     required String email,
     required String password,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'passwordImportingEmailAccount',
         'login',
         {
@@ -329,11 +385,11 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
-  _i2.Future<_i5.AuthSuccess> finishRegistration({
-    required _i4.UuidValue accountRequestId,
+  _i2.Future<_i4.AuthSuccess> finishRegistration({
+    required _i3.UuidValue accountRequestId,
     required String verificationCode,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'passwordImportingEmailAccount',
         'finishRegistration',
         {
@@ -373,12 +429,12 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   /// If the reset was successful, a new session is returned and
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
-  _i2.Future<_i5.AuthSuccess> finishPasswordReset({
-    required _i4.UuidValue passwordResetRequestId,
+  _i2.Future<_i4.AuthSuccess> finishPasswordReset({
+    required _i3.UuidValue passwordResetRequestId,
     required String verificationCode,
     required String newPassword,
   }) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
+      caller.callServerEndpoint<_i4.AuthSuccess>(
         'passwordImportingEmailAccount',
         'finishPasswordReset',
         {
@@ -386,35 +442,6 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
           'verificationCode': verificationCode,
           'newPassword': newPassword,
         },
-      );
-}
-
-/// {@category Endpoint}
-class EndpointSessionTest extends _i1.EndpointRef {
-  EndpointSessionTest(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'sessionTest';
-
-  _i2.Future<_i4.UuidValue> createTestUser() =>
-      caller.callServerEndpoint<_i4.UuidValue>(
-        'sessionTest',
-        'createTestUser',
-        {},
-      );
-
-  _i2.Future<_i5.AuthSuccess> createSession(_i4.UuidValue authUserId) =>
-      caller.callServerEndpoint<_i5.AuthSuccess>(
-        'sessionTest',
-        'createSession',
-        {'authUserId': authUserId},
-      );
-
-  _i2.Future<bool> checkSession(_i4.UuidValue authUserId) =>
-      caller.callServerEndpoint<bool>(
-        'sessionTest',
-        'checkSession',
-        {'authUserId': authUserId},
       );
 }
 
@@ -427,8 +454,8 @@ class EndpointUserProfile extends _i1.EndpointRef {
   String get name => 'userProfile';
 
   /// Returns the user profile of the current user.
-  _i2.Future<_i5.UserProfileModel> get() =>
-      caller.callServerEndpoint<_i5.UserProfileModel>(
+  _i2.Future<_i4.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'get',
         {},
@@ -436,32 +463,32 @@ class EndpointUserProfile extends _i1.EndpointRef {
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
-  _i2.Future<_i5.UserProfileModel> removeUserImage() =>
-      caller.callServerEndpoint<_i5.UserProfileModel>(
+  _i2.Future<_i4.UserProfileModel> removeUserImage() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'removeUserImage',
         {},
       );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<_i5.UserProfileModel> setUserImage(_i6.ByteData image) =>
-      caller.callServerEndpoint<_i5.UserProfileModel>(
+  _i2.Future<_i4.UserProfileModel> setUserImage(_i6.ByteData image) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'setUserImage',
         {'image': image},
       );
 
   /// Changes the name of a user.
-  _i2.Future<_i5.UserProfileModel> changeUserName(String? userName) =>
-      caller.callServerEndpoint<_i5.UserProfileModel>(
+  _i2.Future<_i4.UserProfileModel> changeUserName(String? userName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'changeUserName',
         {'userName': userName},
       );
 
   /// Changes the full name of a user.
-  _i2.Future<_i5.UserProfileModel> changeFullName(String? fullName) =>
-      caller.callServerEndpoint<_i5.UserProfileModel>(
+  _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'changeFullName',
         {'fullName': fullName},
@@ -471,21 +498,21 @@ class EndpointUserProfile extends _i1.EndpointRef {
 class Modules {
   Modules(Client client) {
     serverpod_auth_bridge = _i7.Caller(client);
-    serverpod_auth_core = _i5.Caller(client);
+    serverpod_auth_core = _i4.Caller(client);
     serverpod_auth_idp = _i8.Caller(client);
     serverpod_auth_migration = _i9.Caller(client);
-    auth = _i3.Caller(client);
+    auth = _i5.Caller(client);
   }
 
   late final _i7.Caller serverpod_auth_bridge;
 
-  late final _i5.Caller serverpod_auth_core;
+  late final _i4.Caller serverpod_auth_core;
 
   late final _i8.Caller serverpod_auth_idp;
 
   late final _i9.Caller serverpod_auth_migration;
 
-  late final _i3.Caller auth;
+  late final _i5.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -514,6 +541,7 @@ class Client extends _i1.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
+    authTest = EndpointAuthTest(this);
     emailAccountBackwardsCompatibilityTest =
         EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
@@ -521,10 +549,11 @@ class Client extends _i1.ServerpodClientShared {
         EndpointGoogleAccountBackwardsCompatibilityTest(this);
     googleAccount = EndpointGoogleAccount(this);
     passwordImportingEmailAccount = EndpointPasswordImportingEmailAccount(this);
-    sessionTest = EndpointSessionTest(this);
     userProfile = EndpointUserProfile(this);
     modules = Modules(this);
   }
+
+  late final EndpointAuthTest authTest;
 
   late final EndpointEmailAccountBackwardsCompatibilityTest
       emailAccountBackwardsCompatibilityTest;
@@ -539,14 +568,13 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointPasswordImportingEmailAccount
       passwordImportingEmailAccount;
 
-  late final EndpointSessionTest sessionTest;
-
   late final EndpointUserProfile userProfile;
 
   late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'authTest': authTest,
         'emailAccountBackwardsCompatibilityTest':
             emailAccountBackwardsCompatibilityTest,
         'emailAccount': emailAccount,
@@ -554,7 +582,6 @@ class Client extends _i1.ServerpodClientShared {
             googleAccountBackwardsCompatibilityTest,
         'googleAccount': googleAccount,
         'passwordImportingEmailAccount': passwordImportingEmailAccount,
-        'sessionTest': sessionTest,
         'userProfile': userProfile,
       };
 

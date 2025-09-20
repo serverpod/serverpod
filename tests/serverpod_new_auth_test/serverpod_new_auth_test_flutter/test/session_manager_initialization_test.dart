@@ -7,12 +7,16 @@ import 'utils/test_storage.dart';
 void main() {
   late TestStorage storage;
   late Client client;
+  late AuthSuccess authSuccess;
 
   group('Given a `ClientAuthSessionManager` created with an empty storage', () {
-    setUpAll(() {
+    setUpAll(() async {
       storage = TestStorage();
       client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createJwtToken(testUser);
     });
 
     test('when calling initialize, then it completes.', () async {
@@ -26,7 +30,7 @@ void main() {
 
     group('when logging in', () {
       setUpAll(() async {
-        await client.auth.updateSignedInUser(_authSuccess);
+        await client.auth.updateSignedInUser(authSuccess);
       });
 
       test('then `isAuthenticated` returns `true`.', () {
@@ -35,26 +39,51 @@ void main() {
 
       test('then `authHeaderValue` returns the session key as a Bearer token.',
           () async {
-        expect(await client.auth.authHeaderValue, 'Bearer session-key');
+        final token = authSuccess.token;
+        expect(await client.auth.authHeaderValue, 'Bearer $token');
       });
 
       test('then the auth info value matches the one used to log in.', () {
         final authInfo = client.auth.authInfo.value;
 
         expect(authInfo, isNotNull);
-        expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
+        expect(client.auth.authInfo.value.toString(), authSuccess.toString());
       });
 
       test('then the storage contains the auth info.', () async {
-        expect((await storage.get()).toString(), _authSuccess.toString());
+        expect((await storage.get()).toString(), authSuccess.toString());
       });
     });
 
-    group('when logging out', () {
+    group('when logging out on the current device', () {
       setUpAll(() async {
-        await client.auth.updateSignedInUser(_authSuccess);
+        await client.auth.updateSignedInUser(authSuccess);
         expect(client.auth.isAuthenticated, isTrue);
         await client.auth.signOutDevice();
+      });
+
+      test('then `isAuthenticated` returns `false`.', () {
+        expect(client.auth.isAuthenticated, isFalse);
+      });
+
+      test('then `authHeaderValue` returns `null`.', () async {
+        expect(await client.auth.authHeaderValue, isNull);
+      });
+
+      test('then the auth info value is `null`.', () {
+        expect(client.auth.authInfo.value, isNull);
+      });
+
+      test('then the storage is empty.', () async {
+        expect((await storage.get()), isNull);
+      });
+    });
+
+    group('when logging out from all devices', () {
+      setUpAll(() async {
+        await client.auth.updateSignedInUser(authSuccess);
+        expect(client.auth.isAuthenticated, isTrue);
+        await client.auth.signOutAllDevices();
       });
 
       test('then `isAuthenticated` returns `false`.', () {
@@ -76,23 +105,27 @@ void main() {
   });
 
   group(
-      'Given a `ClientAuthSessionManager` which has been initialized with a previous session from storage',
+      'Given a `ClientAuthSessionManager` which has been initialized with a previous SAS token from storage',
       () {
     setUp(() async {
       storage = TestStorage();
       client = Client('http://localhost:8080/')
         ..authSessionManager = ClientAuthSessionManager(storage: storage);
 
-      await storage.set(_authSuccess);
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createSasToken(testUser);
+
+      await storage.set(authSuccess);
     });
 
     test('when calling restore, then auth info is available.', () async {
       await client.auth.restore();
+      final token = authSuccess.token;
 
       expect(client.auth.authInfo.value, isNotNull);
       expect(client.auth.isAuthenticated, isTrue);
-      expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
-      expect(await client.auth.authHeaderValue, 'Bearer session-key');
+      expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+      expect(await client.auth.authHeaderValue, 'Bearer $token');
     });
 
     test('when initialized again, then auth info is available.', () async {
@@ -100,8 +133,120 @@ void main() {
 
       expect(client.auth.authInfo.value, isNotNull);
       expect(client.auth.isAuthenticated, isTrue);
-      expect(client.auth.authInfo.value.toString(), _authSuccess.toString());
-      expect(await client.auth.authHeaderValue, 'Bearer session-key');
+      expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+    });
+  });
+
+  group(
+      'Given a `ClientAuthSessionManager` which has been initialized with a previous JWT token from storage',
+      () {
+    setUp(() async {
+      storage = TestStorage();
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createJwtToken(testUser);
+
+      await storage.set(authSuccess);
+    });
+
+    test('when calling restore, then auth info is available.', () async {
+      await client.auth.restore();
+      final token = authSuccess.token;
+
+      expect(client.auth.authInfo.value, isNotNull);
+      expect(client.auth.isAuthenticated, isTrue);
+      expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+      expect(await client.auth.authHeaderValue, 'Bearer $token');
+    });
+
+    group('when initialized again', () {
+      setUp(() async {
+        await client.auth.initialize();
+      });
+
+      test('then auth info is available.', () async {
+        expect(client.auth.authInfo.value, isNotNull);
+        expect(client.auth.isAuthenticated, isTrue);
+      });
+
+      test('then auth info is refreshed.', () async {
+        expect(
+          client.auth.authInfo.value.toString(),
+          isNot(authSuccess.toString()),
+        );
+      });
+    });
+  });
+
+  group(
+      'Given a `ClientAuthSessionManager` which has been initialized with a previous SAS token from storage that was revoked on the server',
+      () {
+    setUp(() async {
+      storage = TestStorage();
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createSasToken(testUser);
+      await client.authTest.deleteSasTokens(testUser);
+
+      await storage.set(authSuccess);
+    });
+
+    test('when calling validateAuthentication, then user is signed out.',
+        () async {
+      await client.auth.restore();
+      expect(client.auth.authInfo.value, isNotNull);
+      await client.auth.validateAuthentication();
+
+      expect(client.auth.authInfo.value, isNull);
+      expect(client.auth.isAuthenticated, isFalse);
+      expect(await client.auth.authHeaderValue, isNull);
+    });
+
+    test('when calling initialize, then user is signed out.', () async {
+      await client.auth.initialize();
+
+      expect(client.auth.authInfo.value, isNull);
+      expect(client.auth.isAuthenticated, isFalse);
+      expect(await client.auth.authHeaderValue, isNull);
+    });
+  });
+
+  group(
+      'Given a `ClientAuthSessionManager` which has been initialized with a previous JWT token from storage that was revoked on the server',
+      () {
+    setUp(() async {
+      storage = TestStorage();
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createJwtToken(testUser);
+      await client.authTest.deleteJwtRefreshTokens(testUser);
+
+      await storage.set(authSuccess);
+    });
+
+    test('when calling validateAuthentication, then user is signed out.',
+        () async {
+      await client.auth.restore();
+      expect(client.auth.authInfo.value, isNotNull);
+      await client.auth.validateAuthentication();
+
+      expect(client.auth.authInfo.value, isNull);
+      expect(client.auth.isAuthenticated, isFalse);
+      expect(await client.auth.authHeaderValue, isNull);
+    });
+
+    test('when calling initialize, then user is signed out.', () async {
+      await client.auth.initialize();
+
+      expect(client.auth.authInfo.value, isNull);
+      expect(client.auth.isAuthenticated, isFalse);
+      expect(await client.auth.authHeaderValue, isNull);
     });
   });
 
@@ -128,16 +273,9 @@ void main() {
     test(
         'when logging in on one client, then the other client is not authenticated.',
         () async {
-      await client1.auth.updateSignedInUser(_authSuccess);
+      await client1.auth.updateSignedInUser(authSuccess);
       expect(client1.auth.isAuthenticated, isTrue);
       expect(client2.auth.isAuthenticated, isFalse);
     });
   });
 }
-
-final _authSuccess = AuthSuccess(
-  authStrategy: AuthStrategy.session,
-  token: 'session-key',
-  authUserId: UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
-  scopeNames: {'test1', 'test2'},
-);

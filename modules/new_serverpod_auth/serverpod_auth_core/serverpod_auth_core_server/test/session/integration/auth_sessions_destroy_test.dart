@@ -30,6 +30,52 @@ void main() {
     });
 
     test(
+        'when calling `destroySession` with a valid `authSessionId`, then it returns true.',
+        () async {
+      final deleted = await AuthSessions.destroySession(
+        session,
+        authSessionId: _extractAuthSessionId(sessionKey),
+      );
+
+      expect(deleted, isTrue);
+    });
+
+    test(
+        'when calling `destroySession` with an invalid `authSessionId`, then it returns false.',
+        () async {
+      final deleted = await AuthSessions.destroySession(
+        session,
+        authSessionId: const Uuid().v4obj(),
+      );
+
+      expect(deleted, isFalse);
+    });
+
+    test(
+        'when calling `destroyAllSessions`, then it returns the list of deleted session IDs.',
+        () async {
+      final newAuthSuccesses = await List.generate(
+        3,
+        (final _) async => AuthSessions.createSession(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+        ),
+      ).wait;
+
+      final deletedIds = await AuthSessions.destroyAllSessions(
+        session,
+        authUserId: authUserId,
+      );
+
+      expect(deletedIds.toSet(), {
+        _extractAuthSessionId(sessionKey),
+        for (final authSuccess in newAuthSuccesses)
+          _extractAuthSessionId(authSuccess.token),
+      });
+    });
+
+    test(
       'when destroying the auth session, then a message for it is broadcast.',
       () async {
         final authInfoABeforeRevocation =
@@ -229,4 +275,9 @@ void main() {
       },
     );
   });
+}
+
+UuidValue _extractAuthSessionId(final String sessionKey) {
+  final parts = sessionKey.split(':');
+  return UuidValue.fromByteList(base64Url.decode(parts[1]));
 }

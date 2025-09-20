@@ -186,7 +186,7 @@ abstract final class AuthSessions {
     );
 
     return AuthSuccess(
-      authStrategy: AuthStrategy.session,
+      authStrategy: AuthStrategy.session.name,
       token: buildSessionKey(
         secret: secret,
         authSessionId: authSession.id!,
@@ -212,10 +212,11 @@ abstract final class AuthSessions {
   /// Signs out a user from the server and ends all user sessions managed by this module.
   ///
   /// This means that all sessions connected to the user will be terminated.
+  /// Returns the list of IDs of the deleted sessions.
   ///
   /// Note: The method will not do anything if no authentication information is
   /// found for the user.
-  static Future<void> destroyAllSessions(
+  static Future<List<UuidValue>> destroyAllSessions(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -227,21 +228,26 @@ abstract final class AuthSessions {
       transaction: transaction,
     );
 
-    if (auths.isEmpty) return;
+    if (auths.isEmpty) return const [];
 
     await session.messages.authenticationRevoked(
       authUserId.uuid,
       RevokedAuthenticationUser(),
     );
+
+    return [
+      for (final auth in auths)
+        if (auth.id != null) auth.id!,
+    ];
   }
 
   /// Removes the specified session and thus signs out its user on its device.
   ///
-  /// This does not affect the user's sessions on other
-  /// devices.
+  /// This does not affect the user's sessions on other devices. Returns `true`
+  /// if the token was found and deleted, `false` otherwise.
   ///
   /// If the session does not exist, this method will have no effect.
-  static Future<void> destroySession(
+  static Future<bool> destroySession(
     final Session session, {
     required final UuidValue authSessionId,
     final Transaction? transaction,
@@ -255,7 +261,7 @@ abstract final class AuthSessions {
         .firstOrNull;
 
     if (authSession == null) {
-      return;
+      return false;
     }
 
     // Notify the client about the revoked authentication for the specific
@@ -264,6 +270,8 @@ abstract final class AuthSessions {
       authSession.authUserId.uuid,
       RevokedAuthenticationAuthId(authId: authSessionId.toString()),
     );
+
+    return true;
   }
 
   /// The secrets configuration.

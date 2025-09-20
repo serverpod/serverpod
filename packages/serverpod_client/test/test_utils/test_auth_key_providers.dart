@@ -7,6 +7,7 @@ class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   String? _authKey;
   late FutureOr<RefreshAuthKeyResult> Function() _refresh;
   int refreshCallCount = 0;
+  List<bool> refreshCallForced = [];
 
   void setAuthKey(String? key) => _authKey = key?.wrapAsBearerAuthHeader();
   void setRefresh(FutureOr<RefreshAuthKeyResult> Function() refresh) {
@@ -17,8 +18,9 @@ class TestRefresherAuthKeyProvider implements RefresherClientAuthKeyProvider {
   Future<String?> get authHeaderValue async => _authKey;
 
   @override
-  Future<RefreshAuthKeyResult> refreshAuthKey() async {
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
     refreshCallCount++;
+    refreshCallForced.add(force);
     return _refresh();
   }
 }
