@@ -34,10 +34,6 @@ void main() {
 
     final testUserId = await client.authTest.createTestUser();
     jwtAuthSuccess = await client.authTest.createJwtToken(testUserId);
-
-    // Need to wait a second to ensure the next JWT token has a different
-    // expiry date. Otherwise it would look equal.
-    await Future.delayed(const Duration(milliseconds: 1010));
   });
 
   group('Given a JwtAuthKeyProvider with no auth info available', () {
