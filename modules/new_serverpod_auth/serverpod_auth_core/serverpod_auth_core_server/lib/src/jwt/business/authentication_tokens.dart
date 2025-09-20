@@ -252,8 +252,10 @@ abstract final class AuthenticationTokens {
 
   /// Removes all refresh tokens for the given [authUserId].
   ///
+  /// Returns the list of IDs of the deleted tokens.
+  ///
   /// Active access tokens will continue to work until their expiration time is reached.
-  static Future<void> destroyAllRefreshTokens(
+  static Future<List<UuidValue>> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -264,21 +266,27 @@ abstract final class AuthenticationTokens {
       transaction: transaction,
     );
 
-    if (auths.isEmpty) return;
+    if (auths.isEmpty) return const [];
 
     await session.messages.authenticationRevoked(
       authUserId.uuid,
       RevokedAuthenticationUser(),
     );
+
+    return [
+      for (final auth in auths)
+        if (auth.id != null) auth.id!,
+    ];
   }
 
   /// Removes a specific refresh token.
   ///
-  /// This does not affect the user's other authentications.
+  /// This does not affect the user's other authentications. Returns `true` if
+  /// the token was found and deleted, `false` otherwise.
   ///
   /// Any access tokens associated with this refresh token will continue to work
   /// until they expire.
-  static Future<void> destroyRefreshToken(
+  static Future<bool> destroyRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
@@ -291,7 +299,7 @@ abstract final class AuthenticationTokens {
         .firstOrNull;
 
     if (refreshToken == null) {
-      return;
+      return false;
     }
 
     // Notify the client about the revoked authentication for the specific
@@ -300,6 +308,8 @@ abstract final class AuthenticationTokens {
       refreshToken.authUserId.uuid,
       RevokedAuthenticationAuthId(authId: refreshTokenId.toString()),
     );
+
+    return true;
   }
 
   /// List all authentication tokens belonging to the given [authUserId].

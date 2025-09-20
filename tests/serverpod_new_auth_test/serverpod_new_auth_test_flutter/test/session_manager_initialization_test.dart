@@ -55,11 +55,35 @@ void main() {
       });
     });
 
-    group('when logging out', () {
+    group('when logging out on the current device', () {
       setUpAll(() async {
         await client.auth.updateSignedInUser(authSuccess);
         expect(client.auth.isAuthenticated, isTrue);
         await client.auth.signOutDevice();
+      });
+
+      test('then `isAuthenticated` returns `false`.', () {
+        expect(client.auth.isAuthenticated, isFalse);
+      });
+
+      test('then `authHeaderValue` returns `null`.', () async {
+        expect(await client.auth.authHeaderValue, isNull);
+      });
+
+      test('then the auth info value is `null`.', () {
+        expect(client.auth.authInfo.value, isNull);
+      });
+
+      test('then the storage is empty.', () async {
+        expect((await storage.get()), isNull);
+      });
+    });
+
+    group('when logging out from all devices', () {
+      setUpAll(() async {
+        await client.auth.updateSignedInUser(authSuccess);
+        expect(client.auth.isAuthenticated, isTrue);
+        await client.auth.signOutAllDevices();
       });
 
       test('then `isAuthenticated` returns `false`.', () {

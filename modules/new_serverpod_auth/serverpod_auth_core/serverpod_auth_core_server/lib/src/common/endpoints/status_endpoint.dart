@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/authentication_tokens.dart';
 
@@ -22,15 +21,10 @@ class StatusEndpoint extends Endpoint {
     if (authInfoIdStr == null) return;
     final authInfoId = UuidValue.withValidation(authInfoIdStr);
 
-    try {
-      await AuthenticationTokens.destroyRefreshToken(
-        session,
-        refreshTokenId: authInfoId,
-      );
-      return;
-    } on RefreshTokenNotFoundException catch (_) {}
-
-    await AuthSessions.destroySession(session, authSessionId: authInfoId);
+    if (!await AuthenticationTokens.destroyRefreshToken(session,
+        refreshTokenId: authInfoId)) {
+      await AuthSessions.destroySession(session, authSessionId: authInfoId);
+    }
   }
 
   /// Signs out a user from all active devices.
@@ -39,14 +33,8 @@ class StatusEndpoint extends Endpoint {
     if (authUserIdStr == null) return;
     final authUserId = UuidValue.withValidation(authUserIdStr);
 
-    try {
-      await AuthenticationTokens.destroyAllRefreshTokens(
-        session,
-        authUserId: authUserId,
-      );
-      return;
-    } on RefreshTokenNotFoundException catch (_) {}
-
+    await AuthenticationTokens.destroyAllRefreshTokens(session,
+        authUserId: authUserId);
     await AuthSessions.destroyAllSessions(session, authUserId: authUserId);
   }
 }

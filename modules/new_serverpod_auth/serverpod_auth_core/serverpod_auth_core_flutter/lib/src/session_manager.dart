@@ -149,13 +149,18 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   Future<bool> _signOut({required bool allDevices}) async {
     try {
-      await updateSignedInUser(null);
       switch (allDevices) {
         case true:
           await caller.status.signOutAllDevices();
         case false:
           await caller.status.signOutDevice();
       }
+
+      // Must be updated after the signout for the server to receive the header
+      // info and recognize the signing out user. Otherwise, the call to the
+      // status endpoint will go with no user info and no signout will be done.
+      await updateSignedInUser(null);
+
       return true;
     } catch (e) {
       return false;
