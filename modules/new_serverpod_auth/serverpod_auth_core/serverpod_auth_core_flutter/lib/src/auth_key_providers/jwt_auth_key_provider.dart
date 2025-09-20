@@ -2,8 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 /// The [JwtAuthKeyProvider] keeps track of and manages the signed-in state of
-/// the user for JWT-based authentication. This is the default authentication
-/// method for the client.
+/// the user for JWT-based authentication.
 class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
   /// Creates a new [JwtAuthKeyProvider].
   JwtAuthKeyProvider({

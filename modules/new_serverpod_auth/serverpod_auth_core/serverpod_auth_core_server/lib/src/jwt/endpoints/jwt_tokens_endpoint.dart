@@ -19,8 +19,8 @@ class RefreshJwtTokensEndpoint extends Endpoint {
   ///   will be deleted, and access to it will expire fully when the last access
   ///   token is elapsed.
   ///
-  /// This endpoint is unauthenticated, meaning it won't receive authentication
-  /// information in the [session] object.
+  /// This endpoint is unauthenticated, meaning the client won't include any
+  /// authentication information with the call.
   @unauthenticatedClientCall
   Future<AuthSuccess> refreshAccessToken(
     final Session session, {

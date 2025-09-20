@@ -69,8 +69,8 @@ class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   ///   will be deleted, and access to it will expire fully when the last access
   ///   token is elapsed.
   ///
-  /// This endpoint is unauthenticated, meaning it won't receive authentication
-  /// information in the [session] object.
+  /// This endpoint is unauthenticated, meaning the client won't include any
+  /// authentication information with the call.
   _i2.Future<_i3.AuthSuccess> refreshAccessToken(
           {required String refreshToken}) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
