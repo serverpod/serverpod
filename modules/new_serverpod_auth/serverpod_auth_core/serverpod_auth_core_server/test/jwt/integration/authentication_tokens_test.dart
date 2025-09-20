@@ -46,21 +46,25 @@ void main() {
 
     test('when requesting a new token pair, then expiration date is returned.',
         () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
-        session,
-        authUserId: authUserId,
-        scopes: {},
-        method: 'test',
-      );
+      final now = DateTime.now();
+      late AuthSuccess authSuccess;
 
-      expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+      await withClock(Clock.fixed(now), () async {
+        authSuccess = await AuthenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        );
+      });
 
-      final expirationExpected = DateTime.now()
+      final expirationExpected = now
           .toUtc()
           .add(AuthenticationTokens.config.accessTokenLifetime)
-          .subtract(const Duration(seconds: 5));
+          .truncatedToSecond();
 
-      expect(authSuccess.tokenExpiresAt!.isAfter(expirationExpected), isTrue);
+      expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+      expect(authSuccess.tokenExpiresAt, expirationExpected);
     });
 
     test(
@@ -591,4 +595,9 @@ void main() {
       expect(authSuccess, isNotNull);
     });
   });
+}
+
+extension on DateTime {
+  DateTime truncatedToSecond() =>
+      DateTime.utc(year, month, day, hour, minute, second);
 }
