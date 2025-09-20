@@ -238,7 +238,7 @@ void main() {
 
       await provider.refreshAuthKey();
       expect(delegate.refreshCallCount, 1);
-      expect(delegate.forcedRefresh, false);
+      expect(delegate.refreshCallForced, [false]);
     });
 
     test(
@@ -248,7 +248,7 @@ void main() {
 
       await provider.refreshAuthKey(force: true);
       expect(delegate.refreshCallCount, 1);
-      expect(delegate.forcedRefresh, true);
+      expect(delegate.refreshCallForced, [true]);
     });
   });
 }
