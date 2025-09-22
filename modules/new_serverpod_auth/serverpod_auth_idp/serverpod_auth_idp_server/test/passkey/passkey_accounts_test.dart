@@ -51,11 +51,8 @@ void main() {
           request: PasskeyRegistrationRequest(
             challengeId: challengeId,
             keyId: _keyId,
-            publicKey: _publicKey,
-            publicKeyAlgorithm: _publicKeyAlgorithm,
             clientDataJSON: _registrationClientDataJSON,
             attestationObject: _attestationObject,
-            authenticatorData: _registrationAuthenticatorData,
           ),
         );
 
@@ -104,11 +101,8 @@ void main() {
             request: PasskeyRegistrationRequest(
               challengeId: registrationChallengeId,
               keyId: _keyId,
-              publicKey: _publicKey,
-              publicKeyAlgorithm: _publicKeyAlgorithm,
               clientDataJSON: _registrationClientDataJSON,
               attestationObject: _attestationObject,
-              authenticatorData: _registrationAuthenticatorData,
             ),
           );
         }
@@ -146,15 +140,8 @@ final _registrationChallenge = base64Decode(
   '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=',
 ).asByteData;
 final _keyId = base64Decode('smRGEPLBiguLVdDctsYGBQ==').asByteData;
-final _publicKey = base64Decode(
-  'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkoCYhdhCvJfNoqD1pscWeiXJQF5G2RSeqDTE85g8nDv4rRfcgnxffuLLktXBqPm1Yx9X961Z74FLCwZ_oCuFMg==',
-).asByteData;
-const _publicKeyAlgorithm = -7;
 final _registrationClientDataJSON = base64Decode(
   'eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiMjhHSVZ1dUNTXzVERzBMQTF0TnItMDEtcVd6TWY4UGZ5QlpOUVB0dFhxWSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImNyb3NzT3JpZ2luIjpmYWxzZX0=',
-).asByteData;
-final _registrationAuthenticatorData = base64Decode(
-  'SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NdAAAAAOqbjWZNAR0hPOS2tIy1ddQAELJkRhDywYoLi1XQ3LbGBgWlAQIDJiABIVggkoCYhdhCvJfNoqD1pscWeiXJQF5G2RSeqDTE85g8nDsiWCD4rRfcgnxffuLLktXBqPm1Yx9X961Z74FLCwZ_oCuFMg==',
 ).asByteData;
 final _attestationObject = base64Decode(
   'o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUSZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NdAAAAAOqbjWZNAR0hPOS2tIy1ddQAELJkRhDywYoLi1XQ3LbGBgWlAQIDJiABIVggkoCYhdhCvJfNoqD1pscWeiXJQF5G2RSeqDTE85g8nDsiWCD4rRfcgnxffuLLktXBqPm1Yx9X961Z74FLCwZ_oCuFMg==',

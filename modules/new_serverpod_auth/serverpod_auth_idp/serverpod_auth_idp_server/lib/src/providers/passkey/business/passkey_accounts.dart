@@ -62,7 +62,7 @@ abstract final class PasskeyAccounts {
     );
 
     await _passkeys.verifyRegistration(
-      authenticatorData: request.authenticatorData.asUint8List,
+      keyId: request.keyId.asUint8List,
       attestationObject: request.attestationObject.asUint8List,
       clientDataJSON: request.clientDataJSON.asUint8List,
       challenge: challenge.challenge.asUint8List,
@@ -75,10 +75,7 @@ abstract final class PasskeyAccounts {
         keyId: request.keyId,
         keyIdBase64: base64Encode(request.keyId.asUint8List),
         clientDataJSON: request.clientDataJSON,
-        publicKey: request.publicKey,
-        publicKeyAlgorithm: request.publicKeyAlgorithm,
         attestationObject: request.attestationObject,
-        authenticatorData: request.authenticatorData,
         originalChallenge: challenge.challenge,
       ),
     );
@@ -105,10 +102,8 @@ abstract final class PasskeyAccounts {
     );
 
     await _passkeys.verifyLogin(
-      key: (
-        algorithm: passkeyAccount.publicKeyAlgorithm,
-        publicKey: passkeyAccount.publicKey.asUint8List,
-      ),
+      registrationAttestationObject:
+          passkeyAccount.attestationObject.asUint8List,
       authenticatorData: request.authenticatorData.asUint8List,
       clientDataJSON: request.clientDataJSON.asUint8List,
       signature: request.signature.asUint8List,

@@ -17,20 +17,11 @@ fields:
   ### Base64 variant of the key ID (to enable DB lookups).
   keyIdBase64: String
 
-  ### The authenticator's JSON client data.
+  ### The authenticator's JSON client data sent during the registration.
   clientDataJSON: ByteData
 
-  ### The public key provided by the client.
-  publicKey: ByteData
-
-  ### The algorithm of the public key.
-  publicKeyAlgorithm: int
-
-  ### The authenticator's attestation data.
+  ### The attestation object used during the registration.
   attestationObject: ByteData
-
-  ### The authenticator's client data.
-  authenticatorData: ByteData
 
   ### The challenge used during registration.
   originalChallenge: ByteData
