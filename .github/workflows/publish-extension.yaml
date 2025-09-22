@@ -18,7 +18,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 23.x
+          node-version: 24.x
       - run: npm ci
         working-directory: tools/serverpod_vscode_extension
       - run: npm run publish-vscode
@@ -35,7 +35,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 23.x
+          node-version: 24.x
       - run: npm ci
         working-directory: tools/serverpod_vscode_extension
       - run: npx ovsx publish 
