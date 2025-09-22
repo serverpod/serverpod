@@ -25,3 +25,20 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         working-directory: tools/serverpod_vscode_extension
+
+  publish_openvsx:
+    name: Publish to Open VSX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23.x
+      - run: npm ci
+        working-directory: tools/serverpod_vscode_extension
+      - run: npx ovsx publish 
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        working-directory: tools/serverpod_vscode_extension
