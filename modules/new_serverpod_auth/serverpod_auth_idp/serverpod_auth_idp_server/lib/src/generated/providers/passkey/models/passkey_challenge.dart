@@ -138,9 +138,27 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
   }
 }
 
+class PasskeyChallengeUpdateTable
+    extends _i1.UpdateTable<PasskeyChallengeTable> {
+  PasskeyChallengeUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challenge(_i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.challenge,
+        value,
+      );
+}
+
 class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyChallengeTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
+    updateTable = PasskeyChallengeUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -150,6 +168,8 @@ class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final PasskeyChallengeUpdateTable updateTable;
 
   /// The time when this challenge was created.
   late final _i1.ColumnDateTime createdAt;
@@ -350,6 +370,48 @@ class PasskeyChallengeRepository {
     return session.db.updateRow<PasskeyChallenge>(
       row,
       columns: columns?.call(PasskeyChallenge.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [PasskeyChallenge] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<PasskeyChallenge?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<PasskeyChallenge>(
+      id,
+      columnValues: columnValues(PasskeyChallenge.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [PasskeyChallenge]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<PasskeyChallenge>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<PasskeyChallenge>(
+      columnValues: columnValues(PasskeyChallenge.t.updateTable),
+      where: where(PasskeyChallenge.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

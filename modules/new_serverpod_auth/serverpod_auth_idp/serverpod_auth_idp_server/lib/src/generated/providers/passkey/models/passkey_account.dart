@@ -258,9 +258,77 @@ class _PasskeyAccountImpl extends PasskeyAccount {
   }
 }
 
+class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
+  PasskeyAccountUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> keyId(_i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.keyId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> keyIdBase64(String value) => _i1.ColumnValue(
+        table.keyIdBase64,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> clientDataJSON(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.clientDataJSON,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> publicKey(_i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.publicKey,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> publicKeyAlgorithm(int value) => _i1.ColumnValue(
+        table.publicKeyAlgorithm,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> attestationObject(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.attestationObject,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> authenticatorData(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.authenticatorData,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> originalChallenge(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.originalChallenge,
+        value,
+      );
+}
+
 class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyAccountTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_idp_passkey_account') {
+    updateTable = PasskeyAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -302,6 +370,8 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final PasskeyAccountUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -569,6 +639,46 @@ class PasskeyAccountRepository {
     return session.db.updateRow<PasskeyAccount>(
       row,
       columns: columns?.call(PasskeyAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [PasskeyAccount] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<PasskeyAccount?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<PasskeyAccount>(
+      id,
+      columnValues: columnValues(PasskeyAccount.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [PasskeyAccount]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<PasskeyAccount>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<PasskeyAccount>(
+      columnValues: columnValues(PasskeyAccount.t.updateTable),
+      where: where(PasskeyAccount.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PasskeyAccount.t),
+      orderByList: orderByList?.call(PasskeyAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
