@@ -1,1 +1,3 @@
+### Exception to be thrown if a registration or login attempt was made after
+### the challenge used has expired.
 exception: PasskeyChallengeExpiredException
