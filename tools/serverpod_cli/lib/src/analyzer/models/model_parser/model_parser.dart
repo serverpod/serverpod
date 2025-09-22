@@ -145,12 +145,10 @@ class ModelParser {
       extraClasses: extraClasses,
     );
 
-    var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
-      tableName != null,
       extraClasses,
       serverOnly,
     );
@@ -253,7 +251,6 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
-    bool hasTable,
     List<TypeDefinition> extraClasses,
     bool serverOnlyClass,
   ) {
@@ -270,50 +267,6 @@ class ModelParser {
           serverOnlyClass,
         );
       }).toList());
-    }
-
-    if (hasTable) {
-      final defaultIdType = SupportedIdType.int;
-
-      var maybeIdField =
-          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
-
-      var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
-
-      var defaultPersistValue = (maybeIdField != null)
-          ? maybeIdField.defaultPersistValue
-          : defaultIdType.defaultValue;
-
-      // The 'int' id type can be specified without a default value.
-      if (maybeIdField?.type.className == 'int') {
-        defaultPersistValue ??= SupportedIdType.int.defaultValue;
-      }
-
-      var defaultModelValue = maybeIdField?.defaultModelValue;
-      if (maybeIdField == null && defaultIdType.type.className != 'int') {
-        defaultModelValue ??= defaultIdType.defaultValue;
-      }
-
-      var defaultIdFieldDoc = [
-        '/// The database id, set if the object has been inserted into the',
-        '/// database or if it has been fetched from the database. Otherwise,',
-        '/// the id will be null.',
-      ];
-
-      fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
-      fields.insert(
-        0,
-        SerializableModelFieldDefinition(
-          name: defaultPrimaryKeyName,
-          type: idFieldType,
-          scope: ModelFieldScopeDefinition.all,
-          defaultModelValue: defaultModelValue,
-          defaultPersistValue: defaultPersistValue ?? defaultModelValue,
-          shouldPersist: true,
-          documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
-          isRequired: false, // ID fields are typically optional
-        ),
-      );
     }
 
     return fields;

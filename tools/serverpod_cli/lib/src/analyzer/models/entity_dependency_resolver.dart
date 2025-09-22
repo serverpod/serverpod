@@ -11,11 +11,20 @@ class ModelDependencyResolver {
   static void resolveModelDependencies(
     List<SerializableModelDefinition> modelDefinitions,
   ) {
+    // First resolve inheritance to allow evaluating inherited id fields.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      if (classDefinition is ModelClassDefinition) {
-        _resolveInheritance(classDefinition, modelDefinitions);
-      }
+      if (classDefinition is! ModelClassDefinition) return;
+      _resolveInheritance(classDefinition, modelDefinitions);
+    });
 
+    // Then resolve inherited id fields or create default id fields.
+    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+      if (classDefinition is! ModelClassDefinition) return;
+      _resolveIdField(classDefinition);
+    });
+
+    // Then resolve everything else, including relations on inherited ids.
+    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       var fields = classDefinition is ModelClassDefinition
           ? classDefinition.fieldsIncludingInherited
           : classDefinition.fields;
@@ -64,6 +73,56 @@ class ModelDependencyResolver {
 
     parentClass.childClasses.add(
       ResolvedInheritanceDefinition(classDefinition),
+    );
+  }
+
+  static void _resolveIdField(ModelClassDefinition classDefinition) {
+    if (classDefinition.tableName == null) return;
+
+    final defaultIdType = SupportedIdType.int;
+
+    var maybeIdField = classDefinition.parentClass?.fieldsIncludingInherited
+            .where((f) => f.name == defaultPrimaryKeyName)
+            .firstOrNull ??
+        classDefinition.fields
+            .where((f) => f.name == defaultPrimaryKeyName)
+            .firstOrNull;
+
+    var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
+
+    var defaultPersistValue = (maybeIdField != null)
+        ? maybeIdField.defaultPersistValue
+        : defaultIdType.defaultValue;
+
+    // The 'int' id type can be specified without a default value.
+    if (maybeIdField?.type.className == 'int') {
+      defaultPersistValue ??= SupportedIdType.int.defaultValue;
+    }
+
+    var defaultModelValue = maybeIdField?.defaultModelValue;
+    if (maybeIdField == null && defaultIdType.type.className != 'int') {
+      defaultModelValue ??= defaultIdType.defaultValue;
+    }
+
+    var defaultIdFieldDoc = [
+      '/// The database id, set if the object has been inserted into the',
+      '/// database or if it has been fetched from the database. Otherwise,',
+      '/// the id will be null.',
+    ];
+
+    classDefinition.fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
+    classDefinition.fields.insert(
+      0,
+      SerializableModelFieldDefinition(
+        name: defaultPrimaryKeyName,
+        type: idFieldType,
+        scope: maybeIdField?.scope ?? ModelFieldScopeDefinition.all,
+        defaultModelValue: defaultModelValue,
+        defaultPersistValue: defaultPersistValue ?? defaultModelValue,
+        shouldPersist: true,
+        documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
+        isRequired: false, // ID fields are typically optional
+      ),
     );
   }
 

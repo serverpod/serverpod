@@ -121,8 +121,12 @@ final class ModelClassDefinition extends ClassDefinition {
 
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
+  /// Excludes the id field, as it is re-declared on child classes.
   List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited ?? [];
+      parentClass?.fieldsIncludingInherited
+          .where((element) => tableName == null || element.name != 'id')
+          .toList() ??
+      [];
 
   /// Returns a list of all fields in this class, including inherited fields.
   /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
