@@ -69,6 +69,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "publish-vscode": "vsce publish",
+    "publish-openvsx": "osvx publish",
     "build": "vsce package"
   },
   "dependencies": {
@@ -89,6 +90,7 @@
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
     "mocha": "^10.8.2",
+    "ovsx": "^0.10.5",
     "sinon": "^21.0.0",
     "typescript": "^5.1.3"
   }
