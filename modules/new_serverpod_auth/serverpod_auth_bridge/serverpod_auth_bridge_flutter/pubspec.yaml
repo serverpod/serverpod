@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  meta: ^1.11.0
+  meta: ^1.15.0
   serverpod_auth_core_client: 3.0.0-alpha.1
   serverpod_auth_core_flutter: 3.0.0-alpha.1
   serverpod_auth_bridge_client: 3.0.0-alpha.1

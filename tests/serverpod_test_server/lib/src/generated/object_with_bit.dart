@@ -191,9 +191,50 @@ class _ObjectWithBitImpl extends ObjectWithBit {
   }
 }
 
+class ObjectWithBitUpdateTable extends _i1.UpdateTable<ObjectWithBitTable> {
+  ObjectWithBitUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bit(_i1.Bit value) => _i1.ColumnValue(
+        table.bit,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitNullable(_i1.Bit? value) =>
+      _i1.ColumnValue(
+        table.bitNullable,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnsw(_i1.Bit value) =>
+      _i1.ColumnValue(
+        table.bitIndexedHnsw,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnswWithParams(_i1.Bit value) =>
+      _i1.ColumnValue(
+        table.bitIndexedHnswWithParams,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflat(_i1.Bit value) =>
+      _i1.ColumnValue(
+        table.bitIndexedIvfflat,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflatWithParams(
+          _i1.Bit value) =>
+      _i1.ColumnValue(
+        table.bitIndexedIvfflatWithParams,
+        value,
+      );
+}
+
 class ObjectWithBitTable extends _i1.Table<int?> {
   ObjectWithBitTable({super.tableRelation})
       : super(tableName: 'object_with_bit') {
+    updateTable = ObjectWithBitUpdateTable(this);
     bit = _i1.ColumnBit(
       'bit',
       this,
@@ -225,6 +266,8 @@ class ObjectWithBitTable extends _i1.Table<int?> {
       dimension: 512,
     );
   }
+
+  late final ObjectWithBitUpdateTable updateTable;
 
   late final _i1.ColumnBit bit;
 
@@ -435,6 +478,46 @@ class ObjectWithBitRepository {
     return session.db.updateRow<ObjectWithBit>(
       row,
       columns: columns?.call(ObjectWithBit.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithBit] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithBit?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithBit>(
+      id,
+      columnValues: columnValues(ObjectWithBit.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithBit]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithBit>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithBitUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithBit>(
+      columnValues: columnValues(ObjectWithBit.t.updateTable),
+      where: where(ObjectWithBit.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

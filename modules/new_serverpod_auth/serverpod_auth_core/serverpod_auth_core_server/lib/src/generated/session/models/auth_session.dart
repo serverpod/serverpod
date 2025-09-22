@@ -267,14 +267,75 @@ class _AuthSessionImpl extends AuthSession {
   }
 }
 
+class AuthSessionUpdateTable extends _i1.UpdateTable<AuthSessionTable> {
+  AuthSessionUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.lastUsedAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.expiresAt,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> expireAfterUnusedFor(Duration? value) =>
+      _i1.ColumnValue(
+        table.expireAfterUnusedFor,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeyHash(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.sessionKeyHash,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeySalt(
+          _i3.ByteData value) =>
+      _i1.ColumnValue(
+        table.sessionKeySalt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+}
+
 class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   AuthSessionTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_session') {
+    updateTable = AuthSessionUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -310,13 +371,15 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
+  late final AuthSessionUpdateTable updateTable;
+
   late final _i1.ColumnUuid authUserId;
 
   /// The [AuthUser] this session belongs to
   _i2.AuthUserTable? _authUser;
 
   /// The scopes this session provides access to.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// The time when this session was created.
   late final _i1.ColumnDateTime createdAt;
@@ -586,6 +649,46 @@ class AuthSessionRepository {
     return session.db.updateRow<AuthSession>(
       row,
       columns: columns?.call(AuthSession.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [AuthSession] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AuthSession?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AuthSessionUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AuthSession>(
+      id,
+      columnValues: columnValues(AuthSession.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AuthSession]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AuthSession>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AuthSessionUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AuthSessionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthSessionTable>? orderBy,
+    _i1.OrderByListBuilder<AuthSessionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AuthSession>(
+      columnValues: columnValues(AuthSession.t.updateTable),
+      where: where(AuthSession.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthSession.t),
+      orderByList: orderByList?.call(AuthSession.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

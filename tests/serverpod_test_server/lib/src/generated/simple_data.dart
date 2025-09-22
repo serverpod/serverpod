@@ -126,13 +126,25 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
+class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
+  SimpleDataUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
+        table.num,
+        value,
+      );
+}
+
 class SimpleDataTable extends _i1.Table<int?> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
+    updateTable = SimpleDataUpdateTable(this);
     num = _i1.ColumnInt(
       'num',
       this,
     );
   }
+
+  late final SimpleDataUpdateTable updateTable;
 
   /// The only field of [SimpleData]
   ///
@@ -331,6 +343,46 @@ class SimpleDataRepository {
     return session.db.updateRow<SimpleData>(
       row,
       columns: columns?.call(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [SimpleData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<SimpleData?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<SimpleData>(
+      id,
+      columnValues: columnValues(SimpleData.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SimpleData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<SimpleData>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<SimpleData>(
+      columnValues: columnValues(SimpleData.t.updateTable),
+      where: where(SimpleData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

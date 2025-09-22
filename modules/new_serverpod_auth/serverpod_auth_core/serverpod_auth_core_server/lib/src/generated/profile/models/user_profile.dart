@@ -230,9 +230,48 @@ class _UserProfileImpl extends UserProfile {
   }
 }
 
+class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
+  UserProfileUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.authUserId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
+        table.userName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
+        table.fullName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> imageId(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.imageId,
+        value,
+      );
+}
+
 class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_profile') {
+    updateTable = UserProfileUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
       this,
@@ -259,6 +298,8 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final UserProfileUpdateTable updateTable;
 
   late final _i1.ColumnUuid authUserId;
 
@@ -544,6 +585,46 @@ class UserProfileRepository {
     return session.db.updateRow<UserProfile>(
       row,
       columns: columns?.call(UserProfile.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UserProfile] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UserProfile?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UserProfile>(
+      id,
+      columnValues: columnValues(UserProfile.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UserProfile]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UserProfile>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UserProfileTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserProfileTable>? orderBy,
+    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UserProfile>(
+      columnValues: columnValues(UserProfile.t.updateTable),
+      where: where(UserProfile.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

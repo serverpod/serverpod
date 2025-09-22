@@ -123,11 +123,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
   Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
-    var auth = await authenticationKeyManager?.get();
+    var auth = await authKeyProvider?.authHeaderValue;
     if (auth != null) {
       uri = uri.replace(
         queryParameters: {
-          'auth': auth,
+          // Key must be unwrapped here because the server expects it plain.
+          'auth': unwrapAuthHeaderValue(auth),
         },
       );
     }
@@ -137,8 +138,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  /// Optional [AuthenticationKeyManager] if the client needs to sign the user
-  /// in.
+  // TODO: Deprecate after the new authentication system is in place.
+  /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
   /// Looks up module callers by their name. Overridden by generated code.
@@ -205,12 +206,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
     }
   }
 
+  /// Provides the authentication key for the client. Required to make
+  /// authenticated requests. If not provided, all requests will be
+  /// unauthenticated.
+  ClientAuthKeyProvider? authKeyProvider;
+
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
     dynamic securityContext,
-    required this.authenticationKeyManager,
+    this.authenticationKeyManager,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
@@ -233,6 +239,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
         disconnectStreamsOnLostInternetConnection;
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
+
+    // TODO: Remove this backwards compatibility assignment.
+    authKeyProvider ??= authenticationKeyManager;
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
@@ -449,22 +458,49 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Updates the authentication key if the streaming connection is open.
   /// Note, the provided key will be converted/wrapped as a proper authentication header value
   /// when sent to the server.
-  Future<void> updateStreamingConnectionAuthenticationKey(
-    String? authKey,
-  ) async {
+  Future<void> updateStreamingConnectionAuthenticationKey() async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
     }
-    var authValue = await authenticationKeyManager?.toHeaderValue(authKey);
-    await _sendControlCommandToStream('auth', {'key': authValue});
+    await _sendControlCommandToStream(
+      'auth',
+      {'key': await authKeyProvider?.authHeaderValue},
+    );
   }
 
   @override
   Future<T> callServerEndpoint<T>(
     String endpoint,
     String method,
-    Map<String, dynamic> args,
-  ) async {
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) async {
+    try {
+      return await _callServerEndpoint(endpoint, method, args,
+          authenticated: authenticated);
+    } on ServerpodClientUnauthorized catch (_) {
+      final keyProvider = authKeyProvider;
+
+      // A first failure here with 401 can be due to an access token expiration.
+      // We will retry only once in such case, and only if the `authKeyProvider`
+      // exposes a `refreshAuthKey` method (like JWT).
+      if (keyProvider is RefresherClientAuthKeyProvider) {
+        final refreshResult = await keyProvider.refreshAuthKey();
+        if (refreshResult == RefreshAuthKeyResult.success) {
+          return _callServerEndpoint(endpoint, method, args,
+              authenticated: authenticated);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  Future<T> _callServerEndpoint<T>(
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) async {
     var callContext = MethodCallContext(
       endpointName: endpoint,
       methodName: method,
@@ -473,7 +509,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     try {
       var authenticationValue =
-          await authenticationKeyManager?.getHeaderValue();
+          authenticated ? await authKeyProvider?.authHeaderValue : null;
       var body = formatArgs(args, method);
       var url = Uri.parse('$host$endpoint');
 
@@ -494,7 +530,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
       return result;
     } catch (e, s) {
       onFailedCall?.call(callContext, e, s);
-
       rethrow;
     }
   }
@@ -504,16 +539,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  ) {
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  }) {
     var connectionDetails = MethodStreamConnectionDetails(
       endpoint: endpoint,
       method: method,
       args: args,
       parameterStreams: streams,
       outputController: StreamController<G>(),
-      authenticationProvider: () async =>
-          authenticationKeyManager?.getHeaderValue(),
+      authKeyProvider: authenticated ? authKeyProvider : null,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {
@@ -538,6 +573,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       connectionDetails.outputController.addError(error);
       connectionDetails.outputController.close();
     });
+
     if (T == Stream<G>) {
       return connectionDetails.outputController.stream;
     } else if ((T == Future<G>) && G == getType<void>()) {
@@ -575,8 +611,17 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
 
   @override
   Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args) {
-    return client.callServerEndpoint<T>(endpoint, method, args);
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  }) {
+    return client.callServerEndpoint<T>(
+      endpoint,
+      method,
+      args,
+      authenticated: authenticated,
+    );
   }
 
   @override
@@ -584,13 +629,15 @@ abstract class ModuleEndpointCaller extends EndpointCaller {
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  ) {
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  }) {
     return client.callStreamingServerEndpoint<T, G>(
       endpoint,
       method,
       args,
       streams,
+      authenticated: authenticated,
     );
   }
 }
@@ -604,7 +651,11 @@ abstract class EndpointCaller {
   /// Calls a server endpoint method by its name, passing arguments in a map.
   /// Typically, this method is called by generated code.
   Future<T> callServerEndpoint<T>(
-      String endpoint, String method, Map<String, dynamic> args);
+    String endpoint,
+    String method,
+    Map<String, dynamic> args, {
+    bool authenticated = true,
+  });
 
   /// Calls a server endpoint method that supports streaming. The [streams]
   /// parameter is a map of stream names to stream objects. The method will
@@ -614,15 +665,16 @@ abstract class EndpointCaller {
   /// [T] is the type of the return value of the endpoint stream. This is either
   /// a [Stream] or a [Future].
   ///
-  /// [G] is the generic of [T], such as T<G>.
+  /// [G] is the generic of [T], such as `T<G>`.
   ///
   /// If [T] is not a [Stream] or a [Future], the method will throw an exception.
   dynamic callStreamingServerEndpoint<T, G>(
     String endpoint,
     String method,
     Map<String, dynamic> args,
-    Map<String, Stream> streams,
-  );
+    Map<String, Stream> streams, {
+    bool authenticated = true,
+  });
 }
 
 /// This class connects endpoints on the server with the client, it also

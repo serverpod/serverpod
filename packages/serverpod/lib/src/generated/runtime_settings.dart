@@ -172,14 +172,44 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   }
 }
 
+class RuntimeSettingsUpdateTable extends _i1.UpdateTable<RuntimeSettingsTable> {
+  RuntimeSettingsUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.LogSettings, _i2.LogSettings> logSettings(
+          _i2.LogSettings value) =>
+      _i1.ColumnValue(
+        table.logSettings,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i3.LogSettingsOverride>, List<_i3.LogSettingsOverride>>
+      logSettingsOverrides(List<_i3.LogSettingsOverride> value) =>
+          _i1.ColumnValue(
+            table.logSettingsOverrides,
+            value,
+          );
+
+  _i1.ColumnValue<bool, bool> logServiceCalls(bool value) => _i1.ColumnValue(
+        table.logServiceCalls,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> logMalformedCalls(bool value) => _i1.ColumnValue(
+        table.logMalformedCalls,
+        value,
+      );
+}
+
 class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
       : super(tableName: 'serverpod_runtime_settings') {
-    logSettings = _i1.ColumnSerializable(
+    updateTable = RuntimeSettingsUpdateTable(this);
+    logSettings = _i1.ColumnSerializable<_i2.LogSettings>(
       'logSettings',
       this,
     );
-    logSettingsOverrides = _i1.ColumnSerializable(
+    logSettingsOverrides =
+        _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>(
       'logSettingsOverrides',
       this,
     );
@@ -193,11 +223,14 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
     );
   }
 
+  late final RuntimeSettingsUpdateTable updateTable;
+
   /// Log settings.
-  late final _i1.ColumnSerializable logSettings;
+  late final _i1.ColumnSerializable<_i2.LogSettings> logSettings;
 
   /// List of log setting overrides.
-  late final _i1.ColumnSerializable logSettingsOverrides;
+  late final _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>
+      logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   late final _i1.ColumnBool logServiceCalls;
@@ -400,6 +433,48 @@ class RuntimeSettingsRepository {
     return session.db.updateRow<RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [RuntimeSettings] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<RuntimeSettings?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<RuntimeSettings>(
+      id,
+      columnValues: columnValues(RuntimeSettings.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<RuntimeSettings>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<RuntimeSettings>(
+      columnValues: columnValues(RuntimeSettings.t.updateTable),
+      where: where(RuntimeSettings.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

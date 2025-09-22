@@ -194,9 +194,48 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
   }
 }
 
+class CloudStorageEntryUpdateTable
+    extends _i1.UpdateTable<CloudStorageEntryTable> {
+  CloudStorageEntryUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+        table.storageId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+        table.path,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
+      _i1.ColumnValue(
+        table.addedTime,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime? value) =>
+      _i1.ColumnValue(
+        table.expiration,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.byteData,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> verified(bool value) => _i1.ColumnValue(
+        table.verified,
+        value,
+      );
+}
+
 class CloudStorageEntryTable extends _i1.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_cloud_storage') {
+    updateTable = CloudStorageEntryUpdateTable(this);
     storageId = _i1.ColumnString(
       'storageId',
       this,
@@ -222,6 +261,8 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final CloudStorageEntryUpdateTable updateTable;
 
   /// The storageId, typically `public` or `private`.
   late final _i1.ColumnString storageId;
@@ -438,6 +479,48 @@ class CloudStorageEntryRepository {
     return session.db.updateRow<CloudStorageEntry>(
       row,
       columns: columns?.call(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [CloudStorageEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CloudStorageEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CloudStorageEntry>(
+      id,
+      columnValues: columnValues(CloudStorageEntry.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CloudStorageEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CloudStorageEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CloudStorageEntry>(
+      columnValues: columnValues(CloudStorageEntry.t.updateTable),
+      where: where(CloudStorageEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

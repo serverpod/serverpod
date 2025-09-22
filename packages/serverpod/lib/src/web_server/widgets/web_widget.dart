@@ -16,6 +16,7 @@ abstract class WebWidget {}
 /// server for them to take effect.
 class TemplateWidget extends WebWidget {
   /// The name of the template used by this [TemplateWidget].
+  /// Can be a simple name (e.g., 'default') or a path (e.g., 'admin/dashboard')
   final String name;
 
   /// The template used by this [TemplateWidget].

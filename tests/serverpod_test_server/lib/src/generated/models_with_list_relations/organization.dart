@@ -177,8 +177,23 @@ class _OrganizationImpl extends Organization {
   }
 }
 
+class OrganizationUpdateTable extends _i1.UpdateTable<OrganizationTable> {
+  OrganizationUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
+        table.cityId,
+        value,
+      );
+}
+
 class OrganizationTable extends _i1.Table<int?> {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
+    updateTable = OrganizationUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -188,6 +203,8 @@ class OrganizationTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final OrganizationUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -474,6 +491,46 @@ class OrganizationRepository {
     return session.db.updateRow<Organization>(
       row,
       columns: columns?.call(Organization.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Organization] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Organization?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<OrganizationUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Organization>(
+      id,
+      columnValues: columnValues(Organization.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Organization]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Organization>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<OrganizationUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<OrganizationTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Organization>(
+      columnValues: columnValues(Organization.t.updateTable),
+      where: where(Organization.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

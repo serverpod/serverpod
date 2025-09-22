@@ -154,8 +154,23 @@ class _PlayerUuidImpl extends PlayerUuid {
   }
 }
 
+class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
+  PlayerUuidUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
+        table.teamId,
+        value,
+      );
+}
+
 class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
   PlayerUuidTable({super.tableRelation}) : super(tableName: 'player_uuid') {
+    updateTable = PlayerUuidUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -165,6 +180,8 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
       this,
     );
   }
+
+  late final PlayerUuidUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -400,6 +417,46 @@ class PlayerUuidRepository {
     return session.db.updateRow<PlayerUuid>(
       row,
       columns: columns?.call(PlayerUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [PlayerUuid] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<PlayerUuid?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<PlayerUuid>(
+      id,
+      columnValues: columnValues(PlayerUuid.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [PlayerUuid]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<PlayerUuid>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<PlayerUuid>(
+      columnValues: columnValues(PlayerUuid.t.updateTable),
+      where: where(PlayerUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PlayerUuid.t),
+      orderByList: orderByList?.call(PlayerUuid.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

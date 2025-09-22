@@ -299,9 +299,85 @@ class _SessionLogEntryImpl extends SessionLogEntry {
   }
 }
 
+class SessionLogEntryUpdateTable extends _i1.UpdateTable<SessionLogEntryTable> {
+  SessionLogEntryUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+        table.serverId,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> module(String? value) => _i1.ColumnValue(
+        table.module,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> endpoint(String? value) => _i1.ColumnValue(
+        table.endpoint,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> method(String? value) => _i1.ColumnValue(
+        table.method,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> duration(double? value) => _i1.ColumnValue(
+        table.duration,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> numQueries(int? value) => _i1.ColumnValue(
+        table.numQueries,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> slow(bool? value) => _i1.ColumnValue(
+        table.slow,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+        table.error,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+        table.stackTrace,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> authenticatedUserId(int? value) => _i1.ColumnValue(
+        table.authenticatedUserId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> userId(String? value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> isOpen(bool? value) => _i1.ColumnValue(
+        table.isOpen,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
+      _i1.ColumnValue(
+        table.touched,
+        value,
+      );
+}
+
 class SessionLogEntryTable extends _i1.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_session_log') {
+    updateTable = SessionLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
       this,
@@ -359,6 +435,8 @@ class SessionLogEntryTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final SessionLogEntryUpdateTable updateTable;
 
   /// The id of the server that handled this session.
   late final _i1.ColumnString serverId;
@@ -611,6 +689,48 @@ class SessionLogEntryRepository {
     return session.db.updateRow<SessionLogEntry>(
       row,
       columns: columns?.call(SessionLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [SessionLogEntry] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<SessionLogEntry?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<SessionLogEntry>(
+      id,
+      columnValues: columnValues(SessionLogEntry.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [SessionLogEntry]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<SessionLogEntry>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<SessionLogEntry>(
+      columnValues: columnValues(SessionLogEntry.t.updateTable),
+      where: where(SessionLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

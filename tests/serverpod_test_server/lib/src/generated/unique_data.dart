@@ -134,8 +134,23 @@ class _UniqueDataImpl extends UniqueData {
   }
 }
 
+class UniqueDataUpdateTable extends _i1.UpdateTable<UniqueDataTable> {
+  UniqueDataUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+        table.number,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+}
+
 class UniqueDataTable extends _i1.Table<int?> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
+    updateTable = UniqueDataUpdateTable(this);
     number = _i1.ColumnInt(
       'number',
       this,
@@ -145,6 +160,8 @@ class UniqueDataTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final UniqueDataUpdateTable updateTable;
 
   late final _i1.ColumnInt number;
 
@@ -343,6 +360,46 @@ class UniqueDataRepository {
     return session.db.updateRow<UniqueData>(
       row,
       columns: columns?.call(UniqueData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [UniqueData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<UniqueData?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<UniqueDataUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<UniqueData>(
+      id,
+      columnValues: columnValues(UniqueData.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [UniqueData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<UniqueData>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<UniqueDataUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<UniqueDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UniqueDataTable>? orderBy,
+    _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<UniqueData>(
+      columnValues: columnValues(UniqueData.t.updateTable),
+      where: where(UniqueData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UniqueData.t),
+      orderByList: orderByList?.call(UniqueData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

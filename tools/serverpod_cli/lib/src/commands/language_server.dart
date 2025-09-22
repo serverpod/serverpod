@@ -1,4 +1,4 @@
-import 'package:cli_tools/config.dart';
+import 'package:config/config.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 

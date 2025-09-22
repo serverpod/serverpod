@@ -173,9 +173,43 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
   }
 }
 
+class ObjectWithSparseVectorUpdateTable
+    extends _i1.UpdateTable<ObjectWithSparseVectorTable> {
+  ObjectWithSparseVectorUpdateTable(super.table);
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVector(
+          _i1.SparseVector value) =>
+      _i1.ColumnValue(
+        table.sparseVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorNullable(
+          _i1.SparseVector? value) =>
+      _i1.ColumnValue(
+        table.sparseVectorNullable,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorIndexedHnsw(
+          _i1.SparseVector value) =>
+      _i1.ColumnValue(
+        table.sparseVectorIndexedHnsw,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector>
+      sparseVectorIndexedHnswWithParams(_i1.SparseVector value) =>
+          _i1.ColumnValue(
+            table.sparseVectorIndexedHnswWithParams,
+            value,
+          );
+}
+
 class ObjectWithSparseVectorTable extends _i1.Table<int?> {
   ObjectWithSparseVectorTable({super.tableRelation})
       : super(tableName: 'object_with_sparse_vector') {
+    updateTable = ObjectWithSparseVectorUpdateTable(this);
     sparseVector = _i1.ColumnSparseVector(
       'sparseVector',
       this,
@@ -197,6 +231,8 @@ class ObjectWithSparseVectorTable extends _i1.Table<int?> {
       dimension: 512,
     );
   }
+
+  late final ObjectWithSparseVectorUpdateTable updateTable;
 
   late final _i1.ColumnSparseVector sparseVector;
 
@@ -401,6 +437,48 @@ class ObjectWithSparseVectorRepository {
     return session.db.updateRow<ObjectWithSparseVector>(
       row,
       columns: columns?.call(ObjectWithSparseVector.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithSparseVector] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithSparseVector?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithSparseVector>(
+      id,
+      columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithSparseVector]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithSparseVector>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithSparseVector>(
+      columnValues: columnValues(ObjectWithSparseVector.t.updateTable),
+      where: where(ObjectWithSparseVector.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

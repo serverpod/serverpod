@@ -177,11 +177,35 @@ class _EmailAccountRequestCompletionAttemptImpl
   }
 }
 
+class EmailAccountRequestCompletionAttemptUpdateTable
+    extends _i1.UpdateTable<EmailAccountRequestCompletionAttemptTable> {
+  EmailAccountRequestCompletionAttemptUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.attemptedAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+        table.ipAddress,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountRequestId(
+          _i1.UuidValue value) =>
+      _i1.ColumnValue(
+        table.emailAccountRequestId,
+        value,
+      );
+}
+
 class EmailAccountRequestCompletionAttemptTable
     extends _i1.Table<_i1.UuidValue?> {
   EmailAccountRequestCompletionAttemptTable({super.tableRelation})
       : super(
             tableName: 'serverpod_auth_idp_email_account_request_completion') {
+    updateTable = EmailAccountRequestCompletionAttemptUpdateTable(this);
     attemptedAt = _i1.ColumnDateTime(
       'attemptedAt',
       this,
@@ -195,6 +219,8 @@ class EmailAccountRequestCompletionAttemptTable
       this,
     );
   }
+
+  late final EmailAccountRequestCompletionAttemptUpdateTable updateTable;
 
   /// The time of the reset attempt.
   late final _i1.ColumnDateTime attemptedAt;
@@ -441,6 +467,55 @@ class EmailAccountRequestCompletionAttemptRepository {
     return session.db.updateRow<EmailAccountRequestCompletionAttempt>(
       row,
       columns: columns?.call(EmailAccountRequestCompletionAttempt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmailAccountRequestCompletionAttempt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailAccountRequestCompletionAttempt?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountRequestCompletionAttemptUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailAccountRequestCompletionAttempt>(
+      id,
+      columnValues:
+          columnValues(EmailAccountRequestCompletionAttempt.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailAccountRequestCompletionAttempt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailAccountRequestCompletionAttempt>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<EmailAccountRequestCompletionAttemptUpdateTable>
+        columnValues,
+    required _i1
+        .WhereExpressionBuilder<EmailAccountRequestCompletionAttemptTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailAccountRequestCompletionAttemptTable>? orderBy,
+    _i1.OrderByListBuilder<EmailAccountRequestCompletionAttemptTable>?
+        orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailAccountRequestCompletionAttempt>(
+      columnValues:
+          columnValues(EmailAccountRequestCompletionAttempt.t.updateTable),
+      where: where(EmailAccountRequestCompletionAttempt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccountRequestCompletionAttempt.t),
+      orderByList: orderByList?.call(EmailAccountRequestCompletionAttempt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -136,4 +136,18 @@ void main() async {
       expect(inserted.id, isNotNull);
     });
   });
+
+  group('Given a model with required field', () {
+    tearDown(() async {
+      await ModelWithRequiredField.db
+          .deleteWhere(session, where: (t) => Constant.bool(true));
+    });
+
+    test('when inserting then it is created', () async {
+      var model = ModelWithRequiredField(name: 'John', email: null);
+      var inserted = await ModelWithRequiredField.db.insertRow(session, model);
+
+      expect(inserted.id, isNotNull);
+    });
+  });
 }

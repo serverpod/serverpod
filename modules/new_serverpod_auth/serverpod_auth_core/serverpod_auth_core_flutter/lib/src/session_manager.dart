@@ -1,158 +1,216 @@
-import 'dart:async';
-import 'dart:convert';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
-import 'package:serverpod_auth_core_flutter/src/shared_preferences_key_value_storage.dart';
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
-/// Session manager client a server using `serverpod_auth_session`.
-class SessionManager extends BearerAuthenticationKeyManager {
-  /// Creates a new session manager instance.
-  SessionManager({
-    KeyValueStorage? storage,
+import 'auth_key_providers/jwt_auth_key_provider.dart';
+import 'auth_key_providers/sas_auth_key_provider.dart';
+import 'storage/client_auth_info_storage.dart';
+import 'storage/secure_client_auth_info_storage.dart';
 
-    /// Optional distinct secure storage for the session key (e.g. Keychain).
-    KeyValueStorage? secureStorage,
-  }) : _storage = storage ?? SharedPreferencesKeyValueStorage() {
-    _secureStorage = secureStorage ?? _storage;
+/// The [ClientAuthSessionManager] keeps track of and manages the signed-in
+/// state of the user. Users are typically authenticated with Google, Apple,
+/// or other methods. Please refer to the documentation to see supported
+/// methods. Session information is stored in the secure shared preferences of
+/// the app and persists between restarts of the app.
+class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
+  /// The auth module's caller.
+  Caller? _caller;
+
+  /// The authentication key provider to use.
+  late final Map<String, ClientAuthKeyProvider> _authKeyProviderDelegates;
+
+  /// The secure storage to keep user authentication info.
+  final ClientAuthInfoStorage storage;
+
+  /// Creates a new [ClientAuthSessionManager].
+  ClientAuthSessionManager({
+    /// Optionally override the caller. If not provided directly, the caller
+    /// must be set before usage by calling [setCaller].
+    Caller? caller,
+
+    /// The authentication key provider to use for each auth strategy. If not
+    /// provided, a default one will be created as needed.
+    Map<String, ClientAuthKeyProvider>? authKeyProviderDelegates,
+
+    /// The secure storage to keep user authentication info. If missing, the
+    /// session manager will create a [SecureClientAuthInfoStorage].
+    ClientAuthInfoStorage? storage,
+  })  : _caller = caller,
+        storage = storage ?? SecureClientAuthInfoStorage() {
+    _authKeyProviderDelegates = authKeyProviderDelegates ?? {};
   }
 
-  final KeyValueStorage _storage;
-
-  late final KeyValueStorage _secureStorage;
-
-  final _authInfo = ValueNotifier<AuthInfo?>(null);
-
-  /// The currently logged in user.
-  ValueListenable<AuthInfo?> get authInfo => _authInfo;
-
-  String? _key;
-
-  var _didInit = false;
-
-  /// Restores the persisted session from the storage, if any.
-  Future<void> init() async {
-    if (_didInit) {
-      return;
-    }
-    _didInit = true;
-
-    return _init();
+  /// Sets the caller from the client's module lookup.
+  void setCaller(Caller caller) {
+    _caller = caller;
   }
 
-  Future<void> _init() async {
-    final sessionKey = await _secureStorage.get(
-      SessionManagerStorageKeys.sessionKey.key,
-    );
-
-    _key = sessionKey;
-
-    if (sessionKey == null) {
-      _authInfo.value = null;
-
-      return;
-    }
-
-    final persistedUserId = await _storage.get(
-      SessionManagerStorageKeys.authUserId.key,
-    );
-    if (persistedUserId == null) {
-      throw IncompleteSessionManagerStorageException(
-        SessionManagerStorageKeys.authUserId.key,
-      );
-    }
-
-    final persistedScopeNames = await _storage.get(
-      SessionManagerStorageKeys.scopeNames.key,
-    );
-    if (persistedScopeNames == null) {
-      throw IncompleteSessionManagerStorageException(
-        SessionManagerStorageKeys.scopeNames.key,
-      );
-    }
-
-    _authInfo.value = (
-      authUserId: UuidValue.withValidation(persistedUserId),
-      scopeNames:
-          (jsonDecode(persistedScopeNames) as List).cast<String>().toSet(),
+  /// The authentication module caller.
+  Caller get caller {
+    if (_caller != null) return _caller!;
+    throw StateError(
+      'Caller not set on this session manager. Either set this session manager '
+      'to a client by using the "authSessionManager" extension, or call the '
+      '"setCaller" method before accessing the caller.',
     );
   }
 
-  /// Set the current session to a logged-in user described by [authSuccess].
-  Future<void> setLoggedIn(AuthSuccess authSuccess) async {
-    await _secureStorage.set(
-      SessionManagerStorageKeys.sessionKey.key,
-      authSuccess.token,
-    );
+  final _authInfo = ValueNotifier<AuthSuccess?>(null);
 
-    await _storage.set(
-      SessionManagerStorageKeys.authUserId.key,
-      authSuccess.authUserId.uuid,
-    );
+  /// A listenable that provides access to the signed in user.
+  ValueListenable<AuthSuccess?> get authInfo => _authInfo;
 
-    await _storage.set(
-      SessionManagerStorageKeys.scopeNames.key,
-      jsonEncode(authSuccess.scopeNames.toList()),
-    );
+  /// Whether an user is currently signed in.
+  bool get isAuthenticated => authInfo.value != null;
 
-    await _init();
-  }
+  /// The authentication key provider to use for the current auth strategy.
+  ClientAuthKeyProvider? get authKeyProviderDelegate {
+    final authStrategyName = authInfo.value?.authStrategy;
+    if (authStrategyName == null) return null;
 
-  /// Log out the current user.
-  ///
-  /// This should be called after a `logout` endpoint has been called on the
-  /// server.
-  Future<void> setLoggedOut() async {
-    await _secureStorage.set(SessionManagerStorageKeys.sessionKey.key, null);
-    await _storage.set(SessionManagerStorageKeys.authUserId.key, null);
-    await _storage.set(SessionManagerStorageKeys.scopeNames.key, null);
+    var authKeyProvider = _authKeyProviderDelegates[authStrategyName];
+    if (authKeyProvider != null) return authKeyProvider;
 
-    await _init();
+    switch (AuthStrategy.fromJson(authStrategyName)) {
+      case AuthStrategy.jwt:
+        authKeyProvider = JwtAuthKeyProvider(
+          getAuthInfo: () async => authInfo.value,
+          onRefreshAuthInfo: updateSignedInUser,
+          refreshEndpoint: caller.refreshJwtTokens,
+        );
+      case AuthStrategy.session:
+        authKeyProvider = SasAuthKeyProvider(
+          getAuthInfo: () async => authInfo.value,
+        );
+      default:
+        throw UnimplementedError(
+          'No authentication key provider found for auth strategy: $authStrategyName',
+        );
+    }
+
+    _authKeyProviderDelegates[authStrategyName] = authKeyProvider;
+    return authKeyProvider;
   }
 
   @override
-  Future<String?> get() async {
-    return _key;
-  }
+  Future<String?> get authHeaderValue async =>
+      authKeyProviderDelegate?.authHeaderValue;
 
   @override
-  Future<void> put(String key) {
-    // This is never called by the Serverpod `Client`, and thus no need to implement it.
-    throw UnimplementedError();
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    final authKeyProvider = authKeyProviderDelegate;
+    if (authKeyProvider is! RefresherClientAuthKeyProvider) {
+      return RefreshAuthKeyResult.skipped;
+    }
+    return authKeyProvider.refreshAuthKey(force: force);
   }
 
-  @override
-  Future<void> remove() {
-    // This is never called by the Serverpod `Client`, and thus no need to implement it.
-    throw UnimplementedError();
+  /// Restores any existing session from the storage and validates it. If the
+  /// authentication is no longer valid, the user is signed out from the current
+  /// device, updating the [authInfo] value. If the refresh fails due to other
+  /// reasons (network error, server error, etc.), returns false, but does not
+  /// sign out the user. Returns true if the authentication was validated.
+  Future<bool> initialize() async {
+    await restore();
+    return validateAuthentication();
+  }
+
+  /// Restore the current sign in status from the storage.
+  Future<void> restore() async {
+    _authInfo.value = await storage.get();
+  }
+
+  /// Updates the signed in user on the storage and for open connections.
+  Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
+    await storage.set(authInfo);
+    _authInfo.value = authInfo;
+    await caller.client.updateStreamingConnectionAuthenticationKey();
+  }
+
+  /// Verifies the current sign in status of the user with the server and
+  /// updates the authentication info, if needed. If the user authentication is
+  /// no longer valid, the user is signed out from the current device.
+  Future<bool> validateAuthentication() async {
+    try {
+      if (isAuthenticated) {
+        final refreshResult = await refreshAuthKey(force: true);
+        if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
+            !await caller.status.isSignedIn()) {
+          return await signOutDevice();
+        }
+      }
+      return true;
+    } on ServerpodClientException catch (_) {
+      // Other errors, like network errors, should not sign out the user.
+    }
+    return false;
+  }
+
+  Future<bool> _signOut({required bool allDevices}) async {
+    try {
+      switch (allDevices) {
+        case true:
+          await caller.status.signOutAllDevices();
+        case false:
+          await caller.status.signOutDevice();
+      }
+
+      // Must be updated after the signout for the server to receive the header
+      // info and recognize the signing out user. Otherwise, the call to the
+      // status endpoint will go with no user info and no signout will be done.
+      await updateSignedInUser(null);
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Signs the user out from the current device.
+  /// Returns true if successful.
+  Future<bool> signOutDevice() async {
+    return _signOut(allDevices: false);
+  }
+
+  /// Signs the user out from all connected devices.
+  /// Returns true if successful.
+  Future<bool> signOutAllDevices() async {
+    return _signOut(allDevices: true);
   }
 }
 
-/// Info about the logged-in user.
-typedef AuthInfo = ({UuidValue authUserId, Set<String> scopeNames});
+/// Extension for ServerpodClientShared to provide auth session management.
+extension ClientAuthSessionManagerExtension on ServerpodClientShared {
+  /// The authentication session manager to sign in and manage user sessions.
+  ClientAuthSessionManager get auth {
+    final currentProvider = authKeyProvider;
+    if (currentProvider == null) {
+      throw StateError(
+        'To access the auth instance, first instantiate the session manager '
+        'and set it as the "authKeyProvider" on the client.',
+      );
+    }
+    if (currentProvider is! ClientAuthSessionManager) {
+      throw StateError(
+        'The "authKeyProvider" is set to an unsupported type. Expected '
+        '"ClientAuthSessionManager", got "${currentProvider.runtimeType}".',
+      );
+    }
+    return currentProvider;
+  }
 
-@internal
-enum SessionManagerStorageKeys {
-  sessionKey('serverpod_auth_session.sessionKey'),
-  authUserId('serverpod_auth_session.authUserId'),
-  scopeNames('serverpod_auth_session.scopeNames');
-
-  const SessionManagerStorageKeys(this.key);
-
-  final String key;
+  /// Sets the authentication session manager for this client.
+  set authSessionManager(ClientAuthSessionManager authSessionManager) {
+    authSessionManager.setCaller(getCaller());
+    authKeyProvider = authSessionManager;
+  }
 }
 
-/// Exception to be thrown when the `SessionManager`'s storage does not contain
-/// all expected keys.
-class IncompleteSessionManagerStorageException implements Exception {
-  final String _missingKey;
-
-  /// Creates a new instance of this error.
-  const IncompleteSessionManagerStorageException(this._missingKey);
-
-  @override
-  String toString() {
-    return 'The SessionManager\'s key/value store was missing an entry for "$_missingKey"';
+extension on ServerpodClientShared {
+  Caller getCaller() {
+    var caller = moduleLookup.values.whereType<Caller>().firstOrNull;
+    if (caller != null) return caller;
+    throw StateError('No authentication module found.');
   }
 }

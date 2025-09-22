@@ -43,6 +43,11 @@ class ExceptionYamlDefinition {
                 valueRestriction: restrictions.validateFieldType,
               ),
               ValidateNode(
+                Keyword.requiredKey,
+                keyRestriction: restrictions.validateRequiredKey,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
+              ValidateNode(
                 Keyword.defaultKey,
                 keyRestriction: restrictions.validateDefaultKey,
                 valueRestriction: DefaultValueRestriction(

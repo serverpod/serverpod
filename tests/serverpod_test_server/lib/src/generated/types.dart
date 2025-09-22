@@ -413,8 +413,128 @@ class _TypesImpl extends Types {
   }
 }
 
+class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
+  TypesUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> anInt(int? value) => _i1.ColumnValue(
+        table.anInt,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> aBool(bool? value) => _i1.ColumnValue(
+        table.aBool,
+        value,
+      );
+
+  _i1.ColumnValue<double, double> aDouble(double? value) => _i1.ColumnValue(
+        table.aDouble,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> aDateTime(DateTime? value) =>
+      _i1.ColumnValue(
+        table.aDateTime,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> aString(String? value) => _i1.ColumnValue(
+        table.aString,
+        value,
+      );
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> aByteData(_i2.ByteData? value) =>
+      _i1.ColumnValue(
+        table.aByteData,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> aDuration(Duration? value) =>
+      _i1.ColumnValue(
+        table.aDuration,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> aUuid(_i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.aUuid,
+        value,
+      );
+
+  _i1.ColumnValue<Uri, Uri> aUri(Uri? value) => _i1.ColumnValue(
+        table.aUri,
+        value,
+      );
+
+  _i1.ColumnValue<BigInt, BigInt> aBigInt(BigInt? value) => _i1.ColumnValue(
+        table.aBigInt,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Vector, _i1.Vector> aVector(_i1.Vector? value) =>
+      _i1.ColumnValue(
+        table.aVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> aHalfVector(
+          _i1.HalfVector? value) =>
+      _i1.ColumnValue(
+        table.aHalfVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> aSparseVector(
+          _i1.SparseVector? value) =>
+      _i1.ColumnValue(
+        table.aSparseVector,
+        value,
+      );
+
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> aBit(_i1.Bit? value) => _i1.ColumnValue(
+        table.aBit,
+        value,
+      );
+
+  _i1.ColumnValue<_i3.TestEnum, _i3.TestEnum> anEnum(_i3.TestEnum? value) =>
+      _i1.ColumnValue(
+        table.anEnum,
+        value,
+      );
+
+  _i1.ColumnValue<_i4.TestEnumStringified, _i4.TestEnumStringified>
+      aStringifiedEnum(_i4.TestEnumStringified? value) => _i1.ColumnValue(
+            table.aStringifiedEnum,
+            value,
+          );
+
+  _i1.ColumnValue<List<int>, List<int>> aList(List<int>? value) =>
+      _i1.ColumnValue(
+        table.aList,
+        value,
+      );
+
+  _i1.ColumnValue<Map<int, int>, Map<int, int>> aMap(Map<int, int>? value) =>
+      _i1.ColumnValue(
+        table.aMap,
+        value,
+      );
+
+  _i1.ColumnValue<Set<int>, Set<int>> aSet(Set<int>? value) => _i1.ColumnValue(
+        table.aSet,
+        value,
+      );
+
+  _i1.ColumnValue<(String, {Uri? optionalUri}), Map<String, dynamic>?> aRecord(
+          (String, {Uri? optionalUri})? value) =>
+      _i1.ColumnValue(
+        table.aRecord,
+        _i5.mapRecordToJson(value),
+      );
+}
+
 class TypesTable extends _i1.Table<int?> {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
+    updateTable = TypesUpdateTable(this);
     anInt = _i1.ColumnInt(
       'anInt',
       this,
@@ -485,23 +605,25 @@ class TypesTable extends _i1.Table<int?> {
       this,
       _i1.EnumSerialization.byName,
     );
-    aList = _i1.ColumnSerializable(
+    aList = _i1.ColumnSerializable<List<int>>(
       'aList',
       this,
     );
-    aMap = _i1.ColumnSerializable(
+    aMap = _i1.ColumnSerializable<Map<int, int>>(
       'aMap',
       this,
     );
-    aSet = _i1.ColumnSerializable(
+    aSet = _i1.ColumnSerializable<Set<int>>(
       'aSet',
       this,
     );
-    aRecord = _i1.ColumnSerializable(
+    aRecord = _i1.ColumnSerializable<(String, {Uri? optionalUri})>(
       'aRecord',
       this,
     );
   }
+
+  late final TypesUpdateTable updateTable;
 
   late final _i1.ColumnInt anInt;
 
@@ -535,13 +657,13 @@ class TypesTable extends _i1.Table<int?> {
 
   late final _i1.ColumnEnum<_i4.TestEnumStringified> aStringifiedEnum;
 
-  late final _i1.ColumnSerializable aList;
+  late final _i1.ColumnSerializable<List<int>> aList;
 
-  late final _i1.ColumnSerializable aMap;
+  late final _i1.ColumnSerializable<Map<int, int>> aMap;
 
-  late final _i1.ColumnSerializable aSet;
+  late final _i1.ColumnSerializable<Set<int>> aSet;
 
-  late final _i1.ColumnSerializable aRecord;
+  late final _i1.ColumnSerializable<(String, {Uri? optionalUri})> aRecord;
 
   @override
   List<_i1.Column> get columns => [
@@ -754,6 +876,46 @@ class TypesRepository {
     return session.db.updateRow<Types>(
       row,
       columns: columns?.call(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Types] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Types?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<TypesUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Types>(
+      id,
+      columnValues: columnValues(Types.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Types]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Types>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TypesUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<TypesTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Types>(
+      columnValues: columnValues(Types.t.updateTable),
+      where: where(Types.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

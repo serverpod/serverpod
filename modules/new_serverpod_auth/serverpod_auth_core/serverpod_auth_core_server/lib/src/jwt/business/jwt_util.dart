@@ -18,10 +18,12 @@ class JwtUtil {
 
   /// Creates a new JWT for the given refresh token.
   ///
-  /// The auth user ID is set as `subject`.
-  /// The refresh token's ID for which this access token is generated is set as `jwtId`.
-  /// If scopes are present on the fresh token configuration, they will be set on a claim named "dev.serverpod.scopeNames".
-  /// Any extra claims configured with the refresh token will be added as top-level claims.
+  /// The auth user ID is set as `subject`. An UUID `jwtId` is generated for
+  /// each access token to ensure token uniqueness. The refresh token's ID is
+  /// stored in the claim "dev.serverpod.refreshTokenId". If scopes are present
+  /// on the refresh token configuration, they will be set on a claim named
+  /// "dev.serverpod.scopeNames". Any extra claims configured with the refresh
+  /// token will be added as top-level claims.
   String createJwt(final RefreshToken refreshToken) {
     final extraClaims = refreshToken.extraClaims != null
         ? (jsonDecode(refreshToken.extraClaims!) as Map).cast<String, dynamic>()
@@ -49,8 +51,9 @@ class JwtUtil {
         ...?extraClaims,
         if (refreshToken.scopeNames.isNotEmpty)
           _serverpodScopeNamesClaimKey: refreshToken.scopeNames.toList(),
+        _serverpodRefreshTokenIdClaimKey: refreshToken.id!.toString(),
       },
-      jwtId: refreshToken.id!.toString(),
+      jwtId: const Uuid().v4obj().toString(),
       subject: refreshToken.authUserId.toString(),
       issuer: _issuer,
     );
@@ -77,13 +80,15 @@ class JwtUtil {
   /// In practice, when this is used via [AuthenticationTokens.authenticationHandler], these errors will all be caught and a `null` `AuthenticationInfo?` will be returned instead.
   VerifiedJwtData verifyJwt(final String accessToken) {
     final jwt = _verifyJwt(accessToken);
+    final allClaims = (jwt.payload as Map).cast<String, dynamic>();
 
     final UuidValue refreshTokenId;
     try {
-      refreshTokenId = UuidValue.withValidation(jwt.jwtId!);
+      final tokenStr = allClaims[_serverpodRefreshTokenIdClaimKey] as String;
+      refreshTokenId = UuidValue.withValidation(tokenStr);
     } catch (e) {
       throw ArgumentError(
-        'The refresh token ID could not be read from the JWT\'s `id` claim: "${jwt.jwtId}"',
+        "The refresh token ID could not be read from the JWT's `$_serverpodRefreshTokenIdClaimKey` claim.",
         'accessToken',
       );
     }
@@ -100,8 +105,7 @@ class JwtUtil {
 
     final Set<Scope> scopes;
     try {
-      final scopeNamesClaim =
-          (jwt.payload as Map)[_serverpodScopeNamesClaimKey];
+      final scopeNamesClaim = allClaims[_serverpodScopeNamesClaimKey];
       final scopeNames = scopeNamesClaim != null
           ? (scopeNamesClaim as List).cast<String>()
           : const <String>[];
@@ -116,19 +120,34 @@ class JwtUtil {
       );
     }
 
-    final allClaims = (jwt.payload as Map).cast<String, dynamic>();
     final extraClaims = Map.fromEntries(
       allClaims.entries.where((final e) =>
           !_registeredClaims.contains(e.key) &&
-          e.key != _serverpodScopeNamesClaimKey),
+          e.key != _serverpodScopeNamesClaimKey &&
+          e.key != _serverpodRefreshTokenIdClaimKey),
     );
 
     return (
       refreshTokenId: refreshTokenId,
+      tokenExpiresAt: _extractExpirationDate(allClaims),
       authUserId: authUserId,
       scopes: scopes,
       extraClaims: extraClaims,
     );
+  }
+
+  /// Extracts the expiration date from a JWT token.
+  DateTime extractExpirationDate(final String accessToken) {
+    final jwt = _verifyJwt(accessToken);
+    final payload = (jwt.payload as Map).cast<String, dynamic>();
+    return _extractExpirationDate(payload);
+  }
+
+  DateTime _extractExpirationDate(final Map<String, dynamic> payload) {
+    final exp = payload['exp'];
+    if (exp is! num) throw ArgumentError('JWT payload missing "exp" key');
+    final expMillis = (exp * 1000).toInt();
+    return DateTime.fromMillisecondsSinceEpoch(expMillis, isUtc: true);
   }
 
   /// Verifies the JWT's signature and returns its data.
@@ -169,14 +188,22 @@ class JwtUtil {
     'jti',
   };
 
+  /// Prefix for Serverpod-specific JWT claims.
   static const _serverpodClaimPrefix = 'dev.serverpod.';
+
+  /// Claim for Serverpod scopes embedded in the access token.
   static const _serverpodScopeNamesClaimKey =
       '${_serverpodClaimPrefix}scopeNames';
+
+  /// Claim carrying the RefreshToken ID associated with this access token.
+  static const _serverpodRefreshTokenIdClaimKey =
+      '${_serverpodClaimPrefix}refreshTokenId';
 }
 
 /// The data successfully verified and extracted from a JWT token.
 typedef VerifiedJwtData = ({
   UuidValue refreshTokenId,
+  DateTime tokenExpiresAt,
   UuidValue authUserId,
   Set<Scope> scopes,
   Map<String, dynamic> extraClaims,

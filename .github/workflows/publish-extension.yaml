@@ -1,0 +1,44 @@
+name: Publish extension
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      # Matches tags like extension-v1.2.3 and extension-v1.2.3-pre.1
+      - 'extension-v[0-9]+.[0-9]+.[0-9]+'
+      - 'extension-v[0-9]+.[0-9]+.[0-9]+-*'
+
+jobs:
+  publish_vscode:
+    name: Publish to VS Code Marketplace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - run: npm ci
+        working-directory: tools/serverpod_vscode_extension
+      - run: npm run publish-vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        working-directory: tools/serverpod_vscode_extension
+
+  publish_openvsx:
+    name: Publish to Open VSX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - run: npm ci
+        working-directory: tools/serverpod_vscode_extension
+      - run: npx ovsx publish 
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        working-directory: tools/serverpod_vscode_extension

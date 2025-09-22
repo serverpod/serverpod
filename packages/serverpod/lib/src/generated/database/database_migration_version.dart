@@ -153,9 +153,31 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
   }
 }
 
+class DatabaseMigrationVersionUpdateTable
+    extends _i1.UpdateTable<DatabaseMigrationVersionTable> {
+  DatabaseMigrationVersionUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> module(String value) => _i1.ColumnValue(
+        table.module,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> version(String value) => _i1.ColumnValue(
+        table.version,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime? value) =>
+      _i1.ColumnValue(
+        table.timestamp,
+        value,
+      );
+}
+
 class DatabaseMigrationVersionTable extends _i1.Table<int?> {
   DatabaseMigrationVersionTable({super.tableRelation})
       : super(tableName: 'serverpod_migrations') {
+    updateTable = DatabaseMigrationVersionUpdateTable(this);
     module = _i1.ColumnString(
       'module',
       this,
@@ -169,6 +191,8 @@ class DatabaseMigrationVersionTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final DatabaseMigrationVersionUpdateTable updateTable;
 
   /// The module the migration belongs to.
   late final _i1.ColumnString module;
@@ -373,6 +397,48 @@ class DatabaseMigrationVersionRepository {
     return session.db.updateRow<DatabaseMigrationVersion>(
       row,
       columns: columns?.call(DatabaseMigrationVersion.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DatabaseMigrationVersion] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DatabaseMigrationVersion?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DatabaseMigrationVersion>(
+      id,
+      columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DatabaseMigrationVersion]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DatabaseMigrationVersion>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DatabaseMigrationVersion>(
+      columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
+      where: where(DatabaseMigrationVersion.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

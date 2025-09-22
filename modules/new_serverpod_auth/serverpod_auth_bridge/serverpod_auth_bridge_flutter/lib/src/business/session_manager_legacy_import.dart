@@ -4,18 +4,15 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart'
     as auth_flutter;
 import 'package:shared_preferences/shared_preferences.dart';
 
-extension SessionManagerLegacyImport on auth_flutter.SessionManager {
+extension SessionManagerLegacyImport on auth_flutter.ClientAuthSessionManager {
   static const _prefsKey = 'serverpod_authentication_key_production';
 
   Future<void> initAndImportLegacySessionIfNeeded(
     backward_compatibility_client.Caller caller, {
     final Future<String?> Function(String key)? legacyStringGetter,
   }) async {
-    await init();
-
-    if (authInfo.value != null) {
-      return;
-    }
+    await initialize();
+    if (isAuthenticated) return;
 
     final String? legacySessionKey;
     if (legacyStringGetter != null) {
@@ -37,6 +34,6 @@ extension SessionManagerLegacyImport on auth_flutter.SessionManager {
       return;
     }
 
-    await setLoggedIn(authSuccess);
+    await updateSignedInUser(authSuccess);
   }
 }

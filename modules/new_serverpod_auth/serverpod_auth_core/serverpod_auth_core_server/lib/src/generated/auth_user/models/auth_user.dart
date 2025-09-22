@@ -150,14 +150,36 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
+class AuthUserUpdateTable extends _i1.UpdateTable<AuthUserTable> {
+  AuthUserUpdateTable(super.table);
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _i1.ColumnValue(
+        table.scopeNames,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
+        table.blocked,
+        value,
+      );
+}
+
 class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
       : super(tableName: 'serverpod_auth_core_user') {
+    updateTable = AuthUserUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
     );
-    scopeNames = _i1.ColumnSerializable(
+    scopeNames = _i1.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
@@ -167,11 +189,13 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
+  late final AuthUserUpdateTable updateTable;
+
   /// The time when this user was created.
   late final _i1.ColumnDateTime createdAt;
 
   /// Set of scopes that this user can access.
-  late final _i1.ColumnSerializable scopeNames;
+  late final _i1.ColumnSerializable<Set<String>> scopeNames;
 
   /// If `true` the user will be blocked from signing in.
   late final _i1.ColumnBool blocked;
@@ -370,6 +394,46 @@ class AuthUserRepository {
     return session.db.updateRow<AuthUser>(
       row,
       columns: columns?.call(AuthUser.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [AuthUser] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<AuthUser?> updateById(
+    _i1.Session session,
+    _i1.UuidValue id, {
+    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<AuthUser>(
+      id,
+      columnValues: columnValues(AuthUser.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [AuthUser]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<AuthUser>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<AuthUserTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<AuthUserTable>? orderBy,
+    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<AuthUser>(
+      columnValues: columnValues(AuthUser.t.updateTable),
+      where: where(AuthUser.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

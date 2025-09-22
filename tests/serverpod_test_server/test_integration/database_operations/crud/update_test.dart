@@ -166,7 +166,17 @@ void main() async {
       aByteData: ByteData.view(Uint8List(8).buffer),
       aDuration: Duration(milliseconds: 1000),
       aUuid: UuidValue.fromString(Uuid().v4()),
+      aUri: Uri.parse('https://example.com'),
+      aBigInt: BigInt.from(123456789),
+      aVector: Vector([1.0, 2.0, 3.0]),
+      aHalfVector: HalfVector([1.0, 2.0, 3.0]),
+      aSparseVector: SparseVector([1.0, 0.0, 2.0]),
+      aBit: Bit([true, false, true]),
       anEnum: TestEnum.one,
+      aStringifiedEnum: TestEnumStringified.one,
+      aList: [1, 2, 3],
+      aMap: {1: 10, 2: 20},
+      aSet: {1, 2, 3},
       aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
     );
 
@@ -285,6 +295,84 @@ void main() async {
     });
 
     test(
+        'when updating aUri to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aUri: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aUri, isNull);
+    });
+
+    test(
+        'when updating aBigInt to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBigInt: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBigInt, isNull);
+    });
+
+    test(
+        'when updating aVector to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aVector: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aVector, isNull);
+    });
+
+    test(
+        'when updating aHalfVector to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aHalfVector: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aHalfVector, isNull);
+    });
+
+    test(
+        'when updating aSparseVector to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aSparseVector: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aSparseVector, isNull);
+    });
+
+    test(
+        'when updating aBit to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBit: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBit, isNull);
+    });
+
+    test(
         'when updating anEnum to null then the database is updated with null value.',
         () async {
       var value = Types(
@@ -295,6 +383,58 @@ void main() async {
       var updated = await Types.db.updateRow(session, value);
 
       expect(updated.anEnum, isNull);
+    });
+
+    test(
+        'when updating aStringifiedEnum to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aStringifiedEnum: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aStringifiedEnum, isNull);
+    });
+
+    test(
+        'when updating aList to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aList: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aList, isNull);
+    });
+
+    test(
+        'when updating aMap to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aMap: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aMap, isNull);
+    });
+
+    test(
+        'when updating aSet to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aSet: null,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aSet, isNull);
     });
 
     test(
@@ -321,7 +461,17 @@ void main() async {
       aByteData: null,
       aDuration: null,
       aUuid: null,
+      aUri: null,
+      aBigInt: null,
+      aVector: null,
+      aHalfVector: null,
+      aSparseVector: null,
+      aBit: null,
       anEnum: null,
+      aStringifiedEnum: null,
+      aList: null,
+      aMap: null,
+      aSet: null,
       aRecord: null,
     );
 
@@ -451,6 +601,89 @@ void main() async {
     });
 
     test(
+        'when updating aUri to a real value then the database is updated with the real value.',
+        () async {
+      var uri = Uri.parse('https://example.com');
+      var value = Types(
+        id: type.id,
+        aUri: uri,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aUri, equals(uri));
+    });
+
+    test(
+        'when updating aBigInt to a real value then the database is updated with the real value.',
+        () async {
+      var bigInt = BigInt.from(987654321);
+      var value = Types(
+        id: type.id,
+        aBigInt: bigInt,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBigInt, equals(bigInt));
+    });
+
+    test(
+        'when updating aVector to a real value then the database is updated with the real value.',
+        () async {
+      var vector = Vector([4.0, 5.0, 6.0]);
+      var value = Types(
+        id: type.id,
+        aVector: vector,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aVector, equals(vector));
+    });
+
+    test(
+        'when updating aHalfVector to a real value then the database is updated with the real value.',
+        () async {
+      var halfVector = HalfVector([4.0, 5.0, 6.0]);
+      var value = Types(
+        id: type.id,
+        aHalfVector: halfVector,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aHalfVector, equals(halfVector));
+    });
+
+    test(
+        'when updating aSparseVector to a real value then the database is updated with the real value.',
+        () async {
+      var sparseVector = SparseVector([0.0, 4.0, 5.0]);
+      var value = Types(
+        id: type.id,
+        aSparseVector: sparseVector,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aSparseVector, equals(sparseVector));
+    });
+
+    test(
+        'when updating aBit to a real value then the database is updated with the real value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBit: Bit([true, false, true]),
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aBit, equals(Bit([true, false, true])));
+    });
+
+    test(
         'when updating anEnum to TestEnum.one then the database is updated with value TestEnum.one.',
         () async {
       var value = Types(
@@ -461,6 +694,61 @@ void main() async {
       var updated = await Types.db.updateRow(session, value);
 
       expect(updated.anEnum, equals(TestEnum.one));
+    });
+
+    test(
+        'when updating aStringifiedEnum to TestEnumStringified.two then the database is updated with value TestEnumStringified.two.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aStringifiedEnum: TestEnumStringified.two,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aStringifiedEnum, equals(TestEnumStringified.two));
+    });
+
+    test(
+        'when updating aList to a real value then the database is updated with the real value.',
+        () async {
+      var list = [4, 5, 6];
+      var value = Types(
+        id: type.id,
+        aList: list,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aList, equals(list));
+    });
+
+    test(
+        'when updating aMap to a real value then the database is updated with the real value.',
+        () async {
+      var map = {3: 30, 4: 40};
+      var value = Types(
+        id: type.id,
+        aMap: map,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aMap, equals(map));
+    });
+
+    test(
+        'when updating aSet to a real value then the database is updated with the real value.',
+        () async {
+      var set = {4, 5, 6};
+      var value = Types(
+        id: type.id,
+        aSet: set,
+      );
+
+      var updated = await Types.db.updateRow(session, value);
+
+      expect(updated.aSet, equals(set));
     });
 
     test(
@@ -491,7 +779,17 @@ void main() async {
         aByteData: ByteData.view(Uint8List(8).buffer),
         aDuration: Duration(milliseconds: 1000),
         aUuid: UuidValue.fromString(Uuid().v4()),
+        aUri: Uri.parse('https://example.com'),
+        aBigInt: BigInt.from(123456789),
+        aVector: Vector([1.0, 2.0, 3.0]),
+        aHalfVector: HalfVector([1.0, 2.0, 3.0]),
+        aSparseVector: SparseVector([0.0, 4.0, 5.0]),
+        aBit: Bit([true, false, true]),
         anEnum: TestEnum.one,
+        aStringifiedEnum: TestEnumStringified.one,
+        aList: [1, 2, 3],
+        aMap: {1: 10, 2: 20},
+        aSet: {1, 2, 3},
         aRecord: ('test', optionalUri: Uri.parse('https://serverpod.dev')),
       ),
     ];
@@ -628,6 +926,96 @@ void main() async {
     });
 
     test(
+        'when batch updating aUri to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aUri: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aUri, isNull);
+    });
+
+    test(
+        'when batch updating aBigInt to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aBigInt: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aBigInt, isNull);
+    });
+
+    test(
+        'when batch updating aVector to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aVector: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aVector, isNull);
+    });
+
+    test(
+        'when batch updating aHalfVector to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aHalfVector: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aHalfVector, isNull);
+    });
+
+    test(
+        'when batch updating aSparseVector to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aSparseVector: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aSparseVector, isNull);
+    });
+
+    test(
+        'when batch updating aBit to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aBit: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aBit, isNull);
+    });
+
+    test(
         'when batch updating anEnum to null then the database is updated with null value.',
         () async {
       var toUpdate = <Types>[
@@ -640,6 +1028,66 @@ void main() async {
       var updated = await Types.db.update(session, toUpdate);
 
       expect(updated.first.anEnum, isNull);
+    });
+
+    test(
+        'when batch updating aStringifiedEnum to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aStringifiedEnum: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aStringifiedEnum, isNull);
+    });
+
+    test(
+        'when batch updating aList to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aList: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aList, isNull);
+    });
+
+    test(
+        'when batch updating aMap to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aMap: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aMap, isNull);
+    });
+
+    test(
+        'when batch updating aSet to null then the database is updated with null value.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aSet: null,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aSet, isNull);
     });
 
     test(
@@ -669,7 +1117,17 @@ void main() async {
         aByteData: null,
         aDuration: null,
         aUuid: null,
+        aUri: null,
+        aBigInt: null,
+        aVector: null,
+        aHalfVector: null,
+        aSparseVector: null,
+        aBit: null,
         anEnum: null,
+        aStringifiedEnum: null,
+        aList: null,
+        aMap: null,
+        aSet: null,
         aRecord: null,
       ),
     ];
@@ -818,6 +1276,102 @@ void main() async {
     });
 
     test(
+        'when batch updating aUri to a real value then the database is updated with the real value.',
+        () async {
+      var uri = Uri.parse('https://example.com');
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aUri: uri,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aUri, equals(uri));
+    });
+
+    test(
+        'when batch updating aBigInt to a real value then the database is updated with the real value.',
+        () async {
+      var bigInt = BigInt.from(987654321);
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aBigInt: bigInt,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aBigInt, equals(bigInt));
+    });
+
+    test(
+        'when batch updating aVector to a real value then the database is updated with the real value.',
+        () async {
+      var vector = Vector([4.0, 5.0, 6.0]);
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aVector: vector,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aVector, equals(vector));
+    });
+
+    test(
+        'when batch updating aHalfVector to a real value then the database is updated with the real value.',
+        () async {
+      var halfVector = HalfVector([4.0, 5.0, 6.0]);
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aHalfVector: halfVector,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aHalfVector, equals(halfVector));
+    });
+
+    test(
+        'when batch updating aSparseVector to a real value then the database is updated with the real value.',
+        () async {
+      var sparseVector = SparseVector([0.0, 4.0, 5.0]);
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aSparseVector: sparseVector,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aSparseVector, equals(sparseVector));
+    });
+
+    test(
+        'when batch updating aBit to a real value then the database is updated with the real value.',
+        () async {
+      var bit = Bit([true, false, true]);
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aBit: bit,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aBit, equals(bit));
+    });
+
+    test(
         'when batch updating anEnum to TestEnum.one then the database is updated with value TestEnum.one.',
         () async {
       var toUpdate = <Types>[
@@ -830,6 +1384,69 @@ void main() async {
       var updated = await Types.db.update(session, toUpdate);
 
       expect(updated.first.anEnum, equals(TestEnum.one));
+    });
+
+    test(
+        'when batch updating aStringifiedEnum to TestEnumStringified.two then the database is updated with value TestEnumStringified.two.',
+        () async {
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aStringifiedEnum: TestEnumStringified.two,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aStringifiedEnum, equals(TestEnumStringified.two));
+    });
+
+    test(
+        'when batch updating aList to a real value then the database is updated with the real value.',
+        () async {
+      var list = [4, 5, 6];
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aList: list,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aList, equals(list));
+    });
+
+    test(
+        'when batch updating aMap to a real value then the database is updated with the real value.',
+        () async {
+      var map = {3: 30, 4: 40};
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aMap: map,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aMap, equals(map));
+    });
+
+    test(
+        'when batch updating aSet to a real value then the database is updated with the real value.',
+        () async {
+      var set = {4, 5, 6};
+      var toUpdate = <Types>[
+        Types(
+          id: type.id,
+          aSet: set,
+        ),
+      ];
+
+      var updated = await Types.db.update(session, toUpdate);
+
+      expect(updated.first.aSet, equals(set));
     });
 
     test(

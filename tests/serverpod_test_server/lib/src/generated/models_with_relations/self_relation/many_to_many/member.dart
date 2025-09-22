@@ -168,13 +168,25 @@ class _MemberImpl extends Member {
   }
 }
 
+class MemberUpdateTable extends _i1.UpdateTable<MemberTable> {
+  MemberUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class MemberTable extends _i1.Table<int?> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
+    updateTable = MemberUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final MemberUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -474,6 +486,46 @@ class MemberRepository {
     return session.db.updateRow<Member>(
       row,
       columns: columns?.call(Member.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Member] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Member?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<MemberUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Member>(
+      id,
+      columnValues: columnValues(Member.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Member]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Member>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<MemberUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<MemberTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<MemberTable>? orderBy,
+    _i1.OrderByListBuilder<MemberTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Member>(
+      columnValues: columnValues(Member.t.updateTable),
+      where: where(Member.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

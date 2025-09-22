@@ -143,13 +143,25 @@ class _CustomerImpl extends Customer {
   }
 }
 
+class CustomerUpdateTable extends _i1.UpdateTable<CustomerTable> {
+  CustomerUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CustomerTable extends _i1.Table<int?> {
   CustomerTable({super.tableRelation}) : super(tableName: 'customer') {
+    updateTable = CustomerUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CustomerUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -406,6 +418,46 @@ class CustomerRepository {
     return session.db.updateRow<Customer>(
       row,
       columns: columns?.call(Customer.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [Customer] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<Customer?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<Customer>(
+      id,
+      columnValues: columnValues(Customer.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [Customer]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<Customer>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CustomerTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CustomerTable>? orderBy,
+    _i1.OrderByListBuilder<CustomerTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<Customer>(
+      columnValues: columnValues(Customer.t.updateTable),
+      where: where(Customer.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Customer.t),
+      orderByList: orderByList?.call(Customer.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

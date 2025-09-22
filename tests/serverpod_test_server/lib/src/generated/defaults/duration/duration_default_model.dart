@@ -159,9 +159,28 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
   }
 }
 
+class DurationDefaultModelUpdateTable
+    extends _i1.UpdateTable<DurationDefaultModelTable> {
+  DurationDefaultModelUpdateTable(super.table);
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultModel(Duration value) =>
+      _i1.ColumnValue(
+        table.durationDefaultModel,
+        value,
+      );
+
+  _i1.ColumnValue<Duration, Duration> durationDefaultModelNull(
+          Duration? value) =>
+      _i1.ColumnValue(
+        table.durationDefaultModelNull,
+        value,
+      );
+}
+
 class DurationDefaultModelTable extends _i1.Table<int?> {
   DurationDefaultModelTable({super.tableRelation})
       : super(tableName: 'duration_default_model') {
+    updateTable = DurationDefaultModelUpdateTable(this);
     durationDefaultModel = _i1.ColumnDuration(
       'durationDefaultModel',
       this,
@@ -171,6 +190,8 @@ class DurationDefaultModelTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final DurationDefaultModelUpdateTable updateTable;
 
   late final _i1.ColumnDuration durationDefaultModel;
 
@@ -369,6 +390,48 @@ class DurationDefaultModelRepository {
     return session.db.updateRow<DurationDefaultModel>(
       row,
       columns: columns?.call(DurationDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DurationDefaultModel] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DurationDefaultModel?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<DurationDefaultModelUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DurationDefaultModel>(
+      id,
+      columnValues: columnValues(DurationDefaultModel.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DurationDefaultModel]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DurationDefaultModel>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<DurationDefaultModelUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<DurationDefaultModelTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
+    _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DurationDefaultModel>(
+      columnValues: columnValues(DurationDefaultModel.t.updateTable),
+      where: where(DurationDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultModel.t),
+      orderByList: orderByList?.call(DurationDefaultModel.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

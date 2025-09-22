@@ -155,9 +155,7 @@ void main() {
       expect(response.key, isNotNull);
       expect(response.keyId, isNotNull);
 
-      await client.updateStreamingConnectionAuthenticationKey(
-        '${response.keyId}:${response.key}',
-      );
+      await client.updateStreamingConnectionAuthenticationKey();
 
       var nums = [11, 22, 33];
 

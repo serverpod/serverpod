@@ -152,8 +152,23 @@ class _TownIntImpl extends TownInt {
   }
 }
 
+class TownIntUpdateTable extends _i1.UpdateTable<TownIntTable> {
+  TownIntUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> mayorId(int? value) => _i1.ColumnValue(
+        table.mayorId,
+        value,
+      );
+}
+
 class TownIntTable extends _i1.Table<int?> {
   TownIntTable({super.tableRelation}) : super(tableName: 'town_int') {
+    updateTable = TownIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
@@ -163,6 +178,8 @@ class TownIntTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final TownIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -398,6 +415,46 @@ class TownIntRepository {
     return session.db.updateRow<TownInt>(
       row,
       columns: columns?.call(TownInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [TownInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<TownInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<TownIntUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<TownInt>(
+      id,
+      columnValues: columnValues(TownInt.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [TownInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<TownInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<TownIntUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<TownIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<TownIntTable>? orderBy,
+    _i1.OrderByListBuilder<TownIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<TownInt>(
+      columnValues: columnValues(TownInt.t.updateTable),
+      where: where(TownInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

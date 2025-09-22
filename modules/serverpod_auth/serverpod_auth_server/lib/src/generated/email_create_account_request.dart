@@ -165,9 +165,36 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
   }
 }
 
+class EmailCreateAccountRequestUpdateTable
+    extends _i1.UpdateTable<EmailCreateAccountRequestTable> {
+  EmailCreateAccountRequestUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> userName(String value) => _i1.ColumnValue(
+        table.userName,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+        table.email,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+        table.hash,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> verificationCode(String value) =>
+      _i1.ColumnValue(
+        table.verificationCode,
+        value,
+      );
+}
+
 class EmailCreateAccountRequestTable extends _i1.Table<int?> {
   EmailCreateAccountRequestTable({super.tableRelation})
       : super(tableName: 'serverpod_email_create_request') {
+    updateTable = EmailCreateAccountRequestUpdateTable(this);
     userName = _i1.ColumnString(
       'userName',
       this,
@@ -185,6 +212,8 @@ class EmailCreateAccountRequestTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailCreateAccountRequestUpdateTable updateTable;
 
   /// The name of the user.
   late final _i1.ColumnString userName;
@@ -393,6 +422,48 @@ class EmailCreateAccountRequestRepository {
     return session.db.updateRow<EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmailCreateAccountRequest] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailCreateAccountRequest?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailCreateAccountRequest>(
+      id,
+      columnValues: columnValues(EmailCreateAccountRequest.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailCreateAccountRequest]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailCreateAccountRequest>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailCreateAccountRequest>(
+      columnValues: columnValues(EmailCreateAccountRequest.t.updateTable),
+      where: where(EmailCreateAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -143,13 +143,25 @@ class _CustomerIntImpl extends CustomerInt {
   }
 }
 
+class CustomerIntUpdateTable extends _i1.UpdateTable<CustomerIntTable> {
+  CustomerIntUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class CustomerIntTable extends _i1.Table<int?> {
   CustomerIntTable({super.tableRelation}) : super(tableName: 'customer_int') {
+    updateTable = CustomerIntUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final CustomerIntUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -406,6 +418,46 @@ class CustomerIntRepository {
     return session.db.updateRow<CustomerInt>(
       row,
       columns: columns?.call(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [CustomerInt] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<CustomerInt?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<CustomerIntUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<CustomerInt>(
+      id,
+      columnValues: columnValues(CustomerInt.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [CustomerInt]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<CustomerInt>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<CustomerIntUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<CustomerIntTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<CustomerIntTable>? orderBy,
+    _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<CustomerInt>(
+      columnValues: columnValues(CustomerInt.t.updateTable),
+      where: where(CustomerInt.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -124,14 +124,28 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }
 }
 
+class ObjectWithByteDataUpdateTable
+    extends _i1.UpdateTable<ObjectWithByteDataTable> {
+  ObjectWithByteDataUpdateTable(super.table);
+
+  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
+      _i1.ColumnValue(
+        table.byteData,
+        value,
+      );
+}
+
 class ObjectWithByteDataTable extends _i1.Table<int?> {
   ObjectWithByteDataTable({super.tableRelation})
       : super(tableName: 'object_with_bytedata') {
+    updateTable = ObjectWithByteDataUpdateTable(this);
     byteData = _i1.ColumnByteData(
       'byteData',
       this,
     );
   }
+
+  late final ObjectWithByteDataUpdateTable updateTable;
 
   late final _i1.ColumnByteData byteData;
 
@@ -327,6 +341,48 @@ class ObjectWithByteDataRepository {
     return session.db.updateRow<ObjectWithByteData>(
       row,
       columns: columns?.call(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ObjectWithByteData] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ObjectWithByteData?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ObjectWithByteData>(
+      id,
+      columnValues: columnValues(ObjectWithByteData.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ObjectWithByteData]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ObjectWithByteData>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ObjectWithByteData>(
+      columnValues: columnValues(ObjectWithByteData.t.updateTable),
+      where: where(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

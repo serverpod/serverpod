@@ -151,9 +151,31 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
+class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
+  EmailResetUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+        table.userId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> verificationCode(String value) =>
+      _i1.ColumnValue(
+        table.verificationCode,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
+      _i1.ColumnValue(
+        table.expiration,
+        value,
+      );
+}
+
 class EmailResetTable extends _i1.Table<int?> {
   EmailResetTable({super.tableRelation})
       : super(tableName: 'serverpod_email_reset') {
+    updateTable = EmailResetUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
       this,
@@ -167,6 +189,8 @@ class EmailResetTable extends _i1.Table<int?> {
       this,
     );
   }
+
+  late final EmailResetUpdateTable updateTable;
 
   /// The id of the user that is resetting his/her password.
   late final _i1.ColumnInt userId;
@@ -371,6 +395,46 @@ class EmailResetRepository {
     return session.db.updateRow<EmailReset>(
       row,
       columns: columns?.call(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [EmailReset] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<EmailReset?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<EmailReset>(
+      id,
+      columnValues: columnValues(EmailReset.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [EmailReset]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<EmailReset>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<EmailResetTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<EmailReset>(
+      columnValues: columnValues(EmailReset.t.updateTable),
+      where: where(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

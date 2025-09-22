@@ -168,14 +168,27 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
   }
 }
 
+class LongImplicitIdFieldCollectionUpdateTable
+    extends _i1.UpdateTable<LongImplicitIdFieldCollectionTable> {
+  LongImplicitIdFieldCollectionUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+        table.name,
+        value,
+      );
+}
+
 class LongImplicitIdFieldCollectionTable extends _i1.Table<int?> {
   LongImplicitIdFieldCollectionTable({super.tableRelation})
       : super(tableName: 'long_implicit_id_field_collection') {
+    updateTable = LongImplicitIdFieldCollectionUpdateTable(this);
     name = _i1.ColumnString(
       'name',
       this,
     );
   }
+
+  late final LongImplicitIdFieldCollectionUpdateTable updateTable;
 
   late final _i1.ColumnString name;
 
@@ -453,6 +466,51 @@ class LongImplicitIdFieldCollectionRepository {
     return session.db.updateRow<LongImplicitIdFieldCollection>(
       row,
       columns: columns?.call(LongImplicitIdFieldCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [LongImplicitIdFieldCollection] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<LongImplicitIdFieldCollection?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1
+        .ColumnValueListBuilder<LongImplicitIdFieldCollectionUpdateTable>
+        columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<LongImplicitIdFieldCollection>(
+      id,
+      columnValues: columnValues(LongImplicitIdFieldCollection.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [LongImplicitIdFieldCollection]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<LongImplicitIdFieldCollection>> updateWhere(
+    _i1.Session session, {
+    required _i1
+        .ColumnValueListBuilder<LongImplicitIdFieldCollectionUpdateTable>
+        columnValues,
+    required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
+        where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<LongImplicitIdFieldCollection>(
+      columnValues: columnValues(LongImplicitIdFieldCollection.t.updateTable),
+      where: where(LongImplicitIdFieldCollection.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
+      orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

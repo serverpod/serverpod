@@ -244,9 +244,47 @@ class _ChatMessageImpl extends ChatMessage {
   }
 }
 
+class ChatMessageUpdateTable extends _i1.UpdateTable<ChatMessageTable> {
+  ChatMessageUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
+        table.channel,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
+        table.message,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+        table.time,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> sender(int value) => _i1.ColumnValue(
+        table.sender,
+        value,
+      );
+
+  _i1.ColumnValue<bool, bool> removed(bool value) => _i1.ColumnValue(
+        table.removed,
+        value,
+      );
+
+  _i1.ColumnValue<List<_i3.ChatMessageAttachment>,
+      List<_i3.ChatMessageAttachment>> attachments(
+          List<_i3.ChatMessageAttachment>? value) =>
+      _i1.ColumnValue(
+        table.attachments,
+        value,
+      );
+}
+
 class ChatMessageTable extends _i1.Table<int?> {
   ChatMessageTable({super.tableRelation})
       : super(tableName: 'serverpod_chat_message') {
+    updateTable = ChatMessageUpdateTable(this);
     channel = _i1.ColumnString(
       'channel',
       this,
@@ -267,11 +305,13 @@ class ChatMessageTable extends _i1.Table<int?> {
       'removed',
       this,
     );
-    attachments = _i1.ColumnSerializable(
+    attachments = _i1.ColumnSerializable<List<_i3.ChatMessageAttachment>>(
       'attachments',
       this,
     );
   }
+
+  late final ChatMessageUpdateTable updateTable;
 
   /// The channel this message was posted to.
   late final _i1.ColumnString channel;
@@ -289,7 +329,8 @@ class ChatMessageTable extends _i1.Table<int?> {
   late final _i1.ColumnBool removed;
 
   /// List of attachments associated with this message.
-  late final _i1.ColumnSerializable attachments;
+  late final _i1.ColumnSerializable<List<_i3.ChatMessageAttachment>>
+      attachments;
 
   @override
   List<_i1.Column> get columns => [
@@ -488,6 +529,46 @@ class ChatMessageRepository {
     return session.db.updateRow<ChatMessage>(
       row,
       columns: columns?.call(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ChatMessage] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ChatMessage?> updateById(
+    _i1.Session session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ChatMessageUpdateTable> columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ChatMessage>(
+      id,
+      columnValues: columnValues(ChatMessage.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ChatMessage]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<ChatMessage>> updateWhere(
+    _i1.Session session, {
+    required _i1.ColumnValueListBuilder<ChatMessageUpdateTable> columnValues,
+    required _i1.WhereExpressionBuilder<ChatMessageTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ChatMessageTable>? orderBy,
+    _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<ChatMessage>(
+      columnValues: columnValues(ChatMessage.t.updateTable),
+      where: where(ChatMessage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChatMessage.t),
+      orderByList: orderByList?.call(ChatMessage.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

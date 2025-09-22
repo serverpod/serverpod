@@ -81,6 +81,28 @@ final class ClientMethodStreamManager {
   Future<void> openMethodStream(
     MethodStreamConnectionDetails connectionDetails,
   ) async {
+    try {
+      return await _openMethodStream(connectionDetails);
+    } on OpenMethodStreamException catch (e) {
+      final authKeyProvider = connectionDetails.authKeyProvider;
+
+      // A first failure here with 401 can be due to an access token expiration.
+      // We will retry only once in such case, and only if the `authKeyProvider`
+      // exposes a `refreshAuthKey` method (like JWT).
+      if (e.responseType == OpenMethodStreamResponseType.authenticationFailed &&
+          authKeyProvider is RefresherClientAuthKeyProvider) {
+        final refreshResult = await authKeyProvider.refreshAuthKey();
+        if (refreshResult == RefreshAuthKeyResult.success) {
+          return _openMethodStream(connectionDetails);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _openMethodStream(
+    MethodStreamConnectionDetails connectionDetails,
+  ) async {
     if (_webSocket == null) await _connectSynchronized();
 
     var connectionId = const Uuid().v4obj();
@@ -106,7 +128,7 @@ final class ClientMethodStreamManager {
       method: connectionDetails.method,
       args: connectionDetails.args,
       inputStreams: parameterStreams,
-      authentication: await connectionDetails.authenticationProvider.call(),
+      authentication: await connectionDetails.authKeyProvider?.authHeaderValue,
     );
 
     _addMessageToWebSocket(openCommand);

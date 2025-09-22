@@ -49,3 +49,5 @@ templates/serverpod_templates/modulename_server/test/integration/test_tools/
 .tool-versions
 .cursor
 .claude
+.augment
+.openhands

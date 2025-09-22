@@ -668,6 +668,162 @@ void main() {
           );
         });
       });
+
+      group('has an updateById method', () {
+        var updateByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'updateById',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'updateById',
+            ),
+            isTrue,
+          );
+        });
+
+        test(
+            'that returns a future with an optional instance of the base class',
+            () {
+          expect(
+            updateByIdMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            updateByIdMethod?.returnType?.toSource(),
+            contains('$testClassName?'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the id as a required param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('int id'),
+          );
+        });
+
+        test('that takes the columnValues callback as a required param', () {
+          var params = updateByIdMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains(
+                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateByIdMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an updateWhere method', () {
+        var updateWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'updateWhere',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'updateWhere',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with a list of the base class', () {
+          expect(
+            updateWhereMethod?.returnType?.toSource(),
+            contains('Future'),
+          );
+
+          expect(
+            updateWhereMethod?.returnType?.toSource(),
+            contains('List<$testClassName>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the columnValues callback as a required param', () {
+          var params = updateWhereMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains(
+                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+          );
+        });
+
+        test('that takes the where callback as a required param', () {
+          var params = updateWhereMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains(
+                'required _i1.WhereExpressionBuilder<${testClassName}Table> where'),
+          );
+        });
+
+        test('that takes the limit int as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('int? limit'),
+          );
+        });
+
+        test('that takes the offset int as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy column as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('_i1.OrderByBuilder<${testClassName}Table>? orderBy'),
+          );
+        });
+
+        test('that takes the orderByList as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains(
+                '_i1.OrderByListBuilder<${testClassName}Table>? orderByList'),
+          );
+        });
+
+        test('that takes the orderDescending bool as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('bool orderDescending'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateWhereMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
     }, skip: repositoryClass == null);
   });
 }

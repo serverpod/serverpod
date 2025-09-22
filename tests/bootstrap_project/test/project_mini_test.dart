@@ -21,6 +21,19 @@ void main() async {
       workingDirectory: cliPath,
     );
 
+    // Run command and activate again to force cache pub dependencies.
+    await runProcess(
+      'serverpod',
+      ['version'],
+      workingDirectory: cliPath,
+    );
+
+    await runProcess(
+      'dart',
+      ['pub', 'global', 'activate', '-s', 'path', '.'],
+      workingDirectory: cliPath,
+    );
+
     await Directory(tempPath).create();
   });
 
