@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception to be thrown if a login attempt was made with an unknown key id.
 abstract class PasskeyPublicKeyNotFoundException
     implements _i1.SerializableException, _i1.SerializableModel {
   PasskeyPublicKeyNotFoundException._();

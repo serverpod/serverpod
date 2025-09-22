@@ -12,6 +12,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown if a registration or login attempt was made with
+/// a challenge id which can not be found (because either it has never existed
+/// or has been used already).
 abstract class PasskeyChallengeNotFoundException
     implements
         _i1.SerializableException,

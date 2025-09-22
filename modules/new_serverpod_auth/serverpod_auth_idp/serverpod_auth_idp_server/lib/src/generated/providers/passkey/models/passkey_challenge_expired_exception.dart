@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception to be thrown if a registration or login attempt was made after
+/// the challenge used has expired.
 abstract class PasskeyChallengeExpiredException
     implements
         _i1.SerializableException,
