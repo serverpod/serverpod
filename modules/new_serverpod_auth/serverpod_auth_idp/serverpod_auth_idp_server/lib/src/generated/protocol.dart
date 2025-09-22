@@ -917,25 +917,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'dart:typed_data:ByteData',
         ),
         _i2.ColumnDefinition(
-          name: 'publicKey',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'publicKeyAlgorithm',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
           name: 'attestationObject',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'authenticatorData',
           columnType: _i2.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',

@@ -1,0 +1,81 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "serverpod_auth_idp_passkey_account",
+        "schema": "public",
+        "addColumns": [],
+        "deleteColumns": [
+          "publicKey",
+          "publicKeyAlgorithm",
+          "authenticatorData"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "type": "columnDropped",
+            "message": "Column \"publicKey\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+            "table": "serverpod_auth_idp_passkey_account",
+            "columns": [
+              "publicKey"
+            ],
+            "destrucive": true
+          },
+          {
+            "type": "columnDropped",
+            "message": "Column \"publicKeyAlgorithm\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+            "table": "serverpod_auth_idp_passkey_account",
+            "columns": [
+              "publicKeyAlgorithm"
+            ],
+            "destrucive": true
+          },
+          {
+            "type": "columnDropped",
+            "message": "Column \"authenticatorData\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+            "table": "serverpod_auth_idp_passkey_account",
+            "columns": [
+              "authenticatorData"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"publicKey\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+      "table": "serverpod_auth_idp_passkey_account",
+      "columns": [
+        "publicKey"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"publicKeyAlgorithm\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+      "table": "serverpod_auth_idp_passkey_account",
+      "columns": [
+        "publicKeyAlgorithm"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"authenticatorData\" of table \"serverpod_auth_idp_passkey_account\" will be dropped.",
+      "table": "serverpod_auth_idp_passkey_account",
+      "columns": [
+        "authenticatorData"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

@@ -28,10 +28,7 @@ abstract class PasskeyAccount
     required this.keyId,
     required this.keyIdBase64,
     required this.clientDataJSON,
-    required this.publicKey,
-    required this.publicKeyAlgorithm,
     required this.attestationObject,
-    required this.authenticatorData,
     required this.originalChallenge,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -43,10 +40,7 @@ abstract class PasskeyAccount
     required _i3.ByteData keyId,
     required String keyIdBase64,
     required _i3.ByteData clientDataJSON,
-    required _i3.ByteData publicKey,
-    required int publicKeyAlgorithm,
     required _i3.ByteData attestationObject,
-    required _i3.ByteData authenticatorData,
     required _i3.ByteData originalChallenge,
   }) = _PasskeyAccountImpl;
 
@@ -67,13 +61,8 @@ abstract class PasskeyAccount
       keyIdBase64: jsonSerialization['keyIdBase64'] as String,
       clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['clientDataJSON']),
-      publicKey:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['publicKey']),
-      publicKeyAlgorithm: jsonSerialization['publicKeyAlgorithm'] as int,
       attestationObject: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['attestationObject']),
-      authenticatorData: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['authenticatorData']),
       originalChallenge: _i1.ByteDataJsonExtension.fromJson(
           jsonSerialization['originalChallenge']),
     );
@@ -100,20 +89,11 @@ abstract class PasskeyAccount
   /// Base64 variant of the key ID (to enable DB lookups).
   String keyIdBase64;
 
-  /// The authenticator's JSON client data.
+  /// The authenticator's JSON client data sent during the registration.
   _i3.ByteData clientDataJSON;
 
-  /// The public key provided by the client.
-  _i3.ByteData publicKey;
-
-  /// The algorithm of the public key.
-  int publicKeyAlgorithm;
-
-  /// The authenticator's attestation data.
+  /// The attestation object used during the registration.
   _i3.ByteData attestationObject;
-
-  /// The authenticator's client data.
-  _i3.ByteData authenticatorData;
 
   /// The challenge used during registration.
   _i3.ByteData originalChallenge;
@@ -132,10 +112,7 @@ abstract class PasskeyAccount
     _i3.ByteData? keyId,
     String? keyIdBase64,
     _i3.ByteData? clientDataJSON,
-    _i3.ByteData? publicKey,
-    int? publicKeyAlgorithm,
     _i3.ByteData? attestationObject,
-    _i3.ByteData? authenticatorData,
     _i3.ByteData? originalChallenge,
   });
   @override
@@ -148,10 +125,7 @@ abstract class PasskeyAccount
       'keyId': keyId.toJson(),
       'keyIdBase64': keyIdBase64,
       'clientDataJSON': clientDataJSON.toJson(),
-      'publicKey': publicKey.toJson(),
-      'publicKeyAlgorithm': publicKeyAlgorithm,
       'attestationObject': attestationObject.toJson(),
-      'authenticatorData': authenticatorData.toJson(),
       'originalChallenge': originalChallenge.toJson(),
     };
   }
@@ -202,10 +176,7 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     required _i3.ByteData keyId,
     required String keyIdBase64,
     required _i3.ByteData clientDataJSON,
-    required _i3.ByteData publicKey,
-    required int publicKeyAlgorithm,
     required _i3.ByteData attestationObject,
-    required _i3.ByteData authenticatorData,
     required _i3.ByteData originalChallenge,
   }) : super._(
           id: id,
@@ -215,10 +186,7 @@ class _PasskeyAccountImpl extends PasskeyAccount {
           keyId: keyId,
           keyIdBase64: keyIdBase64,
           clientDataJSON: clientDataJSON,
-          publicKey: publicKey,
-          publicKeyAlgorithm: publicKeyAlgorithm,
           attestationObject: attestationObject,
-          authenticatorData: authenticatorData,
           originalChallenge: originalChallenge,
         );
 
@@ -234,10 +202,7 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     _i3.ByteData? keyId,
     String? keyIdBase64,
     _i3.ByteData? clientDataJSON,
-    _i3.ByteData? publicKey,
-    int? publicKeyAlgorithm,
     _i3.ByteData? attestationObject,
-    _i3.ByteData? authenticatorData,
     _i3.ByteData? originalChallenge,
   }) {
     return PasskeyAccount(
@@ -249,10 +214,7 @@ class _PasskeyAccountImpl extends PasskeyAccount {
       keyId: keyId ?? this.keyId.clone(),
       keyIdBase64: keyIdBase64 ?? this.keyIdBase64,
       clientDataJSON: clientDataJSON ?? this.clientDataJSON.clone(),
-      publicKey: publicKey ?? this.publicKey.clone(),
-      publicKeyAlgorithm: publicKeyAlgorithm ?? this.publicKeyAlgorithm,
       attestationObject: attestationObject ?? this.attestationObject.clone(),
-      authenticatorData: authenticatorData ?? this.authenticatorData.clone(),
       originalChallenge: originalChallenge ?? this.originalChallenge.clone(),
     );
   }
@@ -292,28 +254,10 @@ class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
         value,
       );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> publicKey(_i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.publicKey,
-        value,
-      );
-
-  _i1.ColumnValue<int, int> publicKeyAlgorithm(int value) => _i1.ColumnValue(
-        table.publicKeyAlgorithm,
-        value,
-      );
-
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> attestationObject(
           _i3.ByteData value) =>
       _i1.ColumnValue(
         table.attestationObject,
-        value,
-      );
-
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> authenticatorData(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.authenticatorData,
         value,
       );
 
@@ -349,20 +293,8 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
       'clientDataJSON',
       this,
     );
-    publicKey = _i1.ColumnByteData(
-      'publicKey',
-      this,
-    );
-    publicKeyAlgorithm = _i1.ColumnInt(
-      'publicKeyAlgorithm',
-      this,
-    );
     attestationObject = _i1.ColumnByteData(
       'attestationObject',
-      this,
-    );
-    authenticatorData = _i1.ColumnByteData(
-      'authenticatorData',
       this,
     );
     originalChallenge = _i1.ColumnByteData(
@@ -387,20 +319,11 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// Base64 variant of the key ID (to enable DB lookups).
   late final _i1.ColumnString keyIdBase64;
 
-  /// The authenticator's JSON client data.
+  /// The authenticator's JSON client data sent during the registration.
   late final _i1.ColumnByteData clientDataJSON;
 
-  /// The public key provided by the client.
-  late final _i1.ColumnByteData publicKey;
-
-  /// The algorithm of the public key.
-  late final _i1.ColumnInt publicKeyAlgorithm;
-
-  /// The authenticator's attestation data.
+  /// The attestation object used during the registration.
   late final _i1.ColumnByteData attestationObject;
-
-  /// The authenticator's client data.
-  late final _i1.ColumnByteData authenticatorData;
 
   /// The challenge used during registration.
   late final _i1.ColumnByteData originalChallenge;
@@ -426,10 +349,7 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
         keyId,
         keyIdBase64,
         clientDataJSON,
-        publicKey,
-        publicKeyAlgorithm,
         attestationObject,
-        authenticatorData,
         originalChallenge,
       ];
 
