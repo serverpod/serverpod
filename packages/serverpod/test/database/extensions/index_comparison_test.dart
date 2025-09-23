@@ -1707,7 +1707,7 @@ void main() {
   group('Given tables with gin indexes', () {
     test(
       'when gin indexes have different operator classes then mismatches include operator class mismatch.',
-          () {
+      () {
         var tableA = TableDefinition(
           name: 'gin_table',
           schema: 'public',
@@ -1781,7 +1781,7 @@ void main() {
 
     test(
       'when one index is gin type and the other is not then mismatches include type mismatch.',
-          () {
+      () {
         var tableA = TableDefinition(
           name: 'gin_table',
           schema: 'public',
@@ -1857,7 +1857,7 @@ void main() {
 
     test(
       'when gin indexes are identical then no mismatches are reported.',
-          () {
+      () {
         var tableA = TableDefinition(
           name: 'gin_table',
           schema: 'public',
@@ -1926,7 +1926,7 @@ void main() {
 
     test(
       'when gin indexes have different operator classes then mismatches include gin operator class mismatch.',
-          () {
+      () {
         var tableA = TableDefinition(
           name: 'gin_table',
           schema: 'public',
