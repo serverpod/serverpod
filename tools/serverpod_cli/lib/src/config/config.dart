@@ -79,13 +79,14 @@ class GeneratorConfig implements ModelLoadConfig {
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
-    this.serializeAsJsonbByDefault = false,
+    bool serializeAsJsonbByDefault = false,
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
+        _serializeAsJsonbByDefault = serializeAsJsonbByDefault,
         _modules = modules;
 
   /// The name of the serverpod project.
@@ -213,9 +214,25 @@ class GeneratorConfig implements ModelLoadConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
-  /// True, if JSON fields use JSONB instead of JSON as a default serialization data type in model files.
+  // TODO: This field should be made public and this getter removed when the
+  // feature is no longer experimental.
   // Tracked by issue: https://github.com/serverpod/serverpod/issues/3919
-  final bool serializeAsJsonbByDefault;
+  final bool _serializeAsJsonbByDefault;
+
+  /// Returns true if configured to use JSONB instead of JSON as a default
+  /// serialization data type in model files.
+  bool get serializeAsJsonbByDefault {
+    if (_serializeAsJsonbByDefault &&
+        !isExperimentalFeatureEnabled(
+          ExperimentalFeature.serializeAsJsonb,
+        )) {
+      throw Exception(
+        "Experimental feature 'serializeAsJsonb' must be enabled when using "
+        "the 'serializeAsJsonbByDefault' config.",
+      );
+    }
+    return _serializeAsJsonbByDefault;
+  }
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
@@ -382,7 +399,7 @@ class GeneratorConfig implements ModelLoadConfig {
     var serializeAsJsonbByDefault =
         _loadSerializeAsJsonbByDefault(file, generatorConfig);
 
-    final config = GeneratorConfig(
+    return GeneratorConfig(
       name: name,
       type: type,
       serverPackage: serverPackage,
@@ -397,15 +414,6 @@ class GeneratorConfig implements ModelLoadConfig {
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
     );
-
-    if (serializeAsJsonbByDefault &&
-        !config.isExperimentalFeatureEnabled(
-            ExperimentalFeature.serializeAsJsonb)) {
-      throw Exception(
-          'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
-    }
-
-    return config;
   }
 
   static bool _loadSerializeAsJsonbByDefault(File file, Map config) {

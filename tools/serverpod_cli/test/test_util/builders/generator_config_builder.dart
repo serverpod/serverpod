@@ -129,7 +129,7 @@ class GeneratorConfigBuilder {
   }
 
   GeneratorConfig build() {
-    final config = GeneratorConfig(
+    return GeneratorConfig(
       name: _name,
       type: _type,
       serverPackage: _serverPackage,
@@ -144,14 +144,5 @@ class GeneratorConfigBuilder {
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );
-
-    if (_serializeAsJsonbByDefault &&
-        !config.isExperimentalFeatureEnabled(
-            ExperimentalFeature.serializeAsJsonb)) {
-      throw Exception(
-          'Experimental feature \'serializeAsJsonb\' must be enabled when using the \'serializeAsJsonbByDefault\' config');
-    }
-
-    return config;
   }
 }
