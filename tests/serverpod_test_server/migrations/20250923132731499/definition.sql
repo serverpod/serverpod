@@ -711,7 +711,7 @@ CREATE TABLE "object_with_jsonb" (
 );
 
 -- Indexes
-CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING GIN ("indexed2");
+CREATE INDEX "jsonb_index_gin" ON "object_with_jsonb" USING GIN ("indexed2" jsonb_ops);
 CREATE INDEX "jsonb_index_gin_with_operator_class" ON "object_with_jsonb" USING GIN ("indexed3" jsonb_path_ops);
 
 --
@@ -1981,9 +1981,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20250919124540937', now())
+    VALUES ('serverpod_test', '20250923132731499', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250919124540937', "timestamp" = now();
+    DO UPDATE SET "version" = '20250923132731499', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

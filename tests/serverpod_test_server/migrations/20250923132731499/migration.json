@@ -64,7 +64,8 @@
             ],
             "type": "gin",
             "isUnique": false,
-            "isPrimary": false
+            "isPrimary": false,
+            "ginOperatorClass": "jsonb"
           },
           {
             "indexName": "jsonb_index_gin_with_operator_class",

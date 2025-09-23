@@ -331,13 +331,15 @@ void main() async {
       indexes = table.indexes;
     });
 
-    test('then the explicitly declared gin index exists.', () {
+    test(
+        'then the implicitly declared gin index exists with default jsonb operator class.',
+        () {
       final index = indexes.firstWhere(
         (idx) => idx.indexName == 'jsonb_index_gin',
       );
 
       expect(index.type, 'gin');
-      expect(index.ginOperatorClass, isNull);
+      expect(index.ginOperatorClass, GinOperatorClass.jsonb);
       expect(index.elements.length, 1);
       expect(index.elements.first.type, IndexElementDefinitionType.column);
       expect(index.elements.first.definition, 'indexed2');

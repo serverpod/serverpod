@@ -3692,7 +3692,8 @@
           ],
           "type": "gin",
           "isUnique": false,
-          "isPrimary": false
+          "isPrimary": false,
+          "ginOperatorClass": "jsonb"
         },
         {
           "indexName": "jsonb_index_gin_with_operator_class",
@@ -8215,7 +8216,7 @@
   "installedModules": [
     {
       "module": "serverpod_test",
-      "version": "20250919124540937"
+      "version": "20250923132731499"
     },
     {
       "module": "serverpod",

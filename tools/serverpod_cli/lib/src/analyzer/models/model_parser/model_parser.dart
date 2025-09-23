@@ -713,6 +713,10 @@ class ModelParser {
     var node = documentContents.nodes[Keyword.operatorClass];
     var nodeValue = node?.value;
 
+    if (nodeValue is! String) {
+      return (indexType == 'gin') ? GinOperatorClass.jsonb : null;
+    }
+
     try {
       return unsafeConvertToEnum(
         value: nodeValue,
