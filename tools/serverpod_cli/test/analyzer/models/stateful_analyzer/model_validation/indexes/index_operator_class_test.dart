@@ -49,7 +49,7 @@ void main() {
   });
 
   test(
-      'Given a class with a gin index without operator class, then return a definition where operatorClass is null.',
+      'Given a class with a gin index without operator class, then return a definition where operatorClass defaults to jsonb.',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
@@ -80,7 +80,8 @@ void main() {
     var definition = definitions.first as ModelClassDefinition;
     var operatorClass = definition.indexes.first.ginOperatorClass;
 
-    expect(operatorClass, isNull);
+    expect(operatorClass, isNotNull);
+    expect(operatorClass!.name, 'jsonb');
   });
 
   test(
