@@ -194,11 +194,14 @@ class DatabaseConnection {
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);
 
-    var columnNames = selectedColumnNames.map((columnName) => '"$columnName"').join(', ');
+    var columnNames =
+        selectedColumnNames.map((columnName) => '"$columnName"').join(', ');
 
     var values = _createQueryValueList(rows, selectedColumns);
 
-    var setColumns = selectedColumnNames.map((columnName) => '"$columnName" = data."$columnName"').join(', ');
+    var setColumns = selectedColumnNames
+        .map((columnName) => '"$columnName" = data."$columnName"')
+        .join(', ');
 
     var query =
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
@@ -307,7 +310,10 @@ class DatabaseConnection {
 
     String updateQuery;
 
-    var requiresFilteredSubquery = limit != null || offset != null || orderBy != null || orderByList != null;
+    var requiresFilteredSubquery = limit != null ||
+        offset != null ||
+        orderBy != null ||
+        orderByList != null;
 
     if (requiresFilteredSubquery) {
       var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
@@ -346,7 +352,9 @@ class DatabaseConnection {
       transaction: transaction,
     );
 
-    return result.map((row) => _poolManager.serializationManager.deserialize<T>(row)).toList();
+    return result
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -398,7 +406,10 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
-    var query = DeleteQueryBuilder(table: table).withReturn(Returning.all).withWhere(where).build();
+    var query = DeleteQueryBuilder(table: table)
+        .withReturn(Returning.all)
+        .withWhere(where)
+        .build();
 
     return await _deserializedMappedQuery(
       session,
@@ -417,7 +428,11 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'count');
 
-    var query = CountQueryBuilder(table: table).withCountAlias('c').withWhere(where).withLimit(limit).build();
+    var query = CountQueryBuilder(table: table)
+        .withCountAlias('c')
+        .withWhere(where)
+        .withLimit(limit)
+        .build();
 
     var result = await _query(
       session,
@@ -480,11 +495,13 @@ class DatabaseConnection {
     required pg.Session context,
   }) async {
     assert(
-      simpleQueryMode == false || (simpleQueryMode == true && parameters == null),
+      simpleQueryMode == false ||
+          (simpleQueryMode == true && parameters == null),
       'simpleQueryMode does not support parameters',
     );
 
-    var timeout = timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
+    var timeout =
+        timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
@@ -598,7 +615,9 @@ class DatabaseConnection {
           // Serverpod serialization already knows the type of the target
           // class, so we can remove `UndecodedBytes` here to avoid the
           // dependency of serverpod_serialization on the `postgres` package.
-          entry.key: entry.value is pg.UndecodedBytes ? (entry.value as pg.UndecodedBytes).bytes : entry.value
+          entry.key: entry.value is pg.UndecodedBytes
+              ? (entry.value as pg.UndecodedBytes).bytes
+              : entry.value
       };
     });
   }
@@ -692,7 +711,8 @@ class DatabaseConnection {
     );
   }
 
-  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>> _queryIncludedLists(
+  Future<Map<String, Map<Object, List<Map<String, dynamic>>>>>
+      _queryIncludedLists(
     Session session,
     Table table,
     Include? include,
@@ -701,7 +721,8 @@ class DatabaseConnection {
   ) async {
     if (include == null) return {};
 
-    Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations = {};
+    Map<String, Map<Object, List<Map<String, dynamic>>>> resolvedListRelations =
+        {};
 
     for (var entry in include.includes.entries) {
       var nestedInclude = entry.value;
@@ -796,7 +817,8 @@ class DatabaseConnection {
     }
   }
 
-  List<Order>? _resolveOrderBy(List<Order>? orderByList, Column<dynamic>? orderBy, bool orderDescending) {
+  List<Order>? _resolveOrderBy(List<Order>? orderByList,
+      Column<dynamic>? orderBy, bool orderDescending) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
       // If order by is set then order by list is overridden.
@@ -813,7 +835,8 @@ class DatabaseConnection {
       var values = column.map((column) {
         var unformattedValue = row[column.columnName];
 
-        var formattedValue = DatabasePoolManager.encoder.convert(unformattedValue);
+        var formattedValue =
+            DatabasePoolManager.encoder.convert(unformattedValue);
 
         return '$formattedValue::${_convertToPostgresType(column)}';
       }).join(', ');
@@ -837,7 +860,9 @@ class DatabaseConnection {
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
-    if (column is ColumnSerializable) return column.serializationDataType?.name ?? 'json';
+    if (column is ColumnSerializable) {
+      return column.serializationDataType?.name ?? 'json';
+    }
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
         case EnumSerialization.byIndex:
@@ -856,7 +881,8 @@ class DatabaseConnection {
       _mergeResultsWithNonPersistedFields<T extends TableRow>(
     List<T> rows,
   ) {
-    return (Iterable<Map<String, dynamic>> dbResults) => List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+    return (Iterable<Map<String, dynamic>> dbResults) =>
+        List<Map<String, dynamic>>.generate(dbResults.length, (i) {
           return {
             // Add non-persisted fields from the original object
             ...rows[i].toJson(),
@@ -940,7 +966,8 @@ class _PostgresTransaction implements Transaction {
 
   @override
   Future<Savepoint> createSavepoint() async {
-    var postgresCompatibleRandomString = const Uuid().v4().replaceAll(RegExp(r'-'), '_');
+    var postgresCompatibleRandomString =
+        const Uuid().v4().replaceAll(RegExp(r'-'), '_');
     var savepointId = 'savepoint_$postgresCompatibleRandomString';
     await _query('SAVEPOINT $savepointId;');
     return _PostgresSavepoint(savepointId, this);
