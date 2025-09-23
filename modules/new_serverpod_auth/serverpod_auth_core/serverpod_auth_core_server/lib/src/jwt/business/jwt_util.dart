@@ -129,10 +129,25 @@ class JwtUtil {
 
     return (
       refreshTokenId: refreshTokenId,
+      tokenExpiresAt: _extractExpirationDate(allClaims),
       authUserId: authUserId,
       scopes: scopes,
       extraClaims: extraClaims,
     );
+  }
+
+  /// Extracts the expiration date from a JWT token.
+  DateTime extractExpirationDate(final String accessToken) {
+    final jwt = _verifyJwt(accessToken);
+    final payload = (jwt.payload as Map).cast<String, dynamic>();
+    return _extractExpirationDate(payload);
+  }
+
+  DateTime _extractExpirationDate(final Map<String, dynamic> payload) {
+    final exp = payload['exp'];
+    if (exp is! num) throw ArgumentError('JWT payload missing "exp" key');
+    final expMillis = (exp * 1000).toInt();
+    return DateTime.fromMillisecondsSinceEpoch(expMillis, isUtc: true);
   }
 
   /// Verifies the JWT's signature and returns its data.
@@ -188,6 +203,7 @@ class JwtUtil {
 /// The data successfully verified and extracted from a JWT token.
 typedef VerifiedJwtData = ({
   UuidValue refreshTokenId,
+  DateTime tokenExpiresAt,
   UuidValue authUserId,
   Set<Scope> scopes,
   Map<String, dynamic> extraClaims,

@@ -8,7 +8,7 @@
     "color": "#020E24",
     "theme": "dark"
   },
-  "version": "1.2.4",
+  "version": "1.2.5",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -61,14 +61,16 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "vscode-test",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "publish-vscode": "vsce publish",
+    "publish-openvsx": "osvx publish",
+    "build": "vsce package"
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"
@@ -77,14 +79,19 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
+    "@types/sinon": "^17.0.4",
     "@types/vscode": "^1.75.1",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
-    "@vscode/test-electron": "^2.3.2",
-    "esbuild": "^0.19.8",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.9",
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^10.8.2",
+    "ovsx": "^0.10.5",
+    "sinon": "^21.0.0",
     "typescript": "^5.1.3"
   }
 }

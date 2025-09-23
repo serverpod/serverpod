@@ -171,6 +171,21 @@ void main() {
     });
 
     test(
+        'when first refresh fails with unauthorized and auth header value does not change, but force parameter is true '
+        'then refresh is performed regardless of the previous refresh result.',
+        () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      final firstResult = await provider.refreshAuthKey();
+      expect(firstResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 1);
+
+      final secondResult = await provider.refreshAuthKey(force: true);
+      expect(secondResult, RefreshAuthKeyResult.failedUnauthorized);
+      expect(delegate.refreshCallCount, 2);
+    });
+
+    test(
         'when refreshing throws an exception '
         'then refreshAuthKey rethrows the exception.', () async {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
@@ -185,9 +200,11 @@ void main() {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       final futures = List.generate(3, (_) => provider.refreshAuthKey());
-      for (final future in futures) {
-        await expectLater(future, throwsA(isA<Exception>()));
-      }
+
+      await [
+        for (final future in futures)
+          expectLater(future, throwsA(isA<Exception>()))
+      ].wait;
       expect(delegate.refreshCallCount, 1);
     });
 
@@ -206,13 +223,32 @@ void main() {
       delegate.setRefresh(() => throw Exception('Refresh failed'));
 
       final futures = List.generate(3, (_) => provider.authHeaderValue);
-      for (final future in futures) {
-        await expectLater(future, throwsA(isA<Exception>()));
-      }
+
+      await [
+        for (final future in futures)
+          expectLater(future, throwsA(isA<Exception>()))
+      ].wait;
       expect(delegate.refreshCallCount, 1);
-    },
-        skip: const bool.fromEnvironment('dart.tool.dart2wasm')
-            ? 'Failing on WASM due to https://github.com/dart-lang/sdk/issues/61483'
-            : null);
+    });
+
+    test(
+        'when calling refreshAuthKey without setting force parameter '
+        'then delegate is called with force set to false.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      await provider.refreshAuthKey();
+      expect(delegate.refreshCallCount, 1);
+      expect(delegate.refreshCallForced, [false]);
+    });
+
+    test(
+        'when calling refreshAuthKey with force parameter set to true '
+        'then delegate is also called with force set to true.', () async {
+      delegate.setRefresh(() => RefreshAuthKeyResult.failedUnauthorized);
+
+      await provider.refreshAuthKey(force: true);
+      expect(delegate.refreshCallCount, 1);
+      expect(delegate.refreshCallForced, [true]);
+    });
   });
 }
