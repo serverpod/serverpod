@@ -234,8 +234,9 @@ class ModelParser {
 
   static SerializationDataType? _parseSerializationDataType(
       YamlMap documentContents) {
-    if (documentContents.nodes[Keyword.serializationDataType] == null)
+    if (documentContents.nodes[Keyword.serializationDataType] == null) {
       return null;
+    }
     final serializationDataType =
         documentContents.nodes[Keyword.serializationDataType]?.value;
 
