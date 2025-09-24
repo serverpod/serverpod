@@ -144,7 +144,7 @@ void main() {
     });
 
     test(
-        'Given two immutable child objects with identical fields when comparing equality then equality comparison returns false',
+        'Given two immutable child objects with identical fields when comparing equality then equality comparison returns true',
         () {
       final firstObject = ImmutableChildObject(
         variable: 'value',
@@ -183,60 +183,105 @@ void main() {
   });
 
   group('copyWith', () {
-    test(
-        'Given an immutable object when creating a copy with a new scalar value then returned object has updated value original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object when creating a copy with a new scalar value',
         () {
       final original = ImmutableObject(variable: 'original');
       final copy = original.copyWith(variable: 'updated');
-      expect(copy.variable, equals('updated'));
-      expect(original.variable, equals('original'));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated value', () {
+        expect(copy.variable, equals('updated'));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.variable, equals('original'));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable object containing a list when creating a copy with a new list then returned object has updated list original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object containing a list when creating a copy with a new list',
         () {
       final original = ImmutableObjectWithList(listVariable: ['a', 'b']);
       final copy = original.copyWith(listVariable: ['x', 'y']);
-      expect(copy.listVariable, equals(['x', 'y']));
-      expect(original.listVariable, equals(['a', 'b']));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated list', () {
+        expect(copy.listVariable, equals(['x', 'y']));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.listVariable, equals(['a', 'b']));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable object containing a map when creating a copy with a new map then returned object has updated map original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object containing a map when creating a copy with a new map',
         () {
       final original = ImmutableObjectWithMap(mapVariable: {'k': 'v'});
       final copy = original.copyWith(mapVariable: {'k': 'new'});
-      expect(copy.mapVariable, equals({'k': 'new'}));
-      expect(original.mapVariable, equals({'k': 'v'}));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated map', () {
+        expect(copy.mapVariable, equals({'k': 'new'}));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.mapVariable, equals({'k': 'v'}));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable object containing a record when creating a copy with a new record then returned object has updated record original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object containing a record when creating a copy with a new record',
         () {
       final original = ImmutableObjectWithRecord(recordVariable: (1, 'a'));
       final copy = original.copyWith(recordVariable: (2, 'b'));
-      expect(copy.recordVariable, equals((2, 'b')));
-      expect(original.recordVariable, equals((1, 'a')));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated record', () {
+        expect(copy.recordVariable, equals((2, 'b')));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.recordVariable, equals((1, 'a')));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable object containing another immutable object when creating a copy with a new immutable object then returned object has updated immutable object original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object containing another immutable object when creating a copy with a new immutable object',
         () {
       final original = ImmutableObjectWithImmutableObject(
           immutableVariable: ImmutableObject(variable: 'original'));
       final copy = original.copyWith(
           immutableVariable: ImmutableObject(variable: 'updated'));
-      expect(copy.immutableVariable.variable, equals('updated'));
-      expect(original.immutableVariable.variable, equals('original'));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated immutable object', () {
+        expect(copy.immutableVariable.variable, equals('updated'));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.immutableVariable.variable, equals('original'));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable object with multiple fields when creating a copy with some updated fields then returned object has updated fields original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable object with multiple fields when creating a copy with some updated fields',
         () {
       final original = ImmutableObjectWithMultipleFields(
         anInt: 1,
@@ -248,32 +293,51 @@ void main() {
         aString: 'updated',
         aBool: false,
       );
-      expect(copy.anInt, equals(1));
-      expect(copy.aString, equals('updated'));
-      expect(copy.aBool, equals(false));
-      expect(copy.aDouble, equals(1.0));
 
-      expect(original.anInt, equals(1));
-      expect(original.aString, equals('original'));
-      expect(original.aBool, equals(true));
-      expect(original.aDouble, equals(1.0));
+      test('then the copy has the updated fields', () {
+        expect(copy.anInt, equals(1));
+        expect(copy.aString, equals('updated'));
+        expect(copy.aBool, equals(false));
+        expect(copy.aDouble, equals(1.0));
+      });
 
-      expect(copy, isNot(equals(original)));
+      test('then the original remains unchanged', () {
+        expect(original.anInt, equals(1));
+        expect(original.aString, equals('original'));
+        expect(original.aBool, equals(true));
+        expect(original.aDouble, equals(1.0));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
 
-    test(
-        'Given an immutable child object when creating a copy with a new scalar value then returned object has updated value original remains unchanged and objects are not equal',
+    group(
+        'Given an immutable child object when creating a copy with a new scalar value',
         () {
       final original = ImmutableChildObject(
         variable: 'original',
         childVariable: 'childOriginal',
       );
       final copy = original.copyWith(variable: 'updated');
-      expect(copy.variable, equals('updated'));
-      expect(copy.childVariable, equals('childOriginal'));
-      expect(original.variable, equals('original'));
-      expect(original.childVariable, equals('childOriginal'));
-      expect(copy, isNot(equals(original)));
+
+      test('then the copy has the updated value', () {
+        expect(copy.variable, equals('updated'));
+      });
+
+      test('then the copy retains the original childVariable', () {
+        expect(copy.childVariable, equals('childOriginal'));
+      });
+
+      test('then the original remains unchanged', () {
+        expect(original.variable, equals('original'));
+        expect(original.childVariable, equals('childOriginal'));
+      });
+
+      test('then the copy and original are not equal', () {
+        expect(copy, isNot(equals(original)));
+      });
     });
   });
 }
