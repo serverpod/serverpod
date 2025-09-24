@@ -10,31 +10,33 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../immutable/immutable_object.dart' as _i2;
+import 'package:meta/meta.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i2;
+import '../immutable/immutable_object.dart' as _i3;
 
+@_i1.immutable
 abstract class ImmutableObjectWithImmutableObject
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   const ImmutableObjectWithImmutableObject._({required this.immutableVariable});
 
   const factory ImmutableObjectWithImmutableObject(
-          {required _i2.ImmutableObject immutableVariable}) =
+          {required _i3.ImmutableObject immutableVariable}) =
       _ImmutableObjectWithImmutableObjectImpl;
 
   factory ImmutableObjectWithImmutableObject.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return ImmutableObjectWithImmutableObject(
-        immutableVariable: _i2.ImmutableObject.fromJson(
+        immutableVariable: _i3.ImmutableObject.fromJson(
             (jsonSerialization['immutableVariable'] as Map<String, dynamic>)));
   }
 
-  final _i2.ImmutableObject immutableVariable;
+  final _i3.ImmutableObject immutableVariable;
 
   /// Returns a shallow copy of this [ImmutableObjectWithImmutableObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   ImmutableObjectWithImmutableObject copyWith(
-      {_i2.ImmutableObject? immutableVariable});
+      {_i3.ImmutableObject? immutableVariable});
   @override
   bool operator ==(Object other) {
     return identical(
@@ -70,22 +72,22 @@ abstract class ImmutableObjectWithImmutableObject
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
 class _ImmutableObjectWithImmutableObjectImpl
     extends ImmutableObjectWithImmutableObject {
   const _ImmutableObjectWithImmutableObjectImpl(
-      {required _i2.ImmutableObject immutableVariable})
+      {required _i3.ImmutableObject immutableVariable})
       : super._(immutableVariable: immutableVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithImmutableObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   ImmutableObjectWithImmutableObject copyWith(
-      {_i2.ImmutableObject? immutableVariable}) {
+      {_i3.ImmutableObject? immutableVariable}) {
     return ImmutableObjectWithImmutableObject(
         immutableVariable:
             immutableVariable ?? this.immutableVariable.copyWith());

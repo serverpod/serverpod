@@ -10,10 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:meta/meta.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
+@_i1.immutable
+abstract class ImmutableObjectWithRecord implements _i2.SerializableModel {
   const ImmutableObjectWithRecord._({required this.recordVariable});
 
   const factory ImmutableObjectWithRecord(
@@ -22,7 +24,7 @@ abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
   factory ImmutableObjectWithRecord.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return ImmutableObjectWithRecord(
-        recordVariable: _i2.Protocol().deserialize<(int, String)>(
+        recordVariable: _i3.Protocol().deserialize<(int, String)>(
             (jsonSerialization['recordVariable'] as Map<String, dynamic>)));
   }
 
@@ -30,7 +32,7 @@ abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ImmutableObjectWithRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   ImmutableObjectWithRecord copyWith({(int, String)? recordVariable});
   @override
   bool operator ==(Object other) {
@@ -57,12 +59,12 @@ abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'recordVariable': _i2.mapRecordToJson(recordVariable)};
+    return {'recordVariable': _i3.mapRecordToJson(recordVariable)};
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -72,7 +74,7 @@ class _ImmutableObjectWithRecordImpl extends ImmutableObjectWithRecord {
 
   /// Returns a shallow copy of this [ImmutableObjectWithRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   ImmutableObjectWithRecord copyWith({(int, String)? recordVariable}) {
     return ImmutableObjectWithRecord(

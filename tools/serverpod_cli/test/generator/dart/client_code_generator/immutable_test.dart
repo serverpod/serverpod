@@ -118,6 +118,25 @@ void main() {
           expect(equalsOperator?.returnType?.toSource(), equals('bool'));
         }, skip: equalsOperator == null);
       }, skip: baseClass == null);
+
+      group('has an immutable annotation', () {
+        test('declared.', () {
+          final metadata = baseClass!.metadata;
+          final hasImmutable = metadata.any((annotation) {
+            final name = annotation.name.name;
+            // Handles both direct and aliased imports (e.g. @_i1.immutable)
+            return name == 'immutable' ||
+                name == 'Immutable' ||
+                name.endsWith('.immutable') ||
+                name.endsWith('.Immutable');
+          });
+          expect(
+            hasImmutable,
+            isTrue,
+            reason: 'No @immutable annotation found on $testClassName',
+          );
+        });
+      }, skip: baseClass == null);
     });
   });
 
@@ -234,6 +253,25 @@ void main() {
         test('with the return type of boolean.', () {
           expect(equalsOperator?.returnType?.toSource(), equals('bool'));
         }, skip: equalsOperator == null);
+      }, skip: baseClass == null);
+
+      group('has an immutable annotation', () {
+        test('declared.', () {
+          final metadata = baseClass!.metadata;
+          final hasImmutable = metadata.any((annotation) {
+            final name = annotation.name.name;
+            // Handles both direct and aliased imports (e.g. @_i1.immutable)
+            return name == 'immutable' ||
+                name == 'Immutable' ||
+                name.endsWith('.immutable') ||
+                name.endsWith('.Immutable');
+          });
+          expect(
+            hasImmutable,
+            isTrue,
+            reason: 'No @immutable annotation found on $testClassName',
+          );
+        });
       }, skip: baseClass == null);
     });
   });

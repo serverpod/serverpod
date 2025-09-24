@@ -10,10 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
+@_i1.immutable
 abstract class ImmutableObjectWithTwentyFields
-    implements _i1.SerializableModel {
+    implements _i2.SerializableModel {
   const ImmutableObjectWithTwentyFields._({
     this.variable1,
     this.variable2,
@@ -128,7 +130,7 @@ abstract class ImmutableObjectWithTwentyFields
 
   /// Returns a shallow copy of this [ImmutableObjectWithTwentyFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   ImmutableObjectWithTwentyFields copyWith({
     String? variable1,
     String? variable2,
@@ -316,7 +318,7 @@ abstract class ImmutableObjectWithTwentyFields
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -370,7 +372,7 @@ class _ImmutableObjectWithTwentyFieldsImpl
 
   /// Returns a shallow copy of this [ImmutableObjectWithTwentyFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   ImmutableObjectWithTwentyFields copyWith({
     Object? variable1 = _Undefined,

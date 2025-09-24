@@ -10,10 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i2;
 
+@_i1.immutable
 abstract class ImmutableObjectWithMultipleFields
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   const ImmutableObjectWithMultipleFields._({
     this.anInt,
     this.aBool,
@@ -38,7 +40,7 @@ abstract class ImmutableObjectWithMultipleFields
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
     );
   }
@@ -55,7 +57,7 @@ abstract class ImmutableObjectWithMultipleFields
 
   /// Returns a shallow copy of this [ImmutableObjectWithMultipleFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   ImmutableObjectWithMultipleFields copyWith({
     int? anInt,
     bool? aBool,
@@ -134,7 +136,7 @@ abstract class ImmutableObjectWithMultipleFields
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -158,7 +160,7 @@ class _ImmutableObjectWithMultipleFieldsImpl
 
   /// Returns a shallow copy of this [ImmutableObjectWithMultipleFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   ImmutableObjectWithMultipleFields copyWith({
     Object? anInt = _Undefined,

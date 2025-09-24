@@ -10,9 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:meta/meta.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
-abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
+@_i1.immutable
+abstract class ImmutableObjectWithNoFields implements _i2.SerializableModel {
   const ImmutableObjectWithNoFields._();
 
   const factory ImmutableObjectWithNoFields() =
@@ -25,7 +27,7 @@ abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
 
   /// Returns a shallow copy of this [ImmutableObjectWithNoFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   ImmutableObjectWithNoFields copyWith();
   @override
   bool operator ==(Object other) {
@@ -49,7 +51,7 @@ abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -58,7 +60,7 @@ class _ImmutableObjectWithNoFieldsImpl extends ImmutableObjectWithNoFields {
 
   /// Returns a shallow copy of this [ImmutableObjectWithNoFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_i2.useResult
   @override
   ImmutableObjectWithNoFields copyWith() {
     return ImmutableObjectWithNoFields();
