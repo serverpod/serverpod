@@ -42,6 +42,12 @@ class EndpointDefinition {
     required this.isAbstract,
     required this.extendsClass,
   });
+
+  /// The name of the external package where this endpoint is defined. Will
+  /// return null if the endpoint comes from the project under generation.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
 }
 
 /// Describes a single method in a [EndpointDefinition].

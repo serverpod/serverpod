@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
@@ -17,6 +18,8 @@ var testProjectDirectory = Directory(path.joinAll([
   'endpoint_validation',
   const Uuid().v4(),
 ]));
+
+final config = GeneratorConfigBuilder().build();
 
 void main() {
   setUpAll(() async {
@@ -33,7 +36,7 @@ void main() {
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, config);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -115,7 +118,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, config);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -209,7 +212,7 @@ class ExampleClass {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, config);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -254,7 +257,7 @@ class ExampleEndpoint extends Endpoint {
     return 'Hello \$name';
   }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, config);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
@@ -309,7 +312,7 @@ class ExampleClass extends Endpoint {
       invalidDartFile.writeAsStringSync('''
 classInvalidClass {}
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
+      analyzer = EndpointsAnalyzer(trackedDirectory, config);
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 

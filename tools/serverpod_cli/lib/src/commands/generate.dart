@@ -107,7 +107,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     }
 
     var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-    var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+    var endpointsAnalyzer = EndpointsAnalyzer(libDirectory, config);
 
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
