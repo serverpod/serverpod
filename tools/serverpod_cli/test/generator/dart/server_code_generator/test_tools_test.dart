@@ -1091,4 +1091,428 @@ void main() {
       skip: testToolsFile == null,
     );
   });
+
+  group(
+      'Given a protocol definition with an abstract endpoint when generating test tools file',
+      () {
+    var abstractEndpointName = 'abstractTest';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${abstractEndpointName.pascalCase}Endpoint')
+            .withName(abstractEndpointName)
+            .withIsAbstract()
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName('testMethod')
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file does not contain abstract endpoint class.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given protocol definition with a concrete endpoint that extends an abstract base endpoint when generating test tools file',
+      () {
+    var abstractEndpointName = 'abstractTest';
+    var concreteEndpointName = 'concreteTest';
+
+    var abstractEndpoint = EndpointDefinitionBuilder()
+        .withClassName('${abstractEndpointName.pascalCase}Endpoint')
+        .withName(abstractEndpointName)
+        .withIsAbstract()
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('testMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${concreteEndpointName.pascalCase}Endpoint')
+            .withName(concreteEndpointName)
+            .withExtends(abstractEndpoint)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName('testMethod')
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file does not contain abstract endpoint class.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then test tools file contains concrete endpoint class.',
+      () {
+        expect(
+          testToolsFile,
+          contains('class _${concreteEndpointName.pascalCase}Endpoint'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints class does not have field for abstract endpoint.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains(
+              'late final _${abstractEndpointName.pascalCase}Endpoint $abstractEndpointName;')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints class has field for concrete endpoint.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints constructor does not initialize abstract endpoint.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains(
+              '$abstractEndpointName = _${abstractEndpointName.pascalCase}Endpoint(')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints constructor initializes concrete endpoint.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given protocol definition with a concrete endpoint that extends another concrete endpoint when generating test tools file',
+      () {
+    var baseEndpointName = 'base';
+    var concreteEndpointName = 'subclass';
+    var baseMethodName = 'baseMethod';
+    var concreteMethodName = 'subclassMethod';
+
+    // Create base endpoint
+    var baseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('${baseEndpointName.pascalCase}Endpoint')
+        .withName(baseEndpointName)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName(baseMethodName)
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    // Create endpoint that extends base endpoint
+    var concreteEndpoint = EndpointDefinitionBuilder()
+        .withClassName('${concreteEndpointName.pascalCase}Endpoint')
+        .withName(concreteEndpointName)
+        .withExtends(baseEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName(baseMethodName)
+          .buildMethodCallDefinition(),
+      MethodDefinitionBuilder()
+          .withName(concreteMethodName)
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [baseEndpoint, concreteEndpoint],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file contains both endpoint classes.',
+      () {
+        expect(
+          testToolsFile,
+          contains('class _${baseEndpointName.pascalCase}Endpoint'),
+        );
+        expect(
+          testToolsFile,
+          contains('class _${concreteEndpointName.pascalCase}Endpoint'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints class has field for both endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              'late final _${baseEndpointName.pascalCase}Endpoint $baseEndpointName;'),
+        );
+        expect(
+          testToolsFile,
+          contains(
+              'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints constructor initializes both endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              '$baseEndpointName = _${baseEndpointName.pascalCase}Endpoint('),
+        );
+        expect(
+          testToolsFile,
+          contains(
+              '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+  });
+
+  group(
+      'Given protocol definition with abstract > concrete > abstract > concrete endpoint hierarchy when generating test tools file',
+      () {
+    var abstractBaseEndpointName = 'baseAbstract';
+    var concreteBaseEndpointName = 'base';
+    var abstractSubClassEndpointName = 'abstractSubClass';
+    var concreteSubclassEndpointName = 'subclass';
+
+    var abstractBaseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseAbstractEndpoint')
+        .withName(abstractBaseEndpointName)
+        .withIsAbstract()
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('baseMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var concreteBaseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseEndpoint')
+        .withName(concreteBaseEndpointName)
+        .withExtends(abstractBaseEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('baseMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var abstractSubClassEndpoint = EndpointDefinitionBuilder()
+        .withClassName('AbstractSubClassEndpoint')
+        .withName(abstractSubClassEndpointName)
+        .withIsAbstract()
+        .withExtends(concreteBaseEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('abstractSubClassMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var concreteSubclassEndpoint = EndpointDefinitionBuilder()
+        .withClassName('SubclassEndpoint')
+        .withName(concreteSubclassEndpointName)
+        .withExtends(abstractSubClassEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('subclassMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        abstractBaseEndpoint,
+        concreteBaseEndpoint,
+        abstractSubClassEndpoint,
+        concreteSubclassEndpoint,
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    var testToolsFile = codeMap[expectedFileName];
+
+    test(
+      'then test tools file does not contain abstract endpoint classes.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains(
+              'class _${abstractBaseEndpointName.pascalCase}Endpoint')),
+        );
+        expect(
+          testToolsFile,
+          isNot(contains(
+              'class _${abstractSubClassEndpointName.pascalCase}Endpoint')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then test tools file contains all concrete endpoint classes.',
+      () {
+        expect(
+          testToolsFile,
+          contains('class _${concreteBaseEndpointName.pascalCase}Endpoint'),
+        );
+        expect(
+          testToolsFile,
+          contains('class _${concreteSubclassEndpointName.pascalCase}Endpoint'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints class does not have fields for abstract endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains(
+              'late final _${abstractBaseEndpointName.pascalCase}Endpoint $abstractBaseEndpointName;')),
+        );
+        expect(
+          testToolsFile,
+          isNot(contains(
+              'late final _${abstractSubClassEndpointName.pascalCase}Endpoint $abstractSubClassEndpointName;')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints class has fields for all concrete endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              'late final _${concreteBaseEndpointName.pascalCase}Endpoint $concreteBaseEndpointName;'),
+        );
+        expect(
+          testToolsFile,
+          contains(
+              'late final _${concreteSubclassEndpointName.pascalCase}Endpoint $concreteSubclassEndpointName;'),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints constructor does not initialize abstract endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          isNot(contains(
+              '$abstractBaseEndpointName = _${abstractBaseEndpointName.pascalCase}Endpoint(')),
+        );
+        expect(
+          testToolsFile,
+          isNot(contains(
+              '$abstractSubClassEndpointName = _${abstractSubClassEndpointName.pascalCase}Endpoint(')),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+
+    test(
+      'then TestEndpoints constructor initializes all concrete endpoints.',
+      () {
+        expect(
+          testToolsFile,
+          contains(
+              '$concreteBaseEndpointName = _${concreteBaseEndpointName.pascalCase}Endpoint('),
+        );
+        expect(
+          testToolsFile,
+          contains(
+              '$concreteSubclassEndpointName = _${concreteSubclassEndpointName.pascalCase}Endpoint('),
+        );
+      },
+      skip: testToolsFile == null,
+    );
+  });
 }
