@@ -16,10 +16,10 @@ import 'package:uuid/uuid_value.dart' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
-import 'dart:typed_data' as _i6;
-import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as _i7;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i6;
+import 'dart:typed_data' as _i7;
+import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
     as _i8;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i9;
@@ -172,7 +172,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i1.EndpointRef {
+class EndpointEmailAccount extends _i6.EndpointAuthEmailBase {
   EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -184,6 +184,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// In case an expected error occurs, this throws a
   /// [EmailAccountLoginException].
   /// {@endtemplate}
+  @override
   _i2.Future<_i4.AuthSuccess> login({
     required String email,
     required String password,
@@ -205,6 +206,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
   /// {@endtemplate}
+  @override
   _i2.Future<void> startRegistration({
     required String email,
     required String password,
@@ -233,6 +235,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
+  @override
   _i2.Future<_i4.AuthSuccess> finishRegistration({
     required _i3.UuidValue accountRequestId,
     required String verificationCode,
@@ -255,6 +258,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
+  @override
   _i2.Future<void> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<void>(
         'emailAccount',
@@ -277,6 +281,7 @@ class EndpointEmailAccount extends _i1.EndpointRef {
   /// If the reset was successful, a new session is returned and
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
+  @override
   _i2.Future<_i4.AuthSuccess> finishPasswordReset({
     required _i3.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -296,13 +301,15 @@ class EndpointEmailAccount extends _i1.EndpointRef {
 /// Endpoint for Google-based authentication, which automatically imports legacy
 /// accounts.
 /// {@category Endpoint}
-class EndpointGoogleAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
+class EndpointGoogleAccountBackwardsCompatibilityTest
+    extends _i6.EndpointGoogleAccountBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
       : super(caller);
 
   @override
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
+  @override
   _i2.Future<_i4.AuthSuccess> authenticate({required String idToken}) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
@@ -313,13 +320,14 @@ class EndpointGoogleAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i1.EndpointRef {
+class EndpointGoogleAccount extends _i6.EndpointGoogleAccountBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'googleAccount';
 
   /// Logs in or registers an [AuthUser] for the given Google account ID.
+  @override
   _i2.Future<_i4.AuthSuccess> authenticate({required String idToken}) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleAccount',
@@ -330,7 +338,7 @@ class EndpointGoogleAccount extends _i1.EndpointRef {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
+class EndpointPasswordImportingEmailAccount extends _i6.EndpointAuthEmailBase {
   EndpointPasswordImportingEmailAccount(_i1.EndpointCaller caller)
       : super(caller);
 
@@ -340,6 +348,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   /// Logs in the user and returns a new session.
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
+  @override
   _i2.Future<_i4.AuthSuccess> login({
     required String email,
     required String password,
@@ -357,6 +366,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   ///
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to complete the registration.
+  @override
   _i2.Future<void> startRegistration({
     required String email,
     required String password,
@@ -385,6 +395,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
+  @override
   _i2.Future<_i4.AuthSuccess> finishRegistration({
     required _i3.UuidValue accountRequestId,
     required String verificationCode,
@@ -407,6 +418,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
+  @override
   _i2.Future<void> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<void>(
         'passwordImportingEmailAccount',
@@ -429,6 +441,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
   /// If the reset was successful, a new session is returned and
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
+  @override
   _i2.Future<_i4.AuthSuccess> finishPasswordReset({
     required _i3.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -447,13 +460,14 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointRef {
 
 /// Endpoint to view and edit one's profile.
 /// {@category Endpoint}
-class EndpointUserProfile extends _i1.EndpointRef {
+class EndpointUserProfile extends _i4.EndpointUserProfileBase {
   EndpointUserProfile(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'userProfile';
 
   /// Returns the user profile of the current user.
+  @override
   _i2.Future<_i4.UserProfileModel> get() =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
@@ -463,6 +477,7 @@ class EndpointUserProfile extends _i1.EndpointRef {
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
+  @override
   _i2.Future<_i4.UserProfileModel> removeUserImage() =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
@@ -471,7 +486,8 @@ class EndpointUserProfile extends _i1.EndpointRef {
       );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<_i4.UserProfileModel> setUserImage(_i6.ByteData image) =>
+  @override
+  _i2.Future<_i4.UserProfileModel> setUserImage(_i7.ByteData image) =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
         'setUserImage',
@@ -479,6 +495,7 @@ class EndpointUserProfile extends _i1.EndpointRef {
       );
 
   /// Changes the name of a user.
+  @override
   _i2.Future<_i4.UserProfileModel> changeUserName(String? userName) =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
@@ -487,6 +504,7 @@ class EndpointUserProfile extends _i1.EndpointRef {
       );
 
   /// Changes the full name of a user.
+  @override
   _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName) =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'userProfile',
@@ -497,18 +515,18 @@ class EndpointUserProfile extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_bridge = _i7.Caller(client);
+    serverpod_auth_bridge = _i8.Caller(client);
     serverpod_auth_core = _i4.Caller(client);
-    serverpod_auth_idp = _i8.Caller(client);
+    serverpod_auth_idp = _i6.Caller(client);
     serverpod_auth_migration = _i9.Caller(client);
     auth = _i5.Caller(client);
   }
 
-  late final _i7.Caller serverpod_auth_bridge;
+  late final _i8.Caller serverpod_auth_bridge;
 
   late final _i4.Caller serverpod_auth_core;
 
-  late final _i8.Caller serverpod_auth_idp;
+  late final _i6.Caller serverpod_auth_idp;
 
   late final _i9.Caller serverpod_auth_migration;
 
