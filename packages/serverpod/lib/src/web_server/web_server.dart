@@ -119,7 +119,6 @@ class WebServer {
     Session session,
     NewContext context,
   ) async {
-    // TODO: route.setHeaders(request.response.headers);
     try {
       return await route.handleCall(session, context);
     } catch (e, stackTrace) {
@@ -208,32 +207,6 @@ abstract class Route {
 
   /// Handles a call to this route.
   FutureOr<HandledContext> handleCall(Session session, NewContext context);
-
-  // TODO: May want to create another abstraction layer here, to handle other
-  // types of responses too. Or at least clarify the naming of the method.
-
-  /// Returns the body of the request, assuming it is standard URL encoded form
-  /// post request.
-  static Future<Map<String, String>> getBody(Request request) async {
-    var body = await request.readAsString();
-
-    var params = <String, String>{};
-
-    var encodedParams = body.split('&');
-    for (var encodedParam in encodedParams) {
-      var comps = encodedParam.split('=');
-      if (comps.length != 2) {
-        continue;
-      }
-
-      var name = Uri.decodeQueryComponent(comps[0]);
-      var value = Uri.decodeQueryComponent(comps[1]);
-
-      params[name] = value;
-    }
-
-    return params;
-  }
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
