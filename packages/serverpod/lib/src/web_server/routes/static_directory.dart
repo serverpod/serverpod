@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
@@ -41,6 +42,7 @@ class PathCacheMaxAge {
 }
 
 /// Route for serving a directory of static files.
+@Deprecated('Use StaticRoute.directory instead')
 class RouteStaticDirectory extends Route {
   /// The path to the directory to serve relative to the web/ directory.
   final String serverDirectory;
@@ -50,6 +52,7 @@ class RouteStaticDirectory extends Route {
   late final List<PathCacheMaxAge>? _pathCachePatterns;
 
   /// Creates a static directory with the [serverDirectory] as its root.
+  ///
   /// If [pathCachePatterns] is provided, paths matching the requested
   /// patterns will be cached for the requested amount of time. Paths that
   /// are do not match any provided pattern are cached for one year.

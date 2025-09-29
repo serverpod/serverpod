@@ -225,7 +225,7 @@ class Server {
     // This OPTIONS check is necessary when making requests from
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
-    if (request.method == RequestMethod.options) {
+    if (request.method == Method.options) {
       final combinedHeaders = headers.transform((mh) {
         for (var orh in httpOptionsResponseHeaders.entries) {
           mh[orh.key] = ['${orh.value}'];
