@@ -323,12 +323,10 @@ class DefaultValueRestriction extends ValueRestriction {
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is Uri) {
-      return [];
-    }
+    if (value is Uri) return [];
 
     String invalidValueError =
-        'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
+        'The "$key" value must be a valid Uri string (e.g., $key="http://serverpod.dev").';
 
     if (value is! String || value.isEmpty) {
       return [
@@ -339,49 +337,10 @@ class DefaultValueRestriction extends ValueRestriction {
       ];
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
-        !value.startsWith("'") &&
-        !value.startsWith('"');
-
-    if (invalidDefaultValue) {
-      return [
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      ];
-    }
-
-    if (value == defaultUuidValueRandom) return [];
-
-    bool validSingleQuote = isValidSingleQuote(value);
-    bool validDoubleQuote = isValidDoubleQuote(value);
-
-    if (value.startsWith("'") && !validSingleQuote) {
-      return [
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'http://serverpod.dev\').',
-          span,
-        ),
-      ];
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      return [
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"="http://serverpod.dev").',
-          span,
-        ),
-      ];
-    }
-
-    /// Extract the actual Uri string by removing quotes
-    String uriString = value.substring(1, value.length - 1);
-    var isValid = Uri.tryParse(uriString) != null;
+    var isValid = Uri.tryParse(value) != null;
     if (!isValid) {
       return [
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid Uri (e.g., \'http://serverpod.dev\').',
-          span,
-        ),
+        SourceSpanSeverityException(invalidValueError, span),
       ];
     }
 
