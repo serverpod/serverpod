@@ -285,7 +285,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "defaultPersist" string values, single quotes must be escaped or use double quotes (e.g., "defaultPersist"=\'This "is" a string\' or "defaultPersist"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -313,7 +313,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "defaultPersist" string values, double quotes must be escaped or use single quotes (e.g., "defaultPersist"="This \'is\' a string" or "defaultPersist"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
