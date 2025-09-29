@@ -152,7 +152,7 @@ String? getColumnDefault(
       DateTime? dateTime = DateTime.parse(defaultValue);
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
     case DefaultValueAllowedType.bool:
-      return defaultValue;
+      return '$defaultValue';
     case DefaultValueAllowedType.int:
       if (defaultValue == defaultIntSerial) {
         return "nextval('${tableName}_id_seq'::regclass)";
