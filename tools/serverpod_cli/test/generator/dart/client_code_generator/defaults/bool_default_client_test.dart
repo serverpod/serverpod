@@ -35,18 +35,15 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('boolDefaultTrue')
-            .withTypeDefinition('bool', false)
-            .withDefaults(defaultModelValue: 'true')
+            .withTypeBool(defaultModelValue: true, nullable: false)
             .build(),
         FieldDefinitionBuilder()
             .withName('boolDefaultFalse')
-            .withTypeDefinition('bool', false)
-            .withDefaults(defaultModelValue: 'false')
+            .withTypeBool(defaultModelValue: false, nullable: false)
             .build(),
         FieldDefinitionBuilder()
             .withName('boolDefaultNullFalse')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultModelValue: 'false')
+            .withTypeBool(defaultModelValue: false, nullable: true)
             .build(),
       ];
 
@@ -145,13 +142,11 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('boolDefaultPersistTrue')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultPersistValue: 'true')
+            .withTypeBool(defaultPersistValue: true, nullable: true)
             .build(),
         FieldDefinitionBuilder()
             .withName('boolDefaultPersistFalse')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultPersistValue: 'false')
+            .withTypeBool(defaultPersistValue: false)
             .build(),
       ];
 

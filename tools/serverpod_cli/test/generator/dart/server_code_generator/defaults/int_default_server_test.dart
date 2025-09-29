@@ -29,13 +29,11 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('intDefault')
-            .withTypeDefinition('int', false)
-            .withDefaults(defaultModelValue: '10')
+            .withTypeInt(defaultModelValue: 10)
             .build(),
         FieldDefinitionBuilder()
             .withName('intDefaultNull')
-            .withTypeDefinition('int', true)
-            .withDefaults(defaultModelValue: '20')
+            .withTypeInt(defaultModelValue: 20, nullable: true)
             .build(),
       ];
 
@@ -117,8 +115,7 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('intDefaultPersist')
-            .withTypeDefinition('int', true)
-            .withDefaults(defaultPersistValue: '10')
+            .withTypeInt(defaultPersistValue: 10, nullable: true)
             .build(),
       ];
 

@@ -29,13 +29,14 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('defaultMessage')
-            .withTypeDefinition('String', false)
-            .withDefaults(defaultModelValue: '\'Default error message\'')
+            .withTypeString(defaultModelValue: "'Default error message'")
             .build(),
         FieldDefinitionBuilder()
             .withName('defaultNullMessage')
-            .withTypeDefinition('String', true)
-            .withDefaults(defaultModelValue: '\'Default model error message\'')
+            .withTypeString(
+              defaultModelValue: "'Default model error message'",
+              nullable: true,
+            )
             .build(),
       ];
 

@@ -45,13 +45,18 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('byNameEnumDefault')
-            .withEnumDefinition(enumDefinition, false)
-            .withDefaults(defaultModelValue: 'byName1')
+            .withTypeEnum(
+              enumDefinition,
+              defaultModelValue: 'byName1',
+            )
             .build(),
         FieldDefinitionBuilder()
             .withName('byNameEnumDefaultNull')
-            .withEnumDefinition(enumDefinition, true)
-            .withDefaults(defaultModelValue: 'byName2')
+            .withTypeEnum(
+              enumDefinition,
+              defaultModelValue: 'byName2',
+              nullable: true,
+            )
             .build(),
       ];
 
@@ -140,8 +145,11 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('byNameEnumDefaultPersist')
-            .withEnumDefinition(enumDefinition, true)
-            .withDefaults(defaultPersistValue: 'byName1')
+            .withTypeEnum(
+              enumDefinition,
+              defaultPersistValue: 'byName1',
+              nullable: true,
+            )
             .build(),
       ];
 

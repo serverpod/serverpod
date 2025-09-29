@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeDefinition('String', false)
-          .withDefaults(defaultPersistValue: '\'This is a default value\'')
+          .withTypeString(defaultPersistValue: "'This is a default value'")
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -110,8 +109,10 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeDefinition('String', true)
-          .withDefaults(defaultPersistValue: '\'This is a default value\'')
+          .withTypeString(
+            defaultPersistValue: "'This is a default value'",
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -229,8 +230,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeDefinition('String', false)
-          .withDefaults(defaultModelValue: '\'This is a default value\'')
+          .withTypeString(defaultModelValue: "'This is a default value'")
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -280,8 +280,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeDefinition('String', true)
-          .withDefaults(defaultModelValue: '\'This is a default value\'')
+          .withTypeString(
+            defaultModelValue: "'This is a default value'",
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

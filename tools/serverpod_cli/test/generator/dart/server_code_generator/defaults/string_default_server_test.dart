@@ -29,15 +29,16 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('stringDefault')
-            .withTypeDefinition('String', false)
-            .withDefaults(
-                defaultModelValue: '\'This is a default model value\'')
+            .withTypeString(
+              defaultModelValue: "'This is a default model value'",
+            )
             .build(),
         FieldDefinitionBuilder()
             .withName('stringDefaultNull')
-            .withTypeDefinition('String', true)
-            .withDefaults(
-                defaultModelValue: '\'This is a default model null value\'')
+            .withTypeString(
+              defaultModelValue: "'This is a default model null value'",
+              nullable: true,
+            )
             .build(),
       ];
 
@@ -120,9 +121,10 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('stringDefaultPersist')
-            .withTypeDefinition('String', true)
-            .withDefaults(
-                defaultPersistValue: '\'This is a default persist value\'')
+            .withTypeString(
+              defaultPersistValue: "'This is a default persist value'",
+              nullable: true,
+            )
             .build(),
       ];
 
