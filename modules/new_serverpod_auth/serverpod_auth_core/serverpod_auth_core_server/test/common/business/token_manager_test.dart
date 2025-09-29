@@ -88,17 +88,17 @@ void main() {
 
         group('when listing tokens with provider filter', () {
           late List<TokenInfo> jwtTokens;
-          late List<TokenInfo> sessionTokens;
+          late List<TokenInfo> sasTokens;
 
           setUp(() async {
             jwtTokens = await tokenManager.listTokens(
               session: session,
-              tokenProvider: 'jwt',
+              tokenProvider: AuthStrategy.jwt.name,
             );
 
-            sessionTokens = await tokenManager.listTokens(
+            sasTokens = await tokenManager.listTokens(
               session: session,
-              tokenProvider: 'session',
+              tokenProvider: AuthStrategy.session.name,
             );
           });
 
@@ -108,12 +108,10 @@ void main() {
             expect(jwtTokens.first.userId, equals(user1Id.toString()));
           });
 
-          test(
-              'then only session tokens should be returned for session provider',
-              () {
-            expect(sessionTokens, hasLength(1));
-            expect(sessionTokens.first.tokenProvider, equals('session'));
-            expect(sessionTokens.first.userId, equals(user2Id.toString()));
+          test('then only SAS tokens should be returned for SAS provider', () {
+            expect(sasTokens, hasLength(1));
+            expect(sasTokens.first.tokenProvider, equals('session'));
+            expect(sasTokens.first.userId, equals(user2Id.toString()));
           });
         });
 

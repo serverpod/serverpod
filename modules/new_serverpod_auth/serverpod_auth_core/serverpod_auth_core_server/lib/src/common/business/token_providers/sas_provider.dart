@@ -5,7 +5,7 @@ import 'package:serverpod_auth_core_server/src/common/business/token_provider.da
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/session/business/auth_sessions.dart';
 
-/// Implementation of a token issuer using session tokens.
+/// Implementation of a token issuer using SAS tokens.
 class SasTokenIssuer implements TokenIssuer {
   @override
   Future<AuthSuccess> issueToken({
@@ -25,7 +25,7 @@ class SasTokenIssuer implements TokenIssuer {
   }
 }
 
-/// Implementation of a token provider using session tokens.
+/// Implementation of a token provider using SAS tokens.
 class SasTokenProvider implements TokenProvider {
   @override
   Future<List<TokenInfo>> listTokens({
