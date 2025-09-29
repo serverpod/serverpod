@@ -81,7 +81,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default='This \'is\' a default value'
+            stringType: String, default='This \\'is\\' a default value'
           ''',
           ).build()
         ];
@@ -95,9 +95,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            'This \'is\' a default value');
+            'This \\\'is\\\' a default value');
         expect(definition.fields.last.defaultPersistValue,
-            'This \'is\' a default value');
+            'This \\\'is\\\' a default value');
       },
     );
 
@@ -345,7 +345,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "default" string values, single quotes must be escaped or use double quotes (e.g., "default"=\'This "is" a string\' or "default"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -373,7 +373,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "default" string values, double quotes must be escaped or use single quotes (e.g., "default"="This \'is\' a string" or "default"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );

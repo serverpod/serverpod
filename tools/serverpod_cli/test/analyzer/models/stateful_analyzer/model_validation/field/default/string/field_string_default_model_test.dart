@@ -310,7 +310,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "defaultModel" string values, single quotes must be escaped or use double quotes (e.g., "defaultModel"=\'This "is" a string\' or "defaultModel"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -338,7 +338,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "defaultModel" string values, double quotes must be escaped or use single quotes (e.g., "defaultModel"="This \'is\' a string" or "defaultModel"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );

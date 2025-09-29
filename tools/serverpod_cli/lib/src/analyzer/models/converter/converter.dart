@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:source_span/source_span.dart';
+import 'package:super_string/super_string.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
 import 'package:yaml/yaml.dart';
@@ -43,6 +44,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
   String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
   void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
+  void Function(String key, SourceSpan? span)? onUnescapedStringValue,
 }) {
   var stringifiedNodes = _extractStringifiedNodes(content);
 
@@ -51,6 +53,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     stringifiedNodes,
     content,
     span,
+    onUnescapedStringValue,
   );
 
   var startNodeIndex = initNodes.length;
@@ -59,6 +62,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     content,
     span,
     onNegatedKeyWithValue: onNegatedKeyWithValue,
+    onUnescapedStringValue: onUnescapedStringValue,
     handleDeepNestedNodes: (nestedContent, nestedSpan) {
       // recursion
       return convertStringifiedNestedNodesToYamlMap(
@@ -66,6 +70,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
         nestedSpan,
         onDuplicateKey: onDuplicateKey,
         onNegatedKeyWithValue: onNegatedKeyWithValue,
+        onUnescapedStringValue: onUnescapedStringValue,
       );
     },
   );
@@ -95,6 +100,7 @@ Map<dynamic, YamlNode> _extractInitialNode(
   List<String> options,
   String? content,
   SourceSpan span,
+  void Function(String key, SourceSpan? span)? onUnescapedStringValue,
 ) {
   if (firstKey == null) return {};
 
@@ -103,6 +109,7 @@ Map<dynamic, YamlNode> _extractInitialNode(
     firstKey,
     initRawValue,
     _extractSubSpan(content, span, initRawValue),
+    onUnescapedStringValue,
   );
 }
 
@@ -118,6 +125,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
   String? content,
   SourceSpan span, {
   void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
+  void Function(String key, SourceSpan? span)? onUnescapedStringValue,
   required DeepNestedNodeHandler handleDeepNestedNodes,
 }) {
   if (content == null) return [];
@@ -143,6 +151,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
           key,
           null,
           keyValueSpan,
+          onUnescapedStringValue,
         ));
         continue;
       } else {
@@ -179,6 +188,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       key,
       value,
       keyValueSpan,
+      onUnescapedStringValue,
     ));
     continue;
   }
@@ -229,6 +239,7 @@ Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
   String rawKey,
   String? rawValue,
   SourceSpan span,
+  void Function(String key, SourceSpan? span)? onUnescapedStringValue,
 ) {
   var trimmedKey = rawKey.trim();
   var keySpan = _extractSubSpan(span.text, span, trimmedKey);
@@ -238,22 +249,36 @@ Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
   var valueSpan = _extractSubSpan(span.text, span, trimmedValue);
 
   var value = YamlScalar.internalWithSpan(
-    _parseTypedValue(trimmedValue),
+    _parseTypedValue(trimmedValue, span, onUnescapedStringValue),
     valueSpan,
   );
 
   return {key: value};
 }
 
-dynamic _parseTypedValue(String? value) {
+dynamic _parseTypedValue(
+  String? value,
+  SourceSpan span,
+  void Function(String key, SourceSpan? span)? onUnescapedStringValue,
+) {
   if (value == null) return null;
 
   if (value.startsWith('"') && value.endsWith('"')) {
-    return value.substring(1, value.length - 1);
+    final content = value.substring(1, value.length - 1);
+
+    if (content.count('"') != content.count('\\"')) {
+      onUnescapedStringValue?.call(value, span);
+    }
+    return content;
   }
 
   if (value.startsWith("'") && value.endsWith("'")) {
-    return value.substring(1, value.length - 1);
+    final content = value.substring(1, value.length - 1);
+
+    if (content.count("'") != content.count("\\'")) {
+      onUnescapedStringValue?.call(value, span);
+    }
+    return content;
   }
 
   return bool.tryParse(value) ??
