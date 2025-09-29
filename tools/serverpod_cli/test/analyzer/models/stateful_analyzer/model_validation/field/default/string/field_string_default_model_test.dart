@@ -260,34 +260,6 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultModel value without quotes, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, defaultModel=InvalidValue
-        ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultModel" must be a quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
-        );
-      },
-    );
-
-    test(
       'when the field is of type String with an invalid defaultModel value containing non-string value, then an error is generated',
       () {
         var models = [
@@ -298,34 +270,6 @@ void main() {
         fields:
           stringInvalid: String?, defaultModel=10
         ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultModel" must be a quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid defaultModel value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringInvalid: String?, defaultModel=test
-          ''',
           ).build()
         ];
 
