@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
@@ -21,11 +23,9 @@ void run(final List<String> args) async {
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
-  // Serve all files in the /static directory.
-  pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static'),
-    '/**',
-  );
+  // Serve all files in the web/static relative directory under /.
+  final root = Directory(Uri(path: 'web/static').toFilePath());
+  pod.webServer.addRoute(StaticRoute.directory(root), '/**');
 
   // Start the server.
   await pod.start();

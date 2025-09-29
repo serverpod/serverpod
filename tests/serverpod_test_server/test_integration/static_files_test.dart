@@ -30,33 +30,30 @@ void main() {
   });
 
   group('Given a web server with a static directory', () {
-    late Serverpod serverpod;
+    late Serverpod pod;
 
     setUp(() async {
-      serverpod = IntegrationTestServer.create();
+      pod = IntegrationTestServer.create();
     });
 
     tearDown(() async {
-      await serverpod.shutdown(exitProcess: false);
+      await pod.shutdown(exitProcess: false);
     });
 
     group('and a path cache pattern having a max age of 1 second', () {
       setUp(() async {
-        serverpod.webServer.addRoute(
-          RouteStaticDirectory(
-            serverDirectory: 'server_root_directory',
-            pathCachePatterns: [
-              PathCacheMaxAge(
-                pathPattern: RegExp(r'.*\.txt'),
-                maxAge: Duration(seconds: 1),
-              ),
-            ],
-          ),
+        pod.webServer.addRoute(
+          StaticRoute.directory(
+              directory,
+              (ctx, fileInfo) =>
+                  RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
+                      ? CacheControlHeader(maxAge: 1)
+                      : null),
           '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
-        await serverpod.start();
+        await pod.start();
       });
 
       test(
@@ -80,30 +77,24 @@ void main() {
           ),
         );
 
-        expect(
-          response.headers['cache-control'],
-          'max-age=${PathCacheMaxAge.oneYear.inSeconds}',
-        );
+        expect(response.headers['cache-control'], null);
       });
     });
 
     group('and a path cache string having a max age of 1 second', () {
       setUp(() async {
-        serverpod.webServer.addRoute(
-          RouteStaticDirectory(
-            serverDirectory: 'server_root_directory',
-            pathCachePatterns: [
-              PathCacheMaxAge(
-                pathPattern: '/file1.txt',
-                maxAge: Duration(seconds: 1),
-              ),
-            ],
-          ),
+        pod.webServer.addRoute(
+          StaticRoute.directory(
+              directory,
+              (ctx, fileInfo) =>
+                  RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
+                      ? CacheControlHeader(maxAge: 1)
+                      : null),
           '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
-        await serverpod.start();
+        await pod.start();
       });
 
       test(
@@ -127,22 +118,17 @@ void main() {
           ),
         );
 
-        expect(
-          response.headers['cache-control'],
-          'max-age=${PathCacheMaxAge.oneYear.inSeconds}',
-        );
+        expect(response.headers['cache-control'], isNull);
       });
     });
 
     group('when a nested static file is requested', () {
       setUp(() async {
-        serverpod.webServer.addRoute(
-          RouteStaticDirectory(
-            serverDirectory: 'server_root_directory',
-          ),
+        pod.webServer.addRoute(
+          StaticRoute.directory(directory),
           '/url_prefix/**',
         );
-        await serverpod.start();
+        await pod.start();
       });
 
       test('then the file is served correctly', () async {
@@ -154,22 +140,17 @@ void main() {
 
         expect(response.statusCode, 200);
         expect(response.body, 'nested contents');
-        expect(
-          response.headers['cache-control'],
-          'max-age=${PathCacheMaxAge.oneYear.inSeconds}',
-        );
+        expect(response.headers['cache-control'], isNull);
       });
     });
 
     group('when a request is made with specific headers', () {
       setUp(() async {
-        serverpod.webServer.addRoute(
-          RouteStaticDirectory(
-            serverDirectory: 'server_root_directory',
-          ),
+        pod.webServer.addRoute(
+          StaticRoute.directory(directory),
           '/url_prefix/**',
         );
-        await serverpod.start();
+        await pod.start();
       });
 
       group('and an If-None-Match header', () {
@@ -183,7 +164,8 @@ void main() {
           expect(response.body, 'contents');
         });
 
-        test('then 304 Not Modified is returned when If-None-Match matches ETag',
+        test(
+            'then 304 Not Modified is returned when If-None-Match matches ETag',
             () async {
           // First request to get ETag
           var initialResponse = await client.get(
@@ -296,7 +278,8 @@ void main() {
       });
 
       group('and HEAD method is used', () {
-        test('then HEAD requests are supported with same headers as GET', () async {
+        test('then HEAD requests are supported with same headers as GET',
+            () async {
           // GET request for comparison
           var getResponse = await client.get(
             Uri.parse('http://localhost:8082/url_prefix/file1.txt'),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod_test_nonvector_server/src/birthday_reminder.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -23,8 +25,8 @@ void run(List<String> args) async {
   pod.webServer.addRoute(RootRoute(), '/index.html');
   // Serve all files in the /static directory.
   pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static'),
-    '/*',
+    StaticRoute.directory(Directory('static')),
+    '/**',
   );
 
   // Start the server.

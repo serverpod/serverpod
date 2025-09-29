@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:projectname_server/src/birthday_reminder.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -17,11 +19,9 @@ void run(List<String> args) async {
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
-  // Serve all files in the /static directory.
-  pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static'),
-    '/**',
-  );
+  // Serve all files in the web/static relative directory under /.
+  final root = Directory(Uri(path: 'web/static').toFilePath());
+  pod.webServer.addRoute(StaticRoute.directory(root), '/**');
 
   // Start the server.
   await pod.start();
