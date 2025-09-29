@@ -163,9 +163,7 @@ class DefaultValueRestriction extends ValueRestriction {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (value is! String ||
-        value.isEmpty ||
-        (value != defaultBooleanTrue && value != defaultBooleanFalse)) {
+    if (value is! bool) {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid boolean: "true" or "false"',
@@ -184,59 +182,26 @@ class DefaultValueRestriction extends ValueRestriction {
   ) {
     if (value is int) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
-    if (value is! String || value.isEmpty) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid integer (e.g., "$key"=10).',
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    int? parsedValue = int.tryParse(value);
-    if (parsedValue == null) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid integer (e.g., "$key"=10).',
-          span,
-        ),
-      );
-    }
-    return errors;
+    return [
+      SourceSpanSeverityException(
+        'The "$key" value must be a valid integer (e.g., "$key"=10).',
+        span,
+      ),
+    ];
   }
 
   List<SourceSpanSeverityException> _doubleValidation(
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is double) return [];
+    if (value is double || value is int) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
-    if (value is! String || value.isEmpty) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid double (e.g., "$key"=10.5).',
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    double? parsedValue = double.tryParse(value);
-    if (parsedValue == null) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid double (e.g., "$key"=10.5).',
-          span,
-        ),
-      );
-    }
-
-    return errors;
+    return [
+      SourceSpanSeverityException(
+        'The "$key" value must be a valid double (e.g., "$key"=10.5).',
+        span,
+      ),
+    ];
   }
 
   List<SourceSpanSeverityException> _stringValidation(
@@ -253,36 +218,6 @@ class DefaultValueRestriction extends ValueRestriction {
         ),
       );
       return errors;
-    }
-
-    bool validDoubleQuote = isValidDoubleQuote(value);
-    bool validSingleQuote = isValidSingleQuote(value);
-
-    if (validDoubleQuote || validSingleQuote) {
-      return errors;
-    }
-
-    if (value.startsWith('\'') && !validSingleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'For single quoted "$key" string values, single quotes must be escaped or use double quotes (e.g., "$key"=\'This "is" a string\' or "$key"=\'This \\\'is\\\' a string\').',
-          span,
-        ),
-      );
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'For double quoted "$key" string values, double quotes must be escaped or use single quotes (e.g., "$key"="This \'is\' a string" or "$key"="This \\"is\\" a string").',
-          span,
-        ),
-      );
-    } else {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'This is a string\' or "$key"="This is a string").',
-          span,
-        ),
-      );
     }
 
     return errors;
@@ -327,40 +262,7 @@ class DefaultValueRestriction extends ValueRestriction {
       return [];
     }
 
-    if (!value.startsWith("'") && !value.startsWith('"')) {
-      errors.add(
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    bool validSingleQuote = isValidSingleQuote(value);
-    bool validDoubleQuote = isValidDoubleQuote(value);
-
-    if (value.startsWith("'") && !validSingleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'550e8400-e29b-41d4-a716-446655440000\').',
-          span,
-        ),
-      );
-      return errors;
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"="550e8400-e29b-41d4-a716-446655440000").',
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    /// Extract the actual UUID string by removing quotes
-    String uuidString = value.substring(1, value.length - 1);
-    UuidValue uuidValue = UuidValue.fromString(uuidString);
+    UuidValue uuidValue = UuidValue.fromString(value);
     try {
       uuidValue.validate();
     } catch (_) {
@@ -380,11 +282,14 @@ class DefaultValueRestriction extends ValueRestriction {
     SourceSpan? span,
   ) {
     if (value is BigInt) return [];
+    if (value is int) return [];
 
-    if (value is! String || value.isEmpty || BigInt.tryParse(value) == null) {
+    if ((value is! String ||
+        value.isEmpty ||
+        BigInt.tryParse(value.toString()) == null)) {
       return [
         SourceSpanSeverityException(
-          'The "$key" value must be a valid BigInt (e.g., "$key"=\'1234567890\').',
+          'The "$key" value must be a valid BigInt (e.g., $key="1234567890").',
           span,
         ),
       ];
