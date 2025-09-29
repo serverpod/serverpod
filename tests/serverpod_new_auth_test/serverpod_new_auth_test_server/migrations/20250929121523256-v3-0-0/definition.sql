@@ -489,10 +489,7 @@ CREATE TABLE "serverpod_auth_idp_passkey_account" (
     "keyId" bytea NOT NULL,
     "keyIdBase64" text NOT NULL,
     "clientDataJSON" bytea NOT NULL,
-    "publicKey" bytea NOT NULL,
-    "publicKeyAlgorithm" bigint NOT NULL,
     "attestationObject" bytea NOT NULL,
-    "authenticatorData" bytea NOT NULL,
     "originalChallenge" bytea NOT NULL
 );
 
@@ -830,9 +827,9 @@ ALTER TABLE ONLY "serverpod_auth_migration_migrated_user"
 -- MIGRATION VERSION FOR serverpod_new_auth_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_new_auth_test', '20250826132839096-v3-0-0', now())
+    VALUES ('serverpod_new_auth_test', '20250929121523256-v3-0-0', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250826132839096-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20250929121523256-v3-0-0', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -862,9 +859,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20250826122816956-v3-0-0', now())
+    VALUES ('serverpod_auth_idp', '20250922160233956-v3-0-0', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250826122816956-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20250922160233956-v3-0-0', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_migration

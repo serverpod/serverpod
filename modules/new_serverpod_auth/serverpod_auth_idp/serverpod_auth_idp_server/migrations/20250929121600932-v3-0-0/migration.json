@@ -853,25 +853,7 @@
             "dartType": "dart:typed_data:ByteData"
           },
           {
-            "name": "publicKey",
-            "columnType": 5,
-            "isNullable": false,
-            "dartType": "dart:typed_data:ByteData"
-          },
-          {
-            "name": "publicKeyAlgorithm",
-            "columnType": 6,
-            "isNullable": false,
-            "dartType": "int"
-          },
-          {
             "name": "attestationObject",
-            "columnType": 5,
-            "isNullable": false,
-            "dartType": "dart:typed_data:ByteData"
-          },
-          {
-            "name": "authenticatorData",
             "columnType": 5,
             "isNullable": false,
             "dartType": "dart:typed_data:ByteData"

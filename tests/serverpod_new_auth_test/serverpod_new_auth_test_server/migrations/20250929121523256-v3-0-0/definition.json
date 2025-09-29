@@ -3369,7 +3369,7 @@
   "installedModules": [
     {
       "module": "serverpod_new_auth_test",
-      "version": "20250922163415987-v3-0-0"
+      "version": "20250929121523256-v3-0-0"
     },
     {
       "module": "serverpod",
