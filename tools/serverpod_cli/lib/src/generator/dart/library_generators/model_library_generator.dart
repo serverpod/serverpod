@@ -352,12 +352,13 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(_buildModelClassDBField(className));
 
         classBuilder.fields.add(Field(
-          (f) => f
-            ..name = 'id'
-            ..type = idTypeReference
-            ..annotations.add(
-              refer('override'),
-            ),
+          (f) {
+            f
+              ..name = 'id'
+              ..type = idTypeReference
+              ..annotations.add(refer('override'));
+            if (classDefinition.isImmutable) f.modifier = FieldModifier.final$;
+          },
         ));
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
