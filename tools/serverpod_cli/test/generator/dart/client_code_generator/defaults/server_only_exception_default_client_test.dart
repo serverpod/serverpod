@@ -36,7 +36,7 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('message')
-            .withTypeString(defaultModelValue: '\'Default error message\'')
+            .withTypeString(defaultModelValue: 'Default error message')
             .withScope(ModelFieldScopeDefinition.all)
             .build(),
         FieldDefinitionBuilder()

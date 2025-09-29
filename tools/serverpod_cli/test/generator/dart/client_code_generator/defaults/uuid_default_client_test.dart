@@ -44,13 +44,13 @@ void main() {
         FieldDefinitionBuilder()
             .withName('uuidDefaultStr')
             .withTypeUuidValue(
-              defaultModelValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
             )
             .build(),
         FieldDefinitionBuilder()
             .withName('uuidDefaultStrNull')
             .withTypeUuidValue(
-              defaultModelValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
               nullable: true,
             )
             .build(),
@@ -123,7 +123,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('uuidDefaultStr'));
           expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
+              "uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000')");
         },
       );
 
@@ -133,7 +133,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('uuidDefaultStrNull'));
           expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
+              "uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000')");
         },
       );
     });

@@ -30,13 +30,13 @@ void main() {
         FieldDefinitionBuilder()
             .withName('stringDefault')
             .withTypeString(
-              defaultModelValue: "'This is a default model value'",
+              defaultModelValue: 'This is a default model value',
             )
             .build(),
         FieldDefinitionBuilder()
             .withName('stringDefaultNull')
             .withTypeString(
-              defaultModelValue: "'This is a default model null value'",
+              defaultModelValue: 'This is a default model null value',
               nullable: true,
             )
             .build(),
@@ -90,7 +90,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('stringDefault'));
           expect(initializer?.toSource(),
-              'stringDefault = stringDefault ?? \'This is a default model value\'');
+              "stringDefault = stringDefault ?? 'This is a default model value'");
         },
       );
 
@@ -100,7 +100,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('stringDefaultNull'));
           expect(initializer?.toSource(),
-              'stringDefaultNull = stringDefaultNull ?? \'This is a default model null value\'');
+              "stringDefaultNull = stringDefaultNull ?? 'This is a default model null value'");
         },
       );
     });
@@ -122,7 +122,7 @@ void main() {
         FieldDefinitionBuilder()
             .withName('stringDefaultPersist')
             .withTypeString(
-              defaultPersistValue: "'This is a default persist value'",
+              defaultPersistValue: 'This is a default persist value',
               nullable: true,
             )
             .build(),
