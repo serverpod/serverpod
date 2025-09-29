@@ -236,9 +236,30 @@ Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
 
   var trimmedValue = rawValue?.trim();
   var valueSpan = _extractSubSpan(span.text, span, trimmedValue);
-  var value = YamlScalar.internalWithSpan(trimmedValue, valueSpan);
+
+  var value = YamlScalar.internalWithSpan(
+    _parseTypedValue(trimmedValue),
+    valueSpan,
+  );
 
   return {key: value};
+}
+
+dynamic _parseTypedValue(String? value) {
+  if (value == null) return null;
+
+  if (value.startsWith('"') && value.endsWith('"')) {
+    return value.substring(1, value.length - 1);
+  }
+
+  if (value.startsWith("'") && value.endsWith("'")) {
+    return value.substring(1, value.length - 1);
+  }
+
+  return bool.tryParse(value) ??
+      int.tryParse(value) ??
+      double.tryParse(value) ??
+      value;
 }
 
 Map<YamlScalar, YamlMap> _createYamlMapNode(
