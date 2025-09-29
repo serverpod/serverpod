@@ -186,8 +186,13 @@ void main() {
     group(
         'Given an immutable object when creating a copy with a new scalar value',
         () {
-      final original = ImmutableObject(variable: 'original');
-      final copy = original.copyWith(variable: 'updated');
+      late ImmutableObject original;
+      late ImmutableObject copy;
+
+      setUp(() {
+        original = ImmutableObject(variable: 'original');
+        copy = original.copyWith(variable: 'updated');
+      });
 
       test('then the copy has the updated value', () {
         expect(copy.variable, equals('updated'));
@@ -205,8 +210,13 @@ void main() {
     group(
         'Given an immutable object containing a list when creating a copy with a new list',
         () {
-      final original = ImmutableObjectWithList(listVariable: ['a', 'b']);
-      final copy = original.copyWith(listVariable: ['x', 'y']);
+      late ImmutableObjectWithList original;
+      late ImmutableObjectWithList copy;
+
+      setUp(() {
+        original = ImmutableObjectWithList(listVariable: ['a', 'b']);
+        copy = original.copyWith(listVariable: ['x', 'y']);
+      });
 
       test('then the copy has the updated list', () {
         expect(copy.listVariable, equals(['x', 'y']));
@@ -224,8 +234,13 @@ void main() {
     group(
         'Given an immutable object containing a map when creating a copy with a new map',
         () {
-      final original = ImmutableObjectWithMap(mapVariable: {'k': 'v'});
-      final copy = original.copyWith(mapVariable: {'k': 'new'});
+      late ImmutableObjectWithMap original;
+      late ImmutableObjectWithMap copy;
+
+      setUp(() {
+        original = ImmutableObjectWithMap(mapVariable: {'k': 'v'});
+        copy = original.copyWith(mapVariable: {'k': 'new'});
+      });
 
       test('then the copy has the updated map', () {
         expect(copy.mapVariable, equals({'k': 'new'}));
@@ -243,8 +258,13 @@ void main() {
     group(
         'Given an immutable object containing a record when creating a copy with a new record',
         () {
-      final original = ImmutableObjectWithRecord(recordVariable: (1, 'a'));
-      final copy = original.copyWith(recordVariable: (2, 'b'));
+      late ImmutableObjectWithRecord original;
+      late ImmutableObjectWithRecord copy;
+
+      setUp(() {
+        original = ImmutableObjectWithRecord(recordVariable: (1, 'a'));
+        copy = original.copyWith(recordVariable: (2, 'b'));
+      });
 
       test('then the copy has the updated record', () {
         expect(copy.recordVariable, equals((2, 'b')));
@@ -262,10 +282,15 @@ void main() {
     group(
         'Given an immutable object containing another immutable object when creating a copy with a new immutable object',
         () {
-      final original = ImmutableObjectWithImmutableObject(
-          immutableVariable: ImmutableObject(variable: 'original'));
-      final copy = original.copyWith(
-          immutableVariable: ImmutableObject(variable: 'updated'));
+      late ImmutableObjectWithImmutableObject original;
+      late ImmutableObjectWithImmutableObject copy;
+
+      setUp(() {
+        original = ImmutableObjectWithImmutableObject(
+            immutableVariable: ImmutableObject(variable: 'original'));
+        copy = original.copyWith(
+            immutableVariable: ImmutableObject(variable: 'updated'));
+      });
 
       test('then the copy has the updated immutable object', () {
         expect(copy.immutableVariable.variable, equals('updated'));
@@ -283,16 +308,21 @@ void main() {
     group(
         'Given an immutable object with multiple fields when creating a copy with some updated fields',
         () {
-      final original = ImmutableObjectWithMultipleFields(
-        anInt: 1,
-        aString: 'original',
-        aBool: true,
-        aDouble: 1.0,
-      );
-      final copy = original.copyWith(
-        aString: 'updated',
-        aBool: false,
-      );
+      late ImmutableObjectWithMultipleFields original;
+      late ImmutableObjectWithMultipleFields copy;
+
+      setUp(() {
+        original = ImmutableObjectWithMultipleFields(
+          anInt: 1,
+          aString: 'original',
+          aBool: true,
+          aDouble: 1.0,
+        );
+        copy = original.copyWith(
+          aString: 'updated',
+          aBool: false,
+        );
+      });
 
       test('then the copy has the updated fields', () {
         expect(copy.anInt, equals(1));
@@ -316,11 +346,16 @@ void main() {
     group(
         'Given an immutable child object when creating a copy with a new scalar value',
         () {
-      final original = ImmutableChildObject(
-        variable: 'original',
-        childVariable: 'childOriginal',
-      );
-      final copy = original.copyWith(variable: 'updated');
+      late ImmutableChildObject original;
+      late ImmutableChildObject copy;
+
+      setUp(() {
+        original = ImmutableChildObject(
+          variable: 'original',
+          childVariable: 'childOriginal',
+        );
+        copy = original.copyWith(variable: 'updated');
+      });
 
       test('then the copy has the updated value', () {
         expect(copy.variable, equals('updated'));
