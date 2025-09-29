@@ -108,18 +108,12 @@ class ModelClassDefinitionBuilder {
   ModelClassDefinitionBuilder withSimpleField(
     String fieldName,
     String type, {
-    dynamic defaultModelValue,
-    dynamic defaultPersistValue,
     bool nullable = false,
   }) {
     _fields.add(
       () => FieldDefinitionBuilder()
           .withName(fieldName)
           .withTypeDefinition(type, nullable)
-          .withDefaults(
-            defaultModelValue: defaultModelValue,
-            defaultPersistValue: defaultPersistValue,
-          )
           .build(),
     );
     return this;
