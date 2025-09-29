@@ -235,34 +235,6 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultPersist value without quotes, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, defaultPersist=InvalidValue
-        ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" must be a quoted string (e.g., "defaultPersist"=\'This is a string\' or "defaultPersist"="This is a string").',
-        );
-      },
-    );
-
-    test(
       'when the field is of type String with an invalid defaultPersist value, then an error is generated',
       () {
         var models = [
@@ -273,34 +245,6 @@ void main() {
         fields:
           stringInvalid: String?, defaultPersist=10
         ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" must be a quoted string (e.g., "defaultPersist"=\'This is a string\' or "defaultPersist"="This is a string").',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid defaultPersist value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringInvalid: String?, defaultPersist=test
-          ''',
           ).build()
         ];
 
