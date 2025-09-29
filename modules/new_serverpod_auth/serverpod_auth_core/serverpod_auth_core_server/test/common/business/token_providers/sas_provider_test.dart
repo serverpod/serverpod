@@ -52,7 +52,7 @@ void main() {
           });
 
           test('then the authStrategy should be session', () {
-            expect(authSuccess.authStrategy, equals(AuthStrategy.session));
+            expect(authSuccess.authStrategy, equals(AuthStrategy.session.name));
           });
 
           test('then an AuthSession should be created in the database',

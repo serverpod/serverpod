@@ -65,7 +65,7 @@ void main() {
           });
 
           test('then the authStrategy should be jwt', () {
-            expect(authSuccess.authStrategy, equals(AuthStrategy.jwt));
+            expect(authSuccess.authStrategy, equals(AuthStrategy.jwt.name));
           });
 
           test('then a RefreshToken should be created in the database',

@@ -32,8 +32,8 @@ void main() {
           session = sessionBuilder.build();
 
           tokenManager = TokenManager({
-            'jwt': JwtTokenProvider(),
-            'session': SasTokenProvider(),
+            AuthStrategy.jwt.name: JwtTokenProvider(),
+            AuthStrategy.session.name: SasTokenProvider(),
           });
 
           final user1 = await AuthUsers.create(session);
@@ -74,7 +74,7 @@ void main() {
             expect(tokens, hasLength(2));
             expect(
               tokens.map((final t) => t.tokenProvider).toSet(),
-              containsAll(['jwt', 'session']),
+              containsAll([AuthStrategy.jwt.name, AuthStrategy.session.name]),
             );
           });
 
@@ -104,33 +104,16 @@ void main() {
 
           test('then only JWT tokens should be returned for JWT provider', () {
             expect(jwtTokens, hasLength(1));
-            expect(jwtTokens.first.tokenProvider, equals('jwt'));
+            expect(
+                jwtTokens.first.tokenProvider, equals(AuthStrategy.jwt.name));
             expect(jwtTokens.first.userId, equals(user1Id.toString()));
           });
 
           test('then only SAS tokens should be returned for SAS provider', () {
             expect(sasTokens, hasLength(1));
-            expect(sasTokens.first.tokenProvider, equals('session'));
+            expect(sasTokens.first.tokenProvider,
+                equals(AuthStrategy.session.name));
             expect(sasTokens.first.userId, equals(user2Id.toString()));
-          });
-        });
-
-        group('when revoking all tokens with provider filter', () {
-          setUp(() async {
-            await tokenManager.revokeAllTokens(
-              session: session,
-              tokenProvider: 'jwt',
-              authUserId: user1Id,
-            );
-          });
-
-          test('then only JWT tokens should be revoked', () async {
-            final remainingTokens = await tokenManager.listTokens(
-              session: session,
-            );
-
-            expect(remainingTokens, hasLength(1));
-            expect(remainingTokens.first.tokenProvider, equals('session'));
           });
         });
 
@@ -150,6 +133,28 @@ void main() {
 
             expect(remainingTokens, hasLength(1));
             expect(remainingTokens.first.userId, equals(user2Id.toString()));
+          });
+        });
+
+        group('when revoking all tokens with provider filter', () {
+          setUp(() async {
+            await tokenManager.revokeAllTokens(
+              session: session,
+              tokenProvider: AuthStrategy.jwt.name,
+              authUserId: user1Id,
+            );
+          });
+
+          test('then only JWT tokens should be revoked', () async {
+            final remainingTokens = await tokenManager.listTokens(
+              session: session,
+            );
+
+            expect(remainingTokens, hasLength(1));
+            expect(
+              remainingTokens.first.tokenProvider,
+              equals(AuthStrategy.session.name),
+            );
           });
         });
 
