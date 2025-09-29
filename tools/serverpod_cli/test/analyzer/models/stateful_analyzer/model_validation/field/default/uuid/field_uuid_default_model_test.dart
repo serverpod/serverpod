@@ -146,7 +146,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., defaultModel=random or defaultModel="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
@@ -174,7 +174,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., "defaultModel"=random or "defaultModel"=\'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., defaultModel=random or defaultModel="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
@@ -202,7 +202,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., defaultModel=random or defaultModel="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
@@ -230,7 +230,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., defaultModel=random or defaultModel="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
@@ -258,7 +258,7 @@ void main() {
         var error = collector.errors.first as SourceSpanSeverityException;
         expect(
           error.message,
-          'The "defaultModel" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
+          'The "defaultModel" value must be "random", "random_v7" or valid UUID string (e.g., defaultModel=random or defaultModel="550e8400-e29b-41d4-a716-446655440000").',
         );
       },
     );
