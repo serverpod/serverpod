@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_escapes
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -34,9 +36,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            "'This is a default value'");
+            'This is a default value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This is a default value'");
+            'This is a default value');
       },
     );
 
@@ -64,9 +66,9 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(definition.fields.last.defaultModelValue,
-            "'This is a default null value'");
+            'This is a default null value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This is a default null value'");
+            'This is a default null value');
       },
     );
 
@@ -79,7 +81,7 @@ void main() {
           class: Example
           table: example
           fields:
-            stringType: String, default='This \\'is\\' a default value'
+            stringType: String, default='This \'is\' a default value'
           ''',
           ).build()
         ];
@@ -93,9 +95,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            "'This \\'is\\' a default value'");
+            'This \'is\' a default value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This \\'is\\' a default value'");
+            'This \'is\' a default value');
       },
     );
 
@@ -123,11 +125,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\\"is\\\" a default value'",
+          'This \\"is\\" a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\\"is\\\" a default value'",
+          'This \\"is\\" a default value',
         );
       },
     );
@@ -156,11 +158,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This, is a default value'",
+          'This, is a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This, is a default value'",
+          'This, is a default value',
         );
       },
     );
@@ -189,11 +191,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\\"is\\\", a default value'",
+          'This \\"is\\", a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\\"is\\\", a default value'",
+          'This \\"is\\", a default value',
         );
       },
     );
@@ -222,11 +224,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\'is\\' a default value'",
+          "This \\'is\\' a default value",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\'is\\' a default value'",
+          "This \\'is\\' a default value",
         );
       },
     );
@@ -255,11 +257,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \"is\" a default value'",
+          'This "is" a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \"is\" a default value'",
+          'This "is" a default value',
         );
       },
     );

@@ -34,7 +34,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default persist value\'');
+            'This is a default persist value');
       },
     );
 
@@ -63,7 +63,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'Another default persist value\'',
+          'Another default persist value',
         );
       },
     );
@@ -92,7 +92,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This \\\'is\\\' a default persist value\'',
+          'This \\\'is\\\' a default persist value',
         );
       },
     );
@@ -121,7 +121,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This "is" a default persist value\'',
+          'This "is" a default persist value',
         );
       },
     );
@@ -149,7 +149,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\\'is\\\' a default persist value\'');
+            'This \\\'is\\\' a default persist value');
       },
     );
 
@@ -176,7 +176,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\"is\\" a default persist value\'');
+            'This \\"is\\" a default persist value');
       },
     );
 
@@ -203,7 +203,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This, is a default persist value\'');
+            'This, is a default persist value');
       },
     );
 
@@ -230,7 +230,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\"is\\", a default persist value\'');
+            'This \\"is\\", a default persist value');
       },
     );
 
