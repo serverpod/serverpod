@@ -10,7 +10,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
           .withTypeUuidValue(
-            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+            defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
           )
           .build();
 
@@ -53,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          '\$\$550e8400-e29b-41d4-a716-446655440000\$\$::uuid',
         );
       });
     });
@@ -112,7 +112,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
           .withTypeUuidValue(
-            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+            defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
             nullable: true,
           )
           .build();
@@ -156,7 +156,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          '\$\$550e8400-e29b-41d4-a716-446655440000\$\$::uuid',
         );
       });
 
