@@ -13,7 +13,7 @@ class AuthConfig {
   /// Default token providers
   static Map<String, TokenProvider> get defaultTokenProviders => {
         AuthStrategy.jwt.name: JwtTokenProvider(),
-        AuthStrategy.session.name: SASTokenProvider(),
+        AuthStrategy.session.name: SasTokenProvider(),
       };
 
   /// Returns the singleton instance of [AuthConfig] used by the provider

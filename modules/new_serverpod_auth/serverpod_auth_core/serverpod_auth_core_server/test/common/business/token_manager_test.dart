@@ -2,10 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_providers/jwt_provider.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_providers/sas_provider.dart';
 import 'package:test/test.dart';
 
 import '../../jwt/utils/authentication_token_secrets_mock.dart';
@@ -37,7 +33,7 @@ void main() {
 
           tokenManager = TokenManager({
             'jwt': JwtTokenProvider(),
-            'session': SASTokenProvider(),
+            'session': SasTokenProvider(),
           });
 
           final user1 = await AuthUsers.create(session);

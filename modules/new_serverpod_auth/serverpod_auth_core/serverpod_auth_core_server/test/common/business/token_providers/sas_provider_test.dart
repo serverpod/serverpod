@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_providers/sas_provider.dart';
 import 'package:test/test.dart';
 
 import '../../../serverpod_test_tools.dart';
@@ -17,7 +16,7 @@ void main() {
 
         setUp(() async {
           session = sessionBuilder.build();
-          tokenIssuer = SASTokenIssuer();
+          tokenIssuer = SasTokenIssuer();
 
           final authUser = await AuthUsers.create(session);
           authUserId = authUser.id;
@@ -99,7 +98,7 @@ void main() {
 
         setUp(() async {
           session = sessionBuilder.build();
-          tokenProvider = SASTokenProvider();
+          tokenProvider = SasTokenProvider();
 
           // Create two users
           final user1 = await AuthUsers.create(session);
@@ -347,7 +346,7 @@ void main() {
 
         setUp(() async {
           session = sessionBuilder.build();
-          tokenProvider = SASTokenProvider();
+          tokenProvider = SasTokenProvider();
         });
 
         group('when revoking the invalid session', () {

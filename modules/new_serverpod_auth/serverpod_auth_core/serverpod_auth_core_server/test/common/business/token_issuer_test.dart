@@ -33,7 +33,7 @@ void main() {
         setUp(() async {
           session = sessionBuilder.build();
           jwtIssuer = JwtTokenIssuer();
-          sasIssuer = SASTokenIssuer();
+          sasIssuer = SasTokenIssuer();
 
           final authUser = await AuthUsers.create(session);
           authUserId = authUser.id;
