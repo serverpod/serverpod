@@ -88,7 +88,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'550e8400-e29b-41d4-a716-446655440000\'',
+          '550e8400-e29b-41d4-a716-446655440000',
         );
       },
     );
@@ -118,7 +118,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'550e8400-e29b-41d4-a716-446655440000\'',
+          '550e8400-e29b-41d4-a716-446655440000',
         );
       },
     );
@@ -415,7 +415,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The default value "\'550e8400-e29b-41d4-a716-446655440000\'" is not '
+          'The default value "550e8400-e29b-41d4-a716-446655440000" is not '
           'supported for the id type "UuidValue". Valid options are: "random", '
           '"random_v7".',
         );

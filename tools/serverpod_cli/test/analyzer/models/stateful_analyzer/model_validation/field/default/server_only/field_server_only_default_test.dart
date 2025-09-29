@@ -33,7 +33,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '-1',
+          -1,
         );
         expect(
           definition.fields.last.scope,
@@ -65,7 +65,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'Server only message'",
+          'Server only message',
         );
       },
     );
@@ -95,17 +95,19 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.length, 3);
 
+        // TODO REFACTOR THIS
+
         // Check normal field
-        expect(definition.fields[0].defaultModelValue, "'Normal message'");
+        expect(definition.fields[0].defaultModelValue, 'Normal message');
         expect(definition.fields[0].scope, ModelFieldScopeDefinition.all);
 
         // Check serverOnly field
-        expect(definition.fields[1].defaultModelValue, '42');
+        expect(definition.fields[1].defaultModelValue, 42);
         expect(
             definition.fields[1].scope, ModelFieldScopeDefinition.serverOnly);
 
         // Check all scope field
-        expect(definition.fields[2].defaultModelValue, 'true');
+        expect(definition.fields[2].defaultModelValue, true);
         expect(definition.fields[2].scope, ModelFieldScopeDefinition.all);
       },
     );

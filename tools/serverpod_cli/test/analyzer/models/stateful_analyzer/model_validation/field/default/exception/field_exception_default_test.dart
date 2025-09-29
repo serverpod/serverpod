@@ -34,7 +34,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'Default error message\'',
+          'Default error message',
         );
       },
     );
@@ -99,7 +99,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'Default model error message\'',
+          'Default model error message',
         );
       },
     );
@@ -154,7 +154,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          'true',
+          true,
         );
       },
     );
@@ -209,7 +209,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '10',
+          10,
         );
       },
     );
@@ -264,7 +264,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '20.5',
+          20.5,
         );
       },
     );
@@ -319,7 +319,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'550e8400-e29b-41d4-a716-446655440000\'',
+          '550e8400-e29b-41d4-a716-446655440000',
         );
       },
     );
