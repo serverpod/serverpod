@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
