@@ -83,6 +83,200 @@ void main() {
             expect(authSuccess.scopeNames, isEmpty);
           });
         });
+
+        group('when issuing tokens with custom scopes', () {
+          late AuthSuccess authSuccess;
+
+          setUp(() async {
+            await AuthUsers.update(
+              session,
+              authUserId: authUserId,
+              scopes: {
+                const Scope('user-scope-1'),
+                const Scope('user-scope-2')
+              },
+            );
+
+            authSuccess = await tokenIssuer.issueToken(
+              session: session,
+              authUserId: authUserId,
+              method: 'test-method',
+              scopes: {const Scope('custom-scope')},
+              transaction: null,
+            );
+          });
+
+          test('then custom scopes override user scopes', () {
+            expect(authSuccess.scopeNames, contains('custom-scope'));
+            expect(authSuccess.scopeNames, isNot(contains('user-scope-1')));
+            expect(authSuccess.scopeNames, isNot(contains('user-scope-2')));
+          });
+        });
+
+        group('when issuing tokens with empty set of scopes', () {
+          late AuthSuccess authSuccess;
+
+          setUp(() async {
+            await AuthUsers.update(
+              session,
+              authUserId: authUserId,
+              scopes: {const Scope('user-scope')},
+            );
+
+            authSuccess = await tokenIssuer.issueToken(
+              session: session,
+              authUserId: authUserId,
+              method: 'test-method',
+              scopes: {},
+              transaction: null,
+            );
+          });
+
+          test('then empty scopes override user scopes', () {
+            expect(authSuccess.scopeNames, isEmpty);
+          });
+        });
+
+        group('when issuing tokens for a previously authenticated user', () {
+          late AuthSuccess firstAuth;
+          late AuthSuccess secondAuth;
+
+          setUp(() async {
+            firstAuth = await tokenIssuer.issueToken(
+              session: session,
+              authUserId: authUserId,
+              method: 'test-method',
+              scopes: {const Scope('first-auth')},
+              transaction: null,
+            );
+
+            secondAuth = await tokenIssuer.issueToken(
+              session: session,
+              authUserId: authUserId,
+              method: 'test-method',
+              scopes: {const Scope('second-auth')},
+              transaction: null,
+            );
+          });
+
+          test('then a new session is returned', () {
+            expect(secondAuth.token, isNotEmpty);
+            expect(secondAuth.token, isNot(equals(firstAuth.token)));
+          });
+
+          test('then both sessions exist in the database', () async {
+            final authSessions = await AuthSession.db.find(
+              session,
+              where: (final t) => t.authUserId.equals(authUserId),
+            );
+            expect(authSessions, hasLength(2));
+          });
+        });
+
+        group('when issuing tokens', () {
+          late AuthSuccess authSuccess;
+
+          setUp(() async {
+            authSuccess = await tokenIssuer.issueToken(
+              session: session,
+              authUserId: authUserId,
+              method: 'test-method',
+              scopes: {const Scope('test-scope')},
+              transaction: null,
+            );
+          });
+
+          test('then session token is valid on the server', () async {
+            final authInfo = await AuthSessions.authenticationHandler(
+              session,
+              authSuccess.token,
+            );
+            expect(authInfo, isNotNull);
+            expect(authInfo!.userIdentifier, equals(authUserId.uuid));
+            expect(authInfo.scopes.map((final s) => s.name),
+                contains('test-scope'));
+          });
+        });
+      },
+    );
+
+    withServerpod(
+      'Given a blocked AuthUser',
+      (final sessionBuilder, final endpoints) {
+        late Session session;
+        late UuidValue authUserId;
+        late TokenIssuer tokenIssuer;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          tokenIssuer = SasTokenIssuer();
+
+          final authUser = await AuthUsers.create(session);
+          authUserId = authUser.id;
+
+          await AuthUsers.update(
+            session,
+            authUserId: authUserId,
+            blocked: true,
+          );
+        });
+
+        group('when issuing tokens for a blocked user', () {
+          test('then an AuthUserBlockedException is thrown', () async {
+            expect(
+              () => tokenIssuer.issueToken(
+                session: session,
+                authUserId: authUserId,
+                method: 'test-method',
+                scopes: {const Scope('test-scope')},
+                transaction: null,
+              ),
+              throwsA(isA<AuthUserBlockedException>()),
+            );
+          });
+        });
+      },
+    );
+
+    withServerpod(
+      'Given a transaction that fails',
+      (final sessionBuilder, final endpoints) {
+        late Session session;
+        late UuidValue authUserId;
+        late TokenIssuer tokenIssuer;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          tokenIssuer = SasTokenIssuer();
+
+          final authUser = await AuthUsers.create(session);
+          authUserId = authUser.id;
+        });
+
+        group('when issuing tokens with a transaction that fails', () {
+          test('then sessions are not created in the database', () async {
+            try {
+              await session.db.transaction((final transaction) async {
+                await tokenIssuer.issueToken(
+                  session: session,
+                  authUserId: authUserId,
+                  method: 'test-method',
+                  scopes: {const Scope('test-scope')},
+                  transaction: transaction,
+                );
+                throw Exception('Transaction failed');
+              });
+            } catch (_) {
+              // Expected to fail
+            }
+
+            final authSessions = await AuthSession.db.find(
+              session,
+              where: (final t) => t.authUserId.equals(authUserId),
+            );
+            expect(authSessions, isEmpty);
+          });
+        });
       },
     );
   });
