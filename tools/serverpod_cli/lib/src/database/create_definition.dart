@@ -203,5 +203,6 @@ String? getColumnDefault(
 /// _escapeSqlString("This is a \"default\" persist value") // Returns "This is a ""default"" persist value"
 /// ```
 String _escapeSqlString(String value) {
-  return "'${value.replaceAll("\\'", "'").replaceAll("\\\"", '"')}'";
+  return '\$\$$value\$\$';
+  return "${value.replaceAll("\\'", "'").replaceAll("\\\"", '"')}'";
 }

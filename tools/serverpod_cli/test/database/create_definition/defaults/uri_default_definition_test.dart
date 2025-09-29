@@ -10,7 +10,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeUri(
-            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
           )
           .build();
 
@@ -53,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          "'https://serverpod.dev/defaultPersistValue'::text",
+          "\$\$https://serverpod.dev/defaultPersistValue\$\$::text",
         );
       });
     });
@@ -89,7 +89,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeUri(
-            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
             nullable: true,
           )
           .build();
@@ -110,7 +110,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          "'https://serverpod.dev/defaultPersistValue'::text",
+          "\$\$https://serverpod.dev/defaultPersistValue\$\$::text",
         );
       });
 
@@ -164,7 +164,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeUri(
-            defaultModelValue: "'https://serverpod.dev/defaultModelValue'",
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
           )
           .build();
 
@@ -193,7 +193,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('uri')
           .withTypeUri(
-            defaultModelValue: "'https://serverpod.dev/defaultModelValue'",
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
             nullable: true,
           )
           .build();

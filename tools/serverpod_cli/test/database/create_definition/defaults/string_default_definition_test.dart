@@ -9,7 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeString(defaultPersistValue: "'This is a default value'")
+          .withTypeString(defaultPersistValue: 'This is a default value')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -51,7 +51,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'This is a default value\'::text',
+          '\$\$This is a default value\$\$::text',
         );
       });
     });
@@ -110,7 +110,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
           .withTypeString(
-            defaultPersistValue: "'This is a default value'",
+            defaultPersistValue: 'This is a default value',
             nullable: true,
           )
           .build();
@@ -154,7 +154,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'This is a default value\'::text',
+          '\$\$This is a default value\$\$::text',
         );
       });
 
@@ -230,7 +230,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
-          .withTypeString(defaultModelValue: "'This is a default value'")
+          .withTypeString(defaultModelValue: 'This is a default value')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -281,7 +281,7 @@ void main() {
       var field = FieldDefinitionBuilder()
           .withName('stringDefault')
           .withTypeString(
-            defaultModelValue: "'This is a default value'",
+            defaultModelValue: 'This is a default value',
             nullable: true,
           )
           .build();
