@@ -429,7 +429,7 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildEqualOperator(classDefinition, fields));
         classBuilder.methods.add(_buildHashCodeMethod(classDefinition, fields));
         classBuilder.annotations
-            .add(refer('immutable', 'package:meta/meta.dart'));
+            .add(refer('immutable', serverpodUrl(serverCode)));
       }
 
       // Serialization

@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
-abstract class ImmutableObjectWithList implements _i2.SerializableModel {
+abstract class ImmutableObjectWithList implements _i1.SerializableModel {
   const ImmutableObjectWithList._({required this.listVariable});
 
   const factory ImmutableObjectWithList({required List<String> listVariable}) =
@@ -32,7 +31,7 @@ abstract class ImmutableObjectWithList implements _i2.SerializableModel {
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   ImmutableObjectWithList copyWith({List<String>? listVariable});
   @override
   bool operator ==(Object other) {
@@ -42,7 +41,7 @@ abstract class ImmutableObjectWithList implements _i2.SerializableModel {
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithList &&
-            const _i2.DeepCollectionEquality().equals(
+            const _i1.DeepCollectionEquality().equals(
               other.listVariable,
               listVariable,
             );
@@ -52,7 +51,7 @@ abstract class ImmutableObjectWithList implements _i2.SerializableModel {
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i2.DeepCollectionEquality().hash(listVariable),
+      const _i1.DeepCollectionEquality().hash(listVariable),
     );
   }
 
@@ -63,7 +62,7 @@ abstract class ImmutableObjectWithList implements _i2.SerializableModel {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -73,7 +72,7 @@ class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   @override
   ImmutableObjectWithList copyWith({List<String>? listVariable}) {
     return ImmutableObjectWithList(

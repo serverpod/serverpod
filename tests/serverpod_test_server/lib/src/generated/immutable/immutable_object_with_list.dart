@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _i1;
 
 @_i1.immutable
 abstract class ImmutableObjectWithList
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithList._({required this.listVariable});
 
   const factory ImmutableObjectWithList({required List<String> listVariable}) =
@@ -33,7 +32,7 @@ abstract class ImmutableObjectWithList
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   ImmutableObjectWithList copyWith({List<String>? listVariable});
   @override
   bool operator ==(Object other) {
@@ -43,7 +42,7 @@ abstract class ImmutableObjectWithList
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithList &&
-            const _i2.DeepCollectionEquality().equals(
+            const _i1.DeepCollectionEquality().equals(
               other.listVariable,
               listVariable,
             );
@@ -53,7 +52,7 @@ abstract class ImmutableObjectWithList
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i2.DeepCollectionEquality().hash(listVariable),
+      const _i1.DeepCollectionEquality().hash(listVariable),
     );
   }
 
@@ -69,7 +68,7 @@ abstract class ImmutableObjectWithList
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -79,7 +78,7 @@ class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   @override
   ImmutableObjectWithList copyWith({List<String>? listVariable}) {
     return ImmutableObjectWithList(

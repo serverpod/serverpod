@@ -10,11 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
-abstract class ImmutableObjectWithMap implements _i2.SerializableModel {
+abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
   const ImmutableObjectWithMap._({required this.mapVariable});
 
   const factory ImmutableObjectWithMap(
@@ -34,7 +33,7 @@ abstract class ImmutableObjectWithMap implements _i2.SerializableModel {
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable});
   @override
   bool operator ==(Object other) {
@@ -44,7 +43,7 @@ abstract class ImmutableObjectWithMap implements _i2.SerializableModel {
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithMap &&
-            const _i2.DeepCollectionEquality().equals(
+            const _i1.DeepCollectionEquality().equals(
               other.mapVariable,
               mapVariable,
             );
@@ -54,7 +53,7 @@ abstract class ImmutableObjectWithMap implements _i2.SerializableModel {
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i2.DeepCollectionEquality().hash(mapVariable),
+      const _i1.DeepCollectionEquality().hash(mapVariable),
     );
   }
 
@@ -65,7 +64,7 @@ abstract class ImmutableObjectWithMap implements _i2.SerializableModel {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _i1.SerializationManager.encode(this);
   }
 }
 
@@ -75,7 +74,7 @@ class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_i1.useResult
   @override
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable}) {
     return ImmutableObjectWithMap(
