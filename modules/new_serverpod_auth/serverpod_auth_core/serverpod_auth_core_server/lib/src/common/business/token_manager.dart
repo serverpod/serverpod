@@ -30,14 +30,15 @@ class TokenManager {
       );
     }
 
-    for (final delegate in _tokenProvider.values) {
-      await delegate.revokeAllTokens(
-        session: session,
-        authUserId: authUserId,
-        transaction: transaction,
-        method: method,
-      );
-    }
+    await Future.wait([
+      for (final delegate in _tokenProvider.values)
+        delegate.revokeAllTokens(
+          session: session,
+          authUserId: authUserId,
+          transaction: transaction,
+          method: method,
+        ),
+    ]);
   }
 
   /// Revokes a specific token by ID.
@@ -46,13 +47,14 @@ class TokenManager {
     required final String tokenId,
     final Transaction? transaction,
   }) async {
-    for (final provider in _tokenProvider.values) {
-      await provider.revokeToken(
-        session: session,
-        tokenId: tokenId,
-        transaction: transaction,
-      );
-    }
+    await Future.wait([
+      for (final provider in _tokenProvider.values)
+        provider.revokeToken(
+          session: session,
+          tokenId: tokenId,
+          transaction: transaction,
+        ),
+    ]);
   }
 
   /// Lists all [TokenInfo]s matching the given criteria.
