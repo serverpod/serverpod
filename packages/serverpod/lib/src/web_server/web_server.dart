@@ -23,8 +23,7 @@ class WebServer {
 
   int? _actualPort;
 
-  /// Router for handling incoming requests.
-  final router = ServerpodRouter();
+  final _router = ServerpodRouter();
 
   RelicServer? _server;
 
@@ -53,12 +52,14 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds a [Route] to the server, together with a path that defines how
+  /// Adds a [Route] to the server, together with a [path] that defines how
   /// calls are routed.
-  void addRoute(Route route, String matchPath) {
-    route._matchPath = matchPath;
-    router.add(route);
+  void addRoute(Route route, String path) {
+    _router.add(route, path);
   }
+
+  /// Returns true if the webserver has any routes registered.
+  bool get hasRoutes => !_router.isEmpty;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -74,7 +75,7 @@ class WebServer {
       final server = await serve(
         const Pipeline()
             .addMiddleware(
-              routeWith(router as Router<Route>, toHandler: _routeToHandler),
+              routeWith(_router as Router<Route>, toHandler: _routeToHandler),
             )
             .addHandler(
               respondWith((_) => Response.notFound()),
@@ -200,7 +201,6 @@ class WebServer {
 abstract class Route {
   /// The methods this route will respond to, i.e. HTTP get or post.
   final Set<Method> methods;
-  String? _matchPath;
 
   /// Creates a new [Route].
   Route({this.methods = const {Method.get}});
@@ -251,8 +251,8 @@ extension type ServerpodRouter._(Router<Route> _router) {
   ServerpodRouter() : _router = Router<Route>();
 
   /// Adds a [Route] to the router.
-  void add(Route route) =>
-      _router.anyOf(route.methods, route._matchPath!, route);
+  void add(Route route, String path) =>
+      _router.anyOf(route.methods, path, route);
 
   /// Looks up a [Route] in the router based on the HTTP method and path.
   LookupResult<Route>? lookup(Method method, String path) =>
