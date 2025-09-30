@@ -11,10 +11,10 @@ environment:
 
 dependencies:
   clock: ^1.1.1
-  email_validator: ">=2.1.17 <4.0.0"
-  googleapis: ">=11.0.0 <15.0.0"
-  googleapis_auth: ">=1.6.0 <3.0.0"
-  http: ">=1.1.0 <2.0.0"
+  email_validator: '>=2.1.17 <4.0.0'
+  googleapis: '>=11.0.0 <16.0.0'
+  googleapis_auth: '>=1.6.0 <3.0.0'
+  http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   passkeys_server: ^1.0.0
   pointycastle: '>=3.7.4 <5.0.0'
