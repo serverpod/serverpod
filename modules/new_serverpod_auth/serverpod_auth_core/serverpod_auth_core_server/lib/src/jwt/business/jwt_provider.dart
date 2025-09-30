@@ -69,29 +69,39 @@ class JwtTokenProvider implements TokenProvider {
     required final Transaction? transaction,
     required final String? method,
   }) async {
-    Expression? whereExpr;
-
-    if (authUserId != null) {
-      whereExpr = RefreshToken.t.authUserId.equals(authUserId);
-    }
-
     if (method != null) {
+      Expression? whereExpr;
+
+      if (authUserId != null) {
+        whereExpr = RefreshToken.t.authUserId.equals(authUserId);
+      }
+
       final methodExpr = RefreshToken.t.method.equals(method);
       whereExpr = whereExpr != null ? whereExpr & methodExpr : methodExpr;
-    }
 
-    whereExpr ??= RefreshToken.t.id.notEquals(null);
+      await RefreshToken.db.deleteWhere(
+        session,
+        where: (final t) => whereExpr!,
+        transaction: transaction,
+      );
 
-    await RefreshToken.db.deleteWhere(
-      session,
-      where: (final t) => whereExpr!,
-      transaction: transaction,
-    );
-
-    if (authUserId != null) {
-      await session.messages.authenticationRevoked(
-        authUserId.uuid,
-        RevokedAuthenticationUser(),
+      if (authUserId != null) {
+        await session.messages.authenticationRevoked(
+          authUserId.uuid,
+          RevokedAuthenticationUser(),
+        );
+      }
+    } else if (authUserId != null) {
+      await AuthenticationTokens.destroyAllRefreshTokens(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
+    } else {
+      await RefreshToken.db.deleteWhere(
+        session,
+        where: (final t) => t.id.notEquals(null),
+        transaction: transaction,
       );
     }
   }
@@ -104,18 +114,10 @@ class JwtTokenProvider implements TokenProvider {
   }) async {
     final tokenUuid = UuidValue.withValidation(tokenId);
 
-    final deletedTokens = await RefreshToken.db.deleteWhere(
+    await AuthenticationTokens.destroyRefreshToken(
       session,
-      where: (final t) => t.id.equals(tokenUuid),
+      refreshTokenId: tokenUuid,
       transaction: transaction,
     );
-
-    if (deletedTokens.isNotEmpty) {
-      final token = deletedTokens.first;
-      await session.messages.authenticationRevoked(
-        token.authUserId.uuid,
-        RevokedAuthenticationAuthId(authId: tokenId),
-      );
-    }
   }
 }
