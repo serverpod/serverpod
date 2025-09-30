@@ -30,8 +30,12 @@ class Server {
   /// ids.
   final String serverId;
 
-  /// Port the server is listening on.
-  final int port;
+  final int _port;
+
+  /// Port the server is listening on, or null if not started.
+  /// Returns the actual port from the running server if available,
+  /// otherwise returns the configured port.
+  int get port => _ioServer?.port ?? _port;
 
   /// The [ServerpodRunMode] the server is running in.
   final String runMode;
@@ -100,7 +104,7 @@ class Server {
   Server({
     required this.serverpod,
     required this.serverId,
-    required this.port,
+    required int port,
     required this.serializationManager,
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
@@ -115,7 +119,8 @@ class Server {
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
-        _securityContext = securityContext;
+        _securityContext = securityContext,
+        _port = port;
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -123,7 +128,7 @@ class Server {
     try {
       final ioServer = await bindHttpServer(
         io.InternetAddress.anyIPv6,
-        port: port,
+        port: _port,
         context: _securityContext,
       );
       final server = RelicServer(IOAdapter(ioServer));
@@ -132,7 +137,7 @@ class Server {
       _relicServer = server;
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
-          message: 'Failed to bind socket, port $port may already be in use.');
+          message: 'Failed to bind socket, port $_port may already be in use.');
       return false;
     }
 
