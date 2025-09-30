@@ -32,7 +32,7 @@ class Server {
 
   final int _port;
 
-  /// Port the server is listening on, or null if not started.
+  /// Port the server is listening on.
   /// Returns the actual port from the running server if available,
   /// otherwise returns the configured port.
   int get port => _ioServer?.port ?? _port;
