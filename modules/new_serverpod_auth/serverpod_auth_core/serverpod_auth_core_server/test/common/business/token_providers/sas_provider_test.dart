@@ -352,7 +352,7 @@ void main() {
           });
         });
 
-        group('when listing tokens for user1', () {
+        group('when listing tokens for a specific user', () {
           late List<TokenInfo> tokens;
 
           setUp(() async {
@@ -364,13 +364,16 @@ void main() {
             );
           });
 
-          test('then only user1 sessions should be returned', () {
-            expect(tokens, hasLength(2));
-            expect(
-              tokens.every((final t) => t.userId == user1Id.toString()),
-              isTrue,
-            );
-          });
+          test(
+            'then only sessions for the specific user should be returned',
+            () {
+              expect(tokens, hasLength(2));
+              expect(
+                tokens.every((final t) => t.userId == user1Id.toString()),
+                isTrue,
+              );
+            },
+          );
 
           test('then sessions should have correct methods', () {
             final methods = tokens.map((final t) => t.method).toSet();

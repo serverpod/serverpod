@@ -158,8 +158,8 @@ void main() {
           });
         });
 
-        group('when using invalid provider', () {
-          test('then ArgumentError should be thrown for listTokens', () {
+        group('when listing tokens with invalid provider', () {
+          test('then ArgumentError should be thrown', () {
             expect(
               () => tokenManager.listTokens(
                 session: session,
@@ -168,8 +168,10 @@ void main() {
               throwsA(isA<ArgumentError>()),
             );
           });
+        });
 
-          test('then ArgumentError should be thrown for revokeAllTokens', () {
+        group('when revoking tokens with invalid provider', () {
+          test('then ArgumentError should be thrown', () {
             expect(
               () => tokenManager.revokeAllTokens(
                 session: session,

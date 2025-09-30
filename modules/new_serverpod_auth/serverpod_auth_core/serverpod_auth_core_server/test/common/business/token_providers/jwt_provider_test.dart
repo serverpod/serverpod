@@ -380,7 +380,7 @@ void main() {
           });
         });
 
-        group('when listing tokens for user1', () {
+        group('when listing tokens for a specific user', () {
           late List<TokenInfo> tokens;
 
           setUp(() async {
@@ -392,7 +392,8 @@ void main() {
             );
           });
 
-          test('then only user1 tokens should be returned', () {
+          test('then only tokens for the specified user should be returned',
+              () {
             expect(tokens, hasLength(2));
             expect(
               tokens.every((final t) => t.userId == user1Id.toString()),
@@ -430,7 +431,7 @@ void main() {
             );
           });
 
-          test('then only email method tokens should be returned', () {
+          test('then only tokens with specified method should be returned', () {
             expect(tokens, hasLength(2));
             expect(
               tokens.every((final t) => t.method == 'email'),
@@ -531,7 +532,8 @@ void main() {
             );
           });
 
-          test('then only email tokens should be removed', () async {
+          test('then only tokens with specified method should be removed',
+              () async {
             final remainingTokens = await RefreshToken.db.find(session);
             expect(remainingTokens, hasLength(1));
             expect(remainingTokens.first.method, equals('oauth'));
