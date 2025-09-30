@@ -821,10 +821,10 @@ class SerializableModelLibraryGenerator {
                   .call([otherProperty, thisProperty]);
             }
 
-            return refer('identical')
-                .call([otherProperty, thisProperty])
-                .or(otherProperty.equalTo(thisProperty))
-                .parenthesized;
+            return _wrapWithParentheses(
+              refer('identical').call([otherProperty, thisProperty]).or(
+                  otherProperty.equalTo(thisProperty)),
+            );
           })
         ];
 
@@ -840,6 +840,10 @@ class SerializableModelLibraryGenerator {
         ]);
       },
     );
+  }
+
+  Expression _wrapWithParentheses(Expression expr) {
+    return CodeExpression(Code('(${expr.accept(DartEmitter())})'));
   }
 
   Method _buildHashCodeMethod(
