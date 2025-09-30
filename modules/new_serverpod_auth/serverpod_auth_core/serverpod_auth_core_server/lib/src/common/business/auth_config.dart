@@ -2,8 +2,8 @@ import 'package:serverpod_auth_core_server/src/common/business/provider_factory.
 import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_providers/jwt_provider.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_providers/sas_provider.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/jwt_provider.dart';
+import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
