@@ -1,0 +1,7 @@
+class: ObjectWithJsonbClassLevel
+table: object_with_jsonb_class_level
+serializationDataType: jsonb
+fields:
+  jsonb1: List<String>
+  jsonb2: List<String>, serializationDataType=jsonb
+  json: List<String>, serializationDataType=json

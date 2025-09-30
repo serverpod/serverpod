@@ -16,6 +16,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  bool _serializeAsJsonbByDefault;
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
@@ -45,6 +46,7 @@ class GeneratorConfigBuilder {
           ),
         ],
         _extraClasses = [],
+        _serializeAsJsonbByDefault = false,
         _enabledFeatures = [ServerpodFeature.database],
         _enabledExperimentalFeatures = [];
 
@@ -102,6 +104,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withEnabledSerializeAsJsonbByDefault() {
+    _serializeAsJsonbByDefault = true;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
     _enabledFeatures = features;
     return this;
@@ -132,6 +139,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      serializeAsJsonbByDefault: _serializeAsJsonbByDefault,
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,

@@ -860,7 +860,9 @@ class DatabaseConnection {
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
-    if (column is ColumnSerializable) return 'json';
+    if (column is ColumnSerializable) {
+      return column.serializationDataType?.name ?? 'json';
+    }
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
         case EnumSerialization.byIndex:
