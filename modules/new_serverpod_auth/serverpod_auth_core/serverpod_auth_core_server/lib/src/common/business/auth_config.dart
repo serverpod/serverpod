@@ -2,9 +2,9 @@ import 'package:serverpod_auth_core_server/src/common/business/provider_factory.
 import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/jwt_provider.dart';
 import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens
@@ -31,18 +31,14 @@ class AuthConfig {
 
   /// Sets the [AuthConfig] instance.
   /// [tokenIssuer] is the token issuer used by the identity providers.
-  /// Serverpod provided token issuers are [JwtTokenIssuer] and [SSSTokenIssuer].
+  /// Serverpod provided token issuers are [JwtTokenIssuer] and [SasTokenIssuer].
   ///
   /// [identityProviders] is a list of factories that can create the identity
   /// providers used by the authentication endpoints.
-  /// Serverpod provided identity providers are [EmailAuthFactory] and
-  /// [GoogleAuthFactory].
   ///
   /// [tokenProviders] is a map of token providers that can be used to manage
   /// the lifecycle of authentication tokens.
   /// if not provided, the default token providers will be used.
-  /// Serverpod provided token providers are [JwtTokenProvider] and
-  /// [SSSTokenProvider].
   factory AuthConfig.set({
     required final TokenIssuer tokenIssuer,
     required final List<IdentityProviderFactory<dynamic>> identityProviders,
