@@ -34,32 +34,22 @@ class SasTokenProvider implements TokenProvider {
     required final Transaction? transaction,
     required final String? method,
   }) async {
-    Expression? whereExpr;
-
-    if (authUserId != null) {
-      whereExpr = AuthSession.t.authUserId.equals(authUserId);
-    }
-
-    if (method != null) {
-      final methodExpr = AuthSession.t.method.equals(method);
-      whereExpr = whereExpr != null ? whereExpr & methodExpr : methodExpr;
-    }
-
-    final authSessions = await AuthSession.db.find(
+    final sessionInfos = await AuthSessions.admin.findSessions(
       session,
-      where: whereExpr != null ? (final t) => whereExpr! : null,
+      authUserId: authUserId,
+      method: method,
       transaction: transaction,
     );
 
-    return authSessions
-        .map((final authSession) => TokenInfo(
-              userId: authSession.authUserId.toString(),
+    return sessionInfos
+        .map((final sessionInfo) => TokenInfo(
+              userId: sessionInfo.authUserId.toString(),
               tokenProvider: AuthStrategy.session.name,
-              tokenId: authSession.id.toString(),
-              scopes: authSession.scopeNames
+              tokenId: sessionInfo.id.toString(),
+              scopes: sessionInfo.scopeNames
                   .map((final name) => Scope(name))
                   .toSet(),
-              method: authSession.method,
+              method: sessionInfo.method,
             ))
         .toList();
   }
@@ -71,29 +61,39 @@ class SasTokenProvider implements TokenProvider {
     required final Transaction? transaction,
     required final String? method,
   }) async {
-    Expression? whereExpr;
-
-    if (authUserId != null) {
-      whereExpr = AuthSession.t.authUserId.equals(authUserId);
-    }
-
     if (method != null) {
+      Expression? whereExpr;
+
+      if (authUserId != null) {
+        whereExpr = AuthSession.t.authUserId.equals(authUserId);
+      }
+
       final methodExpr = AuthSession.t.method.equals(method);
       whereExpr = whereExpr != null ? whereExpr & methodExpr : methodExpr;
-    }
 
-    whereExpr ??= AuthSession.t.id.notEquals(null);
+      await AuthSession.db.deleteWhere(
+        session,
+        where: (final t) => whereExpr!,
+        transaction: transaction,
+      );
 
-    await AuthSession.db.deleteWhere(
-      session,
-      where: (final t) => whereExpr!,
-      transaction: transaction,
-    );
-
-    if (authUserId != null) {
-      await session.messages.authenticationRevoked(
-        authUserId.uuid,
-        RevokedAuthenticationUser(),
+      if (authUserId != null) {
+        await session.messages.authenticationRevoked(
+          authUserId.uuid,
+          RevokedAuthenticationUser(),
+        );
+      }
+    } else if (authUserId != null) {
+      await AuthSessions.destroyAllSessions(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
+    } else {
+      await AuthSession.db.deleteWhere(
+        session,
+        where: (final t) => t.id.notEquals(null),
+        transaction: transaction,
       );
     }
   }
@@ -106,18 +106,10 @@ class SasTokenProvider implements TokenProvider {
   }) async {
     final tokenUuid = UuidValue.withValidation(tokenId);
 
-    final deletedSessions = await AuthSession.db.deleteWhere(
+    await AuthSessions.destroySession(
       session,
-      where: (final t) => t.id.equals(tokenUuid),
+      authSessionId: tokenUuid,
       transaction: transaction,
     );
-
-    if (deletedSessions.isNotEmpty) {
-      final authSession = deletedSessions.first;
-      await session.messages.authenticationRevoked(
-        authSession.authUserId.uuid,
-        RevokedAuthenticationAuthId(authId: tokenId),
-      );
-    }
   }
 }
