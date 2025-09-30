@@ -6,21 +6,10 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('Given an immutable object with a table', (sessionBuilder, _) {
-    const tableName = 'immutable_object_with_table';
     late Session session;
 
     setUp(() async {
       session = await sessionBuilder.build();
-      await session.db.unsafeExecute('''
-        CREATE TABLE IF NOT EXISTS $tableName (
-          id SERIAL PRIMARY KEY,
-          variable TEXT NOT NULL
-        );
-      ''');
-    });
-
-    tearDown(() async {
-      await session.db.unsafeExecute('DROP TABLE $tableName;');
     });
 
     test('When inserting, then it should be inserted correctly', () async {
