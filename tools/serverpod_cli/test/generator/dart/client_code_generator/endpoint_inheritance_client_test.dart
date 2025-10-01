@@ -269,7 +269,7 @@ void main() {
 
         expect(
           codeMap[expectedFileName],
-          contains('$subclassEndpoint extends _i1.$baseEndpoint'),
+          matches(RegExp('$subclassEndpoint extends _i[0-9]+[.]$baseEndpoint')),
         );
       });
     });

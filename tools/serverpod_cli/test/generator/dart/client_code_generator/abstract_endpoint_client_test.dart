@@ -481,7 +481,7 @@ void main() {
 
         expect(
           codeMap[expectedFileName],
-          contains('$concreteEndpoint extends _i1.$baseEndpoint'),
+          matches(RegExp('$concreteEndpoint extends _i[0-9]+[.]$baseEndpoint')),
         );
       });
     });
