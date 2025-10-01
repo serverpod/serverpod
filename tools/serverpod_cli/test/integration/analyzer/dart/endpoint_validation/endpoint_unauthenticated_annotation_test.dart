@@ -8,7 +8,6 @@ import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
-import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
@@ -20,8 +19,6 @@ var testProjectDirectory = Directory(path.joinAll([
   'endpoint_validation',
   const Uuid().v4(),
 ]));
-
-final config = GeneratorConfigBuilder().build();
 
 void main() {
   setUpAll(() async {
@@ -56,7 +53,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory, config);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -105,7 +102,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory, config);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -163,7 +160,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory, config);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
@@ -218,7 +215,7 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory, config);
+      analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
