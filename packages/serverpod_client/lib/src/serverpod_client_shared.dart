@@ -675,6 +675,26 @@ abstract class EndpointCaller {
     Map<String, Stream> streams, {
     bool authenticated = true,
   });
+
+  /// Returns an endpoint of type [T]. If more than one endpoint of type [T]
+  /// exists, [name] can be used to disambiguate.
+  T getEndpointOfType<T extends EndpointRef>([String? name]) {
+    if (name != null) return endpointRefLookup[name] as T;
+
+    var foundEndpoints = endpointRefLookup.values.whereType<T>();
+    switch (foundEndpoints.length) {
+      case 0:
+        throw StateError('No endpoint of type $T found.');
+      case 1:
+        return foundEndpoints.single;
+      default:
+        throw StateError(
+          'Found ${foundEndpoints.length} endpoints of type $T: '
+          '${foundEndpoints.map((e) => e.name).join(', ')}. Use '
+          'the name parameter to disambiguate.',
+        );
+    }
+  }
 }
 
 /// This class connects endpoints on the server with the client, it also
