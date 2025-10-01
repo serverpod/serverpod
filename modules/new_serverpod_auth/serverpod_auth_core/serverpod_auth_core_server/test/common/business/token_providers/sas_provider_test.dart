@@ -364,8 +364,9 @@ void main() {
             );
           });
 
-          test('then only tokens for the specified user should be returned',
-              () {
+          test(
+            'then only tokens for the specified user should be returned',
+            () {
               expect(tokens, hasLength(2));
               expect(
                 tokens.every((final t) => t.userId == user1Id.toString()),

@@ -1,0 +1,12 @@
+### A challenge handed out for a subsequent Passkey registration or login.
+class: PasskeyChallenge
+serverOnly: true
+table: serverpod_auth_idp_passkey_challenge
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The time when this challenge was created.
+  createdAt: DateTime, defaultModel=now
+
+  ### The actual challenge for the client
+  challenge: ByteData

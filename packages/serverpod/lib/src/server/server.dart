@@ -158,7 +158,7 @@ class Server {
             'Internal server error. Request handler failed with exception.',
         request: context.request,
       );
-      return context.withResponse(Response.internalServerError(
+      return context.respond(Response.internalServerError(
         body: Body.fromString('Internal Server Error'),
       ));
     }
@@ -207,7 +207,7 @@ class Server {
         body: Body.fromString(responseBuffer.toString()),
         headers: headers,
       );
-      return context.withResponse(response);
+      return context.respond(response);
     } else if (uri.path == '/websocket') {
       return await _dispatchWebSocketUpgradeRequest(
         context,
@@ -225,7 +225,7 @@ class Server {
     // This OPTIONS check is necessary when making requests from
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
-    if (request.method == RequestMethod.options) {
+    if (request.method == Method.options) {
       final combinedHeaders = headers.transform((mh) {
         for (var orh in httpOptionsResponseHeaders.entries) {
           mh[orh.key] = ['${orh.value}'];
@@ -233,7 +233,7 @@ class Server {
         mh.contentLength = 0; // TODO: Why set this explicitly?
       });
 
-      return context.withResponse(Response.ok(headers: combinedHeaders));
+      return context.respond(Response.ok(headers: combinedHeaders));
     }
 
     late final String body;
@@ -245,7 +245,7 @@ class Server {
           // TODO: Log to database?
           io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
-        return context.withResponse(Response(
+        return context.respond(Response(
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
           headers: headers,
@@ -254,7 +254,7 @@ class Server {
         await _reportFrameworkException(e, stackTrace,
             message: 'Internal server error. Failed to read body of request.',
             request: context.request);
-        return context.withResponse(Response.badRequest(
+        return context.respond(Response.badRequest(
           body: Body.fromString('Failed to read request body.'),
           headers: headers,
         ));
@@ -267,7 +267,7 @@ class Server {
     if (serverpod.runtimeSettings.logMalformedCalls) {
       _logMalformedCalls(result);
     }
-    return context.withResponse(_toResponse(result, headers));
+    return context.respond(_toResponse(result, headers));
   }
 
   void _logMalformedCalls(Result result) {

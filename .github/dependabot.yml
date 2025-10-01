@@ -16,3 +16,13 @@ updates:
     # of open pull requests is limited to 1. This prevents multiple pull requests
     # from being opened for the same dependency.
     open-pull-requests-limit: 1
+  - package-ecosystem: "npm"
+    directory: "tools/serverpod_vscode_extension"
+    schedule:
+      interval: "daily"
+    versioning-strategy: "increase-if-necessary"
+    open-pull-requests-limit: 1
+    groups:
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint*"

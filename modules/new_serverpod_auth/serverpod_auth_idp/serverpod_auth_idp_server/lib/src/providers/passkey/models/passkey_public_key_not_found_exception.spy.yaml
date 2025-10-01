@@ -1,0 +1,2 @@
+### Exception to be thrown if a login attempt was made with an unknown key id.
+exception: PasskeyPublicKeyNotFoundException
