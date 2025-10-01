@@ -684,15 +684,11 @@ abstract class EndpointCaller {
     var foundEndpoints = endpointRefLookup.values.whereType<T>();
     switch (foundEndpoints.length) {
       case 0:
-        throw StateError('No endpoint of type $T found.');
+        throw ServerpodClientEndpointNotFound(T);
       case 1:
         return foundEndpoints.single;
       default:
-        throw StateError(
-          'Found ${foundEndpoints.length} endpoints of type $T: '
-          '${foundEndpoints.map((e) => e.name).join(', ')}. Use '
-          'the name parameter to disambiguate.',
-        );
+        throw ServerpodClientMultipleEndpointsFound(T, foundEndpoints);
     }
   }
 }
@@ -742,4 +738,40 @@ abstract class EndpointRef {
     }
     _streamController = StreamController<SerializableModel>();
   }
+}
+
+/// Thrown if not able to get an endpoint on the client by type.
+abstract class ServerpodClientGetEndpointException implements Exception {
+  /// The error message to show to the user.
+  final String message;
+
+  /// Creates an Endpoint Missing Exception.
+  const ServerpodClientGetEndpointException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+/// Thrown if the client tries to call an endpoint that was not generated.
+/// This will typically happen if getting the endpoint by type while the user
+/// has not defined the endpoint in their project.
+class ServerpodClientEndpointNotFound
+    extends ServerpodClientGetEndpointException {
+  /// Creates an Endpoint Missing Exception.
+  const ServerpodClientEndpointNotFound(Type type)
+      : super('No endpoint of type "$type" found.');
+}
+
+/// Thrown if the client tries to call an endpoint by type, but multiple
+/// endpoints of that type exists. The user should disambiguate by using the
+/// name parameter.
+class ServerpodClientMultipleEndpointsFound
+    extends ServerpodClientGetEndpointException {
+  /// Creates an Multiple Endpoints Found Exception.
+  ServerpodClientMultipleEndpointsFound(
+    Type type,
+    Iterable<EndpointRef> endpoints,
+  ) : super('Found ${endpoints.length} endpoints of type "$type": '
+            '${endpoints.map((e) => '"${e.name}"').join(', ')}. '
+            'Use the name parameter to disambiguate.');
 }

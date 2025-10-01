@@ -18,7 +18,7 @@ void main() {
         'then it throws StateError due to multiple matches.', () {
       expect(
         () => client.getEndpointOfType<EndpointRef>(),
-        throwsA(isA<StateError>()),
+        throwsA(isA<ServerpodClientMultipleEndpointsFound>()),
       );
     });
 
@@ -28,10 +28,10 @@ void main() {
       expect(
         () => client.getEndpointOfType<NonExistentEndpoint>(),
         throwsA(
-          isA<StateError>().having(
+          isA<ServerpodClientEndpointNotFound>().having(
             (e) => e.message,
             'message',
-            contains('No endpoint of type NonExistentEndpoint found'),
+            'No endpoint of type "NonExistentEndpoint" found.',
           ),
         ),
       );
@@ -61,11 +61,11 @@ void main() {
       expect(
         () => client.getEndpointOfType<EndpointAbstractBase>(),
         throwsA(
-          isA<StateError>().having(
+          isA<ServerpodClientMultipleEndpointsFound>().having(
             (e) => e.message,
             'message',
-            'Found 2 endpoints of type EndpointAbstractBase: concreteBase, '
-                'concreteSubClass. Use the name parameter to disambiguate.',
+            'Found 2 endpoints of type "EndpointAbstractBase": "concreteBase", '
+                '"concreteSubClass". Use the name parameter to disambiguate.',
           ),
         ),
       );
