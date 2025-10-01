@@ -283,7 +283,7 @@ void main() {
 
   group('SASTokenProvider', () {
     withServerpod(
-      'Given multiple sessions for different users',
+      'Given multiple auth sessions for different users',
       (final sessionBuilder, final endpoints) {
         late Session session;
         late UuidValue user1Id;
@@ -338,7 +338,7 @@ void main() {
             );
           });
 
-          test('then all sessions should be returned', () {
+          test('then all tokens should be returned', () {
             expect(tokens, hasLength(3));
           });
 
@@ -364,9 +364,8 @@ void main() {
             );
           });
 
-          test(
-            'then only sessions for the specific user should be returned',
-            () {
+          test('then only tokens for the specified user should be returned',
+              () {
               expect(tokens, hasLength(2));
               expect(
                 tokens.every((final t) => t.userId == user1Id.toString()),
@@ -375,12 +374,12 @@ void main() {
             },
           );
 
-          test('then sessions should have correct methods', () {
+          test('then tokens should have correct methods', () {
             final methods = tokens.map((final t) => t.method).toSet();
             expect(methods, containsAll(['web', 'mobile']));
           });
 
-          test('then sessions should have correct scopes', () {
+          test('then tokens should have correct scopes', () {
             final webSession =
                 tokens.firstWhere((final t) => t.method == 'web');
             expect(
@@ -409,7 +408,7 @@ void main() {
             );
           });
 
-          test('then only web method sessions should be returned', () {
+          test('then only tokens with specified method should be returned', () {
             expect(tokens, hasLength(2));
             expect(
               tokens.every((final t) => t.method == 'web'),
@@ -430,14 +429,14 @@ void main() {
             );
           });
 
-          test('then only matching sessions should be returned', () {
+          test('then only matching tokens should be returned', () {
             expect(tokens, hasLength(1));
             expect(tokens.first.userId, equals(user1Id.toString()));
             expect(tokens.first.method, equals('mobile'));
           });
         });
 
-        group('when revoking a specific session', () {
+        group('when revoking a specific token', () {
           setUp(() async {
             final sessionToRevoke = await AuthSession.db
                 .find(
@@ -453,12 +452,12 @@ void main() {
             );
           });
 
-          test('then the session should be removed from database', () async {
+          test('then the token should be removed from database', () async {
             final remainingSessions = await AuthSession.db.find(session);
             expect(remainingSessions, hasLength(2));
           });
 
-          test('then other sessions should remain', () async {
+          test('then other tokens should remain', () async {
             final user1Sessions = await AuthSession.db.find(
               session,
               where: (final t) => t.authUserId.equals(user1Id),
@@ -473,7 +472,7 @@ void main() {
           });
         });
 
-        group('when revoking all sessions for a user', () {
+        group('when revoking all tokens for a user', () {
           setUp(() async {
             await tokenProvider.revokeAllTokens(
               session: session,
@@ -483,7 +482,7 @@ void main() {
             );
           });
 
-          test('then all user sessions should be removed', () async {
+          test('then all user tokens should be removed', () async {
             final user1Sessions = await AuthSession.db.find(
               session,
               where: (final t) => t.authUserId.equals(user1Id),
@@ -491,7 +490,7 @@ void main() {
             expect(user1Sessions, isEmpty);
           });
 
-          test('then other user sessions should remain', () async {
+          test('then other user tokens should remain', () async {
             final user2Sessions = await AuthSession.db.find(
               session,
               where: (final t) => t.authUserId.equals(user2Id),
@@ -500,7 +499,7 @@ void main() {
           });
         });
 
-        group('when revoking all sessions with method filter', () {
+        group('when revoking all tokens with method filter', () {
           setUp(() async {
             await tokenProvider.revokeAllTokens(
               session: session,
@@ -510,14 +509,15 @@ void main() {
             );
           });
 
-          test('then only web sessions should be removed', () async {
+          test('then only tokens with specified method should be removed',
+              () async {
             final remainingSessions = await AuthSession.db.find(session);
             expect(remainingSessions, hasLength(1));
             expect(remainingSessions.first.method, equals('mobile'));
           });
         });
 
-        group('when revoking all sessions without filters', () {
+        group('when revoking all tokens without filters', () {
           setUp(() async {
             await tokenProvider.revokeAllTokens(
               session: session,
@@ -527,7 +527,7 @@ void main() {
             );
           });
 
-          test('then all sessions should be removed', () async {
+          test('then all tokens should be removed', () async {
             final remainingSessions = await AuthSession.db.find(session);
             expect(remainingSessions, isEmpty);
           });
@@ -536,7 +536,7 @@ void main() {
     );
 
     withServerpod(
-      'Given an invalid session ID',
+      'Given an invalid token ID',
       (final sessionBuilder, final endpoints) {
         late Session session;
         late TokenProvider tokenProvider;
@@ -546,7 +546,7 @@ void main() {
           tokenProvider = SasTokenProvider();
         });
 
-        group('when revoking the invalid session', () {
+        group('when revoking the invalid token', () {
           test('then it should throw an exception', () async {
             expect(
               () => tokenProvider.revokeToken(
