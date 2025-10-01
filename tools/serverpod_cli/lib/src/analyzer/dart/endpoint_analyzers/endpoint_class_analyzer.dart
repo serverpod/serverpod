@@ -10,10 +10,10 @@ abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
   ///
   /// Assumes that the [ClassElement] is a valid endpoint class. This method
-  /// mutates the input [endpointDefinitions] list. If the [element] extends
-  /// another endpoint class, that parent class is also parsed and added to the
-  /// [endpointDefinitions] list. [EndpointDefinition]s that have already been
-  /// parsed are not parsed again.
+  /// mutates the inputs [endpointDefinitions] and [validationErrors]. If the
+  /// [element] extends another endpoint class, that parent class is also parsed
+  /// and added to the [endpointDefinitions] list. [EndpointDefinition]s that
+  /// have already been parsed are not parsed again.
   ///
   /// For [EndpointDefinition]s that are not part of this package, the field
   /// [EndpointDefinition.filePath] will be set to the library uri.
@@ -76,7 +76,7 @@ abstract class EndpointClassAnalyzer {
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath,
   ) {
-    var endpointMethods = classElement.collectionEndpointMethods(
+    var endpointMethods = classElement.collectEndpointMethods(
       validationErrors: validationErrors,
       filePath: filePath,
     );
@@ -174,7 +174,7 @@ extension on ClassElement {
   /// Returns all endpoints methods from the class.
   ///
   /// Those defined directly on the class, as well as those inherited from the base classes.
-  List<MethodElement> collectionEndpointMethods({
+  List<MethodElement> collectEndpointMethods({
     required Map<String, List<SourceSpanSeverityException>> validationErrors,
     required String filePath,
   }) {
