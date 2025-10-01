@@ -50,20 +50,11 @@ class BaseEndpoint extends Endpoint {
   Future<String> baseMethod(Session session) async {
     return 'base';
   }
-
-  Future<String> overriddenMethod(Session session) async {
-    return 'base overridden';
-  }
 }
 
 class SubclassEndpoint extends BaseEndpoint {
   Future<String> concreteMethod(Session session) async {
     return 'subclass';
-  }
-
-  @override
-  Future<String> overriddenMethod(Session session) async {
-    return 'overridden';
   }
 }
 ''');
@@ -94,7 +85,56 @@ class SubclassEndpoint extends BaseEndpoint {
     test('then subclass endpoint has both base and new methods.', () {
       expect(
         subclassEndpoint.methods.map((m) => m.name).toSet(),
-        {'baseMethod', 'concreteMethod', 'overriddenMethod'},
+        {'baseMethod', 'concreteMethod'},
+      );
+    });
+  });
+
+  group(
+      'Given a endpoint that extends another endpoint and overrides a method when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+
+class BaseEndpoint extends Endpoint {
+  Future<String> overriddenMethod(Session session) async {
+    return 'base';
+  }
+}
+
+class SubclassEndpoint extends BaseEndpoint {
+  @override
+  Future<String> overriddenMethod(Session session) async {
+    return 'overridden';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory, config);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    late var subclassEndpoint = endpointDefinitions
+        .firstWhere((e) => e.className == 'SubclassEndpoint');
+
+    test('then subclass endpoint has overridden method.', () {
+      expect(
+        subclassEndpoint.methods.map((m) => m.name).toSet(),
+        {'overriddenMethod'},
       );
     });
 

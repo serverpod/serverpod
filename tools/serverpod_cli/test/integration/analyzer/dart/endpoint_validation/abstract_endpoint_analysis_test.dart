@@ -96,11 +96,6 @@ class ConcreteEndpoint extends BaseEndpoint {
   Future<String> concreteMethod(Session session) async {
     return 'concrete';
   }
-
-  @override
-  Future<String> overriddenMethod(Session session) async {
-    return 'overridden';
-  }
 }
 ''');
       analyzer = EndpointsAnalyzer(testDirectory, config);
@@ -135,7 +130,54 @@ class ConcreteEndpoint extends BaseEndpoint {
     test('then concrete endpoint has both base and concrete methods.', () {
       expect(
         concreteEndpoint.methods.map((m) => m.name).toSet(),
-        {'baseMethod', 'concreteMethod', 'overriddenMethod'},
+        {'baseMethod', 'concreteMethod'},
+      );
+    });
+  });
+
+  group(
+      'Given a concrete endpoint that extends an abstract base endpoint and overrides a method when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+
+abstract class BaseEndpoint extends Endpoint {
+  Future<String> overriddenMethod(Session session);
+}
+
+class ConcreteEndpoint extends BaseEndpoint {
+  @override
+  Future<String> overriddenMethod(Session session) async {
+    return 'overridden';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory, config);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    late var concreteEndpoint = endpointDefinitions
+        .firstWhere((e) => e.className == 'ConcreteEndpoint');
+
+    test('then concrete endpoint has overridden method.', () {
+      expect(
+        concreteEndpoint.methods.map((m) => m.name).toSet(),
+        {'overriddenMethod'},
       );
     });
 
