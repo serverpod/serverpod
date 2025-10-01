@@ -19,7 +19,7 @@ dependencies:
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
-  relic: ^0.4.1
+  relic: ^0.6.0
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.25.5
 
