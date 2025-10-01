@@ -15,6 +15,11 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i3;
 import 'package:uuid/uuid_value.dart' as _i4;
+import 'dart:typed_data' as _i5;
+import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_registration_request.dart'
+    as _i6;
+import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
+    as _i7;
 
 /// Endpoint for handling Sign in with Apple.
 ///
@@ -141,6 +146,23 @@ abstract class EndpointGoogleAccountBase extends _i1.EndpointRef {
 
   /// Logs in or registers an [AuthUser] for the given Google account ID.
   _i2.Future<_i3.AuthSuccess> authenticate({required String idToken});
+}
+
+/// Base endpoint for Passkey-based authentication.
+/// {@category Endpoint}
+abstract class EndpointPasskeyAccountBase extends _i1.EndpointRef {
+  EndpointPasskeyAccountBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Returns a new challenge to be used for a login or registration request.
+  _i2.Future<({_i5.ByteData challenge, _i4.UuidValue id})> createChallenge();
+
+  /// Registers a Passkey for the [session]'s current user.
+  _i2.Future<void> register(
+      {required _i6.PasskeyRegistrationRequest registrationRequest});
+
+  /// Authenticates the user related to the given Passkey.
+  _i2.Future<_i3.AuthSuccess> authenticate(
+      {required _i7.PasskeyLoginRequest loginRequest});
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
