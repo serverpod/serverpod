@@ -27,7 +27,7 @@ class Features {
 
   /// Returns true if the web server is enabled.
   static bool enableWebServer([WebServer? server]) {
-    if (server != null && server.router.isEmpty) return false;
+    if (server != null && !server.hasRoutes) return false;
     return _instance._config.webServer != null;
   }
 
