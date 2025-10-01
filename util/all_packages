@@ -81,3 +81,15 @@ declare -a SERVERPOD_SERVER_PATHS=(
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
     "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
 )
+
+declare -a SERVERPOD_SERVER_EXPERIMENTAL_PATHS=(
+    "tests/serverpod_test_server"
+    "tests/serverpod_test_module/serverpod_test_module_server"
+    "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
+)
+
+declare -a SERVERPOD_TEMPLATE_SERVERS=(
+    "templates/serverpod_templates/modulename_server"
+    "templates/serverpod_templates/projectname_server"
+    "templates/serverpod_templates/projectname_server_upgrade"
+)
