@@ -38,7 +38,7 @@ void main() {
   });
 
   group(
-      'Given an instance of abstract > concrete > abstract > concrete endpoint class hierarchy',
+      'Given an instance of abstract > concrete > abstract subclass > concrete subclass endpoint class hierarchy',
       () {
     var endpoint = EndpointConcreteSubClass(client);
 

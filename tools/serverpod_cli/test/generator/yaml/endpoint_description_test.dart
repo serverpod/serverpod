@@ -317,7 +317,7 @@ subclass:
   });
 
   test(
-      'Given protocol definition with abstract > concrete > abstract > concrete endpoint hierarchy when generating protocol files then the protocol.yaml contains only concrete endpoints and methods',
+      'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating protocol files then the protocol.yaml contains only concrete endpoints and methods',
       () {
     var abstractBaseEndpoint = EndpointDefinitionBuilder()
         .withClassName('BaseAbstractEndpoint')

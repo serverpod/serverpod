@@ -1346,7 +1346,7 @@ void main() {
   });
 
   group(
-      'Given protocol definition with abstract > concrete > abstract > concrete endpoint hierarchy when generating test tools file',
+      'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating test tools file',
       () {
     var abstractBaseEndpointName = 'baseAbstract';
     var concreteBaseEndpointName = 'base';
