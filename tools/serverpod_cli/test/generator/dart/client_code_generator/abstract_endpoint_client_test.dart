@@ -397,7 +397,10 @@ void main() {
         .withClassName('${baseEndpointName.pascalCase}Endpoint')
         .withName(baseEndpointName)
         .withIsAbstract()
-        .withExternalModule(externalModule.serverPackage)
+        .withFilePath(
+          'example.dart',
+          externalServerPackage: externalModule.serverPackage,
+        )
         .withMethods([
       MethodDefinitionBuilder()
           .withName(baseMethodName)

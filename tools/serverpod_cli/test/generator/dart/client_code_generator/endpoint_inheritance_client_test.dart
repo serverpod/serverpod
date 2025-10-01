@@ -186,7 +186,10 @@ void main() {
     var baseEndpoint = EndpointDefinitionBuilder()
         .withClassName('${baseEndpointName.pascalCase}Endpoint')
         .withName(baseEndpointName)
-        .withExternalModule(externalModule.serverPackage)
+        .withFilePath(
+          'example.dart',
+          externalServerPackage: externalModule.serverPackage,
+        )
         .withMethods([
       MethodDefinitionBuilder()
           .withName(baseMethodName)

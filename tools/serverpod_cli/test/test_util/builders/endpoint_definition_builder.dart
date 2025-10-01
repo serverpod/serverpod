@@ -5,7 +5,6 @@ class EndpointDefinitionBuilder {
   String? _documentationComment;
   String _className = 'ExampleEndpoint';
   String _filePath = 'example.dart';
-  String? _externalModule;
   List<MethodDefinition> _methods = [];
   List<AnnotationDefinition> _annotations = [];
   EndpointDefinition? _extendsClass;
@@ -29,13 +28,13 @@ class EndpointDefinitionBuilder {
     return this;
   }
 
-  EndpointDefinitionBuilder withFilePath(String filePath) {
-    _filePath = filePath;
-    return this;
-  }
-
-  EndpointDefinitionBuilder withExternalModule(String serverPackageName) {
-    _externalModule = serverPackageName;
+  EndpointDefinitionBuilder withFilePath(
+    String filePath, {
+    String? externalServerPackage,
+  }) {
+    _filePath = externalServerPackage != null
+        ? 'package:$externalServerPackage/$filePath'
+        : filePath;
     return this;
   }
 
@@ -66,9 +65,7 @@ class EndpointDefinitionBuilder {
       name: _name,
       documentationComment: _documentationComment,
       className: _className,
-      filePath: _externalModule != null
-          ? _filePath = 'package:$_externalModule/$_filePath.dart'
-          : _filePath,
+      filePath: _filePath,
       methods: _methods,
       annotations: _annotations,
       isAbstract: _isAbstract,
