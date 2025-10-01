@@ -21,6 +21,8 @@ class ModelParser {
   ) {
     var isSealed = _parseIsSealed(documentContents);
 
+    var isImmutable = _parseIsImmutable(documentContents);
+
     var extendsClass = _parseExtendsClass(documentContents);
 
     var migrationValue =
@@ -49,6 +51,7 @@ class ModelParser {
           return ModelClassDefinition(
             className: className,
             isSealed: isSealed,
+            isImmutable: isImmutable,
             extendsClass: extendsClass,
             sourceFileName: protocolSource.yamlSourceUri.path,
             tableName: tableName,
@@ -205,6 +208,13 @@ class ModelParser {
     if (isSealed is! bool) return false;
 
     return isSealed;
+  }
+
+  static bool _parseIsImmutable(YamlMap documentContents) {
+    var isImmutable = documentContents.nodes[Keyword.isImmutable]?.value;
+    if (isImmutable is! bool) return false;
+
+    return isImmutable;
   }
 
   static UnresolvedInheritanceDefinition? _parseExtendsClass(

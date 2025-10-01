@@ -6,11 +6,11 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// typically generated. Instances of [TableRow] can also be serialized and
 /// either passed to clients or cached.
 abstract interface class TableRow<T_ID> implements SerializableModel {
-  TableRow(this.id);
+  TableRow();
 
   /// The id column of the row. Can be null if this row is not yet stored in
   /// the database.
-  T_ID id;
+  T_ID get id;
 
   /// The table that this row belongs to.
   Table<T_ID> get table;
