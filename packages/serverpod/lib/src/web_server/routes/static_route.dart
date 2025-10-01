@@ -10,6 +10,21 @@ class StaticRoute extends Route {
   ) =>
       null;
 
+  /// Returns a [CacheControlHeader] with private and no-cache.
+  CacheControlFactory privateNoCache() =>
+      (_, __) => CacheControlHeader(privateCache: true, noCache: true);
+
+  /// Returns a [CacheControlHeader] with no-store.
+  CacheControlFactory noStore() => (_, __) => CacheControlHeader(noStore: true);
+
+  /// Returns a [CacheControlHeader] with public, and possibly max-age set to [maxAge].
+  CacheControlFactory public({int? maxAge}) =>
+      (_, __) => CacheControlHeader(publicCache: true, maxAge: maxAge);
+
+  /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
+  CacheControlFactory publicImmutable({int? maxAge}) => (_, __) =>
+      CacheControlHeader(publicCache: true, immutable: true, maxAge: maxAge);
+
   final Handler _handler;
 
   StaticRoute._(this._handler) : super(methods: {Method.get, Method.head});
