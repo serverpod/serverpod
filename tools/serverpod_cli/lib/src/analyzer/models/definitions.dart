@@ -128,6 +128,10 @@ final class ModelClassDefinition extends ClassDefinition {
           .toList() ??
       [];
 
+  /// Returns `true` if the 'id' field is inherited from a parent class.
+  bool get isIdInherited =>
+      parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
+
   /// Returns a list of all fields in this class, including inherited fields.
   /// It ensures that the 'id' field, if present, is always included at the beginning of the list.
   List<SerializableModelFieldDefinition> get fieldsIncludingInherited {
@@ -295,7 +299,7 @@ class SerializableModelFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    return scope == ModelFieldScopeDefinition.all;
+    return name == 'id' || scope == ModelFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization for the
