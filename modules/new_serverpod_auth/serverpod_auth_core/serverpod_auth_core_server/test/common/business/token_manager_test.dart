@@ -92,14 +92,13 @@ void main() {
             );
           });
 
-          test('then only JWT tokens should be returned for JWT provider', () {
+          test('then only tokens of the specified provider should be returned',
+              () {
             expect(jwtTokens, hasLength(1));
             expect(
                 jwtTokens.first.tokenProvider, equals(AuthStrategy.jwt.name));
             expect(jwtTokens.first.userId, equals(user1Id.toString()));
-          });
 
-          test('then only SAS tokens should be returned for SAS provider', () {
             expect(sasTokens, hasLength(1));
             expect(sasTokens.first.tokenProvider,
                 equals(AuthStrategy.session.name));
