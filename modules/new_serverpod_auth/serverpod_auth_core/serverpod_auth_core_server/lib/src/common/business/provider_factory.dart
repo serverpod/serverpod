@@ -8,9 +8,6 @@ abstract interface class IdentityProviderFactory<T> {
   /// Used to store the provider in the AuthConfig.
   Type get type;
 
-  /// Optional [TokenIssuer] to use for this provider. If null, the default issuer will be used.
-  TokenIssuer? get tokenIssuer;
-
   /// Constructs a new instance of the provider.
-  T construct({required final TokenIssuer tokenIssuer});
+  T construct({required final TokenIssuer defaultTokenIssuer});
 }
