@@ -3,8 +3,8 @@ import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
-import 'utils/authentication_token_secrets_mock.dart';
 import '../serverpod_test_tools.dart';
+import 'utils/authentication_token_secrets_mock.dart';
 
 void main() {
   setUpAll(() {
