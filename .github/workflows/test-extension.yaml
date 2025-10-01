@@ -1,0 +1,54 @@
+name: Serverpod Extension CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/serverpod_vscode_extension/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/serverpod_vscode_extension/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: '${{ matrix.os }}'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - run: npm ci
+        working-directory: tools/serverpod_vscode_extension
+      - run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+        working-directory: tools/serverpod_vscode_extension
+      - run: npm test
+        if: runner.os != 'Linux'
+        working-directory: tools/serverpod_vscode_extension
+
+  test_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - run: npm ci
+        working-directory: tools/serverpod_vscode_extension
+      - run: npm run build
+        working-directory: tools/serverpod_vscode_extension

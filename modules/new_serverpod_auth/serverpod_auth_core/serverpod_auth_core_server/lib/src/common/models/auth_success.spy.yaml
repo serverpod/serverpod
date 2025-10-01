@@ -1,10 +1,16 @@
 class: AuthSuccess
 fields:
   ### The authentication strategy used for this session.
-  authStrategy: AuthStrategy
+  ###
+  ### Stores the [AuthStrategy] used to generate this authentication response.
+  ### Stored as string to allow users to extend with custom authentication methods.
+  authStrategy: String
 
   ### The authentication token, in the case of JWT this is the access token.
   token: String
+
+  ### The token expiration date in UTC, if any.
+  tokenExpiresAt: DateTime?
 
   ### Optional refresh token.
   refreshToken: String?

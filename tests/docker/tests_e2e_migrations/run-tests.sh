@@ -13,6 +13,11 @@ echo "### Serverpod home: $SERVERPOD_HOME"
 
 cd tools/serverpod_cli
 dart pub global activate -s path .
+
+# Force the CLI to be activated with cached dependencies
+serverpod version
+dart pub global activate -s path .
+
 cd ../..
 
 # Wait for the server to be up (timeout after 60 seconds)

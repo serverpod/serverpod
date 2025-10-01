@@ -15,8 +15,10 @@ abstract interface class RefresherClientAuthKeyProvider
   /// If the refresh is successful, should return [RefreshAuthKeyResult.success]
   /// to retry requests that failed due to authentication errors. Be sure to
   /// annotate the refresh endpoint with @unauthenticatedClientCall to avoid a
-  /// deadlock on the [authHeaderValue] getter on a refresh call.
-  Future<RefreshAuthKeyResult> refreshAuthKey();
+  /// deadlock on the [authHeaderValue] getter on a refresh call. If the [force]
+  /// parameter is set to true, the refresh should be performed regardless of
+  /// skip conditions that the provider might have.
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false});
 }
 
 /// Represents the result of an authentication key refresh operation.
@@ -60,11 +62,11 @@ class MutexRefresherClientAuthKeyProvider
 
   /// Refreshes the authentication key with locking to prevent concurrent calls.
   @override
-  Future<RefreshAuthKeyResult> refreshAuthKey() async {
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
     final pendingRefresh = _pendingRefresh;
     if (pendingRefresh != null) return pendingRefresh;
 
-    final refreshFuture = _refreshAuthKey();
+    final refreshFuture = _refreshAuthKey(force: force);
     _pendingRefresh = refreshFuture;
 
     try {
@@ -84,16 +86,19 @@ class MutexRefresherClientAuthKeyProvider
   /// perform a refresh if the last refresh failed due to invalid credentials
   /// and the auth header value has not changed. This prevents further request
   /// failures due to invalid credentials when refresh credential is already
-  /// proven invalid.
-  Future<RefreshAuthKeyResult> _refreshAuthKey() async {
-    final currentAuthHeaderValue = await _delegate.authHeaderValue;
-    if (_lastAuthHeaderValue != null &&
-        _lastAuthHeaderValue == currentAuthHeaderValue &&
-        _lastRefreshResult == RefreshAuthKeyResult.failedUnauthorized) {
-      return RefreshAuthKeyResult.failedUnauthorized;
+  /// proven invalid. If [force] is set to true, the refresh is performed
+  /// regardless of the last refresh result.
+  Future<RefreshAuthKeyResult> _refreshAuthKey({bool force = false}) async {
+    if (!force) {
+      final currentAuthHeaderValue = await _delegate.authHeaderValue;
+      if (_lastAuthHeaderValue != null &&
+          _lastAuthHeaderValue == currentAuthHeaderValue &&
+          _lastRefreshResult == RefreshAuthKeyResult.failedUnauthorized) {
+        return RefreshAuthKeyResult.failedUnauthorized;
+      }
     }
 
-    final result = await _delegate.refreshAuthKey();
+    final result = await _delegate.refreshAuthKey(force: force);
     _lastAuthHeaderValue = await _delegate.authHeaderValue;
     _lastRefreshResult = result;
     return result;
