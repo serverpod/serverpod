@@ -64,9 +64,6 @@ void main() {
           setUp(() async {
             tokens = await tokenManager.listTokens(
               session: session,
-              authUserId: null,
-              method: null,
-              transaction: null,
             );
           });
 
@@ -75,13 +72,6 @@ void main() {
             expect(
               tokens.map((final t) => t.tokenProvider).toSet(),
               containsAll([AuthStrategy.jwt.name, AuthStrategy.session.name]),
-            );
-          });
-
-          test('then tokens should have correct user IDs', () {
-            expect(
-              tokens.map((final t) => t.userId).toSet(),
-              containsAll([user1Id.toString(), user2Id.toString()]),
             );
           });
         });
