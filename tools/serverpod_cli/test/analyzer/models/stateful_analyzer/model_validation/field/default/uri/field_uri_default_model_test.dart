@@ -12,7 +12,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type bool and the defaultModel is set to "true", then the field should have a "default model" value',
+      'when the field is of type uri and the defaultModel is set to "https://example.com", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -20,7 +20,7 @@ void main() {
           class: Example
           table: example
           fields:
-            boolType: bool, defaultModel=true
+            uriType: Uri, defaultModel="https://example.com"
           ''',
           ).build()
         ];
@@ -33,12 +33,12 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, true);
+        expect(definition.fields.last.defaultModelValue, 'https://example.com');
       },
     );
 
     test(
-      'when the field is of type bool and the defaultModel is set to "false", then the field should have a "default model" value',
+      'when the field is of type uri and the defaultModel is set to unquoted https://example.com, then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -46,7 +46,7 @@ void main() {
           class: Example
           table: example
           fields:
-            boolType: bool, defaultModel=false
+            uriType: Uri, defaultModel=https://example.com
           ''',
           ).build()
         ];
@@ -59,12 +59,12 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, false);
+        expect(definition.fields.last.defaultModelValue, 'https://example.com');
       },
     );
 
     test(
-      'when the field is of type bool and the defaultModel is empty, then an error is generated',
+      'when the field is of type uri and the defaultModel is empty, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -72,7 +72,7 @@ void main() {
           class: Example
           table: example
           fields:
-            boolType: bool, defaultModel=
+            uriType: Uri, defaultModel=
           ''',
           ).build()
         ];
@@ -86,13 +86,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid boolean: "true" or "false"',
+          'The "defaultModel" value must be a valid Uri string (e.g., defaultModel="http://serverpod.dev").',
         );
       },
     );
 
     test(
-      'when the field is of type bool with an invalid defaultModel value "TRUE", then an error is generated',
+      'when the field is of type bool with an invalid defaultModel value "invalid", then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -100,7 +100,7 @@ void main() {
         class: Example
         table: example
         fields:
-          boolInvalid: bool?, defaultModel=TRUE
+          uriType: Uri?, defaultModel=":::invalid-uri"
         ''',
           ).build()
         ];
@@ -114,35 +114,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid boolean: "true" or "false"',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type bool with an invalid defaultModel value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            boolInvalid: bool?, defaultModel=test
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultModel" value must be a valid boolean: "true" or "false"',
+          'The "defaultModel" value must be a valid Uri string (e.g., defaultModel="http://serverpod.dev").',
         );
       },
     );
