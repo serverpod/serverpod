@@ -1,0 +1,3 @@
+class: ParentWithChangedId
+fields:
+  id: UuidValue, defaultModel=random_v7
