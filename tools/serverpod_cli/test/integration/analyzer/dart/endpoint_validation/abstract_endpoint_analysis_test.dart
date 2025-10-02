@@ -85,8 +85,6 @@ abstract class BaseEndpoint extends Endpoint {
   Future<String> baseMethod(Session session) async {
     return 'base';
   }
-
-  Future<String> overriddenMethod(Session session);
 }
 
 class ConcreteEndpoint extends BaseEndpoint {
