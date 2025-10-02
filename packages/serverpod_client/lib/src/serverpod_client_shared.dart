@@ -741,7 +741,7 @@ abstract class EndpointRef {
 }
 
 /// Thrown if not able to get an endpoint on the client by type.
-abstract class ServerpodClientGetEndpointException implements Exception {
+sealed class ServerpodClientGetEndpointException implements Exception {
   /// The error message to show to the user.
   final String message;
 
@@ -755,7 +755,7 @@ abstract class ServerpodClientGetEndpointException implements Exception {
 /// Thrown if the client tries to call an endpoint that was not generated.
 /// This will typically happen if getting the endpoint by type while the user
 /// has not defined the endpoint in their project.
-class ServerpodClientEndpointNotFound
+final class ServerpodClientEndpointNotFound
     extends ServerpodClientGetEndpointException {
   /// Creates an Endpoint Missing Exception.
   const ServerpodClientEndpointNotFound(Type type)
@@ -765,7 +765,7 @@ class ServerpodClientEndpointNotFound
 /// Thrown if the client tries to call an endpoint by type, but multiple
 /// endpoints of that type exists. The user should disambiguate by using the
 /// name parameter.
-class ServerpodClientMultipleEndpointsFound
+final class ServerpodClientMultipleEndpointsFound
     extends ServerpodClientGetEndpointException {
   /// Creates an Multiple Endpoints Found Exception.
   ServerpodClientMultipleEndpointsFound(
