@@ -30,6 +30,7 @@ class ServerTestToolsGenerator {
     );
 
     for (var endpoint in protocolDefinition.endpoints) {
+      if (endpoint.isAbstract) continue;
       library.body.add(_buildEndpointClassWithMethodCalls(endpoint));
     }
 
@@ -401,16 +402,17 @@ class ServerTestToolsGenerator {
               ..body = Block.of(
                 [
                   for (var endpoint in protocolDefinition.endpoints)
-                    refer(endpoint.name)
-                        .assign(
-                          refer('_${endpoint.className}').newInstance(
-                            [
-                              refer('endpoints'),
-                              refer('serializationManager'),
-                            ],
-                          ),
-                        )
-                        .statement,
+                    if (!endpoint.isAbstract)
+                      refer(endpoint.name)
+                          .assign(
+                            refer('_${endpoint.className}').newInstance(
+                              [
+                                refer('endpoints'),
+                                refer('serializationManager'),
+                              ],
+                            ),
+                          )
+                          .statement,
                 ],
               );
           },
@@ -423,6 +425,7 @@ class ServerTestToolsGenerator {
       classBuilder.name = 'TestEndpoints';
 
       for (var endpoint in protocolDefinition.endpoints) {
+        if (endpoint.isAbstract) continue;
         classBuilder.fields.add(
           Field(
             (fieldBuilder) {
