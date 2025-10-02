@@ -331,7 +331,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -340,7 +340,7 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var endpointsFile = codeMap[expectedFileName];
+    late var endpointsFile = codeMap[expectedFileName];
 
     test('then import path is correct.', () {
       var importPath = [

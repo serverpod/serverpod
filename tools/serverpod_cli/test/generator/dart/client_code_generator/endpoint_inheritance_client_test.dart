@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
@@ -63,7 +62,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -72,10 +71,10 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    test('then generated client file contains subclass endpoint class.', () {
-      var clientCompilationUnit =
-          parseString(content: codeMap[expectedFileName]!).unit;
+    late var clientCompilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
 
+    test('then generated client file contains subclass endpoint class.', () {
       var subclass = CompilationUnitHelpers.tryFindClassDeclaration(
         clientCompilationUnit,
         name: 'Endpoint${subclassEndpointName.pascalCase}',
@@ -84,18 +83,10 @@ void main() {
     });
 
     group('then generated subclass endpoint', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration subclass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        subclass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Endpoint${subclassEndpointName.pascalCase}',
-        )!;
-      });
+      late var subclass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Endpoint${subclassEndpointName.pascalCase}',
+      )!;
 
       test('extends base endpoint.', () {
         expect(
@@ -121,18 +112,10 @@ void main() {
     });
 
     group('then generated Client class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration clientClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Client',
-        )!;
-      });
+      late var clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Client',
+      )!;
 
       test('has late variable for subclass endpoint.', () {
         var endpointField = CompilationUnitHelpers.tryFindFieldDeclaration(
@@ -225,7 +208,7 @@ void main() {
         .withName(projectName)
         .withModules([externalModule]).build();
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: customConfig,
     );
@@ -234,10 +217,10 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    test('then generated client file contains import for external module.', () {
-      var clientCompilationUnit =
-          parseString(content: codeMap[expectedFileName]!).unit;
+    late var clientCompilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
 
+    test('then generated client file contains import for external module.', () {
       var hasImport = CompilationUnitHelpers.hasImportDirective(
         clientCompilationUnit,
         uri: externalModule.dartImportUrl(false),
@@ -246,18 +229,10 @@ void main() {
     });
 
     group('then generated subclass endpoint class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration? subclassClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        subclassClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Endpoint${subclassEndpointName.pascalCase}',
-        );
-      });
+      late var subclassClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Endpoint${subclassEndpointName.pascalCase}',
+      );
 
       test('exists.', () {
         expect(subclassClass, isNotNull);

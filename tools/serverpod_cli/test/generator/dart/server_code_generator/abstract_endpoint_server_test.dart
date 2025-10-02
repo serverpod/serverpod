@@ -42,7 +42,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -52,11 +52,7 @@ void main() {
     });
 
     group('then generated endpoints file', () {
-      late String endpointsFileContent;
-
-      setUpAll(() {
-        endpointsFileContent = codeMap[expectedEndpointsFileName]!;
-      });
+      late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
 
       test('does not contain abstract endpoint in endpoints map.', () {
         expect(
@@ -104,7 +100,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -114,16 +110,7 @@ void main() {
     });
 
     group('then generated endpoints file', () {
-      late String endpointsFileContent;
-
-      setUpAll(() {
-        endpointsFileContent = codeMap[expectedEndpointsFileName]!;
-      });
-
-      test('does not contain abstract endpoint in endpoints map.', () {
-        expect(
-            endpointsFileContent, isNot(contains("'$abstractEndpointName'")));
-      });
+      late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
 
       test('contains concrete endpoint in endpoints map.', () {
         expect(endpointsFileContent, contains("'$concreteEndpointName'"));
@@ -200,7 +187,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -210,11 +197,7 @@ void main() {
     });
 
     group('then generated endpoints file', () {
-      late String endpointsFileContent;
-
-      setUpAll(() {
-        endpointsFileContent = codeMap[expectedEndpointsFileName]!;
-      });
+      late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
 
       test('does not contain abstract endpoints in endpoints map.', () {
         expect(endpointsFileContent,

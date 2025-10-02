@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
@@ -52,7 +51,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -61,10 +60,10 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    test('then the generated client file has the endpoint class defined.', () {
-      var clientCompilationUnit =
-          parseString(content: codeMap[expectedFileName]!).unit;
+    late var clientCompilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
 
+    test('then the generated client file has the endpoint class defined.', () {
       var endpointClass = CompilationUnitHelpers.tryFindClassDeclaration(
         clientCompilationUnit,
         name: 'Endpoint${endpointName.pascalCase}',
@@ -74,18 +73,11 @@ void main() {
     });
 
     group('then generated endpoint class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration abstractEndpointClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        abstractEndpointClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Endpoint${endpointName.pascalCase}',
-        )!;
-      });
+      late var abstractEndpointClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Endpoint${endpointName.pascalCase}',
+      )!;
 
       test('has the abstract keyword.', () {
         expect(abstractEndpointClass.abstractKeyword, isNotNull);
@@ -129,18 +121,10 @@ void main() {
     });
 
     group('then generated Client class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration clientClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Client',
-        )!;
-      });
+      late var clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Client',
+      )!;
 
       test('does not have late variable for abstract endpoint.', () {
         var endpointField = CompilationUnitHelpers.tryFindFieldDeclaration(
@@ -219,7 +203,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -228,13 +212,10 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    group('then generated client file', () {
-      late CompilationUnit clientCompilationUnit;
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-      });
+    late var clientCompilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
 
+    group('then generated client file', () {
       test('contains abstract base endpoint class.', () {
         var abstractClass = CompilationUnitHelpers.tryFindClassDeclaration(
           clientCompilationUnit,
@@ -255,18 +236,10 @@ void main() {
     });
 
     group('then generated concrete endpoint class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration concreteClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        concreteClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Endpoint${concreteEndpointName.pascalCase}',
-        )!;
-      });
+      late var concreteClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Endpoint${concreteEndpointName.pascalCase}',
+      )!;
 
       test('has no abstract keyword.', () {
         expect(concreteClass.abstractKeyword, isNull);
@@ -331,18 +304,10 @@ void main() {
     });
 
     group('then generated Client class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration clientClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Client',
-        )!;
-      });
+      late var clientClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Client',
+      )!;
 
       test('has late variable for concrete endpoint.', () {
         var endpointField = CompilationUnitHelpers.tryFindFieldDeclaration(
@@ -436,7 +401,7 @@ void main() {
         .withName(projectName)
         .withModules([externalModule]).build();
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: customConfig,
     );
@@ -445,10 +410,10 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    test('then generated client file contains import for external module.', () {
-      var clientCompilationUnit =
-          parseString(content: codeMap[expectedFileName]!).unit;
+    late var clientCompilationUnit =
+        parseString(content: codeMap[expectedFileName]!).unit;
 
+    test('then generated client file contains import for external module.', () {
       var hasImport = CompilationUnitHelpers.hasImportDirective(
         clientCompilationUnit,
         uri: externalModule.dartImportUrl(false),
@@ -457,18 +422,10 @@ void main() {
     });
 
     group('then generated concrete endpoint class', () {
-      late CompilationUnit clientCompilationUnit;
-      late ClassDeclaration? concreteClass;
-
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-
-        concreteClass = CompilationUnitHelpers.tryFindClassDeclaration(
-          clientCompilationUnit,
-          name: 'Endpoint${concreteEndpointName.pascalCase}',
-        );
-      });
+      late var concreteClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        clientCompilationUnit,
+        name: 'Endpoint${concreteEndpointName.pascalCase}',
+      );
 
       test('exists as non-abstract class.', () {
         expect(concreteClass, isNotNull);
@@ -546,7 +503,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -556,11 +513,8 @@ void main() {
     });
 
     group('then generated client file', () {
-      late CompilationUnit clientCompilationUnit;
-      setUpAll(() {
-        clientCompilationUnit =
-            parseString(content: codeMap[expectedFileName]!).unit;
-      });
+      late var clientCompilationUnit =
+          parseString(content: codeMap[expectedFileName]!).unit;
 
       test('contains abstract base endpoint class.', () {
         var endpointClass = CompilationUnitHelpers.tryFindClassDeclaration(

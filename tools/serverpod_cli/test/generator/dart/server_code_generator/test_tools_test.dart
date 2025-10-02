@@ -36,7 +36,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -45,7 +45,7 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
     test('then components needed by the end user are exported', () {
       expect(
@@ -53,32 +53,30 @@ void main() {
         contains(
             "export 'package:serverpod_test/serverpod_test_public_exports.dart'"),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test(
-      'then test tools file has `withServerpod` function defined with isTestGroup decorator',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-              r'@_i\d\.isTestGroup\n'
-              r'void withServerpod\(\n'
-              r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  bool\? applyMigrations,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
-              r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'\}\)',
-            ));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `withServerpod` function defined with isTestGroup decorator',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+            r'@_i\d\.isTestGroup\n'
+            r'void withServerpod\(\n'
+            r'  String testGroupName,\n'
+            r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+            r'  bool\? applyMigrations,\n'
+            r'  bool\? enableSessionLogging,\n'
+            r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+            r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+            r'  String\? runMode,\n'
+            r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+            r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+            r'  Duration\? serverpodStartTimeout,\n'
+            r'  List<String>\? testGroupTagsOverride,\n'
+            r'\}\)',
+          ));
+    });
 
     test('then doc comment with general description is present', () async {
       expect(
@@ -87,7 +85,7 @@ void main() {
           '/// Creates a new test group that takes a callback that can be used to write tests.',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test('then configuration options header is present', () async {
       expect(
@@ -96,65 +94,57 @@ void main() {
           '**Configuration options**',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test(
-      'then doc comments with correct spacing exist for each configurable parameter',
-      () async {
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [applyMigrations] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [enableSessionLogging] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [rollbackDatabase] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [runMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodLoggingMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodStartTimeout] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [testGroupTagsOverride] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [experimentalFeatures] '),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then doc comments with correct spacing exist for each configurable parameter',
+        () async {
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [applyMigrations] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [enableSessionLogging] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [rollbackDatabase] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [runMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodLoggingMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodStartTimeout] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [experimentalFeatures] '),
+      );
+    });
+
+    test('then test tools file has `TestEndpoints` class defined.', () {
+      expect(codeMap[expectedFileName], contains('class TestEndpoints {'));
+    });
 
     test(
-      'then test tools file has `TestEndpoints` class defined.',
-      () {
-        expect(codeMap[expectedFileName], contains('class TestEndpoints {'));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-                r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
+    });
 
     test('then import path towards project protocol is correct.', () {
       var importPath = [
@@ -164,7 +154,7 @@ void main() {
         'protocol.dart',
       ].join('/');
       expect(testToolsFile, contains("import '$importPath';"));
-    }, skip: testToolsFile == null);
+    });
 
     test('then import path towards project endpoints is correct.', () {
       var importPath = [
@@ -174,7 +164,7 @@ void main() {
         'endpoints.dart',
       ].join('/');
       expect(testToolsFile, contains("import '$importPath';"));
-    }, skip: testToolsFile == null);
+    });
   });
 
   group(
@@ -193,7 +183,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: serverpodMiniConfig,
     );
@@ -202,29 +192,27 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
     test(
-      'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-              r'@_i\d\.isTestGroup\n'
-              r'void withServerpod\(\n'
-              r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  String\? runMode,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'\}\)',
-            ));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `withServerpod` function without `rollbackDatabase` and `applyMigrations` parameters',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+            r'@_i\d\.isTestGroup\n'
+            r'void withServerpod\(\n'
+            r'  String testGroupName,\n'
+            r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+            r'  bool\? enableSessionLogging,\n'
+            r'  _i2.ExperimentalFeatures\? experimentalFeatures,\n'
+            r'  String\? runMode,\n'
+            r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+            r'  Duration\? serverpodStartTimeout,\n'
+            r'  List<String>\? testGroupTagsOverride,\n'
+            r'\}\)',
+          ));
+    });
 
     test('then doc comment with general description is present', () async {
       expect(
@@ -233,7 +221,7 @@ void main() {
           '/// Creates a new test group that takes a callback that can be used to write tests.',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test('then configuration options header is present', () async {
       expect(
@@ -242,53 +230,49 @@ void main() {
           '**Configuration options**',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test(
-      'then doc comments with correct spacing exist for each configurable parameter',
-      () async {
-        expect(
-          testToolsFile,
-          contains('\n/// [enableSessionLogging] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [runMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodLoggingMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodStartTimeout] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [testGroupTagsOverride] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [experimentalFeatures] '),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then doc comments with correct spacing exist for each configurable parameter',
+        () async {
+      expect(
+        testToolsFile,
+        contains('\n/// [enableSessionLogging] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [runMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodLoggingMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodStartTimeout] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [experimentalFeatures] '),
+      );
+    });
 
     test(
-      'then doc comments for `applyMigrations` and `rollbackDatabase` are not present',
-      () async {
-        expect(
-          testToolsFile,
-          isNot(contains('/// [applyMigrations]')),
-        );
-        expect(
-          testToolsFile,
-          isNot(contains('/// [rollbackDatabase]')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then doc comments for `applyMigrations` and `rollbackDatabase` are not present',
+        () async {
+      expect(
+        testToolsFile,
+        isNot(contains('/// [applyMigrations]')),
+      );
+      expect(
+        testToolsFile,
+        isNot(contains('/// [rollbackDatabase]')),
+      );
+    });
   });
 
   group(
@@ -305,7 +289,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -314,32 +298,30 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
     test(
-      'then test tools file has `withServerpod` function defined with isTestGroup decorator',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-              r'@_i\d\.isTestGroup\n'
-              r'void withServerpod\(\n'
-              r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  bool\? applyMigrations,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
-              r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'\}\)',
-            ));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `withServerpod` function defined with isTestGroup decorator',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+            r'@_i\d\.isTestGroup\n'
+            r'void withServerpod\(\n'
+            r'  String testGroupName,\n'
+            r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+            r'  bool\? applyMigrations,\n'
+            r'  bool\? enableSessionLogging,\n'
+            r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+            r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+            r'  String\? runMode,\n'
+            r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+            r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+            r'  Duration\? serverpodStartTimeout,\n'
+            r'  List<String>\? testGroupTagsOverride,\n'
+            r'\}\)',
+          ));
+    });
 
     test('then doc comment with general description is present', () async {
       expect(
@@ -348,7 +330,7 @@ void main() {
           '/// Creates a new test group that takes a callback that can be used to write tests.',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test('then configuration options header is present', () async {
       expect(
@@ -357,74 +339,62 @@ void main() {
           '**Configuration options**',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test(
-      'then doc comments with correct spacing exist for each configurable parameter',
-      () async {
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [applyMigrations] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [enableSessionLogging] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [rollbackDatabase] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [runMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodLoggingMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodStartTimeout] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [testGroupTagsOverride] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [experimentalFeatures] '),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then doc comments with correct spacing exist for each configurable parameter',
+        () async {
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [applyMigrations] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [enableSessionLogging] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [rollbackDatabase] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [runMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodLoggingMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodStartTimeout] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [experimentalFeatures] '),
+      );
+    });
+
+    test('then test tools file has `TestEndpoints` class defined.', () {
+      expect(testToolsFile, contains('class TestEndpoints {'));
+    });
 
     test(
-      'then test tools file has `TestEndpoints` class defined.',
-      () {
-        expect(testToolsFile, contains('class TestEndpoints {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
+    });
 
-    test(
-      'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-                r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then test tools file has private endpoint class defined.',
-      () {
-        expect(testToolsFile,
-            contains('class _${endpointName.pascalCase}Endpoint'));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then test tools file has private endpoint class defined.', () {
+      expect(
+          testToolsFile, contains('class _${endpointName.pascalCase}Endpoint'));
+    });
   });
 
   group(
@@ -446,7 +416,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -455,32 +425,30 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
     test(
-      'then test tools file has `withServerpod` function defined with isTestGroup decorator',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-              r'@_i\d\.isTestGroup\n'
-              r'void withServerpod\(\n'
-              r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  bool\? applyMigrations,\n'
-              r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
-              r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
-              r'  Duration\? serverpodStartTimeout,\n'
-              r'  List<String>\? testGroupTagsOverride,\n'
-              r'\}\)',
-            ));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `withServerpod` function defined with isTestGroup decorator',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+            r'@_i\d\.isTestGroup\n'
+            r'void withServerpod\(\n'
+            r'  String testGroupName,\n'
+            r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+            r'  bool\? applyMigrations,\n'
+            r'  bool\? enableSessionLogging,\n'
+            r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+            r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+            r'  String\? runMode,\n'
+            r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+            r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+            r'  Duration\? serverpodStartTimeout,\n'
+            r'  List<String>\? testGroupTagsOverride,\n'
+            r'\}\)',
+          ));
+    });
 
     test('then doc comment with general description is present', () async {
       expect(
@@ -489,7 +457,7 @@ void main() {
           '/// Creates a new test group that takes a callback that can be used to write tests.',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test('then configuration options header is present', () async {
       expect(
@@ -498,83 +466,67 @@ void main() {
           '**Configuration options**',
         ),
       );
-    }, skip: testToolsFile == null);
+    });
 
     test(
-      'then doc comments with correct spacing exist for each configurable parameter',
-      () async {
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [applyMigrations] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [enableSessionLogging] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [rollbackDatabase] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [runMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodLoggingMode] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [serverpodStartTimeout] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [testGroupTagsOverride] '),
-        );
-        expect(
-          testToolsFile,
-          contains('\n///\n/// [experimentalFeatures] '),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then doc comments with correct spacing exist for each configurable parameter',
+        () async {
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [applyMigrations] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [enableSessionLogging] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [rollbackDatabase] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [runMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodLoggingMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [serverpodStartTimeout] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [experimentalFeatures] '),
+      );
+    });
+
+    test('then test tools file has `TestEndpoints` class defined.', () {
+      expect(testToolsFile, contains('class TestEndpoints {'));
+    });
 
     test(
-      'then test tools file has `TestEndpoints` class defined.',
-      () {
-        expect(testToolsFile, contains('class TestEndpoints {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
+        () {
+      expect(
+          testToolsFile,
+          matches(
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
+    });
 
-    test(
-      'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-                r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n'));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then test tools file has private endpoint class defined.', () {
+      expect(testToolsFile,
+          contains('class _${firstEndpointName.pascalCase}Endpoint'));
+    });
 
-    test(
-      'then test tools file has private endpoint class defined.',
-      () {
-        expect(testToolsFile,
-            contains('class _${firstEndpointName.pascalCase}Endpoint'));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then test tools file has private endpoint class defined.',
-      () {
-        expect(testToolsFile,
-            contains('class _${secondEndpointName.pascalCase}Endpoint'));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then test tools file has private endpoint class defined.', () {
+      expect(testToolsFile,
+          contains('class _${secondEndpointName.pascalCase}Endpoint'));
+    });
   });
 
   group(
@@ -595,7 +547,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -603,35 +555,26 @@ void main() {
     test('then test tools file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          matches(
+              r'Future<String> futureMethod\(_i\d\.TestSessionBuilder sessionBuilder\) async \{'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-                r'Future<String> futureMethod\(_i\d\.TestSessionBuilder sessionBuilder\) async \{'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(
+          testToolsFile, contains('callAwaitableFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodCallContext('));
+    });
   });
 
   group(
@@ -654,7 +597,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -662,35 +605,25 @@ void main() {
     test('then test tools file is created.', () {
       expect(codeMap, contains(expectedFileName));
     });
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          matches(
+              r'Stream<String> streamMethod\(_i\d\.TestSessionBuilder sessionBuilder\) \{'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            matches(
-                r'Stream<String> streamMethod\(_i\d\.TestSessionBuilder sessionBuilder\) \{'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(testToolsFile, contains('callStreamFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(
-            testToolsFile, contains('callStreamFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodStreamCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodStreamCallContext('));
+    });
   });
 
   group(
@@ -716,7 +649,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -725,37 +658,28 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Future<String> nonStreamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder, {\n'
+              '    required String stringParam,\n'
+              '  }) async {\n'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder, {\n'
-                '    required String stringParam,\n'
-                '  }) async {\n'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(
+          testToolsFile, contains('callAwaitableFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodCallContext('));
+    });
   });
   group(
       'Given a protocol definition with a method with optional non-stream parameter when generating test tools file',
@@ -782,7 +706,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -791,37 +715,28 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Future<String> nonStreamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder, [\n'
+              '    String? stringParam,\n'
+              '  ]) async {'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder, [\n'
-                '    String? stringParam,\n'
-                '  ]) async {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(
+          testToolsFile, contains('callAwaitableFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodCallContext('));
+    });
   });
 
   group(
@@ -847,7 +762,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -856,37 +771,28 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Future<String> nonStreamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder, {\n'
+              '    String? stringParam,\n'
+              '  }) async {\n'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Future<String> nonStreamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder, {\n'
-                '    String? stringParam,\n'
-                '  }) async {\n'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(
+          testToolsFile, contains('callAwaitableFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(testToolsFile,
-            contains('callAwaitableFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodCallContext('));
+    });
   });
 
   group(
@@ -912,7 +818,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -921,39 +827,28 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Future<String> streamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder,\n'
+              '    Stream<String> streamParam,\n'
+              '  ) async {'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Future<String> streamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder,\n'
-                '    Stream<String> streamParam,\n'
-                '  ) async {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(testToolsFile,
+          contains('callAwaitableFunctionWithStreamInputAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(
-            testToolsFile,
-            contains(
-                'callAwaitableFunctionWithStreamInputAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodStreamCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodStreamCallContext('));
+    });
   });
 
   group(
@@ -979,7 +874,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -988,39 +883,28 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Future<String> streamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder, {\n'
+              '    required Stream<String> streamParam,\n'
+              '  }) async {'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Future<String> streamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder, {\n'
-                '    required Stream<String> streamParam,\n'
-                '  }) async {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(testToolsFile,
+          contains('callAwaitableFunctionWithStreamInputAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(
-            testToolsFile,
-            contains(
-                'callAwaitableFunctionWithStreamInputAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodStreamCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodStreamCallContext('));
+    });
   });
   group(
       'Given a protocol definition with a method with Stream return value and Stream parameter when generating test tools file',
@@ -1050,7 +934,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -1059,37 +943,27 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file contains the method definition.', () {
+      expect(
+          testToolsFile,
+          contains('  Stream<String> streamMethod(\n'
+              '    _i1.TestSessionBuilder sessionBuilder,\n'
+              '    Stream<String> streamParam,\n'
+              '  ) {'));
+    });
 
     test(
-      'then test tools file contains the method definition.',
-      () {
-        expect(
-            testToolsFile,
-            contains('  Stream<String> streamMethod(\n'
-                '    _i1.TestSessionBuilder sessionBuilder,\n'
-                '    Stream<String> streamParam,\n'
-                '  ) {'));
-      },
-      skip: testToolsFile == null,
-    );
+        'then the method body contains a call to the correct exception handler function.',
+        () {
+      expect(testToolsFile, contains('callStreamFunctionAndHandleExceptions('));
+    });
 
-    test(
-      'then the method body contains a call to the correct exception handler function.',
-      () {
-        expect(
-            testToolsFile, contains('callStreamFunctionAndHandleExceptions('));
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then the method body contains a call to the correct endpoint method.',
-      () {
-        expect(testToolsFile, contains('getMethodStreamCallContext('));
-      },
-      skip: testToolsFile == null,
-    );
+    test('then the method body contains a call to the correct endpoint method.',
+        () {
+      expect(testToolsFile, contains('getMethodStreamCallContext('));
+    });
   });
 
   group(
@@ -1111,7 +985,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -1120,18 +994,14 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
-    test(
-      'then test tools file does not contain abstract endpoint class.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then test tools file does not contain abstract endpoint class.', () {
+      expect(
+        testToolsFile,
+        isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
+      );
+    });
   });
 
   group(
@@ -1165,7 +1035,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -1174,77 +1044,56 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file does not contain abstract endpoint class.', () {
+      expect(
+        testToolsFile,
+        isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
+      );
+    });
+
+    test('then test tools file contains concrete endpoint class.', () {
+      expect(
+        testToolsFile,
+        contains('class _${concreteEndpointName.pascalCase}Endpoint'),
+      );
+    });
+
+    test('then TestEndpoints class does not have field for abstract endpoint.',
+        () {
+      expect(
+        testToolsFile,
+        isNot(contains(
+            'late final _${abstractEndpointName.pascalCase}Endpoint $abstractEndpointName;')),
+      );
+    });
+
+    test('then TestEndpoints class has field for concrete endpoint.', () {
+      expect(
+        testToolsFile,
+        contains(
+            'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
+      );
+    });
 
     test(
-      'then test tools file does not contain abstract endpoint class.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains('class _${abstractEndpointName.pascalCase}Endpoint')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then TestEndpoints constructor does not initialize abstract endpoint.',
+        () {
+      expect(
+        testToolsFile,
+        isNot(contains(
+            '$abstractEndpointName = _${abstractEndpointName.pascalCase}Endpoint(')),
+      );
+    });
 
-    test(
-      'then test tools file contains concrete endpoint class.',
-      () {
-        expect(
-          testToolsFile,
-          contains('class _${concreteEndpointName.pascalCase}Endpoint'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints class does not have field for abstract endpoint.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains(
-              'late final _${abstractEndpointName.pascalCase}Endpoint $abstractEndpointName;')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints class has field for concrete endpoint.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints constructor does not initialize abstract endpoint.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains(
-              '$abstractEndpointName = _${abstractEndpointName.pascalCase}Endpoint(')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints constructor initializes concrete endpoint.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then TestEndpoints constructor initializes concrete endpoint.', () {
+      expect(
+        testToolsFile,
+        contains(
+            '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
+      );
+    });
   });
 
   group(
@@ -1284,7 +1133,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -1293,56 +1142,44 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
 
-    test(
-      'then test tools file contains both endpoint classes.',
-      () {
-        expect(
-          testToolsFile,
-          contains('class _${baseEndpointName.pascalCase}Endpoint'),
-        );
-        expect(
-          testToolsFile,
-          contains('class _${concreteEndpointName.pascalCase}Endpoint'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then test tools file contains both endpoint classes.', () {
+      expect(
+        testToolsFile,
+        contains('class _${baseEndpointName.pascalCase}Endpoint'),
+      );
+      expect(
+        testToolsFile,
+        contains('class _${concreteEndpointName.pascalCase}Endpoint'),
+      );
+    });
 
-    test(
-      'then TestEndpoints class has field for both endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              'late final _${baseEndpointName.pascalCase}Endpoint $baseEndpointName;'),
-        );
-        expect(
-          testToolsFile,
-          contains(
-              'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then TestEndpoints class has field for both endpoints.', () {
+      expect(
+        testToolsFile,
+        contains(
+            'late final _${baseEndpointName.pascalCase}Endpoint $baseEndpointName;'),
+      );
+      expect(
+        testToolsFile,
+        contains(
+            'late final _${concreteEndpointName.pascalCase}Endpoint $concreteEndpointName;'),
+      );
+    });
 
-    test(
-      'then TestEndpoints constructor initializes both endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              '$baseEndpointName = _${baseEndpointName.pascalCase}Endpoint('),
-        );
-        expect(
-          testToolsFile,
-          contains(
-              '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then TestEndpoints constructor initializes both endpoints.', () {
+      expect(
+        testToolsFile,
+        contains(
+            '$baseEndpointName = _${baseEndpointName.pascalCase}Endpoint('),
+      );
+      expect(
+        testToolsFile,
+        contains(
+            '$concreteEndpointName = _${concreteEndpointName.pascalCase}Endpoint('),
+      );
+    });
   });
 
   group(
@@ -1404,7 +1241,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -1413,106 +1250,88 @@ void main() {
       expect(codeMap, contains(expectedFileName));
     });
 
-    var testToolsFile = codeMap[expectedFileName];
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test tools file does not contain abstract endpoint classes.',
+        () {
+      expect(
+        testToolsFile,
+        isNot(
+            contains('class _${abstractBaseEndpointName.pascalCase}Endpoint')),
+      );
+      expect(
+        testToolsFile,
+        isNot(contains(
+            'class _${abstractSubClassEndpointName.pascalCase}Endpoint')),
+      );
+    });
+
+    test('then test tools file contains all concrete endpoint classes.', () {
+      expect(
+        testToolsFile,
+        contains('class _${concreteBaseEndpointName.pascalCase}Endpoint'),
+      );
+      expect(
+        testToolsFile,
+        contains('class _${concreteSubclassEndpointName.pascalCase}Endpoint'),
+      );
+    });
 
     test(
-      'then test tools file does not contain abstract endpoint classes.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains(
-              'class _${abstractBaseEndpointName.pascalCase}Endpoint')),
-        );
-        expect(
-          testToolsFile,
-          isNot(contains(
-              'class _${abstractSubClassEndpointName.pascalCase}Endpoint')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then TestEndpoints class does not have fields for abstract endpoints.',
+        () {
+      expect(
+        testToolsFile,
+        isNot(contains(
+            'late final _${abstractBaseEndpointName.pascalCase}Endpoint $abstractBaseEndpointName;')),
+      );
+      expect(
+        testToolsFile,
+        isNot(contains(
+            'late final _${abstractSubClassEndpointName.pascalCase}Endpoint $abstractSubClassEndpointName;')),
+      );
+    });
+
+    test('then TestEndpoints class has fields for all concrete endpoints.', () {
+      expect(
+        testToolsFile,
+        contains(
+            'late final _${concreteBaseEndpointName.pascalCase}Endpoint $concreteBaseEndpointName;'),
+      );
+      expect(
+        testToolsFile,
+        contains(
+            'late final _${concreteSubclassEndpointName.pascalCase}Endpoint $concreteSubclassEndpointName;'),
+      );
+    });
 
     test(
-      'then test tools file contains all concrete endpoint classes.',
-      () {
-        expect(
-          testToolsFile,
-          contains('class _${concreteBaseEndpointName.pascalCase}Endpoint'),
-        );
-        expect(
-          testToolsFile,
-          contains('class _${concreteSubclassEndpointName.pascalCase}Endpoint'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+        'then TestEndpoints constructor does not initialize abstract endpoints.',
+        () {
+      expect(
+        testToolsFile,
+        isNot(contains(
+            '$abstractBaseEndpointName = _${abstractBaseEndpointName.pascalCase}Endpoint(')),
+      );
+      expect(
+        testToolsFile,
+        isNot(contains(
+            '$abstractSubClassEndpointName = _${abstractSubClassEndpointName.pascalCase}Endpoint(')),
+      );
+    });
 
-    test(
-      'then TestEndpoints class does not have fields for abstract endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains(
-              'late final _${abstractBaseEndpointName.pascalCase}Endpoint $abstractBaseEndpointName;')),
-        );
-        expect(
-          testToolsFile,
-          isNot(contains(
-              'late final _${abstractSubClassEndpointName.pascalCase}Endpoint $abstractSubClassEndpointName;')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints class has fields for all concrete endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              'late final _${concreteBaseEndpointName.pascalCase}Endpoint $concreteBaseEndpointName;'),
-        );
-        expect(
-          testToolsFile,
-          contains(
-              'late final _${concreteSubclassEndpointName.pascalCase}Endpoint $concreteSubclassEndpointName;'),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints constructor does not initialize abstract endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          isNot(contains(
-              '$abstractBaseEndpointName = _${abstractBaseEndpointName.pascalCase}Endpoint(')),
-        );
-        expect(
-          testToolsFile,
-          isNot(contains(
-              '$abstractSubClassEndpointName = _${abstractSubClassEndpointName.pascalCase}Endpoint(')),
-        );
-      },
-      skip: testToolsFile == null,
-    );
-
-    test(
-      'then TestEndpoints constructor initializes all concrete endpoints.',
-      () {
-        expect(
-          testToolsFile,
-          contains(
-              '$concreteBaseEndpointName = _${concreteBaseEndpointName.pascalCase}Endpoint('),
-        );
-        expect(
-          testToolsFile,
-          contains(
-              '$concreteSubclassEndpointName = _${concreteSubclassEndpointName.pascalCase}Endpoint('),
-        );
-      },
-      skip: testToolsFile == null,
-    );
+    test('then TestEndpoints constructor initializes all concrete endpoints.',
+        () {
+      expect(
+        testToolsFile,
+        contains(
+            '$concreteBaseEndpointName = _${concreteBaseEndpointName.pascalCase}Endpoint('),
+      );
+      expect(
+        testToolsFile,
+        contains(
+            '$concreteSubclassEndpointName = _${concreteSubclassEndpointName.pascalCase}Endpoint('),
+      );
+    });
   });
 }

@@ -57,7 +57,7 @@ void main() {
       models: [],
     );
 
-    var codeMap = generator.generateProtocolCode(
+    late var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
       config: config,
     );
@@ -67,11 +67,7 @@ void main() {
     });
 
     group('then generated endpoints file', () {
-      late String endpointsFileContent;
-
-      setUpAll(() {
-        endpointsFileContent = codeMap[expectedEndpointsFileName]!;
-      });
+      late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
 
       test('contains both endpoints in endpoints map.', () {
         expect(endpointsFileContent, contains("'$baseEndpointName'"));
