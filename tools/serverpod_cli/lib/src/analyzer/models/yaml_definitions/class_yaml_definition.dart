@@ -47,7 +47,7 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
-        valueRestriction: restrictions.validateTableName,
+        valueRestriction: restrictions.validateTableValue,
         mutuallyExclusiveKeys: {
           Keyword.isSealed,
         },

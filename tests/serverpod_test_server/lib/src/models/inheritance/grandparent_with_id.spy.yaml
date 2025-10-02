@@ -1,0 +1,4 @@
+class: GrandparentClassWithId
+fields:
+    id: UuidValue?, defaultPersist=random
+    grandParentField: String
