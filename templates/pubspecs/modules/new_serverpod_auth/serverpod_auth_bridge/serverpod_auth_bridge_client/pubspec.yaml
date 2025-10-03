@@ -1,4 +1,5 @@
 name: serverpod_auth_bridge_client
+version: SERVERPOD_VERSION
 description: Serverpod authentication backwards compatibility client module.
 
 environment:

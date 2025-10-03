@@ -1,4 +1,5 @@
 name: serverpod_auth_bridge_flutter
+version: 3.0.0-alpha.2
 description: Serverpod authentication backwards compatibility Flutter client module.
 
 environment:
