@@ -32,10 +32,12 @@ class Server {
 
   final int _port;
 
+  int? _actualPort;
+
   /// Port the server is listening on.
   /// Returns the actual port from the running server if available,
   /// otherwise returns the configured port.
-  int get port => _ioServer?.port ?? _port;
+  int get port => _actualPort ?? _port;
 
   /// The [ServerpodRunMode] the server is running in.
   final String runMode;
@@ -134,6 +136,7 @@ class Server {
       final server = RelicServer(IOAdapter(ioServer));
       await server.mountAndStart(_relicRequestHandler);
       _ioServer = ioServer;
+      _actualPort = ioServer.port;
       _relicServer = server;
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
