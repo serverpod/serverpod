@@ -76,7 +76,7 @@ class WebServer {
         _handleRequest,
         InternetAddress.anyIPv6,
         _config.port,
-        context: context,
+        securityContext: context,
       );
       _server = server;
       _actualPort = (server.adapter as IOAdapter).port;
@@ -113,7 +113,7 @@ class WebServer {
       uri = request.requestedUri;
     } catch (e) {
       logDebug('Malformed call, invalid uri. Client IP: ${request.remoteInfo}');
-      return context.withResponse(Response.badRequest());
+      return context.respond(Response.badRequest());
     }
 
     String? authenticationKey;
@@ -134,16 +134,16 @@ class WebServer {
     );
 
     final match = router.lookup(
-      request.method.toMethod(),
+      request.method,
       uri.path,
     );
     if (match != null) {
-      final route = match.value;
+      final route = match.asMatch.value;
       return await _handleRouteCall(route, session, context);
     }
 
     // No matching patch found
-    return context.withResponse(Response.notFound());
+    return context.respond(Response.notFound());
   }
 
   Future<HandledContext> _handleRouteCall(
@@ -164,7 +164,7 @@ class WebServer {
         request: request,
       );
 
-      return context.withResponse(Response.internalServerError());
+      return context.respond(Response.internalServerError());
     }
   }
 
@@ -293,11 +293,11 @@ abstract class WidgetRoute extends Route {
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.withResponse(Response.seeOther(uri));
+      return context.respond(Response.seeOther(uri));
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
-    return context.withResponse(Response.ok(
+    return context.respond(Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
     ));
   }
@@ -326,21 +326,5 @@ extension on RouteMethod {
   Method toMethod() => switch (this) {
         RouteMethod.get => Method.get,
         RouteMethod.post => Method.post,
-      };
-}
-
-// Temporary helper method
-extension on RequestMethod {
-  Method toMethod() => switch (this) {
-        RequestMethod.get => Method.get,
-        RequestMethod.head => Method.head,
-        RequestMethod.post => Method.post,
-        RequestMethod.put => Method.put,
-        RequestMethod.delete => Method.delete,
-        RequestMethod.patch => Method.patch,
-        RequestMethod.options => Method.options,
-        RequestMethod.trace => Method.trace,
-        RequestMethod.connect => Method.connect,
-        _ => throw UnimplementedError(),
       };
 }

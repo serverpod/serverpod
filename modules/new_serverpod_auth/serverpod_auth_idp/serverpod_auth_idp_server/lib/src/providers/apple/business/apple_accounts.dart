@@ -157,7 +157,7 @@ abstract final class AppleAccounts {
 
       await handler(notification);
 
-      return (ctx as RespondableContext).withResponse(Response.ok());
+      return (ctx as RespondableContext).respond(Response.ok());
     };
   }
 }

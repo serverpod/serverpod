@@ -33,6 +33,9 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
+  # 7.2.0 introduces a breaking change for older versions of flutter.
+  # It depends on Color.toARGB32() which was introduced in Flutter 3.29
+  image_cropper_platform_interface: <7.2.0
 
 flutter:
   uses-material-design: true
