@@ -137,13 +137,12 @@ class WebServer {
       request.method,
       uri.path,
     );
-    if (match != null) {
-      final route = match.asMatch.value;
-      return await _handleRouteCall(route, session, context);
-    }
 
-    // No matching patch found
-    return context.respond(Response.notFound());
+    return switch (match) {
+      RouterMatch<Route>() =>
+        _handleRouteCall(match.asMatch.value, session, context),
+      _ => context.respond(Response.notFound()),
+    };
   }
 
   Future<HandledContext> _handleRouteCall(
@@ -314,7 +313,7 @@ extension type ServerpodRouter._(Router<Route> _router) {
       _router.add(route.method.toMethod(), route._matchPath!, route);
 
   /// Looks up a [Route] in the router based on the HTTP method and path.
-  LookupResult<Route>? lookup(Method method, String path) =>
+  LookupResult<Route> lookup(Method method, String path) =>
       _router.lookup(method, path);
 
   /// Checks if the router is empty.
