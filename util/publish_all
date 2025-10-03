@@ -83,5 +83,5 @@ echo "Restore pubspecs"
 cd $BASE
 git reset --hard HEAD
 
-echo "dart pub get"
-util/pub_get_all
+# echo "dart pub get"
+# util/pub_get_all
