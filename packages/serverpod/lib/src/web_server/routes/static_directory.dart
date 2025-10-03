@@ -130,7 +130,7 @@ class RouteStaticDirectory extends Route {
 
       final file = File(filePath);
       if (!await file.exists()) {
-        return context.withResponse(Response.notFound());
+        return context.respond(Response.notFound());
       }
 
       // Set mime-type.
@@ -156,7 +156,7 @@ class RouteStaticDirectory extends Route {
         file.openRead().cast(),
         mimeType: mimeType,
       );
-      return context.withResponse(Response.ok(body: body, headers: headers));
+      return context.respond(Response.ok(body: body, headers: headers));
     } catch (e) {
       // Couldn't find or load file.
       rethrow;
