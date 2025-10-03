@@ -1,3 +1,6 @@
+## 3.0.0-alpha.2
+- fix: Fixes an issue where static assets could only be served once from the web server.
+
 ## 3.0.0-alpha.1
 - fix: BREAKING. Renames web server template widgets for improved clarity and consistency.
 - fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
