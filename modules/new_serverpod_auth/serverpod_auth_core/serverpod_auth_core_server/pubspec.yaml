@@ -6,6 +6,10 @@ description: Serverpod core authentication server module.
 version: 3.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 
+false_secrets:
+  - test/jwt/utils/authentication_token_secrets_mock.dart
+  - test/jwt/integration/authentication_token_secrets_test.dart
+
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
