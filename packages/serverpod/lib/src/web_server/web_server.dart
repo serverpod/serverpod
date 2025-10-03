@@ -141,7 +141,10 @@ class WebServer {
     return switch (match) {
       RouterMatch<Route>() =>
         _handleRouteCall(match.asMatch.value, session, context),
-      _ => context.respond(Response.notFound()),
+      PathMiss<Route>() => context.respond(Response.notFound()),
+      MethodMiss<Route>() => context.respond(
+          Response(405, body: Body.fromString('Method Not Allowed')),
+        ),
     };
   }
 
