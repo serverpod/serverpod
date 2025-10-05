@@ -3,25 +3,8 @@ import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
-import '../../serverpod_test_tools.dart';
-
-class FakeIdentityProvider {
-  final TokenIssuer tokenIssuer;
-
-  FakeIdentityProvider({required this.tokenIssuer});
-}
-
-class FakeIdentityProviderFactory
-    implements IdentityProviderFactory<FakeIdentityProvider> {
-  @override
-  Type get type => FakeIdentityProvider;
-
-  @override
-  FakeIdentityProvider construct(
-      {required final TokenIssuer defaultTokenIssuer}) {
-    return FakeIdentityProvider(tokenIssuer: defaultTokenIssuer);
-  }
-}
+import '../../../serverpod_test_tools.dart';
+import '../fakes/fakes.dart';
 
 class FakeTokenIssuerForFactory implements TokenIssuer {
   @override

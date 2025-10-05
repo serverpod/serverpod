@@ -10,7 +10,7 @@ import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dar
 /// This object is also used to manage the lifecycle of authentication tokens
 /// regardless of who issues the token.
 class AuthConfig {
-  /// Default token providers
+  /// Default token providers for JWT and session-based authentication.
   static Map<String, TokenProvider> get defaultTokenProviders => {
         AuthStrategy.jwt.name: JwtTokenProvider(),
         AuthStrategy.session.name: SasTokenProvider(),
@@ -30,6 +30,7 @@ class AuthConfig {
   static AuthConfig? _instance;
 
   /// Sets the [AuthConfig] instance.
+  ///
   /// [tokenIssuer] is the token issuer used by the identity providers.
   /// Serverpod provided token issuers are [JwtTokenIssuer] and [SasTokenIssuer].
   ///
@@ -37,8 +38,8 @@ class AuthConfig {
   /// providers used by the authentication endpoints.
   ///
   /// [tokenProviders] is a map of token providers that can be used to manage
-  /// the lifecycle of authentication tokens.
-  /// if not provided, the default token providers will be used.
+  /// the lifecycle of authentication tokens. If not provided, the default
+  /// token providers will be used.
   factory AuthConfig.set({
     required final TokenIssuer tokenIssuer,
     required final List<IdentityProviderFactory<dynamic>> identityProviders,
@@ -80,6 +81,6 @@ class AuthConfig {
   /// The token issuer used by the identity providers.
   final TokenIssuer defaultTokenIssuer;
 
-  /// Admin tool to manage authentication tokens.
+  /// The token manager that handles token lifecycle operations.
   late final TokenManager tokenManager;
 }

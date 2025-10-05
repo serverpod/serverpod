@@ -3,64 +3,15 @@ import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
-import '../../serverpod_test_tools.dart';
+import '../../../serverpod_test_tools.dart';
+import '../fakes/fakes.dart';
 
-abstract interface class TestableTokenIssuer implements TokenIssuer {
-  void testClear();
-  List<AuthSuccess> get testIssuedTokens;
-}
-
-class FakeTokenIssuer implements TestableTokenIssuer {
-  final Map<String, AuthSuccess> _issuedTokens = {};
-  int _tokenCounter = 0;
-
-  @override
-  void testClear() {
-    _issuedTokens.clear();
-    _tokenCounter = 0;
-  }
-
-  @override
-  List<AuthSuccess> get testIssuedTokens => _issuedTokens.values.toList();
-
-  @override
-  Future<AuthSuccess> issueToken({
-    required final Session session,
-    required final UuidValue authUserId,
-    required final String method,
-    required final Set<Scope>? scopes,
-    required final Transaction? transaction,
-  }) async {
-    _tokenCounter++;
-    final tokenId = 'token-$_tokenCounter';
-    final refreshTokenId = 'refresh-token-$_tokenCounter';
-
-    final scopeSet = scopes != null
-        ? scopes
-            .where((final scope) => scope.name != null)
-            .map((final scope) => scope.name!)
-            .toSet()
-        : <String>{};
-
-    final authSuccess = AuthSuccess(
-      token: tokenId,
-      refreshToken: refreshTokenId,
-      authUserId: authUserId,
-      scopeNames: scopeSet,
-      authStrategy: 'jwt',
-    );
-
-    _issuedTokens[tokenId] = authSuccess;
-    return authSuccess;
-  }
-}
-
-void testSuite(final TestableTokenIssuer Function() issuerBuilder) {
+void testSuite(final TokenIssuer Function() issuerBuilder) {
   group('TokenIssuer', () {
     withServerpod(
       'Given a valid user ID',
       (final sessionBuilder, final endpoints) {
-        late TestableTokenIssuer tokenIssuer;
+        late TokenIssuer tokenIssuer;
         late Session session;
         late UuidValue userId;
 
@@ -171,7 +122,7 @@ void testSuite(final TestableTokenIssuer Function() issuerBuilder) {
     withServerpod(
       'Given multiple token issuances',
       (final sessionBuilder, final endpoints) {
-        late TestableTokenIssuer tokenIssuer;
+        late TokenIssuer tokenIssuer;
         late Session session;
         late UuidValue userId;
         late AuthSuccess firstToken;
@@ -242,7 +193,7 @@ void testSuite(final TestableTokenIssuer Function() issuerBuilder) {
     withServerpod(
       'Given different user IDs',
       (final sessionBuilder, final endpoints) {
-        late TestableTokenIssuer tokenIssuer;
+        late TokenIssuer tokenIssuer;
         late Session session;
         late UuidValue user1Id;
         late UuidValue user2Id;
@@ -295,7 +246,7 @@ void testSuite(final TestableTokenIssuer Function() issuerBuilder) {
     withServerpod(
       'Given a transaction parameter',
       (final sessionBuilder, final endpoints) {
-        late TestableTokenIssuer tokenIssuer;
+        late TokenIssuer tokenIssuer;
         late Session session;
         late UuidValue userId;
 
@@ -333,5 +284,7 @@ void testSuite(final TestableTokenIssuer Function() issuerBuilder) {
 }
 
 void main() {
-  testSuite(() => FakeTokenIssuer());
+  final storage = FakeTokenStorage();
+  final fakeTokenIssuer = FakeTokenIssuer(storage);
+  testSuite(() => fakeTokenIssuer);
 }

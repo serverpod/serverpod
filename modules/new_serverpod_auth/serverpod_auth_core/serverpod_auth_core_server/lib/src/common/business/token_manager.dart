@@ -1,16 +1,19 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
 
 /// Manages multiple [TokenProvider]s and delegates operations to them.
 class TokenManager {
-  final Map<String, TokenProvider> _tokenProvider;
+  /// The map of token providers keyed by their provider name.
+  @internal
+  final Map<String, TokenProvider> tokenProviders;
 
   /// Creates a new [TokenManager] with the given token providers.
-  TokenManager(final Map<String, TokenProvider> tokenProviders)
-      : _tokenProvider = {for (var p in tokenProviders.entries) p.key: p.value};
+  TokenManager(final Map<String, TokenProvider> providers)
+      : tokenProviders = {for (var p in providers.entries) p.key: p.value};
 
   /// Revokes all tokens matching the given criteria.
   Future<void> revokeAllTokens({
@@ -31,7 +34,7 @@ class TokenManager {
     }
 
     await Future.wait([
-      for (final delegate in _tokenProvider.values)
+      for (final delegate in tokenProviders.values)
         delegate.revokeAllTokens(
           session: session,
           authUserId: authUserId,
@@ -48,7 +51,7 @@ class TokenManager {
     final Transaction? transaction,
   }) async {
     await Future.wait([
-      for (final provider in _tokenProvider.values)
+      for (final provider in tokenProviders.values)
         provider.revokeToken(
           session: session,
           tokenId: tokenId,
@@ -77,7 +80,7 @@ class TokenManager {
     }
 
     final tokenLists = await Future.wait(
-      _tokenProvider.values.map(
+      tokenProviders.values.map(
         (final tokenProvider) => tokenProvider.listTokens(
           session: session,
           authUserId: authUserId,
@@ -91,7 +94,7 @@ class TokenManager {
   }
 
   TokenProvider _lookupProvider(final String provider) {
-    final TokenProvider? delegate = _tokenProvider[provider];
+    final TokenProvider? delegate = tokenProviders[provider];
     if (delegate == null) {
       throw ArgumentError('No provider found for symbol $provider');
     }
