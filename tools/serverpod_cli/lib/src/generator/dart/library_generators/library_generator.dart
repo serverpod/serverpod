@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -30,9 +31,13 @@ class LibraryGenerator {
   Library generateProtocol() {
     var library = LibraryBuilder();
 
-    var allModels = protocolDefinition.models
-        .where((model) => serverCode || !model.serverOnly)
-        .toList();
+    // Models will be sorted by file path and then topologically, to ensure a
+    // stable order and that children gets generated before parents.
+    var allModels = (protocolDefinition.models
+            .where((model) => serverCode || !model.serverOnly)
+            .toList()
+          ..sort((a, b) => a.filePath.compareTo(b.filePath)))
+        .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
       if (model is! ModelClassDefinition) return true;
@@ -46,8 +51,7 @@ class LibraryGenerator {
 
     var unsealedModels = allModels
         .where((model) => !(model is ModelClassDefinition && model.isSealed))
-        .toList()
-      ..sort(_byChildClassesBeforeParents);
+        .toList();
 
     // exports
     library.directives.addAll([
@@ -1671,32 +1675,37 @@ extension on DatabaseDefinition {
   }
 }
 
-/// Sorts child classes before their parents, such that serialization order is stable.
-int _byChildClassesBeforeParents(
-  SerializableModelDefinition a,
-  SerializableModelDefinition b,
-) {
-  if (a is! ModelClassDefinition || b is! ModelClassDefinition) {
-    return 0;
-  }
+extension on ModelClassDefinition {
+  /// Get all child classes and their children, ensuring children before parents.
+  List<ModelClassDefinition> get sortedChildClasses => childClasses
+      .whereType<ResolvedInheritanceDefinition>()
+      .map((e) => [
+            ...e.classDefinition.sortedChildClasses,
+            e.classDefinition,
+          ])
+      .expand((e) => e)
+      .toList();
+}
 
-  if (a.extendsClass != null && b.extendsClass == null) {
-    return -1;
-  }
+extension on List<SerializableModelDefinition> {
+  /// Sorts the models topologically, ensuring children before parents.
+  List<SerializableModelDefinition> topologicalSort() {
+    var sorted = <SerializableModelDefinition>[];
 
-  if (a.extendsClass == null && b.extendsClass != null) {
-    return 1;
-  }
+    for (var model in this) {
+      if (model is ModelClassDefinition) {
+        for (var subClass in model.sortedChildClasses) {
+          if (!sorted.contains(subClass)) {
+            sorted.add(subClass);
+          }
+        }
+      }
 
-  if (a.extendsClass is ResolvedInheritanceDefinition &&
-      (a.extendsClass as ResolvedInheritanceDefinition).classDefinition == b) {
-    return -1;
-  }
+      if (!sorted.contains(model)) {
+        sorted.add(model);
+      }
+    }
 
-  if (b.extendsClass is ResolvedInheritanceDefinition &&
-      (b.extendsClass as ResolvedInheritanceDefinition).classDefinition == a) {
-    return 1;
+    return sorted;
   }
-
-  return 0;
 }

@@ -12,14 +12,16 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      if (classDefinition is! ModelClassDefinition) return;
+    modelDefinitions
+        .whereType<ModelClassDefinition>()
+        .forEach((classDefinition) {
       _resolveInheritance(classDefinition, modelDefinitions);
     });
 
     // Then resolve inherited id fields or create default id fields.
-    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      if (classDefinition is! ModelClassDefinition) return;
+    modelDefinitions
+        .whereType<ModelClassDefinition>()
+        .forEach((classDefinition) {
       _resolveIdField(classDefinition);
     });
 
