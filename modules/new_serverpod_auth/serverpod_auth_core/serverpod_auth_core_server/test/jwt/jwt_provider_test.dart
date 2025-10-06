@@ -237,7 +237,7 @@ void main() {
           );
         });
 
-        group('when issuing tokens for a blocked user', () {
+        group('when issuing new tokens', () {
           test('then an AuthUserBlockedException is thrown', () async {
             expect(
               () => tokenIssuer.issueToken(
@@ -269,7 +269,7 @@ void main() {
           authUserId = authUser.id;
         });
 
-        group('when issuing tokens with a transaction that fails', () {
+        group('when issuing new tokens', () {
           test('then tokens are not created in the database', () async {
             try {
               await session.db.transaction((final transaction) async {
