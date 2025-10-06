@@ -50,7 +50,7 @@ void testSuite(
           late FakeIdentityProvider provider;
 
           setUp(() {
-            provider = factory.construct(defaultTokenIssuer: tokenIssuer);
+            provider = factory.construct(tokenIssuer: tokenIssuer);
           });
 
           test('then a provider instance should be returned', () {
@@ -67,8 +67,8 @@ void testSuite(
           late FakeIdentityProvider provider2;
 
           setUp(() {
-            provider1 = factory.construct(defaultTokenIssuer: tokenIssuer);
-            provider2 = factory.construct(defaultTokenIssuer: tokenIssuer);
+            provider1 = factory.construct(tokenIssuer: tokenIssuer);
+            provider2 = factory.construct(tokenIssuer: tokenIssuer);
           });
 
           test('then each instance should be unique', () {
@@ -103,8 +103,8 @@ void testSuite(
           late FakeIdentityProvider provider2;
 
           setUp(() {
-            provider1 = factory1.construct(defaultTokenIssuer: tokenIssuer1);
-            provider2 = factory2.construct(defaultTokenIssuer: tokenIssuer2);
+            provider1 = factory1.construct(tokenIssuer: tokenIssuer1);
+            provider2 = factory2.construct(tokenIssuer: tokenIssuer2);
           });
 
           test('then each provider should have its respective token issuer',

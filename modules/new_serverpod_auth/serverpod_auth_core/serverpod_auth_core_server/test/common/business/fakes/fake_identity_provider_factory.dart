@@ -5,14 +5,11 @@ import 'fake_identity_provider.dart';
 
 /// A fake implementation of [IdentityProviderFactory] for testing purposes.
 class FakeIdentityProviderFactory
-    implements IdentityProviderFactory<FakeIdentityProvider> {
-  @override
-  Type get type => FakeIdentityProvider;
-
+    extends IdentityProviderFactory<FakeIdentityProvider> {
   @override
   FakeIdentityProvider construct({
-    required final TokenIssuer defaultTokenIssuer,
+    required final TokenIssuer tokenIssuer,
   }) {
-    return FakeIdentityProvider(tokenIssuer: defaultTokenIssuer);
+    return FakeIdentityProvider(tokenIssuer: tokenIssuer);
   }
 }

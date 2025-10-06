@@ -61,7 +61,7 @@ class AuthConfig {
   }) {
     for (final provider in identityProviders) {
       _providers[provider.type] = provider.construct(
-        defaultTokenIssuer: defaultTokenIssuer,
+        tokenIssuer: provider.tokenIssuerOverride ?? defaultTokenIssuer,
       );
     }
     tokenManager = TokenManager(tokenProviders);
