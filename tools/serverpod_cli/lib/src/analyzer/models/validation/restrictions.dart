@@ -229,7 +229,7 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateTableValue(
+  List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,
     SourceSpan? span,
