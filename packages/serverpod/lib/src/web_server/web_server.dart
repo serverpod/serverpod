@@ -91,12 +91,11 @@ class WebServer {
 
       var scheme = _securityContext != null ? 'https' : 'http';
       var host = _config.publicHost;
-      var port = _actualPort;
-      logInfo('Webserver listening on $scheme://$host:$port');
+      logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
-          message: 'Failed to bind socket, '
-              'port $port may already be in use.');
+          message:
+              'Failed to bind socket, port ${_config.port} may already be in use.');
     }
     return _running;
   }
