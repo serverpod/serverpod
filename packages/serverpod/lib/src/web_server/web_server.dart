@@ -79,7 +79,7 @@ class WebServer {
     try {
       final server = await serve(
         const Pipeline()
-            .addMiddleware(routeWith(_router)) //
+            .addMiddleware(routeWith(_router))
             .addHandler(respondWith((_) => Response.notFound())),
         InternetAddress.anyIPv6,
         _config.port,
