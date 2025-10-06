@@ -106,11 +106,18 @@ class ModelDependencyResolver {
       defaultModelValue ??= defaultIdType.defaultValue;
     }
 
-    var defaultIdFieldDoc = [
-      '/// The database id, set if the object has been inserted into the',
-      '/// database or if it has been fetched from the database. Otherwise,',
-      '/// the id will be null.',
-    ];
+    late List<String> defaultIdFieldDoc;
+    if (idFieldType.nullable && defaultModelValue == null) {
+      defaultIdFieldDoc = [
+        '/// The database id, set if the object has been inserted into the',
+        '/// database or if it has been fetched from the database. Otherwise,',
+        '/// the id will be null.',
+      ];
+    } else {
+      defaultIdFieldDoc = [
+        '/// The id of the object.',
+      ];
+    }
 
     classDefinition.fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
     classDefinition.fields.insert(
