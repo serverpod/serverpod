@@ -241,4 +241,42 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given a serverOnly table class with nullable id type "UUIDv4" when generating code',
+      () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withFileName('example')
+          .withTableName('example_table')
+          .withIdFieldType(SupportedIdType.uuidV4, nullable: true)
+          .withServerOnly(true)
+          .build()
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit =
+        parseString(content: codeMap[expectedFilePath]!).unit;
+
+    late final maybeClassNamedExample =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: 'Example',
+    );
+
+    test('then toJsonForProtocol method should return an empty map.', () {
+      var toJsonForProtocolMethod =
+          CompilationUnitHelpers.tryFindMethodDeclaration(
+        maybeClassNamedExample!,
+        name: 'toJsonForProtocol',
+      );
+
+      var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
+      expect(toJsonForProtocolCode, contains('return {};'));
+    });
+  });
 }

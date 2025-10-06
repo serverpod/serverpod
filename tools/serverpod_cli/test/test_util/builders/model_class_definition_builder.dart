@@ -48,7 +48,9 @@ class ModelClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withPrimaryKey(type: _idType, isNullable: _idTypeNullable)
-            .withScope(ModelFieldScopeDefinition.all)
+            .withScope(_serverOnly
+                ? ModelFieldScopeDefinition.serverOnly
+                : ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
       );

@@ -913,4 +913,17 @@ void main() {
       });
     });
   });
+
+  test(
+      'Given an object from a server only class with changed id type '
+      'when calling toJsonForProtocol '
+      'then the serialized json should be an empty map.', () {
+    var object = ServerOnlyChangedIdFieldClass(
+      id: Uuid().v4obj(),
+    );
+
+    var jsonMap = object.toJsonForProtocol();
+
+    expect(jsonMap, {});
+  });
 }

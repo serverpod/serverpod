@@ -640,4 +640,36 @@ void main() {
       );
     },
   );
+
+  group(
+      'Given a serverOnly table class with a declared id field and no scope set',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        serverOnly: true
+        table: example
+        fields:
+          id: UuidValue?, defaultPersist=random
+        ''',
+      ).build(),
+    ];
+
+    late var collector = CodeGenerationCollector();
+    late var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    late final definitions = analyzer.validateAll();
+
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    late final exampleClass = definitions.first as ModelClassDefinition;
+
+    test('then the scope of the id field is serverOnly.', () {
+      var idField = exampleClass.findField('id');
+      expect(idField?.scope, ModelFieldScopeDefinition.serverOnly);
+    });
+  });
 }

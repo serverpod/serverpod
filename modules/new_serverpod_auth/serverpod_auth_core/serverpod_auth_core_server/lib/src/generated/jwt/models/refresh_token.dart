@@ -177,7 +177,7 @@ abstract class RefreshToken
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static RefreshTokenInclude include({_i2.AuthUserInclude? authUser}) {

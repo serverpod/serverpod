@@ -37,7 +37,7 @@ class ParentWithChangedId
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'id': id.toJson()};
+    return {};
   }
 
   @override

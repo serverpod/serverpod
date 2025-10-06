@@ -110,7 +110,7 @@ abstract class UserProfileImage
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static UserProfileImageInclude include(

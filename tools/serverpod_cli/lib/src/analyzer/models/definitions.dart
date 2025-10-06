@@ -299,7 +299,7 @@ class SerializableModelFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    return name == 'id' || scope == ModelFieldScopeDefinition.all;
+    return scope == ModelFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization for the

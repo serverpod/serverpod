@@ -85,12 +85,7 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'id': id.toJson(),
-      'name': name,
-      if (parent != null) 'parent': parent?.toJsonForProtocol(),
-      if (parentId != null) 'parentId': parentId?.toJson(),
-    };
+    return {};
   }
 
   static ChildWithInheritedIdInclude include(

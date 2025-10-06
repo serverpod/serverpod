@@ -182,7 +182,7 @@ abstract class AppleAccount
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static AppleAccountInclude include({_i2.AuthUserInclude? authUser}) {
