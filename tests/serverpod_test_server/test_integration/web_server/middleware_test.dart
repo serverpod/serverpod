@@ -23,43 +23,44 @@ void main() {
     await serverpod.shutdown(exitProcess: false);
   });
 
-  test(
-      'Given a route that requires authentication is added to an authenticated path, '
-      'when client requests the path without authorization, '
-      'then a 401 Unauthorized is returned', () async {
-    var response =
-        await http.get(Uri.parse('http://localhost:8082/api/foo'), headers: {});
+  group(
+      'Given a route that requires authentication is added to an authenticated path',
+      () {
+    test(
+        'when client requests the path without authorization, '
+        'then a 401 Unauthorized is returned', () async {
+      var response = await http
+          .get(Uri.parse('http://localhost:8082/api/foo'), headers: {});
 
-    expect(response.statusCode, 401);
-  });
+      expect(response.statusCode, 401);
+    });
 
-  test(
-      'Given a route that requires authentication is added to an authenticated path, '
-      'when client requests the path with invalid authorization, '
-      'then a 401 Unauthorized is returned', () async {
-    var response = await http.get(
-      Uri.parse('http://localhost:8082/api/foo'),
-      headers: {
-        'Authorization': 'Bearer bad',
-      },
-    );
+    test(
+        'when client requests the path with invalid authorization, '
+        'then a 401 Unauthorized is returned', () async {
+      var response = await http.get(
+        Uri.parse('http://localhost:8082/api/foo'),
+        headers: {
+          'Authorization': 'Bearer bad',
+        },
+      );
 
-    expect(response.statusCode, 401);
-  });
+      expect(response.statusCode, 401);
+    });
 
-  test(
-      'Given a route that requires authentication is added to an authenticated path, '
-      'when client requests the path with valid authorization, '
-      'then a 200 OK is returned', () async {
-    var response = await http.get(
-      Uri.parse('http://localhost:8082/api/foo'),
-      headers: {
-        'Authorization': 'Bearer good',
-      },
-    );
+    test(
+        'when client requests the path with valid authorization, '
+        'then a 200 OK is returned', () async {
+      var response = await http.get(
+        Uri.parse('http://localhost:8082/api/foo'),
+        headers: {
+          'Authorization': 'Bearer good',
+        },
+      );
 
-    expect(response.statusCode, 200);
-    expect(response.body, 'mario');
+      expect(response.statusCode, 200);
+      expect(response.body, 'mario');
+    });
   });
 
   test(
