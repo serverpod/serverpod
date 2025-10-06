@@ -1695,13 +1695,13 @@ extension on List<SerializableModelDefinition> {
     for (var model in this) {
       if (model is ModelClassDefinition) {
         for (var subClass in model.sortedChildClasses) {
-          if (!sorted.contains(subClass)) {
+          if (contains(subClass) && !sorted.contains(subClass)) {
             sorted.add(subClass);
           }
         }
       }
 
-      if (!sorted.contains(model)) {
+      if (contains(model) && !sorted.contains(model)) {
         sorted.add(model);
       }
     }
