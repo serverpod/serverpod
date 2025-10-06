@@ -146,7 +146,7 @@ void main() {
     });
 
     test(
-        'then child class id field has defaultPersist set to random and defaultModel set to null.',
+        'then child class id field has defaultPersist set to the parents configured value and defaultModel set to null.',
         () {
       var idField = childClass.idField;
 
@@ -194,7 +194,7 @@ void main() {
     });
 
     test(
-        'then child class has both defaultModel and defaultPersist set to random.',
+        'then child class has both defaultModel and defaultPersist set to the parents configured value.',
         () {
       var idField = childClass.idField;
 
@@ -238,7 +238,7 @@ void main() {
     late var childClass = models.last as ModelClassDefinition;
 
     test(
-        'then child class has both defaultModel and defaultPersist set to random.',
+        'then child class has both defaultModel and defaultPersist set to the parents configured value.',
         () {
       var idField = childClass.idField;
 
