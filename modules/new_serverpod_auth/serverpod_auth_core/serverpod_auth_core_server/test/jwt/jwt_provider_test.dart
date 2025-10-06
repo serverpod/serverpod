@@ -77,6 +77,30 @@ void main() {
             expect(refreshTokens, hasLength(1));
             expect(refreshTokens.first.method, equals('test-method'));
           });
+
+          test('then access token is valid on the server', () async {
+            final authInfo = await AuthenticationTokens.authenticationHandler(
+              session,
+              authSuccess.token,
+            );
+            expect(authInfo, isNotNull);
+            expect(authInfo!.userIdentifier, equals(authUserId.uuid));
+            expect(
+              authInfo.scopes.map((final s) => s.name),
+              contains('test-scope'),
+            );
+          });
+
+          test('then refresh token is valid on the server', () async {
+            // Refresh tokens are validated by being able to rotate them
+            final rotatedAuth = await AuthenticationTokens.rotateRefreshToken(
+              session,
+              refreshToken: authSuccess.refreshToken!,
+            );
+            expect(rotatedAuth, isNotNull);
+            expect(rotatedAuth.accessToken, isNotEmpty);
+            expect(rotatedAuth.refreshToken, isNotEmpty);
+          });
         });
 
         group('when issuing a token without scopes', () {
@@ -187,44 +211,6 @@ void main() {
               where: (final t) => t.authUserId.equals(authUserId),
             );
             expect(refreshTokens, hasLength(2));
-          });
-        });
-
-        group('when issuing tokens', () {
-          late AuthSuccess authSuccess;
-
-          setUp(() async {
-            authSuccess = await tokenIssuer.issueToken(
-              session: session,
-              authUserId: authUserId,
-              method: 'test-method',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-          });
-
-          test('then access token is valid on the server', () async {
-            final authInfo = await AuthenticationTokens.authenticationHandler(
-              session,
-              authSuccess.token,
-            );
-            expect(authInfo, isNotNull);
-            expect(authInfo!.userIdentifier, equals(authUserId.uuid));
-            expect(
-              authInfo.scopes.map((final s) => s.name),
-              contains('test-scope'),
-            );
-          });
-
-          test('then refresh token is valid on the server', () async {
-            // Refresh tokens are validated by being able to rotate them
-            final rotatedAuth = await AuthenticationTokens.rotateRefreshToken(
-              session,
-              refreshToken: authSuccess.refreshToken!,
-            );
-            expect(rotatedAuth, isNotNull);
-            expect(rotatedAuth.accessToken, isNotEmpty);
-            expect(rotatedAuth.refreshToken, isNotEmpty);
           });
         });
       },
