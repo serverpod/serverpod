@@ -52,7 +52,6 @@ import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i25;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i26;
 import 'dart:typed_data' as _i27;
-import 'package:uuid/uuid_value.dart' as _i28;
 export 'providers/apple/models/apple_account.dart';
 export 'providers/email/models/email_account.dart';
 export 'providers/email/models/email_account_failed_login_attempt.dart';
@@ -1198,11 +1197,11 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i26.PasskeyRegistrationRequest.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<({_i27.ByteData challenge, _i28.UuidValue id})>()) {
+    if (t == _i1.getType<({_i27.ByteData challenge, _i1.UuidValue id})>()) {
       return (
         challenge: deserialize<_i27.ByteData>(
             ((data as Map)['n'] as Map)['challenge']),
-        id: deserialize<_i28.UuidValue>(data['n']['id']),
+        id: deserialize<_i1.UuidValue>(data['n']['id']),
       ) as T;
     }
     try {
@@ -1424,7 +1423,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
   }
-  if (record is ({_i27.ByteData challenge, _i28.UuidValue id})) {
+  if (record is ({_i27.ByteData challenge, _i1.UuidValue id})) {
     return {
       "n": {
         "challenge": record.challenge,
