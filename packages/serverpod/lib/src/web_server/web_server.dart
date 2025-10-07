@@ -23,7 +23,9 @@ class WebServer {
 
   int? _actualPort;
 
-  final _router = ServerpodRouter();
+  late final _router = Router<Handler>()
+    ..use('/', _ReportExceptionMiddleware(this).call)
+    ..use('/', _SessionMiddleware(serverpod.server).call);
 
   RelicServer? _server;
 
@@ -54,9 +56,12 @@ class WebServer {
 
   /// Adds a [Route] to the server, together with a [path] that defines how
   /// calls are routed.
-  void addRoute(Route route, String path) {
-    _router.add(route, path);
-  }
+  void addRoute(Route route, String path) =>
+      _router.anyOf(route.methods, path, route.call);
+
+  /// Adds a [Middleware] to the server for all routes below [path].
+  void addMiddleware(Middleware middleware, String path) =>
+      _router.use(path, middleware);
 
   /// Returns true if the webserver has any routes registered.
   bool get hasRoutes => !_router.isEmpty;
@@ -74,12 +79,8 @@ class WebServer {
     try {
       final server = await serve(
         const Pipeline()
-            .addMiddleware(
-              routeWith(_router as Router<Route>, toHandler: _routeToHandler),
-            )
-            .addHandler(
-              respondWith((_) => Response.notFound()),
-            ),
+            .addMiddleware(routeWith(_router))
+            .addHandler(respondWith((_) => Response.notFound())),
         InternetAddress.anyIPv6,
         _config.port,
         securityContext: _securityContext,
@@ -90,50 +91,13 @@ class WebServer {
 
       var scheme = _securityContext != null ? 'https' : 'http';
       var host = _config.publicHost;
-      var port = _actualPort;
-      logInfo('Webserver listening on $scheme://$host:$port');
+      logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
-          message: 'Failed to bind socket, '
-              'port $port may already be in use.');
+          message:
+              'Failed to bind socket, port ${_config.port} may already be in use.');
     }
     return _running;
-  }
-
-  Handler _routeToHandler(Route route) {
-    return (ctx) {
-      final request = ctx.request;
-
-      final session = WebCallSession(
-        server: serverpod.server,
-        endpoint: request.requestedUri.path,
-        authenticationKey: request.headers.authorization?.headerValue,
-        remoteInfo: request.remoteInfo,
-      );
-
-      return _handleRouteCall(route, session, ctx);
-    };
-  }
-
-  Future<HandledContext> _handleRouteCall(
-    Route route,
-    Session session,
-    NewContext context,
-  ) async {
-    try {
-      return await route.handleCall(session, context);
-    } catch (e, stackTrace) {
-      final request = context.request;
-      await _reportException(
-        e,
-        stackTrace,
-        space: OriginSpace.application,
-        session: session,
-        request: request,
-      );
-
-      return context.respond(Response.internalServerError());
-    }
   }
 
   Future<void> _reportException(
@@ -194,6 +158,68 @@ class WebServer {
   }
 }
 
+class _SessionMiddleware {
+  final Server _server;
+
+  const _SessionMiddleware(this._server);
+
+  Handler call(Handler next) {
+    return (ctx) async {
+      final request = ctx.request;
+      final session = WebCallSession(
+        server: _server,
+        endpoint: request.requestedUri.path,
+        authenticationKey: request.headers.authorization?.headerValue,
+        remoteInfo: request.remoteInfo,
+      );
+      _sessionProperty[ctx] = session;
+      try {
+        return await next(ctx);
+      } finally {
+        await session.close();
+      }
+    };
+  }
+}
+
+class _ReportExceptionMiddleware {
+  final WebServer _webServer;
+
+  const _ReportExceptionMiddleware(this._webServer);
+
+  Handler call(Handler next) {
+    return (ctx) async {
+      try {
+        return await next(ctx);
+      } catch (e, stackTrace) {
+        await _webServer._reportException(
+          e,
+          stackTrace,
+          space: OriginSpace.application,
+          session: ctx.sessionOrNull,
+          request: ctx.request,
+        );
+        return ctx.respond(Response.internalServerError());
+      }
+    };
+  }
+}
+
+final _sessionProperty = ContextProperty<Session>();
+
+/// [Session] related extension methods for [RequestContext].
+extension SessionEx on RequestContext {
+  /// The session associated with this request context.
+  ///
+  /// Throws, if no session has been initiated.
+  Session get session => _sessionProperty[this];
+
+  /// The session associated with this request context, if any.
+  ///
+  /// Safe to use, even before session is initiated.
+  Session? get sessionOrNull => _sessionProperty.getOrNull(this);
+}
+
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
@@ -204,6 +230,12 @@ abstract class Route {
 
   /// Creates a new [Route].
   Route({this.methods = const {Method.get}});
+
+  /// Handles a call to this route, by extracting [Session] from context and
+  /// forwarding to [handleCall].
+  FutureOr<HandledContext> call(NewContext context) {
+    return handleCall(context.session, context);
+  }
 
   /// Handles a call to this route.
   FutureOr<HandledContext> handleCall(Session session, NewContext context);
@@ -242,22 +274,4 @@ abstract class WidgetRoute extends Route {
       headers: headers,
     ));
   }
-}
-
-/// A [ServerpodRouter] is a collection of [Route]s that can be used to
-/// handle incoming requests. It uses the [relic] package to match routes.
-extension type ServerpodRouter._(Router<Route> _router) {
-  /// Creates a new [ServerpodRouter].
-  ServerpodRouter() : _router = Router<Route>();
-
-  /// Adds a [Route] to the router.
-  void add(Route route, String path) =>
-      _router.anyOf(route.methods, path, route);
-
-  /// Looks up a [Route] in the router based on the HTTP method and path.
-  LookupResult<Route>? lookup(Method method, String path) =>
-      _router.lookup(method, path);
-
-  /// Checks if the router is empty.
-  bool get isEmpty => _router.isEmpty;
 }
