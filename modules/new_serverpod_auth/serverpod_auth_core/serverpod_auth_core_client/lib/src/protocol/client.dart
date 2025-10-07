@@ -14,6 +14,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart'
     as _i3;
+import 'package:serverpod_auth_core_client/src/protocol/profile/models/user_profile_model.dart'
+    as _i4;
+import 'dart:typed_data' as _i5;
 
 /// Endpoint for getting status and managing a signed in user.
 /// {@category Endpoint}
@@ -79,6 +82,54 @@ class EndpointRefreshJwtTokens extends _i1.EndpointRef {
         {'refreshToken': refreshToken},
         authenticated: false,
       );
+}
+
+/// Base endpoint for user profile management.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
+/// {@category Endpoint}
+abstract class EndpointUserProfileBase extends _i1.EndpointRef {
+  EndpointUserProfileBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Returns the user profile of the current user.
+  _i2.Future<_i4.UserProfileModel> get();
+
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
+  _i2.Future<_i4.UserProfileModel> removeUserImage();
+
+  /// Sets a new user image for the signed in user.
+  _i2.Future<_i4.UserProfileModel> setUserImage(_i5.ByteData image);
+
+  /// Changes the name of a user.
+  _i2.Future<_i4.UserProfileModel> changeUserName(String? userName);
+
+  /// Changes the full name of a user.
+  _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName);
+}
+
+/// Base endpoint for auth sessions.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class.
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
+/// {@category Endpoint}
+abstract class EndpointSessionBase extends _i1.EndpointRef {
+  EndpointSessionBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Checks whether the caller is authenticated.
+  ///
+  /// Return `true` if the caller is authentication, `false` otherwise.
+  /// Does not error on missing authentication.
+  _i2.Future<bool> isAuthenticated();
+
+  /// Logs out the current user.
+  ///
+  /// Returns `true` if the user was actually logged out, and `false` if the
+  /// calling session was not valid anymore.
+  _i2.Future<bool> logout({required bool allSessions});
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

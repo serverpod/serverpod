@@ -33,8 +33,10 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i11;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i12;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i13;
+import 'dart:typed_data' as _i14;
+import 'package:uuid/uuid_value.dart' as _i15;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i14;
+    as _i16;
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
 export 'providers/email/models/exceptions/email_account_login_failure_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception.dart';
@@ -157,8 +159,15 @@ class Protocol extends _i1.SerializationManager {
           ? _i13.PasskeyRegistrationRequest.fromJson(data)
           : null) as T;
     }
+    if (t == _i1.getType<({_i14.ByteData challenge, _i15.UuidValue id})>()) {
+      return (
+        challenge: deserialize<_i14.ByteData>(
+            ((data as Map)['n'] as Map)['challenge']),
+        id: deserialize<_i15.UuidValue>(data['n']['id']),
+      ) as T;
+    }
     try {
-      return _i14.Protocol().deserialize<T>(data, t);
+      return _i16.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -193,7 +202,7 @@ class Protocol extends _i1.SerializationManager {
       case _i13.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
-    className = _i14.Protocol().getClassNameForObject(data);
+    className = _i16.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -245,8 +254,80 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i14.Protocol().deserializeByClassName(data);
+      return _i16.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
+}
+
+/// Maps any `Record`s known to this [Protocol] to their JSON representation
+///
+/// Throws in case the record type is not known.
+///
+/// This method will return `null` (only) for `null` inputs.
+Map<String, dynamic>? mapRecordToJson(Record? record) {
+  if (record == null) {
+    return null;
+  }
+  if (record is ({_i14.ByteData challenge, _i15.UuidValue id})) {
+    return {
+      "n": {
+        "challenge": record.challenge,
+        "id": record.id,
+      },
+    };
+  }
+  throw Exception('Unsupported record type ${record.runtimeType}');
+}
+
+/// Maps container types (like [List], [Map], [Set]) containing
+/// [Record]s or non-String-keyed [Map]s to their JSON representation.
+///
+/// It should not be called for [SerializableModel] types. These
+/// handle the "[Record] in container" mapping internally already.
+///
+/// It is only supposed to be called from generated protocol code.
+///
+/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+/// non-String keys) or a `Map<String, dynamic>` in case the input was
+/// a `Map<String, …>`.
+Object? mapContainerToJson(Object obj) {
+  if (obj is! Iterable && obj is! Map) {
+    throw ArgumentError.value(
+      obj,
+      'obj',
+      'The object to serialize should be of type List, Map, or Set',
+    );
+  }
+
+  dynamic mapIfNeeded(Object? obj) {
+    return switch (obj) {
+      Record record => mapRecordToJson(record),
+      Iterable iterable => mapContainerToJson(iterable),
+      Map map => mapContainerToJson(map),
+      Object? value => value,
+    };
+  }
+
+  switch (obj) {
+    case Map<String, dynamic>():
+      return {
+        for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+      };
+    case Map():
+      return [
+        for (var entry in obj.entries)
+          {
+            'k': mapIfNeeded(entry.key),
+            'v': mapIfNeeded(entry.value),
+          }
+      ];
+
+    case Iterable():
+      return [
+        for (var e in obj) mapIfNeeded(e),
+      ];
+  }
+
+  return obj;
 }

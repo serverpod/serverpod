@@ -106,6 +106,30 @@ emailAuthTestMethods:
   - findResetCode:
   - tearDown:
   - createUser:
+concreteBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+concreteSubClass:
+  - subClassVirtualMethod:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+independent:
+  - subClassVirtualMethod:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
+  - abstractBaseStreamMethod:
+concreteFromModuleAbstractBase:
+  - virtualMethod:
+  - abstractBaseMethod:
+concreteModuleBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
 loggedIn:
 myLoggedIn:
   - echo:

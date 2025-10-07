@@ -17,6 +17,55 @@ import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
 import 'package:serverpod_test_module_client/src/protocol/module_feature/models/my_feature_model.dart'
     as _i4;
 
+/// An abstract endpoint with a virtual method.
+///
+/// Uses same name and path than the endpoint on `serverpod_test_server` to
+/// enure classes are not being matched by name only.
+/// {@category Endpoint}
+abstract class EndpointAbstractBase extends _i1.EndpointRef {
+  EndpointAbstractBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// This is a virtual method that must be overriden.
+  _i2.Future<String> virtualMethod();
+
+  /// This body should not be present in the generated abstract class.
+  _i2.Future<String> abstractBaseMethod();
+}
+
+/// A concrete endpoint that extends the abstract endpoint.
+///
+/// Uses same name and path than the endpoint on `serverpod_test_server` to
+/// enure classes are not being matched by name only.
+/// {@category Endpoint}
+class EndpointConcreteBase extends EndpointAbstractBase {
+  EndpointConcreteBase(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_test_module.concreteBase';
+
+  @override
+  _i2.Future<String> virtualMethod() => caller.callServerEndpoint<String>(
+        'serverpod_test_module.concreteBase',
+        'virtualMethod',
+        {},
+      );
+
+  /// A concrete method that should be present in the generated class.
+  _i2.Future<String> concreteMethod() => caller.callServerEndpoint<String>(
+        'serverpod_test_module.concreteBase',
+        'concreteMethod',
+        {},
+      );
+
+  /// This body should not be present in the generated abstract class.
+  @override
+  _i2.Future<String> abstractBaseMethod() => caller.callServerEndpoint<String>(
+        'serverpod_test_module.concreteBase',
+        'abstractBaseMethod',
+        {},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointModule extends _i1.EndpointRef {
   EndpointModule(_i1.EndpointCaller caller) : super(caller);
@@ -161,12 +210,15 @@ class EndpointMyModuleFeature extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
+    concreteBase = EndpointConcreteBase(this);
     module = EndpointModule(this);
     streaming = EndpointStreaming(this);
     unauthenticated = EndpointUnauthenticated(this);
     partiallyUnauthenticated = EndpointPartiallyUnauthenticated(this);
     myModuleFeature = EndpointMyModuleFeature(this);
   }
+
+  late final EndpointConcreteBase concreteBase;
 
   late final EndpointModule module;
 
@@ -180,6 +232,7 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'serverpod_test_module.concreteBase': concreteBase,
         'serverpod_test_module.module': module,
         'serverpod_test_module.streaming': streaming,
         'serverpod_test_module.unauthenticated': unauthenticated,
