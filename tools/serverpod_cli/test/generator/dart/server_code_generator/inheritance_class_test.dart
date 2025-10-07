@@ -585,4 +585,56 @@ void main() {
       });
     });
   });
+
+  group(
+      'Given a serverOnly child-class that inherits from a non serverOnly parent '
+      'when generating code', () {
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(parentClassName)
+          .withFileName(parentClassFileName)
+          .withSimpleField('name', 'String')
+          .build(),
+      ModelClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withSimpleField('age', 'int', nullable: true)
+          .withExtendsClass(
+            ModelClassDefinitionBuilder()
+                .withClassName(parentClassName)
+                .withFileName(parentClassFileName)
+                .withSimpleField('name', 'String')
+                .build(),
+          )
+          .withServerOnly(true)
+          .build(),
+    ];
+
+    late var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late var compilationUnit =
+        parseString(content: codeMap[childExpectedFilePath]!).unit;
+
+    late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: childClassName,
+    );
+
+    late var toJsonForProtocolMethod =
+        CompilationUnitHelpers.tryFindMethodDeclaration(
+      childClass!,
+      name: 'toJsonForProtocol',
+    );
+
+    test('then the $childClassName toJsonForProtocol method is generated.', () {
+      expect(toJsonForProtocolMethod, isNotNull);
+    });
+
+    test('then the toJsonForProtocol method returns an empty map.', () {
+      expect(toJsonForProtocolMethod!.toSource(), contains('return {};'));
+    });
+  });
 }

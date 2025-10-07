@@ -290,7 +290,8 @@ class SerializableModelLibraryGenerator {
       // Serialization for database and everything
       if (serverCode) {
         classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(fields),
+          _buildModelClassToJsonForProtocolMethod(
+              fields, classDefinition.serverOnly),
         );
       }
 
@@ -445,7 +446,8 @@ class SerializableModelLibraryGenerator {
       if (serverCode) {
         if (!classDefinition.isSealed) {
           classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(fields),
+            _buildModelClassToJsonForProtocolMethod(
+                fields, classDefinition.serverOnly),
           );
         }
 
@@ -1266,6 +1268,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassToJsonForProtocolMethod(
     Iterable<SerializableModelFieldDefinition> fields,
+    bool isServerOnlyClass,
   ) {
     return Method(
       (m) {
@@ -1273,8 +1276,8 @@ class SerializableModelLibraryGenerator {
         m.name = _toJsonForProtocolMethodName;
         m.annotations.add(refer('override'));
 
-        var filteredFields =
-            fields.where((field) => field.shouldSerializeField(serverCode));
+        var filteredFields = fields.where((field) =>
+            field.shouldSerializeField(serverCode) && !isServerOnlyClass);
 
         m.body = _createToJsonBodyFromFields(
           filteredFields,

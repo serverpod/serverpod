@@ -926,4 +926,18 @@ void main() {
 
     expect(jsonMap, {});
   });
+
+  test(
+      'Given an object from a server only class that inherits from a non server only class '
+      'when calling toJsonForProtocol '
+      'then the serialized json should be an empty map.', () {
+    var object = ServerOnlyChildClass(
+      parentField: 'parentField',
+      childField: 'childField',
+    );
+
+    var jsonMap = object.toJsonForProtocol();
+
+    expect(jsonMap, {});
+  });
 }

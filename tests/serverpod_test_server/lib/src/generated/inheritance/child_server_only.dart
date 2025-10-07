@@ -13,29 +13,21 @@
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 
-abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
+abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
     implements _i2.SerializableModel, _i2.ProtocolSerialization {
-  ServerOnlyChildClassWithoutId._({
-    super.id,
-    required super.grandParentField,
+  ServerOnlyChildClass._({
     required super.parentField,
     required this.childField,
   });
 
-  factory ServerOnlyChildClassWithoutId({
-    _i2.UuidValue? id,
-    required String grandParentField,
+  factory ServerOnlyChildClass({
     required String parentField,
     required String childField,
-  }) = _ServerOnlyChildClassWithoutIdImpl;
+  }) = _ServerOnlyChildClassImpl;
 
-  factory ServerOnlyChildClassWithoutId.fromJson(
+  factory ServerOnlyChildClass.fromJson(
       Map<String, dynamic> jsonSerialization) {
-    return ServerOnlyChildClassWithoutId(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      grandParentField: jsonSerialization['grandParentField'] as String,
+    return ServerOnlyChildClass(
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
     );
@@ -43,21 +35,17 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
 
   String childField;
 
-  /// Returns a shallow copy of this [ServerOnlyChildClassWithoutId]
+  /// Returns a shallow copy of this [ServerOnlyChildClass]
   /// with some or all fields replaced by the given arguments.
   @override
   @_i2.useResult
-  ServerOnlyChildClassWithoutId copyWith({
-    Object? id,
-    String? grandParentField,
+  ServerOnlyChildClass copyWith({
     String? parentField,
     String? childField,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id?.toJson(),
-      'grandParentField': grandParentField,
       'parentField': parentField,
       'childField': childField,
     };
@@ -74,34 +62,24 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
   }
 }
 
-class _Undefined {}
-
-class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
-  _ServerOnlyChildClassWithoutIdImpl({
-    _i2.UuidValue? id,
-    required String grandParentField,
+class _ServerOnlyChildClassImpl extends ServerOnlyChildClass {
+  _ServerOnlyChildClassImpl({
     required String parentField,
     required String childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
           parentField: parentField,
           childField: childField,
         );
 
-  /// Returns a shallow copy of this [ServerOnlyChildClassWithoutId]
+  /// Returns a shallow copy of this [ServerOnlyChildClass]
   /// with some or all fields replaced by the given arguments.
   @_i2.useResult
   @override
-  ServerOnlyChildClassWithoutId copyWith({
-    Object? id = _Undefined,
-    String? grandParentField,
+  ServerOnlyChildClass copyWith({
     String? parentField,
     String? childField,
   }) {
-    return ServerOnlyChildClassWithoutId(
-      id: id is _i2.UuidValue? ? id : this.id,
-      grandParentField: grandParentField ?? this.grandParentField,
+    return ServerOnlyChildClass(
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,
     );
