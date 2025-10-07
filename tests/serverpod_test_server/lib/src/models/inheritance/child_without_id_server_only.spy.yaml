@@ -1,0 +1,5 @@
+class: ServerOnlyChildClassWithoutId
+serverOnly: true
+extends: ParentClassWithoutId
+fields:
+    childField: String

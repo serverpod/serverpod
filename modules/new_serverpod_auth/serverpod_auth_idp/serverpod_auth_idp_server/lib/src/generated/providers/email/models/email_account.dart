@@ -119,7 +119,7 @@ abstract class EmailAccount
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static EmailAccountInclude include({_i2.AuthUserInclude? authUser}) {

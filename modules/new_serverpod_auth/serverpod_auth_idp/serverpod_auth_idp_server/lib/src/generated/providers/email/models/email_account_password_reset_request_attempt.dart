@@ -84,7 +84,7 @@ abstract class EmailAccountPasswordResetRequestAttempt
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static EmailAccountPasswordResetRequestAttemptInclude include() {

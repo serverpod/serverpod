@@ -104,7 +104,7 @@ abstract class LegacySession
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id};
+    return {};
   }
 
   static LegacySessionInclude include({_i2.AuthUserInclude? authUser}) {

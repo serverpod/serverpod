@@ -1,0 +1,5 @@
+class: ChildClassWithoutId
+extends: ParentClassWithoutId
+table: child_table_with_inherited_id
+fields:
+    childField: String

@@ -130,7 +130,7 @@ abstract class EmailAccountRequest
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static EmailAccountRequestInclude include() {
