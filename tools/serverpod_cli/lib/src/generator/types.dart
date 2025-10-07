@@ -317,6 +317,12 @@ class TypeDefinition {
               serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
+            (className == 'UuidValue' &&
+                [
+                  'serverpod',
+                  'package:uuid/uuid_value.dart',
+                  'package:uuid/uuid.dart'
+                ].contains(url)) ||
             (url == null &&
                 (['UuidValue', ...vectorClassNames]).contains(className))) {
           // serverpod: reference
