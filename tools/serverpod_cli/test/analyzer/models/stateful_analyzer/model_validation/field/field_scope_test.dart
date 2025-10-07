@@ -78,12 +78,17 @@ void main() {
       late var collector = CodeGenerationCollector();
       late var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      late var definitions = analyzer.validateAll();
-      late var definition = definitions.first as ClassDefinition;
+
+      late List<SerializableModelDefinition> definitions;
+      setUpAll(() {
+        definitions = analyzer.validateAll();
+      });
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
       });
+
+      late var definition = definitions.first as ClassDefinition;
 
       test('then the generated model has the scope.', () {
         expect(
@@ -218,7 +223,11 @@ void main() {
         models,
         onErrorsCollector(collector),
       );
-      late var definitions = analyzer.validateAll();
+
+      late List<SerializableModelDefinition> definitions;
+      setUpAll(() {
+        definitions = analyzer.validateAll();
+      });
 
       test('then an error is collected.', () {
         expect(collector.errors, isNotEmpty);
