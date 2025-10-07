@@ -317,7 +317,14 @@ class TypeDefinition {
               serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
-            (['UuidValue', ...vectorClassNames]).contains(className)) {
+            (className == 'UuidValue' &&
+                [
+                  'serverpod',
+                  'package:uuid/uuid_value.dart',
+                  'package:uuid/uuid.dart'
+                ].contains(url)) ||
+            (url == null &&
+                (['UuidValue', ...vectorClassNames]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {

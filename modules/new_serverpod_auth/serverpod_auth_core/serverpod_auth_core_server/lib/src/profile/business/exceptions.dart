@@ -1,4 +1,4 @@
-import 'package:uuid/uuid_value.dart';
+import 'package:serverpod/serverpod.dart';
 
 /// Exception which is thrown when a user's profile could not be found.
 class UserProfileNotFoundException implements Exception {
