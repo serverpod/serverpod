@@ -2,25 +2,48 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/src/generated/endpoints.dart';
+
 void main() {
-  late Serverpod serverpod;
+  late Serverpod pod;
+  late int port;
+
+  final portZeroConfig = ServerConfig(
+    port: 0,
+    publicScheme: 'http',
+    publicHost: 'localhost',
+    publicPort: 0,
+  );
 
   setUp(() async {
-    serverpod = IntegrationTestServer.create(
-        authenticationHandler: (session, token) => Future.value(
-            token == 'Bearer good' ? AuthenticationInfo('mario', {}) : null));
-    serverpod.webServer.addMiddleware(_AuthMiddleware().call, '/api');
-    serverpod.webServer.addRoute(TestRoute(), '/api/foo');
-    serverpod.webServer.addRoute(TestRoute(), '/bar');
+    // Setup a bare-bone serverpod
+    pod = Serverpod(
+      [],
+      Protocol(),
+      Endpoints(),
+      config: ServerpodConfig(
+        apiServer: portZeroConfig, // not used in these tests
+        webServer: portZeroConfig,
+      ),
+      authenticationHandler: (session, token) => Future.value(
+          token == 'Bearer good' ? AuthenticationInfo('mario', {}) : null),
+    );
 
-    await serverpod.start();
+    pod.webServer.addMiddleware(_AuthMiddleware().call, '/api');
+    pod.webServer.addRoute(TestRoute(), '/api/foo');
+    pod.webServer.addRoute(TestRoute(), '/bar');
+
+    await pod.start();
+
+    port = pod.webServer.port!;
+    print(port);
   });
 
   tearDown(() async {
-    await serverpod.shutdown(exitProcess: false);
+    await pod.shutdown(exitProcess: false);
   });
 
   group(
@@ -29,8 +52,7 @@ void main() {
     test(
         'when client requests the path without authorization, '
         'then a 401 Unauthorized is returned', () async {
-      var response = await http
-          .get(Uri.parse('http://localhost:8082/api/foo'), headers: {});
+      var response = await http.get(Uri.http('localhost:$port', '/api/foo'));
 
       expect(response.statusCode, 401);
     });
@@ -39,7 +61,7 @@ void main() {
         'when client requests the path with invalid authorization, '
         'then a 401 Unauthorized is returned', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/api/foo'),
+        Uri.http('localhost:$port', '/api/foo'),
         headers: {
           'Authorization': 'Bearer bad',
         },
@@ -52,7 +74,7 @@ void main() {
         'when client requests the path with valid authorization, '
         'then a 200 OK is returned', () async {
       var response = await http.get(
-        Uri.parse('http://localhost:8082/api/foo'),
+        Uri.http('localhost:$port', '/api/foo'),
         headers: {
           'Authorization': 'Bearer good',
         },
@@ -68,7 +90,7 @@ void main() {
       'when a client request the path without authorization, '
       'then a 500 Internal Error is returned', () async {
     var response =
-        await http.get(Uri.parse('http://localhost:8082/bar'), headers: {});
+        await http.get(Uri.http('localhost:$port', '/bar'), headers: {});
 
     expect(response.statusCode, 500);
   });

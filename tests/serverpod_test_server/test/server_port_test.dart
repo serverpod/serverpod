@@ -35,7 +35,7 @@ void main() {
     });
 
     tearDownAll(() async {
-      await server.shutdown();
+      await server.shutdown(exitProcess: false);
     });
 
     test('then api server reports actual port', () {

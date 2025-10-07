@@ -232,7 +232,6 @@ abstract class Route {
   }
 
   /// Handles a call to this route.
-  // TODO: Should we get rid of this, and just have operator call?
   FutureOr<HandledContext> handleCall(Session session, NewContext context);
 }
 
