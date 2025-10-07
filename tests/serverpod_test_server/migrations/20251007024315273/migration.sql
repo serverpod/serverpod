@@ -49,6 +49,13 @@ CREATE TABLE "child_with_inherited_id" (
 );
 
 --
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "server_only_changed_id_field_class" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
+--
 -- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "child_with_inherited_id"
@@ -63,9 +70,9 @@ ALTER TABLE ONLY "child_with_inherited_id"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251002025819961', now())
+    VALUES ('serverpod_test', '20251007024315273', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251002025819961', "timestamp" = now();
+    DO UPDATE SET "version" = '20251007024315273', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

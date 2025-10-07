@@ -941,6 +941,13 @@ CREATE TABLE "scope_none_fields" (
 );
 
 --
+-- Class ServerOnlyChangedIdFieldClass as table server_only_changed_id_field_class
+--
+CREATE TABLE "server_only_changed_id_field_class" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
+--
 -- Class SimpleData as table simple_data
 --
 CREATE TABLE "simple_data" (
@@ -1993,9 +2000,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251002025819961', now())
+    VALUES ('serverpod_test', '20251007024315273', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251002025819961', "timestamp" = now();
+    DO UPDATE SET "version" = '20251007024315273', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

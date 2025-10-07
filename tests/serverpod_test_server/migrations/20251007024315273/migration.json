@@ -111,6 +111,40 @@
         ],
         "managed": true
       }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "server_only_changed_id_field_class",
+        "dartName": "ServerOnlyChangedIdFieldClass",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "server_only_changed_id_field_class_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
     }
   ],
   "warnings": [],
