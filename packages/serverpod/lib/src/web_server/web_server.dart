@@ -24,8 +24,8 @@ class WebServer {
   int? _actualPort;
 
   late final _router = Router<Handler>()
-    ..use('/', _SessionMiddleware(serverpod.server).call)
-    ..use('/', _ReportExceptionMiddleware(this).call); // depends on above
+    ..use('/', _ReportExceptionMiddleware(this).call)
+    ..use('/', _SessionMiddleware(serverpod.server).call);
 
   RelicServer? _server;
 
@@ -189,7 +189,6 @@ class _ReportExceptionMiddleware {
 
   Handler call(Handler next) {
     return (ctx) async {
-      final request = ctx.request;
       try {
         return await next(ctx);
       } catch (e, stackTrace) {
@@ -197,8 +196,8 @@ class _ReportExceptionMiddleware {
           e,
           stackTrace,
           space: OriginSpace.application,
-          session: ctx.session,
-          request: request,
+          session: ctx.sessionOrNull,
+          request: ctx.request,
         );
         return ctx.respond(Response.internalServerError());
       }
@@ -211,7 +210,14 @@ final _sessionProperty = ContextProperty<Session>();
 /// [Session] related extension methods for [RequestContext].
 extension SessionEx on RequestContext {
   /// The session associated with this request context.
+  ///
+  /// Throws, if no session has been initiated.
   Session get session => _sessionProperty[this];
+
+  /// The session associated with this request context, if any.
+  ///
+  /// Safe to use, even before session is initiated.
+  Session? get sessionOrNull => _sessionProperty.getOrNull(this);
 }
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle
