@@ -14,12 +14,11 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
-import 'dart:typed_data' as _i5;
+import 'dart:typed_data' as _i4;
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_registration_request.dart'
-    as _i6;
+    as _i5;
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
-    as _i7;
+    as _i6;
 
 /// Endpoint for handling Sign in with Apple.
 ///
@@ -102,7 +101,7 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// Returns a session for the newly created user.
   /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> finishRegistration({
-    required _i4.UuidValue accountRequestId,
+    required _i1.UuidValue accountRequestId,
     required String verificationCode,
   });
 
@@ -133,7 +132,7 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// all previous sessions of the user are destroyed.
   /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> finishPasswordReset({
-    required _i4.UuidValue passwordResetRequestId,
+    required _i1.UuidValue passwordResetRequestId,
     required String verificationCode,
     required String newPassword,
   });
@@ -154,15 +153,15 @@ abstract class EndpointPasskeyAccountBase extends _i1.EndpointRef {
   EndpointPasskeyAccountBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Returns a new challenge to be used for a login or registration request.
-  _i2.Future<({_i5.ByteData challenge, _i4.UuidValue id})> createChallenge();
+  _i2.Future<({_i4.ByteData challenge, _i1.UuidValue id})> createChallenge();
 
   /// Registers a Passkey for the [session]'s current user.
   _i2.Future<void> register(
-      {required _i6.PasskeyRegistrationRequest registrationRequest});
+      {required _i5.PasskeyRegistrationRequest registrationRequest});
 
   /// Authenticates the user related to the given Passkey.
   _i2.Future<_i3.AuthSuccess> authenticate(
-      {required _i7.PasskeyLoginRequest loginRequest});
+      {required _i6.PasskeyLoginRequest loginRequest});
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
