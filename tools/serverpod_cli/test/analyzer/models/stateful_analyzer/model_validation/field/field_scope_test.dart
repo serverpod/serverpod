@@ -75,11 +75,11 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer =
+      late var collector = CodeGenerationCollector();
+      late var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+      late var definitions = analyzer.validateAll();
+      late var definition = definitions.first as ClassDefinition;
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
@@ -212,13 +212,13 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+      late var definitions = analyzer.validateAll();
 
       test('then an error is collected.', () {
         expect(collector.errors, isNotEmpty);
@@ -243,6 +243,7 @@ void main() {
           'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
         );
       });
+
       test('then the field is declared with the server only scope.', () {
         var definition = definitions.first as ClassDefinition;
         expect(
@@ -362,13 +363,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -402,13 +405,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -480,13 +485,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -523,13 +530,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);

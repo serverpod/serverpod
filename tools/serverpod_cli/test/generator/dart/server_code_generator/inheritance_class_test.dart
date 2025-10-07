@@ -54,24 +54,24 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var parentCompilationUnit =
+    late var parentCompilationUnit =
         parseString(content: codeMap[parentExpectedFilePath]!).unit;
-    var childCompilationUnit =
+    late var childCompilationUnit =
         parseString(content: codeMap[childExpectedFilePath]!).unit;
 
     group('Then the $parentClassName', () {
-      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
         parentCompilationUnit,
         name: parentClassName,
       );
 
       group('has a public constructor', () {
-        var publicConstructor =
+        late var publicConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           parentClass!,
           name: null,
@@ -88,13 +88,13 @@ void main() {
     });
 
     group('Then the $childClassName', () {
-      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
         childCompilationUnit,
         name: childClassName,
       );
 
       group('has a private constructor', () {
-        var privateConstructor =
+        late var privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           childClass!,
           name: '_',
@@ -109,11 +109,11 @@ void main() {
             privateConstructor?.parameters.toSource(),
             '({required super.name, this.age})',
           );
-        }, skip: privateConstructor == null);
+        });
       });
 
       group('has a factory constructor', () {
-        var factoryConstructor =
+        late var factoryConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           childClass!,
           name: null,
@@ -129,25 +129,26 @@ void main() {
             isNotNull,
             reason: 'No factory keyword found on $childClassName',
           );
-        }, skip: factoryConstructor == null);
+        });
 
         test('passed to private implementing class', () {
           expect(
             factoryConstructor?.redirectedConstructor?.toSource(),
             '_${childClassName}Impl',
           );
-        }, skip: factoryConstructor == null);
+        });
 
         test('with the class vars as params', () {
           expect(
             factoryConstructor?.parameters.toSource(),
             '({required String name, int? age})',
           );
-        }, skip: factoryConstructor == null);
+        });
       });
 
       group('has a copyWith method', () {
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
           childClass!,
           name: 'copyWith',
         );
@@ -162,22 +163,22 @@ void main() {
 
         test('with the return type of $childClassName.', () {
           expect(copyWithMethod?.returnType?.toSource(), childClassName);
-        }, skip: copyWithMethod == null);
+        });
 
         test('with the named params set where all variables are nullable.', () {
           expect(
             copyWithMethod?.parameters?.toSource(),
             '({String? name, int? age})',
           );
-        }, skip: copyWithMethod == null);
+        });
 
         test('with no code body.', () {
           var sourceCode = copyWithMethod?.body.toSource();
           expect(sourceCode, ';');
-        }, skip: copyWithMethod == null);
-      }, skip: childClass == null);
+        });
+      });
     });
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       childCompilationUnit,
       name: '_${childClassName}Impl',
     );
@@ -191,7 +192,7 @@ void main() {
 
     group('then the class named _${childClassName}Impl', () {
       group('has a constructor', () {
-        var defaultConstructor =
+        late var defaultConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           copyWithClass!,
           name: null,
@@ -210,7 +211,7 @@ void main() {
             defaultConstructor?.parameters.toSource(),
             '({required String name, int? age})',
           );
-        }, skip: defaultConstructor == null);
+        });
 
         test('with super call to named private constructor', () {
           expect(
@@ -257,24 +258,24 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var parentCompilationUnit =
+    late var parentCompilationUnit =
         parseString(content: codeMap[parentExpectedFilePath]!).unit;
-    var childCompilationUnit =
+    late var childCompilationUnit =
         parseString(content: codeMap[childExpectedFilePath]!).unit;
 
     group('Then the $parentClassName', () {
-      var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var parentClass = CompilationUnitHelpers.tryFindClassDeclaration(
         parentCompilationUnit,
         name: parentClassName,
       );
 
       group('has a public constructor', () {
-        var publicConstructor =
+        late var publicConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           parentClass!,
           name: null,
@@ -283,26 +284,26 @@ void main() {
         group('with the initializers', () {
           test('containing 1 entry', () {
             expect(publicConstructor?.initializers.length, 1);
-          }, skip: publicConstructor == null);
+          });
 
           test('correctly set', () {
             expect(
               publicConstructor?.initializers.first.toSource(),
               'parentDefault = parentDefault ?? 0',
             );
-          }, skip: publicConstructor == null);
+          });
         });
       });
     });
 
     group('Then the $childClassName', () {
-      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
         childCompilationUnit,
         name: childClassName,
       );
 
       group('has a private constructor', () {
-        var privateConstructor =
+        late var privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           childClass!,
           name: '_',
@@ -313,24 +314,24 @@ void main() {
             privateConstructor?.parameters.toSource(),
             '({required super.name, super.parentDefault, this.age, int? childDefault})',
           );
-        }, skip: privateConstructor == null);
+        });
 
         group('with the initializers', () {
           test('containing 1 entry', () {
             expect(privateConstructor?.initializers.length, 1);
-          }, skip: privateConstructor == null);
+          });
 
           test('correctly set', () {
             expect(
               privateConstructor?.initializers.first.toSource(),
               'childDefault = childDefault ?? -1',
             );
-          }, skip: privateConstructor == null);
+          });
         });
       });
 
       group('has a factory constructor', () {
-        var factoryConstructor =
+        late var factoryConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           childClass!,
           name: null,
@@ -341,11 +342,12 @@ void main() {
             factoryConstructor?.parameters.toSource(),
             '({required String name, int? parentDefault, int? age, int? childDefault})',
           );
-        }, skip: factoryConstructor == null);
+        });
       });
 
       group('has a copyWith method', () {
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
           childClass!,
           name: 'copyWith',
         );
@@ -355,17 +357,18 @@ void main() {
             copyWithMethod?.parameters?.toSource(),
             '({String? name, int? parentDefault, int? age, int? childDefault})',
           );
-        }, skip: copyWithMethod == null);
-      }, skip: childClass == null);
+        });
+      });
     });
-    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+
+    late var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
       childCompilationUnit,
       name: '_${childClassName}Impl',
     );
 
     group('then the class named _${childClassName}Impl', () {
       group('has a constructor', () {
-        var defaultConstructor =
+        late var defaultConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
           copyWithClass!,
           name: null,
@@ -376,7 +379,7 @@ void main() {
             defaultConstructor?.parameters.toSource(),
             '({required String name, int? parentDefault, int? age, int? childDefault})',
           );
-        }, skip: defaultConstructor == null);
+        });
 
         test('with super call to named private constructor', () {
           expect(
@@ -418,15 +421,15 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit =
+    late var compilationUnit =
         parseString(content: codeMap[childExpectedFilePath]!).unit;
 
-    var maybeClassNamedExampleTable =
+    late var maybeClassNamedExampleTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${childClassName}Table',
@@ -439,6 +442,7 @@ void main() {
         reason: 'Missing definition for class named ${childClassName}Table',
       );
     });
+
     group('then the class named ${childClassName}Table', () {
       test('inherits from Table.', () {
         expect(
@@ -512,7 +516,7 @@ void main() {
             isTrue,
             reason: 'Missing own field in ${childClassName}Table.');
       });
-    }, skip: maybeClassNamedExampleTable == null);
+    });
   });
 
   group(
@@ -547,22 +551,23 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableModelsCode(
+    late var codeMap = generator.generateSerializableModelsCode(
       models: models,
       config: config,
     );
 
-    var compilationUnit =
+    late var compilationUnit =
         parseString(content: codeMap[childExpectedFilePath]!).unit;
 
     group('then the $childClassName', () {
-      var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      late var childClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: childClassName,
       );
 
       group('has a copyWith method with named params', () {
-        var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        late var copyWithMethod =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
           childClass!,
           name: 'copyWith',
         );
@@ -573,7 +578,7 @@ void main() {
           );
 
           expect(nameParam?.toSource(), 'Object? name');
-        }, skip: copyWithMethod == null);
+        });
 
         test('where nullable-local fields are typed', () {
           var ageParam = copyWithMethod?.parameters?.parameters.firstWhere(
@@ -581,7 +586,7 @@ void main() {
           );
 
           expect(ageParam?.toSource(), 'int? age');
-        }, skip: copyWithMethod == null);
+        });
       });
     });
   });
