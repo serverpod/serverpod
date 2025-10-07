@@ -455,3 +455,38 @@ jobs:
         run: dart pub global activate melos
       - name: Run version change test
         run: util/run_tests_version_change
+  
+  publish_check:
+    name: Publish check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          cache: true
+      - name: Install melos
+        run: dart pub global activate melos
+      - name: Run publish check
+        continue-on-error: true
+        id: run_publish
+        shell: bash
+        run: melos publish --dry-run --yes 2>&1 | tee publish_output.txt
+      - name: Highlight publish errors
+        shell: bash
+        run: |
+          if [ -f publish_output.txt ]; then
+            # Print lines that begin with "ERROR: " to make them stand out in logs
+            # Because the publish --dry-run does not support ignoring warnings,
+            # we fail the step if any ERROR lines are found.
+            if grep -nE '^ERROR: ' publish_output.txt >/dev/null; then
+              echo "Packages with errors (lines from melos output):"
+              grep -nE '^ERROR: ' publish_output.txt || true
+              exit 1
+            else
+              echo "No ERROR lines found in melos output."
+            fi
+          else
+            echo "publish_output.txt not found."
+            exit 1
+          fi
