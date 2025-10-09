@@ -338,7 +338,9 @@ abstract final class EmailAccounts {
   ///
   /// The caller may check the returned [PasswordResetResult], but this
   /// should not be exposed to the client, so that this method can not be
-  /// misused to check which emails are registered.
+  /// misused to check which emails are registered. If the reset email is sent,
+  /// a [passwordResetRequestId] is returned, which can be used to complete the
+  /// reset.
   ///
   /// Each reset request will be logged to the database outside of the
   /// [transaction] and can not be rolled back, so the throttling will always be
@@ -346,7 +348,11 @@ abstract final class EmailAccounts {
   ///
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
-  static Future<PasswordResetResult> startPasswordReset(
+  static Future<
+      ({
+        PasswordResetResult result,
+        UuidValue? passwordResetRequestId,
+      })> startPasswordReset(
     final Session session, {
     required String email,
     final Transaction? transaction,
@@ -373,7 +379,10 @@ abstract final class EmailAccounts {
         );
 
         if (account == null) {
-          return PasswordResetResult.emailDoesNotExist;
+          return (
+            result: PasswordResetResult.emailDoesNotExist,
+            passwordResetRequestId: null,
+          );
         }
 
         final verificationCode =
@@ -402,7 +411,10 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        return PasswordResetResult.passwordResetSent;
+        return (
+          result: PasswordResetResult.passwordResetSent,
+          passwordResetRequestId: resetRequest.id!,
+        );
       },
     );
   }

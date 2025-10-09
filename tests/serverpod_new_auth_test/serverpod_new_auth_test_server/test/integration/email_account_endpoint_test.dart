@@ -14,9 +14,9 @@ void main() {
         EmailAccounts.config = EmailAccountConfig();
       });
 
-      test(
-          'when calling `startRegistration`, then the verification code is sent out.',
-          () async {
+      group('when calling `startRegistration`', () {
+        late UuidValue receivedAccountRequestId;
+        late UuidValue clientReceivedRequestId;
         String? receivedVerificationCode;
 
         EmailAccounts.config = EmailAccountConfig(
@@ -28,16 +28,27 @@ void main() {
             required final verificationCode,
           }) {
             receivedVerificationCode = verificationCode;
+            receivedAccountRequestId = accountRequestId;
           },
         );
 
-        await endpoints.emailAccount.startRegistration(
-          sessionBuilder,
-          email: 'test@serverpod.dev',
-          password: 'Foobar123!',
-        );
+        setUpAll(() async {
+          clientReceivedRequestId =
+              await endpoints.emailAccount.startRegistration(
+            sessionBuilder,
+            email: _getNewTestEmail(),
+            password: 'Foobar123!',
+          );
+        });
 
-        expect(receivedVerificationCode, isNotNull);
+        test('then the verification information is sent out.', () async {
+          expect(receivedVerificationCode, isNotNull);
+          expect(receivedAccountRequestId, isNotNull);
+        });
+
+        test('then the client received correct request id. ', () async {
+          expect(clientReceivedRequestId, receivedAccountRequestId);
+        });
       });
 
       test(
@@ -46,7 +57,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.startRegistration(
             sessionBuilder,
-            email: 'test@serverpod.dev',
+            email: _getNewTestEmail(),
             password: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -63,7 +74,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.login(
             sessionBuilder,
-            email: '404@serverpod.dev',
+            email: _getNewTestEmail(),
             password: 'Password!',
           ),
           throwsA(
@@ -75,7 +86,81 @@ void main() {
           ),
         );
       });
+
+      group('when calling `startPasswordReset` for a non existing email', () {
+        UuidValue? receivedPasswordResetRequestId;
+        UuidValue? clientReceivedRequestId;
+        String? receivedVerificationCode;
+
+        setUp(() async {
+          EmailAccounts.config = EmailAccountConfig(
+            maxPasswordResetAttempts: (
+              timeframe: const Duration(seconds: 1),
+              maxAttempts: 100,
+            ),
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+              receivedPasswordResetRequestId = passwordResetRequestId;
+            },
+          );
+
+          clientReceivedRequestId =
+              await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: _getNewTestEmail(),
+          );
+        });
+
+        test('then no verification information is sent out.', () async {
+          expect(receivedVerificationCode, isNull);
+          expect(receivedPasswordResetRequestId, isNull);
+        });
+
+        test('then the client received a request id. ', () async {
+          expect(clientReceivedRequestId, isNotNull);
+        });
+
+        test('then the request id does not exist on the database.', () async {
+          expect(
+            await EmailAccountPasswordResetRequest.db.findFirstRow(
+              sessionBuilder.build(),
+              where: (final t) => t.id.equals(clientReceivedRequestId!),
+            ),
+            isNull,
+          );
+        });
+
+        test(
+            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is not registered.',
+            () async {
+          final existingEmail = _getNewTestEmail();
+          await endpoints._registerEmailAccount(
+            sessionBuilder,
+            email: existingEmail,
+            password: 'Foobar123!',
+          );
+
+          final validPasswordResetRequest =
+              await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: existingEmail,
+          );
+
+          expect(
+            clientReceivedRequestId!.version,
+            validPasswordResetRequest.version,
+          );
+        });
+      });
     },
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
@@ -100,7 +185,7 @@ void main() {
 
         await endpoints.emailAccount.startRegistration(
           sessionBuilder,
-          email: 'test@serverpod.dev',
+          email: _getNewTestEmail(),
           password: 'Foobar123!',
         );
       });
@@ -132,7 +217,7 @@ void main() {
   withServerpod(
     'Given an active account,',
     (final sessionBuilder, final endpoints) {
-      const email = 'test@serverpod.dev';
+      final email = _getNewTestEmail();
       const password = 'Foobar123!';
 
       setUp(() async {
@@ -186,6 +271,69 @@ void main() {
         );
       });
 
+      group('when calling `startRegistration`', () {
+        UuidValue? receivedAccountRequestId;
+        UuidValue? clientReceivedRequestId;
+        String? receivedVerificationCode;
+
+        setUp(() async {
+          EmailAccounts.config = EmailAccountConfig(
+            sendRegistrationVerificationCode: (
+              final session, {
+              required final accountRequestId,
+              required final email,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedAccountRequestId = accountRequestId;
+              receivedVerificationCode = verificationCode;
+            },
+          );
+
+          clientReceivedRequestId =
+              await endpoints.emailAccount.startRegistration(
+            sessionBuilder,
+            email: email,
+            password: password,
+          );
+        });
+
+        test('then no verification information is sent out.', () async {
+          expect(receivedVerificationCode, isNull);
+          expect(receivedAccountRequestId, isNull);
+        });
+
+        test('then the client received a request id.', () async {
+          expect(clientReceivedRequestId, isNotNull);
+        });
+
+        test('then the request id does not exist on the database.', () async {
+          expect(
+            await EmailAccountRequest.db.findFirstRow(
+              sessionBuilder.build(),
+              where: (final t) => t.id.equals(clientReceivedRequestId!),
+            ),
+            isNull,
+          );
+        });
+
+        test(
+            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is already registered.',
+            () async {
+          final validRegistrationRequest =
+              await endpoints.emailAccount.startRegistration(
+            sessionBuilder,
+            email: _getNewTestEmail(),
+            password: password,
+          );
+
+          expect(
+            clientReceivedRequestId!.version,
+            validRegistrationRequest.version,
+          );
+        });
+      });
+
       test(
           'when calling `startPasswordReset`, then the verification code is sent out.',
           () async {
@@ -218,7 +366,7 @@ void main() {
   withServerpod(
     'Given an email authentication for a blocked `AuthUser`,',
     (final sessionBuilder, final endpoints) {
-      const email = 'test@serverpod.dev';
+      final email = _getNewTestEmail();
       const password = 'Foobar123!';
 
       setUp(() async {
@@ -257,7 +405,7 @@ void main() {
   withServerpod(
     'Given an auth user with a pending password reset,',
     (final sessionBuilder, final endpoints) {
-      const email = 'test@serverpod.dev';
+      final email = _getNewTestEmail();
 
       late UuidValue authUserId;
       late UuidValue passwordResetRequestId;
@@ -311,7 +459,7 @@ void main() {
   withServerpod(
     'Given an auth user with a changed password,',
     (final sessionBuilder, final endpoints) {
-      const email = 'test@serverpod.dev';
+      final email = _getNewTestEmail();
       const oldPassword = 'Foobar123!';
       const newPassword = 'BarFoo789?';
 
@@ -409,6 +557,11 @@ void main() {
   );
 }
 
+/// A new test email to avoid colliding with existing data on the database.
+String _getNewTestEmail() {
+  return 'test_${const Uuid().v4().replaceAll('-', '')}@serverpod.dev';
+}
+
 extension on TestEndpoints {
   Future<({String sessionKey, UuidValue authUserId})> _registerEmailAccount(
     final TestSessionBuilder sessionBuilder, {
@@ -418,6 +571,10 @@ extension on TestEndpoints {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
     EmailAccounts.config = EmailAccountConfig(
+      maxPasswordResetAttempts: (
+        timeframe: const Duration(seconds: 1),
+        maxAttempts: 100,
+      ),
       sendRegistrationVerificationCode: (
         final session, {
         required final accountRequestId,

@@ -617,7 +617,7 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> startRegistration(
+  _i3.Future<_i2.UuidValue> startRegistration(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
     required String password,
@@ -642,7 +642,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -683,7 +683,7 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> startPasswordReset(
+  _i3.Future<_i2.UuidValue> startPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
   }) async {
@@ -704,7 +704,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -871,7 +871,7 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> startRegistration(
+  _i3.Future<_i2.UuidValue> startRegistration(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
     required String password,
@@ -896,7 +896,7 @@ class _PasswordImportingEmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -937,7 +937,7 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> startPasswordReset(
+  _i3.Future<_i2.UuidValue> startPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
   }) async {
@@ -958,7 +958,7 @@ class _PasswordImportingEmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<void>);
+        ) as _i3.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

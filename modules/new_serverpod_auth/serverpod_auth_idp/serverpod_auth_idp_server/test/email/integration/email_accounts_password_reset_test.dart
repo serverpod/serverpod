@@ -30,7 +30,8 @@ void main() {
           email: '404@serverpod.dev',
         );
 
-        expect(result, PasswordResetResult.emailDoesNotExist);
+        expect(result.result, PasswordResetResult.emailDoesNotExist);
+        expect(result.passwordResetRequestId, isNull);
       });
     },
     rollbackDatabase: RollbackDatabase.disabled,
@@ -83,13 +84,16 @@ void main() {
           },
         );
 
-        await EmailAccounts.startPasswordReset(
+        final result = await EmailAccounts.startPasswordReset(
           session,
           email: email.toUpperCase(),
         );
 
         expect(receivedPasswordResetRequestId, isNotNull);
         expect(receivedVerificationCode, isNotNull);
+
+        expect(result.result, PasswordResetResult.passwordResetSent);
+        expect(result.passwordResetRequestId, receivedPasswordResetRequestId);
       });
 
       test('when requesting too many password resets, then an error is thrown.',

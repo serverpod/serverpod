@@ -79,8 +79,12 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
+  ///
+  /// Always returns a account request ID, which can be used to complete the
+  /// registration. If the email is already registered, the returned ID will not
+  /// be valid.
   /// {@endtemplate}
-  _i2.Future<void> startRegistration({
+  _i2.Future<_i1.UuidValue> startRegistration({
     required String email,
     required String password,
   });
@@ -111,10 +115,14 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// If the email address is registered, an email with reset instructions will
   /// be send out. If the email is unknown, this method will have no effect.
   ///
+  /// Always returns a password reset request ID, which can be used to complete
+  /// the reset. If the email is not registered, the returned ID will not be
+  /// valid.
+  ///
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
-  _i2.Future<void> startPasswordReset({required String email});
+  _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
 
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.

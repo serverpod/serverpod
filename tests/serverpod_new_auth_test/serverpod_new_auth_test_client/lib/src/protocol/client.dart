@@ -204,13 +204,17 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to
   /// complete the registration.
+  ///
+  /// Always returns a account request ID, which can be used to complete the
+  /// registration. If the email is already registered, the returned ID will not
+  /// be valid.
   /// {@endtemplate}
   @override
-  _i2.Future<void> startRegistration({
+  _i2.Future<_i1.UuidValue> startRegistration({
     required String email,
     required String password,
   }) =>
-      caller.callServerEndpoint<void>(
+      caller.callServerEndpoint<_i1.UuidValue>(
         'emailAccount',
         'startRegistration',
         {
@@ -254,12 +258,16 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
   /// If the email address is registered, an email with reset instructions will
   /// be send out. If the email is unknown, this method will have no effect.
   ///
+  /// Always returns a password reset request ID, which can be used to complete
+  /// the reset. If the email is not registered, the returned ID will not be
+  /// valid.
+  ///
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
   @override
-  _i2.Future<void> startPasswordReset({required String email}) =>
-      caller.callServerEndpoint<void>(
+  _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_i1.UuidValue>(
         'emailAccount',
         'startPasswordReset',
         {'email': email},
@@ -366,11 +374,11 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to complete the registration.
   @override
-  _i2.Future<void> startRegistration({
+  _i2.Future<_i1.UuidValue> startRegistration({
     required String email,
     required String password,
   }) =>
-      caller.callServerEndpoint<void>(
+      caller.callServerEndpoint<_i1.UuidValue>(
         'passwordImportingEmailAccount',
         'startRegistration',
         {
@@ -414,12 +422,16 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
   /// If the email address is registered, an email with reset instructions will
   /// be send out. If the email is unknown, this method will have no effect.
   ///
+  /// Always returns a password reset request ID, which can be used to complete
+  /// the reset. If the email is not registered, the returned ID will not be
+  /// valid.
+  ///
   /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
   /// case the client or account has been involved in too many reset attempts.
   /// {@endtemplate}
   @override
-  _i2.Future<void> startPasswordReset({required String email}) =>
-      caller.callServerEndpoint<void>(
+  _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_i1.UuidValue>(
         'passwordImportingEmailAccount',
         'startPasswordReset',
         {'email': email},

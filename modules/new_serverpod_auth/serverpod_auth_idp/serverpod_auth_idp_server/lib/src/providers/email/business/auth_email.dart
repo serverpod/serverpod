@@ -44,7 +44,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.start_registration}
-  static Future<void> startRegistration(
+  static Future<UuidValue> startRegistration(
     final Session session, {
     required final String email,
     required final String password,
@@ -66,6 +66,12 @@ abstract class AuthEmail {
         level: LogLevel.debug,
       );
     }
+
+    // NOTE: It is necessary to keep the version of the uuid in sync with the
+    // one used by the [EmailAccountRequest] model to prevent attackers from
+    // using the difference on the version bit of the uuid to determine whether
+    // an email is registered or not.
+    return result.accountRequestId ?? const Uuid().v4obj();
   }
 
   /// {@macro email_account_base_endpoint.finish_registration}
@@ -118,7 +124,7 @@ abstract class AuthEmail {
   }
 
   /// {@macro email_account_base_endpoint.start_password_reset}
-  static Future<void> startPasswordReset(
+  static Future<UuidValue> startPasswordReset(
     final Session session, {
     required final String email,
     final Transaction? transaction,
@@ -131,12 +137,18 @@ abstract class AuthEmail {
 
     // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
     // Clients should always show something like "check your email to proceed with the password reset".
-    if (result != PasswordResetResult.passwordResetSent) {
+    if (result.result != PasswordResetResult.passwordResetSent) {
       session.log(
-        'Failed to start password reset for $email, reason: $result',
+        'Failed to start password reset for $email, reason: ${result.result}',
         level: LogLevel.debug,
       );
     }
+
+    // NOTE: It is necessary to keep the version of the uuid in sync with the
+    // one used by the [EmailAccountPasswordResetRequestAttempt] model to
+    // prevent attackers from using the difference on the version bit of the
+    // uuid to determine whether an email is registered or not.
+    return result.passwordResetRequestId ?? const Uuid().v4obj();
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
