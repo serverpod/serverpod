@@ -1,12 +1,11 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
+import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/authentication_tokens.dart';
 
-/// Implementation of a token issuer using JWT tokens.
-class JwtTokenIssuer implements TokenIssuer {
+/// Implementation of a token manager using JWT tokens.
+class JwtTokenManager implements TokenManager {
   @override
   Future<AuthSuccess> issueToken({
     required final Session session,
@@ -23,10 +22,7 @@ class JwtTokenIssuer implements TokenIssuer {
       transaction: transaction,
     );
   }
-}
 
-/// Implementation of a token provider using JWT tokens.
-class JwtTokenProvider implements TokenProvider {
   @override
   Future<List<TokenInfo>> listTokens({
     required final Session session,
@@ -119,5 +115,13 @@ class JwtTokenProvider implements TokenProvider {
       refreshTokenId: tokenUuid,
       transaction: transaction,
     );
+  }
+
+  @override
+  Future<AuthenticationInfo?> validateToken(
+    final Session session,
+    final String token,
+  ) async {
+    return AuthenticationTokens.authenticationHandler(session, token);
   }
 }

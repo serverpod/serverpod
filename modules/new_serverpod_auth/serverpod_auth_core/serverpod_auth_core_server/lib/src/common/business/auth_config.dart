@@ -1,7 +1,6 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/jwt_provider.dart';
 import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dart';
@@ -10,10 +9,10 @@ import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dar
 /// This object is also used to manage the lifecycle of authentication tokens
 /// regardless of who issues the token.
 class AuthConfig {
-  /// Default token providers for JWT and session-based authentication.
-  static Map<String, TokenProvider> get defaultTokenProviders => {
-        AuthStrategy.jwt.name: JwtTokenProvider(),
-        AuthStrategy.session.name: SasTokenProvider(),
+  /// Default token managers for JWT and session-based authentication.
+  static Map<String, TokenManager> get defaultTokenManagers => {
+        AuthStrategy.jwt.name: JwtTokenManager(),
+        AuthStrategy.session.name: SasTokenManager(),
       };
 
   /// Returns the singleton instance of [AuthConfig] used by the provider
@@ -31,46 +30,50 @@ class AuthConfig {
 
   /// Sets the [AuthConfig] instance.
   ///
-  /// [tokenIssuer] is the token issuer used by the identity providers.
-  /// Serverpod provided token issuers are [JwtTokenIssuer] and [SasTokenIssuer].
+  /// [defaultTokenManager] is the primary token manager used by identity providers
+  /// for issuing new tokens. Each identity provider can optionally override this
+  /// with their own token manager via [IdentityProviderFactory.tokenManagerOverride].
   ///
-  /// [identityProviders] is a list of factories that can create the identity
-  /// providers used by the authentication endpoints.
+  /// [identityProviders] is a list of [IdentityProviderFactory] instances that
+  /// construct the identity providers used by authentication endpoints. Each factory
+  /// creates a provider instance with the appropriate token manager dependency.
   ///
-  /// [tokenProviders] is a map of token providers that can be used to manage
-  /// the lifecycle of authentication tokens. If not provided, the default
-  /// token providers will be used.
+  /// [tokenManagers] is a map of token managers keyed by strategy name (e.g., 'jwt', 'session')
+  /// that handle token lifecycle operations. If not provided, defaults to built-in
+  /// [JwtTokenManager] and [SasTokenManager] instances.
   factory AuthConfig.set({
-    required final TokenIssuer tokenIssuer,
-    required final List<IdentityProviderFactory<dynamic>> identityProviders,
-    final Map<String, TokenProvider>? tokenProviders,
+    required final TokenManager defaultTokenManager,
+    required final List<IdentityProviderFactory<IdentityProvider>>
+        identityProviders,
+    final Map<String, TokenManager>? tokenManagers,
   }) {
     final instance = AuthConfig._(
-      defaultTokenIssuer: tokenIssuer,
+      defaultTokenManager: defaultTokenManager,
       identityProviders: identityProviders,
-      tokenProviders: tokenProviders ?? defaultTokenProviders,
+      tokenManagers: tokenManagers ?? defaultTokenManagers,
     );
-    _instance = instance;
-    return instance;
+    return _instance = instance;
   }
 
   AuthConfig._({
-    required this.defaultTokenIssuer,
-    required final List<IdentityProviderFactory<dynamic>> identityProviders,
-    required final Map<String, TokenProvider> tokenProviders,
+    required final TokenManager defaultTokenManager,
+    required final List<IdentityProviderFactory<IdentityProvider>>
+        identityProviders,
+    required final Map<String, TokenManager> tokenManagers,
   }) {
+    tokenManager = defaultTokenManager;
+
     for (final provider in identityProviders) {
       _providers[provider.type] = provider.construct(
-        tokenIssuer: provider.tokenIssuerOverride ?? defaultTokenIssuer,
+        tokenManager: provider.tokenManagerOverride ?? tokenManager,
       );
     }
-    tokenManager = TokenManager(tokenProviders);
   }
 
-  final Map<Type, dynamic> _providers = {};
+  final Map<Type, IdentityProvider> _providers = {};
 
-  /// Retrieves the provider of type [T].
-  static T getProvider<T>() {
+  /// Retrieves the identity provider of type [T].
+  static T getIdentityProvider<T>() {
     final provider = instance._providers[T];
     if (provider == null) {
       throw StateError('Provider for $T is not registered');
@@ -78,9 +81,11 @@ class AuthConfig {
     return provider as T;
   }
 
-  /// The token issuer used by the identity providers.
-  final TokenIssuer defaultTokenIssuer;
-
   /// The token manager that handles token lifecycle operations.
   late final TokenManager tokenManager;
+
+  Future<AuthenticationInfo?> authenticationHandler(
+    final Session session,
+    final String key,
+  ) async {}
 }
