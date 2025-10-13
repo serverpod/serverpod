@@ -9,21 +9,22 @@ void main() {
     withServerpod(
       'Given AuthConfig',
       (final sessionBuilder, final endpoints) {
-        late FakeTokenIssuer fakeTokenIssuer;
-        late List<IdentityProviderFactory<dynamic>> identityProviderFactories;
-        late Map<String, TokenProvider> tokenProviders;
+        late FakeTokenManager fakeTokenManager;
+        late List<IdentityProviderFactory<IdentityProvider>>
+            identityProviderFactories;
+        late Map<String, TokenManager> tokenManagers;
         late FakeTokenStorage fakeTokenStorage;
 
         setUp(() {
           fakeTokenStorage = FakeTokenStorage();
-          fakeTokenIssuer = FakeTokenIssuer(fakeTokenStorage);
+          fakeTokenManager = FakeTokenManager(fakeTokenStorage);
 
           identityProviderFactories = [
             FakeIdentityProviderFactory(),
           ];
 
-          tokenProviders = {
-            'fake': FakeTokenProvider(fakeTokenStorage),
+          tokenManagers = {
+            'fake': FakeTokenManager(fakeTokenStorage),
           };
         });
 
@@ -32,9 +33,9 @@ void main() {
 
           setUp(() {
             authConfig = AuthConfig.set(
-              tokenIssuer: fakeTokenIssuer,
+              defaultTokenManager: fakeTokenManager,
               identityProviders: identityProviderFactories,
-              tokenProviders: tokenProviders,
+              tokenManagers: tokenManagers,
             );
           });
 
@@ -42,45 +43,40 @@ void main() {
               () {
             expect(authConfig, isNotNull);
             expect(authConfig, isA<AuthConfig>());
-            expect(authConfig.defaultTokenIssuer, equals(fakeTokenIssuer));
+            expect(authConfig.tokenManager, equals(fakeTokenManager));
           });
 
           test('then AuthConfig.instance shall return the created instance',
               () {
             expect(AuthConfig.instance, equals(authConfig));
-            expect(AuthConfig.instance.defaultTokenIssuer,
-                equals(fakeTokenIssuer));
+            expect(AuthConfig.instance.tokenManager, equals(fakeTokenManager));
             expect(AuthConfig.instance.tokenManager, isNotNull);
           });
 
-          test('then TokenManager shall receive the configured token providers',
-              () {
-            final tokenManager = AuthConfig.instance.tokenManager;
-            expect(tokenManager.tokenProviders, equals(tokenProviders));
-            expect(tokenManager.tokenProviders['fake'],
-                equals(tokenProviders['fake']));
+          test('then the configured token managers shall be accessible', () {
+            expect(authConfig.tokenManager, equals(fakeTokenManager));
           });
         });
 
         group('when AuthConfig.set is called multiple times', () {
           late AuthConfig firstConfig;
           late AuthConfig secondConfig;
-          late FakeTokenIssuer secondTokenIssuer;
+          late FakeTokenManager secondTokenManager;
           late FakeTokenStorage secondTokenStorage;
 
           setUp(() {
             firstConfig = AuthConfig.set(
-              tokenIssuer: fakeTokenIssuer,
+              defaultTokenManager: fakeTokenManager,
               identityProviders: identityProviderFactories,
-              tokenProviders: tokenProviders,
+              tokenManagers: tokenManagers,
             );
 
             secondTokenStorage = FakeTokenStorage();
-            secondTokenIssuer = FakeTokenIssuer(secondTokenStorage);
+            secondTokenManager = FakeTokenManager(secondTokenStorage);
             secondConfig = AuthConfig.set(
-              tokenIssuer: secondTokenIssuer,
+              defaultTokenManager: secondTokenManager,
               identityProviders: identityProviderFactories,
-              tokenProviders: tokenProviders,
+              tokenManagers: tokenManagers,
             );
           });
 
@@ -91,75 +87,75 @@ void main() {
           });
 
           test('then the new configuration shall take effect', () {
-            expect(AuthConfig.instance.defaultTokenIssuer,
-                equals(secondTokenIssuer));
-            expect(AuthConfig.instance.defaultTokenIssuer,
-                isNot(equals(fakeTokenIssuer)));
+            expect(
+                AuthConfig.instance.tokenManager, equals(secondTokenManager));
+            expect(AuthConfig.instance.tokenManager,
+                isNot(equals(fakeTokenManager)));
           });
         });
 
         group('when accessing providers', () {
           setUp(() {
             AuthConfig.set(
-              tokenIssuer: fakeTokenIssuer,
+              defaultTokenManager: fakeTokenManager,
               identityProviders: identityProviderFactories,
-              tokenProviders: tokenProviders,
+              tokenManagers: tokenManagers,
             );
           });
 
           test('then registered provider should be returned', () {
-            final provider = AuthConfig.getProvider<FakeIdentityProvider>();
+            final provider =
+                AuthConfig.getIdentityProvider<FakeIdentityProvider>();
             expect(provider, isA<FakeIdentityProvider>());
           });
 
           test('then unregistered provider should throw StateError', () {
             expect(
-              () => AuthConfig.getProvider<String>(),
+              () => AuthConfig.getIdentityProvider<String>(),
               throwsA(isA<StateError>()),
             );
           });
         });
 
-        group('when using default token providers', () {
+        group('when using default token managers', () {
           setUp(() {
             AuthConfig.set(
-              tokenIssuer: fakeTokenIssuer,
+              defaultTokenManager: fakeTokenManager,
               identityProviders: identityProviderFactories,
             );
           });
 
-          test('then default token providers should be used', () {
+          test('then default token managers should be used', () {
             final tokenManager = AuthConfig.instance.tokenManager;
             expect(tokenManager, isNotNull);
           });
 
-          test('then TokenManager shall receive the default token providers',
-              () {
+          test('then the default token manager shall be set', () {
             final tokenManager = AuthConfig.instance.tokenManager;
-            final defaultProviders = AuthConfig.defaultTokenProviders;
-            expect(tokenManager.tokenProviders.keys,
-                equals(defaultProviders.keys));
+            expect(tokenManager, equals(fakeTokenManager));
           });
         });
 
         group('provider registration and retrieval', () {
           setUp(() {
             AuthConfig.set(
-              tokenIssuer: fakeTokenIssuer,
+              defaultTokenManager: fakeTokenManager,
               identityProviders: identityProviderFactories,
-              tokenProviders: tokenProviders,
+              tokenManagers: tokenManagers,
             );
           });
 
           group('when provider is constructed during initialization', () {
-            test('then constructed provider should have correct token issuer',
+            test('then constructed provider should have correct token manager',
                 () {
-              final provider = AuthConfig.getProvider<FakeIdentityProvider>();
-              expect(provider.tokenIssuer, equals(fakeTokenIssuer));
+              final provider =
+                  AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+              expect(provider.tokenManager, equals(fakeTokenManager));
             });
 
             test('then constructed provider should be stored correctly', () {
-              final provider = AuthConfig.getProvider<FakeIdentityProvider>();
+              final provider =
+                  AuthConfig.getIdentityProvider<FakeIdentityProvider>();
               expect(provider, isA<FakeIdentityProvider>());
               expect(provider, isNotNull);
             });
@@ -169,16 +165,17 @@ void main() {
             test(
                 'then getProvider should return correct provider instance for registered types',
                 () {
-              final provider = AuthConfig.getProvider<FakeIdentityProvider>();
+              final provider =
+                  AuthConfig.getIdentityProvider<FakeIdentityProvider>();
               expect(provider, isA<FakeIdentityProvider>());
-              expect(provider.tokenIssuer, equals(fakeTokenIssuer));
+              expect(provider.tokenManager, equals(fakeTokenManager));
             });
 
             test(
                 'then StateError should be thrown for unregistered provider types',
                 () {
               expect(
-                () => AuthConfig.getProvider<String>(),
+                () => AuthConfig.getIdentityProvider<String>(),
                 throwsA(isA<StateError>().having(
                   (final e) => e.message,
                   'message',
@@ -189,7 +186,7 @@ void main() {
           });
 
           group('when multiple providers are registered', () {
-            late List<IdentityProviderFactory<dynamic>>
+            late List<IdentityProviderFactory<IdentityProvider>>
                 multipleProviderFactories;
             late FakeIdentityProviderFactory firstFactory;
             late FakeIdentityProviderFactory secondFactory;
@@ -200,16 +197,17 @@ void main() {
               multipleProviderFactories = [firstFactory, secondFactory];
 
               AuthConfig.set(
-                tokenIssuer: fakeTokenIssuer,
+                defaultTokenManager: fakeTokenManager,
                 identityProviders: multipleProviderFactories,
-                tokenProviders: tokenProviders,
+                tokenManagers: tokenManagers,
               );
             });
 
             test('then each provider should be accessible independently', () {
-              final provider = AuthConfig.getProvider<FakeIdentityProvider>();
+              final provider =
+                  AuthConfig.getIdentityProvider<FakeIdentityProvider>();
               expect(provider, isA<FakeIdentityProvider>());
-              expect(provider.tokenIssuer, equals(fakeTokenIssuer));
+              expect(provider.tokenManager, equals(fakeTokenManager));
             });
           });
         });

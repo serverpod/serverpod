@@ -84,8 +84,11 @@ class AuthConfig {
   /// The token manager that handles token lifecycle operations.
   late final TokenManager tokenManager;
 
+  /// TODO
   Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String key,
-  ) async {}
+  ) async {
+    throw UnimplementedError();
+  }
 }

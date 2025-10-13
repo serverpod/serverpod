@@ -1,5 +1,5 @@
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
+import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 
 import 'fake_identity_provider.dart';
 
@@ -8,8 +8,8 @@ class FakeIdentityProviderFactory
     extends IdentityProviderFactory<FakeIdentityProvider> {
   @override
   FakeIdentityProvider construct({
-    required final TokenIssuer tokenIssuer,
+    required final TokenManager tokenManager,
   }) {
-    return FakeIdentityProvider(tokenIssuer: tokenIssuer);
+    return FakeIdentityProvider(tokenManager: tokenManager);
   }
 }

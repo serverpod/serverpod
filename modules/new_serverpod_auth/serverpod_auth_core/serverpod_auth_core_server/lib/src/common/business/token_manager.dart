@@ -11,7 +11,7 @@ class TokenInfo {
   /// The unique identifier of this token.
   final String tokenId;
 
-  /// The name of the provider that issued this token.
+  /// The name of the token manager that issued this token.
   final String tokenProvider;
 
   /// The scopes granted by this token.

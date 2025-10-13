@@ -1,20 +1,58 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_issuer.dart';
+import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../../../serverpod_test_tools.dart';
 import '../fakes/fakes.dart';
 
-class FakeTokenIssuerForFactory implements TokenIssuer {
+class FakeTokenManagerForFactory implements TokenManager {
   @override
   Future<AuthSuccess> issueToken({
-    required final session,
-    required final authUserId,
-    required final method,
-    required final scopes,
-    required final transaction,
+    required final Session session,
+    required final UuidValue authUserId,
+    required final String method,
+    required final Set<Scope>? scopes,
+    required final Transaction? transaction,
   }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> revokeAllTokens({
+    required final Session session,
+    required final UuidValue? authUserId,
+    required final Transaction? transaction,
+    required final String? method,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> revokeToken({
+    required final Session session,
+    required final String tokenId,
+    required final Transaction? transaction,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<TokenInfo>> listTokens({
+    required final Session session,
+    required final UuidValue? authUserId,
+    required final String? method,
+    required final Transaction? transaction,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<AuthenticationInfo?> validateToken(
+    final Session session,
+    final String token,
+  ) async {
     throw UnimplementedError();
   }
 }
@@ -27,11 +65,11 @@ void testSuite(
       'Given a factory',
       (final sessionBuilder, final endpoints) {
         late IdentityProviderFactory<FakeIdentityProvider> factory;
-        late TokenIssuer tokenIssuer;
+        late TokenManager tokenManager;
 
         setUp(() {
           factory = factoryBuilder();
-          tokenIssuer = FakeTokenIssuerForFactory();
+          tokenManager = FakeTokenManagerForFactory();
         });
 
         group('when getting type', () {
@@ -50,15 +88,15 @@ void testSuite(
           late FakeIdentityProvider provider;
 
           setUp(() {
-            provider = factory.construct(tokenIssuer: tokenIssuer);
+            provider = factory.construct(tokenManager: tokenManager);
           });
 
           test('then a provider instance should be returned', () {
             expect(provider, isA<FakeIdentityProvider>());
           });
 
-          test('then the provider should have the correct token issuer', () {
-            expect(provider.tokenIssuer, equals(tokenIssuer));
+          test('then the provider should have the correct token manager', () {
+            expect(provider.tokenManager, equals(tokenManager));
           });
         });
 
@@ -67,17 +105,17 @@ void testSuite(
           late FakeIdentityProvider provider2;
 
           setUp(() {
-            provider1 = factory.construct(tokenIssuer: tokenIssuer);
-            provider2 = factory.construct(tokenIssuer: tokenIssuer);
+            provider1 = factory.construct(tokenManager: tokenManager);
+            provider2 = factory.construct(tokenManager: tokenManager);
           });
 
           test('then each instance should be unique', () {
             expect(provider1, isNot(same(provider2)));
           });
 
-          test('then each instance should have the same token issuer', () {
-            expect(provider1.tokenIssuer, equals(tokenIssuer));
-            expect(provider2.tokenIssuer, equals(tokenIssuer));
+          test('then each instance should have the same token manager', () {
+            expect(provider1.tokenManager, equals(tokenManager));
+            expect(provider2.tokenManager, equals(tokenManager));
           });
         });
       },
@@ -88,30 +126,30 @@ void testSuite(
       (final sessionBuilder, final endpoints) {
         late IdentityProviderFactory<FakeIdentityProvider> factory1;
         late IdentityProviderFactory<FakeIdentityProvider> factory2;
-        late TokenIssuer tokenIssuer1;
-        late TokenIssuer tokenIssuer2;
+        late TokenManager tokenManager1;
+        late TokenManager tokenManager2;
 
         setUp(() {
           factory1 = factoryBuilder();
           factory2 = factoryBuilder();
-          tokenIssuer1 = FakeTokenIssuerForFactory();
-          tokenIssuer2 = FakeTokenIssuerForFactory();
+          tokenManager1 = FakeTokenManagerForFactory();
+          tokenManager2 = FakeTokenManagerForFactory();
         });
 
-        group('when constructing providers with different token issuers', () {
+        group('when constructing providers with different token managers', () {
           late FakeIdentityProvider provider1;
           late FakeIdentityProvider provider2;
 
           setUp(() {
-            provider1 = factory1.construct(tokenIssuer: tokenIssuer1);
-            provider2 = factory2.construct(tokenIssuer: tokenIssuer2);
+            provider1 = factory1.construct(tokenManager: tokenManager1);
+            provider2 = factory2.construct(tokenManager: tokenManager2);
           });
 
-          test('then each provider should have its respective token issuer',
+          test('then each provider should have its respective token manager',
               () {
-            expect(provider1.tokenIssuer, equals(tokenIssuer1));
-            expect(provider2.tokenIssuer, equals(tokenIssuer2));
-            expect(provider1.tokenIssuer, isNot(equals(tokenIssuer2)));
+            expect(provider1.tokenManager, equals(tokenManager1));
+            expect(provider2.tokenManager, equals(tokenManager2));
+            expect(provider1.tokenManager, isNot(equals(tokenManager2)));
           });
         });
       },

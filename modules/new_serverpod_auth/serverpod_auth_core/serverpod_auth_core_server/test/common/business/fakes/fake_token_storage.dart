@@ -1,9 +1,9 @@
-import 'package:serverpod_auth_core_server/src/common/business/token_provider.dart';
+import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 
 /// In-memory token storage for testing purposes.
 ///
-/// This class provides shared storage that can be injected into both
-/// [FakeTokenIssuer] and [FakeTokenProvider] to ensure they work with
+/// This class provides shared storage that can be injected into
+/// [FakeTokenManager] and related test classes to ensure they work with
 /// the same token data during tests.
 class FakeTokenStorage {
   final Map<String, TokenInfo> _tokens = {};
@@ -34,6 +34,10 @@ class FakeTokenStorage {
     for (final token in tokensToRemove) {
       _tokens.remove(token.tokenId);
     }
+  }
+
+  TokenInfo? getToken(final String tokenId) {
+    return _tokens[tokenId];
   }
 
   List<TokenInfo> getTokensWhere({
