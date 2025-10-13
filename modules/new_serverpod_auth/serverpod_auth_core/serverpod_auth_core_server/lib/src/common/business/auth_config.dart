@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
@@ -61,7 +62,10 @@ class AuthConfig {
         identityProviders,
     required final Map<String, TokenManager> tokenManagers,
   }) {
-    tokenManager = defaultTokenManager;
+    tokenManager = MultiTokenManager(
+      defaultTokenManager: defaultTokenManager,
+      additionalTokenManagers: tokenManagers.values.toList(),
+    );
 
     for (final provider in identityProviders) {
       _providers[provider.type] = provider.construct(
@@ -82,13 +86,17 @@ class AuthConfig {
   }
 
   /// The token manager that handles token lifecycle operations.
-  late final TokenManager tokenManager;
+  late final MultiTokenManager tokenManager;
 
-  /// TODO
+  /// Validates an authentication token and returns the associated authentication info.
+  ///
+  /// This handler delegates to the [tokenManager] to validate the provided [key]
+  /// against all registered token managers. Returns [AuthenticationInfo] if the
+  /// token is valid, or `null` if validation fails.
   Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String key,
   ) async {
-    throw UnimplementedError();
+    return tokenManager.validateToken(session, key);
   }
 }
