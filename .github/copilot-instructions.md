@@ -251,7 +251,7 @@ dart bin/main.dart --apply-migrations
 
 Run the auth example:
 ```bash
-cd examples/auth_example/auth_example_server
+cd examples/legacy_auth_example/auth_example_server
 
 # Start services
 docker compose up -d
@@ -360,7 +360,7 @@ util/run_tests_analyze
 util/run_tests_unit
 
 # 3. Test example project still works
-cd examples/auth_example/auth_example_server
+cd examples/legacy_auth_example/auth_example_server
 docker compose up -d
 dart bin/main.dart --apply-migrations
 # Verify no errors in startup
@@ -428,7 +428,7 @@ dart test -t integration --reporter=failures-only
 
 3. **Test example projects**:
    ```bash
-   cd examples/auth_example/auth_example_server
+   cd examples/legacy_auth_example/auth_example_server
    docker compose up -d
    dart bin/main.dart --apply-migrations
    # Verify server starts successfully
