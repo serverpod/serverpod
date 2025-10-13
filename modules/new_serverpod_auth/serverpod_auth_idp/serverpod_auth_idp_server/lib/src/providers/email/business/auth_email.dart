@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 
+import '../../../generated/protocol.dart';
 import 'email_accounts.dart';
 
 part 'auth_email_admin.dart';
@@ -85,40 +86,48 @@ abstract class AuthEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final accountRequest = await EmailAccounts.verifyAccountCreation(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        );
+        try {
+          final accountRequest = await EmailAccounts.verifyAccountCreation(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          );
 
-        final newUser = await AuthUsers.create(
-          session,
-          transaction: transaction,
-        );
-        final authUserId = newUser.id;
+          final newUser = await AuthUsers.create(
+            session,
+            transaction: transaction,
+          );
+          final authUserId = newUser.id;
 
-        await UserProfiles.createUserProfile(
-          session,
-          authUserId,
-          UserProfileData(
-            email: accountRequest.email,
-          ),
-          transaction: transaction,
-        );
+          await UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(
+              email: accountRequest.email,
+            ),
+            transaction: transaction,
+          );
 
-        await EmailAccounts.completeAccountCreation(
-          session,
-          accountRequestId: accountRequestId,
-          authUserId: authUserId,
-          transaction: transaction,
-        );
+          await EmailAccounts.completeAccountCreation(
+            session,
+            accountRequestId: accountRequestId,
+            authUserId: authUserId,
+            transaction: transaction,
+          );
 
-        return admin.createSession(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
+          return admin.createSession(
+            session,
+            authUserId,
+            transaction: transaction,
+          );
+        } on EmailAccountRequestException catch (e) {
+          if (e.reason == EmailAccountRequestExceptionReason.notFound) {
+            throw EmailAccountRequestException(
+                reason: EmailAccountRequestExceptionReason.unauthorized);
+          }
+          rethrow;
+        }
       },
     );
   }
@@ -163,25 +172,35 @@ abstract class AuthEmail {
       session.db,
       transaction,
       (final transaction) async {
-        final authUserId = await EmailAccounts.completePasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: newPassword,
-          transaction: transaction,
-        );
+        try {
+          final authUserId = await EmailAccounts.completePasswordReset(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            newPassword: newPassword,
+            transaction: transaction,
+          );
 
-        await AuthSessions.destroyAllSessions(
-          session,
-          authUserId: authUserId,
-          transaction: transaction,
-        );
+          await AuthSessions.destroyAllSessions(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          );
 
-        return admin.createSession(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
+          return admin.createSession(
+            session,
+            authUserId,
+            transaction: transaction,
+          );
+        } on EmailAccountPasswordResetException catch (e) {
+          if (e.reason ==
+              EmailAccountPasswordResetExceptionReason.requestNotFound) {
+            throw EmailAccountPasswordResetException(
+                reason: EmailAccountPasswordResetExceptionReason
+                    .requestUnauthorized);
+          }
+          rethrow;
+        }
       },
     );
   }

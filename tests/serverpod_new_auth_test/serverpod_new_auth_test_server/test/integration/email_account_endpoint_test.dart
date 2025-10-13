@@ -215,6 +215,29 @@ void main() {
   );
 
   withServerpod(
+    'Given an invalid account request id,',
+    (final sessionBuilder, final endpoints) {
+      test(
+          'when calling `finishRegistration`, '
+          'then it throws generic unauthorized error that does not leak that the email is not registered.',
+          () async {
+        await expectLater(
+          () => endpoints.emailAccount.finishRegistration(
+            sessionBuilder,
+            accountRequestId: const Uuid().v4obj(),
+            verificationCode: '123456',
+          ),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountRequestExceptionReason.unauthorized,
+          )),
+        );
+      });
+    },
+  );
+
+  withServerpod(
     'Given an active account,',
     (final sessionBuilder, final endpoints) {
       final email = _getNewTestEmail();
@@ -454,6 +477,30 @@ void main() {
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
+  );
+
+  withServerpod(
+    'Given an invalid password reset request id,',
+    (final sessionBuilder, final endpoints) {
+      test(
+          'when calling `finishPasswordReset`, '
+          'then it throws generic unauthorized error that does not leak that the email is not registered.',
+          () async {
+        await expectLater(
+          () => endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: const Uuid().v4obj(),
+            verificationCode: '123456',
+            newPassword: 'NewPassword123!',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.requestUnauthorized,
+          )),
+        );
+      });
+    },
   );
 
   withServerpod(
