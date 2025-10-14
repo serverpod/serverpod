@@ -251,6 +251,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
     final bytes = await UserProfileConfig.current.imageFetchFunc(url);
 
@@ -259,6 +260,7 @@ abstract final class UserProfiles {
       authUserId,
       bytes,
       transaction: transaction,
+      userProfile: userProfile,
     );
   }
 
@@ -267,13 +269,8 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
-    final userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-
     final reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes)!;
 
@@ -337,11 +334,18 @@ abstract final class UserProfiles {
       session.db,
       transaction,
       (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
         final image = await _createImageFromUrl(
           session,
           authUserId,
           url,
           transaction: transaction,
+          userProfile: userProfile,
         );
 
         return _setUserImage(
@@ -349,6 +353,7 @@ abstract final class UserProfiles {
           authUserId,
           image,
           transaction: transaction,
+          userProfile: userProfile,
         );
       },
     );
@@ -367,11 +372,18 @@ abstract final class UserProfiles {
       session.db,
       transaction,
       (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
         final image = await _createImageFromBytes(
           session,
           authUserId,
           imageBytes,
           transaction: transaction,
+          userProfile: userProfile,
         );
 
         return _setUserImage(
@@ -379,6 +391,7 @@ abstract final class UserProfiles {
           authUserId,
           image,
           transaction: transaction,
+          userProfile: userProfile,
         );
       },
     );
@@ -419,23 +432,18 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final UserProfileImage image, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
-    var userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-
     userProfile.imageId = image.id!;
     userProfile.image = image;
 
-    userProfile = await _updateProfile(
+    final updatedProfile = await _updateProfile(
       session,
       userProfile,
       transaction: transaction,
     );
 
-    return userProfile.toModel();
+    return updatedProfile.toModel();
   }
 
 // #endregion
