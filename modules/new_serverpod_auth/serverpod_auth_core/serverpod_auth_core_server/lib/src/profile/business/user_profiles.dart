@@ -56,23 +56,13 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
 
-        switch (imageSource) {
-          case UserImageFromUrl():
-            await UserProfiles.setUserImageFromUrl(
-              session,
-              authUserId,
-              imageSource.url,
-              transaction: transaction,
-            );
-          case UserImageFromBytes():
-            await UserProfiles.setUserImageFromBytes(
-              session,
-              authUserId,
-              imageSource.bytes,
-              transaction: transaction,
-            );
-          case null:
-            break;
+        if (imageSource != null) {
+          await _setUserImage(
+            session,
+            authUserId,
+            imageSource,
+            transaction: transaction,
+          );
         }
 
         final createdProfileModel = createdProfile.toModel();
@@ -329,35 +319,13 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await _findUserProfile(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
-
-        final image = await _createImageFromUrl(
-          session,
-          authUserId,
-          url,
-          transaction: transaction,
-          userProfile: userProfile,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-          userProfile: userProfile,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromUrl(url),
+        transaction: transaction,
+      );
 
   /// Sets a user's image from image data.
   ///
@@ -367,35 +335,13 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await _findUserProfile(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
-
-        final image = await _createImageFromBytes(
-          session,
-          authUserId,
-          imageBytes,
-          transaction: transaction,
-          userProfile: userProfile,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-          userProfile: userProfile,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromBytes(imageBytes),
+        transaction: transaction,
+      );
 
   /// Sets a user's image to the default image for that user.
   static Future<UserProfileModel> setDefaultUserImage(
@@ -430,20 +376,48 @@ abstract final class UserProfiles {
   static Future<UserProfileModel> _setUserImage(
     final Session session,
     final UuidValue authUserId,
-    final UserProfileImage image, {
-    required final Transaction transaction,
-    required final UserProfile userProfile,
+    final UserImageSource imageSource, {
+    final Transaction? transaction,
   }) async {
-    userProfile.imageId = image.id!;
-    userProfile.image = image;
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
 
-    final updatedProfile = await _updateProfile(
-      session,
-      userProfile,
-      transaction: transaction,
+        final image = switch (imageSource) {
+          UserImageFromUrl() => await _createImageFromUrl(
+              session,
+              authUserId,
+              imageSource.url,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+          UserImageFromBytes() => await _createImageFromBytes(
+              session,
+              authUserId,
+              imageSource.bytes,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+        };
+
+        userProfile.imageId = image.id!;
+        userProfile.image = image;
+
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
+
+        return updatedProfile.toModel();
+      },
     );
-
-    return updatedProfile.toModel();
   }
 
 // #endregion
