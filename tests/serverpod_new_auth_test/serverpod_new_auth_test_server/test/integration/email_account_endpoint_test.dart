@@ -54,24 +54,25 @@ void main() {
       });
 
       test(
-          'when calling `startRegistration` with a short password, then an error is thrown with reason `policyViolation`.',
-          () async {
+          'when calling `startRegistration` with a short password, '
+          'then an error is thrown with reason `policyViolation`.', () async {
         await expectLater(
           () => endpoints.emailAccount.startRegistration(
             sessionBuilder,
             email: 'test@serverpod.dev',
             password: 'short',
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
+          throwsA(isA<EmailAccountRequestException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.policyViolation,
+            EmailAccountRequestExceptionReason.policyViolation,
           )),
         );
       });
 
       test(
-          'when calling `login` with unknown credentials, then it throws an error with reason `invalidCredentials`.',
+          'when calling `login` with unknown credentials, '
+          'then it throws an error with reason `invalidCredentials`.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.login(
@@ -221,7 +222,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       test(
           'when calling `finishRegistration`, '
-          'then it throws generic unauthorized error that does not leak that the email is not registered.',
+          'then it throws generic invalid error that does not leak that the email is not registered.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.finishRegistration(
@@ -232,7 +233,7 @@ void main() {
           throwsA(isA<EmailAccountRequestException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountRequestExceptionReason.unauthorized,
+            EmailAccountRequestExceptionReason.invalid,
           )),
         );
       });
@@ -486,7 +487,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       test(
           'when calling `finishPasswordReset`, '
-          'then it throws generic unauthorized error that does not leak that the email is not registered.',
+          'then it throws generic invalid error that does not leak that the email is not registered.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.finishPasswordReset(
@@ -498,7 +499,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.unauthorized,
+            EmailAccountPasswordResetExceptionReason.invalid,
           )),
         );
       });

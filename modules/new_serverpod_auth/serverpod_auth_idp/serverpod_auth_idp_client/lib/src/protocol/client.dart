@@ -98,7 +98,7 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts to verify the account.
-  /// - [EmailAccountRequestExceptionReason.unauthorized] if no request exists
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
   ///
   /// Returns a session for the newly created user.
@@ -133,7 +133,7 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   ///   password does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.unauthorized] if no request exists
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// If the reset was successful, a new session is returned and all previous

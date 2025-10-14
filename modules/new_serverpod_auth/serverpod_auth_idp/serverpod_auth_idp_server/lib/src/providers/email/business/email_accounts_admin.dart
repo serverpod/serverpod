@@ -219,7 +219,7 @@ final class EmailAccountsAdmin {
         .singleOrNull;
 
     if (account == null) {
-      throw EmailAccountNotFoundException(email: email);
+      throw EmailAccountNotFoundException();
     }
 
     final passwordHash = await EmailAccountSecretHash.createHash(

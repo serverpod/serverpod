@@ -8,8 +8,8 @@ import '../../../generated/protocol.dart';
 import '../util/byte_data_extension.dart';
 import '../util/uint8list_extension.dart';
 import 'email_account_config.dart';
-import 'email_account_not_found_exception.dart';
 import 'email_account_secret_hash.dart';
+import 'email_account_server_exceptions.dart';
 
 part 'email_accounts_admin.dart';
 
@@ -23,7 +23,13 @@ abstract final class EmailAccounts {
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
-  /// Throws [EmailAccountLoginException] for expected error cases.
+  /// Can throw:
+  /// - [EmailAccountNotFoundException] if the email address is not registered
+  ///   in the database.
+  /// - [EmailAuthenticationInvalidCredentialsException] if the password is not
+  ///   valid for an existing account.
+  /// - [EmailAuthenticationTooManyAttemptsException] if the user has made
+  ///   too many failed attempts.
   ///
   /// In case of invalid credentials, the failed attempt will be logged to
   /// the database outside of the [transaction] and can not be rolled back.
@@ -44,9 +50,7 @@ abstract final class EmailAccounts {
           email,
           transaction: transaction,
         )) {
-          throw EmailAccountLoginException(
-            reason: EmailAccountLoginExceptionReason.tooManyAttempts,
-          );
+          throw EmailAuthenticationTooManyAttemptsException();
         }
 
         final account = await EmailAccount.db.findFirstRow(
@@ -55,17 +59,18 @@ abstract final class EmailAccounts {
           transaction: transaction,
         );
 
-        if (account == null ||
-            !await EmailAccountSecretHash.validateHash(
-              value: password,
-              hash: account.passwordHash.asUint8List,
-              salt: account.passwordSalt.asUint8List,
-            )) {
+        if (account == null) {
           await _logFailedSignIn(session, email);
+          throw EmailAccountNotFoundException();
+        }
 
-          throw EmailAccountLoginException(
-            reason: EmailAccountLoginExceptionReason.invalidCredentials,
-          );
+        if (!await EmailAccountSecretHash.validateHash(
+          value: password,
+          hash: account.passwordHash.asUint8List,
+          salt: account.passwordSalt.asUint8List,
+        )) {
+          await _logFailedSignIn(session, email);
+          throw EmailAuthenticationInvalidCredentialsException();
         }
 
         return account.authUserId;
@@ -76,21 +81,22 @@ abstract final class EmailAccounts {
   /// Returns the result of the operation and a process ID for the account
   /// request.
   ///
-  /// An account request is only created if the `result` is
-  /// [EmailAccountRequestResult.accountRequestCreated].
-  /// In all other cases `accountRequestId` will be `null`.
+  /// If the `result` is [EmailAccountRequestResult.accountRequestCreated], an
+  /// account request has been created and a verification email has been sent.
+  /// In all other cases, `accountRequestId` will be `null`.
   ///
   /// The caller should ensure that the actual result does not leak to the
-  /// outside client.
-  /// Instead clients generally should always see a message like "If this email
-  /// was not registered already, a new account has been created and a
-  /// verification email has been sent".
-  /// This prevents the endpoint from being misused to scan for registered/valid
-  /// email addresses.
+  /// outside client. Instead clients generally should always see a message like
+  /// "If this email was not registered already, a new account has been created
+  /// and a verification email has been sent". This prevents the endpoint from
+  /// being misused to scan for registered/valid email addresses.
   ///
   /// The caller might decide to initiate a password reset (via email, not in
   /// the client response), to help users which try to register but already have
   /// an account.
+  ///
+  /// Can throw an [EmailPasswordPolicyViolationException] if the password does
+  /// not meet the password policy.
   ///
   /// In the success case of [EmailAccountRequestResult.accountRequestCreated],
   /// the caller may store additional information attached to the
@@ -107,8 +113,7 @@ abstract final class EmailAccounts {
     final Transaction? transaction,
   }) async {
     if (!EmailAccounts.config.passwordValidationFunction(password)) {
-      throw EmailAccountPasswordResetException(
-          reason: EmailAccountPasswordResetExceptionReason.policyViolation);
+      throw EmailPasswordPolicyViolationException();
     }
 
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -202,15 +207,16 @@ abstract final class EmailAccounts {
   /// If this returns successfully, this means [completeAccountCreation] can be
   /// called.
   ///
-  /// Can throw an [EmailAccountRequestException] with the reason:
-  /// - [EmailAccountRequestExceptionReason.notFound] if the request does not
-  ///   exist or has already been completed.
-  /// - [EmailAccountRequestExceptionReason.expired] if the request has already
-  ///   expired, but has not been cleaned up yet.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] in case the user
-  ///   has made too many attempts to verify the account.
-  /// - [EmailAccountRequestExceptionReason.unauthorized] if the verification
-  ///   code is not valid.
+  /// Can throw:
+  /// - [EmailAccountRequestNotFoundException] if the request does not exist or
+  ///   has already been completed.
+  /// - [EmailAccountRequestVerificationExpiredException] if the request is
+  ///   completed with the correct verification code, but has already expired.
+  ///   but has not been cleaned up yet.
+  /// - [EmailAccountRequestVerificationTooManyAttemptsException] in case the
+  ///   user has made too many attempts to verify the account.
+  /// - [EmailAccountRequestInvalidVerificationCodeException] if the provided
+  ///   verification code is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed attempt will be
   /// logged to the database outside of the [transaction] and can not be rolled
@@ -229,8 +235,7 @@ abstract final class EmailAccounts {
     );
 
     if (request == null) {
-      throw EmailAccountRequestException(
-          reason: EmailAccountRequestExceptionReason.notFound);
+      throw EmailAccountRequestNotFoundException();
     }
 
     if (request.isExpired) {
@@ -239,8 +244,7 @@ abstract final class EmailAccounts {
         request,
         // passing no transaction, so this will not be rolled back
       );
-      throw EmailAccountRequestException(
-          reason: EmailAccountRequestExceptionReason.expired);
+      throw EmailAccountRequestVerificationExpiredException();
     }
 
     if (await _hasTooManyEmailAccountCompletionAttempts(
@@ -253,8 +257,7 @@ abstract final class EmailAccounts {
         // passing no transaction, so this will not be rolled back
       );
 
-      throw EmailAccountRequestException(
-          reason: EmailAccountRequestExceptionReason.tooManyAttempts);
+      throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
     if (!await EmailAccountSecretHash.validateHash(
@@ -262,8 +265,7 @@ abstract final class EmailAccounts {
       hash: request.verificationCodeHash.asUint8List,
       salt: request.verificationCodeSalt.asUint8List,
     )) {
-      throw EmailAccountRequestException(
-          reason: EmailAccountRequestExceptionReason.unauthorized);
+      throw EmailAccountRequestInvalidVerificationCodeException();
     }
 
     await EmailAccountRequest.db.updateRow(
@@ -280,8 +282,12 @@ abstract final class EmailAccounts {
   /// Returns the `ID` of the new email authentication, and the email address
   /// used during registration.
   ///
-  /// Throws an [EmailAccountRequestException] if request does not point to an
-  /// existing request or it has not been verified via [verifyAccountCreation].
+  /// Can throw:
+  /// - [EmailAccountRequestNotFoundException] if the request does not exist
+  ///   or has already been completed and cleaned up.
+  /// - [EmailAccountRequestNotVerifiedException] if the request has not been
+  ///   previously verified via [verifyAccountCreation].
+  ///
   static Future<({UuidValue emailAccountId, String email})>
       completeAccountCreation(
     final Session session, {
@@ -302,13 +308,11 @@ abstract final class EmailAccounts {
         );
 
         if (request == null) {
-          throw EmailAccountRequestException(
-              reason: EmailAccountRequestExceptionReason.notFound);
+          throw EmailAccountRequestNotFoundException();
         }
 
         if (request.verifiedAt == null) {
-          throw EmailAccountRequestException(
-              reason: EmailAccountRequestExceptionReason.notVerified);
+          throw EmailAccountRequestNotVerifiedException();
         }
 
         await EmailAccountRequest.db.deleteRow(
@@ -345,8 +349,8 @@ abstract final class EmailAccounts {
   /// [transaction] and can not be rolled back, so the throttling will always be
   /// enforced.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Can throw [EmailPasswordResetTooManyAttemptsException] if the account
+  /// email does not exist in the database.
   static Future<
       ({
         PasswordResetResult result,
@@ -366,8 +370,7 @@ abstract final class EmailAccounts {
           session,
           email: email,
         )) {
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.tooManyAttempts);
+          throw EmailPasswordResetTooManyAttemptsException();
         }
 
         final account = await EmailAccount.db.findFirstRow(
@@ -420,15 +423,15 @@ abstract final class EmailAccounts {
   /// Returns the auth user ID for the successfully changed password
   ///
   /// Can throw an [EmailAccountPasswordResetException] with the reason:
-  /// - [EmailAccountPasswordResetExceptionReason.notFound] if no reset request
-  ///   could be found for [passwordResetRequestId].
-  /// - [EmailAccountPasswordResetExceptionReason.expired] if the reset
-  ///   request has expired and has not been cleaned up yet.
-  /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
-  ///   password does not comply with the configured password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user
-  ///   has made too many attempts trying to complete the password reset.
-  /// - [EmailAccountPasswordResetExceptionReason.unauthorized] if the provided
+  /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
+  ///   be found for [passwordResetRequestId].
+  /// - [EmailPasswordResetRequestExpiredException] if the reset request has
+  ///   expired and has not been cleaned up yet.
+  /// - [EmailPasswordResetPasswordPolicyViolationException] if the new password
+  ///   does not comply with the configured password policy.
+  /// - [EmailPasswordResetTooManyVerificationAttemptsException] if the user has
+  ///   made too many attempts trying to complete the password reset.
+  /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
   ///   [verificationCode] is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed password reset
@@ -452,8 +455,7 @@ abstract final class EmailAccounts {
         );
 
         if (resetRequest == null) {
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.notFound);
+          throw EmailPasswordResetRequestNotFoundException();
         }
 
         if (resetRequest.isExpired) {
@@ -463,13 +465,11 @@ abstract final class EmailAccounts {
             // passing no transaction, so this will not be rolled back
           );
 
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.expired);
+          throw EmailPasswordResetRequestExpiredException();
         }
 
         if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.policyViolation);
+          throw EmailPasswordResetPasswordPolicyViolationException();
         }
 
         if (await _hasTooManyPasswordResetAttempts(
@@ -482,8 +482,7 @@ abstract final class EmailAccounts {
             // passing no transaction, so this will not be rolled back
           );
 
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.tooManyAttempts);
+          throw EmailPasswordResetTooManyVerificationAttemptsException();
         }
 
         if (!await EmailAccountSecretHash.validateHash(
@@ -491,8 +490,7 @@ abstract final class EmailAccounts {
           hash: resetRequest.verificationCodeHash.asUint8List,
           salt: resetRequest.verificationCodeSalt.asUint8List,
         )) {
-          throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.unauthorized);
+          throw EmailPasswordResetInvalidVerificationCodeException();
         }
 
         await EmailAccountPasswordResetRequest.db.deleteRow(

@@ -3,6 +3,7 @@ import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 
 import '../../../generated/protocol.dart';
+import 'email_account_server_exceptions.dart';
 import 'email_accounts.dart';
 
 part 'auth_email_admin.dart';
@@ -27,7 +28,7 @@ abstract class AuthEmail {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
+      (final transaction) => _withReplacedServerEmailException(() async {
         final authUserId = await EmailAccounts.authenticate(
           session,
           email: email,
@@ -40,7 +41,7 @@ abstract class AuthEmail {
           authUserId,
           transaction: transaction,
         );
-      },
+      }),
     );
   }
 
@@ -51,28 +52,30 @@ abstract class AuthEmail {
     required final String password,
     final Transaction? transaction,
   }) async {
-    final result = await EmailAccounts.startAccountCreation(
-      session,
-      email: email,
-      password: password,
-      transaction: transaction,
-    );
-
-    // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
-    // Clients should always show something like "check your email to proceed with the account creation".
-    // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
-    if (result.result != EmailAccountRequestResult.accountRequestCreated) {
-      session.log(
-        'Failed to start account registration for $email, reason: ${result.result}',
-        level: LogLevel.debug,
+    return await _withReplacedServerEmailException(() async {
+      final result = await EmailAccounts.startAccountCreation(
+        session,
+        email: email,
+        password: password,
+        transaction: transaction,
       );
-    }
 
-    // NOTE: It is necessary to keep the version of the uuid in sync with the
-    // one used by the [EmailAccountRequest] model to prevent attackers from
-    // using the difference on the version bit of the uuid to determine whether
-    // an email is registered or not.
-    return result.accountRequestId ?? const Uuid().v4obj();
+      // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+      // Clients should always show something like "check your email to proceed with the account creation".
+      // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
+      if (result.result != EmailAccountRequestResult.accountRequestCreated) {
+        session.log(
+          'Failed to start account registration for $email, reason: ${result.result}',
+          level: LogLevel.debug,
+        );
+      }
+
+      // NOTE: It is necessary to keep the version of the uuid in sync with the
+      // one used by the [EmailAccountRequest] model to prevent attackers from
+      // using the difference on the version bit of the uuid to determine whether
+      // an email is registered or not.
+      return result.accountRequestId ?? const Uuid().v4obj();
+    });
   }
 
   /// {@macro email_account_base_endpoint.finish_registration}
@@ -85,50 +88,42 @@ abstract class AuthEmail {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
-        try {
-          final accountRequest = await EmailAccounts.verifyAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          );
+      (final transaction) => _withReplacedServerEmailException(() async {
+        final accountRequest = await EmailAccounts.verifyAccountCreation(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        );
 
-          final newUser = await AuthUsers.create(
-            session,
-            transaction: transaction,
-          );
-          final authUserId = newUser.id;
+        final newUser = await AuthUsers.create(
+          session,
+          transaction: transaction,
+        );
+        final authUserId = newUser.id;
 
-          await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(
-              email: accountRequest.email,
-            ),
-            transaction: transaction,
-          );
+        await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(
+            email: accountRequest.email,
+          ),
+          transaction: transaction,
+        );
 
-          await EmailAccounts.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUserId,
-            transaction: transaction,
-          );
+        await EmailAccounts.completeAccountCreation(
+          session,
+          accountRequestId: accountRequestId,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
 
-          return admin.createSession(
-            session,
-            authUserId,
-            transaction: transaction,
-          );
-        } on EmailAccountRequestException catch (e) {
-          if (e.reason == EmailAccountRequestExceptionReason.notFound) {
-            throw EmailAccountRequestException(
-                reason: EmailAccountRequestExceptionReason.unauthorized);
-          }
-          rethrow;
-        }
-      },
+        return admin.createSession(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+      }),
     );
   }
 
@@ -138,26 +133,28 @@ abstract class AuthEmail {
     required final String email,
     final Transaction? transaction,
   }) async {
-    final result = await EmailAccounts.startPasswordReset(
-      session,
-      email: email,
-      transaction: transaction,
-    );
-
-    // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
-    // Clients should always show something like "check your email to proceed with the password reset".
-    if (result.result != PasswordResetResult.passwordResetSent) {
-      session.log(
-        'Failed to start password reset for $email, reason: ${result.result}',
-        level: LogLevel.debug,
+    return await _withReplacedServerEmailException(() async {
+      final result = await EmailAccounts.startPasswordReset(
+        session,
+        email: email,
+        transaction: transaction,
       );
-    }
 
-    // NOTE: It is necessary to keep the version of the uuid in sync with the
-    // one used by the [EmailAccountPasswordResetRequestAttempt] model to
-    // prevent attackers from using the difference on the version bit of the
-    // uuid to determine whether an email is registered or not.
-    return result.passwordResetRequestId ?? const Uuid().v4obj();
+      // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+      // Clients should always show something like "check your email to proceed with the password reset".
+      if (result.result != PasswordResetResult.passwordResetSent) {
+        session.log(
+          'Failed to start password reset for $email, reason: ${result.result}',
+          level: LogLevel.debug,
+        );
+      }
+
+      // NOTE: It is necessary to keep the version of the uuid in sync with the
+      // one used by the [EmailAccountPasswordResetRequestAttempt] model to
+      // prevent attackers from using the difference on the version bit of the
+      // uuid to determine whether an email is registered or not.
+      return result.passwordResetRequestId ?? const Uuid().v4obj();
+    });
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
@@ -171,8 +168,8 @@ abstract class AuthEmail {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async {
-        try {
+      (final transaction) async => _withReplacedServerEmailException(() async {
+        return await _withReplacedServerEmailException(() async {
           final authUserId = await EmailAccounts.completePasswordReset(
             session,
             passwordResetRequestId: passwordResetRequestId,
@@ -192,14 +189,55 @@ abstract class AuthEmail {
             authUserId,
             transaction: transaction,
           );
-        } on EmailAccountPasswordResetException catch (e) {
-          if (e.reason == EmailAccountPasswordResetExceptionReason.notFound) {
-            throw EmailAccountPasswordResetException(
-                reason: EmailAccountPasswordResetExceptionReason.unauthorized);
-          }
-          rethrow;
-        }
-      },
+        });
+      }),
     );
+  }
+}
+
+/// Replaces server-side exceptions by client-side exceptions, hiding details
+/// that could leak account information.
+Future<T> _withReplacedServerEmailException<T>(
+    final Future<T> Function() fn) async {
+  try {
+    return await fn();
+  } on EmailServerException catch (e) {
+    switch (e) {
+      // Login
+      case EmailAccountNotFoundException():
+      case EmailAuthenticationInvalidCredentialsException():
+        throw EmailAccountLoginException(
+            reason: EmailAccountLoginExceptionReason.invalidCredentials);
+      case EmailAuthenticationTooManyAttemptsException():
+        throw EmailAccountLoginException(
+            reason: EmailAccountLoginExceptionReason.tooManyAttempts);
+      // Account creation
+      case EmailAccountRequestInvalidVerificationCodeException():
+      case EmailAccountRequestNotFoundException():
+      case EmailAccountRequestNotVerifiedException():
+      case EmailAccountRequestVerificationTooManyAttemptsException():
+        throw EmailAccountRequestException(
+            reason: EmailAccountRequestExceptionReason.invalid);
+      case EmailPasswordPolicyViolationException():
+        throw EmailAccountRequestException(
+            reason: EmailAccountRequestExceptionReason.policyViolation);
+      case EmailAccountRequestVerificationExpiredException():
+        throw EmailAccountRequestException(
+            reason: EmailAccountRequestExceptionReason.expired);
+      // Password reset
+      case EmailPasswordResetAccountNotFoundException():
+      case EmailPasswordResetInvalidVerificationCodeException():
+      case EmailPasswordResetRequestNotFoundException():
+      case EmailPasswordResetTooManyAttemptsException():
+      case EmailPasswordResetTooManyVerificationAttemptsException():
+        throw EmailAccountPasswordResetException(
+            reason: EmailAccountPasswordResetExceptionReason.invalid);
+      case EmailPasswordResetPasswordPolicyViolationException():
+        throw EmailAccountPasswordResetException(
+            reason: EmailAccountPasswordResetExceptionReason.policyViolation);
+      case EmailPasswordResetRequestExpiredException():
+        throw EmailAccountPasswordResetException(
+            reason: EmailAccountPasswordResetExceptionReason.expired);
+    }
   }
 }

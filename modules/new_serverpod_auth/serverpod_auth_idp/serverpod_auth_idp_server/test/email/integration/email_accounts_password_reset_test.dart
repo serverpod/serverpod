@@ -96,8 +96,9 @@ void main() {
         expect(result.passwordResetRequestId, receivedPasswordResetRequestId);
       });
 
-      test('when requesting too many password resets, then an error is thrown.',
-          () async {
+      test(
+          'when requesting too many password resets, '
+          'then it throws a "too many attempts" exception.', () async {
         EmailAccounts.config = EmailAccountConfig(
           maxPasswordResetAttempts: (
             maxAttempts: 1,
@@ -115,11 +116,7 @@ void main() {
             session,
             email: email.toUpperCase(),
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
-          )),
+          throwsA(isA<EmailPasswordResetTooManyAttemptsException>()),
         );
       });
     },
@@ -174,7 +171,8 @@ void main() {
       });
 
       test(
-          'when changing the password with an incorrect verification code, then it fails with different errors for "wrong code" and "allowed attempts exhausted" and from then on with "not found".',
+          'when changing the password with an incorrect verification code, '
+          'then it throws a "too many attempts" on the second attempt and "not found" on the next ones. ',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           passwordResetVerificationCodeAllowedAttempts: 1,
@@ -187,11 +185,7 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.unauthorized,
-          )),
+          throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
         );
 
         await expectLater(
@@ -201,11 +195,8 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
-          )),
+          throwsA(
+              isA<EmailPasswordResetTooManyVerificationAttemptsException>()),
         );
 
         await expectLater(
@@ -215,11 +206,7 @@ void main() {
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.notFound,
-          )),
+          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
         );
       });
     },
@@ -272,21 +259,16 @@ void main() {
         expect(userId, authUserId);
       });
 
-      test('when using the old credentials for the login, then it fails.',
-          () async {
+      test(
+          'when using the old credentials for the login, '
+          'then it throws an "invalid credentials" exception.', () async {
         await expectLater(
           () => EmailAccounts.authenticate(
             session,
             email: email,
             password: oldPassword,
           ),
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
-            ),
-          ),
+          throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
         );
       });
     },

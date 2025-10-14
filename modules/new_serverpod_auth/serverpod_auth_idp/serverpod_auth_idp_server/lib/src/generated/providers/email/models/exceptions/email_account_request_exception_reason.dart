@@ -18,24 +18,13 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
   /// request after it has expired.
   expired,
 
-  /// Exception to be thrown when an email account request could not be found.
-  ///
-  /// This might mean that the account request never existed or has since been
-  /// deleted. This reason is only available in the server and will be replaced
-  /// by `unauthorized` when sent to the client.
-  notFound,
-
-  /// Exception to be thrown when an attempt is made to complete the creation
-  /// of an email account before the account request has been verified.
-  notVerified,
-
-  /// Exception to be thrown when too many verification attempts were made on a
-  /// email account request.
-  tooManyAttempts,
-
   /// Exception to be thrown when the verification code given for an email
   /// account request is not valid.
-  unauthorized,
+  invalid,
+
+  /// Exception to be thrown when attempting to set a password which does not
+  /// match the configured policy.
+  policyViolation,
 
   /// Unknown error occurred.
   unknown;
@@ -44,14 +33,10 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
     switch (name) {
       case 'expired':
         return EmailAccountRequestExceptionReason.expired;
-      case 'notFound':
-        return EmailAccountRequestExceptionReason.notFound;
-      case 'notVerified':
-        return EmailAccountRequestExceptionReason.notVerified;
-      case 'tooManyAttempts':
-        return EmailAccountRequestExceptionReason.tooManyAttempts;
-      case 'unauthorized':
-        return EmailAccountRequestExceptionReason.unauthorized;
+      case 'invalid':
+        return EmailAccountRequestExceptionReason.invalid;
+      case 'policyViolation':
+        return EmailAccountRequestExceptionReason.policyViolation;
       case 'unknown':
         return EmailAccountRequestExceptionReason.unknown;
       default:

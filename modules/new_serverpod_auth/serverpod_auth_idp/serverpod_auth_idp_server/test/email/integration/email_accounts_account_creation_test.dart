@@ -42,18 +42,14 @@ void main() {
 
       test(
           'when trying to create a new account with a short password, '
-          'then an error is thrown for short passwords.', () async {
+          'then it throws a "password policy violation" exception.', () async {
         await expectLater(
           () => EmailAccounts.startAccountCreation(
             session,
             email: 'test@serverpod.dev',
             password: 'short',
           ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.policyViolation,
-          )),
+          throwsA(isA<EmailPasswordPolicyViolationException>()),
         );
       });
 
@@ -178,25 +174,21 @@ void main() {
       });
 
       test(
-          'when verifying the account request with an incorrect code, then it throw an exception with reason `unauthorized`.',
-          () async {
+          'when verifying the account request with an incorrect code, '
+          'then it throws an "invalid verification code" exception.', () async {
         await expectLater(
           () => EmailAccounts.verifyAccountCreation(
             session,
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'some invalid code',
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.unauthorized,
-          )),
+          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
         );
       });
 
       test(
-          'when verifying the account request after it has expired, then it throw an exception of reason `expired`.',
-          () async {
+          'when verifying the account request with the correct verification code after it has expired, '
+          'then it throws an "expired" exception.', () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(
@@ -207,16 +199,13 @@ void main() {
               verificationCode: pendingAccountVerificationCode,
             ),
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.expired,
-          )),
+          throwsA(isA<EmailAccountRequestVerificationExpiredException>()),
         );
       });
 
       test(
-          'when verifying the account request with an invalid verification code, then fails with the correct error for each try.',
+          'when verifying the account request with an invalid verification code multiple times, '
+          'then it throws an "invalid verification code" exception on the second attempt and "request not found" on the next ones. ',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           registrationVerificationCodeAllowedAttempts: 1,
@@ -228,11 +217,7 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.unauthorized,
-          )),
+          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
         );
 
         await expectLater(
@@ -241,11 +226,8 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.tooManyAttempts,
-          )),
+          throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>()),
         );
 
         await expectLater(
@@ -254,16 +236,13 @@ void main() {
             accountRequestId: pendingAccountRequestId,
             verificationCode: 'wrong code',
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.notFound,
-          )),
+          throwsA(isA<EmailAccountRequestNotFoundException>()),
         );
       });
 
       test(
-          'when creating an account from the unverified request, then it fails.',
+          'when creating an account from the unverified request, '
+          'then it throws an "account request not verified" exception.',
           () async {
         final authUser = await createAuthUser(session);
 
@@ -273,11 +252,7 @@ void main() {
             authUserId: authUser.id,
             accountRequestId: pendingAccountRequestId,
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.notVerified,
-          )),
+          throwsA(isA<EmailAccountRequestNotVerifiedException>()),
         );
       });
 
@@ -450,19 +425,15 @@ void main() {
       });
 
       test(
-          'when attempting to create the account again with same account request data, then it fails.',
-          () async {
+          'when attempting to create the account again with same account request data, '
+          'then it throws an "account request not found" exception.', () async {
         await expectLater(
           () => EmailAccounts.verifyAccountCreation(
             session,
             accountRequestId: accountCreationParameters.accountRequestId,
             verificationCode: accountCreationParameters.verificationCode,
           ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.notFound,
-          )),
+          throwsA(isA<EmailAccountRequestNotFoundException>()),
         );
       });
 

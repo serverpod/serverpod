@@ -60,7 +60,8 @@ void main() {
       });
 
       test(
-          'when trying to authenticate with an invalid password, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
+          'when trying to authenticate with an invalid password, '
+          'then it throws a "invalid credentials" exception initially and then blocks further attempts with "too many attempts" exception.',
           () async {
         EmailAccounts.config = EmailAccountConfig(
           failedLoginRateLimit: (
@@ -75,11 +76,7 @@ void main() {
             email: email,
             password: 'some other password',
           ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginExceptionReason.invalidCredentials,
-          )),
+          throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
         );
 
         await expectLater(
@@ -88,16 +85,13 @@ void main() {
             email: email,
             password: 'some other password',
           ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginExceptionReason.tooManyAttempts,
-          )),
+          throwsA(isA<EmailAuthenticationTooManyAttemptsException>()),
         );
       });
 
       test(
-          'when attempting to log into a non-existent account, then it throws a `EmailAccountLoginException` initially with `invalidCredentials` and then blocks further attempts with `tooManyAttempts`.',
+          'when attempting to log into a non-existent account, '
+          'then it throws a "account not found" exception initially and then blocks further attempts with "too many attempts" exception.',
           () async {
         const unknownEmail = '404@serverpod.dev';
 
@@ -114,11 +108,7 @@ void main() {
             email: unknownEmail,
             password: 'some other password',
           ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginExceptionReason.invalidCredentials,
-          )),
+          throwsA(isA<EmailAccountNotFoundException>()),
         );
 
         await expectLater(
@@ -127,11 +117,7 @@ void main() {
             email: unknownEmail,
             password: 'some other password',
           ),
-          throwsA(isA<EmailAccountLoginException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountLoginExceptionReason.tooManyAttempts,
-          )),
+          throwsA(isA<EmailAuthenticationTooManyAttemptsException>()),
         );
       });
     },
