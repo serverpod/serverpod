@@ -60,6 +60,17 @@ void main() {
       expect(storage.delegate.storageGetHitCount, 1);
     });
 
+    test(
+        'when calling clearCache before get then subsequent get retrieves from delegate storage.',
+        () async {
+      await storage.get();
+
+      await storage.clearCache();
+      await storage.get();
+
+      expect(storage.delegate.storageGetHitCount, 2);
+    });
+
     group('when calling set with a new AuthSuccess data', () {
       final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
 

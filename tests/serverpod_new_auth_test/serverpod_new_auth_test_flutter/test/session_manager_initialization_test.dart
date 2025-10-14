@@ -250,6 +250,44 @@ void main() {
     });
   });
 
+  group(
+      'Given a `ClientAuthSessionManager` with an initialized cached storage containing a valid token that later changes on the underlying storage layer',
+      () {
+    late AuthSuccess newAuthSuccess;
+
+    setUp(() async {
+      storage = TestStorage();
+      client = Client('http://localhost:8080/')
+        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      final testUser = await client.authTest.createTestUser();
+      authSuccess = await client.authTest.createSasToken(testUser);
+
+      await storage.set(authSuccess);
+      await client.auth.initialize();
+      expect(client.auth.authInfo.value, isNotNull);
+
+      newAuthSuccess = await client.authTest.createSasToken(testUser);
+      await storage.set(newAuthSuccess);
+    });
+
+    test(
+        'when getting auth info, then the old value is still returned due to caching.',
+        () async {
+      expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+      expect(await client.auth.authHeaderValue, 'Bearer ${authSuccess.token}');
+    });
+
+    test(
+        'when getting auth info after restore, then cache is cleared and new value is returned from storage.',
+        () async {
+      await client.auth.restore();
+      expect(client.auth.authInfo.value.toString(), newAuthSuccess.toString());
+      expect(
+          await client.auth.authHeaderValue, 'Bearer ${newAuthSuccess.token}');
+    });
+  });
+
   group('Given two separate client instances with separate session managers',
       () {
     late Client client1;
