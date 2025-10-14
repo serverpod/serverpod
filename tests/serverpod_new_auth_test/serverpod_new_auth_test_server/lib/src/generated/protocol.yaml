@@ -20,9 +20,9 @@ emailAccount:
   - startPasswordReset:
   - finishPasswordReset:
 googleAccountBackwardsCompatibilityTest:
-  - authenticate:
+  - login:
 googleAccount:
-  - authenticate:
+  - login:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:

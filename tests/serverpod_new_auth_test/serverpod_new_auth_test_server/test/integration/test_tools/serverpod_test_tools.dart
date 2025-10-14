@@ -758,7 +758,7 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.AuthSuccess> authenticate(
+  _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
   }) async {
@@ -766,13 +766,13 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'googleAccountBackwardsCompatibilityTest',
-        method: 'authenticate',
+        method: 'login',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccountBackwardsCompatibilityTest',
-          methodName: 'authenticate',
+          methodName: 'login',
           parameters: _i1.testObjectToJson({'idToken': idToken}),
           serializationManager: _serializationManager,
         );
@@ -798,7 +798,7 @@ class _GoogleAccountEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.AuthSuccess> authenticate(
+  _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
   }) async {
@@ -806,13 +806,13 @@ class _GoogleAccountEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
         endpoint: 'googleAccount',
-        method: 'authenticate',
+        method: 'login',
       );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccount',
-          methodName: 'authenticate',
+          methodName: 'login',
           parameters: _i1.testObjectToJson({'idToken': idToken}),
           serializationManager: _serializationManager,
         );

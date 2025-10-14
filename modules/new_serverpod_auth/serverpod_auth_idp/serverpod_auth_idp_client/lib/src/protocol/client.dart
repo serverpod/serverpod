@@ -139,12 +139,21 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
 }
 
 /// Base endpoint for Google Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Google ID tokens.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointGoogleAccountBase extends _i1.EndpointRef {
-  EndpointGoogleAccountBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
+  EndpointGoogleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// Logs in or registers an [AuthUser] for the given Google account ID.
-  _i2.Future<_i3.AuthSuccess> authenticate({required String idToken});
+  /// {@template google_idp_base_endpoint.login}
+  /// Validates a Google ID token and either logs in the associated user or
+  /// creates a new user account if the Google account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  /// {@endtemplate}
+  _i2.Future<_i3.AuthSuccess> login({required String idToken});
 }
 
 /// Base endpoint for Passkey-based authentication.
