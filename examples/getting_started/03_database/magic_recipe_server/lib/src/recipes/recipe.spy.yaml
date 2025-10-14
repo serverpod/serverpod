@@ -1,0 +1,14 @@
+# @@@SNIPSTART 03-table-model
+### Our AI generated Recipe
+class: Recipe
+table: recipes
+fields:
+  ### The author of the recipe
+  author: String
+  ### The recipe text
+  text: String
+  ### The date the recipe was created
+  date: DateTime
+  ### The ingredients the user has passed in
+  ingredients: String
+# @@@SNIPEND
