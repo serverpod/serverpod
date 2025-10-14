@@ -17,7 +17,10 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        UserProfileConfig.current = UserProfileConfig();
+        UserProfileConfig.current = UserProfileConfig(
+          /// Mock image fetch function that returns a 1x1 pixel PNG.
+          imageFetchFunc: (final _) => onePixelPng,
+        );
 
         final authUser = await AuthUsers.create(session);
         authUserId = authUser.id;
@@ -170,6 +173,51 @@ void main() {
           await expectLater(
             () => UserProfiles.findUserProfileByUserId(session, authUserId),
             throwsA(isA<UserProfileNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when creating a user profile with image url, then image is accessible on user.',
+        () async {
+          await UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(userName: 'test_user'),
+            imageSource: UserImageFromUrl.parse(
+                'https://serverpod.dev/external-profile-image.png'),
+          );
+
+          final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
+
+          expect(
+            foundUserProfile.imageUrl.toString(),
+            allOf(startsWith('http://localhost'), endsWith('.jpg')),
+          );
+        },
+      );
+
+      test(
+        'when creating a user profile with image bytes, then image is accessible on user.',
+        () async {
+          await UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(userName: 'test_user'),
+            imageSource: UserImageFromBytes(onePixelPng),
+          );
+
+          final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
+
+          expect(
+            foundUserProfile.imageUrl.toString(),
+            allOf(startsWith('http://localhost'), endsWith('.jpg')),
           );
         },
       );

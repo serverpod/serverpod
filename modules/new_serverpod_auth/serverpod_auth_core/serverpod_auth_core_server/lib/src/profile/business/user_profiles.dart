@@ -24,6 +24,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     UserProfileData userProfile, {
     final Transaction? transaction,
+    final UserImageSource? imageSource,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
@@ -54,6 +55,25 @@ abstract final class UserProfiles {
           ),
           transaction: transaction,
         );
+
+        switch (imageSource) {
+          case UserImageFromUrl():
+            await UserProfiles.setUserImageFromUrl(
+              session,
+              authUserId,
+              imageSource.url,
+              transaction: transaction,
+            );
+          case UserImageFromBytes():
+            await UserProfiles.setUserImageFromBytes(
+              session,
+              authUserId,
+              imageSource.bytes,
+              transaction: transaction,
+            );
+          case null:
+            break;
+        }
 
         final createdProfileModel = createdProfile.toModel();
 
@@ -518,4 +538,32 @@ abstract final class UserProfiles {
       },
     );
   }
+}
+
+/// Source of a user image.
+///
+/// Can either be a [UserImageFromUrl] or [UserImageFromBytes].
+sealed class UserImageSource {}
+
+/// User image source from a URL.
+final class UserImageFromUrl extends UserImageSource {
+  /// The URL to fetch the image from.
+  final Uri url;
+
+  /// Creates a new [UserImageFromUrl] instance.
+  UserImageFromUrl(this.url);
+
+  /// Creates a new [UserImageFromUrl] instance by parsing the given [url] string.
+  factory UserImageFromUrl.parse(final String url) {
+    return UserImageFromUrl(Uri.parse(url));
+  }
+}
+
+/// User image source from raw bytes.
+final class UserImageFromBytes extends UserImageSource {
+  /// The image bytes.
+  final Uint8List bytes;
+
+  /// Creates a new [UserImageFromBytes] instance.
+  UserImageFromBytes(this.bytes);
 }
