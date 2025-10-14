@@ -206,7 +206,8 @@ abstract final class AuthBackwardsCompatibility {
     required final String idToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails = await GoogleAccounts.admin.fetchAccountDetails(
+    final accountDetails =
+        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
       session,
       idToken: idToken,
     );
@@ -223,7 +224,7 @@ abstract final class AuthBackwardsCompatibility {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await GoogleAccounts.admin.linkGoogleAuthentication(
+        await AuthServices.instance.googleIDP.admin.linkGoogleAuthentication(
           session,
           authUserId: legacyUserIdentifier.authUserId,
           accountDetails: accountDetails,

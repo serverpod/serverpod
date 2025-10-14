@@ -301,7 +301,7 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i5.EndpointGoogleAccountBase {
+    extends _i5.EndpointGoogleIDPBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
       : super(caller);
 
@@ -319,7 +319,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i5.EndpointGoogleAccountBase {
+class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
