@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 
-import 'package:auth_server/src/web/routes/root.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -13,14 +12,20 @@ import 'src/generated/endpoints.dart';
 
 void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
-  final pod = Serverpod(args, Protocol(), Endpoints());
+  final pod = Serverpod(
+    args,
+    Protocol(),
+    Endpoints(),
+    authenticationHandler: AuthSessions.authenticationHandler,
+  );
 
-  // Setup a default page at the web root.
-  pod.webServer.addRoute(RootRoute(), '/');
-  pod.webServer.addRoute(RootRoute(), '/index.html');
-  // Serve all files in the web/static relative directory under /.
-  final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root), '/**');
+  AuthServices.initialize(
+    googleIDPConfig: GoogleIDPConfig(
+      clientSecret: GoogleClientSecret.fromJsonString(
+        pod.getPassword('googleClientSecret')!,
+      ),
+    ),
+  );
 
   // Start the server.
   await pod.start();

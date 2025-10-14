@@ -11,23 +11,54 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../greeting_endpoint.dart' as _i2;
+import '../endpoints/google_idp_endpoint.dart' as _i2;
+import '../greeting_endpoint.dart' as _i3;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i3;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'greeting': _i2.GreetingEndpoint()
+      'googleIDP': _i2.GoogleIDPEndpoint()
+        ..initialize(
+          server,
+          'googleIDP',
+          null,
+        ),
+      'greeting': _i3.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
           null,
-        )
+        ),
     };
+    connectors['googleIDP'] = _i1.EndpointConnector(
+      name: 'googleIDP',
+      endpoint: endpoints['googleIDP']!,
+      methodConnectors: {
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['googleIDP'] as _i2.GoogleIDPEndpoint).login(
+            session,
+            idToken: params['idToken'],
+          ),
+        )
+      },
+    );
     connectors['greeting'] = _i1.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
@@ -45,16 +76,16 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['greeting'] as _i2.GreetingEndpoint).hello(
+              (endpoints['greeting'] as _i3.GreetingEndpoint).hello(
             session,
             params['name'],
           ),
         )
       },
     );
-    modules['serverpod_auth_idp'] = _i3.Endpoints()
+    modules['serverpod_auth_idp'] = _i4.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i4.Endpoints()
+    modules['serverpod_auth_core'] = _i5.Endpoints()
       ..initializeEndpoints(server);
   }
 }
