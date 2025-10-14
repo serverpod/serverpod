@@ -10,8 +10,10 @@ void main() {
   withServerpod(
     'Given no users,',
     (final sessionBuilder, final endpoints) {
-      tearDown(() {
+      tearDown(() async {
         EmailAccounts.config = EmailAccountConfig();
+
+        await _cleanUpDatabase(sessionBuilder.build());
       });
 
       group('when calling `startRegistration`', () {
@@ -19,24 +21,24 @@ void main() {
         late UuidValue clientReceivedRequestId;
         String? receivedVerificationCode;
 
-        EmailAccounts.config = EmailAccountConfig(
-          sendRegistrationVerificationCode: (
-            final session, {
-            required final accountRequestId,
-            required final email,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedVerificationCode = verificationCode;
-            receivedAccountRequestId = accountRequestId;
-          },
-        );
+        setUp(() async {
+          EmailAccounts.config = EmailAccountConfig(
+            sendRegistrationVerificationCode: (
+              final session, {
+              required final accountRequestId,
+              required final email,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+              receivedAccountRequestId = accountRequestId;
+            },
+          );
 
-        setUpAll(() async {
           clientReceivedRequestId =
               await endpoints.emailAccount.startRegistration(
             sessionBuilder,
-            email: _getNewTestEmail(),
+            email: 'test@serverpod.dev',
             password: 'Foobar123!',
           );
         });
@@ -57,7 +59,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.startRegistration(
             sessionBuilder,
-            email: _getNewTestEmail(),
+            email: 'test@serverpod.dev',
             password: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -74,7 +76,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.login(
             sessionBuilder,
-            email: _getNewTestEmail(),
+            email: 'test@serverpod.dev',
             password: 'Password!',
           ),
           throwsA(
@@ -113,7 +115,7 @@ void main() {
           clientReceivedRequestId =
               await endpoints.emailAccount.startPasswordReset(
             sessionBuilder,
-            email: _getNewTestEmail(),
+            email: 'test@serverpod.dev',
           );
         });
 
@@ -139,7 +141,7 @@ void main() {
         test(
             'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is not registered.',
             () async {
-          final existingEmail = _getNewTestEmail();
+          const existingEmail = 'test@serverpod.dev';
           await endpoints._registerEmailAccount(
             sessionBuilder,
             email: existingEmail,
@@ -185,7 +187,7 @@ void main() {
 
         await endpoints.emailAccount.startRegistration(
           sessionBuilder,
-          email: _getNewTestEmail(),
+          email: 'test@serverpod.dev',
           password: 'Foobar123!',
         );
       });
@@ -240,7 +242,7 @@ void main() {
   withServerpod(
     'Given an active account,',
     (final sessionBuilder, final endpoints) {
-      final email = _getNewTestEmail();
+      const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
 
       setUp(() async {
@@ -346,7 +348,7 @@ void main() {
           final validRegistrationRequest =
               await endpoints.emailAccount.startRegistration(
             sessionBuilder,
-            email: _getNewTestEmail(),
+            email: 'test@serverpod.dev',
             password: password,
           );
 
@@ -389,7 +391,7 @@ void main() {
   withServerpod(
     'Given an email authentication for a blocked `AuthUser`,',
     (final sessionBuilder, final endpoints) {
-      final email = _getNewTestEmail();
+      const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
 
       setUp(() async {
@@ -428,7 +430,7 @@ void main() {
   withServerpod(
     'Given an auth user with a pending password reset,',
     (final sessionBuilder, final endpoints) {
-      final email = _getNewTestEmail();
+      const email = 'test@serverpod.dev';
 
       late UuidValue authUserId;
       late UuidValue passwordResetRequestId;
@@ -506,7 +508,7 @@ void main() {
   withServerpod(
     'Given an auth user with a changed password,',
     (final sessionBuilder, final endpoints) {
-      final email = _getNewTestEmail();
+      const email = 'test@serverpod.dev';
       const oldPassword = 'Foobar123!';
       const newPassword = 'BarFoo789?';
 
@@ -602,11 +604,6 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
   );
-}
-
-/// A new test email to avoid colliding with existing data on the database.
-String _getNewTestEmail() {
-  return 'test_${const Uuid().v4().replaceAll('-', '')}@serverpod.dev';
 }
 
 extension on TestEndpoints {
@@ -710,6 +707,11 @@ extension on TestEndpoints {
 
 Future<void> _cleanUpDatabase(final Session session) async {
   await AuthUser.db.deleteWhere(
+    session,
+    where: (final _) => Constant.bool(true),
+  );
+
+  await EmailAccountRequest.db.deleteWhere(
     session,
     where: (final _) => Constant.bool(true),
   );
