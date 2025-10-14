@@ -95,7 +95,7 @@ abstract class EmailAccountRequest
 
   /// Time at which the email address has been verified, or `null` if it did not happen yet.
   ///
-  /// The requets can only be turned into an account if this is non-`null`.
+  /// The requests can only be turned into an account if this is non-`null`.
   DateTime? verifiedAt;
 
   @override
@@ -326,7 +326,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
 
   /// Time at which the email address has been verified, or `null` if it did not happen yet.
   ///
-  /// The requets can only be turned into an account if this is non-`null`.
+  /// The requests can only be turned into an account if this is non-`null`.
   late final _i1.ColumnDateTime verifiedAt;
 
   @override

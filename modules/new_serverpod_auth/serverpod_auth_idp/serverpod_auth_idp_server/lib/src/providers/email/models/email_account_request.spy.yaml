@@ -33,7 +33,7 @@ fields:
 
   ### Time at which the email address has been verified, or `null` if it did not happen yet.
   ###
-  ### The requets can only be turned into an account if this is non-`null`.
+  ### The requests can only be turned into an account if this is non-`null`.
   verifiedAt: DateTime?
 
 indexes:

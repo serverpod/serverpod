@@ -62,7 +62,7 @@ void main() {
               isA<auth_next.EmailAccountLoginException>().having(
                 (final e) => e.reason,
                 'reason',
-                auth_next.EmailAccountLoginFailureReason.invalidCredentials,
+                auth_next.EmailAccountLoginExceptionReason.invalidCredentials,
               ),
             ),
           );

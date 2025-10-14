@@ -13,7 +13,7 @@ final class EmailAccountsAdmin {
   /// [olderThan].
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
-  /// window that is checked upon password reset requets, as configured in
+  /// window that is checked upon password reset requests, as configured in
   /// [EmailAccountConfig.maxPasswordResetAttempts].
   Future<void> deletePasswordResetAttempts(
     final Session session, {

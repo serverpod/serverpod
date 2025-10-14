@@ -52,7 +52,7 @@ void main() {
       });
 
       test(
-          'when calling `startRegistration` with a short password, then an error is thrown.',
+          'when calling `startRegistration` with a short password, then an error is thrown with reason `policyViolation`.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.startRegistration(
@@ -69,7 +69,7 @@ void main() {
       });
 
       test(
-          'when calling `login` with unknown credentials, then it throws an error with `invalidCredentials`.',
+          'when calling `login` with unknown credentials, then it throws an error with reason `invalidCredentials`.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.login(
@@ -81,7 +81,7 @@ void main() {
             isA<EmailAccountLoginException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountLoginFailureReason.invalidCredentials,
+              EmailAccountLoginExceptionReason.invalidCredentials,
             ),
           ),
         );
@@ -288,7 +288,7 @@ void main() {
             isA<EmailAccountLoginException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountLoginFailureReason.invalidCredentials,
+              EmailAccountLoginExceptionReason.invalidCredentials,
             ),
           ),
         );
@@ -496,7 +496,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.requestUnauthorized,
+            EmailAccountPasswordResetExceptionReason.unauthorized,
           )),
         );
       });
@@ -537,7 +537,7 @@ void main() {
       });
 
       test(
-          'when calling `login` with the old credentials, then it throws an error.',
+          'when calling `login` with the old credentials, then it throws an error with reason `invalidCredentials`.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.login(
@@ -549,7 +549,7 @@ void main() {
             isA<EmailAccountLoginException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountLoginFailureReason.invalidCredentials,
+              EmailAccountLoginExceptionReason.invalidCredentials,
             ),
           ),
         );

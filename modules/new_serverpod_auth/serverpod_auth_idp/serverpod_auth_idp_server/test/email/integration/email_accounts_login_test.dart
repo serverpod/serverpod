@@ -78,7 +78,7 @@ void main() {
           throwsA(isA<EmailAccountLoginException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountLoginFailureReason.invalidCredentials,
+            EmailAccountLoginExceptionReason.invalidCredentials,
           )),
         );
 
@@ -91,7 +91,7 @@ void main() {
           throwsA(isA<EmailAccountLoginException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountLoginFailureReason.tooManyAttempts,
+            EmailAccountLoginExceptionReason.tooManyAttempts,
           )),
         );
       });
@@ -117,7 +117,7 @@ void main() {
           throwsA(isA<EmailAccountLoginException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountLoginFailureReason.invalidCredentials,
+            EmailAccountLoginExceptionReason.invalidCredentials,
           )),
         );
 
@@ -130,7 +130,7 @@ void main() {
           throwsA(isA<EmailAccountLoginException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountLoginFailureReason.tooManyAttempts,
+            EmailAccountLoginExceptionReason.tooManyAttempts,
           )),
         );
       });

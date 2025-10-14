@@ -178,7 +178,7 @@ void main() {
       });
 
       test(
-          'when verifying the account request with an incorrect code, then it throw a `EmailAccountRequestUnauthorizedException`.',
+          'when verifying the account request with an incorrect code, then it throw an exception with reason `unauthorized`.',
           () async {
         await expectLater(
           () => EmailAccounts.verifyAccountCreation(
@@ -195,7 +195,7 @@ void main() {
       });
 
       test(
-          'when verifying the account request after it has expired, then it throw a `EmailAccountRequestExpiredException`.',
+          'when verifying the account request after it has expired, then it throw an exception of reason `expired`.',
           () async {
         await expectLater(
           () => withClock(

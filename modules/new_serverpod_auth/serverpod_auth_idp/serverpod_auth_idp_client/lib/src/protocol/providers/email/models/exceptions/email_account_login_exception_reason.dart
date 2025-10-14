@@ -13,27 +13,31 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The reason for why the authentication via email credentials was rejected.
-enum EmailAccountLoginFailureReason implements _i1.SerializableModel {
+enum EmailAccountLoginExceptionReason implements _i1.SerializableModel {
+  /// The credentials are either wrong or the email address is not known.
+  invalidCredentials,
+
   /// Too many attempts made by the same client/IP or towards the same account.
   tooManyAttempts,
 
-  /// The credentials are either wrong or the email address is not known.
-  invalidCredentials;
+  /// Unknown error occurred.
+  unknown;
 
-  static EmailAccountLoginFailureReason fromJson(int index) {
-    switch (index) {
-      case 0:
-        return EmailAccountLoginFailureReason.tooManyAttempts;
-      case 1:
-        return EmailAccountLoginFailureReason.invalidCredentials;
+  static EmailAccountLoginExceptionReason fromJson(String name) {
+    switch (name) {
+      case 'invalidCredentials':
+        return EmailAccountLoginExceptionReason.invalidCredentials;
+      case 'tooManyAttempts':
+        return EmailAccountLoginExceptionReason.tooManyAttempts;
+      case 'unknown':
+        return EmailAccountLoginExceptionReason.unknown;
       default:
-        throw ArgumentError(
-            'Value "$index" cannot be converted to "EmailAccountLoginFailureReason"');
+        return EmailAccountLoginExceptionReason.unknown;
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
 
   @override
   String toString() => name;

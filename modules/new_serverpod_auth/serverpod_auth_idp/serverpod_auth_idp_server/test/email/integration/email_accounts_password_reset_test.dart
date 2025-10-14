@@ -118,7 +118,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.requestTooManyAttempts,
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )),
         );
       });
@@ -134,7 +134,7 @@ void main() {
       const password = 'asdf1234';
       late Session session;
       late UuidValue authUserId;
-      late UuidValue paswordResetRequestId;
+      late UuidValue passwordResetRequestId;
       late String verificationCode;
 
       setUp(() async {
@@ -150,7 +150,7 @@ void main() {
           password: password,
         );
 
-        (paswordResetRequestId, verificationCode) = await requestPasswordReset(
+        (passwordResetRequestId, verificationCode) = await requestPasswordReset(
           session,
           email: email,
         );
@@ -165,7 +165,7 @@ void main() {
           () async {
         final result = await EmailAccounts.completePasswordReset(
           session,
-          passwordResetRequestId: paswordResetRequestId,
+          passwordResetRequestId: passwordResetRequestId,
           verificationCode: verificationCode,
           newPassword: '1234asdf!!!',
         );
@@ -183,21 +183,21 @@ void main() {
         await expectLater(
           () => EmailAccounts.completePasswordReset(
             session,
-            passwordResetRequestId: paswordResetRequestId,
+            passwordResetRequestId: passwordResetRequestId,
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.requestUnauthorized,
+            EmailAccountPasswordResetExceptionReason.unauthorized,
           )),
         );
 
         await expectLater(
           () => EmailAccounts.completePasswordReset(
             session,
-            passwordResetRequestId: paswordResetRequestId,
+            passwordResetRequestId: passwordResetRequestId,
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
@@ -211,14 +211,14 @@ void main() {
         await expectLater(
           () => EmailAccounts.completePasswordReset(
             session,
-            passwordResetRequestId: paswordResetRequestId,
+            passwordResetRequestId: passwordResetRequestId,
             verificationCode: 'wrong',
             newPassword: '1234asdf!!!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.requestNotFound,
+            EmailAccountPasswordResetExceptionReason.notFound,
           )),
         );
       });
@@ -284,7 +284,7 @@ void main() {
             isA<EmailAccountLoginException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountLoginFailureReason.invalidCredentials,
+              EmailAccountLoginExceptionReason.invalidCredentials,
             ),
           ),
         );

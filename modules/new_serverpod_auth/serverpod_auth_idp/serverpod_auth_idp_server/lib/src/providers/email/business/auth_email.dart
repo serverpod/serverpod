@@ -193,11 +193,9 @@ abstract class AuthEmail {
             transaction: transaction,
           );
         } on EmailAccountPasswordResetException catch (e) {
-          if (e.reason ==
-              EmailAccountPasswordResetExceptionReason.requestNotFound) {
+          if (e.reason == EmailAccountPasswordResetExceptionReason.notFound) {
             throw EmailAccountPasswordResetException(
-                reason: EmailAccountPasswordResetExceptionReason
-                    .requestUnauthorized);
+                reason: EmailAccountPasswordResetExceptionReason.unauthorized);
           }
           rethrow;
         }

@@ -45,7 +45,7 @@ abstract final class EmailAccounts {
           transaction: transaction,
         )) {
           throw EmailAccountLoginException(
-            reason: EmailAccountLoginFailureReason.tooManyAttempts,
+            reason: EmailAccountLoginExceptionReason.tooManyAttempts,
           );
         }
 
@@ -64,7 +64,7 @@ abstract final class EmailAccounts {
           await _logFailedSignIn(session, email);
 
           throw EmailAccountLoginException(
-            reason: EmailAccountLoginFailureReason.invalidCredentials,
+            reason: EmailAccountLoginExceptionReason.invalidCredentials,
           );
         }
 
@@ -202,14 +202,15 @@ abstract final class EmailAccounts {
   /// If this returns successfully, this means [completeAccountCreation] can be
   /// called.
   ///
-  /// Throws an [EmailAccountRequestNotFoundException] in case the
-  /// [accountRequestId] does not point to an existing request.
-  /// Throws an [EmailAccountRequestExpiredException] in case the request's
-  /// validation window has elapsed.
-  /// Throws an [EmailAccountRequestTooManyAttemptsException] in case too many
-  /// attempts have been made at finishing the same account request.
-  /// Throws an [EmailAccountRequestUnauthorizedException] in case the
-  /// [verificationCode] is not valid.
+  /// Can throw an [EmailAccountRequestException] with the reason:
+  /// - [EmailAccountRequestExceptionReason.notFound] if the request does not
+  ///   exist or has already been completed.
+  /// - [EmailAccountRequestExceptionReason.expired] if the request has already
+  ///   expired, but has not been cleaned up yet.
+  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] in case the user
+  ///   has made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.unauthorized] if the verification
+  ///   code is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed attempt will be
   /// logged to the database outside of the [transaction] and can not be rolled
@@ -279,10 +280,8 @@ abstract final class EmailAccounts {
   /// Returns the `ID` of the new email authentication, and the email address
   /// used during registration.
   ///
-  /// Throws an [EmailAccountRequestNotFoundException] in case the
-  /// [accountRequestId] does not point to an existing request.
-  /// Throws an [EmailAccountRequestNotVerifiedException] in case the request
-  /// has not been verified via [verifyAccountCreation].
+  /// Throws an [EmailAccountRequestException] if request does not point to an
+  /// existing request or it has not been verified via [verifyAccountCreation].
   static Future<({UuidValue emailAccountId, String email})>
       completeAccountCreation(
     final Session session, {
@@ -346,8 +345,8 @@ abstract final class EmailAccounts {
   /// [transaction] and can not be rolled back, so the throttling will always be
   /// enforced.
   ///
-  /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
-  /// case the client or account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case the client or
+  /// account has been involved in too many reset attempts.
   static Future<
       ({
         PasswordResetResult result,
@@ -368,8 +367,7 @@ abstract final class EmailAccounts {
           email: email,
         )) {
           throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason
-                  .requestTooManyAttempts);
+              reason: EmailAccountPasswordResetExceptionReason.tooManyAttempts);
         }
 
         final account = await EmailAccount.db.findFirstRow(
@@ -421,14 +419,17 @@ abstract final class EmailAccounts {
 
   /// Returns the auth user ID for the successfully changed password
   ///
-  /// Throws an [EmailAccountPasswordResetRequestNotFoundException] in case no
-  /// reset request could be found for [passwordResetRequestId].
-  /// Throws an [EmailAccountPasswordResetRequestExpiredException] in case the
-  /// reset request has expired.
-  /// Throws an [EmailAccountPasswordPolicyViolationException] in case the
-  /// password does not confirm to the configured policy.
-  /// Throws an [EmailAccountPasswordResetRequestUnauthorizedException] in case
-  /// the [verificationCode] is not valid.
+  /// Can throw an [EmailAccountPasswordResetException] with the reason:
+  /// - [EmailAccountPasswordResetExceptionReason.notFound] if no reset request
+  ///   could be found for [passwordResetRequestId].
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the reset
+  ///   request has expired and has not been cleaned up yet.
+  /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
+  ///   password does not comply with the configured password policy.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user
+  ///   has made too many attempts trying to complete the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.unauthorized] if the provided
+  ///   [verificationCode] is not valid.
   ///
   /// In case of an invalid [verificationCode], the failed password reset
   /// completion will be logged to the database outside of the [transaction] and
@@ -452,7 +453,7 @@ abstract final class EmailAccounts {
 
         if (resetRequest == null) {
           throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.requestNotFound);
+              reason: EmailAccountPasswordResetExceptionReason.notFound);
         }
 
         if (resetRequest.isExpired) {
@@ -463,7 +464,7 @@ abstract final class EmailAccounts {
           );
 
           throw EmailAccountPasswordResetException(
-              reason: EmailAccountPasswordResetExceptionReason.requestExpired);
+              reason: EmailAccountPasswordResetExceptionReason.expired);
         }
 
         if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
@@ -491,8 +492,7 @@ abstract final class EmailAccounts {
           salt: resetRequest.verificationCodeSalt.asUint8List,
         )) {
           throw EmailAccountPasswordResetException(
-              reason:
-                  EmailAccountPasswordResetExceptionReason.requestUnauthorized);
+              reason: EmailAccountPasswordResetExceptionReason.unauthorized);
         }
 
         await EmailAccountPasswordResetRequest.db.deleteRow(
@@ -682,8 +682,8 @@ extension on Session {
 /// This describes the detailed status of the operation to the caller.
 ///
 /// In the general case the caller should take care not to leak this to clients,
-/// such that outside clients can not use this result to determine wheter or not
-/// a specific acccount is registered on the server.
+/// such that outside clients can not use this result to determine whether a
+/// specific account is registered on the server.
 enum EmailAccountRequestResult {
   /// An account request has been created.
   accountRequestCreated,

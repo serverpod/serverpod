@@ -13,7 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'providers/email/models/exceptions/email_account_login_exception.dart'
     as _i2;
-import 'providers/email/models/exceptions/email_account_login_failure_reason.dart'
+import 'providers/email/models/exceptions/email_account_login_exception_reason.dart'
     as _i3;
 import 'providers/email/models/exceptions/email_account_password_reset_exception.dart'
     as _i4;
@@ -37,7 +37,7 @@ import 'dart:typed_data' as _i14;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i15;
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
-export 'providers/email/models/exceptions/email_account_login_failure_reason.dart';
+export 'providers/email/models/exceptions/email_account_login_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
@@ -66,8 +66,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.EmailAccountLoginException) {
       return _i2.EmailAccountLoginException.fromJson(data) as T;
     }
-    if (t == _i3.EmailAccountLoginFailureReason) {
-      return _i3.EmailAccountLoginFailureReason.fromJson(data) as T;
+    if (t == _i3.EmailAccountLoginExceptionReason) {
+      return _i3.EmailAccountLoginExceptionReason.fromJson(data) as T;
     }
     if (t == _i4.EmailAccountPasswordResetException) {
       return _i4.EmailAccountPasswordResetException.fromJson(data) as T;
@@ -104,9 +104,9 @@ class Protocol extends _i1.SerializationManager {
           ? _i2.EmailAccountLoginException.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i3.EmailAccountLoginFailureReason?>()) {
+    if (t == _i1.getType<_i3.EmailAccountLoginExceptionReason?>()) {
       return (data != null
-          ? _i3.EmailAccountLoginFailureReason.fromJson(data)
+          ? _i3.EmailAccountLoginExceptionReason.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i4.EmailAccountPasswordResetException?>()) {
@@ -178,8 +178,8 @@ class Protocol extends _i1.SerializationManager {
     switch (data) {
       case _i2.EmailAccountLoginException():
         return 'EmailAccountLoginException';
-      case _i3.EmailAccountLoginFailureReason():
-        return 'EmailAccountLoginFailureReason';
+      case _i3.EmailAccountLoginExceptionReason():
+        return 'EmailAccountLoginExceptionReason';
       case _i4.EmailAccountPasswordResetException():
         return 'EmailAccountPasswordResetException';
       case _i5.EmailAccountPasswordResetExceptionReason():
@@ -217,8 +217,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'EmailAccountLoginException') {
       return deserialize<_i2.EmailAccountLoginException>(data['data']);
     }
-    if (dataClassName == 'EmailAccountLoginFailureReason') {
-      return deserialize<_i3.EmailAccountLoginFailureReason>(data['data']);
+    if (dataClassName == 'EmailAccountLoginExceptionReason') {
+      return deserialize<_i3.EmailAccountLoginExceptionReason>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetException') {
       return deserialize<_i4.EmailAccountPasswordResetException>(data['data']);

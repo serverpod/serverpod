@@ -30,7 +30,7 @@ abstract class EmailAccountPasswordResetException
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountPasswordResetException(
         reason: _i2.EmailAccountPasswordResetExceptionReason.fromJson(
-            (jsonSerialization['reason'] as int)));
+            (jsonSerialization['reason'] as String)));
   }
 
   _i2.EmailAccountPasswordResetExceptionReason reason;

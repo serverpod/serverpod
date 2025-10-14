@@ -93,14 +93,13 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   ///
-  /// Throws an [EmailAccountRequestNotFoundException] in case the
-  /// [accountRequestId] does not point to an existing request.
-  /// Throws an [EmailAccountRequestExpiredException] in case the request's
-  /// validation window has elapsed.
-  /// Throws an [EmailAccountRequestTooManyAttemptsException] in case too many
-  /// attempts have been made at finishing the same account request.
-  /// Throws an [EmailAccountRequestUnauthorizedException] in case the
-  /// [verificationCode] is not valid.
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.unauthorized] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
@@ -119,25 +118,26 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetRequestTooManyAttemptsException] in
-  /// case the client or account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case the client or
+  /// account has been involved in too many reset attempts.
   /// {@endtemplate}
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
 
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
-  /// Throws an [EmailAccountPasswordResetRequestNotFoundException] in case no
-  /// reset request could be found for [passwordResetRequestId].
-  /// Throws an [EmailAccountPasswordResetRequestExpiredException] in case the
-  /// reset request has expired.
-  /// Throws an [EmailAccountPasswordPolicyViolationException] in case the
-  /// password does not confirm to the configured policy.
-  /// Throws an [EmailAccountPasswordResetRequestUnauthorizedException] in case
-  /// the [verificationCode] is not valid.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
+  ///   password does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to complete the password reset.
+  /// - [EmailAccountRequestExceptionReason.unauthorized] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
-  /// If the reset was successful, a new session is returned and
-  /// all previous sessions of the user are destroyed.
+  /// If the reset was successful, a new session is returned and all previous
+  /// active sessions of the user are destroyed.
   /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> finishPasswordReset({
     required _i1.UuidValue passwordResetRequestId,

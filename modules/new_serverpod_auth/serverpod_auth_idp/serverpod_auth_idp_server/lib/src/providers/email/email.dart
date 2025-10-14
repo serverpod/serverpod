@@ -10,7 +10,7 @@ export '../../generated/protocol.dart'
         EmailAccountRequest,
         EmailAccountRequestCompletionAttempt,
         EmailAccountLoginException,
-        EmailAccountLoginFailureReason,
+        EmailAccountLoginExceptionReason,
         EmailAccountPasswordResetException,
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,

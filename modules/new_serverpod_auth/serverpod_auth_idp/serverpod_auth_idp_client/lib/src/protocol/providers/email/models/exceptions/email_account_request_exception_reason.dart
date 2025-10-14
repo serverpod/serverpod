@@ -18,11 +18,11 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
   /// request after it has expired.
   expired,
 
-  /// Exception to be thrown when an email account request could not be found by
-  /// the given id.
+  /// Exception to be thrown when an email account request could not be found.
   ///
   /// This might mean that the account request never existed or has since been
-  /// deleted.
+  /// deleted. This reason is only available in the server and will be replaced
+  /// by `unauthorized` when sent to the client.
   notFound,
 
   /// Exception to be thrown when an attempt is made to complete the creation
@@ -33,30 +33,34 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
   /// email account request.
   tooManyAttempts,
 
-  /// Exception to be thrown when the verification code given for an email account
-  /// request is not valid.
-  unauthorized;
+  /// Exception to be thrown when the verification code given for an email
+  /// account request is not valid.
+  unauthorized,
 
-  static EmailAccountRequestExceptionReason fromJson(int index) {
-    switch (index) {
-      case 0:
+  /// Unknown error occurred.
+  unknown;
+
+  static EmailAccountRequestExceptionReason fromJson(String name) {
+    switch (name) {
+      case 'expired':
         return EmailAccountRequestExceptionReason.expired;
-      case 1:
+      case 'notFound':
         return EmailAccountRequestExceptionReason.notFound;
-      case 2:
+      case 'notVerified':
         return EmailAccountRequestExceptionReason.notVerified;
-      case 3:
+      case 'tooManyAttempts':
         return EmailAccountRequestExceptionReason.tooManyAttempts;
-      case 4:
+      case 'unauthorized':
         return EmailAccountRequestExceptionReason.unauthorized;
+      case 'unknown':
+        return EmailAccountRequestExceptionReason.unknown;
       default:
-        throw ArgumentError(
-            'Value "$index" cannot be converted to "EmailAccountRequestExceptionReason"');
+        return EmailAccountRequestExceptionReason.unknown;
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
 
   @override
   String toString() => name;
