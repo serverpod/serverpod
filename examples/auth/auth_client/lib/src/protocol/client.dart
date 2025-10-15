@@ -20,6 +20,44 @@ import 'package:auth_client/src/protocol/greeting.dart' as _i5;
 import 'protocol.dart' as _i6;
 
 /// {@category Endpoint}
+class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
+  EndpointAppleIDP(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'appleIDP';
+
+  /// {@template apple_idp_base_endpoint.login}
+  /// Signs in a user with their Apple account.
+  ///
+  /// If no user exists yet linked to the Apple-provided identifier, a new one
+  /// will be created (without any `Scope`s). Further their provided name and
+  /// email (if any) will be used for the `UserProfile` which will be linked to
+  /// their `AuthUser`.
+  ///
+  /// Returns a session for the user upon successful login.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i4.AuthSuccess> login({
+    required String identityToken,
+    required String authorizationCode,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+  }) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'appleIDP',
+        'login',
+        {
+          'identityToken': identityToken,
+          'authorizationCode': authorizationCode,
+          'isNativeApplePlatformSignIn': isNativeApplePlatformSignIn,
+          'firstName': firstName,
+          'lastName': lastName,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   EndpointGoogleIDP(_i2.EndpointCaller caller) : super(caller);
 
@@ -96,10 +134,13 @@ class Client extends _i2.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
+    appleIDP = EndpointAppleIDP(this);
     googleIDP = EndpointGoogleIDP(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
+
+  late final EndpointAppleIDP appleIDP;
 
   late final EndpointGoogleIDP googleIDP;
 
@@ -109,6 +150,7 @@ class Client extends _i2.ServerpodClientShared {
 
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
+        'appleIDP': appleIDP,
         'googleIDP': googleIDP,
         'greeting': greeting,
       };

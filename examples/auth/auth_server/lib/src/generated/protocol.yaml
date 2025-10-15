@@ -1,3 +1,5 @@
+appleIDP:
+  - login:
 googleIDP:
   - login:
 greeting:
