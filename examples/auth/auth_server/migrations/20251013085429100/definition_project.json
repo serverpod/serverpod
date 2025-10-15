@@ -1,0 +1,11 @@
+{
+  "moduleName": "auth",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20250825102336032-v3-0-0"
+    }
+  ],
+  "migrationApiVersion": 1
+}

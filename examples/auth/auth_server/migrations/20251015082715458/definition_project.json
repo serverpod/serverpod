@@ -1,0 +1,19 @@
+{
+  "moduleName": "auth",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20250825102336032-v3-0-0"
+    },
+    {
+      "module": "serverpod_auth_idp",
+      "version": "20250929121600932-v3-0-0"
+    },
+    {
+      "module": "serverpod_auth_core",
+      "version": "20250825102357155-v3-0-0"
+    }
+  ],
+  "migrationApiVersion": 1
+}
