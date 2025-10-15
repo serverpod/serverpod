@@ -5,6 +5,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 import 'auth_key_providers/jwt_auth_key_provider.dart';
 import 'auth_key_providers/sas_auth_key_provider.dart';
+import 'storage/cached_client_auth_info_storage.dart';
 import 'storage/client_auth_info_storage.dart';
 import 'storage/secure_client_auth_info_storage.dart';
 
@@ -116,8 +117,15 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     return validateAuthentication();
   }
 
-  /// Restore the current sign in status from the storage.
+  /// Restore the current sign in status from the storage. If the underlying
+  /// storage implements caching, the cache is cleared before restoring the
+  /// value. This method can be called at any time to get the latest value from
+  /// the storage.
   Future<void> restore() async {
+    final storage = this.storage;
+    if (storage is CachedClientAuthInfoStorage) {
+      await storage.clearCache();
+    }
     _authInfo.value = await storage.get();
   }
 
