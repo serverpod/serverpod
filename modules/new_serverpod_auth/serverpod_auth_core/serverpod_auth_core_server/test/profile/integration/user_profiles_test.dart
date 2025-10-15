@@ -177,48 +177,72 @@ void main() {
         },
       );
 
-      test(
+      group(
         'when creating a user profile with image url, then image is accessible on user.',
-        () async {
-          await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(userName: 'test_user'),
-            imageSource: UserImageFromUrl.parse(
-                'https://serverpod.dev/external-profile-image.png'),
-          );
+        () {
+          late UserProfileModel createdProfile;
+          setUp(() async {
+            createdProfile = await UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(userName: 'test_user'),
+              imageSource: UserImageFromUrl.parse(
+                  'https://serverpod.dev/external-profile-image.png'),
+            );
+          });
 
-          final foundUserProfile = await UserProfiles.findUserProfileByUserId(
-            session,
-            authUserId,
-          );
+          test('then the returned profile contains the image URL.', () async {
+            expect(
+              createdProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
 
-          expect(
-            foundUserProfile.imageUrl.toString(),
-            allOf(startsWith('http://localhost'), endsWith('.jpg')),
-          );
+          test('then image is accessible stored user.', () async {
+            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+              session,
+              authUserId,
+            );
+
+            expect(
+              foundUserProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
         },
       );
 
-      test(
-        'when creating a user profile with image bytes, then image is accessible on user.',
-        () async {
-          await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(userName: 'test_user'),
-            imageSource: UserImageFromBytes(onePixelPng),
-          );
+      group(
+        'when creating a user profile with image bytes',
+        () {
+          late UserProfileModel createdProfile;
+          setUp(() async {
+            createdProfile = await UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(userName: 'test_user'),
+              imageSource: UserImageFromBytes(onePixelPng),
+            );
+          });
 
-          final foundUserProfile = await UserProfiles.findUserProfileByUserId(
-            session,
-            authUserId,
-          );
+          test('then the returned profile contains the image URL.', () async {
+            expect(
+              createdProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
 
-          expect(
-            foundUserProfile.imageUrl.toString(),
-            allOf(startsWith('http://localhost'), endsWith('.jpg')),
-          );
+          test('then image is accessible stored user.', () async {
+            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+              session,
+              authUserId,
+            );
+
+            expect(
+              foundUserProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
         },
       );
     },

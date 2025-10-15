@@ -56,16 +56,15 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
 
-        if (imageSource != null) {
-          await _setUserImage(
-            session,
-            authUserId,
-            imageSource,
-            transaction: transaction,
-          );
-        }
-
-        final createdProfileModel = createdProfile.toModel();
+        final createdProfileModel = switch (imageSource) {
+          null => createdProfile.toModel(),
+          _ => await _setUserImage(
+              session,
+              authUserId,
+              imageSource,
+              transaction: transaction,
+            ),
+        };
 
         await UserProfileConfig.current.onAfterUserProfileCreated?.call(
           session,
