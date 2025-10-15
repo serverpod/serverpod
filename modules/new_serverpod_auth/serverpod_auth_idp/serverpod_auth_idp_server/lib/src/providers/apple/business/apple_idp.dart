@@ -42,13 +42,9 @@ final class AppleIDP {
       key: config.key,
     );
 
-    final siwa = SignInWithApple(
-      config: siwaConf,
-    );
+    final siwa = SignInWithApple(config: siwaConf);
 
-    utils = AppleIDPUtils(
-      siwa: siwa,
-    );
+    utils = AppleIDPUtils(siwa: siwa);
     admin = AppleIDPAdmin(utils: utils);
   }
 
