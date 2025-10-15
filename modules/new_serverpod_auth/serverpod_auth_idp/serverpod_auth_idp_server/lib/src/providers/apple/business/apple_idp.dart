@@ -1,50 +1,59 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/profile.dart';
+import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
-import '../../../generated/protocol.dart';
 import 'apple_idp_admin.dart';
 import 'apple_idp_config.dart';
+import 'apple_idp_utils.dart';
 
-/// Apple account management functions.
-abstract final class AppleIDP {
-  /// Administrative methods for working with Apple-backed accounts.
-  static late AppleIDPAdmin admin;
+/// Main class for the Apple identity provider.
+/// The methods defined here are intended to be called from an endpoint.
+///
+/// The `admin` property provides access to [AppleIDPAdmin], which contains
+/// admin-related methods for managing Apple-backed accounts.
+///
+/// The `utils` property provides access to [AppleIDPUtils], which contains
+/// utility methods for working with Apple-backed accounts. These can be used
+/// to implement custom authentication flows if needed.
+///
+/// If you would like to modify the authentication flow, consider creating
+/// custom implementations of the relevant methods.
+final class AppleIDP {
+  static const String _method = 'apple';
 
-  static late AppleIDPConfig _config;
-  static late SignInWithApple _siwa;
+  /// Admin operations to work with Apple-backed accounts.
+  late final AppleIDPAdmin admin;
 
-  /// Sets the configuration and configured the underlying utilities.
-  ///
-  /// This must be set before any methods on this class are invoked.
-  set config(final AppleIDPConfig config) {
-    _config = config;
+  /// Utility functions for the Apple identity provider.
+  late final AppleIDPUtils utils;
 
-    _siwa = SignInWithApple(
-      config: SignInWithAppleConfiguration(
-        serviceIdentifier: config.serviceIdentifier,
-        bundleIdentifier: config.bundleIdentifier,
-        redirectUri: config.redirectUri,
-        teamId: config.teamId,
-        keyId: config.keyId,
-        key: config.key,
-      ),
+  /// Creates a new instance of [AppleIDP].
+  AppleIDP({required final AppleIDPConfig config}) {
+    final siwaConf = SignInWithAppleConfiguration(
+      serviceIdentifier: config.serviceIdentifier,
+      bundleIdentifier: config.bundleIdentifier,
+      redirectUri: config.redirectUri,
+      teamId: config.teamId,
+      keyId: config.keyId,
+      key: config.key,
     );
 
-    admin = AppleIDPAdmin(_siwa);
+    final siwa = SignInWithApple(
+      config: siwaConf,
+    );
+
+    utils = AppleIDPUtils(
+      siwa: siwa,
+    );
+    admin = AppleIDPAdmin(utils: utils);
   }
 
-  /// Returns the current configuration.
-  AppleIDPConfig get config => _config;
-
-  /// Authenticates a user using an [identityToken] and [authorizationCode].
-  ///
-  /// If the external user ID is not yet known in the system, a new `AuthUser`
-  /// is created for it.
-  static Future<AppleAuthSuccess> signIn(
+  /// {@macro apple_idp_base_endpoint.login}
+  Future<AuthSuccess> login(
     final Session session, {
     required final String identityToken,
     required final String authorizationCode,
@@ -55,128 +64,64 @@ abstract final class AppleIDP {
     required final bool isNativeApplePlatformSignIn,
     final String? firstName,
     final String? lastName,
-    final Transaction? transaction,
   }) async {
-    final verifiedIdentityToken = await _siwa.verifyIdentityToken(
-      identityToken,
-      useBundleIdentifier: isNativeApplePlatformSignIn,
-      nonce: null,
-    );
-
-    // TODO: Handle the edge-case where we already know the user, but they
-    //       disconnected and now "registered" again, in which case we need to
-    //       receive and store the new refresh token.
-
-    var appleAccount = await AppleAccount.db.findFirstRow(
-      session,
-      where: (final t) => t.userIdentifier.equals(
-        verifiedIdentityToken.userId,
-      ),
-      transaction: transaction,
-    );
-    final authUserNewlyCreated = appleAccount == null;
-
-    if (appleAccount == null) {
-      final refreshToken = await _siwa.exchangeAuthorizationCode(
-        authorizationCode,
-        useBundleIdentifier: isNativeApplePlatformSignIn,
+    return session.db.transaction((final transaction) async {
+      final account = await utils.authenticate(
+        session,
+        identityToken: identityToken,
+        authorizationCode: authorizationCode,
+        isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+        firstName: firstName,
+        lastName: lastName,
+        transaction: transaction,
       );
 
-      await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (final transaction) async {
-          final authUser = await AuthUsers.create(
-            session,
-            transaction: transaction,
-          );
+      if (account.authUserNewlyCreated) {
+        await UserProfiles.createUserProfile(
+          session,
+          account.authUserId,
+          UserProfileData(
+            fullName: [account.details.firstName, account.details.lastName]
+                .nonNulls
+                .map((final n) => n.trim())
+                .where((final n) => n.isNotEmpty)
+                .join(' '),
+            email: account.details.isVerifiedEmail == true
+                ? account.details.email
+                : null,
+          ),
+          transaction: transaction,
+        );
+      }
 
-          appleAccount = await AppleAccount.db.insertRow(
-            session,
-            AppleAccount(
-              userIdentifier: verifiedIdentityToken.userId,
-              refreshToken: refreshToken.refreshToken,
-              refreshTokenRequestedWithBundleIdentifier:
-                  isNativeApplePlatformSignIn,
-              email: verifiedIdentityToken.email?.toLowerCase(),
-              isEmailVerified: verifiedIdentityToken.emailVerified,
-              isPrivateEmail: verifiedIdentityToken.isPrivateEmail,
-              authUserId: authUser.id,
-              firstName: firstName,
-              lastName: lastName,
-            ),
-            transaction: transaction,
-          );
-        },
+      return utils.createSession(
+        session,
+        account.authUserId,
+        transaction: transaction,
+        method: _method,
       );
-    }
-
-    final AppleAccountDetails details = (
-      userIdentifier: appleAccount!.userIdentifier,
-      email: appleAccount!.email,
-      isVerifiedEmail: appleAccount!.isEmailVerified,
-      isPrivateEmail: appleAccount!.isPrivateEmail,
-      firstName: appleAccount!.firstName,
-      lastName: appleAccount!.lastName,
-    );
-
-    return (
-      appleAccountId: appleAccount!.id!,
-      authUserId: appleAccount!.authUserId,
-      details: details,
-      authUserNewlyCreated: authUserNewlyCreated,
-    );
+    });
   }
 
-  /// Handler for server-to-server notifications coming from Apple.
+  /// {@template apple_idp.revokedNotificationRoute}
+  /// Route for handling revoking sessions based on server-to-server
+  /// notifications coming from Apple.
   ///
   /// To be mounted as a `POST` handler under the URL configured in Apple's
   /// developer portal, for example:
   ///
   /// ```dart
-  ///   Router<Handler>()..post(
-  ///     '/hooks/apple-notification',
-  ///     handleAppleNotification, // your function to handle the notification
-  ///   );
+  ///  pod.webServer.addRoute(
+  ///    appleIDP.revokedNotificationRoute(),
+  ///    '/hooks/apple-notification',
+  /// );
   /// ```
   ///
   /// If the notification is of type [AppleServerNotificationConsentRevoked] or
   /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
-  /// authentication should be removed.
-  static Handler serverNotificationHandler(
-    final FutureOr<void> Function(AppleServerNotification notification) handler,
-  ) {
-    return (final RequestContext ctx) async {
-      final body = await utf8.decodeStream(ctx.request.body.read());
-
-      final payload = (jsonDecode(body) as Map)['payload'] as String;
-
-      final notification = await _siwa.decodeAppleServerNotification(
-        payload,
-      );
-
-      await handler(notification);
-
-      return (ctx as RespondableContext).respond(Response.ok());
-    };
+  /// authentication for that account will be revoked.
+  /// {@endtemplate}
+  Route revokedNotificationRoute() {
+    return AppleRevokedNotificationRoute(utils: utils);
   }
 }
-
-/// Details of a successful Apple-based authentication.
-typedef AppleAuthSuccess = ({
-  UuidValue appleAccountId,
-  UuidValue authUserId,
-  AppleAccountDetails details,
-  bool authUserNewlyCreated,
-});
-
-/// Details of the Apple account.
-typedef AppleAccountDetails = ({
-  /// Apple's permanent user identifier for this account
-  String userIdentifier,
-  String? email,
-  bool? isVerifiedEmail,
-  bool? isPrivateEmail,
-  String? firstName,
-  String? lastName,
-});

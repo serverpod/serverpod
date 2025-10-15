@@ -1,17 +1,14 @@
-import 'package:clock/clock.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';
+import 'apple_idp_utils.dart';
 
-/// Administrative Apple account management functions.
+/// Collection of Apple-account admin methods.
 final class AppleIDPAdmin {
-  final SignInWithApple _siwa;
+  final AppleIDPUtils _utils;
 
   /// Creates a new instance of the admin utilities.
-  @internal
-  AppleIDPAdmin(this._siwa);
+  AppleIDPAdmin({required final AppleIDPUtils utils}) : _utils = utils;
 
   /// Checks whether all accounts are in good standing with Apple and that the
   /// authorization has not been revoked.
@@ -48,19 +45,10 @@ final class AppleIDPAdmin {
       }
 
       for (final appleAccount in appleAccounts) {
-        try {
-          await _siwa.validateRefreshToken(
-            appleAccount.refreshToken,
-            useBundleIdentifier:
-                appleAccount.refreshTokenRequestedWithBundleIdentifier,
-          );
-        } on RevokedTokenException catch (_) {
-          onExpiredUserAuthentication(appleAccount.authUserId);
-        }
-
-        await AppleAccount.db.updateRow(
+        await _utils.refreshToken(
           session,
-          appleAccount.copyWith(lastRefreshedAt: clock.now()),
+          appleAccount: appleAccount,
+          onExpiredUserAuthentication: onExpiredUserAuthentication,
         );
       }
     }

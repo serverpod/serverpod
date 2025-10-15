@@ -1,3 +1,4 @@
+import '../../providers/apple.dart';
 import '../../providers/google.dart';
 
 /// Centralized access to authentication services.
@@ -8,19 +9,29 @@ class AuthServices {
   static AuthServices get instance => _instance;
 
   final GoogleIDP? _googleIDP;
+  final AppleIDP? _appleIDP;
 
   /// Create [an AuthServices] instance.
-  AuthServices({required final GoogleIDP? googleIDP}) : _googleIDP = googleIDP;
+  AuthServices({
+    final GoogleIDP? googleIDP,
+    final AppleIDP? appleIDP,
+  })  : _googleIDP = googleIDP,
+        _appleIDP = appleIDP;
 
   /// Create an empty [AuthServices] instance with no configured IDPs.
   factory AuthServices.empty() => AuthServices(googleIDP: null);
 
   /// Initialize the [AuthServices] singleton.
-  static void initialize({final GoogleIDPConfig? googleIDPConfig}) {
+  static void initialize({
+    final GoogleIDPConfig? googleIDPConfig,
+    final AppleIDPConfig? appleIDPConfig,
+  }) {
     _instance = AuthServices(
-        googleIDP: googleIDPConfig != null
-            ? GoogleIDP(config: googleIDPConfig)
-            : null);
+      googleIDP:
+          googleIDPConfig != null ? GoogleIDP(config: googleIDPConfig) : null,
+      appleIDP:
+          appleIDPConfig != null ? AppleIDP(config: appleIDPConfig) : null,
+    );
   }
 }
 
@@ -36,5 +47,17 @@ extension IDPExtension on AuthServices {
     }
 
     return googleIDP;
+  }
+
+  /// The Apple IDP instance used for authentication.
+  AppleIDP get appleIDP {
+    final appleIDP = _appleIDP;
+    if (appleIDP == null) {
+      throw StateError(
+        'AppleIDP is not configured. Make sure to provide a valid AppleIDPConfig when initializing AuthServices.',
+      );
+    }
+
+    return appleIDP;
   }
 }

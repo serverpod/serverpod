@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 
+import '../../../common/auth_services.dart';
 import '../apple.dart';
 
 /// Endpoint for handling Sign in with Apple.
@@ -10,8 +9,14 @@ import '../apple.dart';
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 abstract class AppleIDPBaseEndpoint extends Endpoint {
-  static const String _method = 'apple';
+  /// Accessor for the configured Apple IDP instance.
+  /// By default this uses the global instance configured in
+  /// [AuthServices].
+  ///
+  /// If you want to use a different instance, override this getter.
+  AppleIDP get appleIDP => AuthServices.instance.appleIDP;
 
+  /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
   ///
   /// If no user exists yet linked to the Apple-provided identifier, a new one
@@ -20,7 +25,8 @@ abstract class AppleIDPBaseEndpoint extends Endpoint {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  Future<AuthSuccess> signIn(
+  /// {@endtemplate}
+  Future<AuthSuccess> login(
     final Session session, {
     required final String identityToken,
     required final String authorizationCode,
@@ -32,53 +38,13 @@ abstract class AppleIDPBaseEndpoint extends Endpoint {
     final String? firstName,
     final String? lastName,
   }) async {
-    return session.db.transaction((final transaction) async {
-      final account = await AppleIDP.signIn(
-        session,
-        identityToken: identityToken,
-        authorizationCode: authorizationCode,
-        isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
-        firstName: firstName,
-        lastName: lastName,
-        transaction: transaction,
-      );
-
-      if (account.authUserNewlyCreated) {
-        await UserProfiles.createUserProfile(
-          session,
-          account.authUserId,
-          UserProfileData(
-            fullName: [account.details.firstName, account.details.lastName]
-                .nonNulls
-                .map((final n) => n.trim())
-                .where((final n) => n.isNotEmpty)
-                .join(' '),
-            email: account.details.isVerifiedEmail == true
-                ? account.details.email
-                : null,
-          ),
-          transaction: transaction,
-        );
-      }
-
-      return _createSession(
-        session,
-        account.authUserId,
-        transaction: transaction,
-      );
-    });
-  }
-
-  Future<AuthSuccess> _createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
-  }) async {
-    return AuthSessions.createSession(
+    return appleIDP.login(
       session,
-      authUserId: authUserId,
-      method: _method,
-      transaction: transaction,
+      identityToken: identityToken,
+      authorizationCode: authorizationCode,
+      isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+      firstName: firstName,
+      lastName: lastName,
     );
   }
 }

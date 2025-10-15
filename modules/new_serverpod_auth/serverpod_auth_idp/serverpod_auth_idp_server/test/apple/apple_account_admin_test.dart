@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
+import 'package:serverpod_auth_idp_server/src/providers/apple/business/apple_idp_utils.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
@@ -25,7 +26,7 @@ void main() {
         final siwa = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleIDPAdmin(siwa);
+        admin = AppleIDPAdmin(utils: AppleIDPUtils(siwa: siwa));
       });
 
       test(

@@ -1,4 +1,4 @@
-/// Configuration for the Apple account module.
+/// Configuration for the Apple identity provider.
 class AppleIDPConfig {
   /// The service identifier for the Sign in with Apple project.
   final String serviceIdentifier;
