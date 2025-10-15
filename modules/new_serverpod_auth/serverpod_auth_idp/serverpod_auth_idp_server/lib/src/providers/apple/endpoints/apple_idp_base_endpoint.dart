@@ -9,7 +9,7 @@ import '../apple.dart';
 /// To expose these endpoint methods on your server, extend this class in a
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-abstract class AppleAccountBaseEndpoint extends Endpoint {
+abstract class AppleIDPBaseEndpoint extends Endpoint {
   static const String _method = 'apple';
 
   /// Signs in a user with their Apple account.
@@ -33,7 +33,7 @@ abstract class AppleAccountBaseEndpoint extends Endpoint {
     final String? lastName,
   }) async {
     return session.db.transaction((final transaction) async {
-      final account = await AppleAccounts.signIn(
+      final account = await AppleIDP.signIn(
         session,
         identityToken: identityToken,
         authorizationCode: authorizationCode,

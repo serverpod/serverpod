@@ -6,21 +6,21 @@ import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';
-import 'apple_accounts_admin.dart';
-import 'config.dart';
+import 'apple_idp_admin.dart';
+import 'apple_idp_config.dart';
 
 /// Apple account management functions.
-abstract final class AppleAccounts {
+abstract final class AppleIDP {
   /// Administrative methods for working with Apple-backed accounts.
-  static late AppleAccountsAdmin admin;
+  static late AppleIDPAdmin admin;
 
-  static late AppleAccountConfig _config;
+  static late AppleIDPConfig _config;
   static late SignInWithApple _siwa;
 
   /// Sets the configuration and configured the underlying utilities.
   ///
   /// This must be set before any methods on this class are invoked.
-  set config(final AppleAccountConfig config) {
+  set config(final AppleIDPConfig config) {
     _config = config;
 
     _siwa = SignInWithApple(
@@ -34,11 +34,11 @@ abstract final class AppleAccounts {
       ),
     );
 
-    admin = AppleAccountsAdmin(_siwa);
+    admin = AppleIDPAdmin(_siwa);
   }
 
   /// Returns the current configuration.
-  AppleAccountConfig get config => _config;
+  AppleIDPConfig get config => _config;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///

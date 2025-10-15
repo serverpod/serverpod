@@ -6,12 +6,12 @@ import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 import '../../../generated/protocol.dart';
 
 /// Administrative Apple account management functions.
-final class AppleAccountsAdmin {
+final class AppleIDPAdmin {
   final SignInWithApple _siwa;
 
   /// Creates a new instance of the admin utilities.
   @internal
-  AppleAccountsAdmin(this._siwa);
+  AppleIDPAdmin(this._siwa);
 
   /// Checks whether all accounts are in good standing with Apple and that the
   /// authorization has not been revoked.

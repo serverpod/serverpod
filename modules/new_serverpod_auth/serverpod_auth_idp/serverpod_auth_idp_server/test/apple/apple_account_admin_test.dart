@@ -14,7 +14,7 @@ void main() {
       late Session session;
       late UuidValue activeUser;
       late UuidValue inactiveUser;
-      late AppleAccountsAdmin admin;
+      late AppleIDPAdmin admin;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -25,7 +25,7 @@ void main() {
         final siwa = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleAccountsAdmin(siwa);
+        admin = AppleIDPAdmin(siwa);
       });
 
       test(
