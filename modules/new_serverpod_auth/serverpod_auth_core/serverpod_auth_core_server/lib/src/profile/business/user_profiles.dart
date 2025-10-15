@@ -24,6 +24,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     UserProfileData userProfile, {
     final Transaction? transaction,
+    final UserImageSource? imageSource,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
@@ -55,7 +56,15 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
 
-        final createdProfileModel = createdProfile.toModel();
+        final createdProfileModel = switch (imageSource) {
+          null => createdProfile.toModel(),
+          _ => await _setUserImage(
+              session,
+              authUserId,
+              imageSource,
+              transaction: transaction,
+            ),
+        };
 
         await UserProfileConfig.current.onAfterUserProfileCreated?.call(
           session,
@@ -231,6 +240,7 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
     final bytes = await UserProfileConfig.current.imageFetchFunc(url);
 
@@ -239,6 +249,7 @@ abstract final class UserProfiles {
       authUserId,
       bytes,
       transaction: transaction,
+      userProfile: userProfile,
     );
   }
 
@@ -247,13 +258,8 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
-    final userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-
     final reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes)!;
 
@@ -312,27 +318,13 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final image = await _createImageFromUrl(
-          session,
-          authUserId,
-          url,
-          transaction: transaction,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromUrl(url),
+        transaction: transaction,
+      );
 
   /// Sets a user's image from image data.
   ///
@@ -342,27 +334,13 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final image = await _createImageFromBytes(
-          session,
-          authUserId,
-          imageBytes,
-          transaction: transaction,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromBytes(imageBytes),
+        transaction: transaction,
+      );
 
   /// Sets a user's image to the default image for that user.
   static Future<UserProfileModel> setDefaultUserImage(
@@ -397,25 +375,48 @@ abstract final class UserProfiles {
   static Future<UserProfileModel> _setUserImage(
     final Session session,
     final UuidValue authUserId,
-    final UserProfileImage image, {
-    required final Transaction transaction,
+    final UserImageSource imageSource, {
+    final Transaction? transaction,
   }) async {
-    var userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
+        final image = switch (imageSource) {
+          UserImageFromUrl() => await _createImageFromUrl(
+              session,
+              authUserId,
+              imageSource.url,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+          UserImageFromBytes() => await _createImageFromBytes(
+              session,
+              authUserId,
+              imageSource.bytes,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+        };
+
+        userProfile.imageId = image.id!;
+        userProfile.image = image;
+
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
+
+        return updatedProfile.toModel();
+      },
     );
-
-    userProfile.imageId = image.id!;
-    userProfile.image = image;
-
-    userProfile = await _updateProfile(
-      session,
-      userProfile,
-      transaction: transaction,
-    );
-
-    return userProfile.toModel();
   }
 
 // #endregion
@@ -518,4 +519,32 @@ abstract final class UserProfiles {
       },
     );
   }
+}
+
+/// Source of a user image.
+///
+/// Can either be a [UserImageFromUrl] or [UserImageFromBytes].
+sealed class UserImageSource {}
+
+/// User image source from a URL.
+final class UserImageFromUrl extends UserImageSource {
+  /// The URL to fetch the image from.
+  final Uri url;
+
+  /// Creates a new [UserImageFromUrl] instance.
+  UserImageFromUrl(this.url);
+
+  /// Creates a new [UserImageFromUrl] instance by parsing the given [url] string.
+  factory UserImageFromUrl.parse(final String url) {
+    return UserImageFromUrl(Uri.parse(url));
+  }
+}
+
+/// User image source from raw bytes.
+final class UserImageFromBytes extends UserImageSource {
+  /// The image bytes.
+  final Uint8List bytes;
+
+  /// Creates a new [UserImageFromBytes] instance.
+  UserImageFromBytes(this.bytes);
 }

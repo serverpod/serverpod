@@ -17,7 +17,10 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        UserProfileConfig.current = UserProfileConfig();
+        UserProfileConfig.current = UserProfileConfig(
+          /// Mock image fetch function that returns a 1x1 pixel PNG.
+          imageFetchFunc: (final _) => onePixelPng,
+        );
 
         final authUser = await AuthUsers.create(session);
         authUserId = authUser.id;
@@ -171,6 +174,75 @@ void main() {
             () => UserProfiles.findUserProfileByUserId(session, authUserId),
             throwsA(isA<UserProfileNotFoundException>()),
           );
+        },
+      );
+
+      group(
+        'when creating a user profile with image url, then image is accessible on user.',
+        () {
+          late UserProfileModel createdProfile;
+          setUp(() async {
+            createdProfile = await UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(userName: 'test_user'),
+              imageSource: UserImageFromUrl.parse(
+                  'https://serverpod.dev/external-profile-image.png'),
+            );
+          });
+
+          test('then the returned profile contains the image URL.', () async {
+            expect(
+              createdProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
+
+          test('then image is accessible stored user.', () async {
+            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+              session,
+              authUserId,
+            );
+
+            expect(
+              foundUserProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
+        },
+      );
+
+      group(
+        'when creating a user profile with image bytes',
+        () {
+          late UserProfileModel createdProfile;
+          setUp(() async {
+            createdProfile = await UserProfiles.createUserProfile(
+              session,
+              authUserId,
+              UserProfileData(userName: 'test_user'),
+              imageSource: UserImageFromBytes(onePixelPng),
+            );
+          });
+
+          test('then the returned profile contains the image URL.', () async {
+            expect(
+              createdProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
+
+          test('then image is accessible stored user.', () async {
+            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+              session,
+              authUserId,
+            );
+
+            expect(
+              foundUserProfile.imageUrl.toString(),
+              allOf(startsWith('http://localhost'), endsWith('.jpg')),
+            );
+          });
         },
       );
     },
