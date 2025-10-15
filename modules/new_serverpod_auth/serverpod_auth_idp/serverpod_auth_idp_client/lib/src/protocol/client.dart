@@ -26,9 +26,10 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// {@category Endpoint}
-abstract class EndpointAppleAccountBase extends _i1.EndpointRef {
-  EndpointAppleAccountBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
+  EndpointAppleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
+  /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
   ///
   /// If no user exists yet linked to the Apple-provided identifier, a new one
@@ -37,7 +38,8 @@ abstract class EndpointAppleAccountBase extends _i1.EndpointRef {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  _i2.Future<_i3.AuthSuccess> signIn({
+  /// {@endtemplate}
+  _i2.Future<_i3.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
     required bool isNativeApplePlatformSignIn,
