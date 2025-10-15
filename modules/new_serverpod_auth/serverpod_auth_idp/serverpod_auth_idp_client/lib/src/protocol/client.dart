@@ -26,9 +26,10 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// {@category Endpoint}
-abstract class EndpointAppleAccountBase extends _i1.EndpointRef {
-  EndpointAppleAccountBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
+  EndpointAppleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
+  /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
   ///
   /// If no user exists yet linked to the Apple-provided identifier, a new one
@@ -37,7 +38,8 @@ abstract class EndpointAppleAccountBase extends _i1.EndpointRef {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  _i2.Future<_i3.AuthSuccess> signIn({
+  /// {@endtemplate}
+  _i2.Future<_i3.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
     required bool isNativeApplePlatformSignIn,
@@ -139,12 +141,21 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
 }
 
 /// Base endpoint for Google Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Google ID tokens.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointGoogleAccountBase extends _i1.EndpointRef {
-  EndpointGoogleAccountBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
+  EndpointGoogleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// Logs in or registers an [AuthUser] for the given Google account ID.
-  _i2.Future<_i3.AuthSuccess> authenticate({required String idToken});
+  /// {@template google_idp_base_endpoint.login}
+  /// Validates a Google ID token and either logs in the associated user or
+  /// creates a new user account if the Google account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  /// {@endtemplate}
+  _i2.Future<_i3.AuthSuccess> login({required String idToken});
 }
 
 /// Base endpoint for Passkey-based authentication.

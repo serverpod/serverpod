@@ -1,5 +1,5 @@
-/// Configuration for the Apple account module.
-class AppleAccountConfig {
+/// Configuration for the Apple identity provider.
+class AppleIDPConfig {
   /// The service identifier for the Sign in with Apple project.
   final String serviceIdentifier;
 
@@ -19,7 +19,7 @@ class AppleAccountConfig {
   final String key;
 
   /// Creates a new Sign in with Apple configuration.
-  AppleAccountConfig({
+  AppleIDPConfig({
     required this.serviceIdentifier,
     required this.bundleIdentifier,
     required this.redirectUri,

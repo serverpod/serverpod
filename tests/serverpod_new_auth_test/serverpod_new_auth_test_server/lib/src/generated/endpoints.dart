@@ -485,8 +485,8 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'googleAccountBackwardsCompatibilityTest',
       endpoint: endpoints['googleAccountBackwardsCompatibilityTest']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
-          name: 'authenticate',
+        'login': _i1.MethodConnector(
+          name: 'login',
           params: {
             'idToken': _i1.ParameterDescription(
               name: 'idToken',
@@ -500,7 +500,7 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['googleAccountBackwardsCompatibilityTest']
                       as _i5.GoogleAccountBackwardsCompatibilityTestEndpoint)
-                  .authenticate(
+                  .login(
             session,
             idToken: params['idToken'],
           ),
@@ -511,8 +511,8 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'googleAccount',
       endpoint: endpoints['googleAccount']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
-          name: 'authenticate',
+        'login': _i1.MethodConnector(
+          name: 'login',
           params: {
             'idToken': _i1.ParameterDescription(
               name: 'idToken',
@@ -524,8 +524,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['googleAccount'] as _i6.GoogleAccountEndpoint)
-                  .authenticate(
+              (endpoints['googleAccount'] as _i6.GoogleAccountEndpoint).login(
             session,
             idToken: params['idToken'],
           ),

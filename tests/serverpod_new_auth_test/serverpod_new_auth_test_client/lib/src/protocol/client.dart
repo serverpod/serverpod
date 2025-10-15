@@ -301,7 +301,7 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i5.EndpointGoogleAccountBase {
+    extends _i5.EndpointGoogleIDPBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
       : super(caller);
 
@@ -309,28 +309,33 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
   @override
-  _i2.Future<_i3.AuthSuccess> authenticate({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
-        'authenticate',
+        'login',
         {'idToken': idToken},
       );
 }
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i5.EndpointGoogleAccountBase {
+class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'googleAccount';
 
-  /// Logs in or registers an [AuthUser] for the given Google account ID.
+  /// {@template google_idp_base_endpoint.login}
+  /// Validates a Google ID token and either logs in the associated user or
+  /// creates a new user account if the Google account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  /// {@endtemplate}
   @override
-  _i2.Future<_i3.AuthSuccess> authenticate({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccount',
-        'authenticate',
+        'login',
         {'idToken': idToken},
       );
 }
