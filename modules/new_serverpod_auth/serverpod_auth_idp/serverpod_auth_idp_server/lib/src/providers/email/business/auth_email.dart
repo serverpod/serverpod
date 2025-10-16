@@ -168,28 +168,26 @@ abstract class AuthEmail {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) async => _withReplacedServerEmailException(() async {
-        return await _withReplacedServerEmailException(() async {
-          final authUserId = await EmailAccounts.completePasswordReset(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            newPassword: newPassword,
-            transaction: transaction,
-          );
+      (final transaction) => _withReplacedServerEmailException(() async {
+        final authUserId = await EmailAccounts.completePasswordReset(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+          newPassword: newPassword,
+          transaction: transaction,
+        );
 
-          await AuthSessions.destroyAllSessions(
-            session,
-            authUserId: authUserId,
-            transaction: transaction,
-          );
+        await AuthSessions.destroyAllSessions(
+          session,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
 
-          return admin.createSession(
-            session,
-            authUserId,
-            transaction: transaction,
-          );
-        });
+        return admin.createSession(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
       }),
     );
   }
