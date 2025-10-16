@@ -204,6 +204,24 @@ void main() {
       });
 
       test(
+          'when verifying the account request with the wrong verification code after it has expired '
+          'then it throws an "invalid verification code" exception to not leak that the request exists.',
+          () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => EmailAccounts.verifyAccountCreation(
+              session,
+              accountRequestId: pendingAccountRequestId,
+              verificationCode: 'wrong',
+            ),
+          ),
+          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
+        );
+      });
+
+      test(
           'when verifying the account request with an invalid verification code multiple times, '
           'then it throws an "invalid verification code" exception on the second attempt and "request not found" on the next ones. ',
           () async {

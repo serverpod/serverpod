@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
@@ -168,6 +169,84 @@ void main() {
         );
 
         expect(result, authUserId);
+      });
+
+      test(
+          'when completing a password reset after the associated account was deleted, '
+          'then it throws an "reset not found" exception.', () async {
+        final account = await EmailAccount.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(authUserId),
+        );
+
+        if (account != null) {
+          await EmailAccount.db.deleteRow(
+            session,
+            account,
+          );
+        }
+
+        await expectLater(
+          () => EmailAccounts.completePasswordReset(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            newPassword: '1234asdf!!!',
+          ),
+          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+        );
+      });
+
+      test(
+          'when completing a password reset with a password that violates policy, '
+          'then it throws a "password policy violation" exception regardless of the verification code.',
+          () async {
+        await expectLater(
+          () => EmailAccounts.completePasswordReset(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: 'wrong',
+            newPassword: 'short',
+          ),
+          throwsA(isA<EmailPasswordResetPasswordPolicyViolationException>()),
+        );
+      });
+
+      test(
+          'when trying to complete an expired password reset request with the correct verification code'
+          'then it throws an "expired" exception.', () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.passwordResetVerificationCodeLifetime)),
+            () => EmailAccounts.completePasswordReset(
+              session,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: verificationCode,
+              newPassword: '1234asdf!!!',
+            ),
+          ),
+          throwsA(isA<EmailPasswordResetRequestExpiredException>()),
+        );
+      });
+
+      test(
+          'when trying to complete an expired password reset request with the wrong verification code'
+          'then it throws an "invalid verification code" exception to not leak that the request exists.',
+          () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.passwordResetVerificationCodeLifetime)),
+            () => EmailAccounts.completePasswordReset(
+              session,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: 'wrong',
+              newPassword: '1234asdf!!!',
+            ),
+          ),
+          throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
+        );
       });
 
       test(

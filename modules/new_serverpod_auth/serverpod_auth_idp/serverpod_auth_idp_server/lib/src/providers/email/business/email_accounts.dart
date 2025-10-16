@@ -238,15 +238,6 @@ abstract final class EmailAccounts {
       throw EmailAccountRequestNotFoundException();
     }
 
-    if (request.isExpired) {
-      await EmailAccountRequest.db.deleteRow(
-        session,
-        request,
-        // passing no transaction, so this will not be rolled back
-      );
-      throw EmailAccountRequestVerificationExpiredException();
-    }
-
     if (await _hasTooManyEmailAccountCompletionAttempts(
       session,
       emailAccountRequestId: request.id!,
@@ -266,6 +257,15 @@ abstract final class EmailAccounts {
       salt: request.verificationCodeSalt.asUint8List,
     )) {
       throw EmailAccountRequestInvalidVerificationCodeException();
+    }
+
+    if (request.isExpired) {
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        request,
+        // passing no transaction, so this will not be rolled back
+      );
+      throw EmailAccountRequestVerificationExpiredException();
     }
 
     await EmailAccountRequest.db.updateRow(
@@ -444,6 +444,10 @@ abstract final class EmailAccounts {
     required final String newPassword,
     final Transaction? transaction,
   }) async {
+    if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
+      throw EmailPasswordResetPasswordPolicyViolationException();
+    }
+
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
@@ -456,20 +460,6 @@ abstract final class EmailAccounts {
 
         if (resetRequest == null) {
           throw EmailPasswordResetRequestNotFoundException();
-        }
-
-        if (resetRequest.isExpired) {
-          await EmailAccountPasswordResetRequest.db.deleteRow(
-            session,
-            resetRequest,
-            // passing no transaction, so this will not be rolled back
-          );
-
-          throw EmailPasswordResetRequestExpiredException();
-        }
-
-        if (!EmailAccounts.config.passwordValidationFunction(newPassword)) {
-          throw EmailPasswordResetPasswordPolicyViolationException();
         }
 
         if (await _hasTooManyPasswordResetAttempts(
@@ -491,6 +481,16 @@ abstract final class EmailAccounts {
           salt: resetRequest.verificationCodeSalt.asUint8List,
         )) {
           throw EmailPasswordResetInvalidVerificationCodeException();
+        }
+
+        if (resetRequest.isExpired) {
+          await EmailAccountPasswordResetRequest.db.deleteRow(
+            session,
+            resetRequest,
+            // passing no transaction, so this will not be rolled back
+          );
+
+          throw EmailPasswordResetRequestExpiredException();
         }
 
         await EmailAccountPasswordResetRequest.db.deleteRow(

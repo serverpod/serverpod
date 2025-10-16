@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
@@ -198,8 +199,8 @@ void main() {
       });
 
       test(
-          'when calling `finishRegistration`, then it succeeds returning a valid session key.',
-          () async {
+          'when calling `finishRegistration` with the correct verification code, '
+          'then it succeeds returning a valid session key.', () async {
         final authSuccess = await endpoints.emailAccount.finishRegistration(
           sessionBuilder,
           accountRequestId: receivedAccountRequestId,
@@ -212,6 +213,66 @@ void main() {
             authSuccess.token,
           ),
           isNotNull,
+        );
+      });
+
+      test(
+          'when calling `finishRegistration` with the correct verification code after the account request has expired, '
+          'then it fails with reason `expired`.', () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => endpoints.emailAccount.finishRegistration(
+              sessionBuilder,
+              accountRequestId: receivedAccountRequestId,
+              verificationCode: receivedVerificationCode,
+            ),
+          ),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.expired,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishRegistration` with the wrong verification code, '
+          'then it fails with reason `invalid`.', () async {
+        await expectLater(
+          () async => await endpoints.emailAccount.finishRegistration(
+            sessionBuilder,
+            accountRequestId: receivedAccountRequestId,
+            verificationCode: 'wrong',
+          ),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishRegistration` with the wrong verification code after the account request has expired, '
+          'then it fails with reason `invalid` to not leak that the request exists.',
+          () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => endpoints.emailAccount.finishRegistration(
+              sessionBuilder,
+              accountRequestId: receivedAccountRequestId,
+              verificationCode: 'wrong',
+            ),
+          ),
+          throwsA(isA<EmailAccountRequestException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountRequestExceptionReason.invalid,
+          )),
         );
       });
     },
@@ -460,7 +521,8 @@ void main() {
       });
 
       test(
-        'when calling `finishPasswordReset` with the correct credentials, then it succeeds returning a valid session key.',
+        'when calling `finishPasswordReset` with the correct verification code, '
+        'then it succeeds returning a valid session key.',
         () async {
           final authSuccess = await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
@@ -477,6 +539,111 @@ void main() {
           expect(authInfo?.authUserId, authUserId);
         },
       );
+
+      test(
+          'when calling `finishPasswordReset` with the correct verification code after the password reset request has expired, '
+          'then it fails with reason `expired`.', () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => endpoints.emailAccount.finishPasswordReset(
+              sessionBuilder,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: verificationCode,
+              newPassword: 'NewPassword123!',
+            ),
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.expired,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishPasswordReset` the correct verification code after the email account being deleted, '
+          'then an error is thrown with reason `invalid`.', () async {
+        await EmailAccount.db.deleteWhere(
+          sessionBuilder.build(),
+          where: (final t) => t.authUserId.equals(authUserId),
+        );
+
+        await expectLater(
+          () => endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            newPassword: 'NewPassword123!',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishPasswordReset` with the wrong verification code, '
+          'then it fails with reason `invalid`.', () async {
+        await expectLater(
+          () async => await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: 'wrong',
+            newPassword: 'NewPassword123!',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishPasswordReset` with the wrong verification code after the password reset request has expired, '
+          'then it fails with reason `invalid` to not leak that the request exists.',
+          () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(
+                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            () => endpoints.emailAccount.finishPasswordReset(
+              sessionBuilder,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: 'wrong',
+              newPassword: 'NewPassword123!',
+            ),
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishPasswordReset` with a short password, '
+          'then an error is thrown with reason `policyViolation` regardless of the request ID and verification code.',
+          () async {
+        await expectLater(
+          () => endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: const Uuid().v4obj(),
+            verificationCode: 'wrong',
+            newPassword: 'short',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.policyViolation,
+          )),
+        );
+      });
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
