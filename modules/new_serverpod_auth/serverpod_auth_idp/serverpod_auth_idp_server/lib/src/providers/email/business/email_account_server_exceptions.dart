@@ -4,65 +4,81 @@
 /// clients. For such, see the adequate serializable exceptions.
 sealed class EmailServerException implements Exception {}
 
+/// Base exception for all login related errors.
+sealed class EmailLoginServerException extends EmailServerException {}
+
 /// Exception thrown for operations on an email address that is not registered.
-class EmailAccountNotFoundException extends EmailServerException {}
+final class EmailAccountNotFoundException extends EmailLoginServerException {}
 
 /// Exception thrown for login attempts with invalid credentials.
-class EmailAuthenticationInvalidCredentialsException
-    extends EmailServerException {}
+final class EmailAuthenticationInvalidCredentialsException
+    extends EmailLoginServerException {}
 
 /// Exception thrown for too many login attempts.
-class EmailAuthenticationTooManyAttemptsException
-    extends EmailServerException {}
+final class EmailAuthenticationTooManyAttemptsException
+    extends EmailLoginServerException {}
+
+/// Base exception for all account request related errors.
+sealed class EmailAccountRequestServerException extends EmailServerException {}
 
 /// Exception thrown for operations that violate password policies.
-class EmailPasswordPolicyViolationException extends EmailServerException {}
+final class EmailPasswordPolicyViolationException
+    extends EmailAccountRequestServerException {}
 
 /// Exception thrown when trying to complete inexistent email account requests.
-class EmailAccountRequestNotFoundException extends EmailServerException {}
+final class EmailAccountRequestNotFoundException
+    extends EmailAccountRequestServerException {}
 
 /// Exception thrown when trying to complete an email request that is expired.
 ///
 /// Must be thrown only if the verification is correct to avoid leaking that the
 /// request exists.
-class EmailAccountRequestVerificationExpiredException
-    extends EmailServerException {}
+final class EmailAccountRequestVerificationExpiredException
+    extends EmailAccountRequestServerException {}
 
 /// Exception thrown when trying to verify an email account too many times.
-class EmailAccountRequestVerificationTooManyAttemptsException
-    extends EmailServerException {}
+final class EmailAccountRequestVerificationTooManyAttemptsException
+    extends EmailAccountRequestServerException {}
 
 /// Exception thrown when trying to verify an email account with an invalid
 /// verification code.
-class EmailAccountRequestInvalidVerificationCodeException
-    extends EmailServerException {}
+final class EmailAccountRequestInvalidVerificationCodeException
+    extends EmailAccountRequestServerException {}
 
 /// Exception thrown when trying to complete a non-verified account request.
-class EmailAccountRequestNotVerifiedException extends EmailServerException {}
+final class EmailAccountRequestNotVerifiedException
+    extends EmailAccountRequestServerException {}
+
+/// Base exception for all password reset related errors.
+sealed class EmailPasswordResetServerException extends EmailServerException {}
 
 /// Exception thrown when trying to request a password reset too many times.
-class EmailPasswordResetTooManyAttemptsException extends EmailServerException {}
+final class EmailPasswordResetTooManyAttemptsException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when requesting password reset for an inexistent account.
-class EmailPasswordResetAccountNotFoundException extends EmailServerException {}
+final class EmailPasswordResetAccountNotFoundException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when trying to complete an inexistent password reset request.
-class EmailPasswordResetRequestNotFoundException extends EmailServerException {}
+final class EmailPasswordResetRequestNotFoundException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when trying to complete an expired password reset request.
-class EmailPasswordResetRequestExpiredException extends EmailServerException {}
+final class EmailPasswordResetRequestExpiredException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when trying to complete a password reset request with a
 /// password that violates the password policy.
-class EmailPasswordResetPasswordPolicyViolationException
-    extends EmailServerException {}
+final class EmailPasswordResetPasswordPolicyViolationException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when trying to complete the password reset request too
 /// many times.
-class EmailPasswordResetTooManyVerificationAttemptsException
-    extends EmailServerException {}
+final class EmailPasswordResetTooManyVerificationAttemptsException
+    extends EmailPasswordResetServerException {}
 
 /// Exception thrown when trying to complete a password reset request with an
 /// invalid verification code.
-class EmailPasswordResetInvalidVerificationCodeException
-    extends EmailServerException {}
+final class EmailPasswordResetInvalidVerificationCodeException
+    extends EmailPasswordResetServerException {}

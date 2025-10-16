@@ -203,41 +203,57 @@ Future<T> _withReplacedServerEmailException<T>(
     return await fn();
   } on EmailServerException catch (e) {
     switch (e) {
-      // Login
+      case EmailLoginServerException():
+        throw EmailAccountLoginException(reason: e.reason);
+      case EmailAccountRequestServerException():
+        throw EmailAccountRequestException(reason: e.reason);
+      case EmailPasswordResetServerException():
+        throw EmailAccountPasswordResetException(reason: e.reason);
+    }
+  }
+}
+
+extension on EmailLoginServerException {
+  EmailAccountLoginExceptionReason get reason {
+    switch (this) {
       case EmailAccountNotFoundException():
       case EmailAuthenticationInvalidCredentialsException():
-        throw EmailAccountLoginException(
-            reason: EmailAccountLoginExceptionReason.invalidCredentials);
+        return EmailAccountLoginExceptionReason.invalidCredentials;
       case EmailAuthenticationTooManyAttemptsException():
-        throw EmailAccountLoginException(
-            reason: EmailAccountLoginExceptionReason.tooManyAttempts);
-      // Account creation
+        return EmailAccountLoginExceptionReason.tooManyAttempts;
+    }
+  }
+}
+
+extension on EmailAccountRequestServerException {
+  EmailAccountRequestExceptionReason get reason {
+    switch (this) {
       case EmailAccountRequestInvalidVerificationCodeException():
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
       case EmailAccountRequestVerificationTooManyAttemptsException():
-        throw EmailAccountRequestException(
-            reason: EmailAccountRequestExceptionReason.invalid);
+        return EmailAccountRequestExceptionReason.invalid;
       case EmailPasswordPolicyViolationException():
-        throw EmailAccountRequestException(
-            reason: EmailAccountRequestExceptionReason.policyViolation);
+        return EmailAccountRequestExceptionReason.policyViolation;
       case EmailAccountRequestVerificationExpiredException():
-        throw EmailAccountRequestException(
-            reason: EmailAccountRequestExceptionReason.expired);
-      // Password reset
+        return EmailAccountRequestExceptionReason.expired;
+    }
+  }
+}
+
+extension on EmailPasswordResetServerException {
+  EmailAccountPasswordResetExceptionReason get reason {
+    switch (this) {
       case EmailPasswordResetAccountNotFoundException():
       case EmailPasswordResetInvalidVerificationCodeException():
       case EmailPasswordResetRequestNotFoundException():
       case EmailPasswordResetTooManyAttemptsException():
       case EmailPasswordResetTooManyVerificationAttemptsException():
-        throw EmailAccountPasswordResetException(
-            reason: EmailAccountPasswordResetExceptionReason.invalid);
+        return EmailAccountPasswordResetExceptionReason.invalid;
       case EmailPasswordResetPasswordPolicyViolationException():
-        throw EmailAccountPasswordResetException(
-            reason: EmailAccountPasswordResetExceptionReason.policyViolation);
+        return EmailAccountPasswordResetExceptionReason.policyViolation;
       case EmailPasswordResetRequestExpiredException():
-        throw EmailAccountPasswordResetException(
-            reason: EmailAccountPasswordResetExceptionReason.expired);
+        return EmailAccountPasswordResetExceptionReason.expired;
     }
   }
 }

@@ -23,7 +23,7 @@ abstract final class EmailAccounts {
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
-  /// Can throw:
+  /// Can throw the following [EmailLoginServerException] subclasses:
   /// - [EmailAccountNotFoundException] if the email address is not registered
   ///   in the database.
   /// - [EmailAuthenticationInvalidCredentialsException] if the password is not
@@ -207,7 +207,7 @@ abstract final class EmailAccounts {
   /// If this returns successfully, this means [completeAccountCreation] can be
   /// called.
   ///
-  /// Can throw:
+  /// Can throw the following [EmailAccountRequestServerException] subclasses:
   /// - [EmailAccountRequestNotFoundException] if the request does not exist or
   ///   has already been completed.
   /// - [EmailAccountRequestVerificationExpiredException] if the request is
@@ -282,7 +282,7 @@ abstract final class EmailAccounts {
   /// Returns the `ID` of the new email authentication, and the email address
   /// used during registration.
   ///
-  /// Can throw:
+  /// Can throw the following [EmailAccountRequestServerException] subclasses:
   /// - [EmailAccountRequestNotFoundException] if the request does not exist
   ///   or has already been completed and cleaned up.
   /// - [EmailAccountRequestNotVerifiedException] if the request has not been
@@ -420,9 +420,9 @@ abstract final class EmailAccounts {
     );
   }
 
-  /// Returns the auth user ID for the successfully changed password
+  /// Returns the auth user ID for the successfully changed password.
   ///
-  /// Can throw an [EmailAccountPasswordResetException] with the reason:
+  /// Can throw the following [EmailPasswordResetServerException] subclasses:
   /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
   ///   be found for [passwordResetRequestId].
   /// - [EmailPasswordResetRequestExpiredException] if the reset request has
@@ -434,9 +434,9 @@ abstract final class EmailAccounts {
   /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
   ///   [verificationCode] is not valid.
   ///
-  /// In case of an invalid [verificationCode], the failed password reset
-  /// completion will be logged to the database outside of the [transaction] and
-  /// can not be rolled back.
+  /// In case of an invalid [verificationCode] or [passwordResetRequestId], the
+  /// failed password reset completion will be logged to the database outside
+  /// of the [transaction] and can not be rolled back.
   static Future<UuidValue> completePasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
