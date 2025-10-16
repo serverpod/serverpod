@@ -1,7 +1,10 @@
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 
 /// Base interface for all identity providers in the Serverpod auth system.
-abstract interface class IdentityProvider {}
+abstract interface class IdentityProvider {
+  /// The token issuer used by this provider for creating authentication tokens.
+  TokenIssuer get tokenIssuer;
+}
 
 /// Interface for factories that can create auth providers.
 /// These factories are responsible for constructing instances of auth providers

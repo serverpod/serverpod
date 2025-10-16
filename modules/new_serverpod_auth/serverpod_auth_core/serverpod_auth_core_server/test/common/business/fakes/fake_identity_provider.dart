@@ -3,7 +3,8 @@ import 'package:serverpod_auth_core_server/src/common/business/token_manager.dar
 
 /// A fake identity provider for testing purposes.
 class FakeIdentityProvider implements IdentityProvider {
-  final TokenManager tokenManager;
+  @override
+  final TokenIssuer tokenIssuer;
 
-  FakeIdentityProvider({required this.tokenManager});
+  FakeIdentityProvider({required this.tokenIssuer});
 }

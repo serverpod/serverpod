@@ -10,6 +10,6 @@ class FakeIdentityProviderFactory
   FakeIdentityProvider construct({
     required final TokenManager tokenManager,
   }) {
-    return FakeIdentityProvider(tokenManager: tokenManager);
+    return FakeIdentityProvider(tokenIssuer: tokenManager);
   }
 }
