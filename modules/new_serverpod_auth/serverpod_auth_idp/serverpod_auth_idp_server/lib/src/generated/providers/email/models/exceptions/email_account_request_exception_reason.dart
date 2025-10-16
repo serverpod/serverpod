@@ -14,49 +14,38 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// The reason for why the account creation with email request was rejected.
 enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
-  /// Exception to be thrown when one attempts to complete an email account
-  /// request after it has expired.
+  /// Exception to be thrown when attempting to complete a valid email account
+  /// request that has already expired.
   expired,
 
-  /// Exception to be thrown when an email account request could not be found by
-  /// the given id.
-  ///
-  /// This might mean that the account request never existed or has since been
-  /// deleted.
-  notFound,
+  /// Exception to be thrown when attempting to complete an email account
+  /// request with an invalid verification code or account request id.
+  invalid,
 
-  /// Exception to be thrown when an attempt is made to complete the creation
-  /// of an email account before the account request has been verified.
-  notVerified,
+  /// Exception to be thrown when attempting to set a password which does not
+  /// match the configured policy.
+  policyViolation,
 
-  /// Exception to be thrown when too many verification attempts were made on a
-  /// email account request.
-  tooManyAttempts,
+  /// Unknown error occurred.
+  unknown;
 
-  /// Exception to be thrown when the verification code given for an email account
-  /// request is not valid.
-  unauthorized;
-
-  static EmailAccountRequestExceptionReason fromJson(int index) {
-    switch (index) {
-      case 0:
+  static EmailAccountRequestExceptionReason fromJson(String name) {
+    switch (name) {
+      case 'expired':
         return EmailAccountRequestExceptionReason.expired;
-      case 1:
-        return EmailAccountRequestExceptionReason.notFound;
-      case 2:
-        return EmailAccountRequestExceptionReason.notVerified;
-      case 3:
-        return EmailAccountRequestExceptionReason.tooManyAttempts;
-      case 4:
-        return EmailAccountRequestExceptionReason.unauthorized;
+      case 'invalid':
+        return EmailAccountRequestExceptionReason.invalid;
+      case 'policyViolation':
+        return EmailAccountRequestExceptionReason.policyViolation;
+      case 'unknown':
+        return EmailAccountRequestExceptionReason.unknown;
       default:
-        throw ArgumentError(
-            'Value "$index" cannot be converted to "EmailAccountRequestExceptionReason"');
+        return EmailAccountRequestExceptionReason.unknown;
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
 
   @override
   String toString() => name;

@@ -10,14 +10,14 @@ export '../../generated/protocol.dart'
         EmailAccountRequest,
         EmailAccountRequestCompletionAttempt,
         EmailAccountLoginException,
-        EmailAccountLoginFailureReason,
+        EmailAccountLoginExceptionReason,
         EmailAccountPasswordResetException,
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,
         EmailAccountRequestExceptionReason;
 export 'business/auth_email.dart' show AuthEmail;
 export 'business/email_account_config.dart';
-export 'business/email_account_not_found_exception.dart';
+export 'business/email_account_server_exceptions.dart';
 export 'business/email_accounts.dart'
     show
         EmailAccounts,

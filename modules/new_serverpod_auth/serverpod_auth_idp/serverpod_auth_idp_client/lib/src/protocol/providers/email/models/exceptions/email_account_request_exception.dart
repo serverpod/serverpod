@@ -30,7 +30,7 @@ abstract class EmailAccountRequestException
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountRequestException(
         reason: _i2.EmailAccountRequestExceptionReason.fromJson(
-            (jsonSerialization['reason'] as int)));
+            (jsonSerialization['reason'] as String)));
   }
 
   _i2.EmailAccountRequestExceptionReason reason;

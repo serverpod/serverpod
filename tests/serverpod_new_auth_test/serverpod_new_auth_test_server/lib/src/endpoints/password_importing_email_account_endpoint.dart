@@ -27,7 +27,7 @@ class PasswordImportingEmailAccountEndpoint extends AuthEmailBaseEndpoint {
   /// Upon successful completion of this method, an email will have been
   /// sent to [email] with a verification link, which the user must open to complete the registration.
   @override
-  Future<void> startRegistration(
+  Future<UuidValue> startRegistration(
     final Session session, {
     required final String email,
     required final String password,

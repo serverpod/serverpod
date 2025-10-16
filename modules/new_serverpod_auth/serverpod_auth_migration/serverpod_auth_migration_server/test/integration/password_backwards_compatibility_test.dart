@@ -58,13 +58,8 @@ void main() {
               email: email,
               password: password,
             ),
-            throwsA(
-              isA<auth_next.EmailAccountLoginException>().having(
-                (final e) => e.reason,
-                'reason',
-                auth_next.EmailAccountLoginFailureReason.invalidCredentials,
-              ),
-            ),
+            throwsA(isA<
+                auth_next.EmailAuthenticationInvalidCredentialsException>()),
           );
         },
       );

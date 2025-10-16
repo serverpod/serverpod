@@ -457,7 +457,9 @@ void main() {
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<new_auth_email.EmailAccountLoginException>()),
+            throwsA(isA<
+                new_auth_email
+                .EmailAuthenticationInvalidCredentialsException>()),
           );
         },
       );
@@ -474,7 +476,9 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<new_auth_email.EmailAccountLoginException>()),
+            throwsA(isA<
+                new_auth_email
+                .EmailAuthenticationInvalidCredentialsException>()),
           );
         },
       );
