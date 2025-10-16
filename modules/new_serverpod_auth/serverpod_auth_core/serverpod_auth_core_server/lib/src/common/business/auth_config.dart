@@ -2,26 +2,19 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_core_server/src/jwt/business/jwt_provider.dart';
-import 'package:serverpod_auth_core_server/src/session/business/sas_provider.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens
 /// regardless of who issues the token.
 class AuthConfig {
-  /// Default token managers for JWT and session-based authentication.
-  static Map<String, TokenManager> get defaultTokenManagers => {
-        AuthStrategy.jwt.name: JwtTokenManager(),
-        AuthStrategy.session.name: SasTokenManager(),
-      };
-
   /// Returns the singleton instance of [AuthConfig] used by the provider
   /// endpoints.
   static AuthConfig get instance {
     final localInstance = _instance;
     if (localInstance == null) {
-      throw StateError('AuthConfig is not initialized');
+      throw StateError(
+        'AuthConfig is not set. Call AuthConfig.set() to initialize it before accessing the instance.',
+      );
     }
 
     return localInstance;
@@ -31,7 +24,7 @@ class AuthConfig {
 
   /// Sets the [AuthConfig] instance.
   ///
-  /// [defaultTokenManager] is the primary token manager used by identity providers
+  /// [primaryTokenManager] is the primary token manager used by identity providers
   /// for issuing new tokens. Each identity provider can optionally override this
   /// with their own token manager via [IdentityProviderFactory.tokenManagerOverride].
   ///
@@ -39,32 +32,32 @@ class AuthConfig {
   /// construct the identity providers used by authentication endpoints. Each factory
   /// creates a provider instance with the appropriate token manager dependency.
   ///
-  /// [tokenManagers] is a map of token managers keyed by strategy name (e.g., 'jwt', 'session')
-  /// that handle token lifecycle operations. If not provided, defaults to built-in
-  /// [JwtTokenManager] and [SasTokenManager] instances.
+  /// [additionalTokenManagers] is a map of additional token managers keyed by strategy
+  /// name (e.g., 'jwt', 'session') that handle token lifecycle operations alongside the
+  /// [primaryTokenManager]. The default token manager is always included automatically.
   factory AuthConfig.set({
-    required final TokenManager defaultTokenManager,
+    required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<IdentityProvider>>
         identityProviders,
-    final Map<String, TokenManager>? tokenManagers,
+    final Map<String, TokenManager> additionalTokenManagers = const {},
   }) {
     final instance = AuthConfig._(
-      defaultTokenManager: defaultTokenManager,
+      primaryTokenManager: primaryTokenManager,
       identityProviders: identityProviders,
-      tokenManagers: tokenManagers ?? defaultTokenManagers,
+      additionalTokenManagers: additionalTokenManagers,
     );
     return _instance = instance;
   }
 
   AuthConfig._({
-    required final TokenManager defaultTokenManager,
+    required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<IdentityProvider>>
         identityProviders,
-    required final Map<String, TokenManager> tokenManagers,
+    required final Map<String, TokenManager> additionalTokenManagers,
   }) {
     tokenManager = MultiTokenManager(
-      defaultTokenManager: defaultTokenManager,
-      additionalTokenManagers: tokenManagers.values.toList(),
+      primaryTokenManager: primaryTokenManager,
+      additionalTokenManagers: additionalTokenManagers,
     );
 
     for (final provider in identityProviders) {
@@ -80,7 +73,11 @@ class AuthConfig {
   static T getIdentityProvider<T>() {
     final provider = instance._providers[T];
     if (provider == null) {
-      throw StateError('Provider for $T is not registered');
+      throw StateError(
+        'Provider for $T is not registered. '
+        'To register this provider, add its IdentityProviderFactory to the identityProviders list when calling AuthConfig.set(). '
+        'Example: AuthConfig.set(defaultTokenManager: ..., identityProviders: [YourProviderFactory()])',
+      );
     }
     return provider as T;
   }
@@ -97,6 +94,6 @@ class AuthConfig {
     final Session session,
     final String key,
   ) async {
-    return tokenManager.validateToken(session, key);
+    return tokenManager.validateToken(session, key, kind: null);
   }
 }

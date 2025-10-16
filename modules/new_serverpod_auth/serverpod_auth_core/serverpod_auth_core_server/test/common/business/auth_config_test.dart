@@ -8,7 +8,7 @@ import 'fakes/fakes.dart';
 
 void main() {
   withServerpod(
-    'Given AuthConfig dependencies',
+    'Given AuthConfig is being configured',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
       late List<IdentityProviderFactory<IdentityProvider>>
@@ -34,25 +34,13 @@ void main() {
 
         setUp(() {
           authConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
+            primaryTokenManager: fakeTokenManager,
             identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
+            additionalTokenManagers: tokenManagers,
           );
         });
 
-        test('then the singleton instance shall be created and accessible', () {
-          expect(authConfig, isNotNull);
-          expect(authConfig, isA<AuthConfig>());
-          expect(authConfig.tokenManager, isA<MultiTokenManager>());
-        });
-
-        test('then AuthConfig.instance shall return the created instance', () {
-          expect(AuthConfig.instance, equals(authConfig));
-          expect(AuthConfig.instance.tokenManager, isA<MultiTokenManager>());
-          expect(AuthConfig.instance.tokenManager, isNotNull);
-        });
-
-        test('then the configured token managers shall be accessible', () {
+        test('then a token manager is accessible', () {
           expect(authConfig.tokenManager, isA<MultiTokenManager>());
         });
       });
@@ -65,164 +53,189 @@ void main() {
 
         setUp(() {
           firstConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
+            primaryTokenManager: fakeTokenManager,
             identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
+            additionalTokenManagers: tokenManagers,
           );
 
           secondTokenStorage = FakeTokenStorage();
           secondTokenManager = FakeTokenManager(secondTokenStorage);
           secondConfig = AuthConfig.set(
-            defaultTokenManager: secondTokenManager,
+            primaryTokenManager: secondTokenManager,
             identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
+            additionalTokenManagers: tokenManagers,
           );
         });
 
-        test('then the instance shall be replaced with the new configuration',
-            () {
+        test('then the instance is replaced with the new configuration', () {
           expect(AuthConfig.instance, equals(secondConfig));
           expect(AuthConfig.instance, isNot(equals(firstConfig)));
         });
+      });
+    },
+  );
 
-        test('then the new configuration shall take effect', () {
-          expect(AuthConfig.instance.tokenManager, isA<MultiTokenManager>());
-          expect(AuthConfig.instance, equals(secondConfig));
-        });
+  withServerpod(
+    'Given an AuthConfig with identity providers',
+    (final sessionBuilder, final endpoints) {
+      late FakeTokenManager fakeTokenManager;
+      late List<IdentityProviderFactory<IdentityProvider>>
+          identityProviderFactories;
+      late Map<String, TokenManager> tokenManagers;
+      late FakeTokenStorage fakeTokenStorage;
+
+      setUp(() {
+        fakeTokenStorage = FakeTokenStorage();
+        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+
+        identityProviderFactories = [
+          FakeIdentityProviderFactory(),
+        ];
+
+        tokenManagers = {
+          'fake': FakeTokenManager(fakeTokenStorage),
+        };
+
+        AuthConfig.set(
+          primaryTokenManager: fakeTokenManager,
+          identityProviders: identityProviderFactories,
+          additionalTokenManagers: tokenManagers,
+        );
       });
 
-      group('when accessing providers', () {
-        setUp(() {
-          AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
-          );
+      group('when provider is constructed during initialization', () {
+        test('then constructed provider should have correct token issuer', () {
+          final provider =
+              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+          expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
 
-        test('then the registered provider should be returned', () {
+        test('then constructed provider should be stored correctly', () {
           final provider =
               AuthConfig.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
+          expect(provider, isNotNull);
+        });
+      });
+
+      group('when retrieving provider by type', () {
+        test(
+            'then getProvider should return correct provider instance for registered types',
+            () {
+          final provider =
+              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+          expect(provider, isA<FakeIdentityProvider>());
+          expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
 
-        test('then the unregistered provider should throw StateError', () {
+        test('then StateError should be thrown for unregistered provider types',
+            () {
           expect(
             () => AuthConfig.getIdentityProvider<String>(),
-            throwsA(isA<StateError>()),
+            throwsA(isA<StateError>().having(
+              (final e) => e.message,
+              'message',
+              contains('Provider for String is not registered'),
+            )),
           );
         });
       });
 
-      group('when using default token managers', () {
-        setUp(() {
-          AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-          );
-        });
-
-        test('then default token managers should be used', () {
-          final tokenManager = AuthConfig.instance.tokenManager;
-          expect(tokenManager, isNotNull);
-          expect(tokenManager, isA<MultiTokenManager>());
-        });
-
-        test('then the token manager shall be a MultiTokenManager', () {
-          final tokenManager = AuthConfig.instance.tokenManager;
-          expect(tokenManager, isA<MultiTokenManager>());
-        });
+      test(
+          'when accessing a registered provider then the provider should be accessible',
+          () {
+        final provider = AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+        expect(provider, isA<FakeIdentityProvider>());
       });
 
-      group('when identity providers are registered and', () {
-        setUp(() {
-          AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
-          );
-        });
+      test(
+          'when accessing an unregistered provider then a StateError is thrown',
+          () {
+        expect(
+          () => AuthConfig.getIdentityProvider<String>(),
+          throwsA(isA<StateError>()),
+        );
+      });
+    },
+  );
 
-        group('when provider is constructed during initialization', () {
-          test('then constructed provider should have correct token manager',
-              () {
-            final provider =
-                AuthConfig.getIdentityProvider<FakeIdentityProvider>();
-            expect(provider.tokenManager, isA<MultiTokenManager>());
-          });
+  withServerpod(
+    'Given an AuthConfig with multiple identity providers',
+    (final sessionBuilder, final endpoints) {
+      late FakeTokenManager fakeTokenManager;
+      late List<IdentityProviderFactory<IdentityProvider>>
+          multipleProviderFactories;
+      late Map<String, TokenManager> tokenManagers;
+      late FakeTokenStorage fakeTokenStorage;
+      late FakeIdentityProviderFactory firstFactory;
+      late FakeIdentityProviderFactory secondFactory;
 
-          test('then constructed provider should be stored correctly', () {
-            final provider =
-                AuthConfig.getIdentityProvider<FakeIdentityProvider>();
-            expect(provider, isA<FakeIdentityProvider>());
-            expect(provider, isNotNull);
-          });
-        });
+      setUp(() {
+        fakeTokenStorage = FakeTokenStorage();
+        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
 
-        group('when retrieving provider by type', () {
-          test(
-              'then getProvider should return correct provider instance for registered types',
-              () {
-            final provider =
-                AuthConfig.getIdentityProvider<FakeIdentityProvider>();
-            expect(provider, isA<FakeIdentityProvider>());
-            expect(provider.tokenManager, isA<MultiTokenManager>());
-          });
+        firstFactory = FakeIdentityProviderFactory();
+        secondFactory = FakeIdentityProviderFactory();
+        multipleProviderFactories = [firstFactory, secondFactory];
 
-          test(
-              'then StateError should be thrown for unregistered provider types',
-              () {
-            expect(
-              () => AuthConfig.getIdentityProvider<String>(),
-              throwsA(isA<StateError>().having(
-                (final e) => e.message,
-                'message',
-                'Provider for String is not registered',
-              )),
-            );
-          });
-        });
+        tokenManagers = {
+          'fake': FakeTokenManager(fakeTokenStorage),
+        };
+
+        AuthConfig.set(
+          primaryTokenManager: fakeTokenManager,
+          identityProviders: multipleProviderFactories,
+          additionalTokenManagers: tokenManagers,
+        );
       });
 
-      group('when multiple identity providers are registered', () {
-        late List<IdentityProviderFactory<IdentityProvider>>
-            multipleProviderFactories;
-        late FakeIdentityProviderFactory firstFactory;
-        late FakeIdentityProviderFactory secondFactory;
-
-        setUp(() {
-          firstFactory = FakeIdentityProviderFactory();
-          secondFactory = FakeIdentityProviderFactory();
-          multipleProviderFactories = [firstFactory, secondFactory];
-
-          AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: multipleProviderFactories,
-            tokenManagers: tokenManagers,
-          );
-        });
-
+      group('when accessing providers', () {
         test('then each provider should be accessible independently', () {
           final provider =
               AuthConfig.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
-          expect(provider.tokenManager, isA<MultiTokenManager>());
+          expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
       });
+    },
+  );
 
-      group('when a token exists in storage and', () {
-        late Session session;
-        late AuthConfig authConfig;
+  withServerpod(
+    'Given an AuthConfig with authentication handler',
+    (final sessionBuilder, final endpoints) {
+      late FakeTokenManager fakeTokenManager;
+      late List<IdentityProviderFactory<IdentityProvider>>
+          identityProviderFactories;
+      late Map<String, TokenManager> tokenManagers;
+      late FakeTokenStorage fakeTokenStorage;
+      late Session session;
+      late AuthConfig authConfig;
+
+      setUp(() {
+        session = sessionBuilder.build();
+        fakeTokenStorage = FakeTokenStorage();
+        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+
+        identityProviderFactories = [
+          FakeIdentityProviderFactory(),
+        ];
+
+        tokenManagers = {
+          'fake': FakeTokenManager(fakeTokenStorage),
+        };
+
+        authConfig = AuthConfig.set(
+          primaryTokenManager: fakeTokenManager,
+          identityProviders: identityProviderFactories,
+          additionalTokenManagers: tokenManagers,
+        );
+      });
+
+      group('when validating a valid token with single scope', () {
         const validToken = 'valid-token-123';
+        late AuthenticationInfo? result;
 
-        setUp(() {
-          session = sessionBuilder.build();
-          authConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
-          );
-
+        setUp(() async {
           fakeTokenManager.addToken(TokenInfo(
             userId: 'user-123',
             tokenProvider: 'fake',
@@ -230,46 +243,30 @@ void main() {
             scopes: {const Scope('test-scope')},
             method: 'test-method',
           ));
+
+          result = await authConfig.authenticationHandler(session, validToken);
         });
 
-        group('when validating the token', () {
-          late AuthenticationInfo? result;
+        test('then authentication info should be returned', () {
+          expect(result, isNotNull);
+        });
 
-          setUp(() async {
-            result =
-                await authConfig.authenticationHandler(session, validToken);
-          });
+        test('then the user identifier should match', () {
+          expect(result!.userIdentifier, equals('user-123'));
+        });
 
-          test('then authentication info should be returned', () {
-            expect(result, isNotNull);
-          });
-
-          test('then the user identifier should match', () {
-            expect(result!.userIdentifier, equals('user-123'));
-          });
-
-          test('then the scopes should match', () {
-            expect(
-              result!.scopes.map((final s) => s.name),
-              contains('test-scope'),
-            );
-          });
+        test('then the scopes should match', () {
+          expect(
+            result!.scopes.map((final s) => s.name),
+            contains('test-scope'),
+          );
         });
       });
 
-      group('when a token with multiple scopes exists in storage and', () {
-        late Session session;
-        late AuthConfig authConfig;
+      group('when validating a token with multiple scopes', () {
         const validToken = 'multi-scope-token';
 
         setUp(() {
-          session = sessionBuilder.build();
-          authConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
-          );
-
           fakeTokenManager.addToken(TokenInfo(
             userId: 'user-456',
             tokenProvider: 'fake',
@@ -283,67 +280,31 @@ void main() {
           ));
         });
 
-        group('when validating the token', () {
-          late AuthenticationInfo? result;
+        test('then all scopes should be included', () async {
+          final result =
+              await authConfig.authenticationHandler(session, validToken);
 
-          setUp(() async {
-            result =
-                await authConfig.authenticationHandler(session, validToken);
-          });
-
-          test('then all scopes should be included', () {
-            expect(result, isNotNull);
-            final scopeNames = result!.scopes.map((final s) => s.name);
-            expect(scopeNames, contains('read'));
-            expect(scopeNames, contains('write'));
-            expect(scopeNames, contains('admin'));
-          });
+          expect(result, isNotNull);
+          final scopeNames = result!.scopes.map((final s) => s.name);
+          expect(scopeNames, contains('read'));
+          expect(scopeNames, contains('write'));
+          expect(scopeNames, contains('admin'));
         });
       });
 
-      group('when no token exists in storage and', () {
-        late Session session;
-        late AuthConfig authConfig;
-
-        setUp(() {
-          session = sessionBuilder.build();
-          authConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
+      group('when validating invalid tokens', () {
+        test('then null should be returned for invalid token', () async {
+          final result = await authConfig.authenticationHandler(
+            session,
+            'invalid-token',
           );
+
+          expect(result, isNull);
         });
 
-        group('when validating an invalid token', () {
-          late AuthenticationInfo? result;
+        test('then null should be returned for empty token', () async {
+          final result = await authConfig.authenticationHandler(session, '');
 
-          setUp(() async {
-            result = await authConfig.authenticationHandler(
-              session,
-              'invalid-token',
-            );
-          });
-
-          test('then null should be returned', () {
-            expect(result, isNull);
-          });
-        });
-      });
-
-      group('when validating an empty token', () {
-        late AuthenticationInfo? result;
-
-        setUp(() async {
-          final session = sessionBuilder.build();
-          final authConfig = AuthConfig.set(
-            defaultTokenManager: fakeTokenManager,
-            identityProviders: identityProviderFactories,
-            tokenManagers: tokenManagers,
-          );
-          result = await authConfig.authenticationHandler(session, '');
-        });
-
-        test('then null should be returned', () {
           expect(result, isNull);
         });
       });
