@@ -1,3 +1,4 @@
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
@@ -6,8 +7,18 @@ import 'fake_token_storage.dart';
 
 class FakeTokenManager implements TokenManager {
   final FakeTokenStorage _storage;
+  final String _kind;
+  final bool _usesRefreshTokens;
 
-  FakeTokenManager(this._storage);
+  FakeTokenManager(
+    this._storage, {
+    final String kind = 'jwt',
+    final bool usesRefreshTokens = true,
+  })  : _kind = kind,
+        _usesRefreshTokens = usesRefreshTokens;
+
+  @override
+  String get kind => _kind;
 
   @override
   Future<AuthSuccess> issueToken({
@@ -18,7 +29,8 @@ class FakeTokenManager implements TokenManager {
     required final Transaction? transaction,
   }) async {
     final tokenId = _storage.generateTokenId();
-    final refreshTokenId = _storage.generateRefreshTokenId();
+    final refreshTokenId =
+        _usesRefreshTokens ? _storage.generateRefreshTokenId() : null;
 
     final scopeSet = scopes != null
         ? scopes
@@ -29,7 +41,7 @@ class FakeTokenManager implements TokenManager {
 
     final tokenInfo = TokenInfo(
       userId: authUserId.toString(),
-      tokenProvider: 'jwt',
+      tokenProvider: _kind,
       tokenId: tokenId,
       scopes: scopes ?? {},
       method: method,
@@ -41,7 +53,7 @@ class FakeTokenManager implements TokenManager {
       refreshToken: refreshTokenId,
       authUserId: authUserId,
       scopeNames: scopeSet,
-      authStrategy: 'jwt',
+      authStrategy: _kind,
     );
 
     return authSuccess;
@@ -53,11 +65,40 @@ class FakeTokenManager implements TokenManager {
     required final UuidValue? authUserId,
     required final Transaction? transaction,
     required final String? method,
+    final String? kind,
   }) async {
+    // If kind is specified and doesn't match this manager's kind, do nothing
+    if (kind != null && kind != _kind) return;
+
+    final tokensToRevoke = _storage.getTokensWhere(
+      userId: authUserId?.toString(),
+      method: method,
+    );
+
     _storage.removeTokensWhere(
       userId: authUserId?.toString(),
       method: method,
     );
+
+    // Notify about revoked authentications
+    if (tokensToRevoke.isNotEmpty) {
+      if (authUserId != null) {
+        // Revoking all tokens for a specific user
+        await session.messages.authenticationRevoked(
+          authUserId.uuid,
+          RevokedAuthenticationUser(),
+        );
+      } else {
+        // Revoking tokens for multiple users (notify each user)
+        final userIds = tokensToRevoke.map((final t) => t.userId).toSet();
+        for (final userId in userIds) {
+          await session.messages.authenticationRevoked(
+            userId,
+            RevokedAuthenticationUser(),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -65,8 +106,23 @@ class FakeTokenManager implements TokenManager {
     required final Session session,
     required final String tokenId,
     required final Transaction? transaction,
+    final String? kind,
   }) async {
+    // If kind is specified and doesn't match this manager's kind, do nothing
+    if (kind != null && kind != _kind) return;
+
+    // Get token info before removing to notify about revocation
+    final tokenInfo = _storage.getToken(tokenId);
+
     _storage.removeToken(tokenId);
+
+    // Notify about revoked authentication
+    if (tokenInfo != null) {
+      await session.messages.authenticationRevoked(
+        tokenInfo.userId,
+        RevokedAuthenticationAuthId(authId: tokenId),
+      );
+    }
   }
 
   @override
@@ -75,7 +131,11 @@ class FakeTokenManager implements TokenManager {
     required final UuidValue? authUserId,
     required final String? method,
     required final Transaction? transaction,
+    final String? kind,
   }) async {
+    // If kind is specified and doesn't match this manager's kind, return empty list
+    if (kind != null && kind != _kind) return [];
+
     return _storage.getTokensWhere(
       userId: authUserId?.toString(),
       method: method,
@@ -85,8 +145,12 @@ class FakeTokenManager implements TokenManager {
   @override
   Future<AuthenticationInfo?> validateToken(
     final Session session,
-    final String token,
-  ) async {
+    final String token, {
+    final String? kind,
+  }) async {
+    // If kind is specified and doesn't match this manager's kind, return null
+    if (kind != null && kind != _kind) return null;
+
     // Check if the token exists (hasn't been revoked)
     final tokenInfo = _storage.getToken(token);
     if (tokenInfo == null) return null;
@@ -94,6 +158,7 @@ class FakeTokenManager implements TokenManager {
     return AuthenticationInfo(
       tokenInfo.userId,
       tokenInfo.scopes,
+      authId: token,
     );
   }
 
