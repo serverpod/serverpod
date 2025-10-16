@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('durationDefault')
-          .withTypeDefinition('Duration', false)
-          .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
+          .withTypeDuration(defaultPersistValue: '1d 2h 10min 30s 100ms')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -112,8 +111,10 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('durationDefault')
-          .withTypeDefinition('Duration', true)
-          .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
+          .withTypeDuration(
+            defaultPersistValue: '1d 2h 10min 30s 100ms',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -233,8 +234,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('durationDefault')
-          .withTypeDefinition('Duration', false)
-          .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
+          .withTypeDuration(defaultModelValue: '1d 2h 10min 30s 100ms')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -284,8 +284,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('durationDefault')
-          .withTypeDefinition('Duration', true)
-          .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
+          .withTypeDuration(
+            defaultModelValue: '1d 2h 10min 30s 100ms',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
