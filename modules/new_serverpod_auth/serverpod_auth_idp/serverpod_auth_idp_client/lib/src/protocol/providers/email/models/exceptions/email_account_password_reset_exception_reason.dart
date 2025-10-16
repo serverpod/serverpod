@@ -14,12 +14,12 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The reason for why the password reset request was rejected.
 enum EmailAccountPasswordResetExceptionReason implements _i1.SerializableModel {
-  /// Exception to be thrown when the password reset request was used after
-  /// it has expired.
+  /// Exception to be thrown when attempting to complete a valid password reset
+  /// request that has already expired.
   expired,
 
-  /// Exception to be thrown when an attempt was made to complete a password
-  /// reset with an invalid verification code.
+  /// Exception to be thrown when attempting to complete a password reset with
+  /// an invalid verification code or password reset request id.
   invalid,
 
   /// Exception to be thrown when attempting to set a password which does not

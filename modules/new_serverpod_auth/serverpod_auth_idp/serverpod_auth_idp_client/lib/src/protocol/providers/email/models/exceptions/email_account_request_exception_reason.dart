@@ -14,12 +14,12 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The reason for why the account creation with email request was rejected.
 enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
-  /// Exception to be thrown when one attempts to complete an email account
-  /// request after it has expired.
+  /// Exception to be thrown when attempting to complete a valid email account
+  /// request that has already expired.
   expired,
 
-  /// Exception to be thrown when the verification code given for an email
-  /// account request is not valid.
+  /// Exception to be thrown when attempting to complete an email account
+  /// request with an invalid verification code or account request id.
   invalid,
 
   /// Exception to be thrown when attempting to set a password which does not
