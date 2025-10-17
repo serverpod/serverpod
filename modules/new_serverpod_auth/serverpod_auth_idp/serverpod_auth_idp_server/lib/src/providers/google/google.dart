@@ -5,4 +5,5 @@ export '../../generated/protocol.dart'
 export 'business/google_idp.dart';
 export 'business/google_idp_admin.dart';
 export 'business/google_idp_config.dart';
+export 'business/google_idp_utils.dart';
 export 'endpoints/google_idp_base_endpoint.dart';
