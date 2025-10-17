@@ -288,6 +288,47 @@ void main() {
     });
   });
 
+  group(
+      'Given a `ClientAuthSessionManager` with a valid token in storage and an unreachable server',
+      () {
+    setUp(() async {
+      final tempClient = Client('http://localhost:8080/');
+      final testUser = await tempClient.authTest.createTestUser();
+      authSuccess = await tempClient.authTest.createSasToken(testUser);
+
+      storage = TestStorage();
+      await storage.set(authSuccess);
+
+      client = Client(
+        'http://unreachable-server/',
+        connectionTimeout: const Duration(seconds: 1),
+      )..authSessionManager = ClientAuthSessionManager(storage: storage);
+    });
+
+    test(
+        'when calling `validateAuthentication` '
+        'then network error is caught and user is not signed out and returns false.',
+        () async {
+      await client.auth.restore();
+      expect(client.auth.isAuthenticated, isTrue);
+
+      final result = await client.auth.validateAuthentication();
+
+      expect(result, isFalse);
+      expect(client.auth.isAuthenticated, isTrue);
+    });
+
+    test(
+        'when calling `initialize` '
+        'then network error is caught and user is not signed out and returns false.',
+        () async {
+      final result = await client.auth.initialize();
+
+      expect(result, isFalse);
+      expect(client.auth.isAuthenticated, isTrue);
+    });
+  });
+
   group('Given two separate client instances with separate session managers',
       () {
     late Client client1;

@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
@@ -138,7 +139,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Verifies the current sign in status of the user with the server and
   /// updates the authentication info, if needed. If the user authentication is
-  /// no longer valid, the user is signed out from the current device.
+  /// no longer valid, the user is signed out from the current device. In case
+  /// of network or internal server errors, the user is not signed out.
   Future<bool> validateAuthentication() async {
     try {
       if (isAuthenticated) {
@@ -149,9 +151,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         }
       }
       return true;
-    } on ServerpodClientException catch (_) {
-      // Other errors, like network errors, should not sign out the user.
-    }
+    } on SocketException catch (_) {
+    } on ServerpodClientException catch (_) {}
     return false;
   }
 
