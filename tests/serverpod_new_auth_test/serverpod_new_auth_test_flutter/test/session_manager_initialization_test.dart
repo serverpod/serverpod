@@ -301,7 +301,7 @@ void main() {
 
       client = Client(
         'http://unreachable-server/',
-        connectionTimeout: const Duration(seconds: 1),
+        connectionTimeout: const Duration(seconds: 20),
       )..authSessionManager = ClientAuthSessionManager(storage: storage);
     });
 
@@ -312,20 +312,38 @@ void main() {
       await client.auth.restore();
       expect(client.auth.isAuthenticated, isTrue);
 
-      final result = await client.auth.validateAuthentication();
+      final result = await client.auth
+          .validateAuthentication(timeout: const Duration(seconds: 1));
 
       expect(result, isFalse);
       expect(client.auth.isAuthenticated, isTrue);
     });
 
     test(
+        'when calling `validateAuthentication with a timeout '
+        'then the timeout interval overrides the default timeout.', () async {
+      await client.auth.restore();
+      expect(client.auth.isAuthenticated, isTrue);
+
+      final (result, elapsed) = await Stopwatch().timeElapsed(
+        client.auth.validateAuthentication(timeout: const Duration(seconds: 1)),
+      );
+
+      expect(result, isFalse);
+      expect(elapsed.inSeconds, 1);
+    });
+
+    test(
         'when calling `initialize` '
         'then network error is caught and user is not signed out and returns false.',
         () async {
-      final result = await client.auth.initialize();
+      final (result, elapsed) = await Stopwatch().timeElapsed(
+        client.auth.initialize(),
+      );
 
       expect(result, isFalse);
       expect(client.auth.isAuthenticated, isTrue);
+      expect(elapsed.inSeconds, 2);
     });
   });
 
@@ -357,4 +375,13 @@ void main() {
       expect(client2.auth.isAuthenticated, isFalse);
     });
   });
+}
+
+extension on Stopwatch {
+  Future<(T, Duration)> timeElapsed<T>(Future<T> future) async {
+    start();
+    final result = await future;
+    stop();
+    return (result, elapsed);
+  }
 }

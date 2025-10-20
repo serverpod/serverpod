@@ -111,10 +111,13 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// authentication is no longer valid, the user is signed out from the current
   /// device, updating the [authInfo] value. If the refresh fails due to other
   /// reasons (network error, server error, etc.), returns false, but does not
-  /// sign out the user. Returns true if the authentication was validated.
-  Future<bool> initialize() async {
+  /// sign out the user. Returns true if the authentication was validated. Use
+  /// [timeout] to set a maximum time for the server validation call.
+  Future<bool> initialize({
+    Duration timeout = const Duration(seconds: 2),
+  }) async {
     await restore();
-    return validateAuthentication();
+    return validateAuthentication(timeout: timeout);
   }
 
   /// Restore the current sign in status from the storage. If the underlying
@@ -139,19 +142,28 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// Verifies the current sign in status of the user with the server and
   /// updates the authentication info, if needed. If the user authentication is
   /// no longer valid, the user is signed out from the current device. In case
-  /// of network or internal server errors, the user is not signed out.
-  Future<bool> validateAuthentication() async {
+  /// of network or internal server errors, the user is not signed out. The
+  /// [timeout] parameter can be used to override the default client timeout.
+  Future<bool> validateAuthentication({Duration? timeout}) async {
     try {
-      if (isAuthenticated) {
-        final refreshResult = await refreshAuthKey(force: true);
-        if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
-            !await caller.status.isSignedIn()) {
-          return await signOutDevice();
-        }
+      return await _validateAuthentication().timeout(
+        timeout ?? caller.client.connectionTimeout,
+        onTimeout: () => false,
+      );
+    } on ServerpodClientException catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _validateAuthentication() async {
+    if (isAuthenticated) {
+      final refreshResult = await refreshAuthKey(force: true);
+      if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
+          !await caller.status.isSignedIn()) {
+        return await signOutDevice();
       }
-      return true;
-    } on ServerpodClientException catch (_) {}
-    return false;
+    }
+    return true;
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
