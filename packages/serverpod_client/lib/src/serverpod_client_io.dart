@@ -39,30 +39,35 @@ class ServerpodClientRequestDelegateImpl
     required String body,
     String? authenticationValue,
   }) async {
-    var request = await _httpClient.postUrl(url);
-    request.headers.contentType =
-        ContentType('application', 'json', charset: 'utf-8');
-    request.contentLength = utf8.encode(body).length;
-    if (authenticationValue != null) {
-      request.headers.add(HttpHeaders.authorizationHeader, authenticationValue);
+    try {
+      var request = await _httpClient.postUrl(url);
+      request.headers.contentType =
+          ContentType('application', 'json', charset: 'utf-8');
+      request.contentLength = utf8.encode(body).length;
+      if (authenticationValue != null) {
+        request.headers
+            .add(HttpHeaders.authorizationHeader, authenticationValue);
+      }
+      request.write(body);
+
+      await request.flush();
+
+      var response = await request.close().timeout(connectionTimeout);
+
+      var data = await _readResponse(response);
+
+      if (response.statusCode != HttpStatus.ok) {
+        throw getExceptionFrom(
+          data: data,
+          serializationManager: serializationManager,
+          statusCode: response.statusCode,
+        );
+      }
+
+      return data;
+    } on SocketException catch (e) {
+      throw ServerpodClientException(e.toString(), -1);
     }
-    request.write(body);
-
-    await request.flush();
-
-    var response = await request.close().timeout(connectionTimeout);
-
-    var data = await _readResponse(response);
-
-    if (response.statusCode != HttpStatus.ok) {
-      throw getExceptionFrom(
-        data: data,
-        serializationManager: serializationManager,
-        statusCode: response.statusCode,
-      );
-    }
-
-    return data;
   }
 
   Future<String> _readResponse(HttpClientResponse response) {
