@@ -330,7 +330,8 @@ void main() {
       );
 
       expect(result, isFalse);
-      expect(elapsed.inSeconds, 1);
+      // On web, returns immediately due to client identifying unreachable host.
+      expect(elapsed.inSeconds, lessThanOrEqualTo(1));
     });
 
     test(
@@ -343,7 +344,8 @@ void main() {
 
       expect(result, isFalse);
       expect(client.auth.isAuthenticated, isTrue);
-      expect(elapsed.inSeconds, 2);
+      // On web, returns immediately due to client identifying unreachable host.
+      expect(elapsed.inSeconds, lessThanOrEqualTo(2));
     });
   });
 
