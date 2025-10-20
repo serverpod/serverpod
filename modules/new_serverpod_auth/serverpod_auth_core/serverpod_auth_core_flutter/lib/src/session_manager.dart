@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
@@ -151,7 +150,6 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         }
       }
       return true;
-    } on SocketException catch (_) {
     } on ServerpodClientException catch (_) {}
     return false;
   }
