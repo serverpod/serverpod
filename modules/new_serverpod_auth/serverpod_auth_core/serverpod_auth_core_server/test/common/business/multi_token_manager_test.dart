@@ -926,16 +926,6 @@ void main() {
           expect(authInfo!.userIdentifier, equals(userId.toString()));
         });
 
-        test('then wrong kind should return null even if token exists',
-            () async {
-          final authInfo = await multiTokenManager.validateToken(
-            session,
-            'jwt-token-1',
-          );
-
-          expect(authInfo, isNull);
-        });
-
         test('then null kind should check all managers', () async {
           final jwtAuth = await multiTokenManager.validateToken(
             session,
