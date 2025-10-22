@@ -11,8 +11,8 @@ class TokenInfo {
   /// The unique identifier of this token.
   final String tokenId;
 
-  /// The name of the token manager that issued this token.
-  final String tokenProvider;
+  /// The name of the token issuer that issued this token.
+  final String tokenIssuer;
 
   /// The scopes granted by this token.
   final Set<Scope> scopes;
@@ -23,7 +23,7 @@ class TokenInfo {
   /// Creates a new [TokenInfo] instance.
   TokenInfo({
     required this.userId,
-    required this.tokenProvider,
+    required this.tokenIssuer,
     required this.tokenId,
     required this.scopes,
     required this.method,
@@ -31,7 +31,7 @@ class TokenInfo {
 
   @override
   String toString() {
-    return 'TokenInfo(userId: $userId, tokenProvider: $tokenProvider, token: $tokenId, scopes: $scopes, method: $method)';
+    return 'TokenInfo(userId: $userId, tokenIssuer: $tokenIssuer, tokenId: $tokenId, scopes: $scopes, method: $method)';
   }
 }
 
@@ -40,11 +40,6 @@ class TokenInfo {
 /// Implementations of this interface are responsible for creating and storing
 /// new authentication tokens for users.
 abstract interface class TokenIssuer {
-  /// The kind/type identifier for this token issuer.
-  ///
-  /// This is used to identify the token manager type
-  String get kind;
-
   /// Issues an authentication token.
   ///
   /// Creates a new authentication token for the specified user with the given
@@ -55,8 +50,8 @@ abstract interface class TokenIssuer {
     required final Session session,
     required final UuidValue authUserId,
     required final String method,
-    required final Set<Scope>? scopes,
-    required final Transaction? transaction,
+    final Set<Scope>? scopes,
+    final Transaction? transaction,
   });
 }
 
@@ -69,47 +64,44 @@ abstract interface class TokenManager implements TokenIssuer {
   ///
   /// If [authUserId] is provided, only tokens for that user will be revoked.
   /// If [method] is provided, only tokens created with that authentication method will be revoked.
-  /// If [kind] is provided, only tokens from that specific token manager will be revoked.
-  Future<void> revokeAllTokens({
-    required final Session session,
+  /// If [tokenIssuer] is provided, only tokens from that specific token manager will be revoked.
+  Future<void> revokeAllTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final Transaction? transaction,
-    required final String? method,
-    final String? kind,
+    final Transaction? transaction,
+    final String? method,
+    final String? tokenIssuer,
   });
 
   /// Revokes a specific token by its ID.
   ///
   /// If the [tokenId] doesn't exist, the operation completes without error.
-  /// If [kind] is provided, only tokens from that specific token manager will be revoked.
-  Future<void> revokeToken({
-    required final Session session,
+  /// If [tokenIssuer] is provided, only tokens from that specific token manager will be revoked.
+  Future<void> revokeToken(
+    final Session session, {
     required final String tokenId,
-    required final Transaction? transaction,
-    final String? kind,
+    final Transaction? transaction,
+    final String? tokenIssuer,
   });
 
   /// Lists all [TokenInfo]s matching the given criteria.
   ///
   /// If [authUserId] is provided, only tokens for that user will be listed.
   /// If [method] is provided, only tokens created with that authentication method will be listed.
-  /// If [kind] is provided, only tokens from that specific token manager will be listed.
-  Future<List<TokenInfo>> listTokens({
-    required final Session session,
+  /// If [tokenIssuer] is provided, only tokens from that specific token manager will be listed.
+  Future<List<TokenInfo>> listTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final String? method,
-    required final Transaction? transaction,
-    final String? kind,
+    final String? method,
+    final String? tokenIssuer,
   });
 
   /// Validates an authentication token and returns the associated authentication information.
   ///
   /// Returns [AuthenticationInfo] if the token is valid, or `null` if the token is invalid,
   /// expired, or revoked.
-  /// If [kind] is provided, only that specific token manager will be used for validation.
   Future<AuthenticationInfo?> validateToken(
     final Session session,
-    final String token, {
-    final String? kind,
-  });
+    final String token,
+  );
 }

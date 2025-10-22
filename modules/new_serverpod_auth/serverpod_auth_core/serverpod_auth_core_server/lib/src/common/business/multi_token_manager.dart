@@ -17,7 +17,7 @@ class MultiTokenManager implements TokenManager {
 
   /// Map of all token managers including the primary and additional managers,
   /// keyed by their kind (e.g., 'jwt', 'session').
-  late final Map<String, TokenManager> _allTokenManagers;
+  late final List<TokenManager> _allTokenManagers;
 
   /// Creates a new [MultiTokenManager] instance.
   ///
@@ -25,24 +25,21 @@ class MultiTokenManager implements TokenManager {
   /// Additional managers can be provided via [additionalTokenManagers].
   MultiTokenManager({
     required this.primaryTokenManager,
-    required final Map<String, TokenManager> additionalTokenManagers,
+    required final List<TokenManager> additionalTokenManagers,
   }) {
-    _allTokenManagers = {
-      primaryTokenManager.kind: primaryTokenManager,
+    _allTokenManagers = [
+      primaryTokenManager,
       ...additionalTokenManagers,
-    };
+    ];
   }
-
-  @override
-  String get kind => 'multi';
 
   @override
   Future<AuthSuccess> issueToken({
     required final Session session,
     required final UuidValue authUserId,
     required final String method,
-    required final Set<Scope>? scopes,
-    required final Transaction? transaction,
+    final Set<Scope>? scopes,
+    final Transaction? transaction,
   }) {
     return primaryTokenManager.issueToken(
       session: session,
@@ -54,96 +51,75 @@ class MultiTokenManager implements TokenManager {
   }
 
   @override
-  Future<void> revokeAllTokens({
-    required final Session session,
+  Future<void> revokeAllTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final Transaction? transaction,
-    required final String? method,
-    final String? kind,
+    final Transaction? transaction,
+    final String? method,
+    final String? tokenIssuer,
   }) async {
-    final managersToUse =
-        kind != null ? {kind: _allTokenManagers[kind]!} : _allTokenManagers;
-
     await Future.wait(
-      managersToUse.values.map(
+      _allTokenManagers.map(
         (final manager) => manager.revokeAllTokens(
-          session: session,
+          session,
           authUserId: authUserId,
           transaction: transaction,
           method: method,
-          kind: null,
+          tokenIssuer: tokenIssuer,
         ),
       ),
     );
   }
 
   @override
-  Future<void> revokeToken({
-    required final Session session,
+  Future<void> revokeToken(
+    final Session session, {
     required final String tokenId,
-    required final Transaction? transaction,
-    final String? kind,
+    final Transaction? transaction,
+    final String? tokenIssuer,
   }) async {
-    final managersToUse =
-        kind != null ? {kind: _allTokenManagers[kind]!} : _allTokenManagers;
-
     await Future.wait(
-      managersToUse.values.map(
+      _allTokenManagers.map(
         (final manager) => manager.revokeToken(
-          session: session,
+          session,
           tokenId: tokenId,
           transaction: transaction,
-          kind: null,
+          tokenIssuer: tokenIssuer,
         ),
       ),
     );
   }
 
   @override
-  Future<List<TokenInfo>> listTokens({
-    required final Session session,
+  Future<List<TokenInfo>> listTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final String? method,
-    required final Transaction? transaction,
-    final String? kind,
+    final String? method,
+    final String? tokenIssuer,
   }) async {
-    final managersToUse =
-        kind != null ? {kind: _allTokenManagers[kind]!} : _allTokenManagers;
-
     final tokenLists = await Future.wait(
-      managersToUse.values.map(
+      _allTokenManagers.map(
         (final manager) => manager.listTokens(
-          session: session,
+          session,
           authUserId: authUserId,
           method: method,
-          transaction: transaction,
-          kind: null,
+          tokenIssuer: tokenIssuer,
         ),
       ),
     );
 
-    final allTokens = <TokenInfo>[];
-    for (final tokenList in tokenLists) {
-      allTokens.addAll(tokenList);
-    }
-
-    return allTokens;
+    return tokenLists.expand((final tokens) => tokens).toList();
   }
 
   @override
   Future<AuthenticationInfo?> validateToken(
     final Session session,
-    final String token, {
-    final String? kind,
-  }) async {
-    final managersToUse =
-        kind != null ? {kind: _allTokenManagers[kind]!} : _allTokenManagers;
-
-    for (final manager in managersToUse.values) {
+    final String token,
+  ) async {
+    for (final manager in _allTokenManagers) {
       final authInfo = await manager.validateToken(
         session,
         token,
-        kind: null,
       );
       if (authInfo != null) {
         return authInfo;

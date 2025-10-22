@@ -13,7 +13,7 @@ void main() {
       late FakeTokenManager fakeTokenManager;
       late List<IdentityProviderFactory<IdentityProvider>>
           identityProviderFactories;
-      late Map<String, TokenManager> tokenManagers;
+      late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
@@ -24,9 +24,9 @@ void main() {
           FakeIdentityProviderFactory(),
         ];
 
-        tokenManagers = {
-          'fake': FakeTokenManager(fakeTokenStorage),
-        };
+        tokenManagers = [
+          FakeTokenManager(fakeTokenStorage),
+        ];
       });
 
       group('when AuthConfig.set is called with valid parameters', () {
@@ -81,7 +81,7 @@ void main() {
       late FakeTokenManager fakeTokenManager;
       late List<IdentityProviderFactory<IdentityProvider>>
           identityProviderFactories;
-      late Map<String, TokenManager> tokenManagers;
+      late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
@@ -92,9 +92,9 @@ void main() {
           FakeIdentityProviderFactory(),
         ];
 
-        tokenManagers = {
-          'fake': FakeTokenManager(fakeTokenStorage),
-        };
+        tokenManagers = [
+          FakeTokenManager(fakeTokenStorage),
+        ];
 
         AuthConfig.set(
           primaryTokenManager: fakeTokenManager,
@@ -165,7 +165,7 @@ void main() {
       late FakeTokenManager fakeTokenManager;
       late List<IdentityProviderFactory<IdentityProvider>>
           multipleProviderFactories;
-      late Map<String, TokenManager> tokenManagers;
+      late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late FakeIdentityProviderFactory firstFactory;
       late FakeIdentityProviderFactory secondFactory;
@@ -178,9 +178,9 @@ void main() {
         secondFactory = FakeIdentityProviderFactory();
         multipleProviderFactories = [firstFactory, secondFactory];
 
-        tokenManagers = {
-          'fake': FakeTokenManager(fakeTokenStorage),
-        };
+        tokenManagers = [
+          FakeTokenManager(fakeTokenStorage),
+        ];
 
         AuthConfig.set(
           primaryTokenManager: fakeTokenManager,
@@ -206,7 +206,7 @@ void main() {
       late FakeTokenManager fakeTokenManager;
       late List<IdentityProviderFactory<IdentityProvider>>
           identityProviderFactories;
-      late Map<String, TokenManager> tokenManagers;
+      late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
       late AuthConfig authConfig;
@@ -220,9 +220,9 @@ void main() {
           FakeIdentityProviderFactory(),
         ];
 
-        tokenManagers = {
-          'fake': FakeTokenManager(fakeTokenStorage),
-        };
+        tokenManagers = [
+          FakeTokenManager(fakeTokenStorage),
+        ];
 
         authConfig = AuthConfig.set(
           primaryTokenManager: fakeTokenManager,
@@ -238,7 +238,7 @@ void main() {
         setUp(() async {
           fakeTokenManager.addToken(TokenInfo(
             userId: 'user-123',
-            tokenProvider: 'fake',
+            tokenIssuer: 'fake',
             tokenId: validToken,
             scopes: {const Scope('test-scope')},
             method: 'test-method',
@@ -269,7 +269,7 @@ void main() {
         setUp(() {
           fakeTokenManager.addToken(TokenInfo(
             userId: 'user-456',
-            tokenProvider: 'fake',
+            tokenIssuer: 'fake',
             tokenId: validToken,
             scopes: {
               const Scope('read'),

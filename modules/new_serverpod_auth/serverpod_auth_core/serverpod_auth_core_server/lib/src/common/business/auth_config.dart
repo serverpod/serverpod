@@ -39,7 +39,7 @@ class AuthConfig {
     required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<IdentityProvider>>
         identityProviders,
-    final Map<String, TokenManager> additionalTokenManagers = const {},
+    final List<TokenManager> additionalTokenManagers = const [],
   }) {
     final instance = AuthConfig._(
       primaryTokenManager: primaryTokenManager,
@@ -53,7 +53,7 @@ class AuthConfig {
     required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<IdentityProvider>>
         identityProviders,
-    required final Map<String, TokenManager> additionalTokenManagers,
+    required final List<TokenManager> additionalTokenManagers,
   }) {
     tokenManager = MultiTokenManager(
       primaryTokenManager: primaryTokenManager,
@@ -94,6 +94,6 @@ class AuthConfig {
     final Session session,
     final String key,
   ) async {
-    return tokenManager.validateToken(session, key, kind: null);
+    return tokenManager.validateToken(session, key);
   }
 }

@@ -8,47 +8,43 @@ import '../fakes/fakes.dart';
 
 class FakeTokenManagerForFactory implements TokenManager {
   @override
-  String get kind => 'fake';
-
-  @override
   Future<AuthSuccess> issueToken({
     required final Session session,
     required final UuidValue authUserId,
     required final String method,
-    required final Set<Scope>? scopes,
-    required final Transaction? transaction,
+    final Set<Scope>? scopes,
+    final Transaction? transaction,
   }) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> revokeAllTokens({
-    required final Session session,
+  Future<void> revokeAllTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final Transaction? transaction,
-    required final String? method,
-    final String? kind,
+    final Transaction? transaction,
+    final String? method,
+    final String? tokenIssuer,
   }) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> revokeToken({
-    required final Session session,
+  Future<void> revokeToken(
+    final Session session, {
     required final String tokenId,
-    required final Transaction? transaction,
-    final String? kind,
+    final Transaction? transaction,
+    final String? tokenIssuer,
   }) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<TokenInfo>> listTokens({
-    required final Session session,
+  Future<List<TokenInfo>> listTokens(
+    final Session session, {
     required final UuidValue? authUserId,
-    required final String? method,
-    required final Transaction? transaction,
-    final String? kind,
+    final String? method,
+    final String? tokenIssuer,
   }) async {
     throw UnimplementedError();
   }
@@ -57,7 +53,7 @@ class FakeTokenManagerForFactory implements TokenManager {
   Future<AuthenticationInfo?> validateToken(
     final Session session,
     final String token, {
-    final String? kind,
+    final String? tokenManager,
   }) async {
     throw UnimplementedError();
   }
