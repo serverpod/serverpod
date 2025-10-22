@@ -29,10 +29,6 @@ void testSuite<T extends IdentityProvider>(
           provider = factory.construct(tokenManager: tokenManager);
         });
 
-        test('then a provider instance should be returned', () {
-          expect(provider, isA<FakeIdentityProvider>());
-        });
-
         test('then the provider should have the supplied token manager', () {
           expect(provider.tokenIssuer, equals(tokenManager));
         });
