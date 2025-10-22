@@ -78,7 +78,7 @@ class Serverpod {
   late PasswordManager _passwordManager;
 
   /// Custom [AuthenticationHandler] used to authenticate users.
-  final AuthenticationHandler? authenticationHandler;
+  AuthenticationHandler? authenticationHandler;
 
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
@@ -174,6 +174,11 @@ class Serverpod {
   /// Storage. E.g. see the serverpod_cloud_storage_s3 pub package.
   void addCloudStorage(CloudStorage cloudStorage) {
     storage[cloudStorage.storageId] = cloudStorage;
+  }
+
+  /// Sets a custom [AuthenticationHandler] for authenticating users.
+  void setAuthenticationHandler(AuthenticationHandler handler) {
+    authenticationHandler = handler;
   }
 
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
