@@ -1,63 +1,8 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/provider_factory.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../fakes/fakes.dart';
-
-class FakeTokenManagerForFactory implements TokenManager {
-  @override
-  Future<AuthSuccess> issueToken({
-    required final Session session,
-    required final UuidValue authUserId,
-    required final String method,
-    final Set<Scope>? scopes,
-    final Transaction? transaction,
-  }) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> revokeAllTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-    final String? tokenIssuer,
-  }) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> revokeToken(
-    final Session session, {
-    required final String tokenId,
-    final Transaction? transaction,
-    final String? tokenIssuer,
-  }) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<TokenInfo>> listTokens(
-    final Session session, {
-    required final UuidValue? authUserId,
-    final String? method,
-    final String? tokenIssuer,
-  }) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<AuthenticationInfo?> validateToken(
-    final Session session,
-    final String token, {
-    final String? tokenManager,
-  }) async {
-    throw UnimplementedError();
-  }
-}
 
 void testSuite<T extends IdentityProvider>(
   final IdentityProviderFactory<T> Function() factoryBuilder,
@@ -70,7 +15,7 @@ void testSuite<T extends IdentityProvider>(
 
       setUp(() {
         factory = factoryBuilder();
-        tokenManager = FakeTokenManagerForFactory();
+        tokenManager = FakeTokenManager(FakeTokenStorage());
       });
 
       test('when getting type, then the correct type should be returned', () {
@@ -118,7 +63,7 @@ void testSuite<T extends IdentityProvider>(
         late TokenManager tokenManager2;
 
         setUp(() {
-          tokenManager2 = FakeTokenManagerForFactory();
+          tokenManager2 = FakeTokenManager(FakeTokenStorage());
           provider1 = factory.construct(tokenManager: tokenManager);
           provider2 = factory.construct(tokenManager: tokenManager2);
         });
