@@ -1,973 +1,996 @@
-import 'package:clock/clock.dart';
+import 'dart:async';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
-import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../../../serverpod_test_tools.dart';
-import '../fakes/fakes.dart';
+import '../fakes/fake_token_manager.dart';
+import '../fakes/fake_token_storage.dart';
 
-void testSuite({
-  required final TokenManager Function() tokenManagerBuilder,
+void testSuite<T extends TokenManager>(
+  final T Function() tokenManagerBuilder, {
+  required final Future<UuidValue> Function(Session session) createAuthId,
+  required final String tokenIssuer,
   required final bool isDatabaseBackedManager,
   required final bool usesRefreshTokens,
+  final FutureOr<void> Function(T tokenManager)? teardownFunction,
 }) {
   withServerpod(
-    'Given a TokenManager and a valid user ID',
+    'Given a TokenManager and an authId',
     (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
       late Session session;
-      late UuidValue userId;
+      late UuidValue authId;
+      late T tokenManager;
 
       setUp(() async {
         session = sessionBuilder.build();
+        authId = await createAuthId(session);
         tokenManager = tokenManagerBuilder();
-        final authUser = await AuthUsers.create(session);
-        userId = authUser.id;
       });
 
-      group('when issuing a token', () {
-        late Future<AuthSuccess> issueTokenFuture;
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
+      });
+
+      group('when issuing a token without scopes', () {
+        late Future<AuthSuccess> authSuccessFuture;
         late AuthSuccess authSuccess;
 
         setUp(() async {
-          issueTokenFuture = tokenManager.issueToken(
+          authSuccessFuture = tokenManager.issueToken(
             session: session,
-            authUserId: userId,
+            authUserId: authId,
+            method: 'test-method',
+          );
+
+          authSuccess = await authSuccessFuture;
+        });
+
+        test('then issueToken completes', () async {
+          await expectLater(authSuccessFuture, completes);
+        });
+
+        test('then authStrategy matches tokenIssuer type', () {
+          expect(authSuccess.authStrategy, equals(tokenIssuer));
+        });
+
+        test('then authUserId matches supplied value', () {
+          expect(authSuccess.authUserId, equals(authId));
+        });
+
+        test('then scopes is empty', () {
+          expect(authSuccess.scopeNames, isEmpty);
+        });
+
+        test(
+          skip: !usesRefreshTokens
+              ? 'Skipped for managers not using refresh tokens.'
+              : false,
+          'then refreshToken exists',
+          () {
+            expect(authSuccess.refreshToken, isNotEmpty);
+          },
+        );
+      });
+
+      test(
+        'when issuing a token with scopes then scopes matches supplied value',
+        () async {
+          final authSuccess = await tokenManager.issueToken(
+            session: session,
+            authUserId: authId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
-            transaction: null,
           );
-          authSuccess = await issueTokenFuture;
-        });
 
-        test('then issuing the token should complete', () {
-          expect(issueTokenFuture, completes);
-        });
-
-        test('then the authUserId should match', () {
-          expect(authSuccess.authUserId, equals(userId));
-        });
-
-        test('then the scopeNames should match', () {
+          expect(authSuccess.scopeNames, hasLength(1));
           expect(authSuccess.scopeNames, contains('test-scope'));
-        });
-
-        test('then the authStrategy should match the token manager kind', () {
-          expect(authSuccess.authStrategy, equals(tokenManager.kind));
-        });
-      });
+        },
+      );
 
       test(
-          'when issuing a token with multiple scopes then all scopes should be included',
-          () async {
-        final authSuccess = await tokenManager.issueToken(
-          session: session,
-          authUserId: userId,
-          method: 'test-method',
-          scopes: {
-            const Scope('scope1'),
-            const Scope('scope2'),
-            const Scope('scope3'),
-          },
-          transaction: null,
-        );
-
-        expect(authSuccess.scopeNames, hasLength(3));
-        expect(authSuccess.scopeNames, contains('scope1'));
-        expect(authSuccess.scopeNames, contains('scope2'));
-        expect(authSuccess.scopeNames, contains('scope3'));
-      });
-
-      test(
-          'when issuing a token without scopes then scopeNames should be empty',
-          () async {
-        final authSuccess = await tokenManager.issueToken(
-          session: session,
-          authUserId: userId,
-          method: 'test-method',
-          scopes: null,
-          transaction: null,
-        );
-
-        expect(authSuccess.scopeNames, isEmpty);
-      });
-
-      test(
-          'when issuing a token with empty scopes then scopeNames should be empty',
-          () async {
-        final authSuccess = await tokenManager.issueToken(
-          session: session,
-          authUserId: userId,
-          method: 'test-method',
-          scopes: {},
-          transaction: null,
-        );
-
-        expect(authSuccess.scopeNames, isEmpty);
-      });
-
-      group('when issuing multiple tokens at the same time', () {
-        late AuthSuccess firstToken;
-        late AuthSuccess secondToken;
-        late AuthSuccess thirdToken;
-        late DateTime fixedTime;
-
-        setUp(() async {
-          fixedTime = DateTime.now();
-
-          await withClock(Clock.fixed(fixedTime), () async {
-            firstToken = await tokenManager.issueToken(
+        'when issuing a token with a transaction that succeeds '
+        'then issuing the token completes',
+        () async {
+          final authSuccessFuture =
+              session.db.transaction((final transaction) async {
+            return await tokenManager.issueToken(
               session: session,
-              authUserId: userId,
+              authUserId: authId,
               method: 'test-method',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-
-            secondToken = await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'test-method',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-
-            thirdToken = await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'test-method',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
+              transaction: transaction,
             );
           });
-        });
 
-        test('then each token should be unique', () {
-          expect(firstToken.token, isNot(equals(secondToken.token)));
-          expect(firstToken.token, isNot(equals(thirdToken.token)));
-          expect(secondToken.token, isNot(equals(thirdToken.token)));
-        });
+          await expectLater(authSuccessFuture, completes);
+        },
+      );
 
-        test('then each refresh token should be unique', () {
-          if (usesRefreshTokens) {
-            expect(firstToken.refreshToken,
-                isNot(equals(secondToken.refreshToken)));
-            expect(firstToken.refreshToken,
-                isNot(equals(thirdToken.refreshToken)));
-            expect(secondToken.refreshToken,
-                isNot(equals(thirdToken.refreshToken)));
-          } else {
-            expect(firstToken.refreshToken, isNull);
-            expect(secondToken.refreshToken, isNull);
-            expect(thirdToken.refreshToken, isNull);
-          }
-        });
-
-        test('then all tokens should have the same authUserId', () {
-          expect(firstToken.authUserId, equals(userId));
-          expect(secondToken.authUserId, equals(userId));
-          expect(thirdToken.authUserId, equals(userId));
-        });
-
-        test('then all tokens should have the same scopes', () {
-          expect(firstToken.scopeNames, contains('test-scope'));
-          expect(secondToken.scopeNames, contains('test-scope'));
-          expect(thirdToken.scopeNames, contains('test-scope'));
-        });
-      });
-    },
-  );
-
-  withServerpod(
-    'Given a TokenManager with a transaction parameter',
-    (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
-      late Session session;
-      late UuidValue userId;
-
-      setUp(() async {
-        tokenManager = tokenManagerBuilder();
-        session = sessionBuilder.build();
-        final authUser = await AuthUsers.create(session);
-        userId = authUser.id;
-      });
-
-      group('when issuing tokens successfully with transaction', () {
-        setUp(() async {
+      test(
+        skip: !isDatabaseBackedManager
+            ? 'Skipped for non-database-backed managers.'
+            : false,
+        'when issuing a token with a transaction that rolls back '
+        'then token does not exist',
+        () async {
           await session.db.transaction((final transaction) async {
+            final savepoint = await transaction.createSavepoint();
             await tokenManager.issueToken(
               session: session,
-              authUserId: userId,
-              method: 'transaction',
-              scopes: {const Scope('scope1')},
+              authUserId: authId,
+              method: 'intentional-rollback',
               transaction: transaction,
             );
-
-            await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'transaction',
-              scopes: {const Scope('scope2')},
-              transaction: transaction,
-            );
-          });
-        });
-
-        test('then tokens should be persisted after transaction commits',
-            () async {
-          final tokensAfterCommit = await tokenManager.listTokens(
-            session: session,
-            authUserId: userId,
-            method: null,
-            transaction: null,
-          );
-
-          expect(
-            tokensAfterCommit
-                .where((final token) => token.method == 'transaction'),
-            hasLength(2),
-          );
-        });
-      });
-
-      group(
-        'when issuing tokens with transaction that rolls back',
-        () {
-          setUp(() async {
-            try {
-              await session.db.transaction((final transaction) async {
-                await tokenManager.issueToken(
-                  session: session,
-                  authUserId: userId,
-                  method: 'rollback-test',
-                  scopes: {const Scope('rollback-scope')},
-                  transaction: transaction,
-                );
-
-                // Force a rollback by throwing an exception
-                throw Exception('Intentional rollback');
-              });
-            } catch (e) {
-              // Expected exception, ignore
-            }
+            await savepoint.rollback();
           });
 
-          test(
-            'then tokens should not be persisted after transaction rollback',
-            () async {
-              final tokensAfterRollback = await tokenManager.listTokens(
-                session: session,
-                authUserId: userId,
-                method: null,
-                transaction: null,
-              );
-
-              expect(
-                tokensAfterRollback
-                    .where((final token) => token.method == 'rollback-test'),
-                isEmpty,
-              );
-            },
-            skip: !isDatabaseBackedManager
-                ? 'Skipped for non-database-backed managers'
-                : null,
-          );
-        },
-        skip: !isDatabaseBackedManager
-            ? 'Skipped for non-database-backed managers'
-            : null,
-      );
-
-      group(
-        'when revoking a token with transaction that rolls back',
-        () {
-          late String tokenIdToRevoke;
-
-          setUp(() async {
-            // First, issue a token
-            final authSuccess = await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'revoke-rollback-test',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-            tokenIdToRevoke = authSuccess.token;
-
-            // Try to revoke it in a transaction that rolls back
-            try {
-              await session.db.transaction((final transaction) async {
-                await tokenManager.revokeToken(
-                  session: session,
-                  tokenId: tokenIdToRevoke,
-                  transaction: transaction,
-                );
-
-                // Force a rollback by throwing an exception
-                throw Exception('Intentional rollback');
-              });
-            } catch (e) {
-              // Expected exception, ignore
-            }
-          });
-
-          test(
-            'then token should still exist after transaction rollback',
-            () async {
-              final tokensAfterRollback = await tokenManager.listTokens(
-                session: session,
-                authUserId: userId,
-                method: null,
-                transaction: null,
-              );
-
-              expect(
-                tokensAfterRollback
-                    .any((final token) => token.tokenId == tokenIdToRevoke),
-                isTrue,
-              );
-            },
-            skip: !isDatabaseBackedManager
-                ? 'Skipped for non-database-backed managers'
-                : null,
-          );
-        },
-        skip: !isDatabaseBackedManager
-            ? 'Skipped for non-database-backed managers'
-            : null,
-      );
-
-      group(
-        'when revoking all tokens with transaction that rolls back',
-        () {
-          setUp(() async {
-            // First, issue some tokens
-            await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'revoke-all-rollback-test',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-
-            await tokenManager.issueToken(
-              session: session,
-              authUserId: userId,
-              method: 'revoke-all-rollback-test',
-              scopes: {const Scope('test-scope')},
-              transaction: null,
-            );
-
-            // Try to revoke all in a transaction that rolls back
-            try {
-              await session.db.transaction((final transaction) async {
-                await tokenManager.revokeAllTokens(
-                  session: session,
-                  authUserId: userId,
-                  method: 'revoke-all-rollback-test',
-                  transaction: transaction,
-                );
-
-                // Force a rollback by throwing an exception
-                throw Exception('Intentional rollback');
-              });
-            } catch (e) {
-              // Expected exception, ignore
-            }
-          });
-
-          test(
-            'then tokens should still exist after transaction rollback',
-            () async {
-              final tokensAfterRollback = await tokenManager.listTokens(
-                session: session,
-                authUserId: userId,
-                method: 'revoke-all-rollback-test',
-                transaction: null,
-              );
-
-              expect(tokensAfterRollback, hasLength(2));
-            },
-            skip: !isDatabaseBackedManager
-                ? 'Skipped for non-database-backed managers'
-                : null,
-          );
-        },
-        skip: !isDatabaseBackedManager
-            ? 'Skipped for non-database-backed managers'
-            : null,
-      );
-    },
-  );
-
-  withServerpod(
-    'Given a TokenManager with multiple tokens '
-    'for multiple users using multiple methods '
-    'and multiple scopes',
-    (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
-      late Session session;
-      late UuidValue user1Id;
-      late UuidValue user2Id;
-      late String token1Id;
-      late String token2Id;
-      late String token3Id;
-
-      setUp(() async {
-        tokenManager = tokenManagerBuilder();
-        session = sessionBuilder.build();
-        final authUser1 = await AuthUsers.create(session);
-        final authUser2 = await AuthUsers.create(session);
-        user1Id = authUser1.id;
-        user2Id = authUser2.id;
-
-        final token1 = await tokenManager.issueToken(
-          session: session,
-          authUserId: user1Id,
-          method: 'email',
-          scopes: {const Scope('read')},
-          transaction: null,
-        );
-        token1Id = token1.token;
-
-        final token2 = await tokenManager.issueToken(
-          session: session,
-          authUserId: user1Id,
-          method: 'oauth',
-          scopes: {const Scope('write')},
-          transaction: null,
-        );
-        token2Id = token2.token;
-
-        final token3 = await tokenManager.issueToken(
-          session: session,
-          authUserId: user2Id,
-          method: 'email',
-          scopes: {const Scope('admin')},
-          transaction: null,
-        );
-        token3Id = token3.token;
-      });
-
-      group('when listing tokens without filters', () {
-        late List<TokenInfo> tokens;
-
-        setUp(() async {
-          tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-        });
-
-        test('then all tokens should be returned', () {
-          expect(tokens, hasLength(3));
-          final tokenIds = tokens.map((final t) => t.tokenId).toSet();
-          expect(tokenIds, contains(token1Id));
-          expect(tokenIds, contains(token2Id));
-          expect(tokenIds, contains(token3Id));
-        });
-
-        test('then all tokens should have correct tokenProvider', () {
-          expect(tokens, hasLength(3));
-          expect(
-            tokens.every(
-                (final token) => token.tokenProvider == tokenManager.kind),
-            isTrue,
-          );
-        });
-      });
-
-      group('when listing tokens with user filter', () {
-        late List<TokenInfo> tokens;
-
-        setUp(() async {
-          tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: user1Id,
-            method: null,
-            transaction: null,
-          );
-        });
-
-        test('then only tokens for the specified user should be returned', () {
-          expect(tokens, hasLength(2));
-          expect(
-            tokens.every((final token) => token.userId == user1Id.toString()),
-            isTrue,
-          );
-          final tokenIds = tokens.map((final t) => t.tokenId).toSet();
-          expect(tokenIds, contains(token1Id));
-          expect(tokenIds, contains(token2Id));
-        });
-      });
-
-      group('when listing tokens with method filter', () {
-        late List<TokenInfo> tokens;
-
-        setUp(() async {
-          tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: 'email',
-            transaction: null,
-          );
-        });
-
-        test('then only tokens with specified method should be returned', () {
-          expect(tokens, hasLength(2));
-          expect(
-            tokens.every((final token) => token.method == 'email'),
-            isTrue,
-          );
-          final tokenIds = tokens.map((final t) => t.tokenId).toSet();
-          expect(tokenIds, contains(token1Id));
-          expect(tokenIds, contains(token3Id));
-        });
-      });
-
-      group('when listing tokens with combined filters', () {
-        late List<TokenInfo> tokens;
-
-        setUp(() async {
-          tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: user1Id,
-            method: 'oauth',
-            transaction: null,
-          );
-        });
-
-        test('then only matching tokens should be returned', () {
-          expect(tokens, hasLength(1));
-          expect(tokens.first.userId, equals(user1Id.toString()));
-          expect(tokens.first.method, equals('oauth'));
-          expect(tokens.first.tokenId, equals(token2Id));
-        });
-      });
-
-      group('when revoking a specific token', () {
-        late String revokedTokenId;
-
-        setUp(() async {
-          await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          // Revoke token2 (user1, oauth method, write scope)
-          revokedTokenId = token2Id;
-
-          await tokenManager.revokeToken(
-            session: session,
-            tokenId: revokedTokenId,
-            transaction: null,
-          );
-        });
-
-        test('then the token should be removed', () async {
-          final remainingTokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          expect(
-            remainingTokens
-                .any((final token) => token.tokenId == revokedTokenId),
-            isFalse,
-          );
-        });
-
-        test('then other tokens should remain', () async {
-          final remainingTokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          expect(remainingTokens, hasLength(2));
-
-          final remainingTokenIds =
-              remainingTokens.map((final t) => t.tokenId).toSet();
-          expect(remainingTokenIds, contains(token1Id));
-          expect(remainingTokenIds, contains(token3Id));
-          expect(remainingTokenIds, isNot(contains(token2Id)));
-        });
-
-        test('then authenticationRevoked should be called with correct authId',
-            () async {
-          final channelName =
-              MessageCentralServerpodChannels.revokedAuthentication(
-            user1Id.uuid,
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+            method: 'intentional-rollback',
           );
 
-          final revocationMessages = <SerializableModel>[];
-          session.messages.addListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          await tokenManager.revokeToken(
-            session: session,
-            tokenId: token1Id,
-            transaction: null,
-          );
-
-          session.messages.removeListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          expect(revocationMessages, [
-            isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
-              'authId',
-              token1Id,
-            ),
-          ]);
-        });
-      });
-
-      group('when revoking all tokens for a user', () {
-        setUp(() async {
-          await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-
-          await tokenManager.revokeAllTokens(
-            session: session,
-            authUserId: user1Id,
-            method: null,
-            transaction: null,
-          );
-        });
-
-        test('then all user tokens should be removed', () async {
-          final user1Tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: user1Id,
-            method: null,
-            transaction: null,
-          );
-          expect(user1Tokens, isEmpty);
-        });
-
-        test('then other user tokens should remain', () async {
-          final remainingTokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          expect(remainingTokens, hasLength(1));
-
-          final remainingTokenIds =
-              remainingTokens.map((final t) => t.tokenId).toSet();
-          expect(remainingTokenIds, contains(token3Id));
-          expect(remainingTokenIds, isNot(contains(token1Id)));
-          expect(remainingTokenIds, isNot(contains(token2Id)));
-        });
-
-        test('then authenticationRevoked should be called with user revocation',
-            () async {
-          final channelName =
-              MessageCentralServerpodChannels.revokedAuthentication(
-            user2Id.uuid,
-          );
-
-          final revocationMessages = <SerializableModel>[];
-          session.messages.addListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          await tokenManager.revokeAllTokens(
-            session: session,
-            authUserId: user2Id,
-            method: null,
-            transaction: null,
-          );
-
-          session.messages.removeListener(
-            channelName,
-            revocationMessages.add,
-          );
-
-          expect(revocationMessages, [isA<RevokedAuthenticationUser>()]);
-        });
-      });
-
-      group('when revoking all tokens with method filter', () {
-        setUp(() async {
-          await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-
-          await tokenManager.revokeAllTokens(
-            session: session,
-            authUserId: null,
-            method: 'email',
-            transaction: null,
-          );
-        });
-
-        test('then only tokens with specified method should be removed',
-            () async {
-          final remainingTokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          expect(remainingTokens, hasLength(1));
-
-          final remainingTokenIds =
-              remainingTokens.map((final t) => t.tokenId).toSet();
-          expect(remainingTokenIds, contains(token2Id));
-          expect(remainingTokenIds, isNot(contains(token1Id)));
-          expect(remainingTokenIds, isNot(contains(token3Id)));
-          expect(remainingTokens.first.method, equals('oauth'));
-        });
-      });
-
-      group('when revoking all tokens without filters', () {
-        setUp(() async {
-          await tokenManager.revokeAllTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-        });
-
-        test('then all tokens should be removed', () async {
-          final remainingTokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-          expect(remainingTokens, isEmpty);
-        });
-      });
-    },
-  );
-
-  withServerpod(
-    'Given a TokenManager with no tokens',
-    (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
-      late Session session;
-
-      setUp(() {
-        tokenManager = tokenManagerBuilder();
-        session = sessionBuilder.build();
-      });
-
-      group('when listing tokens', () {
-        late List<TokenInfo> tokens;
-
-        setUp(() async {
-          tokens = await tokenManager.listTokens(
-            session: session,
-            authUserId: null,
-            method: null,
-            transaction: null,
-          );
-        });
-
-        test('then an empty list should be returned', () {
           expect(tokens, isEmpty);
-        });
-      });
-
-      group('when revoking a non-existent token', () {
-        test('then no error should be thrown', () async {
-          expect(
-            () => tokenManager.revokeToken(
-              session: session,
-              tokenId: 'non-existent',
-              transaction: null,
-            ),
-            returnsNormally,
-          );
-        });
-      });
+        },
+      );
     },
   );
 
   withServerpod(
-    'Given a TokenManager with a valid token',
+    'Given a TokenManager and an issued token for an authId',
     (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
       late Session session;
-      late UuidValue userId;
-      late String validToken;
-      late AuthSuccess issuedToken;
+      late UuidValue authId;
+      late T tokenManager;
+      late AuthSuccess authSuccess;
+      late List<TokenInfo> initialTokens;
 
       setUp(() async {
-        tokenManager = tokenManagerBuilder();
         session = sessionBuilder.build();
-        final authUser = await AuthUsers.create(session);
-        userId = authUser.id;
-
-        issuedToken = await tokenManager.issueToken(
+        authId = await createAuthId(session);
+        tokenManager = tokenManagerBuilder();
+        authSuccess = await tokenManager.issueToken(
           session: session,
-          authUserId: userId,
+          authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
-          transaction: null,
         );
-        validToken = issuedToken.token;
+        initialTokens = await tokenManager.listTokens(
+          session,
+          authUserId: authId,
+        );
+      });
+
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
       });
 
       group('when validating the token', () {
         late AuthenticationInfo? authInfo;
 
         setUp(() async {
-          authInfo = await tokenManager.validateToken(session, validToken);
+          authInfo = await tokenManager.validateToken(
+            session,
+            authSuccess.token,
+          );
         });
 
-        test('then the authentication info should be returned', () {
+        test('then AuthenticationInfo should be non-null', () {
           expect(authInfo, isNotNull);
         });
 
-        test('then the user identifier should match the issued token', () {
-          expect(authInfo!.userIdentifier, equals(userId.uuid));
-          expect(authInfo!.userIdentifier, equals(issuedToken.authUserId.uuid));
+        test('then userIdentifier should match authUserId', () {
+          expect(authInfo!.userIdentifier, equals(authId.uuid));
         });
 
-        test('then the scopes should match the issued token', () {
+        test('then scopes should match issued scopes', () {
           expect(authInfo!.scopes, hasLength(1));
-          expect(
-            authInfo!.scopes.map((final s) => s.name),
-            containsAll(issuedToken.scopeNames),
+          expect(authInfo!.scopes, contains(const Scope('test-scope')));
+        });
+
+        test('then authId should exist', () {
+          expect(authInfo!.authId, isNotNull);
+        });
+
+        test('then authId should match tokenId', () async {
+          final [tokenInfo] = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
           );
-        });
-
-        test('then the authId should match the token', () {
-          expect(authInfo!.authId, equals(validToken));
+          expect(authInfo!.authId, tokenInfo.tokenId);
         });
       });
-    },
-  );
 
-  withServerpod(
-    'Given a TokenManager with an invalid token',
-    (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
-      late Session session;
-      late UuidValue userId;
-      late String validToken;
-
-      setUp(() async {
-        tokenManager = tokenManagerBuilder();
-        session = sessionBuilder.build();
-        final authUser = await AuthUsers.create(session);
-        userId = authUser.id;
-
-        // Issue a valid token to use as a base for creating invalid tokens
-        final issuedToken = await tokenManager.issueToken(
-          session: session,
-          authUserId: userId,
-          method: 'test-method',
-          scopes: {const Scope('test-scope')},
-          transaction: null,
-        );
-        validToken = issuedToken.token;
-      });
-
-      group('when validating an invalid token', () {
-        test('then null should be returned for malformed token', () async {
-          final malformedToken = 'XXX${validToken.substring(3)}';
-
+      test(
+        'when validating an invalid token, then AuthenticationInfo should be null',
+        () async {
+          final invalidToken = 'INVALID${authSuccess.token}';
           final authInfo = await tokenManager.validateToken(
             session,
-            malformedToken,
+            invalidToken,
           );
+
           expect(authInfo, isNull);
+        },
+      );
+
+      test(
+        'when revoking the token with a transaction that succeeds '
+        'then token is removed',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await tokenManager.revokeToken(
+              session,
+              tokenId: authSuccess.token,
+              transaction: transaction,
+            );
+          });
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(
+            tokens.any((final t) => t.tokenId == authSuccess.token),
+            isFalse,
+          );
+        },
+      );
+
+      test(
+        skip: !isDatabaseBackedManager
+            ? 'Skipped for non-database-backed managers.'
+            : false,
+        'when revoking the token with a transaction that rolls back '
+        'then token still exists',
+        () async {
+          await session.db.transaction((final transaction) async {
+            final savepoint = await transaction.createSavepoint();
+            await tokenManager.revokeToken(
+              session,
+              tokenId: authSuccess.token,
+              transaction: transaction,
+            );
+            await savepoint.rollback();
+          });
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(
+            tokens.any((final t) => t.tokenId == authSuccess.token),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'when revoking the token with an invalid tokenIssuer filter '
+        'then token is not removed',
+        () async {
+          await tokenManager.revokeToken(
+            session,
+            tokenId: authSuccess.token,
+            tokenIssuer: 'INVALID$tokenIssuer',
+          );
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(tokens, hasLength(initialTokens.length));
+          expect(
+            tokens.any((final t) => t.tokenId == authSuccess.token),
+            isTrue,
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a TokenManager and multiple issued tokens for the same authId',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authId;
+      late T tokenManager;
+      late List<TokenInfo> initialTokens;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        authId = await createAuthId(session);
+        tokenManager = tokenManagerBuilder();
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        initialTokens = await tokenManager.listTokens(
+          session,
+          authUserId: authId,
+        );
+      });
+
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
+      });
+
+      group('when revoking a token with a non-existent tokenId', () {
+        late Future<void> revokeTokenFuture;
+        late List<TokenInfo> tokensAfterRevocation;
+
+        setUp(() async {
+          revokeTokenFuture = tokenManager.revokeToken(
+            session,
+            tokenId: 'non-existent-token-id',
+          );
+
+          tokensAfterRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+        });
+
+        test('then revokeToken completes', () async {
+          await expectLater(revokeTokenFuture, completes);
+        });
+
+        test('then no tokens are revoked', () {
+          expect(tokensAfterRevocation, hasLength(initialTokens.length));
+        });
+      });
+
+      test(
+        'when listing tokens with an invalid token issuer filter, then tokens should be empty',
+        () async {
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+            tokenIssuer: 'INVALID$tokenIssuer',
+          );
+
+          expect(tokens, isEmpty);
+        },
+      );
+
+      test(
+        'when listing tokens '
+        'then all tokens should be returned',
+        () async {
+          final tokens =
+              await tokenManager.listTokens(session, authUserId: null);
+
+          expect(tokens, hasLength(initialTokens.length));
+        },
+      );
+
+      group('when listing tokens with a valid token issuer filter', () {
+        late List<TokenInfo> tokens;
+
+        setUp(() async {
+          tokens = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+            tokenIssuer: tokenIssuer,
+          );
+        });
+
+        test('then tokens should not be empty', () {
+          expect(tokens, isNotEmpty);
+        });
+
+        test('then tokens should have the specified token issuer', () {
+          expect(
+            tokens.every((final t) => t.tokenIssuer == tokenIssuer),
+            isTrue,
+          );
+        });
+      });
+
+      group('when revoking a specific token by tokenId', () {
+        late String channelName;
+        late List<SerializableModel> revocationMessages;
+
+        late List<TokenInfo> beforeRevocationTokens;
+        late List<TokenInfo> afterRevocationTokens;
+        late String tokenIdToRevoke;
+
+        late Future<void> revokeTokenFuture;
+
+        setUp(() async {
+          channelName = MessageCentralServerpodChannels.revokedAuthentication(
+            authId.uuid,
+          );
+
+          revocationMessages = <SerializableModel>[];
+          session.messages.addListener(
+            channelName,
+            revocationMessages.add,
+          );
+
+          beforeRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+            method: 'test-method',
+          );
+
+          tokenIdToRevoke = beforeRevocationTokens.first.tokenId;
+          revokeTokenFuture = tokenManager.revokeToken(
+            session,
+            tokenId: tokenIdToRevoke,
+          );
+
+          afterRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+            method: 'test-method',
+          );
+        });
+
+        tearDown(() {
+          session.messages.removeListener(
+            channelName,
+            revocationMessages.add,
+          );
+        });
+
+        test('then revokeToken completes successfully', () async {
+          await expectLater(revokeTokenFuture, completes);
+        });
+
+        test('then the token should be removed', () {
+          expect(
+            afterRevocationTokens,
+            hasLength(beforeRevocationTokens.length - 1),
+          );
+          expect(
+            afterRevocationTokens.any(
+              (final t) => t.tokenId == tokenIdToRevoke,
+            ),
+            isFalse,
+          );
+        });
+
+        test(
+          'then authenticationRevoked message is sent with correct authId',
+          () async {
+            expect(revocationMessages, [
+              isA<RevokedAuthenticationAuthId>().having(
+                (final m) => m.authId,
+                'authId',
+                tokenIdToRevoke,
+              ),
+            ]);
+          },
+        );
+      });
+
+      group('when revoking a token with a valid tokenIssuer filter', () {
+        late String tokenIdToRevoke;
+        late List<TokenInfo> beforeRevocationTokens;
+        late List<TokenInfo> afterRevocationTokens;
+
+        setUp(() async {
+          beforeRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          tokenIdToRevoke = beforeRevocationTokens.first.tokenId;
+
+          await tokenManager.revokeToken(
+            session,
+            tokenId: tokenIdToRevoke,
+            tokenIssuer: tokenIssuer,
+          );
+
+          afterRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+        });
+
+        test('then the token should be removed', () {
+          expect(
+            afterRevocationTokens.any(
+              (final t) => t.tokenId == tokenIdToRevoke,
+            ),
+            isFalse,
+          );
+        });
+
+        test('then other tokens should remain', () {
+          expect(
+            afterRevocationTokens,
+            hasLength(beforeRevocationTokens.length - 1),
+          );
+        });
+      });
+
+      test(
+        'when revoking a token with an invalid tokenIssuer filter '
+        'then token is not removed',
+        () async {
+          final beforeRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          final tokenIdToRevoke = beforeRevocationTokens.first.tokenId;
+
+          await tokenManager.revokeToken(
+            session,
+            tokenId: tokenIdToRevoke,
+            tokenIssuer: 'INVALID$tokenIssuer',
+          );
+
+          final afterRevocationTokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(afterRevocationTokens, hasLength(initialTokens.length));
+          expect(
+            afterRevocationTokens
+                .any((final t) => t.tokenId == tokenIdToRevoke),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'when revoking all tokens with a transaction that succeeds '
+        'then tokens are removed',
+        () async {
+          await session.db.transaction((final transaction) async {
+            await tokenManager.revokeAllTokens(
+              session,
+              authUserId: authId,
+              transaction: transaction,
+            );
+          });
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(tokens, isEmpty);
+        },
+      );
+
+      test(
+        skip: !isDatabaseBackedManager
+            ? 'Skipped for non-database-backed managers.'
+            : false,
+        'when revoking all tokens with a transaction that rolls back '
+        'then tokens still exist',
+        () async {
+          await session.db.transaction((final transaction) async {
+            final savepoint = await transaction.createSavepoint();
+            await tokenManager.revokeAllTokens(
+              session,
+              authUserId: authId,
+              transaction: transaction,
+            );
+            await savepoint.rollback();
+          });
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+
+          expect(tokens, hasLength(initialTokens.length));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a TokenManager with tokens issued using different methods for the same authId',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authId;
+      late T tokenManager;
+      late List<TokenInfo> initialTokensMethod1;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        authId = await createAuthId(session);
+        tokenManager = tokenManagerBuilder();
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'method1',
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'method1',
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId,
+          method: 'method2',
+        );
+
+        initialTokensMethod1 = await tokenManager.listTokens(
+          session,
+          authUserId: null,
+          method: 'method1',
+        );
+      });
+
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
+      });
+
+      test(
+        'when listing tokens with a method filter '
+        'then only tokens with the specified method should be returned',
+        () async {
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+            method: 'method1',
+          );
+
+          expect(tokens, hasLength(initialTokensMethod1.length));
+          expect(
+            tokens.every((final t) => t.method == 'method1'),
+            isTrue,
+          );
+        },
+      );
+
+      group('when revoking all tokens globally with a method filter', () {
+        late List<TokenInfo> tokensAfterRevocation;
+
+        setUp(() async {
+          await tokenManager.revokeAllTokens(
+            session,
+            authUserId: null,
+            method: 'method1',
+          );
+
+          tokensAfterRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: authId,
+          );
+        });
+
+        test('then all tokens with the specified method should be removed', () {
+          expect(
+            tokensAfterRevocation.any((final t) => t.method == 'method1'),
+            isFalse,
+          );
+        });
+
+        test('then tokens with other methods should remain', () {
+          expect(
+            tokensAfterRevocation.any((final t) => t.method == 'method2'),
+            isTrue,
+          );
         });
       });
     },
   );
 
   withServerpod(
-    'Given a TokenManager with a revoked token',
+    'Given a TokenManager with tokens for multiple authIds',
     (final sessionBuilder, final endpoints) {
-      late TokenManager tokenManager;
       late Session session;
-      late UuidValue userId;
-      late String token;
+      late T tokenManager;
+      late UuidValue authId1;
+      late UuidValue authId2;
+      late UuidValue authId3;
+      late List<TokenInfo> initialTokensForAuthId1;
 
       setUp(() async {
-        tokenManager = tokenManagerBuilder();
         session = sessionBuilder.build();
-        final authUser = await AuthUsers.create(session);
-        userId = authUser.id;
+        tokenManager = tokenManagerBuilder();
 
-        final authSuccess = await tokenManager.issueToken(
+        authId1 = await createAuthId(session);
+        authId2 = await createAuthId(session);
+        authId3 = await createAuthId(session);
+
+        await tokenManager.issueToken(
           session: session,
-          authUserId: userId,
+          authUserId: authId1,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
-          transaction: null,
         );
-        token = authSuccess.token;
 
-        await tokenManager.revokeToken(
+        await tokenManager.issueToken(
           session: session,
-          tokenId: authSuccess.token,
-          transaction: null,
+          authUserId: authId1,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId2,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId3,
+          method: 'test-method',
+          scopes: {const Scope('test-scope')},
+        );
+
+        initialTokensForAuthId1 = await tokenManager.listTokens(
+          session,
+          authUserId: authId1,
         );
       });
 
-      group('when validating the revoked token', () {
-        late AuthenticationInfo? authInfo;
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
+      });
+
+      test(
+        'when listing tokens for a specific authId '
+        'then only tokens for the specified authId should be returned',
+        () async {
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: authId1,
+          );
+
+          expect(tokens, hasLength(initialTokensForAuthId1.length));
+          expect(
+            tokens.every((final t) => t.userId == authId1.toString()),
+            isTrue,
+          );
+        },
+      );
+
+      group('when revoking all tokens for a specific authId', () {
+        late List<TokenInfo> tokensAfterRevocation;
+        late Future<void> revokeAllTokensFuture;
 
         setUp(() async {
-          authInfo = await tokenManager.validateToken(session, token);
+          revokeAllTokensFuture = tokenManager.revokeAllTokens(
+            session,
+            authUserId: authId1,
+          );
+
+          tokensAfterRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
         });
 
-        test('then null should be returned', () {
-          expect(authInfo, isNull);
+        test('then revokeAllTokens completes successfully', () async {
+          await expectLater(revokeAllTokensFuture, completes);
+        });
+
+        test('then all tokens for the authId should be removed', () {
+          expect(
+            tokensAfterRevocation
+                .any((final t) => t.userId == authId1.toString()),
+            isFalse,
+          );
+        });
+
+        test('then tokens for other authIds should remain', () {
+          expect(
+            tokensAfterRevocation
+                .any((final t) => t.userId == authId2.toString()),
+            isTrue,
+          );
         });
       });
+
+      group('when revoking all tokens for a non-existent authId', () {
+        late List<TokenInfo> tokensBeforeRevocation;
+        late List<TokenInfo> tokensAfterRevocation;
+        late Future<void> revokeAllTokensFuture;
+
+        setUp(() async {
+          tokensBeforeRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
+
+          final nonExistentUserId = const Uuid().v4obj();
+
+          revokeAllTokensFuture = tokenManager.revokeAllTokens(
+            session,
+            authUserId: nonExistentUserId,
+          );
+
+          tokensAfterRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
+        });
+
+        test('then revokeAllTokens completes', () async {
+          await expectLater(revokeAllTokensFuture, completes);
+        });
+
+        test('then no other tokens are revoked', () {
+          expect(
+            tokensAfterRevocation.length,
+            equals(tokensBeforeRevocation.length),
+          );
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given a TokenManager with tokens for multiple authIds and methods',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late T tokenManager;
+      late UuidValue authId1;
+      late UuidValue authId2;
+      late List<TokenInfo> initialAllTokens;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        tokenManager = tokenManagerBuilder();
+
+        authId1 = await createAuthId(session);
+        authId2 = await createAuthId(session);
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId1,
+          method: 'method1',
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId1,
+          method: 'method2',
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId2,
+          method: 'method1',
+        );
+
+        await tokenManager.issueToken(
+          session: session,
+          authUserId: authId2,
+          method: 'method2',
+        );
+
+        initialAllTokens = await tokenManager.listTokens(
+          session,
+          authUserId: null,
+        );
+      });
+
+      tearDown(() async {
+        await teardownFunction?.call(tokenManager);
+      });
+
+      group(
+          'when revoking all tokens for a specific authId with combined filters',
+          () {
+        late List<TokenInfo> tokensAfterRevocation;
+
+        setUp(() async {
+          await tokenManager.revokeAllTokens(
+            session,
+            authUserId: authId1,
+            method: 'method1',
+            tokenIssuer: tokenIssuer,
+          );
+
+          tokensAfterRevocation = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
+        });
+
+        test('then only token matching all filters should be removed', () {
+          expect(
+            tokensAfterRevocation.any(
+              (final t) =>
+                  t.userId == authId1.toString() && t.method == 'method1',
+            ),
+            isFalse,
+          );
+        });
+
+        test('then all other tokens should remain', () {
+          expect(tokensAfterRevocation, hasLength(initialAllTokens.length - 1));
+          expect(
+            tokensAfterRevocation.any(
+              (final t) =>
+                  t.userId == authId1.toString() && t.method == 'method2',
+            ),
+            isTrue,
+          );
+          expect(
+            tokensAfterRevocation.any(
+              (final t) =>
+                  t.userId == authId2.toString() && t.method == 'method1',
+            ),
+            isTrue,
+          );
+          expect(
+            tokensAfterRevocation.any(
+              (final t) =>
+                  t.userId == authId2.toString() && t.method == 'method2',
+            ),
+            isTrue,
+          );
+        });
+      });
+
+      test(
+        'when revoking all tokens without any filters '
+        'then all tokens are removed',
+        () async {
+          await tokenManager.revokeAllTokens(
+            session,
+            authUserId: null,
+          );
+
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
+
+          expect(tokens, isEmpty);
+        },
+      );
     },
   );
 }
 
 void main() {
-  group('FakeTokenManager with refresh tokens', () {
-    testSuite(
-      tokenManagerBuilder: () {
-        final storage = FakeTokenStorage();
-        return FakeTokenManager(storage, usesRefreshTokens: true);
-      },
-      isDatabaseBackedManager: false,
-      usesRefreshTokens: true,
-    );
-  });
-
-  group('FakeTokenManager without refresh tokens', () {
-    testSuite(
-      tokenManagerBuilder: () {
-        final storage = FakeTokenStorage();
-        return FakeTokenManager(storage, usesRefreshTokens: false);
-      },
-      isDatabaseBackedManager: false,
-      usesRefreshTokens: false,
-    );
-  });
+  final fakeTokenStorage = FakeTokenStorage();
+  testSuite(
+    () {
+      return FakeTokenManager(fakeTokenStorage);
+    },
+    teardownFunction: (final tokenManager) {
+      fakeTokenStorage.clear();
+    },
+    createAuthId: (final session) async {
+      return const Uuid().v4obj();
+    },
+    tokenIssuer: 'fake',
+    isDatabaseBackedManager: false,
+    usesRefreshTokens: false,
+  );
 }
