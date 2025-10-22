@@ -7,14 +7,14 @@ import 'fake_token_storage.dart';
 
 class FakeTokenManager implements TokenManager {
   final FakeTokenStorage _storage;
-  final String _kind;
+  final String _tokenIssuer;
   final bool _usesRefreshTokens;
 
   FakeTokenManager(
     this._storage, {
-    final String kind = 'fake',
+    final String tokenIssuer = 'fake',
     final bool usesRefreshTokens = true,
-  })  : _kind = kind,
+  })  : _tokenIssuer = tokenIssuer,
         _usesRefreshTokens = usesRefreshTokens;
 
   @override
@@ -38,7 +38,7 @@ class FakeTokenManager implements TokenManager {
 
     final tokenInfo = TokenInfo(
       userId: authUserId.toString(),
-      tokenIssuer: _kind,
+      tokenIssuer: _tokenIssuer,
       tokenId: tokenId,
       scopes: scopes ?? {},
       method: method,
@@ -50,7 +50,7 @@ class FakeTokenManager implements TokenManager {
       refreshToken: refreshTokenId,
       authUserId: authUserId,
       scopeNames: scopeSet,
-      authStrategy: _kind,
+      authStrategy: _tokenIssuer,
     );
 
     return authSuccess;
@@ -65,7 +65,7 @@ class FakeTokenManager implements TokenManager {
     final String? tokenIssuer,
   }) async {
     // If kind is specified and doesn't match this manager's kind, do nothing
-    if (tokenIssuer != null && tokenIssuer != _kind) return;
+    if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return;
 
     final tokensToRevoke = _storage.getTokensWhere(
       userId: authUserId?.toString(),
@@ -94,7 +94,7 @@ class FakeTokenManager implements TokenManager {
     final String? tokenIssuer,
   }) async {
     // If kind is specified and doesn't match this manager's kind, do nothing
-    if (tokenIssuer != null && tokenIssuer != _kind) return;
+    if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return;
 
     // Get token info before removing to notify about revocation
     final tokenInfo = _storage.getToken(tokenId);
@@ -118,7 +118,7 @@ class FakeTokenManager implements TokenManager {
     final String? tokenIssuer,
   }) async {
     // If kind is specified and doesn't match this manager's kind, return empty list
-    if (tokenIssuer != null && tokenIssuer != _kind) return [];
+    if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return [];
 
     return _storage.getTokensWhere(
       userId: authUserId?.toString(),
@@ -133,7 +133,7 @@ class FakeTokenManager implements TokenManager {
     final String? tokenManager,
   }) async {
     // If kind is specified and doesn't match this manager's kind, return null
-    if (tokenManager != null && tokenManager != _kind) return null;
+    if (tokenManager != null && tokenManager != _tokenIssuer) return null;
 
     // Check if the token exists (hasn't been revoked)
     final tokenInfo = _storage.getToken(token);

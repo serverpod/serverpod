@@ -747,10 +747,11 @@ void main() {
         storage2 = FakeTokenStorage();
         storage3 = FakeTokenStorage();
 
-        defaultManager = FakeTokenManager(defaultStorage, kind: 'default');
-        manager1 = FakeTokenManager(storage1, kind: 'jwt');
-        manager2 = FakeTokenManager(storage2, kind: 'session');
-        manager3 = FakeTokenManager(storage3, kind: 'refresh');
+        defaultManager =
+            FakeTokenManager(defaultStorage, tokenIssuer: 'default');
+        manager1 = FakeTokenManager(storage1, tokenIssuer: 'jwt');
+        manager2 = FakeTokenManager(storage2, tokenIssuer: 'session');
+        manager3 = FakeTokenManager(storage3, tokenIssuer: 'refresh');
 
         multiTokenManager = MultiTokenManager(
           primaryTokenManager: defaultManager,
