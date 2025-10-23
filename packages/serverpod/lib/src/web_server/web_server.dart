@@ -24,8 +24,8 @@ class WebServer {
   int? _actualPort;
 
   late final _app = RelicApp()
-    ..use('/', _ReportExceptionMiddleware(this).call)
-    ..use('/', _SessionMiddleware(serverpod.server).call);
+    ..inject(_ReportExceptionMiddleware(this))
+    ..inject(_SessionMiddleware(serverpod.server));
 
   RelicServer? _server;
 
@@ -56,8 +56,8 @@ class WebServer {
 
   /// Adds a [Route] to the server, together with a [path] that defines how
   /// calls are routed.
-  void addRoute(Route route, String path) =>
-      _app.anyOf(route.methods, path, route.call);
+  void addRoute(Route route, [String path = '/']) =>
+      _app.group(path).inject(route);
 
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
@@ -155,11 +155,12 @@ class WebServer {
   }
 }
 
-class _SessionMiddleware {
+class _SessionMiddleware extends MiddlewareObject {
   final Server _server;
 
   const _SessionMiddleware(this._server);
 
+  @override
   Handler call(Handler next) {
     return (ctx) async {
       final request = ctx.request;
@@ -179,11 +180,12 @@ class _SessionMiddleware {
   }
 }
 
-class _ReportExceptionMiddleware {
+class _ReportExceptionMiddleware extends MiddlewareObject {
   final WebServer _webServer;
 
   const _ReportExceptionMiddleware(this._webServer);
 
+  @override
   Handler call(Handler next) {
     return (ctx) async {
       try {
@@ -221,15 +223,19 @@ extension SessionEx on RequestContext {
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
-abstract class Route {
+abstract class Route extends HandlerObject {
   /// The methods this route will respond to, i.e. HTTP get or post.
   final Set<Method> methods;
 
   /// Creates a new [Route].
   Route({this.methods = const {Method.get}});
 
+  @override
+  void injectIn(RelicRouter router) => router.anyOf(methods, '/', asHandler);
+
   /// Handles a call to this route, by extracting [Session] from context and
   /// forwarding to [handleCall].
+  @override
   FutureOr<HandledContext> call(NewContext context) {
     return handleCall(context.session, context);
   }
