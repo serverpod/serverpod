@@ -233,11 +233,17 @@ abstract class Route extends HandlerObject {
   /// The methods this route will respond to, i.e. HTTP get or post.
   final Set<Method> methods;
 
+  /// The suffix path this route will respond to.
+  ///
+  /// The complete path is determined by where the route is added, ie.
+  /// the path given to [WebServer.addRoute].
+  final String path;
+
   /// Creates a new [Route].
-  Route({this.methods = const {Method.get}});
+  Route({this.methods = const {Method.get}, this.path = '/'});
 
   @override
-  void injectIn(RelicRouter router) => router.anyOf(methods, '/', asHandler);
+  void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
 
   /// Handles a call to this route, by extracting [Session] from context and
   /// forwarding to [handleCall].
