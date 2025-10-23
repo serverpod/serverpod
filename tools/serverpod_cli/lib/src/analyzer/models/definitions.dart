@@ -265,6 +265,18 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// Name of the column in the database
+  /// This should be set if the column name is not a camelCaseString
+  /// and will therefore be different from the field name.
+  ///
+  /// Example yaml use
+  /// ```yaml
+  /// class: Example
+  /// fields:
+  ///   userName: String, column=user_name
+  /// ```
+  final String? column;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
@@ -279,6 +291,7 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
+    this.column,
   });
 
   /// Returns true, if classes should include this field.
