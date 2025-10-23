@@ -302,6 +302,10 @@ class ModelParser {
     var fieldName = key.value;
     if (fieldName is! String) return [];
 
+    final columnNode = node.nodes[Keyword.columnKey];
+    final columnValue = columnNode?.value;
+    final column = columnValue is String ? columnValue : null;
+
     var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
     if (typeNode is! YamlScalar) return [];
@@ -345,6 +349,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
+        column: column,
       ),
     ];
   }
