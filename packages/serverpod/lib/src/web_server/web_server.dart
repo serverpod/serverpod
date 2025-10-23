@@ -54,7 +54,7 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds a [Route] to the server, together with a [path] that defines how
+  /// Adds [route] to the server, together with a [path] that defines how
   /// calls are routed.
   void addRoute(Route route, [String path = '/']) =>
       _app.group(path).inject(route);
@@ -62,6 +62,12 @@ class WebServer {
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
       _app.use(path, middleware);
+
+  /// Sets a fallback [route] to use if no other registered [Route] matches
+  /// a request.
+  ///
+  /// If not set, default behavior is to return "404 Not Found".
+  set fallbackRoute(Route route) => _app.fallback = route.asHandler;
 
   /// Returns true if the webserver has any routes registered.
   bool get hasRoutes => !_app.isEmpty;
