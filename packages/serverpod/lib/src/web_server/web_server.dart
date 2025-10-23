@@ -23,9 +23,9 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _router = Router<Handler>()
-    ..use('/', _ReportExceptionMiddleware(this).call)
-    ..use('/', _SessionMiddleware(serverpod.server).call);
+  late final _app = RelicApp()
+    ..inject(_ReportExceptionMiddleware(this))
+    ..inject(_SessionMiddleware(serverpod.server));
 
   RelicServer? _server;
 
@@ -54,17 +54,23 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds a [Route] to the server, together with a [path] that defines how
+  /// Adds [route] to the server, together with a [path] that defines how
   /// calls are routed.
-  void addRoute(Route route, String path) =>
-      _router.anyOf(route.methods, path, route.call);
+  void addRoute(Route route, [String path = '/']) =>
+      _app.group(path).inject(route);
 
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
-      _router.use(path, middleware);
+      _app.use(path, middleware);
+
+  /// Sets a fallback [route] to use if no other registered [Route] matches
+  /// a request.
+  ///
+  /// If not set, default behavior is to return "404 Not Found".
+  set fallbackRoute(Route route) => _app.fallback = route.asHandler;
 
   /// Returns true if the webserver has any routes registered.
-  bool get hasRoutes => !_router.isEmpty;
+  bool get hasRoutes => !_app.isEmpty;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -77,12 +83,9 @@ class WebServer {
     }
 
     try {
-      final server = await serve(
-        const Pipeline()
-            .addMiddleware(routeWith(_router))
-            .addHandler(respondWith((_) => Response.notFound())),
-        InternetAddress.anyIPv6,
-        _config.port,
+      final server = await _app.serve(
+        address: InternetAddress.anyIPv6,
+        port: _config.port,
         securityContext: _securityContext,
       );
       _server = server;
@@ -158,11 +161,12 @@ class WebServer {
   }
 }
 
-class _SessionMiddleware {
+class _SessionMiddleware extends MiddlewareObject {
   final Server _server;
 
   const _SessionMiddleware(this._server);
 
+  @override
   Handler call(Handler next) {
     return (ctx) async {
       final request = ctx.request;
@@ -182,11 +186,12 @@ class _SessionMiddleware {
   }
 }
 
-class _ReportExceptionMiddleware {
+class _ReportExceptionMiddleware extends MiddlewareObject {
   final WebServer _webServer;
 
   const _ReportExceptionMiddleware(this._webServer);
 
+  @override
   Handler call(Handler next) {
     return (ctx) async {
       try {
@@ -224,15 +229,25 @@ extension SessionEx on RequestContext {
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
-abstract class Route {
+abstract class Route extends HandlerObject {
   /// The methods this route will respond to, i.e. HTTP get or post.
   final Set<Method> methods;
 
+  /// The suffix path this route will respond to.
+  ///
+  /// The complete path is determined by where the route is added, ie.
+  /// the path given to [WebServer.addRoute].
+  final String path;
+
   /// Creates a new [Route].
-  Route({this.methods = const {Method.get}});
+  Route({this.methods = const {Method.get}, this.path = '/'});
+
+  @override
+  void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
 
   /// Handles a call to this route, by extracting [Session] from context and
   /// forwarding to [handleCall].
+  @override
   FutureOr<HandledContext> call(NewContext context) {
     return handleCall(context.session, context);
   }

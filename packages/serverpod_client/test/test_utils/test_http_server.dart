@@ -41,17 +41,16 @@ abstract class TestHttpServer {
       return context.respond(await httpRequestHandler(context.request));
     }
 
-    final adapter = IOAdapter(await HttpServer.bind(
-      InternetAddress.loopbackIPv4,
-      0, // Pick an available port
-    ));
     final server = RelicServer(
-      adapter,
+      await IOAdapter.bind(
+        InternetAddress.loopbackIPv4,
+        port: 0, // Pick an available port
+      ),
     );
     await server.mountAndStart(requestHandler);
 
-    final httpHost = Uri.parse(
-        'http://${InternetAddress.loopbackIPv4.host}:${adapter.port}');
+    final httpHost = Uri.http(
+        '${InternetAddress.loopbackIPv4.host}:${(server.adapter as IOAdapter).port}');
     onConnected?.call(httpHost);
 
     return server;

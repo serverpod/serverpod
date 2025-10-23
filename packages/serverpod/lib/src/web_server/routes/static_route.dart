@@ -37,7 +37,8 @@ class StaticRoute extends Route {
   factory StaticRoute.directory(Directory root,
       [CacheControlFactory cacheControlFactory = _defaultFactory]) {
     return StaticRoute._(
-        createStaticHandler(root.path, cacheControl: cacheControlFactory));
+        StaticHandler.directory(root, cacheControl: cacheControlFactory)
+            .asHandler);
   }
 
   /// Use [StaticRoute.file] to serve a single [file].
@@ -48,7 +49,7 @@ class StaticRoute extends Route {
   factory StaticRoute.file(File file,
       [CacheControlFactory cacheControlFactory = _defaultFactory]) {
     return StaticRoute._(
-        createFileHandler(file.path, cacheControl: cacheControlFactory));
+        StaticHandler.file(file, cacheControl: cacheControlFactory).asHandler);
   }
 
   @override
