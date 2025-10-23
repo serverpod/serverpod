@@ -23,7 +23,7 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _router = Router<Handler>()
+  late final _app = RelicApp()
     ..use('/', _ReportExceptionMiddleware(this).call)
     ..use('/', _SessionMiddleware(serverpod.server).call);
 
@@ -57,14 +57,14 @@ class WebServer {
   /// Adds a [Route] to the server, together with a [path] that defines how
   /// calls are routed.
   void addRoute(Route route, String path) =>
-      _router.anyOf(route.methods, path, route.call);
+      _app.anyOf(route.methods, path, route.call);
 
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
-      _router.use(path, middleware);
+      _app.use(path, middleware);
 
   /// Returns true if the webserver has any routes registered.
-  bool get hasRoutes => !_router.isEmpty;
+  bool get hasRoutes => !_app.isEmpty;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -77,12 +77,9 @@ class WebServer {
     }
 
     try {
-      final server = await serve(
-        const Pipeline()
-            .addMiddleware(routeWith(_router))
-            .addHandler(respondWith((_) => Response.notFound())),
-        InternetAddress.anyIPv6,
-        _config.port,
+      final server = await _app.serve(
+        address: InternetAddress.anyIPv6,
+        port: _config.port,
         securityContext: _securityContext,
       );
       _server = server;
