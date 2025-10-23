@@ -43,9 +43,8 @@ void main() {
     group('and a path cache pattern having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(
-              directory,
-              (ctx, fileInfo) =>
+          StaticRoute.directory(directory,
+              cacheControlFactory: (ctx, fileInfo) =>
                   RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
                       ? CacheControlHeader(maxAge: 1)
                       : null),
@@ -84,9 +83,8 @@ void main() {
     group('and a path cache string having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(
-              directory,
-              (ctx, fileInfo) =>
+          StaticRoute.directory(directory,
+              cacheControlFactory: (ctx, fileInfo) =>
                   RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
                       ? CacheControlHeader(maxAge: 1)
                       : null),
