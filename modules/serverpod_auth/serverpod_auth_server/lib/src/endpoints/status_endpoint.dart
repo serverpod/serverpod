@@ -2,7 +2,6 @@
 // `serverpod generate` to produce the modules server and client code. Refer to
 // the documentation on how to add endpoints to your server.
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
@@ -32,21 +31,10 @@ class StatusEndpoint extends Endpoint {
     var userId = authInfo?.userId;
     if (userId == null) return;
 
-    // Delete all authentication keys for the user
-    var auths = await AuthKey.db.deleteWhere(
+    return UserAuthentication.signOutUser(
       session,
-      where: (row) => row.userId.equals(userId),
+      userId: userId,
     );
-
-    if (auths.isEmpty) return;
-
-    await session.messages.authenticationRevoked(
-      userId.toString(),
-      RevokedAuthenticationUser(),
-    );
-
-    // Clear session authentication
-    session.updateAuthenticated(null);
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
