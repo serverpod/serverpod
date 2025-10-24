@@ -76,6 +76,7 @@ class StreamingConnectionHandler {
     if (client.streamingConnectionStatus ==
         StreamingConnectionStatus.connected) {
       _countdown = 0;
+      _countdownTimer?.cancel();
       listener(StreamingConnectionHandlerState._(
         status: StreamingConnectionStatus.connected,
         retryInSeconds: null,
