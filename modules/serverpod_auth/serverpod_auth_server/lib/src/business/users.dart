@@ -1,7 +1,7 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
-import 'package:serverpod_auth_server/src/business/user_authentication.dart';
+import 'package:serverpod_auth_server/src/extensions/authentication_info_extension.dart';
 
 import '../generated/protocol.dart';
 
