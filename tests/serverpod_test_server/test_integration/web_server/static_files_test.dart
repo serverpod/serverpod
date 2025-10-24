@@ -120,7 +120,9 @@ void main() {
       });
     });
 
-    group('and cache busting config with hash separator', () {
+    group('and cache busting config with _ separator', () {
+      late String file1AssetPath;
+
       setUp(() async {
         var cacheBustingConfig = CacheBustingConfig(
           mountPrefix: '/url_prefix',
@@ -135,16 +137,20 @@ void main() {
           '/url_prefix/**',
         );
         await pod.start();
+
+        file1AssetPath = await cacheBustingConfig.assetPath('file1.txt');
+      });
+
+      test('then asset path contains _', () {
+        expect(file1AssetPath, contains('_'));
       });
 
       test(
-          'when requesting a static file with separator '
+          'when requesting a static file with '
           'then the file is served correctly', () async {
-        // Request with hash using @ separator
-        // Format: filename@HASH.extension
         var response = await client.get(
           Uri.parse(
-            'http://localhost:8082/url_prefix/file1_12345678.txt',
+            'http://localhost:8082/$file1AssetPath',
           ),
         );
 
