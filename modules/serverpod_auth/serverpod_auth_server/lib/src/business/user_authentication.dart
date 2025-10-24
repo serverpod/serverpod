@@ -51,7 +51,40 @@ class UserAuthentication {
     return result;
   }
 
+  /// Signs out a user from the server and deletes all authentication keys.
+  /// This means that the user will be signed out from all connected devices.
+  /// If the user being signed out is the currently authenticated user, the
+  /// session's authentication information will be cleared.
+  ///
+  /// Note: The method will fail silently if no authentication information is
+  /// found for the user.
+  static Future<void> signOutUser(
+    Session session, {
+    int? userId,
+  }) async {
+    userId ??= (await session.authenticated)?.userId;
+    if (userId == null) return;
 
+    // Delete all authentication keys for the user
+    var auths = await AuthKey.db.deleteWhere(
+      session,
+      where: (row) => row.userId.equals(userId),
+    );
+
+    if (auths.isEmpty) return;
+
+    await session.messages.authenticationRevoked(
+      userId.toString(),
+      RevokedAuthenticationUser(),
+    );
+
+    // Clear session authentication if the signed-out user is the currently
+    // authenticated user
+    var authInfo = await session.authenticated;
+    if (userId == authInfo?.userId) {
+      session.updateAuthenticated(null);
+    }
+  }
 
   /// Signs out the user from the current device by deleting the specific
   /// authentication key. This does not affect the user's sessions on other

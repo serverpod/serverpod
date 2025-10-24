@@ -1,7 +1,7 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/src/business/config.dart';
-import 'package:serverpod_auth_server/src/extensions/authentication_info_extension.dart';
+import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../generated/protocol.dart';
 
@@ -184,26 +184,11 @@ class Users {
     // ignore: invalid_use_of_internal_member
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
-    
-    // Sign out user from all devices by deleting all authentication keys
-    var auths = await AuthKey.db.deleteWhere(
+    // Sign out user
+    await UserAuthentication.signOutUser(
       session,
-      where: (row) => row.userId.equals(userId),
+      userId: userId,
     );
-
-    if (auths.isNotEmpty) {
-      await session.messages.authenticationRevoked(
-        userId.toString(),
-        RevokedAuthenticationUser(),
-      );
-
-      // Clear session authentication if the blocked user is the currently
-      // authenticated user
-      var authInfo = await session.authenticated;
-      if (userId == authInfo?.userId) {
-        session.updateAuthenticated(null);
-      }
-    }
   }
 
   /// Unblocks a user so that they can log in again, and invalidates the cache
