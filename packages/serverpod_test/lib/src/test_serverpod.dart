@@ -164,11 +164,17 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   /// Shuts down the underlying serverpod instance.
   Future<void> shutdown() async {
-    return IOOverrides.runZoned(
-      () => _serverpod.shutdown(exitProcess: false),
-      stdout: () => NullStdOut(),
-      stderr: () => NullStdOut(),
-    );
+    try {
+      await IOOverrides.runZoned(
+        () => _serverpod.shutdown(exitProcess: false),
+        stdout: () => NullStdOut(),
+        stderr: () => NullStdOut(),
+      );
+    } catch (e, stackTrace) {
+      throw InitializationException(
+        'Failed to shutdown the serverpod instance: $e\n$stackTrace',
+      );
+    }
   }
 
   /// Creates a new Serverpod session.
