@@ -184,11 +184,26 @@ class Users {
     // ignore: invalid_use_of_internal_member
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
-    // Sign out user
-    await UserAuthentication.signOutUser(
+    
+    // Sign out user from all devices by deleting all authentication keys
+    var auths = await AuthKey.db.deleteWhere(
       session,
-      userId: userId,
+      where: (row) => row.userId.equals(userId),
     );
+
+    if (auths.isNotEmpty) {
+      await session.messages.authenticationRevoked(
+        userId.toString(),
+        RevokedAuthenticationUser(),
+      );
+
+      // Clear session authentication if the blocked user is the currently
+      // authenticated user
+      var authInfo = await session.authenticated;
+      if (userId == authInfo?.userId) {
+        session.updateAuthenticated(null);
+      }
+    }
   }
 
   /// Unblocks a user so that they can log in again, and invalidates the cache

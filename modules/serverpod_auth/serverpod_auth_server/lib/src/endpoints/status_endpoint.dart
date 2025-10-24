@@ -2,6 +2,7 @@
 // `serverpod generate` to produce the modules server and client code. Refer to
 // the documentation on how to add endpoints to your server.
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
@@ -11,34 +12,6 @@ class StatusEndpoint extends Endpoint {
   Future<bool> isSignedIn(Session session) async {
     var userId = (await session.authenticated)?.userId;
     return userId != null;
-  }
-
-  /// **[Deprecated]** Signs out a user from all devices.
-  /// Use `signOutDevice` to sign out a single device
-  /// or `signOutAllDevices` to sign out all devices.
-  @Deprecated(
-    'Use signOutDevice to sign out a single device or signOutAllDevices to sign out all devices. '
-    'This method will be removed in future releases.',
-  )
-  Future<void> signOut(Session session) async {
-    var authInfo = await session.authenticated;
-    if (authInfo == null) return;
-
-    switch (AuthConfig.current.legacyUserSignOutBehavior) {
-      case SignOutBehavior.currentDevice:
-        var authKeyId = authInfo.authId;
-        if (authKeyId == null) return;
-
-        return UserAuthentication.revokeAuthKey(
-          session,
-          authKeyId: authKeyId,
-        );
-      case SignOutBehavior.allDevices:
-        return UserAuthentication.signOutUser(
-          session,
-          userId: authInfo.userId,
-        );
-    }
   }
 
   /// Signs out a user from the current device.
@@ -59,10 +32,21 @@ class StatusEndpoint extends Endpoint {
     var userId = authInfo?.userId;
     if (userId == null) return;
 
-    return UserAuthentication.signOutUser(
+    // Delete all authentication keys for the user
+    var auths = await AuthKey.db.deleteWhere(
       session,
-      userId: userId,
+      where: (row) => row.userId.equals(userId),
     );
+
+    if (auths.isEmpty) return;
+
+    await session.messages.authenticationRevoked(
+      userId.toString(),
+      RevokedAuthenticationUser(),
+    );
+
+    // Clear session authentication
+    session.updateAuthenticated(null);
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently
