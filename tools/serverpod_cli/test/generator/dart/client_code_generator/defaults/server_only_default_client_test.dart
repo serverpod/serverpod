@@ -36,20 +36,24 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('normalField')
-            .withTypeDefinition('String', false)
+            .withTypeString()
             .withScope(ModelFieldScopeDefinition.all)
             .build(),
         FieldDefinitionBuilder()
             .withName('serverOnlyField')
-            .withTypeDefinition('int', true)
+            .withTypeInt(
+              defaultModelValue: -1,
+              nullable: true,
+            )
             .withScope(ModelFieldScopeDefinition.serverOnly)
-            .withDefaults(defaultModelValue: '-1')
             .build(),
         FieldDefinitionBuilder()
             .withName('serverOnlyStringField')
-            .withTypeDefinition('String', true)
+            .withTypeString(
+              defaultModelValue: "'Server only message'",
+              nullable: true,
+            )
             .withScope(ModelFieldScopeDefinition.serverOnly)
-            .withDefaults(defaultModelValue: "'Server only message'")
             .build(),
       ];
 

@@ -29,13 +29,11 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('doubleDefault')
-            .withTypeDefinition('double', false)
-            .withDefaults(defaultModelValue: '10.5')
+            .withTypeDouble(defaultModelValue: 10.5)
             .build(),
         FieldDefinitionBuilder()
             .withName('doubleDefaultNull')
-            .withTypeDefinition('double', true)
-            .withDefaults(defaultModelValue: '20.5')
+            .withTypeDouble(defaultModelValue: 20.5, nullable: true)
             .build(),
       ];
 
@@ -118,8 +116,7 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('doubleDefaultPersist')
-            .withTypeDefinition('double', true)
-            .withDefaults(defaultPersistValue: '10.5')
+            .withTypeDouble(defaultPersistValue: 10.5, nullable: true)
             .build(),
       ];
 

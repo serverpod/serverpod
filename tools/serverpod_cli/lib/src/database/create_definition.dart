@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/duration_utils.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -152,7 +151,7 @@ String? getColumnDefault(
       DateTime? dateTime = DateTime.parse(defaultValue);
       return '\'${DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime)}\'::timestamp without time zone';
     case DefaultValueAllowedType.bool:
-      return defaultValue;
+      return '$defaultValue';
     case DefaultValueAllowedType.int:
       if (defaultValue == defaultIntSerial) {
         return "nextval('${tableName}_id_seq'::regclass)";
@@ -203,21 +202,7 @@ String? getColumnDefault(
 /// _escapeSqlString("This is a \'default persist value")  // Returns "This is a ''default persist value"
 /// _escapeSqlString("This is a \"default\" persist value") // Returns "This is a ""default"" persist value"
 /// ```
-///
-/// Throws:
-/// - `FormatException` if the string contains invalid quoting.
 String _escapeSqlString(String value) {
-  if (isValidSingleQuote(value)) {
-    return value.replaceAll("\\'", "''").replaceAll('\\"', '"');
-  }
-
-  if (isValidDoubleQuote(value)) {
-    return value.replaceAll("\\'", "'").replaceAll('\\"', '""');
-  }
-
-  /// This exception is unlikely to be thrown due to prior validation checks,
-  /// but it's included as a safeguard to handle any unexpected input.
-  throw FormatException(
-    'The string contains invalid quoting or escape sequences: $value',
-  );
+  return '\$\$$value\$\$';
+  return "${value.replaceAll("\\'", "'").replaceAll("\\\"", '"')}'";
 }

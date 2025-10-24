@@ -36,15 +36,13 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('message')
-            .withTypeDefinition('String', false)
+            .withTypeString(defaultModelValue: 'Default error message')
             .withScope(ModelFieldScopeDefinition.all)
-            .withDefaults(defaultModelValue: '\'Default error message\'')
             .build(),
         FieldDefinitionBuilder()
             .withName('serverErrorCode')
-            .withTypeDefinition('int', true)
+            .withTypeInt(defaultModelValue: 500, nullable: true)
             .withScope(ModelFieldScopeDefinition.serverOnly)
-            .withDefaults(defaultModelValue: '500')
             .build(),
       ];
 
