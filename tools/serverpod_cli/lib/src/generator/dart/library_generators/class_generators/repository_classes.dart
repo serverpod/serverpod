@@ -3,7 +3,6 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
-import 'package:super_string/super_string.dart';
 
 class BuildRepositoryClass {
   final bool serverCode;
@@ -1631,7 +1630,7 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
-      var classFieldName = className.toCamelCase(isLowerCamelCase: true);
+      var classFieldName = className.camelCase;
       var fieldName = field.name;
 
       var relation = field.relation as ObjectRelationDefinition;

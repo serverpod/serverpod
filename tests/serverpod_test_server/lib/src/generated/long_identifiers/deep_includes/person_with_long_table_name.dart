@@ -635,17 +635,17 @@ class PersonWithLongTableNameDetachRowRepository {
   /// the related record.
   Future<void> organization(
     _i1.Session session,
-    PersonWithLongTableName personwithlongtablename, {
+    PersonWithLongTableName personWithLongTableName, {
     _i1.Transaction? transaction,
   }) async {
-    if (personwithlongtablename.id == null) {
-      throw ArgumentError.notNull('personwithlongtablename.id');
+    if (personWithLongTableName.id == null) {
+      throw ArgumentError.notNull('personWithLongTableName.id');
     }
 
-    var $personwithlongtablename =
-        personwithlongtablename.copyWith(organizationId: null);
+    var $personWithLongTableName =
+        personWithLongTableName.copyWith(organizationId: null);
     await session.db.updateRow<PersonWithLongTableName>(
-      $personwithlongtablename,
+      $personWithLongTableName,
       columns: [PersonWithLongTableName.t.organizationId],
       transaction: transaction,
     );

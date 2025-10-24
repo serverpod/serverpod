@@ -560,16 +560,16 @@ class ChildWithInheritedIdDetachRowRepository {
   /// the related record.
   Future<void> parent(
     _i2.Session session,
-    ChildWithInheritedId childwithinheritedid, {
+    ChildWithInheritedId childWithInheritedId, {
     _i2.Transaction? transaction,
   }) async {
-    if (childwithinheritedid.id == null) {
-      throw ArgumentError.notNull('childwithinheritedid.id');
+    if (childWithInheritedId.id == null) {
+      throw ArgumentError.notNull('childWithInheritedId.id');
     }
 
-    var $childwithinheritedid = childwithinheritedid.copyWith(parentId: null);
+    var $childWithInheritedId = childWithInheritedId.copyWith(parentId: null);
     await session.db.updateRow<ChildWithInheritedId>(
-      $childwithinheritedid,
+      $childWithInheritedId,
       columns: [ChildWithInheritedId.t.parentId],
       transaction: transaction,
     );
