@@ -120,6 +120,39 @@ void main() {
       });
     });
 
+    group('and cache busting config with hash separator', () {
+      setUp(() async {
+        var cacheBustingConfig = CacheBustingConfig(
+          mountPrefix: '/url_prefix',
+          fileSystemRoot: directory,
+          separator: '_',
+        );
+        pod.webServer.addRoute(
+          StaticRoute.directory(
+            directory,
+            cacheBustingConfig: cacheBustingConfig,
+          ),
+          '/url_prefix/**',
+        );
+        await pod.start();
+      });
+
+      test(
+          'when requesting a static file with separator '
+          'then the file is served correctly', () async {
+        // Request with hash using @ separator
+        // Format: filename@HASH.extension
+        var response = await client.get(
+          Uri.parse(
+            'http://localhost:8082/url_prefix/file1_12345678.txt',
+          ),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'contents');
+      });
+    });
+
     group('when a nested static file is requested', () {
       setUp(() async {
         pod.webServer.addRoute(
