@@ -989,6 +989,34 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateColumnName(
+    String parentNodeName,
+    dynamic column,
+    SourceSpan? span,
+  ) {
+    if (column is! String) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var currentModel = parsedModels.findByClassName(definition.className);
+
+    if (currentModel is ModelClassDefinition) {
+      final fieldsWithColumn = _findFieldsWithColumn(currentModel, column);
+
+      if (fieldsWithColumn.length > 1) {
+        return [
+          SourceSpanSeverityException(
+            'The column "$column" should only be used for a single field.',
+            span,
+          )
+        ];
+      }
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> _validateTableInheritedIdField(
     SourceSpan? span,
   ) {
@@ -2109,5 +2137,14 @@ class Restrictions {
             .firstOrNull;
       },
     );
+  }
+
+  List<SerializableModelFieldDefinition> _findFieldsWithColumn(
+    ModelClassDefinition currentModel,
+    String column,
+  ) {
+    return currentModel.fields
+        .where((field) => field.column == column)
+        .toList();
   }
 }
