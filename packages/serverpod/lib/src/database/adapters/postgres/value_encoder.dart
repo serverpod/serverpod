@@ -35,11 +35,9 @@ class ValueEncoder extends PostgresTextEncoder {
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {
-      // TODO:
-      // This is a bit of a hack to get ByteData working. Strings that starts
-      // with `convert('` and ends with `', 'base64') will be incorrectly
-      // encoded to base64. Best would be to find a better way to detect when we
-      // are trying to store a ByteData.
+      // ByteData detection: Strings matching this pattern are PostgreSQL decode() calls.
+      // This approach has limitations - a better solution would use type information
+      // to distinguish ByteData from regular strings with this specific format.
       return input;
     } else if (input is Vector) {
       return '\'${input.toString().replaceAll(' ', '')}\'';
