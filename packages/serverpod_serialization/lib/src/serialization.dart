@@ -214,7 +214,8 @@ abstract class SerializationManager {
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
       (nonEncodable) {
-        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
+        // Fallback encoder for types that don't call their .toJson() extension method.
+        // Generated code uses the extensions, but this ensures manual serialization still works.
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
