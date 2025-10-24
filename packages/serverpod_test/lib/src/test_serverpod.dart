@@ -146,7 +146,11 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
     try {
-      await _serverpod.start(runInGuardedZone: false);
+      await IOOverrides.runZoned(
+        () => _serverpod.start(runInGuardedZone: false),
+        stdout: () => NullStdOut(),
+        stderr: () => NullStdOut(),
+      );
     } on ExitException catch (e) {
       throw InitializationException(
         'Failed to start the serverpod instance${e.message.isEmpty ? ', check the log for more info.' : ': ${e.message}'}',
@@ -160,7 +164,11 @@ class TestServerpod<T extends InternalTestEndpoints> {
 
   /// Shuts down the underlying serverpod instance.
   Future<void> shutdown() async {
-    return _serverpod.shutdown(exitProcess: false);
+    return IOOverrides.runZoned(
+      () => _serverpod.shutdown(exitProcess: false),
+      stdout: () => NullStdOut(),
+      stderr: () => NullStdOut(),
+    );
   }
 
   /// Creates a new Serverpod session.
