@@ -1,5 +1,4 @@
 ## 3.0.0-alpha.1
-- fix: BREAKING. Removes deprecated `SerializableEntity` class. Use `SerializableModel` interface instead.
 - fix: BREAKING. Renames web server template widgets for improved clarity and consistency.
 - fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
 - fix: BREAKING. Replaces direct use of `dart:io`s `HttpServer` with `relic` and updates interfaces accordingly.
