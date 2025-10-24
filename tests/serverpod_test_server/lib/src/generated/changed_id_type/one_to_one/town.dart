@@ -550,16 +550,16 @@ class TownIntDetachRowRepository {
   /// the related record.
   Future<void> mayor(
     _i1.Session session,
-    TownInt townint, {
+    TownInt townInt, {
     _i1.Transaction? transaction,
   }) async {
-    if (townint.id == null) {
-      throw ArgumentError.notNull('townint.id');
+    if (townInt.id == null) {
+      throw ArgumentError.notNull('townInt.id');
     }
 
-    var $townint = townint.copyWith(mayorId: null);
+    var $townInt = townInt.copyWith(mayorId: null);
     await session.db.updateRow<TownInt>(
-      $townint,
+      $townInt,
       columns: [TownInt.t.mayorId],
       transaction: transaction,
     );

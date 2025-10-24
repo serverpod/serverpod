@@ -552,16 +552,16 @@ class PlayerUuidDetachRowRepository {
   /// the related record.
   Future<void> team(
     _i1.Session session,
-    PlayerUuid playeruuid, {
+    PlayerUuid playerUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (playeruuid.id == null) {
-      throw ArgumentError.notNull('playeruuid.id');
+    if (playerUuid.id == null) {
+      throw ArgumentError.notNull('playerUuid.id');
     }
 
-    var $playeruuid = playeruuid.copyWith(teamId: null);
+    var $playerUuid = playerUuid.copyWith(teamId: null);
     await session.db.updateRow<PlayerUuid>(
-      $playeruuid,
+      $playerUuid,
       columns: [PlayerUuid.t.teamId],
       transaction: transaction,
     );
