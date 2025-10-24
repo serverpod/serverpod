@@ -120,14 +120,14 @@ void main() {
       });
     });
 
-    group('and cache busting config with _ separator', () {
+    group('and cache busting config with ___ separator', () {
       late String file1AssetPath;
 
       setUp(() async {
         var cacheBustingConfig = CacheBustingConfig(
           mountPrefix: '/url_prefix',
           fileSystemRoot: directory,
-          separator: '_',
+          separator: '___',
         );
         pod.webServer.addRoute(
           StaticRoute.directory(
@@ -138,11 +138,12 @@ void main() {
         );
         await pod.start();
 
-        file1AssetPath = await cacheBustingConfig.assetPath('file1.txt');
+        file1AssetPath =
+            await cacheBustingConfig.assetPath('/url_prefix/file1.txt');
       });
 
-      test('then asset path contains _', () {
-        expect(file1AssetPath, contains('_'));
+      test('then asset path contains ___', () {
+        expect(file1AssetPath, contains('___'));
       });
 
       test(
