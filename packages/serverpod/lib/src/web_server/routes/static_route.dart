@@ -35,10 +35,15 @@ class StaticRoute extends Route {
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
   factory StaticRoute.directory(Directory root,
-      [CacheControlFactory cacheControlFactory = _defaultFactory]) {
+      {CacheBustingConfig? cacheBustingConfig,
+      CacheControlFactory cacheControlFactory = _defaultFactory}) {
     return StaticRoute._(
-        StaticHandler.directory(root, cacheControl: cacheControlFactory)
-            .asHandler);
+      StaticHandler.directory(
+        root,
+        cacheBustingConfig: cacheBustingConfig,
+        cacheControl: cacheControlFactory,
+      ).asHandler,
+    );
   }
 
   /// Use [StaticRoute.file] to serve a single [file].
@@ -47,9 +52,13 @@ class StaticRoute extends Route {
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
   factory StaticRoute.file(File file,
-      [CacheControlFactory cacheControlFactory = _defaultFactory]) {
+      {CacheControlFactory cacheControlFactory = _defaultFactory}) {
     return StaticRoute._(
-        StaticHandler.file(file, cacheControl: cacheControlFactory).asHandler);
+      StaticHandler.file(
+        file,
+        cacheControl: cacheControlFactory,
+      ).asHandler,
+    );
   }
 
   @override

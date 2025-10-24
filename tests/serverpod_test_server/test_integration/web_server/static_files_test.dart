@@ -43,9 +43,8 @@ void main() {
     group('and a path cache pattern having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(
-              directory,
-              (ctx, fileInfo) =>
+          StaticRoute.directory(directory,
+              cacheControlFactory: (ctx, fileInfo) =>
                   RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
                       ? CacheControlHeader(maxAge: 1)
                       : null),
@@ -84,9 +83,8 @@ void main() {
     group('and a path cache string having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(
-              directory,
-              (ctx, fileInfo) =>
+          StaticRoute.directory(directory,
+              cacheControlFactory: (ctx, fileInfo) =>
                   RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
                       ? CacheControlHeader(maxAge: 1)
                       : null),
@@ -119,6 +117,46 @@ void main() {
         );
 
         expect(response.headers['cache-control'], isNull);
+      });
+    });
+
+    group('and cache busting config with ___ separator', () {
+      late String file1AssetPath;
+
+      setUp(() async {
+        var cacheBustingConfig = CacheBustingConfig(
+          mountPrefix: '/url_prefix',
+          fileSystemRoot: directory,
+          separator: '___',
+        );
+        pod.webServer.addRoute(
+          StaticRoute.directory(
+            directory,
+            cacheBustingConfig: cacheBustingConfig,
+          ),
+          '/url_prefix/**',
+        );
+        await pod.start();
+
+        file1AssetPath =
+            await cacheBustingConfig.assetPath('/url_prefix/file1.txt');
+      });
+
+      test('then asset path contains ___', () {
+        expect(file1AssetPath, contains('___'));
+      });
+
+      test(
+          'when requesting a static file with '
+          'then the file is served correctly', () async {
+        var response = await client.get(
+          Uri.parse(
+            'http://localhost:8082/$file1AssetPath',
+          ),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'contents');
       });
     });
 
