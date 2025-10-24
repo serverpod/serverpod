@@ -87,12 +87,9 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     bool check = commandConfig.value(CreateMigrationOption.check);
     bool empty = commandConfig.value(CreateMigrationOption.empty);
 
-    // Validate that check and empty flags are not used together
     if (check && empty) {
       log.error(
-        'Cannot use both --check and --empty flags together. '
-        'The --check flag checks for changes without creating migrations, '
-        'while --empty creates an empty migration.',
+        'Cannot use both --check and --empty flags together.',
       );
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -124,7 +121,6 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     MigrationVersion? migration;
 
-    // Determine the progress message based on command options
     String progressMessage;
     if (check) {
       progressMessage = 'Checking for changes';
@@ -140,7 +136,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           tag: tag,
           force: force,
           config: config,
-          write: !check, // Don't write files in check mode
+          write: !check,
           empty: empty,
         );
       } on MigrationVersionLoadException catch (e) {
@@ -159,27 +155,20 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         );
       }
 
-      return migration != null;
+      return migration == null;
     });
 
     if (check) {
-      // In check mode, exit with appropriate code based on whether changes were detected
       if (migration == null) {
-        // No changes detected
         log.info('No changes detected.', type: TextLogType.success);
-        // Exit with code 0 (success)
         return;
       } else {
-        // Changes detected
         log.info('Changes detected.', type: TextLogType.bullet);
-        // Exit with code 1 (changes exist)
         throw ExitException.error();
       }
     }
 
-    // Normal mode - create migration
     if (migration == null) {
-      // No changes detected, exit gracefully
       log.info('No changes detected.', type: TextLogType.success);
       return;
     }
@@ -198,5 +187,6 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       type: TextLogType.bullet,
     );
     log.info('Done.', type: TextLogType.success);
+    return;
   }
 }

@@ -67,20 +67,16 @@ class MigrationGenerator {
       version: versionName,
     );
 
-    // Handle empty migration case
     if (empty) {
-      // Create an empty migration
-      var migration = DatabaseMigration(
-        actions: [],
-        warnings: [],
-        migrationApiVersion: DatabaseConstants.migrationApiVersion,
-      );
-
       var migrationVersion = MigrationVersion(
         moduleName: projectName,
         projectDirectory: directory,
         versionName: versionName,
-        migration: migration,
+        migration: DatabaseMigration(
+          actions: [],
+          warnings: [],
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
+        ),
         databaseDefinitionProject: DatabaseDefinition(
           moduleName: projectName,
           tables: [],
