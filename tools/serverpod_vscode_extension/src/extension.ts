@@ -61,11 +61,13 @@ export function deactivate(): Thenable<void> | undefined {
 	if (!client) {
 		return undefined;
 	}
-	return client.stop();
+	const stopPromise = client.stop();
+	client = undefined as any;
+	return stopPromise;
 }
 
 
-function validVersion(versionString: string): boolean {
+export function validVersion(versionString: string): boolean {
 	console.log(versionString);
 	const versionTag = versionString.split(':')[1];
 	const versionNumber = coerce(versionTag);
