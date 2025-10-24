@@ -86,7 +86,7 @@ Expression buildFromJsonForField(
     field.type,
     serverCode,
     config,
-    fieldName: field.name,
+    fieldName: field.column ?? field.name,
     subDirParts: subDirParts,
   );
 }
