@@ -100,6 +100,93 @@ void main() {
         );
       });
     });
+
+    group('then toJson method should return ', () {
+      test(
+          'the column mapped to the serialized field name variable for a '
+          'field with column set', () {
+        var toJsonConstructor = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJson',
+        );
+
+        var toJsonCode = toJsonConstructor!.toSource();
+
+        expect(
+          toJsonCode.contains(
+            "'$columnName' : $columnFieldName",
+          ),
+          isTrue,
+          reason: 'The toJson method should map the column name to '
+              'the serialized field name variable.',
+        );
+      });
+
+      test(
+          'the field name mapped to its serialized variable for a field '
+          'without column set', () {
+        var toJsonConstructor = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJson',
+        );
+
+        var toJsonCode = toJsonConstructor!.toSource();
+
+        expect(
+          toJsonCode.contains(
+            "'$noColumnFieldName' : $noColumnFieldName",
+          ),
+          isTrue,
+          reason: 'The toJson method should map the field name to its '
+              'serialized variable.',
+        );
+      });
+    });
+
+    group('then toJsonForProtocol method should return ', () {
+      test(
+          'the column mapped to the serialized field name variable for a '
+          'field with column set', () {
+        var toJsonForProtocolConstructor =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJsonForProtocol',
+        );
+
+        var toJsonForProtocolCode = toJsonForProtocolConstructor!.toSource();
+
+        expect(
+          toJsonForProtocolCode.contains(
+            "'$columnName' : $columnFieldName",
+          ),
+          isTrue,
+          reason: 'The toJsonForProtocol method should map the column name to '
+              'field name.',
+        );
+      });
+
+      test(
+          'the field name mapped to its serialized variable for a field '
+          'without column set', () {
+        var toJsonForProtocolConstructor =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJsonForProtocol',
+        );
+
+        var toJsonForProtocolCode = toJsonForProtocolConstructor!.toSource();
+
+        expect(
+          toJsonForProtocolCode.contains(
+            "'$columnName' : $columnFieldName",
+          ),
+          isTrue,
+          reason:
+              'The toJsonForProtocol method should map the field name to its '
+              'serialized variable.',
+        );
+      });
+    });
   });
 
   test(
