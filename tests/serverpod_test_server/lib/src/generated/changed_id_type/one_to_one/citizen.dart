@@ -720,19 +720,19 @@ class CitizenIntDetachRowRepository {
   /// the related record.
   Future<void> address(
     _i1.Session session,
-    CitizenInt citizenint, {
+    CitizenInt citizenInt, {
     _i1.Transaction? transaction,
   }) async {
-    var $address = citizenint.address;
+    var $address = citizenInt.address;
 
     if ($address == null) {
-      throw ArgumentError.notNull('citizenint.address');
+      throw ArgumentError.notNull('citizenInt.address');
     }
     if ($address.id == null) {
-      throw ArgumentError.notNull('citizenint.address.id');
+      throw ArgumentError.notNull('citizenInt.address.id');
     }
-    if (citizenint.id == null) {
-      throw ArgumentError.notNull('citizenint.id');
+    if (citizenInt.id == null) {
+      throw ArgumentError.notNull('citizenInt.id');
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
@@ -750,16 +750,16 @@ class CitizenIntDetachRowRepository {
   /// the related record.
   Future<void> oldCompany(
     _i1.Session session,
-    CitizenInt citizenint, {
+    CitizenInt citizenInt, {
     _i1.Transaction? transaction,
   }) async {
-    if (citizenint.id == null) {
-      throw ArgumentError.notNull('citizenint.id');
+    if (citizenInt.id == null) {
+      throw ArgumentError.notNull('citizenInt.id');
     }
 
-    var $citizenint = citizenint.copyWith(oldCompanyId: null);
+    var $citizenInt = citizenInt.copyWith(oldCompanyId: null);
     await session.db.updateRow<CitizenInt>(
-      $citizenint,
+      $citizenInt,
       columns: [CitizenInt.t.oldCompanyId],
       transaction: transaction,
     );

@@ -706,16 +706,16 @@ class TeamIntDetachRowRepository {
   /// the related record.
   Future<void> arena(
     _i1.Session session,
-    TeamInt teamint, {
+    TeamInt teamInt, {
     _i1.Transaction? transaction,
   }) async {
-    if (teamint.id == null) {
-      throw ArgumentError.notNull('teamint.id');
+    if (teamInt.id == null) {
+      throw ArgumentError.notNull('teamInt.id');
     }
 
-    var $teamint = teamint.copyWith(arenaId: null);
+    var $teamInt = teamInt.copyWith(arenaId: null);
     await session.db.updateRow<TeamInt>(
-      $teamint,
+      $teamInt,
       columns: [TeamInt.t.arenaId],
       transaction: transaction,
     );

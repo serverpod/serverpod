@@ -552,16 +552,16 @@ class AddressUuidDetachRowRepository {
   /// the related record.
   Future<void> inhabitant(
     _i1.Session session,
-    AddressUuid addressuuid, {
+    AddressUuid addressUuid, {
     _i1.Transaction? transaction,
   }) async {
-    if (addressuuid.id == null) {
-      throw ArgumentError.notNull('addressuuid.id');
+    if (addressUuid.id == null) {
+      throw ArgumentError.notNull('addressUuid.id');
     }
 
-    var $addressuuid = addressuuid.copyWith(inhabitantId: null);
+    var $addressUuid = addressUuid.copyWith(inhabitantId: null);
     await session.db.updateRow<AddressUuid>(
-      $addressuuid,
+      $addressUuid,
       columns: [AddressUuid.t.inhabitantId],
       transaction: transaction,
     );
