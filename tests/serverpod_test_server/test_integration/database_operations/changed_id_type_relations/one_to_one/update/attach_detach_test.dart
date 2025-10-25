@@ -293,8 +293,7 @@ void main() async {
         fail('Expected an exception to be thrown');
       } catch (e) {
         expect(e, isA<ArgumentError>());
-        // TODO: Fix case after issue https://github.com/serverpod/serverpod/issues/3391 is fixed.
-        expect((e as ArgumentError).name, 'citizenint.id');
+        expect((e as ArgumentError).name, 'citizenInt.id');
       }
     });
 
@@ -308,8 +307,7 @@ void main() async {
         fail('Expected an exception to be thrown');
       } catch (e) {
         expect(e, isA<ArgumentError>());
-        // TODO: Fix case after issue https://github.com/serverpod/serverpod/issues/3391 is fixed.
-        expect((e as ArgumentError).name, 'citizenint.address');
+        expect((e as ArgumentError).name, 'citizenInt.address');
       }
     });
   });
