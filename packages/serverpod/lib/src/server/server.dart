@@ -4,12 +4,13 @@ import 'dart:io' as io;
 import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/serverpod.dart' hide Middleware;
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/server/middleware/middleware.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
@@ -102,6 +103,19 @@ class Server {
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
   final Map<String, dynamic> httpOptionsResponseHeaders;
 
+  /// List of middleware to process HTTP requests.
+  /// Middleware is executed in the order it appears in this list.
+  ///
+  /// **Note:** WebSocket upgrade requests (`/websocket`, `/v1/websocket`)
+  /// bypass middleware entirely as they require direct access to the
+  /// connection upgrade mechanism. If you need to intercept WebSocket
+  /// connections, use the WebSocket-specific hooks instead.
+  final List<Middleware> _middleware;
+
+  /// Cached middleware chain built once at startup.
+  /// Null if middleware is not enabled.
+  late final NextFunction? _middlewareChain;
+
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
@@ -119,10 +133,15 @@ class Server {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
+    List<Middleware>? middleware,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
         _securityContext = securityContext,
-        _port = port;
+        _port = port,
+        _middleware = middleware ?? const [] {
+    // Build middleware chain once at startup if middleware is configured
+    _middlewareChain = _middleware.isNotEmpty ? _buildMiddlewareChain() : null;
+  }
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -157,7 +176,19 @@ class Server {
 
   FutureOr<HandledContext> _relicRequestHandler(NewContext context) async {
     try {
-      return await _handleRequest(context);
+      // WebSocket upgrades must be handled before middleware
+      // because they require NewContext.connect() and don't return Response
+      final uri = context.request.requestedUri;
+      if (uri.path == '/websocket' || uri.path == '/v1/websocket') {
+        return await _handleRequest(context);
+      }
+
+      // Check if middleware is enabled via experimental features
+      if (_middleware.isNotEmpty) {
+        return await _executeMiddlewareChain(context);
+      } else {
+        return await _handleRequest(context);
+      }
     } catch (e, stackTrace) {
       await _reportFrameworkException(
         e,
@@ -172,24 +203,56 @@ class Server {
     }
   }
 
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
-    final request = context.request;
+  /// Executes the middleware chain for the given request.
+  ///
+  /// This method invokes the pre-built middleware chain (cached at startup),
+  /// allowing each middleware to process the request before it reaches the core handler.
+  Future<HandledContext> _executeMiddlewareChain(NewContext context) async {
+    final chain = _middlewareChain!;
+    final response = await chain(context.request);
+    return context.respond(response);
+  }
+
+  /// Builds the middleware execution chain.
+  ///
+  /// This method is called once at startup and the result is cached.
+  /// Middleware is executed in the order it was registered. Each middleware
+  /// wraps the next one, creating a nested execution structure.
+  ///
+  /// Returns a [NextFunction] that represents the complete chain.
+  NextFunction _buildMiddlewareChain() {
+    // Start with core handler (existing _handleRequest logic)
+    NextFunction handler = _coreHandler;
+
+    // Wrap with each middleware in reverse order
+    // (so they execute in the order they were registered)
+    for (var middleware in _middleware.reversed) {
+      final next = handler;
+      handler = (request) async => middleware.handle(request, next);
+    }
+
+    return handler;
+  }
+
+  /// Core request handler containing the existing request processing logic.
+  ///
+  /// This method contains the logic previously in [_handleRequest], but now
+  /// wrapped by middleware when enabled.
+  Future<Response> _coreHandler(Request request) async {
     final uri = request.requestedUri;
     serverpod.logVerbose('handleRequest: ${request.method} ${uri.path}');
 
-    // TODO: Make httpResponseHeaders a Headers object from the get-go.
-    // or better yet, use middleware
+    // Build base headers
     final headers = Headers.build((mh) {
       for (var rh in httpResponseHeaders.entries) {
-        mh[rh.key] = ['${rh.value}'];
+        mh[rh.key] = [rh.value.toString()];
       }
     });
 
     var readBody = true;
 
-    // TODO: Use Router instead of manual dispatch on path and verb
+    // Health checks
     if (uri.path == '/') {
-      // Perform health checks
       var checks = await performHealthChecks(serverpod);
       var issues = <String>[];
       var allOk = true;
@@ -210,38 +273,25 @@ class Server {
         responseBuffer.writeln(issue);
       }
 
-      var response = Response(
+      return Response(
         allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
         body: Body.fromString(responseBuffer.toString()),
         headers: headers,
-      );
-      return context.respond(response);
-    } else if (uri.path == '/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        EndpointWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/v1/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        MethodWebsocketRequestHandler.handleWebsocket,
       );
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
     }
 
-    // This OPTIONS check is necessary when making requests from
-    // eg `editor.swagger.io`. It ensures proper handling of preflight requests
-    // with the OPTIONS method.
+    // Handle OPTIONS requests
     if (request.method == Method.options) {
       final combinedHeaders = headers.transform((mh) {
         for (var orh in httpOptionsResponseHeaders.entries) {
-          mh[orh.key] = ['${orh.value}'];
+          mh[orh.key] = [orh.value.toString()];
         }
-        mh.contentLength = 0; // TODO: Why set this explicitly?
+        mh.contentLength = 0;
       });
 
-      return context.respond(Response.ok(headers: combinedHeaders));
+      return Response.ok(headers: combinedHeaders);
     }
 
     late final String body;
@@ -250,22 +300,21 @@ class Server {
         body = await _readBody(request);
       } on _RequestTooLargeException catch (e) {
         if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
           io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
-        return context.respond(Response(
+        return Response(
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
           headers: headers,
-        ));
+        );
       } catch (e, stackTrace) {
         await _reportFrameworkException(e, stackTrace,
             message: 'Internal server error. Failed to read body of request.',
-            request: context.request);
-        return context.respond(Response.badRequest(
+            request: request);
+        return Response.badRequest(
           body: Body.fromString('Failed to read request body.'),
           headers: headers,
-        ));
+        );
       }
     } else {
       body = '';
@@ -275,7 +324,28 @@ class Server {
     if (serverpod.runtimeSettings.logMalformedCalls) {
       _logMalformedCalls(result);
     }
-    return context.respond(_toResponse(result, headers));
+    return _toResponse(result, headers);
+  }
+
+  FutureOr<HandledContext> _handleRequest(NewContext context) async {
+    final uri = context.request.requestedUri;
+
+    // Handle WebSocket upgrade requests (these cannot go through middleware)
+    if (uri.path == '/websocket') {
+      return await _dispatchWebSocketUpgradeRequest(
+        context,
+        EndpointWebsocketRequestHandler.handleWebsocket,
+      );
+    } else if (uri.path == '/v1/websocket') {
+      return await _dispatchWebSocketUpgradeRequest(
+        context,
+        MethodWebsocketRequestHandler.handleWebsocket,
+      );
+    }
+
+    // For all other requests, delegate to core handler
+    final response = await _coreHandler(context.request);
+    return context.respond(response);
   }
 
   void _logMalformedCalls(Result result) {
