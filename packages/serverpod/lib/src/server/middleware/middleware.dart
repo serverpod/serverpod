@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:relic/relic.dart';
 
-/// Middleware for intercepting and processing HTTP requests.
+/// HTTP middleware for intercepting and processing HTTP requests.
 ///
-/// Middleware provides a mechanism to execute code before and after
+/// [HttpMiddleware] provides a mechanism to execute code before and after
 /// request processing, enabling cross-cutting concerns like logging,
 /// authentication, metrics collection, and response modification.
 ///
@@ -34,7 +34,7 @@ import 'package:relic/relic.dart';
 ///
 /// **✅ Safe**: Use local variables for per-request state
 /// ```dart
-/// class SafeMiddleware implements Middleware {
+/// class SafeMiddleware implements HttpMiddleware {
 ///   @override
 ///   Future<Response> handle(Request request, NextFunction next) async {
 ///     final startTime = DateTime.now(); // ✅ Local variable
@@ -47,7 +47,7 @@ import 'package:relic/relic.dart';
 ///
 /// **❌ Unsafe**: Use instance fields for per-request data
 /// ```dart
-/// class UnsafeMiddleware implements Middleware {
+/// class UnsafeMiddleware implements HttpMiddleware {
 ///   String? currentUserId; // ❌ Shared across requests!
 ///
 ///   @override
@@ -60,7 +60,7 @@ import 'package:relic/relic.dart';
 ///
 /// **✅ Safe**: Shared state for counters/metrics (Dart's single-isolate model)
 /// ```dart
-/// class MetricsMiddleware implements Middleware {
+/// class MetricsMiddleware implements HttpMiddleware {
 ///   int requestCount = 0; // ✅ Safe in single isolate
 ///
 ///   @override
@@ -75,7 +75,7 @@ import 'package:relic/relic.dart';
 ///
 /// ### Simple Logging Middleware
 /// ```dart
-/// class LoggingMiddleware implements Middleware {
+/// class LoggingMiddleware implements HttpMiddleware {
 ///   final Serverpod serverpod;
 ///
 ///   LoggingMiddleware(this.serverpod);
@@ -92,7 +92,7 @@ import 'package:relic/relic.dart';
 ///
 /// ### Short-Circuiting (Authentication)
 /// ```dart
-/// class ApiKeyMiddleware implements Middleware {
+/// class ApiKeyMiddleware implements HttpMiddleware {
 ///   final String validApiKey;
 ///
 ///   ApiKeyMiddleware(this.validApiKey);
@@ -115,7 +115,7 @@ import 'package:relic/relic.dart';
 ///
 /// ### Modifying Responses
 /// ```dart
-/// class HeaderMiddleware implements Middleware {
+/// class HeaderMiddleware implements HttpMiddleware {
 ///   @override
 ///   Future<Response> handle(Request request, NextFunction next) async {
 ///     final response = await next(request);
@@ -160,7 +160,7 @@ import 'package:relic/relic.dart';
 ///
 /// - [NextFunction] - Function signature for calling the next middleware
 /// - [ExperimentalFeatures] - How to enable middleware
-abstract class Middleware {
+abstract class HttpMiddleware {
   /// Process the request and optionally call the next middleware.
   ///
   /// The [request] parameter contains the incoming HTTP request.
@@ -222,7 +222,7 @@ abstract class Middleware {
 /// ## Example
 ///
 /// ```dart
-/// class ExampleMiddleware implements Middleware {
+/// class ExampleMiddleware implements HttpMiddleware {
 ///   @override
 ///   Future<Response> handle(Request request, NextFunction next) async {
 ///     // Modify request before passing to next handler

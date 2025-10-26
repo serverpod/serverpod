@@ -8,7 +8,7 @@ class ExperimentalFeatures {
   /// List of [DiagnosticEventHandler] that will be called for all diagnostic events.
   final List<DiagnosticEventHandler>? diagnosticEventHandlers;
 
-  /// List of [Middleware] to process HTTP requests.
+  /// List of [HttpMiddleware] to process HTTP requests.
   ///
   /// Middleware is executed in the order it appears in this list, before
   /// existing hooks like [AuthenticationHandler]. Each middleware can
@@ -52,9 +52,9 @@ class ExperimentalFeatures {
   ///
   /// ## See Also
   ///
-  /// - [Middleware] - Base interface for all middleware
+  /// - [HttpMiddleware] - Base interface for all middleware
   /// - [NextFunction] - Function signature for middleware chain
-  final List<Middleware>? middleware;
+  final List<HttpMiddleware>? middleware;
 
   /// Creates a new [ExperimentalFeatures] instance.
   ExperimentalFeatures({

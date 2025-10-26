@@ -4,7 +4,7 @@ import 'dart:io' as io;
 import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart' hide Middleware;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
@@ -110,7 +110,7 @@ class Server {
   /// bypass middleware entirely as they require direct access to the
   /// connection upgrade mechanism. If you need to intercept WebSocket
   /// connections, use the WebSocket-specific hooks instead.
-  final List<Middleware> _middleware;
+  final List<HttpMiddleware> _middleware;
 
   /// Cached middleware chain built once at startup.
   /// Null if middleware is not enabled.
@@ -133,7 +133,7 @@ class Server {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
-    List<Middleware>? middleware,
+    List<HttpMiddleware>? middleware,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
         _securityContext = securityContext,
