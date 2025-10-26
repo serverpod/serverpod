@@ -826,4 +826,59 @@ void main() {
       });
     },
   );
+
+  group('Given a class with a field with an explicit column name '
+      'when generating code', () {
+    const fieldName = 'userName';
+    const columnName = 'user_name';
+    const columnType = 'String';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName(fieldName)
+                .withColumn(columnName)
+                .withTypeDefinition(columnType, true)
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build(),
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
+    late final maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
+
+    group('then the class named ${testClassName}Table', () {
+      test('has the columnName for the field set to the explicit '
+          'column name provided', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          maybeClassNamedExampleTable!,
+          name: null,
+        );
+
+        expect(
+          constructor?.toSource(),
+          contains("$fieldName = _i1.Column$columnType('$columnName', this)"),
+          reason:
+              'columnName for $fieldName set to $columnName not found '
+              'in constructor.',
+        );
+      });
+    });
+  });
 }
