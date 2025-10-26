@@ -144,4 +144,39 @@ void main() {
       });
     },
   );
+
+  test('Given a class definition with a table with an explicit column name, '
+      'then generate a column with the explicit name.', () {
+    const fieldName = 'userName';
+    const columnName = 'user_name';
+    const columnType = 'String';
+    const tableName = 'example';
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName(fieldName)
+                .withColumn(columnName)
+                .withTypeDefinition(columnType, true)
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      tableName,
+      [],
+    );
+
+    expect(databaseDefinition.tables, hasLength(1));
+    expect(databaseDefinition.tables.first.name, tableName);
+    final table = databaseDefinition.findTableNamed(tableName);
+    expect(table, isNotNull);
+    final column = table!.findColumnNamed(columnName);
+    expect(column, isNotNull);
+  });
 }
