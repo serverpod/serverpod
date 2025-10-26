@@ -15,6 +15,7 @@ import 'package:serverpod/src/server/future_call_manager/future_call_manager.dar
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
+import 'package:serverpod/src/server/middleware/middleware_validator.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -521,6 +522,13 @@ class Serverpod {
 
     var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
 
+    // Validate middleware if provided
+    final middlewareWarnings =
+        validateMiddleware(_experimental._experimentalFeatures?.middleware);
+    for (var warning in middlewareWarnings) {
+      logVerbose(warning);
+    }
+
     server = Server(
       serverpod: this,
       serverId: serverId,
@@ -536,6 +544,7 @@ class Serverpod {
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.apiServer,
+      middleware: _experimental._experimentalFeatures?.middleware,
     );
     endpoints.initializeEndpoints(server);
 
@@ -932,6 +941,7 @@ class Serverpod {
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.insightsServer,
+      middleware: _experimental._experimentalFeatures?.middleware,
     );
     endpoints.initializeEndpoints(insightsServer);
 
@@ -1251,6 +1261,8 @@ class ExperimentalApi {
 
   final TaskManagerImpl _shutdownTasks;
 
+  final ExperimentalFeatures? _experimentalFeatures;
+
   /// Shutdown tasks can be used to perform cleanup operations before the server
   /// is shut down. The tasks will be executed asynchronously after the server
   /// has received the shutdown signal.
@@ -1268,7 +1280,8 @@ class ExperimentalApi {
           experimentalFeatures?.diagnosticEventHandlers ?? const [],
           timeout: config?.experimentalDiagnosticHandlerTimeout,
         ),
-        _shutdownTasks = TaskManagerImpl();
+        _shutdownTasks = TaskManagerImpl(),
+        _experimentalFeatures = experimentalFeatures;
 
   /// Application method for submitting a diagnostic event
   /// to registered event handlers.
