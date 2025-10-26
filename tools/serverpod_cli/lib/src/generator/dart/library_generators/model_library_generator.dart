@@ -2705,7 +2705,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
 
     var constructorArgs = <Expression>[
-      literalString(field.name),
+      literalString(field.column ?? field.name),
       refer('this'),
     ];
 
