@@ -73,7 +73,7 @@
     "build": "vsce package"
   },
   "dependencies": {
-    "vscode-languageclient": "^8.1.0"
+    "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@types/glob": "^9.0.0",
