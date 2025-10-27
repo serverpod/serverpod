@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -8,7 +9,9 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart'
 /// Collection of helpers to migrate from `serverpod_auth` to the new packages.
 abstract final class AuthMigrations {
   /// The configuration to be used for all migrations.
-  static var config = AuthMigrationConfig();
+  static var config = AuthMigrationConfig(
+    emailIDP: AuthServices.instance.emailIDP,
+  );
 
   /// Returns whether a legacy `serverpod_auth` user has been migrated already.
   ///
@@ -80,6 +83,7 @@ abstract final class AuthMigrations {
             session,
             userInfo,
             transaction: transaction,
+            newEmailIDP: config.emailIDP,
           );
 
           if (didCreate && userMigration != null) {
