@@ -74,7 +74,7 @@ abstract class EndpointDispatch {
     );
 
     if (methodConnector is! MethodStreamConnector) {
-      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+      throw InvalidEndpointMethodTypeException();
     }
 
     List<StreamParameterDescription> inputStreams = parseRequestedInputStreams(
@@ -125,7 +125,7 @@ abstract class EndpointDispatch {
     );
 
     if (methodConnector is! MethodConnector) {
-      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+      throw InvalidEndpointMethodTypeException();
     }
 
     return MethodCallContext(
@@ -149,8 +149,7 @@ abstract class EndpointDispatch {
 
     var methodConnector = endpointConnector.methodConnectors[methodName];
     if (methodConnector == null) {
-      throw MethodNotFoundException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
+      throw MethodNotFoundException('Method not found in endpoint');
     }
 
     var parsedArguments = parseParameters(
@@ -168,7 +167,7 @@ abstract class EndpointDispatch {
           createSessionCallback) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
-      throw EndpointNotFoundException('Endpoint $endpointPath not found');
+      throw EndpointNotFoundException('Endpoint not found');
     }
 
     var session = createSessionCallback(connector);
@@ -513,15 +512,10 @@ class MethodNotFoundException extends EndpointDispatchException {
 /// The found endpoint method was not of the expected type.
 class InvalidEndpointMethodTypeException extends EndpointDispatchException {
   @override
-  String get message =>
-      'Endpoint method $_methodName in $_endpointPath is not of the expected type.';
-
-  final String _methodName;
-  final String _endpointPath;
+  String get message => 'Endpoint method is not of the expected type';
 
   /// Creates a new [InvalidEndpointMethodTypeException].
-
-  InvalidEndpointMethodTypeException(this._methodName, this._endpointPath);
+  InvalidEndpointMethodTypeException();
 }
 
 /// The input parameters were invalid.

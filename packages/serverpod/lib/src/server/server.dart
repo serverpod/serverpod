@@ -438,7 +438,7 @@ class Server {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+      return ResultInvalidParams('Endpoint name is not valid');
     }
 
     // Read query parameters
@@ -448,7 +448,7 @@ class Server {
       try {
         queryParameters = jsonDecode(body);
       } catch (_) {
-        return ResultInvalidParams('Invalid JSON in body: $body');
+        return ResultInvalidParams('Invalid JSON in body');
       }
     }
 
@@ -471,7 +471,7 @@ class Server {
         methodName = method;
       } else {
         return ResultInvalidParams(
-          'No method name specified in call to $endpointName',
+          'No method name specified',
         );
       }
     }
@@ -487,10 +487,9 @@ class Server {
       authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
     } catch (e) {
       if (e is AuthHeaderEncodingException || e is InvalidHeaderException) {
-        // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
         return ResultStatusCode(
           400,
-          'Request has invalid "authorization" header: $authenticationHeaderValue',
+          'Request has invalid "authorization" header',
         );
       } else {
         rethrow;
