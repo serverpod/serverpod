@@ -526,19 +526,19 @@ class ArenaUuidDetachRowRepository {
   /// the related record.
   Future<void> team(
     _i1.Session session,
-    ArenaUuid arenauuid, {
+    ArenaUuid arenaUuid, {
     _i1.Transaction? transaction,
   }) async {
-    var $team = arenauuid.team;
+    var $team = arenaUuid.team;
 
     if ($team == null) {
-      throw ArgumentError.notNull('arenauuid.team');
+      throw ArgumentError.notNull('arenaUuid.team');
     }
     if ($team.id == null) {
-      throw ArgumentError.notNull('arenauuid.team.id');
+      throw ArgumentError.notNull('arenaUuid.team.id');
     }
-    if (arenauuid.id == null) {
-      throw ArgumentError.notNull('arenauuid.id');
+    if (arenaUuid.id == null) {
+      throw ArgumentError.notNull('arenaUuid.id');
     }
 
     var $$team = $team.copyWith(arenaId: null);

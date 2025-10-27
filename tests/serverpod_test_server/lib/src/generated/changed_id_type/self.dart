@@ -872,19 +872,19 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// the related record.
   Future<void> previous(
     _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    var $previous = changedidtypeself.previous;
+    var $previous = changedIdTypeSelf.previous;
 
     if ($previous == null) {
-      throw ArgumentError.notNull('changedidtypeself.previous');
+      throw ArgumentError.notNull('changedIdTypeSelf.previous');
     }
     if ($previous.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.previous.id');
+      throw ArgumentError.notNull('changedIdTypeSelf.previous.id');
     }
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
     var $$previous = $previous.copyWith(nextId: null);
@@ -902,16 +902,16 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// the related record.
   Future<void> next(
     _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedidtypeself = changedidtypeself.copyWith(nextId: null);
+    var $changedIdTypeSelf = changedIdTypeSelf.copyWith(nextId: null);
     await session.db.updateRow<ChangedIdTypeSelf>(
-      $changedidtypeself,
+      $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.nextId],
       transaction: transaction,
     );
@@ -924,16 +924,16 @@ class ChangedIdTypeSelfDetachRowRepository {
   /// the related record.
   Future<void> parent(
     _i1.Session session,
-    ChangedIdTypeSelf changedidtypeself, {
+    ChangedIdTypeSelf changedIdTypeSelf, {
     _i1.Transaction? transaction,
   }) async {
-    if (changedidtypeself.id == null) {
-      throw ArgumentError.notNull('changedidtypeself.id');
+    if (changedIdTypeSelf.id == null) {
+      throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedidtypeself = changedidtypeself.copyWith(parentId: null);
+    var $changedIdTypeSelf = changedIdTypeSelf.copyWith(parentId: null);
     await session.db.updateRow<ChangedIdTypeSelf>(
-      $changedidtypeself,
+      $changedIdTypeSelf,
       columns: [ChangedIdTypeSelf.t.parentId],
       transaction: transaction,
     );
