@@ -8,7 +8,7 @@
     "color": "#020E24",
     "theme": "dark"
   },
-  "version": "1.2.5",
+  "version": "1.2.6",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -79,6 +79,7 @@
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "24.7.1",
+    "@types/semver": "^7.7.1",
     "@types/sinon": "^17.0.4",
     "@types/vscode": "^1.75.1",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
@@ -92,6 +93,6 @@
     "mocha": "^11.7.2",
     "ovsx": "^0.10.5",
     "sinon": "^21.0.0",
-    "typescript": "^5.1.3"
+    "typescript": "~5.5.0"
   }
 }
