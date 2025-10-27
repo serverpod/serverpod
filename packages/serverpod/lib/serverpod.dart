@@ -39,6 +39,8 @@ export 'diagnostic_events.dart';
 
 // Middleware (experimental)
 export 'src/server/middleware/middleware.dart';
+export 'src/server/middleware/cors_middleware.dart';
+export 'src/server/middleware/metrics_middleware.dart';
 
 export 'package:meta/meta.dart' show useResult, immutable;
 export 'package:collection/collection.dart' show DeepCollectionEquality;
