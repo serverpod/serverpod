@@ -99,12 +99,12 @@ The `MessageCentral` class currently only handles communication within a single 
 
 ---
 
-#### Issue: Refactor request handling to use Router instead of manual dispatch
+#### Issue: Refactor request handling to use Router from relic package
 
 **File**: `packages/serverpod/lib/src/server/server.dart:190`
 
 **Description**:
-The current server implementation uses manual path and HTTP verb dispatch. This should be refactored to use a proper Router abstraction for better maintainability and extensibility.
+The current server implementation uses manual path and HTTP verb dispatch. This should be refactored to use the `Router` class from the `relic` package for better maintainability and extensibility.
 
 **Context**:
 ```dart
@@ -116,10 +116,10 @@ if (uri.path == '/') {
 ```
 
 **Suggested Implementation**:
-- Design or adopt a Router interface
-- Implement route matching and dispatching logic
+- Use the `Router` class from the `relic` package (already a dependency)
+- Implement route matching and dispatching logic using relic's Router API
 - Migrate existing manual dispatch code to use Router
-- Add support for route parameters and pattern matching
+- Add support for route parameters and pattern matching as provided by relic
 - Maintain backward compatibility during transition
 - Add tests for route matching edge cases
 
@@ -127,22 +127,29 @@ if (uri.path == '/') {
 
 ---
 
-#### Issue: Refactor httpResponseHeaders to use Headers object type
+#### Issue: Refactor httpResponseHeaders to use Headers class from relic package
 
 **File**: `packages/serverpod/lib/src/server/server.dart:180`
 
 **Description**:
-The `httpResponseHeaders` should use a proper `Headers` object type instead of the current implementation for better type safety and API consistency.
+The `httpResponseHeaders` should use the `Headers` class from the `relic` package instead of the current Map implementation for better type safety and API consistency.
 
 **Context**:
 ```dart
 // TODO: Make httpResponseHeaders a Headers object from the get-go.
+// or better yet, use middleware
+final headers = Headers.build((mh) {
+  for (var rh in httpResponseHeaders.entries) {
+    mh[rh.key] = ['${rh.value}'];
+  }
+});
 ```
 
 **Suggested Implementation**:
-- Define or import a proper Headers type
-- Refactor code to use the Headers type throughout
+- Change `httpResponseHeaders` from `Map<String, String>` to use the `Headers` class from the `relic` package directly
+- Refactor code to use the Headers type throughout the codebase
 - Update related APIs to work with the new type
+- Consider using middleware as suggested in the comment
 - Ensure backward compatibility or provide migration guide
 - Add tests for header manipulation
 
