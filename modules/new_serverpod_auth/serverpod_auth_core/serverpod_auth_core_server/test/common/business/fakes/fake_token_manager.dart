@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
@@ -46,7 +48,7 @@ class FakeTokenManager implements TokenManager {
     _storage.storeToken(tokenInfo);
 
     final authSuccess = AuthSuccess(
-      token: tokenId,
+      token: base64Encode(utf8.encode(tokenId)),
       refreshToken: refreshTokenId,
       authUserId: authUserId,
       scopeNames: scopeSet,
@@ -135,19 +137,24 @@ class FakeTokenManager implements TokenManager {
     // If kind is specified and doesn't match this manager's kind, return null
     if (tokenManager != null && tokenManager != _tokenIssuer) return null;
 
+    final String tokenId;
+    try {
+      tokenId = utf8.decode(base64Decode(token));
+    } catch (e) {
+      /// Silence if the token is not a valid base64 encoded string which can happen when
+      /// interacting with multiple token managers.
+      return null;
+    }
+
     // Check if the token exists (hasn't been revoked)
-    final tokenInfo = _storage.getToken(token);
+    final tokenInfo = _storage.getToken(tokenId);
     if (tokenInfo == null) return null;
 
     return AuthenticationInfo(
       tokenInfo.userId,
       tokenInfo.scopes,
-      authId: tokenInfo.tokenId,
+      authId: tokenId,
     );
-  }
-
-  void addToken(final TokenInfo token) {
-    _storage.storeToken(token);
   }
 
   int get tokenCount => _storage.tokenCount;

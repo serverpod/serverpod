@@ -232,17 +232,15 @@ void main() {
       });
 
       group('when validating a valid token with single scope', () {
-        const validToken = 'valid-token-123';
         late AuthenticationInfo? result;
+        late String validToken;
 
         setUp(() async {
-          fakeTokenManager.addToken(TokenInfo(
-            userId: 'user-123',
-            tokenIssuer: 'fake',
-            tokenId: validToken,
-            scopes: {const Scope('test-scope')},
-            method: 'test-method',
-          ));
+          final authSuccess = await fakeTokenManager.issueToken(session,
+              authUserId: UuidValue.fromString('user-123'),
+              method: 'test-method',
+              scopes: {const Scope('test-scope')});
+          validToken = authSuccess.token;
 
           result = await authConfig.authenticationHandler(session, validToken);
         });
@@ -264,20 +262,18 @@ void main() {
       });
 
       group('when validating a token with multiple scopes', () {
-        const validToken = 'multi-scope-token';
+        late String validToken;
 
-        setUp(() {
-          fakeTokenManager.addToken(TokenInfo(
-            userId: 'user-456',
-            tokenIssuer: 'fake',
-            tokenId: validToken,
-            scopes: {
-              const Scope('read'),
-              const Scope('write'),
-              const Scope('admin')
-            },
-            method: 'oauth',
-          ));
+        setUp(() async {
+          final authSuccess = await fakeTokenManager.issueToken(session,
+              authUserId: UuidValue.fromString('user-456'),
+              method: 'oauth',
+              scopes: {
+                const Scope('read'),
+                const Scope('write'),
+                const Scope('admin')
+              });
+          validToken = authSuccess.token;
         });
 
         test('then all scopes should be included', () async {

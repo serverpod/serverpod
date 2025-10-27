@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
@@ -9,7 +9,9 @@ import '../../../serverpod_test_tools.dart';
 import '../fakes/fake_token_manager.dart';
 import '../fakes/fake_token_storage.dart';
 
+@isTestGroup
 void testSuite<T extends TokenManager>(
+  final String description,
   final T Function() tokenManagerBuilder, {
   required final Future<UuidValue> Function(Session session) createAuthId,
   required final String tokenIssuer,
@@ -144,6 +146,7 @@ void testSuite<T extends TokenManager>(
       late Session session;
       late UuidValue authId;
       late T tokenManager;
+      late String tokenId;
       late AuthSuccess authSuccess;
       late List<TokenInfo> initialTokens;
 
@@ -161,6 +164,8 @@ void testSuite<T extends TokenManager>(
           session,
           authUserId: authId,
         );
+
+        tokenId = initialTokens.single.tokenId;
       });
 
       tearDown(() async {
@@ -195,18 +200,14 @@ void testSuite<T extends TokenManager>(
         });
 
         test('then authId should match tokenId', () async {
-          final [tokenInfo] = await tokenManager.listTokens(
-            session,
-            authUserId: authId,
-          );
-          expect(authInfo!.authId, tokenInfo.tokenId);
+          expect(authInfo!.authId, tokenId);
         });
       });
 
       test(
         'when validating an invalid token, then AuthenticationInfo should be null',
         () async {
-          final invalidToken = 'INVALID${authSuccess.token}';
+          final invalidToken = 'INVALID$tokenId';
           final authInfo = await tokenManager.validateToken(
             session,
             invalidToken,
@@ -217,13 +218,12 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking the token with a transaction that succeeds '
-        'then token is removed',
+        'when revoking the token with a transaction that succeeds then token is removed',
         () async {
           await session.db.transaction((final transaction) async {
             await tokenManager.revokeToken(
               session,
-              tokenId: authSuccess.token,
+              tokenId: tokenId,
               transaction: transaction,
             );
           });
@@ -234,7 +234,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isFalse,
           );
         },
@@ -251,7 +251,7 @@ void testSuite<T extends TokenManager>(
             final savepoint = await transaction.createSavepoint();
             await tokenManager.revokeToken(
               session,
-              tokenId: authSuccess.token,
+              tokenId: tokenId,
               transaction: transaction,
             );
             await savepoint.rollback();
@@ -263,7 +263,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -275,7 +275,7 @@ void testSuite<T extends TokenManager>(
         () async {
           await tokenManager.revokeToken(
             session,
-            tokenId: authSuccess.token,
+            tokenId: tokenId,
             tokenIssuer: 'INVALID$tokenIssuer',
           );
 
@@ -286,7 +286,7 @@ void testSuite<T extends TokenManager>(
 
           expect(tokens, hasLength(initialTokens.length));
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -980,6 +980,7 @@ void testSuite<T extends TokenManager>(
 void main() {
   final fakeTokenStorage = FakeTokenStorage();
   testSuite(
+    'FakeTokenManager',
     () {
       return FakeTokenManager(fakeTokenStorage);
     },
