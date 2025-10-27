@@ -66,7 +66,7 @@ class AppleIDPUtils {
       nonce: null,
     );
 
-    // TODO: Handle the edge-case where we already know the user, but they
+    // TODO(#4105): Handle the edge-case where we already know the user, but they
     //       disconnected and now "registered" again, in which case we need to
     //       receive and store the new refresh token.
 
@@ -177,7 +177,7 @@ class AppleIDPUtils {
         return;
       }
 
-      /// TODO: Implement session revocation based on the notification for all
+      /// TODO(#4105): Implement session revocation based on the notification for all
       /// the sessions associated with the Apple account.
       return;
     });

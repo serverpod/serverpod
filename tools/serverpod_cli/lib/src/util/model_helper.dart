@@ -58,7 +58,7 @@ class ModelHelper {
       modelSources.addAll(modelSource);
     }
 
-    // TODO This sort is needed to make sure all generated methods
+    // TODO(#4104): This sort is needed to make sure all generated methods
     // are in the same order. Move this logic to the code generator instead.
     modelSources
         .sort((a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path));

@@ -84,12 +84,12 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  // TODO: implement localKeys
+  // TODO(#4093): implement localKeys
   List<String> get localKeys =>
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  // TODO: implement localSize
+  // TODO(#4093): implement localSize
   int get localSize =>
       throw UnimplementedError('No local keys are used in RedisCache');
 

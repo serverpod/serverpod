@@ -176,7 +176,7 @@ class Server {
     final uri = req.requestedUri;
     serverpod.logVerbose('handleRequest: ${req.method} ${uri.path}');
 
-    // TODO: Make httpResponseHeaders a Headers object from the get-go.
+    // TODO(#4102): Make httpResponseHeaders a Headers object from the get-go.
     // or better yet, use middleware
     final headers = Headers.build((mh) {
       for (var rh in httpResponseHeaders.entries) {
@@ -186,7 +186,7 @@ class Server {
 
     var readBody = true;
 
-    // TODO: Use Router instead of manual dispatch on path and verb
+    // TODO(#4101): Use Router instead of manual dispatch on path and verb
     if (uri.path == '/') {
       // Perform health checks
       var checks = await performHealthChecks(serverpod);
@@ -236,7 +236,7 @@ class Server {
         for (var orh in httpOptionsResponseHeaders.entries) {
           mh[orh.key] = ['${orh.value}'];
         }
-        mh.contentLength = 0; // TODO: Why set this explicitly?
+        mh.contentLength = 0; // TODO(#4103): Why set this explicitly?
       });
 
       return Response.ok(headers: combinedHeaders);
@@ -248,7 +248,7 @@ class Server {
         body = await _readBody(req);
       } on _RequestTooLargeException catch (e) {
         if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
+          // TODO(#4098): Log to database?
           io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
         return Response(
@@ -281,11 +281,11 @@ class Server {
       ResultInvalidParams() => 'Malformed call',
       ResultNoSuchEndpoint() => 'Malformed call',
       ResultAuthenticationFailed() => 'Access denied',
-      // ResultInternalServerError // TODO: historically not included
+      // ResultInternalServerError // TODO(#4103): historically not included
       _ => null
     };
     if (error != null) {
-      // TODO: Log to database?
+      // TODO(#4098): Log to database?
       io.stderr.writeln('$error: $result');
     }
   }
@@ -381,7 +381,7 @@ class Server {
   ) async {
     return WebSocketUpgrade((webSocket) async {
       try {
-        // TODO(kasper): Should we keep doing this?
+        // TODO(#4103): Should we keep doing this?
         webSocket.pingInterval = const Duration(seconds: 30);
 
         var websocketKey = const Uuid().v4();
