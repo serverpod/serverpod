@@ -596,6 +596,14 @@ void testSuite<T extends TokenManager>(
               authUserId: authId,
               transaction: transaction,
             );
+            final tokens = await tokenManager.listTokens(
+              session,
+              authUserId: authId,
+              transaction: transaction,
+            );
+
+            /// New token can be listed
+            expect(tokens, hasLength(0));
             await savepoint.rollback();
           });
 

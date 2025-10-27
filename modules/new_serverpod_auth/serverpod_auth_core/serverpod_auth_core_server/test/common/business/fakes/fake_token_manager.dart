@@ -118,6 +118,7 @@ class FakeTokenManager implements TokenManager {
     required final UuidValue? authUserId,
     final String? method,
     final String? tokenIssuer,
+    final Transaction? transaction,
   }) async {
     // If kind is specified and doesn't match this manager's kind, return empty list
     if (tokenIssuer != null && tokenIssuer != _tokenIssuer) return [];

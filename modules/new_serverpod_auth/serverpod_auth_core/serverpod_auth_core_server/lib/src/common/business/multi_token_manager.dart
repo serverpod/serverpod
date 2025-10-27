@@ -96,6 +96,7 @@ class MultiTokenManager implements TokenManager {
     required final UuidValue? authUserId,
     final String? method,
     final String? tokenIssuer,
+    final Transaction? transaction,
   }) async {
     final tokenLists = await Future.wait(
       _allTokenManagers.map(
@@ -104,6 +105,7 @@ class MultiTokenManager implements TokenManager {
           authUserId: authUserId,
           method: method,
           tokenIssuer: tokenIssuer,
+          transaction: transaction,
         ),
       ),
     );

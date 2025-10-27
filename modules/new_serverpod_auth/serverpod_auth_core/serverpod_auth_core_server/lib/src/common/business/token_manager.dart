@@ -94,6 +94,7 @@ abstract interface class TokenManager implements TokenIssuer {
     required final UuidValue? authUserId,
     final String? method,
     final String? tokenIssuer,
+    final Transaction? transaction,
   });
 
   /// Validates an authentication token and returns the associated authentication information.
