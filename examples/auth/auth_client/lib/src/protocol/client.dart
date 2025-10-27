@@ -26,7 +26,6 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
   @override
   String get name => 'appleIDP';
 
-  /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
   ///
   /// If no user exists yet linked to the Apple-provided identifier, a new one
@@ -35,7 +34,6 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  /// {@endtemplate}
   @override
   _i3.Future<_i4.AuthSuccess> login({
     required String identityToken,
@@ -64,12 +62,10 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   @override
   String get name => 'googleIDP';
 
-  /// {@template google_idp_base_endpoint.login}
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  /// {@endtemplate}
   @override
   _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
