@@ -55,7 +55,7 @@ void main() {
       );
 
       expect(response.statusCode, 404);
-      expect(response.body, contains('Endpoint $nonExistingPath not found'));
+      expect(response.body, contains('Endpoint not found'));
     });
 
     test(
@@ -72,7 +72,7 @@ void main() {
       );
 
       expect(response.statusCode, 400);
-      expect(response.body, contains('Method "$nonExistingName" not found'));
+      expect(response.body, contains('Method not found'));
     });
 
     test(

@@ -229,8 +229,7 @@ void main() async {
       expect(clientException!.statusCode, equals(400));
       expect(
         clientException.message,
-        'Bad request: Request has invalid "authorization" header: Bearer '
-        'doubled-bearer jwt-token-4712',
+        'Bad request: Request has invalid "authorization" header',
       );
     });
 
