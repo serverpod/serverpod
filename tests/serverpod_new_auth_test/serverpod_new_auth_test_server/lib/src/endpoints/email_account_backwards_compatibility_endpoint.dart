@@ -91,7 +91,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    final account = await EmailAccounts.admin.findAccount(
+    final account = await AuthServices.instance.emailIDP.admin.findAccount(
       session,
       email: email,
     );
