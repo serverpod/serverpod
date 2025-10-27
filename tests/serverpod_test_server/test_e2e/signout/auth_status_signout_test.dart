@@ -37,30 +37,6 @@ void main() {
       secondaryClient.close();
     });
 
-    group('when calling the deprecated signOut method with first client', () {
-      setUp(() async {
-        // ignore: deprecated_member_use
-        await primaryClient.modules.auth.status.signOut();
-      });
-
-      test('then first client is signed out', () async {
-        expect(
-          await primaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason: 'Primary client was not signed out after signOut()',
-        );
-      });
-
-      test('then second client is signed out', () async {
-        expect(
-          await secondaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Secondary client was not signed out after primary client signOut()',
-        );
-      });
-    });
-
     group('when calling signOutCurrentDevice with first client', () {
       setUp(() async {
         await primaryClient.modules.auth.status.signOutDevice();
