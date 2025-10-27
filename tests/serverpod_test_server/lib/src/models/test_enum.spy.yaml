@@ -1,5 +1,6 @@
 ### Just an test enum.
 enum: TestEnum
+serialized: byIndex
 values:
   ### The first value of [TestEnum].
   - one

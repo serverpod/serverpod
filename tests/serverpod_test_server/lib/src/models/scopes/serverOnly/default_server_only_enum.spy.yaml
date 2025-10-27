@@ -1,4 +1,5 @@
 enum: DefaultServerOnlyEnum
+serialized: byIndex
 values:
   - foo
   - bar
