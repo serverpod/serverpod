@@ -743,16 +743,16 @@ class UserProfileDetachRowRepository {
   /// the related record.
   Future<void> image(
     _i1.Session session,
-    UserProfile userprofile, {
+    UserProfile userProfile, {
     _i1.Transaction? transaction,
   }) async {
-    if (userprofile.id == null) {
-      throw ArgumentError.notNull('userprofile.id');
+    if (userProfile.id == null) {
+      throw ArgumentError.notNull('userProfile.id');
     }
 
-    var $userprofile = userprofile.copyWith(imageId: null);
+    var $userProfile = userProfile.copyWith(imageId: null);
     await session.db.updateRow<UserProfile>(
-      $userprofile,
+      $userProfile,
       columns: [UserProfile.t.imageId],
       transaction: transaction,
     );
