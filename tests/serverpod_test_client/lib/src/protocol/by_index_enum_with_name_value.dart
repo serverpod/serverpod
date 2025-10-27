@@ -30,7 +30,6 @@ enum ByIndexEnumWithNameValue implements _i1.SerializableModel {
 
   @override
   int toJson() => index;
-
   @override
   String toString() => this.name;
 }
