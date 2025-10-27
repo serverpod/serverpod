@@ -17,7 +17,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'providers/apple/models/apple_account.dart' as _i4;
 import 'providers/email/models/email_account.dart' as _i5;
 import 'providers/email/models/email_account_failed_login_attempt.dart' as _i6;
-import 'providers/email/models/email_account_password_reset_attempt.dart'
+import 'providers/email/models/email_account_password_reset_complete_attempt.dart'
     as _i7;
 import 'providers/email/models/email_account_password_reset_request.dart'
     as _i8;
@@ -55,7 +55,7 @@ import 'dart:typed_data' as _i27;
 export 'providers/apple/models/apple_account.dart';
 export 'providers/email/models/email_account.dart';
 export 'providers/email/models/email_account_failed_login_attempt.dart';
-export 'providers/email/models/email_account_password_reset_attempt.dart';
+export 'providers/email/models/email_account_password_reset_complete_attempt.dart';
 export 'providers/email/models/email_account_password_reset_request.dart';
 export 'providers/email/models/email_account_password_reset_request_attempt.dart';
 export 'providers/email/models/email_account_request.dart';
@@ -371,8 +371,8 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'serverpod_auth_idp_email_account_password_reset',
-      dartName: 'EmailAccountPasswordResetAttempt',
+      name: 'serverpod_auth_idp_email_account_password_reset_complete',
+      dartName: 'EmailAccountPasswordResetCompleteAttempt',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
@@ -405,7 +405,7 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [
         _i2.ForeignKeyDefinition(
           constraintName:
-              'serverpod_auth_idp_email_account_password_reset_fk_0',
+              'serverpod_auth_idp_email_account_password_reset_complete_fk_0',
           columns: ['passwordResetRequestId'],
           referenceTable:
               'serverpod_auth_idp_email_account_password_reset_request',
@@ -418,7 +418,8 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_idp_email_account_password_reset_pkey',
+          indexName:
+              'serverpod_auth_idp_email_account_password_reset_complete_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -1034,8 +1035,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.EmailAccountFailedLoginAttempt) {
       return _i6.EmailAccountFailedLoginAttempt.fromJson(data) as T;
     }
-    if (t == _i7.EmailAccountPasswordResetAttempt) {
-      return _i7.EmailAccountPasswordResetAttempt.fromJson(data) as T;
+    if (t == _i7.EmailAccountPasswordResetCompleteAttempt) {
+      return _i7.EmailAccountPasswordResetCompleteAttempt.fromJson(data) as T;
     }
     if (t == _i8.EmailAccountPasswordResetRequest) {
       return _i8.EmailAccountPasswordResetRequest.fromJson(data) as T;
@@ -1105,9 +1106,9 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i6.EmailAccountFailedLoginAttempt.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i7.EmailAccountPasswordResetAttempt?>()) {
+    if (t == _i1.getType<_i7.EmailAccountPasswordResetCompleteAttempt?>()) {
       return (data != null
-          ? _i7.EmailAccountPasswordResetAttempt.fromJson(data)
+          ? _i7.EmailAccountPasswordResetCompleteAttempt.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i8.EmailAccountPasswordResetRequest?>()) {
@@ -1224,8 +1225,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'EmailAccount';
       case _i6.EmailAccountFailedLoginAttempt():
         return 'EmailAccountFailedLoginAttempt';
-      case _i7.EmailAccountPasswordResetAttempt():
-        return 'EmailAccountPasswordResetAttempt';
+      case _i7.EmailAccountPasswordResetCompleteAttempt():
+        return 'EmailAccountPasswordResetCompleteAttempt';
       case _i8.EmailAccountPasswordResetRequest():
         return 'EmailAccountPasswordResetRequest';
       case _i9.EmailAccountPasswordResetRequestAttempt():
@@ -1291,8 +1292,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'EmailAccountFailedLoginAttempt') {
       return deserialize<_i6.EmailAccountFailedLoginAttempt>(data['data']);
     }
-    if (dataClassName == 'EmailAccountPasswordResetAttempt') {
-      return deserialize<_i7.EmailAccountPasswordResetAttempt>(data['data']);
+    if (dataClassName == 'EmailAccountPasswordResetCompleteAttempt') {
+      return deserialize<_i7.EmailAccountPasswordResetCompleteAttempt>(
+          data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetRequest') {
       return deserialize<_i8.EmailAccountPasswordResetRequest>(data['data']);
@@ -1386,8 +1388,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i5.EmailAccount.t;
       case _i6.EmailAccountFailedLoginAttempt:
         return _i6.EmailAccountFailedLoginAttempt.t;
-      case _i7.EmailAccountPasswordResetAttempt:
-        return _i7.EmailAccountPasswordResetAttempt.t;
+      case _i7.EmailAccountPasswordResetCompleteAttempt:
+        return _i7.EmailAccountPasswordResetCompleteAttempt.t;
       case _i8.EmailAccountPasswordResetRequest:
         return _i8.EmailAccountPasswordResetRequest.t;
       case _i9.EmailAccountPasswordResetRequestAttempt:

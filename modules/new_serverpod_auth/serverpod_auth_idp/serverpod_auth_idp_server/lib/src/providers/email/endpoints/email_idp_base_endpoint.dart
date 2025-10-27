@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../../../common/auth_services.dart';
 import '../email.dart';
 
 /// Base endpoint for email-based accounts.
@@ -12,20 +13,32 @@ import '../email.dart';
 /// methods.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [AuthEmail].
-abstract class AuthEmailBaseEndpoint extends Endpoint {
+/// logic by using [EmailIDP].
+abstract class EmailIDPBaseEndpoint extends Endpoint {
+  /// Accessor for the configured Email IDP instance.
+  /// By default this uses the global instance configured in
+  /// [AuthServices].
+  ///
+  /// If you want to use a different instance, override this getter.
+  EmailIDP get emailIDP => AuthServices.instance.emailIDP;
+
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a
-  /// [EmailAccountLoginException].
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   /// {@endtemplate}
   Future<AuthSuccess> login(
     final Session session, {
     required final String email,
     required final String password,
   }) async {
-    return AuthEmail.login(
+    return emailIDP.login(
       session,
       email: email,
       password: password,
@@ -49,7 +62,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return AuthEmail.startRegistration(
+    return emailIDP.startRegistration(
       session,
       email: email,
       password: password,
@@ -63,10 +76,13 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the account request has
   ///   already expired.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
@@ -75,7 +91,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
-    return AuthEmail.finishRegistration(
+    return emailIDP.finishRegistration(
       session,
       accountRequestId: accountRequestId,
       verificationCode: verificationCode,
@@ -99,7 +115,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    return AuthEmail.startPasswordReset(session, email: email);
+    return emailIDP.startPasswordReset(session, email: email);
   }
 
   /// {@template email_account_base_endpoint.finish_password_reset}
@@ -110,10 +126,12 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.
@@ -124,7 +142,7 @@ abstract class AuthEmailBaseEndpoint extends Endpoint {
     required final String verificationCode,
     required final String newPassword,
   }) async {
-    return AuthEmail.finishPasswordReset(
+    return emailIDP.finishPasswordReset(
       session,
       passwordResetRequestId: passwordResetRequestId,
       verificationCode: verificationCode,

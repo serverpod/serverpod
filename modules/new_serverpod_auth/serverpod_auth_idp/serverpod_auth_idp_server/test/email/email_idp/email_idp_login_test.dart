@@ -1,0 +1,252 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:test/test.dart';
+
+import '../../test_tags.dart';
+import '../../test_tools/serverpod_test_tools.dart';
+import '../test_utils/email_idp_test_fixture.dart';
+
+void main() {
+  withServerpod(
+    'Given an existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+
+        final authUser = await fixture.createAuthUser(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when login is called with correct credentials then it returns auth session token',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.login(
+            session,
+            email: email,
+            password: password,
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(result, completion(isA<AuthSuccess>()));
+      });
+
+      test(
+          'when login is called with invalid credentials then it throws EmailAccountLoginException with invalidCredentials',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.login(
+            session,
+            email: email,
+            password: 'WrongPassword123!',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountLoginException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountLoginExceptionReason.invalidCredentials,
+            ),
+          ),
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given blocked auth user with email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+
+        final authUser = await fixture.createAuthUser(session);
+        await AuthUsers.update(
+          session,
+          authUserId: authUser.id,
+          blocked: true,
+        );
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when login is called with correct credentials then it throws AuthUserBlockedException',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.login(
+            session,
+            email: email,
+            password: password,
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<AuthUserBlockedException>()),
+        );
+      });
+    },
+  );
+  withServerpod(
+    'Given email account with invalid logins matching rate limit',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      const maxLoginAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        fixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            passwordHashPepper: 'pepper',
+            failedLoginRateLimit: maxLoginAttempts,
+          ),
+        );
+
+        final authUser = await fixture.createAuthUser(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        // Make initial failed login attempt to hit the rate limit
+        try {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIDP.login(
+              session,
+              email: email,
+              password: 'WrongPassword123!',
+              transaction: transaction,
+            ),
+          );
+        } on EmailAccountLoginException {
+          // Expected
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when login is called with valid credentials then it throws EmailAccountLoginException with tooManyAttempts',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.login(
+            session,
+            email: email,
+            password: password,
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountLoginException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountLoginExceptionReason.tooManyAttempts,
+            ),
+          ),
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given no email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when login is called then it throws EmailAccountLoginException with invalidCredentials',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.login(
+            session,
+            email: 'nonexistent@serverpod.dev',
+            password: 'Password123!',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountLoginException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountLoginExceptionReason.invalidCredentials,
+            ),
+          ),
+        );
+      });
+    },
+  );
+}
