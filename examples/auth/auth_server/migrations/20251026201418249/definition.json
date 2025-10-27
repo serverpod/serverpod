@@ -1429,8 +1429,8 @@
       "managed": true
     },
     {
-      "name": "serverpod_auth_idp_email_account_password_reset",
-      "dartName": "EmailAccountPasswordResetAttempt",
+      "name": "serverpod_auth_idp_email_account_password_reset_complete",
+      "dartName": "EmailAccountPasswordResetCompleteAttempt",
       "module": "serverpod_auth_idp",
       "schema": "public",
       "columns": [
@@ -1462,7 +1462,7 @@
       ],
       "foreignKeys": [
         {
-          "constraintName": "serverpod_auth_idp_email_account_password_reset_fk_0",
+          "constraintName": "serverpod_auth_idp_email_account_password_reset_complete_fk_0",
           "columns": [
             "passwordResetRequestId"
           ],
@@ -1477,7 +1477,7 @@
       ],
       "indexes": [
         {
-          "indexName": "serverpod_auth_idp_email_account_password_reset_pkey",
+          "indexName": "serverpod_auth_idp_email_account_password_reset_complete_pkey",
           "elements": [
             {
               "type": 0,
@@ -2516,7 +2516,7 @@
   "installedModules": [
     {
       "module": "auth",
-      "version": "20251015082715458"
+      "version": "20251026201418249"
     },
     {
       "module": "serverpod",
@@ -2524,7 +2524,7 @@
     },
     {
       "module": "serverpod_auth_idp",
-      "version": "20250929121600932-v3-0-0"
+      "version": "20251026095951842"
     },
     {
       "module": "serverpod_auth_core",

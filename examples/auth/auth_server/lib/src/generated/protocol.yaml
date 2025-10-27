@@ -1,5 +1,11 @@
 appleIDP:
   - login:
+emailIDP:
+  - login:
+  - startRegistration:
+  - finishRegistration:
+  - startPasswordReset:
+  - finishPasswordReset:
 googleIDP:
   - login:
 greeting:

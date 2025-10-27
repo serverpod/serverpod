@@ -287,9 +287,9 @@ CREATE INDEX "serverpod_auth_idp_email_account_failed_login_email" ON "serverpod
 CREATE INDEX "serverpod_auth_idp_email_account_failed_login_at" ON "serverpod_auth_idp_email_account_failed_login_attempt" USING btree ("attemptedAt");
 
 --
--- Class EmailAccountPasswordResetAttempt as table serverpod_auth_idp_email_account_password_reset
+-- Class EmailAccountPasswordResetCompleteAttempt as table serverpod_auth_idp_email_account_password_reset_complete
 --
-CREATE TABLE "serverpod_auth_idp_email_account_password_reset" (
+CREATE TABLE "serverpod_auth_idp_email_account_password_reset_complete" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "attemptedAt" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL,
@@ -297,8 +297,8 @@ CREATE TABLE "serverpod_auth_idp_email_account_password_reset" (
 );
 
 -- Indexes
-CREATE INDEX "serverpod_auth_idp_email_account_password_reset_ip" ON "serverpod_auth_idp_email_account_password_reset" USING btree ("ipAddress");
-CREATE INDEX "serverpod_auth_idp_email_account_password_reset_at" ON "serverpod_auth_idp_email_account_password_reset" USING btree ("attemptedAt");
+CREATE INDEX "serverpod_auth_idp_email_account_password_reset_ip" ON "serverpod_auth_idp_email_account_password_reset_complete" USING btree ("ipAddress");
+CREATE INDEX "serverpod_auth_idp_email_account_password_reset_at" ON "serverpod_auth_idp_email_account_password_reset_complete" USING btree ("attemptedAt");
 
 --
 -- Class EmailAccountPasswordResetRequest as table serverpod_auth_idp_email_account_password_reset_request
@@ -521,10 +521,10 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_idp_email_account_password_reset" table
+-- Foreign relations for "serverpod_auth_idp_email_account_password_reset_complete" table
 --
-ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset"
-    ADD CONSTRAINT "serverpod_auth_idp_email_account_password_reset_fk_0"
+ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset_complete"
+    ADD CONSTRAINT "serverpod_auth_idp_email_account_password_reset_complete_fk_0"
     FOREIGN KEY("passwordResetRequestId")
     REFERENCES "serverpod_auth_idp_email_account_password_reset_request"("id")
     ON DELETE CASCADE
@@ -621,9 +621,9 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('auth', '20251015082715458', now())
+    VALUES ('auth', '20251026201418249', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251015082715458', "timestamp" = now();
+    DO UPDATE SET "version" = '20251026201418249', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -637,9 +637,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20250929121600932-v3-0-0', now())
+    VALUES ('serverpod_auth_idp', '20251026095951842', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250929121600932-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20251026095951842', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
