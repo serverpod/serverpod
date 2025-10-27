@@ -10,7 +10,7 @@ class StatusEndpoint extends Endpoint {
     return authInfo?.authId != null;
   }
 
-  // TODO: Replace signout methods implementation by using the [TokenManager]
+  // TODO(#4105): Replace signout methods implementation by using the [TokenManager]
   // class that once it is implemented. This class will allow revoking the token
   // from the specific issuer without having to try each of the available ones.
   // POC spec: https://github.com/serverpod/serverpod/pull/3970/files

@@ -94,7 +94,7 @@ class HealthCheckManager {
         await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
       }
     } catch (e) {
-      // TODO: Sometimes serverpod attempts to write duplicate health checks for
+      // TODO(#4098): Sometimes serverpod attempts to write duplicate health checks for
       // the same time. Doesn't cause any harm, but would be nice to fix.
     }
 

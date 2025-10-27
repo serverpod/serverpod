@@ -59,7 +59,7 @@ class ColumnSerializable<T> extends Column<T> {
     super.hasDefault,
   });
 
-// TODO: Add comparisons and possibly other operations
+// TODO(#4097): Add comparisons and possibly other operations
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {

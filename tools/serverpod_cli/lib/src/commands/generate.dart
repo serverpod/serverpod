@@ -47,7 +47,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
 
-    // TODO: add a -d option to select the directory
+    // TODO(#4095): add a -d option to select the directory
     GeneratorConfig config;
     try {
       config = await GeneratorConfig.load();

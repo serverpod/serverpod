@@ -84,7 +84,7 @@ DatabaseMigration generateDatabaseMigration({
         );
       } else if (!diff.isEmpty) {
         // Table was modified
-        // TODO: Check if table can be modified
+        // TODO(#4104): Check if table can be modified
 
         actions.add(
           DatabaseMigrationAction(
