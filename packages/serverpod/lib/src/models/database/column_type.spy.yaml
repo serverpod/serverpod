@@ -1,6 +1,7 @@
 ### All the types, that are possible for columns.
 ### Contains all the values of [TypeDefinition.databaseType]
 enum: ColumnType
+serialized: byIndex
 values:
   ### Dart type: [String]
   - text

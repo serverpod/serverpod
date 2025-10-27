@@ -1,6 +1,7 @@
 ### Used to specify how the definition of an [IndexElementDefinition]
 ### should be interpreted.
 enum: IndexElementDefinitionType
+serialized: byIndex
 values:
   ### Indicates, that the definition of an [IndexElementDefinition]
   ### referees to a column.

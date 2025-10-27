@@ -1,4 +1,5 @@
 enum: FilterConstraintType
+serialized: byIndex
 values:
   - equals
   - notEquals
