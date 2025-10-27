@@ -142,6 +142,139 @@ void main() {
     );
   });
 
+  withServerpod('Given an auth session,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late UuidValue authSessionId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      authUserId = await createAuthUser(session);
+
+      // ignore: unused_result
+      await authSessions.createSession(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      authSessionId = (await AuthSession.db.find(session)).single.id!;
+    });
+
+    test(
+      'when calling `deleteSessions`, then it is deleted and tuple returned.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(session);
+
+        expect(deleted, hasLength(1));
+        expect(deleted.single.$1, authUserId);
+        expect(deleted.single.$2, authSessionId);
+        expect(await AuthSession.db.count(session), 0);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for the user, then it is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          authUserId: authUserId,
+        );
+
+        expect(deleted, hasLength(1));
+        expect(deleted.single.$1, authUserId);
+        expect(deleted.single.$2, authSessionId);
+        expect(await AuthSession.db.count(session), 0);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for another user, then nothing is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          authUserId: const Uuid().v4obj(),
+        );
+
+        expect(deleted, isEmpty);
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for its `method`, then it is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          method: 'test',
+        );
+
+        expect(deleted, hasLength(1));
+        expect(deleted.single.$1, authUserId);
+        expect(deleted.single.$2, authSessionId);
+        expect(await AuthSession.db.count(session), 0);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for another `method`, then nothing is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          method: 'something else',
+        );
+
+        expect(deleted, isEmpty);
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for the session id, then it is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          authSessionId: authSessionId,
+        );
+
+        expect(deleted, hasLength(1));
+        expect(deleted.single.$1, authUserId);
+        expect(deleted.single.$2, authSessionId);
+        expect(await AuthSession.db.count(session), 0);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` with another session id, then nothing is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          authSessionId: const Uuid().v4obj(),
+        );
+
+        expect(deleted, isEmpty);
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+
+    test(
+      'when calling `deleteSessions` for the user with another `method`, then nothing is deleted.',
+      () async {
+        final deleted = await AuthSessionsAdmin().deleteSessions(
+          session,
+          authUserId: authUserId,
+          method: 'some other method',
+        );
+
+        expect(deleted, isEmpty);
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+  });
+
   withServerpod(
     'Given an auth session expiring in 1 day,',
     (final sessionBuilder, final endpoints) {
