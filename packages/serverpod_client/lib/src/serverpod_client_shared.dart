@@ -240,9 +240,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // Backwards compatibility: authenticationKeyManager implements ClientAuthKeyProvider.
-    // This can be removed once the new auth system is fully deployed and all code
-    // uses authKeyProvider directly.
+    // TODO: Remove this backwards compatibility assignment.
     authKeyProvider ??= authenticationKeyManager;
   }
 
