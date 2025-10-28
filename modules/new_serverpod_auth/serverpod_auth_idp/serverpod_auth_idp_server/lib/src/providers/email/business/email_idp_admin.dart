@@ -125,13 +125,8 @@ final class EmailIDPAdmin {
     );
   }
 
-  /// Checks whether an email authentication exists for the given email address.
-  Future<
-      ({
-        UuidValue authUserId,
-        UuidValue emailAccountId,
-        bool hasPassword,
-      })?> findAccount(
+  /// Gets an email authentication exists for the given email address.
+  Future<EmailAccount?> findAccount(
     final Session session, {
     required String email,
     final Transaction? transaction,
@@ -146,15 +141,7 @@ final class EmailIDPAdmin {
         transaction: transaction,
       );
 
-      if (account == null) {
-        return null;
-      }
-
-      return (
-        authUserId: account.authUserId,
-        emailAccountId: account.id!,
-        hasPassword: account.passwordHash.lengthInBytes > 0,
-      );
+      return account;
     });
   }
 
@@ -215,4 +202,10 @@ final class EmailIDPAdmin {
       },
     );
   }
+}
+
+/// Extension methods for [EmailAccount].
+extension EmailAccountExtension on EmailAccount {
+  /// Checks whether the email account has a password set.
+  bool get hasPassword => passwordHash.lengthInBytes > 0;
 }

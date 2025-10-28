@@ -176,7 +176,7 @@ void main() {
         );
 
         expect(result, isNotNull);
-        expect(result?.emailAccountId, equals(emailAccountId));
+        expect(result?.id, equals(emailAccountId));
       });
     },
   );

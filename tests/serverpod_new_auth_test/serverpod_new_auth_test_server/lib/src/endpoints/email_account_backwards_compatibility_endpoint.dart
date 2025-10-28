@@ -102,7 +102,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
 
     return await AuthBackwardsCompatibility.isLegacyPasswordValid(
       session,
-      emailAccountId: account.emailAccountId,
+      emailAccountId: account.id!,
       email: email,
       password: password,
     );
