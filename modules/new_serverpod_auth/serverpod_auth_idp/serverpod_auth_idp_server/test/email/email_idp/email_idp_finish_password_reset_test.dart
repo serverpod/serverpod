@@ -253,9 +253,6 @@ void main() {
     });
   });
 
-  // TODO: This scenario is a bit strange since it allows the password reset
-  // to be completed even though the auth user is blocked and just prevents
-  // a new session from being created.
   withServerpod('Given password reset request exists for blocked auth user',
       rollbackDatabase: RollbackDatabase.disabled,
       testGroupTagsOverride: TestTags.concurrencyOneTestTags,
