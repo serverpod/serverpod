@@ -92,18 +92,18 @@ String? stripDocumentationTemplateMarkers(String? documentation) {
   );
 
   var result = documentation;
-  
+
   // Remove {@template ...} lines
   result = result.replaceAll(templateMarkerPattern, '');
-  
+
   // Remove {@endtemplate} lines
   result = result.replaceAll(endTemplateMarkerPattern, '');
-  
+
   // Clean up any resulting extra blank lines (more than one consecutive blank line)
   result = result.replaceAll(RegExp(r'(\n\s*\n)\s*\n+'), '\$1');
-  
+
   // Trim leading/trailing whitespace
   result = result.trim();
-  
+
   return result.isEmpty ? null : result;
 }

@@ -353,8 +353,7 @@ void main() {
       expect(result, '''/// This is a method''');
     });
 
-    test(
-        'Given documentation with only {@template} marker then it is removed.',
+    test('Given documentation with only {@template} marker then it is removed.',
         () {
       var input = '''/// {@template example.method}
 /// This is a method''';
@@ -374,7 +373,8 @@ void main() {
     test(
         'Given documentation with template markers and multiple paragraphs then markers are removed and content is preserved.',
         () {
-      var input = '''/// {@template email_account_base_endpoint.start_registration}
+      var input =
+          '''/// {@template email_account_base_endpoint.start_registration}
 /// Starts the registration for a new user account with an email-based login
 /// associated to it.
 ///
@@ -387,8 +387,7 @@ void main() {
 /// be valid.
 /// {@endtemplate}''';
       var result = stripDocumentationTemplateMarkers(input);
-      expect(
-          result,
+      expect(result,
           '''/// Starts the registration for a new user account with an email-based login
 /// associated to it.
 ///
@@ -420,8 +419,7 @@ void main() {
       expect(result, input);
     });
 
-    test(
-        'Given documentation that is only template markers then returns null.',
+    test('Given documentation that is only template markers then returns null.',
         () {
       var input = '''/// {@template example.method}
 /// {@endtemplate}''';
