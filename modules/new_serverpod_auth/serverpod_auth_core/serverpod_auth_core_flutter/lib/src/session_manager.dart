@@ -107,12 +107,21 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     return authKeyProvider.refreshAuthKey(force: force);
   }
 
-  /// Restores any existing session from the storage and validates it. If the
-  /// authentication is no longer valid, the user is signed out from the current
-  /// device, updating the [authInfo] value. If the refresh fails due to other
-  /// reasons (network error, server error, etc.), returns false, but does not
-  /// sign out the user. Returns true if the authentication was validated. Use
-  /// [timeout] to set a maximum time for the server validation call.
+  /// Restores any existing session from storage and validates with the server.
+  ///
+  /// This method is intended to be called when the app starts and is the same
+  /// as calling [restore] followed by [validateAuthentication]. To only restore
+  /// the session from storage without validating with the server, use [restore]
+  /// instead.
+  ///
+  /// After restoring the session, if the authentication is no longer valid, the
+  /// user is signed out from the current device, updating the [authInfo] value.
+  /// Returns false if the refresh fails due to other reasons (network error,
+  /// server error, timeout, etc.), but does not sign out the user. Returns true
+  /// if the authentication was validated.
+  ///
+  /// Use [timeout] to set a maximum time for the server validation call. The
+  /// validation can be retried at any time by calling [validateAuthentication].
   Future<bool> initialize({
     Duration timeout = const Duration(seconds: 2),
   }) async {
