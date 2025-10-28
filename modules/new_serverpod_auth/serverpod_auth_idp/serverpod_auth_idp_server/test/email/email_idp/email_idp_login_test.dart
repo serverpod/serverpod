@@ -190,6 +190,27 @@ void main() {
           ),
         );
       });
+
+      test(
+          'when login is called with invalid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+          () async {
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: '$password-invalid',
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountLoginException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountLoginExceptionReason.tooManyAttempts,
+            ),
+          ),
+        );
+      });
     },
   );
 
