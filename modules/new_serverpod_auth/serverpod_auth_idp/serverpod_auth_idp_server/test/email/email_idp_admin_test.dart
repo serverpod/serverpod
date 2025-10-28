@@ -59,6 +59,44 @@ void main() {
     },
   );
 
+  withServerpod('Given an email account',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late EmailIDPTestFixture fixture;
+    const email = 'test@serverpod.dev';
+    late UuidValue emailAccountId;
+    setUp(() async {
+      session = sessionBuilder.build();
+      fixture = EmailIDPTestFixture();
+      final authUser = await fixture.createAuthUser(session);
+      final emailAccount = await fixture.createEmailAccount(
+        session,
+        authUserId: authUser.id,
+        email: email,
+      );
+      emailAccountId = emailAccount.id!;
+    });
+
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
+
+    test(
+        'when findAccount is called with uppercase email then it finds email account',
+        () async {
+      final result = await session.db.transaction(
+        (final transaction) => fixture.emailIDP.admin.findAccount(
+          session,
+          email: email.toUpperCase(),
+          transaction: transaction,
+        ),
+      );
+
+      expect(result, isNotNull);
+      expect(result?.id, equals(emailAccountId));
+    });
+  });
+
   withServerpod('Given an email account without password',
       (final sessionBuilder, final endpoints) {
     late Session session;
@@ -162,21 +200,6 @@ void main() {
 
         expect(result, isNotNull);
         expect(result?.hasPassword, isTrue);
-      });
-
-      test(
-          'when findAccount is called with uppercase email then it finds email account',
-          () async {
-        final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
-            session,
-            email: email.toUpperCase(),
-            transaction: transaction,
-          ),
-        );
-
-        expect(result, isNotNull);
-        expect(result?.id, equals(emailAccountId));
       });
     },
   );
