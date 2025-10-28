@@ -253,4 +253,65 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given maximum allowed invalid login attempts for non-existent email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const maxLoginAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+      const email = 'nonexistent@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            passwordHashPepper: 'pepper',
+            failedLoginRateLimit: maxLoginAttempts,
+          ),
+        );
+
+        // Make initial failed login attempt to hit the rate limit
+        try {
+          await fixture.emailIDP.login(
+            session,
+            email: email,
+            password: 'WrongPassword123!',
+          );
+        } on EmailAccountLoginException {
+          // Expected
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when login is called then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+          () async {
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: 'Password123!',
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountLoginException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountLoginExceptionReason.tooManyAttempts,
+            ),
+          ),
+        );
+      });
+    },
+  );
 }
