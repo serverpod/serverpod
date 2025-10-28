@@ -120,6 +120,7 @@ void main() {
       });
     },
   );
+
   withServerpod(
     'Given email account with invalid logins matching rate limit',
     rollbackDatabase: RollbackDatabase.disabled,

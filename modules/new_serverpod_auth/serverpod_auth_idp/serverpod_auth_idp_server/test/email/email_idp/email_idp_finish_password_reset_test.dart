@@ -368,6 +368,7 @@ void main() {
     tearDown(() async {
       await fixture.tearDown(session);
     });
+
     test(
         'when finishPasswordReset is called with valid parameters then it destroys all existing sessions',
         () async {
