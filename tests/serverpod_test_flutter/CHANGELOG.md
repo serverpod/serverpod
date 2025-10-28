@@ -1,3 +1,43 @@
+## 3.0.0-alpha.3
+- feat: BREAKING. Removes deprecated signOut endpoint and legacy configuration.
+- feat: BREAKING. Adds comprehensive support for serving static assets from the web server including cache busting, HTTP range requests and more.
+- feat: BREAKING. Authenticated user id is now logged using a String to support multiple formats.
+- feat: BREAKING. Switches to Bearer token for authentication tokens in new auth module.
+- fix: BREAKING. Removes deprecated `SerializableEntity` class.
+- refactor: BREAKING. Refactors the new email identity provider to clarify the code structure and improve readability.
+- refactor: BREAKING. Consolidates exceptions for new email identity provider. ([@yashas-hm](https://github.com/yashas-hm))
+- refactor: BREAKING. Replaces callbacks with exceptions and return object when validating password hash. ([@yashas-hm](https://github.com/yashas-hm))
+- feat: Adds support for router fallbacks in the web server.
+- feat: Adds support for clearing storage cache on `ClientAuthSessionManager`.
+- feat: Adds support for supplying image when creating a user profile in new auth module.
+- feat: Adds support for middleware in the web server.
+- feat: Adds support for endpoint inheritance in generated client code.
+- feat: Adds support for generating abstract endpoint classes in client code.
+- feat: Adds support for `immutable` keyword in models to generate immutable models. ([obiwanzenobi](https://github.com/obiwanzenobi), [@kamil-matula](https://github.com/kamil-matula))
+- feat: Adds support for partial database updates with the `updateWhere` and `updateById` methods.
+- feat: Adds support for `required` field keyword on nullable fields in model and exception definitions.
+- feat: Adds support for `@unauthenticatedClientCall` annotation for endpoints.
+- feat: Web server templates can now be placed in subdirectories. ([@nicowalter256](https://github.com/nicowalter256))
+- feat: Introduces a new `authKeyProvider` and a new client session manager experience in new auth module.
+- feat: Dynamic routes by default now always include no cache headers in the web server.
+- feat: Adds a `~` operator on expressions to perform `NOT` expression.
+- feat(EXPERIMENTAL): Adds support for inheritance on `id` field for table models for `serverOnly` models.
+- fix: Fixes an issue where {@template} markers were not removed from generated endpoint documentation.
+- fix: Fixes an issue where a failing database health check would fail the health check.
+- fix: Fixes an issue where request-specific information was included in error responses.
+- fix: Fixes an issue where the port retrieved from API and insights server would not be the actual port used by the service.
+- fix: Fixes an issue where updating a vector database entry would crash due to missing dimensions.
+- fix: Fixes a crash when persistent logging is disabled but database is enabled.
+- fix: Improves documentation for the email auth endpoint. ([@emilakerman](https://github.com/emilakerman))
+- fix: Fixes an issue where password length validation was not triggered for password reset and change password. ([@yashas-hm](https://github.com/yashas-hm))
+- fix: Replaces health check manager crash on unsupported platform with error message.
+- fix: Fixes an issue where transaction was not always propagated in auth bridge package.
+- fix: Index and table name collisions now give errors when generating project.
+- fix: Fixes an issue where the streaming connection handler would attempt to reconnect indefinitely if the connection was lost.
+
+## 3.0.0-alpha.2
+- fix: Fixes an issue where static assets could only be served once from the web server.
+
 ## 3.0.0-alpha.1
 - fix: BREAKING. Renames web server template widgets for improved clarity and consistency.
 - fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
