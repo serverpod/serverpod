@@ -175,7 +175,7 @@ void main() {
 
         final authUser = await fixture.createAuthUser(session);
 
-        final account = await fixture.createEmailAccount(
+        await fixture.createEmailAccount(
           session,
           authUserId: authUser.id,
           email: email,
