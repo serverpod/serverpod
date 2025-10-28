@@ -109,12 +109,13 @@ void main() {
           );
         });
 
-        test('then it returns password reset request id', () async {
+        test('then it returns account registration request id', () async {
           await expectLater(
               accountRequestIdFuture, completion(isA<UuidValue>()));
         });
 
-        test('then password reset request can be used to complete registration',
+        test(
+            'then account registration request can be used to complete registration',
             () async {
           final accountRequestId = await accountRequestIdFuture;
           final authSuccessFuture = fixture.emailIDP.finishRegistration(
