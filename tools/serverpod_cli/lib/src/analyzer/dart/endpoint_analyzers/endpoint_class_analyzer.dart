@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
@@ -60,7 +61,8 @@ abstract class EndpointClassAnalyzer {
     endpointDefinitions.add(
       EndpointDefinition(
         name: endpointName,
-        documentationComment: classDocumentationComment,
+        documentationComment:
+            stripDocumentationTemplateMarkers(classDocumentationComment),
         className: className,
         methods: _parseEndpointMethods(element, validationErrors, filePath),
         filePath: filePath,

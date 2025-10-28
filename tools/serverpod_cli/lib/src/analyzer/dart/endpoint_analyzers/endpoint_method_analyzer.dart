@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.da
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'extension/endpoint_parameters_extension.dart';
 
@@ -32,7 +33,8 @@ abstract class EndpointMethodAnalyzer {
     if (isStream) {
       return MethodStreamDefinition(
         name: method.displayName,
-        documentationComment: method.documentationComment,
+        documentationComment:
+            stripDocumentationTemplateMarkers(method.documentationComment),
         annotations: AnnotationAnalyzer.parseAnnotations(method),
         parameters: parameters.required,
         parametersNamed: parameters.named,
@@ -43,7 +45,8 @@ abstract class EndpointMethodAnalyzer {
 
     return MethodCallDefinition(
       name: method.displayName,
-      documentationComment: method.documentationComment,
+      documentationComment:
+          stripDocumentationTemplateMarkers(method.documentationComment),
       annotations: AnnotationAnalyzer.parseAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
