@@ -468,4 +468,70 @@ void main() {
       });
     },
   );
+
+  withServerpod('Given completed password reset request',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late EmailIDPTestFixture fixture;
+    late UuidValue passwordResetRequestId;
+    const email = 'test@serverpod.dev';
+    const password = 'Password123!';
+    late String verificationCode;
+    setUp(() async {
+      session = sessionBuilder.build();
+      verificationCode = const Uuid().v4().toString();
+      fixture = EmailIDPTestFixture(
+        config: EmailIDPConfig(
+          passwordHashPepper: 'pepper',
+          passwordResetVerificationCodeGenerator: () => verificationCode,
+        ),
+      );
+      final authUser = await fixture.createAuthUser(session);
+      await fixture.createEmailAccount(
+        session,
+        authUserId: authUser.id,
+        email: email,
+        password: EmailAccountPassword.fromString(password),
+      );
+      passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
+      );
+
+      await fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: 'NewPassword123!',
+      );
+    });
+
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
+
+    test(
+        'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with reason "invalid"',
+        () async {
+      final result = fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: 'NewPassword123!',
+      );
+
+      await expectLater(
+        result,
+        throwsA(
+          isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          ),
+        ),
+      );
+    });
+  });
 }
