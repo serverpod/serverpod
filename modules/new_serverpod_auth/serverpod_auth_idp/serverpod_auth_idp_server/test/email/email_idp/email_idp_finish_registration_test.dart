@@ -174,6 +174,27 @@ void main() {
         ),
       );
     });
+
+    test(
+        'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with invalid reason',
+        () async {
+      final result = fixture.emailIDP.finishRegistration(
+        session,
+        accountRequestId: accountRequestId,
+        verificationCode: '$verificationCode-invalid',
+      );
+
+      await expectLater(
+        result,
+        throwsA(
+          isA<EmailAccountRequestException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountRequestExceptionReason.invalid,
+          ),
+        ),
+      );
+    });
   });
 
   withServerpod('Given no account request created',
