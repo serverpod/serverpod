@@ -190,6 +190,28 @@ void main() {
         ),
       );
     });
+
+    test(
+        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with invalid reason',
+        () async {
+      final result = fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: '$verificationCode-invalid',
+        newPassword: 'NewPassword123!',
+      );
+
+      await expectLater(
+        result,
+        throwsA(
+          isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          ),
+        ),
+      );
+    });
   });
 
   withServerpod('Given no password reset request created',
