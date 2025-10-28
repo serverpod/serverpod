@@ -71,6 +71,7 @@ void main() {
   });
 
   test(
+      'Given StreamingConnectionHandler '
       'when transitioning to connected status during countdown '
       'then timer is cancelled and old timer does not fire', () async {
     handler = StreamingConnectionHandler(
