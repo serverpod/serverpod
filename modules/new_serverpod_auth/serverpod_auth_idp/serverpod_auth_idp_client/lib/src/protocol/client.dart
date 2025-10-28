@@ -58,16 +58,21 @@ abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
 /// methods.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [AuthEmail].
+/// logic by using [EmailIDP].
 /// {@category Endpoint}
-abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
-  EndpointAuthEmailBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
+  EndpointEmailIDPBase(_i1.EndpointCaller caller) : super(caller);
 
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a
-  /// [EmailAccountLoginException].
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> login({
     required String email,
@@ -98,10 +103,13 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the account request has
   ///   already expired.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
   /// {@endtemplate}
@@ -133,10 +141,12 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.

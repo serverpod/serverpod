@@ -1,3 +1,5 @@
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+
 /// Configuration options for the account migration.
 class AuthMigrationConfig {
   /// Whether to import the `serverpod_auth` `UserInfo` into a
@@ -12,6 +14,13 @@ class AuthMigrationConfig {
   /// Defaults to `true`.
   final bool importSessions;
 
+  /// The email identity provider to be used for migrating email accounts.
+  final EmailIDP emailIDP;
+
   /// Create a new email account migration configuration.
-  AuthMigrationConfig({this.importProfile = true, this.importSessions = true});
+  AuthMigrationConfig({
+    this.importProfile = true,
+    this.importSessions = true,
+    required this.emailIDP,
+  });
 }

@@ -4,7 +4,7 @@ export '../../generated/protocol.dart'
     show
         EmailAccount,
         EmailAccountFailedLoginAttempt,
-        EmailAccountPasswordResetAttempt,
+        EmailAccountPasswordResetCompleteAttempt,
         EmailAccountPasswordResetRequest,
         EmailAccountPasswordResetRequestAttempt,
         EmailAccountRequest,
@@ -15,13 +15,13 @@ export '../../generated/protocol.dart'
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,
         EmailAccountRequestExceptionReason;
-export 'business/auth_email.dart' show AuthEmail;
-export 'business/email_account_config.dart';
-export 'business/email_account_server_exceptions.dart';
-export 'business/email_accounts.dart'
-    show
-        EmailAccounts,
-        EmailAccountsAdmin,
-        EmailAccountRequestResult,
-        PasswordResetResult;
-export 'endpoints/auth_email_base_endpoint.dart' show AuthEmailBaseEndpoint;
+export 'business/email_idp.dart' show EmailIDP;
+export 'business/email_idp_admin.dart';
+export 'business/email_idp_config.dart';
+export 'business/email_idp_server_exceptions.dart';
+export 'business/email_idp_utils.dart';
+export 'business/utils/email_idp_account_creation_util.dart';
+export 'business/utils/email_idp_authentication_util.dart';
+export 'business/utils/email_idp_password_hash_util.dart';
+export 'business/utils/email_idp_password_reset_util.dart';
+export 'endpoints/email_idp_base_endpoint.dart' show EmailIDPBaseEndpoint;

@@ -2,8 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
 import 'package:serverpod_auth_core_server/profile.dart' as new_auth_profile;
-import 'package:serverpod_auth_idp_server/providers/email.dart'
-    as new_auth_email;
+import 'package:serverpod_auth_idp_server/providers/email.dart' as new_auth_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -12,6 +11,16 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
+  const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
+  final newEmailIDP = new_auth_idp.EmailIDP(config: config);
+
+  setUp(() async {
+    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    AuthBackwardsCompatibility.config = AuthBackwardsCompatibilityConfig(
+      emailIDP: newEmailIDP,
+    );
+  });
+
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with just `migrateUsers`,',
     (final sessionBuilder, final endpoints) {
@@ -126,7 +135,7 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await new_auth_email.EmailAccount.db.find(
+          (await new_auth_idp.EmailAccount.db.find(
             session,
           ))
               .single
@@ -215,15 +224,11 @@ void main() {
           password: password,
         );
 
-        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
+        authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
         ))!
             .authUserId;
-      });
-
-      tearDown(() {
-        AuthMigrations.config = AuthMigrationConfig();
       });
 
       test(
@@ -256,7 +261,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await new_auth_email.EmailAccounts.authenticate(
+            await newEmailIDP.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -297,13 +302,18 @@ void main() {
 
         await _createLegacyUser(session, email: email, password: password);
 
-        AuthMigrations.config = AuthMigrationConfig(importProfile: false);
+        AuthMigrations.config = AuthMigrationConfig(
+          importProfile: false,
+          emailIDP: newEmailIDP,
+        );
 
         await AuthMigrations.migrateUsers(session, userMigration: null);
 
-        AuthMigrations.config = AuthMigrationConfig();
+        AuthMigrations.config = AuthMigrationConfig(
+          emailIDP: newEmailIDP,
+        );
 
-        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
+        authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
         ))!
@@ -358,7 +368,7 @@ void main() {
           },
         );
 
-        authUserId = (await new_auth_email.EmailAccounts.admin.findAccount(
+        authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
         ))!
@@ -428,7 +438,7 @@ void main() {
           );
 
           expect(
-            await new_auth_email.EmailAccounts.authenticate(
+            await newEmailIDP.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -451,15 +461,14 @@ void main() {
           );
 
           await expectLater(
-            () => new_auth_email.EmailAccounts.authenticate(
+            () => newEmailIDP.utils.authentication.authenticate(
               session,
               email: email,
               password: wrongPassword,
               transaction: session.transaction,
             ),
             throwsA(isA<
-                new_auth_email
-                .EmailAuthenticationInvalidCredentialsException>()),
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
           );
         },
       );
@@ -468,7 +477,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => new_auth_email.EmailAccounts.authenticate(
+            () => newEmailIDP.utils.authentication.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,
@@ -477,8 +486,7 @@ void main() {
               transaction: session.transaction,
             ),
             throwsA(isA<
-                new_auth_email
-                .EmailAuthenticationInvalidCredentialsException>()),
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
           );
         },
       );

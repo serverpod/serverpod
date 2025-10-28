@@ -58,6 +58,151 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
 }
 
 /// {@category Endpoint}
+class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
+  EndpointEmailIDP(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'emailIDP';
+
+  /// {@template email_account_base_endpoint.login}
+  /// Logs in the user and returns a new session.
+  ///
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i4.AuthSuccess> login({
+    required String email,
+    required String password,
+  }) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'emailIDP',
+        'login',
+        {
+          'email': email,
+          'password': password,
+        },
+      );
+
+  /// {@template email_account_base_endpoint.start_registration}
+  /// Starts the registration for a new user account with an email-based login
+  /// associated to it.
+  ///
+  /// Upon successful completion of this method, an email will have been
+  /// sent to [email] with a verification link, which the user must open to
+  /// complete the registration.
+  ///
+  /// Always returns a account request ID, which can be used to complete the
+  /// registration. If the email is already registered, the returned ID will not
+  /// be valid.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i2.UuidValue> startRegistration({
+    required String email,
+    required String password,
+  }) =>
+      caller.callServerEndpoint<_i2.UuidValue>(
+        'emailIDP',
+        'startRegistration',
+        {
+          'email': email,
+          'password': password,
+        },
+      );
+
+  /// {@template email_account_base_endpoint.finish_registration}
+  /// Completes a new account registration, creating a new auth user with a
+  /// profile and attaching the given email account to it.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  ///
+  /// Returns a session for the newly created user.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i4.AuthSuccess> finishRegistration({
+    required _i2.UuidValue accountRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'emailIDP',
+        'finishRegistration',
+        {
+          'accountRequestId': accountRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
+  /// {@template email_account_base_endpoint.start_password_reset}
+  /// Requests a password reset for [email].
+  ///
+  /// If the email address is registered, an email with reset instructions will
+  /// be send out. If the email is unknown, this method will have no effect.
+  ///
+  /// Always returns a password reset request ID, which can be used to complete
+  /// the reset. If the email is not registered, the returned ID will not be
+  /// valid.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case the client or
+  /// account has been involved in too many reset attempts.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_i2.UuidValue>(
+        'emailIDP',
+        'startPasswordReset',
+        {'email': email},
+      );
+
+  /// {@template email_account_base_endpoint.finish_password_reset}
+  /// Completes a password reset request by setting a new password.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
+  ///   password does not comply with the password policy.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to complete the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  ///
+  /// If the reset was successful, a new session is returned and all previous
+  /// active sessions of the user are destroyed.
+  /// {@endtemplate}
+  @override
+  _i3.Future<_i4.AuthSuccess> finishPasswordReset({
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+    required String newPassword,
+  }) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'emailIDP',
+        'finishPasswordReset',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+          'newPassword': newPassword,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   EndpointGoogleIDP(_i2.EndpointCaller caller) : super(caller);
 
@@ -135,12 +280,15 @@ class Client extends _i2.ServerpodClientShared {
               disconnectStreamsOnLostInternetConnection,
         ) {
     appleIDP = EndpointAppleIDP(this);
+    emailIDP = EndpointEmailIDP(this);
     googleIDP = EndpointGoogleIDP(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
 
   late final EndpointAppleIDP appleIDP;
+
+  late final EndpointEmailIDP emailIDP;
 
   late final EndpointGoogleIDP googleIDP;
 
@@ -151,6 +299,7 @@ class Client extends _i2.ServerpodClientShared {
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
         'appleIDP': appleIDP,
+        'emailIDP': emailIDP,
         'googleIDP': googleIDP,
         'greeting': greeting,
       };
