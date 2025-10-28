@@ -166,7 +166,6 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIDPTestFixture fixture;
-      late UuidValue emailAccountId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
@@ -182,7 +181,6 @@ void main() {
           email: email,
           password: EmailAccountPassword.fromString(password),
         );
-        emailAccountId = account.id!;
       });
 
       tearDown(() async {
