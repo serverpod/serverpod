@@ -39,13 +39,10 @@ void main() {
       test(
           'when login is called with correct credentials then it returns auth session token',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: password,
         );
 
         await expectLater(result, completion(isA<AuthSuccess>()));
@@ -54,13 +51,10 @@ void main() {
       test(
           'when login is called with invalid credentials then it throws EmailAccountLoginException with invalidCredentials',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
-            session,
-            email: email,
-            password: 'WrongPassword123!',
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: 'WrongPassword123!',
         );
 
         await expectLater(
@@ -113,13 +107,10 @@ void main() {
       test(
           'when login is called with correct credentials then it throws AuthUserBlockedException',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: password,
         );
 
         await expectLater(
@@ -164,13 +155,10 @@ void main() {
 
         // Make initial failed login attempt to hit the rate limit
         try {
-          await session.db.transaction(
-            (final transaction) => fixture.emailIDP.login(
-              session,
-              email: email,
-              password: 'WrongPassword123!',
-              transaction: transaction,
-            ),
+          await fixture.emailIDP.login(
+            session,
+            email: email,
+            password: 'WrongPassword123!',
           );
         } on EmailAccountLoginException {
           // Expected
@@ -184,13 +172,10 @@ void main() {
       test(
           'when login is called with valid credentials then it throws EmailAccountLoginException with tooManyAttempts',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.login(
+          session,
+          email: email,
+          password: password,
         );
 
         await expectLater(
@@ -227,13 +212,10 @@ void main() {
       test(
           'when login is called then it throws EmailAccountLoginException with invalidCredentials',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
-            session,
-            email: 'nonexistent@serverpod.dev',
-            password: 'Password123!',
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.login(
+          session,
+          email: 'nonexistent@serverpod.dev',
+          password: 'Password123!',
         );
 
         await expectLater(

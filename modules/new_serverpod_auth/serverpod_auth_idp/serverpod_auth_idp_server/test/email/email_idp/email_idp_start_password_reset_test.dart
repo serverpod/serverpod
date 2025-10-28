@@ -46,12 +46,9 @@ void main() {
       group('when startPasswordReset is called', () {
         late Future<UuidValue> passwordResetRequestIdFuture;
         setUp(() async {
-          passwordResetRequestIdFuture = session.db.transaction(
-            (final transaction) => fixture.emailIDP.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+          passwordResetRequestIdFuture = fixture.emailIDP.startPasswordReset(
+            session,
+            email: email,
           );
         });
 
@@ -65,14 +62,11 @@ void main() {
             () async {
           final passwordResetRequestId = await passwordResetRequestIdFuture;
 
-          final authSuccessFuture = session.db.transaction(
-            (final transaction) => fixture.emailIDP.finishPasswordReset(
-              session,
-              passwordResetRequestId: passwordResetRequestId,
-              verificationCode: verificationCode,
-              newPassword: 'NewPassword123!',
-              transaction: transaction,
-            ),
+          final authSuccessFuture = fixture.emailIDP.finishPasswordReset(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            newPassword: 'NewPassword123!',
           );
 
           await expectLater(authSuccessFuture, completion(isA<AuthSuccess>()));
@@ -101,12 +95,9 @@ void main() {
       test(
           'when startPasswordReset is called then it returns dummy uuid without throwing',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.startPasswordReset(
-            session,
-            email: 'nonexistent@serverpod.dev',
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.startPasswordReset(
+          session,
+          email: 'nonexistent@serverpod.dev',
         );
 
         await expectLater(result, completion(isA<UuidValue>()));

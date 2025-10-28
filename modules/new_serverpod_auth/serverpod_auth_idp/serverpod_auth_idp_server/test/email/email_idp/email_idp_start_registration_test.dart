@@ -38,13 +38,10 @@ void main() {
       test(
           'when start registration is called for the same user then it returns dummy password reset request id',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.startRegistration(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.startRegistration(
+          session,
+          email: email,
+          password: password,
         );
 
         await expectLater(result, completion(isA<UuidValue>()));
@@ -82,13 +79,10 @@ void main() {
       group('when startRegistration is called', () {
         late Future<UuidValue> accountRequestIdFuture;
         setUp(() async {
-          accountRequestIdFuture = session.db.transaction(
-            (final transaction) => fixture.emailIDP.startRegistration(
-              session,
-              email: email,
-              password: password,
-              transaction: transaction,
-            ),
+          accountRequestIdFuture = fixture.emailIDP.startRegistration(
+            session,
+            email: email,
+            password: password,
           );
         });
 
@@ -100,13 +94,10 @@ void main() {
         test('then password reset request can be used to complete registration',
             () async {
           final accountRequestId = await accountRequestIdFuture;
-          final authSuccessFuture = session.db.transaction(
-            (final transaction) => fixture.emailIDP.finishRegistration(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
+          final authSuccessFuture = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
           );
 
           await expectLater(authSuccessFuture, completion(isA<AuthSuccess>()));

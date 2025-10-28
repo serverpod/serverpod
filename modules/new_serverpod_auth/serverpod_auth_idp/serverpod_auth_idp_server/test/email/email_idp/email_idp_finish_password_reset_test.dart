@@ -49,12 +49,9 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
+        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+          session,
+          email: email,
         );
       });
 
@@ -65,14 +62,11 @@ void main() {
       test(
           'when finishPasswordReset is called with valid parameters then it returns auth session token',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.finishPasswordReset(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            newPassword: allowedNewPassword,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.finishPasswordReset(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+          newPassword: allowedNewPassword,
         );
 
         await expectLater(result, completion(isA<AuthSuccess>()));
@@ -81,14 +75,11 @@ void main() {
       test(
           'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.finishPasswordReset(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: '$verificationCode-invalid',
-            newPassword: allowedNewPassword,
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.finishPasswordReset(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: '$verificationCode-invalid',
+          newPassword: allowedNewPassword,
         );
 
         await expectLater(
@@ -106,14 +97,11 @@ void main() {
       test(
           'when finishPasswordReset is called with password that violates policy then it throws EmailAccountPasswordResetException with policyViolation reason',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.finishPasswordReset(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            newPassword: '$allowedNewPassword-invalid',
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.finishPasswordReset(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+          newPassword: '$allowedNewPassword-invalid',
         );
 
         await expectLater(
@@ -170,12 +158,9 @@ void main() {
               passwordResetVerificationCodeLifetime + const Duration(hours: 1),
             ),
           ), () async {
-        passwordResetRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
+        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+          session,
+          email: email,
         );
       });
     });
@@ -187,14 +172,11 @@ void main() {
     test(
         'when finishPasswordReset is called with valid parameters then it throws EmailAccountPasswordResetException with expired reason',
         () async {
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishPasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: 'NewPassword123!',
-          transaction: transaction,
-        ),
+      final result = fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: 'NewPassword123!',
       );
 
       await expectLater(
@@ -229,14 +211,11 @@ void main() {
     test(
         'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with invalid reason',
         () async {
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishPasswordReset(
-          session,
-          passwordResetRequestId: const Uuid().v4obj(),
-          verificationCode: 'some-code',
-          newPassword: 'NewPassword123!',
-          transaction: transaction,
-        ),
+      final result = fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: const Uuid().v4obj(),
+        verificationCode: 'some-code',
+        newPassword: 'NewPassword123!',
       );
 
       await expectLater(
@@ -286,12 +265,9 @@ void main() {
         password: EmailAccountPassword.fromString(password),
       );
 
-      passwordResetRequestId = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.startPasswordReset(
-          session,
-          email: email,
-          transaction: transaction,
-        ),
+      passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
       );
 
       // Block the auth user after creating the password reset request
@@ -309,14 +285,11 @@ void main() {
     test(
         'when finishPasswordReset is called then it throws AuthUserBlockedException',
         () async {
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishPasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: 'NewPassword123!',
-          transaction: transaction,
-        ),
+      final result = fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: 'NewPassword123!',
       );
 
       await expectLater(
@@ -367,12 +340,9 @@ void main() {
         password: EmailAccountPassword.fromString(password),
       );
 
-      passwordResetRequestId = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.startPasswordReset(
-          session,
-          email: email,
-          transaction: transaction,
-        ),
+      passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
       );
     });
 
@@ -383,14 +353,11 @@ void main() {
         'when finishPasswordReset is called with valid parameters then it destroys all existing sessions',
         () async {
       // Complete password reset
-      final authSuccess = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishPasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: newPassword,
-          transaction: transaction,
-        ),
+      final authSuccess = await fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+        newPassword: newPassword,
       );
 
       // Verify the session was destroyed by checking if it still exists

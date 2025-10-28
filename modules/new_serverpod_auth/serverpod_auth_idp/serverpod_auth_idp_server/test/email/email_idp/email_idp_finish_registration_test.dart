@@ -35,13 +35,10 @@ void main() {
           ),
         );
 
-        accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startRegistration(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        accountRequestId = await fixture.emailIDP.startRegistration(
+          session,
+          email: email,
+          password: password,
         );
       });
 
@@ -53,13 +50,10 @@ void main() {
         late Future<AuthSuccess> authSuccessFuture;
 
         setUp(() async {
-          authSuccessFuture = session.db.transaction(
-            (final transaction) => fixture.emailIDP.finishRegistration(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
+          authSuccessFuture = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
           );
         });
 
@@ -97,13 +91,10 @@ void main() {
       test(
           'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with invalid reason',
           () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.finishRegistration(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: '$verificationCode-invalid',
-            transaction: transaction,
-          ),
+        final result = fixture.emailIDP.finishRegistration(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: '$verificationCode-invalid',
         );
 
         await expectLater(
@@ -151,13 +142,10 @@ void main() {
               accountRequestVerificationCodeLifetime + const Duration(hours: 1),
             ),
           ), () async {
-        accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startRegistration(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+        accountRequestId = await fixture.emailIDP.startRegistration(
+          session,
+          email: email,
+          password: password,
         );
       });
     });
@@ -169,13 +157,10 @@ void main() {
     test(
         'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with expired reason',
         () async {
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishRegistration(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        ),
+      final result = fixture.emailIDP.finishRegistration(
+        session,
+        accountRequestId: accountRequestId,
+        verificationCode: verificationCode,
       );
 
       await expectLater(
@@ -210,13 +195,10 @@ void main() {
     test(
         'when finishRegistration is called then it throws EmailAccountRequestException with invalid reason',
         () async {
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.finishRegistration(
-          session,
-          accountRequestId: const Uuid().v4obj(),
-          verificationCode: 'some-code',
-          transaction: transaction,
-        ),
+      final result = fixture.emailIDP.finishRegistration(
+        session,
+        accountRequestId: const Uuid().v4obj(),
+        verificationCode: 'some-code',
       );
 
       await expectLater(
