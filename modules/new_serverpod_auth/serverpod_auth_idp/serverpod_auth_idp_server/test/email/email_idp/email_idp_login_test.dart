@@ -171,7 +171,7 @@ void main() {
       });
 
       test(
-          'when login is called with valid credentials then it throws EmailAccountLoginException with tooManyAttempts',
+          'when login is called with valid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
           () async {
         final result = fixture.emailIDP.login(
           session,

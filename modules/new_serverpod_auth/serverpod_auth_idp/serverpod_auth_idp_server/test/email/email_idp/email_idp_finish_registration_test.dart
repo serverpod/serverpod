@@ -89,7 +89,7 @@ void main() {
       });
 
       test(
-          'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with invalid reason',
+          'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
           () async {
         final result = fixture.emailIDP.finishRegistration(
           session,
@@ -155,7 +155,7 @@ void main() {
     });
 
     test(
-        'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with expired reason',
+        'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with reason "expired"',
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,
@@ -176,7 +176,7 @@ void main() {
     });
 
     test(
-        'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with invalid reason',
+        'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,
@@ -214,7 +214,7 @@ void main() {
     });
 
     test(
-        'when finishRegistration is called then it throws EmailAccountRequestException with invalid reason',
+        'when finishRegistration is called then it throws EmailAccountRequestException with reason "invalid"',
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,

@@ -73,7 +73,7 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException',
+          'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
@@ -95,7 +95,7 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with password that violates policy then it throws EmailAccountPasswordResetException with policyViolation reason',
+          'when finishPasswordReset is called with password that violates policy then it throws EmailAccountPasswordResetException with reason "policyViolation"',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
@@ -170,7 +170,7 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called with valid parameters then it throws EmailAccountPasswordResetException with expired reason',
+        'when finishPasswordReset is called with valid parameters then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
@@ -192,7 +192,7 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with invalid reason',
+        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
@@ -231,7 +231,7 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with invalid reason',
+        'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
@@ -446,7 +446,7 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with valid parameters then throws EmailAccountPasswordResetException with invalid reason',
+          'when finishPasswordReset is called with valid parameters then throws EmailAccountPasswordResetException with reason "invalid"',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
