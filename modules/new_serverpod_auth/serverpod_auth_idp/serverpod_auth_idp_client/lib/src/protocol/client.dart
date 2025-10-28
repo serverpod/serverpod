@@ -29,7 +29,6 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
   EndpointAppleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
   ///
   /// If no user exists yet linked to the Apple-provided identifier, a new one
@@ -38,7 +37,6 @@ abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
   /// their `AuthUser`.
   ///
   /// Returns a session for the user upon successful login.
-  /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
@@ -58,23 +56,25 @@ abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
 /// methods.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [AuthEmail].
+/// logic by using [EmailIDP].
 /// {@category Endpoint}
-abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
-  EndpointAuthEmailBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
+  EndpointEmailIDPBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a
-  /// [EmailAccountLoginException].
-  /// {@endtemplate}
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   _i2.Future<_i3.AuthSuccess> login({
     required String email,
     required String password,
   });
 
-  /// {@template email_account_base_endpoint.start_registration}
   /// Starts the registration for a new user account with an email-based login
   /// associated to it.
   ///
@@ -85,32 +85,31 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   /// Always returns a account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
-  /// {@endtemplate}
   _i2.Future<_i1.UuidValue> startRegistration({
     required String email,
     required String password,
   });
 
-  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   ///
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the account request has
   ///   already expired.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
-  /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> finishRegistration({
     required _i1.UuidValue accountRequestId,
     required String verificationCode,
   });
 
-  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   ///
   /// If the email address is registered, an email with reset instructions will
@@ -122,10 +121,8 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   ///
   /// Throws an [EmailAccountPasswordResetException] in case the client or
   /// account has been involved in too many reset attempts.
-  /// {@endtemplate}
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
 
-  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
@@ -133,14 +130,15 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.
-  /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> finishPasswordReset({
     required _i1.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -157,12 +155,10 @@ abstract class EndpointAuthEmailBase extends _i1.EndpointRef {
 abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
   EndpointGoogleIDPBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// {@template google_idp_base_endpoint.login}
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  /// {@endtemplate}
   _i2.Future<_i3.AuthSuccess> login({required String idToken});
 }
 

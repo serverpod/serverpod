@@ -341,4 +341,90 @@ void main() {
       ]);
     });
   });
+
+  group('stripDocumentationTemplateMarkers', () {
+    test(
+        'Given documentation with {@template} and {@endtemplate} markers then they are removed.',
+        () {
+      var input = '''/// {@template example.method}
+/// This is a method
+/// {@endtemplate}''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result, '''/// This is a method''');
+    });
+
+    test('Given documentation with only {@template} marker then it is removed.',
+        () {
+      var input = '''/// {@template example.method}
+/// This is a method''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result, '''/// This is a method''');
+    });
+
+    test(
+        'Given documentation with only {@endtemplate} marker then it is removed.',
+        () {
+      var input = '''/// This is a method
+/// {@endtemplate}''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result, '''/// This is a method''');
+    });
+
+    test(
+        'Given documentation with template markers and multiple paragraphs then markers are removed and content is preserved.',
+        () {
+      var input =
+          '''/// {@template email_account_base_endpoint.start_registration}
+/// Starts the registration for a new user account with an email-based login
+/// associated to it.
+///
+/// Upon successful completion of this method, an email will have been
+/// sent to [email] with a verification link, which the user must open to
+/// complete the registration.
+///
+/// Always returns a account request ID, which can be used to complete the
+/// registration. If the email is already registered, the returned ID will not
+/// be valid.
+/// {@endtemplate}''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result,
+          '''/// Starts the registration for a new user account with an email-based login
+/// associated to it.
+///
+/// Upon successful completion of this method, an email will have been
+/// sent to [email] with a verification link, which the user must open to
+/// complete the registration.
+///
+/// Always returns a account request ID, which can be used to complete the
+/// registration. If the email is already registered, the returned ID will not
+/// be valid.''');
+    });
+
+    test('Given null documentation then returns null.', () {
+      var result = stripDocumentationTemplateMarkers(null);
+      expect(result, null);
+    });
+
+    test('Given empty documentation then returns empty.', () {
+      var result = stripDocumentationTemplateMarkers('');
+      expect(result, '');
+    });
+
+    test(
+        'Given documentation without template markers then it is returned unchanged.',
+        () {
+      var input = '''/// This is a method
+/// with multiple lines''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result, input);
+    });
+
+    test('Given documentation that is only template markers then returns null.',
+        () {
+      var input = '''/// {@template example.method}
+/// {@endtemplate}''';
+      var result = stripDocumentationTemplateMarkers(input);
+      expect(result, null);
+    });
+  });
 }

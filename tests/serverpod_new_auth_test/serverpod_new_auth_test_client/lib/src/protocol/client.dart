@@ -171,18 +171,21 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
+class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'emailAccount';
 
-  /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
-  /// In case an expected error occurs, this throws a
-  /// [EmailAccountLoginException].
-  /// {@endtemplate}
+  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
+  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
+  ///   password is incorrect.
+  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
+  ///   too many failed login attempts.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i2.Future<_i3.AuthSuccess> login({
     required String email,
@@ -197,7 +200,6 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.start_registration}
   /// Starts the registration for a new user account with an email-based login
   /// associated to it.
   ///
@@ -208,7 +210,6 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
   /// Always returns a account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
-  /// {@endtemplate}
   @override
   _i2.Future<_i1.UuidValue> startRegistration({
     required String email,
@@ -223,20 +224,21 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   ///
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the account request has
   ///   already expired.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
-  /// {@endtemplate}
   @override
   _i2.Future<_i3.AuthSuccess> finishRegistration({
     required _i1.UuidValue accountRequestId,
@@ -251,7 +253,6 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   ///
   /// If the email address is registered, an email with reset instructions will
@@ -263,7 +264,6 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
   ///
   /// Throws an [EmailAccountPasswordResetException] in case the client or
   /// account has been involved in too many reset attempts.
-  /// {@endtemplate}
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -272,7 +272,6 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
         {'email': email},
       );
 
-  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
@@ -280,14 +279,15 @@ class EndpointEmailAccount extends _i5.EndpointAuthEmailBase {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.
-  /// {@endtemplate}
   @override
   _i2.Future<_i3.AuthSuccess> finishPasswordReset({
     required _i1.UuidValue passwordResetRequestId,
@@ -333,12 +333,10 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   @override
   String get name => 'googleAccount';
 
-  /// {@template google_idp_base_endpoint.login}
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
-  /// {@endtemplate}
   @override
   _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
@@ -350,7 +348,7 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
+class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   EndpointPasswordImportingEmailAccount(_i1.EndpointCaller caller)
       : super(caller);
 
@@ -392,20 +390,21 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   ///
   /// Throws an [EmailAccountRequestException] in case of errors, with reason:
   /// - [EmailAccountRequestExceptionReason.expired] if the account request has
   ///   already expired.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts to verify the account.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  ///   for the given [accountRequestId], [verificationCode] is invalid, or
+  ///   the request has not been verified yet.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
-  /// {@endtemplate}
   @override
   _i2.Future<_i3.AuthSuccess> finishRegistration({
     required _i1.UuidValue accountRequestId,
@@ -420,7 +419,6 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   ///
   /// If the email address is registered, an email with reset instructions will
@@ -432,7 +430,6 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
   ///
   /// Throws an [EmailAccountPasswordResetException] in case the client or
   /// account has been involved in too many reset attempts.
-  /// {@endtemplate}
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -441,7 +438,6 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
         {'email': email},
       );
 
-  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
@@ -449,14 +445,15 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointAuthEmailBase {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.tooManyAttempts] if the user has
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
   ///   made too many attempts trying to complete the password reset.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.
-  /// {@endtemplate}
   @override
   _i2.Future<_i3.AuthSuccess> finishPasswordReset({
     required _i1.UuidValue passwordResetRequestId,

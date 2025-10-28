@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;
+import 'package:serverpod_auth_idp_server/providers/email.dart' as new_auth_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -10,6 +10,13 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
+  const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
+  final newEmailIDP = new_auth_idp.EmailIDP(config: config);
+
+  setUp(() async {
+    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+  });
+
   withServerpod('Given a legacy `serverpod_auth` email-based user account,', (
     final sessionBuilder,
     final endpoints,
@@ -137,7 +144,7 @@ void main() {
       test(
         'when checking the `EmailAccount`, then it has been created with the lower-case email variant.',
         () async {
-          final emailAccount = await auth_next.EmailAccount.db.findFirstRow(
+          final emailAccount = await new_auth_idp.EmailAccount.db.findFirstRow(
             session,
             where: (final t) =>
                 t.authUserId.equals(migratedUsers.values.single),
@@ -320,7 +327,7 @@ void main() {
       test(
         'when checking the `EmailAccount`, then no entry has been created for the social-backed account.',
         () async {
-          expect(await auth_next.EmailAccount.db.find(session), isEmpty);
+          expect(await new_auth_idp.EmailAccount.db.find(session), isEmpty);
         },
       );
 

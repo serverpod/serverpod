@@ -454,4 +454,83 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given a class with multi-word name and object relation field when generating code',
+      () {
+    var multiWordClassName = 'CitizenInt';
+    var multiWordClassFileName = 'citizen_int';
+    var multiWordExpectedFilePath =
+        path.join('lib', 'src', 'generated', '$multiWordClassFileName.dart');
+
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(multiWordClassName)
+          .withFileName(multiWordClassFileName)
+          .withTableName('citizen_int')
+          .withObjectRelationField(
+            'address',
+            'AddressUuid',
+            'address',
+            nullableRelation: true,
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    var compilationUnit =
+        parseString(content: codeMap[multiWordExpectedFilePath]!).unit;
+
+    var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${multiWordClassName}AttachRowRepository',
+    );
+
+    var detachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${multiWordClassName}DetachRowRepository',
+    );
+
+    group('then the attach method for address', () {
+      var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        attachRowRepository!,
+        name: 'address',
+      );
+
+      test('has the input params with proper camelCase for multi-word class',
+          () {
+        expect(
+          method?.parameters?.toSource(),
+          matches(
+            r'\(_i\d\.Session session, CitizenInt citizenInt, AddressUuid address, \{_i\d\.Transaction\? transaction\}\)',
+          ),
+          reason:
+              'The parameter name should be "citizenInt" (proper camelCase), not "citizenint" (all lowercase).',
+        );
+      });
+    }, skip: attachRowRepository == null);
+
+    group('then the detach method for address', () {
+      var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        detachRowRepository!,
+        name: 'address',
+      );
+
+      test('has the input params with proper camelCase for multi-word class',
+          () {
+        expect(
+          method?.parameters?.toSource(),
+          matches(
+            r'\(_i\d\.Session session, CitizenInt citizenInt, \{_i\d\.Transaction\? transaction\}\)',
+          ),
+          reason:
+              'The parameter name should be "citizenInt" (proper camelCase), not "citizenint" (all lowercase).',
+        );
+      });
+    }, skip: detachRowRepository == null);
+  });
 }

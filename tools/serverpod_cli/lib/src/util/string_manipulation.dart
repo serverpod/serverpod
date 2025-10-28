@@ -60,3 +60,50 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
 
   return result;
 }
+
+/// Removes {@template ...} and {@endtemplate} markers from documentation
+/// comments, as they are only needed in source files for documentation
+/// generation and should not appear in generated files.
+///
+/// Example:
+/// ```dart
+/// /// {@template example.method}
+/// /// This is a method
+/// /// {@endtemplate}
+/// ```
+/// becomes:
+/// ```dart
+/// /// This is a method
+/// ```
+String? stripDocumentationTemplateMarkers(String? documentation) {
+  if (documentation == null || documentation.isEmpty) {
+    return documentation;
+  }
+
+  // Regular expression to match {@template ...} lines and {@endtemplate} lines
+  // Match the entire line including the comment markers (///)
+  final templateMarkerPattern = RegExp(
+    r'^\s*///\s*\{@template\s+[^}]+\}\s*$',
+    multiLine: true,
+  );
+  final endTemplateMarkerPattern = RegExp(
+    r'^\s*///\s*\{@endtemplate\}\s*$',
+    multiLine: true,
+  );
+
+  var result = documentation;
+
+  // Remove {@template ...} lines
+  result = result.replaceAll(templateMarkerPattern, '');
+
+  // Remove {@endtemplate} lines
+  result = result.replaceAll(endTemplateMarkerPattern, '');
+
+  // Clean up any resulting extra blank lines (more than one consecutive blank line)
+  result = result.replaceAll(RegExp(r'(\n\s*\n)\s*\n+'), '\$1');
+
+  // Trim leading/trailing whitespace
+  result = result.trim();
+
+  return result.isEmpty ? null : result;
+}
