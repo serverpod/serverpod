@@ -35,16 +35,39 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      test(
-          'when start registration is called for the same user then it returns dummy password reset request id',
-          () async {
-        final result = fixture.emailIDP.startRegistration(
-          session,
-          email: email,
-          password: password,
-        );
+      group('when start registration is called for the same user', () {
+        late Future<UuidValue> accountRequestIdFuture;
 
-        await expectLater(result, completion(isA<UuidValue>()));
+        setUp(() async {
+          accountRequestIdFuture = fixture.emailIDP.startRegistration(
+            session,
+            email: email,
+            password: password,
+          );
+        });
+
+        test(
+            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+            () async {
+          const nonRegisteredEmail = 'non-registered-$email';
+          final capturedAccountRequestId =
+              await fixture.emailIDP.startRegistration(
+            session,
+            email: nonRegisteredEmail,
+            password: password,
+          );
+
+          await expectLater(
+            accountRequestIdFuture,
+            completion(
+              isA<UuidValue>().having(
+                (final uuid) => uuid.version,
+                'version',
+                equals(capturedAccountRequestId.version),
+              ),
+            ),
+          );
+        });
       });
     },
   );

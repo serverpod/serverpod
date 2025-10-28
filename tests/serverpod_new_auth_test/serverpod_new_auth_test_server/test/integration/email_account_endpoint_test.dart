@@ -153,28 +153,6 @@ void main() {
             isNull,
           );
         });
-
-        test(
-            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is not registered.',
-            () async {
-          const existingEmail = 'test@serverpod.dev';
-          await endpoints._registerEmailAccount(
-            sessionBuilder,
-            email: existingEmail,
-            password: 'Foobar123!',
-          );
-
-          final validPasswordResetRequest =
-              await endpoints.emailAccount.startPasswordReset(
-            sessionBuilder,
-            email: existingEmail,
-          );
-
-          expect(
-            clientReceivedRequestId!.version,
-            validPasswordResetRequest.version,
-          );
-        });
       });
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -430,22 +408,6 @@ void main() {
               where: (final t) => t.id.equals(clientReceivedRequestId!),
             ),
             isNull,
-          );
-        });
-
-        test(
-            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is already registered.',
-            () async {
-          final validRegistrationRequest =
-              await endpoints.emailAccount.startRegistration(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-            password: password,
-          );
-
-          expect(
-            clientReceivedRequestId!.version,
-            validRegistrationRequest.version,
           );
         });
       });

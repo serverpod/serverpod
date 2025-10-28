@@ -92,15 +92,45 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      test(
-          'when startPasswordReset is called then it returns dummy uuid without throwing',
-          () async {
-        final result = fixture.emailIDP.startPasswordReset(
-          session,
-          email: 'nonexistent@serverpod.dev',
-        );
+      group('when startPasswordReset is called', () {
+        late Future<UuidValue> passwordResetRequestIdFuture;
 
-        await expectLater(result, completion(isA<UuidValue>()));
+        setUp(() async {
+          // Use setup to ensure the request is made when no email account exists.
+          passwordResetRequestIdFuture = fixture.emailIDP.startPasswordReset(
+            session,
+            email: 'nonexistent@serverpod.dev',
+          );
+        });
+
+        test(
+            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+            () async {
+          const existingUserEmail = 'existinguser@serverpod.dev';
+          final authUser = await fixture.createAuthUser(session);
+          await fixture.createEmailAccount(
+            session,
+            authUserId: authUser.id,
+            email: existingUserEmail,
+          );
+
+          final capturedPasswordResetRequestId =
+              await fixture.emailIDP.startPasswordReset(
+            session,
+            email: existingUserEmail,
+          );
+
+          await expectLater(
+            passwordResetRequestIdFuture,
+            completion(
+              isA<UuidValue>().having(
+                (final uuid) => uuid.version,
+                'version',
+                equals(capturedPasswordResetRequestId.version),
+              ),
+            ),
+          );
+        });
       });
     },
   );
