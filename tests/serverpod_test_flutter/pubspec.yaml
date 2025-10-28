@@ -25,6 +25,9 @@ dev_dependencies:
     path: ../serverpod_test_client
   serverpod_auth_shared_flutter:
     path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  # 7.2.0 introduces a breaking change for older versions of flutter.
+  # It depends on Color.toARGB32() which was introduced in Flutter 3.29
+  image_cropper_platform_interface: <7.2.0
 
 dependency_overrides:
   serverpod_auth_client:
