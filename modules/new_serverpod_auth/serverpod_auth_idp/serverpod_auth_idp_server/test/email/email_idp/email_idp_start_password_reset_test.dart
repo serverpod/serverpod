@@ -76,6 +76,66 @@ void main() {
   );
 
   withServerpod(
+      'Given existing email account with maximum allowed password reset requests',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late EmailIDPTestFixture fixture;
+    const email = 'test@serverpod.dev';
+    const password = 'Password123!';
+    const maxPasswordResetAttempts = RateLimit(
+      maxAttempts: 1,
+      timeframe: Duration(hours: 1),
+    );
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      fixture = EmailIDPTestFixture(
+        config: const EmailIDPConfig(
+          passwordHashPepper: 'pepper',
+          maxPasswordResetAttempts: maxPasswordResetAttempts,
+        ),
+      );
+
+      final authUser = await fixture.createAuthUser(session);
+      await fixture.createEmailAccount(
+        session,
+        authUserId: authUser.id,
+        email: email,
+        password: EmailAccountPassword.fromString(password),
+      );
+
+      // Make initial request to hit the rate limit
+      await fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
+      );
+    });
+
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
+
+    test(
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        () async {
+      final result = fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
+      );
+
+      await expectLater(
+          result,
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )));
+    });
+  });
+
+  withServerpod(
     'Given no email account',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -134,4 +194,55 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+      'Given maximum allowed password reset requests for non-existing email account',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late EmailIDPTestFixture fixture;
+    const email = 'test@serverpod.dev';
+    const maxPasswordResetAttempts = RateLimit(
+      maxAttempts: 1,
+      timeframe: Duration(hours: 1),
+    );
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      fixture = EmailIDPTestFixture(
+        config: const EmailIDPConfig(
+          passwordHashPepper: 'pepper',
+          maxPasswordResetAttempts: maxPasswordResetAttempts,
+        ),
+      );
+
+      // Make initial request to hit the rate limit
+      await fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
+      );
+    });
+
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
+
+    test(
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        () async {
+      final result = fixture.emailIDP.startPasswordReset(
+        session,
+        email: email,
+      );
+
+      await expectLater(
+          result,
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )));
+    });
+  });
 }
