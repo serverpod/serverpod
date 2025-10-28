@@ -1,4 +1,5 @@
 import '../../providers/apple.dart';
+import '../../providers/email.dart';
 import '../../providers/google.dart';
 
 /// Centralized access to authentication services.
@@ -10,13 +11,16 @@ class AuthServices {
 
   final GoogleIDP? _googleIDP;
   final AppleIDP? _appleIDP;
+  final EmailIDP? _emailIDP;
 
   /// Create [an AuthServices] instance.
   AuthServices({
     final GoogleIDP? googleIDP,
     final AppleIDP? appleIDP,
+    final EmailIDP? emailIDP,
   })  : _googleIDP = googleIDP,
-        _appleIDP = appleIDP;
+        _appleIDP = appleIDP,
+        _emailIDP = emailIDP;
 
   /// Create an empty [AuthServices] instance with no configured IDPs.
   factory AuthServices.empty() => AuthServices(googleIDP: null);
@@ -25,12 +29,15 @@ class AuthServices {
   static void initialize({
     final GoogleIDPConfig? googleIDPConfig,
     final AppleIDPConfig? appleIDPConfig,
+    final EmailIDPConfig? emailIDPConfig,
   }) {
     _instance = AuthServices(
       googleIDP:
           googleIDPConfig != null ? GoogleIDP(config: googleIDPConfig) : null,
       appleIDP:
           appleIDPConfig != null ? AppleIDP(config: appleIDPConfig) : null,
+      emailIDP:
+          emailIDPConfig != null ? EmailIDP(config: emailIDPConfig) : null,
     );
   }
 }
@@ -59,5 +66,17 @@ extension IDPExtension on AuthServices {
     }
 
     return appleIDP;
+  }
+
+  /// The Email IDP instance used for authentication.
+  EmailIDP get emailIDP {
+    final emailIDP = _emailIDP;
+    if (emailIDP == null) {
+      throw StateError(
+        'EmailIDP is not configured. Make sure to provide a valid EmailIDPConfig when initializing AuthServices.',
+      );
+    }
+
+    return emailIDP;
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';
@@ -18,6 +19,13 @@ void run(final List<String> args) async {
     Protocol(),
     Endpoints(),
     authenticationHandler: UnifiedAuthTokens.authenticationHandler,
+  );
+
+  AuthServices.initialize(
+    emailIDPConfig: EmailIDPConfig(
+      passwordHashPepper:
+          pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
+    ),
   );
 
   // Setup a default page at the web root.

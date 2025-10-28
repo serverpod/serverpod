@@ -17,6 +17,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   final Session session,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
+  required final auth_next.EmailIDP newEmailIDP,
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
     session,
@@ -45,6 +46,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     oldUserId: userInfo.id!,
     newAuthUserId: authUser.id,
     transaction: transaction,
+    newEmailIDP: newEmailIDP,
   );
 
   await _importUserIdentifier(
@@ -86,6 +88,7 @@ Future<void> _importEmailAccounts(
   required final int oldUserId,
   required final UuidValue newAuthUserId,
   required final Transaction transaction,
+  required final auth_next.EmailIDP newEmailIDP,
 }) async {
   final emailAuths = await legacy_auth.EmailAuth.db.find(
     session,
@@ -93,8 +96,7 @@ Future<void> _importEmailAccounts(
     transaction: transaction,
   );
   for (final emailAuth in emailAuths) {
-    final newEmailAccountId =
-        await auth_next.EmailAccounts.admin.createEmailAuthentication(
+    final newEmailAccountId = await newEmailIDP.admin.createEmailAuthentication(
       session,
       authUserId: newAuthUserId,
       email: emailAuth.email,

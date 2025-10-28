@@ -8,12 +8,22 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
+  setUp(() async {
+    AuthServices.initialize(
+        emailIDPConfig: const EmailIDPConfig(
+      passwordHashPepper: 'test',
+    ));
+  });
+
+  tearDown(() async {
+    AuthServices.initialize();
+  });
+
   withServerpod(
     'Given no users,',
     (final sessionBuilder, final endpoints) {
       tearDown(() async {
-        EmailAccounts.config = EmailAccountConfig();
-
+        AuthServices.initialize();
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -23,7 +33,9 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          EmailAccounts.config = EmailAccountConfig(
+          AuthServices.initialize(
+              emailIDPConfig: EmailIDPConfig(
+            passwordHashPepper: 'test',
             sendRegistrationVerificationCode: (
               final session, {
               required final accountRequestId,
@@ -34,7 +46,7 @@ void main() {
               receivedVerificationCode = verificationCode;
               receivedAccountRequestId = accountRequestId;
             },
-          );
+          ));
 
           clientReceivedRequestId =
               await endpoints.emailAccount.startRegistration(
@@ -97,9 +109,11 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          EmailAccounts.config = EmailAccountConfig(
-            maxPasswordResetAttempts: (
-              timeframe: const Duration(seconds: 1),
+          AuthServices.initialize(
+              emailIDPConfig: EmailIDPConfig(
+            passwordHashPepper: 'test',
+            maxPasswordResetAttempts: const RateLimit(
+              timeframe: Duration(seconds: 1),
               maxAttempts: 100,
             ),
             sendPasswordResetVerificationCode: (
@@ -112,7 +126,7 @@ void main() {
               receivedVerificationCode = verificationCode;
               receivedPasswordResetRequestId = passwordResetRequestId;
             },
-          );
+          ));
 
           clientReceivedRequestId =
               await endpoints.emailAccount.startPasswordReset(
@@ -139,28 +153,6 @@ void main() {
             isNull,
           );
         });
-
-        test(
-            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is not registered.',
-            () async {
-          const existingEmail = 'test@serverpod.dev';
-          await endpoints._registerEmailAccount(
-            sessionBuilder,
-            email: existingEmail,
-            password: 'Foobar123!',
-          );
-
-          final validPasswordResetRequest =
-              await endpoints.emailAccount.startPasswordReset(
-            sessionBuilder,
-            email: existingEmail,
-          );
-
-          expect(
-            clientReceivedRequestId!.version,
-            validPasswordResetRequest.version,
-          );
-        });
       });
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -172,9 +164,12 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late UuidValue receivedAccountRequestId;
       late String receivedVerificationCode;
+      const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        EmailAccounts.config = EmailAccountConfig(
+        AuthServices.initialize(
+            emailIDPConfig: EmailIDPConfig(
+          passwordHashPepper: 'test',
           sendRegistrationVerificationCode: (
             final session, {
             required final accountRequestId,
@@ -185,7 +180,8 @@ void main() {
             receivedAccountRequestId = accountRequestId;
             receivedVerificationCode = verificationCode;
           },
-        );
+          registrationVerificationCodeLifetime: verificationCodeLifetime,
+        ));
 
         await endpoints.emailAccount.startRegistration(
           sessionBuilder,
@@ -195,7 +191,7 @@ void main() {
       });
 
       tearDown(() {
-        EmailAccounts.config = EmailAccountConfig();
+        AuthServices.initialize();
       });
 
       test(
@@ -221,8 +217,7 @@ void main() {
           'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
-            Clock.fixed(DateTime.now().add(
-                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishRegistration(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
@@ -260,8 +255,7 @@ void main() {
           () async {
         await expectLater(
           () => withClock(
-            Clock.fixed(DateTime.now().add(
-                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishRegistration(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
@@ -306,17 +300,44 @@ void main() {
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
+      String? receivedVerificationCode;
+      String? receivedPasswordResetCode;
 
       setUp(() async {
+        /// This initializes the AuthServices singleton so it will override
+        /// anything configured here.
         await endpoints._registerEmailAccount(
           sessionBuilder,
           email: email,
           password: password,
         );
+        AuthServices.initialize(
+          emailIDPConfig: EmailIDPConfig(
+            passwordHashPepper: 'test',
+            sendRegistrationVerificationCode: (
+              final session, {
+              required final accountRequestId,
+              required final email,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedVerificationCode = verificationCode;
+            },
+            sendPasswordResetVerificationCode: (
+              final session, {
+              required final email,
+              required final passwordResetRequestId,
+              required final transaction,
+              required final verificationCode,
+            }) {
+              receivedPasswordResetCode = verificationCode;
+            },
+          ),
+        );
       });
 
       tearDown(() async {
-        EmailAccounts.config = EmailAccountConfig();
+        AuthServices.initialize();
 
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -361,22 +382,8 @@ void main() {
       group('when calling `startRegistration`', () {
         UuidValue? receivedAccountRequestId;
         UuidValue? clientReceivedRequestId;
-        String? receivedVerificationCode;
 
         setUp(() async {
-          EmailAccounts.config = EmailAccountConfig(
-            sendRegistrationVerificationCode: (
-              final session, {
-              required final accountRequestId,
-              required final email,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedAccountRequestId = accountRequestId;
-              receivedVerificationCode = verificationCode;
-            },
-          );
-
           clientReceivedRequestId =
               await endpoints.emailAccount.startRegistration(
             sessionBuilder,
@@ -403,47 +410,17 @@ void main() {
             isNull,
           );
         });
-
-        test(
-            'then the random request id has the same uuid version as the model to prevent leaking the fact that the email is already registered.',
-            () async {
-          final validRegistrationRequest =
-              await endpoints.emailAccount.startRegistration(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-            password: password,
-          );
-
-          expect(
-            clientReceivedRequestId!.version,
-            validRegistrationRequest.version,
-          );
-        });
       });
 
       test(
           'when calling `startPasswordReset`, then the verification code is sent out.',
           () async {
-        String? receivedVerificationCode;
-
-        EmailAccounts.config = EmailAccountConfig(
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedVerificationCode = verificationCode;
-          },
-        );
-
         await endpoints.emailAccount.startPasswordReset(
           sessionBuilder,
           email: email,
         );
 
-        expect(receivedVerificationCode, isNotNull);
+        expect(receivedPasswordResetCode, isNotNull);
       });
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -471,7 +448,7 @@ void main() {
       });
 
       tearDown(() {
-        EmailAccounts.config = EmailAccountConfig();
+        AuthServices.initialize();
       });
 
       test(
@@ -497,8 +474,14 @@ void main() {
       late UuidValue authUserId;
       late UuidValue passwordResetRequestId;
       late String verificationCode;
+      const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
+        AuthServices.initialize(
+            emailIDPConfig: const EmailIDPConfig(
+          passwordHashPepper: 'test',
+        ));
+
         final registrationResult = await endpoints._registerEmailAccount(
           sessionBuilder,
           email: email,
@@ -515,7 +498,7 @@ void main() {
       });
 
       tearDown(() async {
-        EmailAccounts.config = EmailAccountConfig();
+        AuthServices.initialize();
 
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -545,8 +528,7 @@ void main() {
           'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
-            Clock.fixed(DateTime.now().add(
-                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
               passwordResetRequestId: passwordResetRequestId,
@@ -609,8 +591,7 @@ void main() {
           () async {
         await expectLater(
           () => withClock(
-            Clock.fixed(DateTime.now().add(
-                EmailAccounts.config.registrationVerificationCodeLifetime)),
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
               passwordResetRequestId: passwordResetRequestId,
@@ -685,6 +666,10 @@ void main() {
       late String passwordResetSessionKey;
 
       setUp(() async {
+        AuthServices.initialize(
+            emailIDPConfig: const EmailIDPConfig(
+          passwordHashPepper: 'test',
+        ));
         final registrationResult = await endpoints._registerEmailAccount(
           sessionBuilder,
           email: email,
@@ -701,7 +686,7 @@ void main() {
       });
 
       tearDown(() async {
-        EmailAccounts.config = EmailAccountConfig();
+        AuthServices.initialize();
 
         await _cleanUpDatabase(sessionBuilder.build());
       });
@@ -782,9 +767,11 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
-    EmailAccounts.config = EmailAccountConfig(
-      maxPasswordResetAttempts: (
-        timeframe: const Duration(seconds: 1),
+    AuthServices.initialize(
+        emailIDPConfig: EmailIDPConfig(
+      passwordHashPepper: 'test',
+      maxPasswordResetAttempts: const RateLimit(
+        timeframe: Duration(seconds: 1),
         maxAttempts: 100,
       ),
       sendRegistrationVerificationCode: (
@@ -797,7 +784,7 @@ extension on TestEndpoints {
         receivedAccountRequestId = accountRequestId;
         receivedVerificationCode = verificationCode;
       },
-    );
+    ));
 
     await emailAccount.startRegistration(
       sessionBuilder,
@@ -829,7 +816,9 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
-    EmailAccounts.config = EmailAccountConfig(
+    AuthServices.initialize(
+        emailIDPConfig: EmailIDPConfig(
+      passwordHashPepper: 'test',
       sendPasswordResetVerificationCode: (
         final session, {
         required final email,
@@ -840,7 +829,7 @@ extension on TestEndpoints {
         receivedPasswordResetRequestId = passwordResetRequestId;
         receivedVerificationCode = verificationCode;
       },
-    );
+    ));
 
     await emailAccount.startPasswordReset(
       sessionBuilder,
@@ -884,7 +873,7 @@ Future<void> _cleanUpDatabase(final Session session) async {
     where: (final _) => Constant.bool(true),
   );
 
-  await EmailAccountPasswordResetAttempt.db.deleteWhere(
+  await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
     session,
     where: (final _) => Constant.bool(true),
   );

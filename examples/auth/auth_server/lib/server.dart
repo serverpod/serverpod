@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -33,6 +34,9 @@ void run(List<String> args) async {
       teamId: pod.getPassword('appleTeamId')!,
       keyId: pod.getPassword('appleKeyId')!,
       key: pod.getPassword('appleKey')!,
+    ),
+    emailIDPConfig: EmailIDPConfig(
+      passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
     ),
   );
 
