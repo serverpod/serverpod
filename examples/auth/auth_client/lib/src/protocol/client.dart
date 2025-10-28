@@ -62,7 +62,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   @override
   String get name => 'emailIDP';
 
-  /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
   ///
   /// Throws an [EmailAccountLoginException] in case of errors, with reason:
@@ -72,7 +71,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   ///   too many failed login attempts.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  /// {@endtemplate}
   @override
   _i3.Future<_i4.AuthSuccess> login({
     required String email,
@@ -87,7 +85,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.start_registration}
   /// Starts the registration for a new user account with an email-based login
   /// associated to it.
   ///
@@ -98,7 +95,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// Always returns a account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
-  /// {@endtemplate}
   @override
   _i3.Future<_i2.UuidValue> startRegistration({
     required String email,
@@ -113,7 +109,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.finish_registration}
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
   ///
@@ -129,7 +124,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
   /// Returns a session for the newly created user.
-  /// {@endtemplate}
   @override
   _i3.Future<_i4.AuthSuccess> finishRegistration({
     required _i2.UuidValue accountRequestId,
@@ -144,7 +138,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         },
       );
 
-  /// {@template email_account_base_endpoint.start_password_reset}
   /// Requests a password reset for [email].
   ///
   /// If the email address is registered, an email with reset instructions will
@@ -156,7 +149,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   ///
   /// Throws an [EmailAccountPasswordResetException] in case the client or
   /// account has been involved in too many reset attempts.
-  /// {@endtemplate}
   @override
   _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i2.UuidValue>(
@@ -165,7 +157,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         {'email': email},
       );
 
-  /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
@@ -182,7 +173,6 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   ///
   /// If the reset was successful, a new session is returned and all previous
   /// active sessions of the user are destroyed.
-  /// {@endtemplate}
   @override
   _i3.Future<_i4.AuthSuccess> finishPasswordReset({
     required _i2.UuidValue passwordResetRequestId,
