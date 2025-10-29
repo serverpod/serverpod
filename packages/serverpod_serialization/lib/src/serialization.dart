@@ -65,7 +65,8 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
-    //TODO(#4099): all the "dart native" types should be listed here
+    // TODO(https://github.com/serverpod/serverpod/issues/4099):
+    // All the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
     } else if (_isNullableType<double>(t)) {
@@ -214,7 +215,8 @@ abstract class SerializationManager {
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
       (nonEncodable) {
-        //TODO(#4106): Remove this in 2.0.0 as the extensions should be used instead.
+        // TODO(https://github.com/serverpod/serverpod/issues/4106):
+        // Remove this in 2.0.0 as the extensions should be used instead.
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
