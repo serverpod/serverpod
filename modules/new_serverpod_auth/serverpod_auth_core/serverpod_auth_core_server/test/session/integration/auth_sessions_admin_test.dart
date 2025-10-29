@@ -8,6 +8,10 @@ import '../../serverpod_test_tools.dart';
 import '../test_utils.dart';
 
 void main() {
+  final authSessions = AuthSessions(
+    config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
   withServerpod('Given an auth session,',
       (final sessionBuilder, final endpoints) {
     late Session session;
@@ -20,7 +24,7 @@ void main() {
       authUserId = await createAuthUser(session);
 
       // ignore: unused_result
-      await AuthSessions.createSession(
+      await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -287,7 +291,7 @@ void main() {
         final authUserId = await createAuthUser(session);
 
         // ignore: unused_result
-        await AuthSessions.createSession(
+        await authSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -320,7 +324,7 @@ void main() {
         final authUserId = await createAuthUser(session);
 
         // ignore: unused_result
-        await AuthSessions.createSession(
+        await authSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -367,7 +371,7 @@ void main() {
         final authUserId = await createAuthUser(session);
 
         // ignore: unused_result
-        await AuthSessions.createSession(
+        await authSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -405,7 +409,7 @@ void main() {
             ),
           ),
           () async {
-            return AuthSessions.createSession(
+            return authSessions.createSession(
               session,
               authUserId: authUserId,
               scopes: {},
