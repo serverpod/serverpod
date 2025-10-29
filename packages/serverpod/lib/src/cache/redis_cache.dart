@@ -84,14 +84,10 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  // TODO(https://github.com/serverpod/serverpod/issues/4093):
-  // implement localKeys
   List<String> get localKeys =>
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  // TODO(https://github.com/serverpod/serverpod/issues/4093):
-  // implement localSize
   int get localSize =>
       throw UnimplementedError('No local keys are used in RedisCache');
 

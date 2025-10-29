@@ -58,9 +58,9 @@ class ModelHelper {
       modelSources.addAll(modelSource);
     }
 
-    // TODO(https://github.com/serverpod/serverpod/issues/4104):
-    // This sort is needed to make sure all generated methods are in the same
-    // order. Move this logic to the code generator instead.
+    // This sort is needed to make sure all analyzed models are processed in
+    // the same order. This affects the order of partial imports in sealed
+    // classes.
     modelSources
         .sort((a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path));
 

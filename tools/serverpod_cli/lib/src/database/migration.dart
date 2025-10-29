@@ -83,9 +83,6 @@ DatabaseMigration generateDatabaseMigration({
           ),
         );
       } else if (!diff.isEmpty) {
-        // Table was modified
-        // TODO(https://github.com/serverpod/serverpod/issues/4104):
-        // Check if table can be modified
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.alterTable,

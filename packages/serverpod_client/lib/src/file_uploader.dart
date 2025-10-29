@@ -74,8 +74,6 @@ class FileUploader {
           return response.statusCode == 204;
       }
     } catch (e) {
-      // TODO(https://github.com/serverpod/serverpod/issues/4098):
-      // Shouldn't we log something here?
       return false;
     }
   }

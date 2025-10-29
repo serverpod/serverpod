@@ -165,8 +165,7 @@ class FutureCallManager {
       final futureCall = _futureCalls[entry.name];
 
       if (futureCall == null) {
-        // TODO(https://github.com/serverpod/serverpod/issues/4098):
-        // TODO(https://github.com/serverpod/serverpod/issues/3485):
+        // ISSUE(https://github.com/serverpod/serverpod/issues/3485):
         // This should be logged or caught otherwise.
         return null;
       }

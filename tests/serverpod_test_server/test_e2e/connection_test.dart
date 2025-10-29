@@ -807,12 +807,6 @@ void main() {
       expect(numRows, isNotNull);
       expect(numRows, equals(101));
     });
-
-    test('Exception after delay', () async {
-      await client.asyncTasks.throwExceptionAfterDelay(1);
-      // TODO(https://github.com/serverpod/serverpod/issues/4098):
-      // Check that it is recorded in error logs.
-    });
   });
 
   group('Failed calls', () {

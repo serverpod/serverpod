@@ -482,8 +482,7 @@ class Serverpod {
         databaseConfiguration,
       );
 
-      // TODO(https://github.com/serverpod/serverpod/issues/4105):
-      // TODO(https://github.com/serverpod/serverpod/issues/2421):
+      // ISSUE(https://github.com/serverpod/serverpod/issues/2421):
       // Remove this when we have a better way to handle this.
       // This is required because other operations in Serverpod assumes that
       // the database is connected when the Serverpod is created

@@ -241,7 +241,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // TODO(https://github.com/serverpod/serverpod/issues/4106):
+    // TODO(https://github.com/serverpod/serverpod/issues/4105):
     // Remove this backwards compatibility assignment.
     authKeyProvider ??= authenticationKeyManager;
   }

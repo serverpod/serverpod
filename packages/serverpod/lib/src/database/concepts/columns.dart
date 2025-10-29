@@ -58,9 +58,6 @@ class ColumnSerializable<T> extends Column<T> {
     super.table, {
     super.hasDefault,
   });
-
-// TODO(https://github.com/serverpod/serverpod/issues/4097):
-// Add comparisons and possibly other operations
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {

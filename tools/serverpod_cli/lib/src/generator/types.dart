@@ -383,8 +383,6 @@ class TypeDefinition {
 
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO(https://github.com/serverpod/serverpod/issues/4099):
-    // Add all supported types here
     var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {
