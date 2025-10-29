@@ -1,8 +1,13 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_new_auth_test_server/server.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
+  final _authSessions = AuthSessions(
+    config: AuthSessionConfig(sessionKeyHashPepper: sessionKeyHashPepper),
+  );
+
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
     final authUser = await AuthUsers.create(session);
@@ -14,7 +19,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthSessions.createSession(
+    return _authSessions.createSession(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -26,7 +31,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await AuthSessions.destroyAllSessions(session, authUserId: authUserId);
+    await _authSessions.destroyAllSessions(session, authUserId: authUserId);
   }
 
   /// Creates a new JWT token for the test user.

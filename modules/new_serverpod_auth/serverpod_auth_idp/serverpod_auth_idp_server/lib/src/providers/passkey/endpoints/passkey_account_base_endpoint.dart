@@ -1,12 +1,19 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Base endpoint for Passkey-based authentication.
 abstract class PasskeyAccountBaseEndpoint extends Endpoint {
+  /// The token manager to use for the passkey authentication.
+  ///
+  /// If [TokenManager] should be fetched from a different source, override
+  /// this method.
+  final TokenManager tokenManager = AuthConfig.instance.tokenManager;
+
   static const String _method = 'passkey';
 
   /// Returns a new challenge to be used for a login or registration request.
@@ -67,7 +74,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
       throw AuthUserBlockedException();
     }
 
-    final sessionKey = await AuthSessions.createSession(
+    final sessionKey = await tokenManager.issueToken(
       session,
       authUserId: authUserId,
       method: _method,

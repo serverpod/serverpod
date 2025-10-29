@@ -1,11 +1,17 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/src/business/legacy_authentication_handler.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_session.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// Endpoint to convert legacy sessions.
 class SessionMigrationEndpoint extends Endpoint {
-  /// Converts a legacy session into a `serverpod_auth_session` one.
+  /// The token manager to use for the session migration.
+  ///
+  /// If [TokenManager] should be fetched from a different source, override
+  /// this method.
+  TokenManager get tokenManager => AuthConfig.instance.tokenManager;
+
+  /// Converts a legacy session into a new token from the token manager.
   Future<AuthSuccess?> convertSession(
     final Session session, {
     required final String sessionKey,
@@ -25,7 +31,7 @@ class SessionMigrationEndpoint extends Endpoint {
         transaction: transaction,
       );
 
-      return AuthSessions.createSession(
+      return tokenManager.issueToken(
         session,
         authUserId: legacySession.authUserId,
         method: legacySession.method,
