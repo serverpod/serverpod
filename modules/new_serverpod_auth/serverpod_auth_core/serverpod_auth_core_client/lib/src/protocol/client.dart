@@ -110,28 +110,6 @@ abstract class EndpointUserProfileBase extends _i1.EndpointRef {
   _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName);
 }
 
-/// Base endpoint for auth sessions.
-///
-/// To expose these endpoint methods on your server, extend this class in a
-/// concrete class.
-/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-/// {@category Endpoint}
-abstract class EndpointSessionBase extends _i1.EndpointRef {
-  EndpointSessionBase(_i1.EndpointCaller caller) : super(caller);
-
-  /// Checks whether the caller is authenticated.
-  ///
-  /// Return `true` if the caller is authentication, `false` otherwise.
-  /// Does not error on missing authentication.
-  _i2.Future<bool> isAuthenticated();
-
-  /// Logs out the current user.
-  ///
-  /// Returns `true` if the user was actually logged out, and `false` if the
-  /// calling session was not valid anymore.
-  _i2.Future<bool> logout({required bool allSessions});
-}
-
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     status = EndpointStatus(this);
