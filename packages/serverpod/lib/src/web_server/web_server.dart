@@ -89,7 +89,7 @@ class WebServer {
         securityContext: _securityContext,
       );
       _server = server;
-      _actualPort = (server.adapter as IOAdapter).port;
+      _actualPort = server.port;
       _running = true;
 
       var scheme = _securityContext != null ? 'https' : 'http';
@@ -212,8 +212,8 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
 
 final _sessionProperty = ContextProperty<Session>();
 
-/// [Session] related extension methods for [RequestContext].
-extension SessionEx on RequestContext {
+/// [Session] related extension methods for [Context].
+extension SessionEx on Context {
   /// The session associated with this request context.
   ///
   /// Throws, if no session has been initiated.
@@ -248,12 +248,12 @@ abstract class Route extends HandlerObject {
   /// Handles a call to this route, by extracting [Session] from context and
   /// forwarding to [handleCall].
   @override
-  FutureOr<HandledContext> call(NewContext context) {
+  FutureOr<HandledContext> call(RequestContext context) {
     return handleCall(context.session, context);
   }
 
   /// Handles a call to this route.
-  FutureOr<HandledContext> handleCall(Session session, NewContext context);
+  FutureOr<HandledContext> handleCall(Session session, RequestContext context);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
@@ -266,7 +266,7 @@ abstract class WidgetRoute extends Route {
   @override
   FutureOr<HandledContext> handleCall(
     Session session,
-    NewContext context,
+    RequestContext context,
   ) async {
     var widget = await build(session, context.request);
 

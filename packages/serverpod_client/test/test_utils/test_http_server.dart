@@ -37,20 +37,20 @@ abstract class TestHttpServer {
     void Function(Uri httpHost)? onConnected,
     HttpRequestHandler httpRequestHandler,
   ) async {
-    FutureOr<HandledContext> requestHandler(NewContext context) async {
+    FutureOr<HandledContext> requestHandler(RequestContext context) async {
       return context.respond(await httpRequestHandler(context.request));
     }
 
     final server = RelicServer(
-      await IOAdapter.bind(
+      () => IOAdapter.bind(
         InternetAddress.loopbackIPv4,
         port: 0, // Pick an available port
       ),
     );
     await server.mountAndStart(requestHandler);
 
-    final httpHost = Uri.http(
-        '${InternetAddress.loopbackIPv4.host}:${(server.adapter as IOAdapter).port}');
+    final httpHost =
+        Uri.http('${InternetAddress.loopbackIPv4.host}:${server.port}');
     onConnected?.call(httpHost);
 
     return server;

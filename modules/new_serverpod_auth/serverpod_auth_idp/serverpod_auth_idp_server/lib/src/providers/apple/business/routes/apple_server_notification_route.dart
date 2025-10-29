@@ -15,7 +15,7 @@ class AppleRevokedNotificationRoute extends Route {
   @override
   FutureOr<HandledContext> handleCall(
     final Session _,
-    final NewContext context,
+    final RequestContext context,
   ) {
     return _utils.revokedNotificationHandler()(context);
   }

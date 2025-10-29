@@ -99,7 +99,7 @@ void main() {
 /// Test route that requires authentication (uses ctx.authInfo)
 class TestRoute extends Route {
   @override
-  FutureOr<HandledContext> handleCall(Session session, NewContext context) {
+  FutureOr<HandledContext> handleCall(Session session, RequestContext context) {
     return context.respond(
         Response.ok(body: Body.fromString(context.authInfo.userIdentifier)));
   }
@@ -107,7 +107,7 @@ class TestRoute extends Route {
 
 final _authInfoProperty = ContextProperty<AuthenticationInfo>('authInfo');
 
-extension on RequestContext {
+extension on Context {
   AuthenticationInfo get authInfo => _authInfoProperty[this];
 }
 

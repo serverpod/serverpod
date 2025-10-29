@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:serverpod/src/server/features.dart';
-import 'package:serverpod/src/server/server.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 
@@ -62,8 +59,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     }
   }
 
-  final connectionsInfo =
-      pod.server.ioServer?.connectionsInfo() ?? HttpConnectionsInfo();
+  ConnectionsInfo connectionsInfo = await pod.server.connectionsInfo();
 
   return ServerHealthResult(
     metrics: [
