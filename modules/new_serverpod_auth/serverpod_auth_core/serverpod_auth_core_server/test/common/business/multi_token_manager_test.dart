@@ -47,7 +47,7 @@ void main() {
 
         setUp(() async {
           authSuccess = await multiTokenManager.issueToken(
-            session: session,
+            session,
             authUserId: userId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
@@ -92,7 +92,7 @@ void main() {
 
         setUp(() async {
           firstToken = await multiTokenManager.issueToken(
-            session: session,
+            session,
             authUserId: userId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
@@ -100,7 +100,7 @@ void main() {
           );
 
           secondToken = await multiTokenManager.issueToken(
-            session: session,
+            session,
             authUserId: userId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
@@ -659,7 +659,7 @@ void main() {
 
         setUp(() async {
           authSuccess = await multiTokenManager.issueToken(
-            session: session,
+            session,
             authUserId:
                 UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
             method: 'test',

@@ -42,7 +42,7 @@ void testSuite<T extends TokenManager>(
 
         setUp(() async {
           authSuccessFuture = tokenManager.issueToken(
-            session: session,
+            session,
             authUserId: authId,
             method: 'test-method',
           );
@@ -81,7 +81,7 @@ void testSuite<T extends TokenManager>(
         'when issuing a token with scopes then scopes matches supplied value',
         () async {
           final authSuccess = await tokenManager.issueToken(
-            session: session,
+            session,
             authUserId: authId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
@@ -99,7 +99,7 @@ void testSuite<T extends TokenManager>(
           final authSuccessFuture =
               session.db.transaction((final transaction) async {
             return await tokenManager.issueToken(
-              session: session,
+              session,
               authUserId: authId,
               method: 'test-method',
               transaction: transaction,
@@ -120,7 +120,7 @@ void testSuite<T extends TokenManager>(
           await session.db.transaction((final transaction) async {
             final savepoint = await transaction.createSavepoint();
             await tokenManager.issueToken(
-              session: session,
+              session,
               authUserId: authId,
               method: 'intentional-rollback',
               transaction: transaction,
@@ -155,7 +155,7 @@ void testSuite<T extends TokenManager>(
         authId = await createAuthId(session);
         tokenManager = tokenManagerBuilder();
         authSuccess = await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -308,21 +308,21 @@ void testSuite<T extends TokenManager>(
         tokenManager = tokenManagerBuilder();
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -632,19 +632,19 @@ void testSuite<T extends TokenManager>(
         tokenManager = tokenManagerBuilder();
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method2',
         );
@@ -730,28 +730,28 @@ void testSuite<T extends TokenManager>(
         authId3 = await createAuthId(session);
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId3,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -876,25 +876,25 @@ void testSuite<T extends TokenManager>(
         authId2 = await createAuthId(session);
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'method2',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'method2',
         );

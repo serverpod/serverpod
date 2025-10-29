@@ -46,8 +46,8 @@ abstract interface class TokenIssuer {
   /// authentication method and optional scopes.
   ///
   /// Returns an [AuthSuccess] containing the generated token and user information.
-  Future<AuthSuccess> issueToken({
-    required final Session session,
+  Future<AuthSuccess> issueToken(
+    final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,

@@ -34,15 +34,15 @@ class MultiTokenManager implements TokenManager {
   }
 
   @override
-  Future<AuthSuccess> issueToken({
-    required final Session session,
+  Future<AuthSuccess> issueToken(
+    final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) {
     return primaryTokenManager.issueToken(
-      session: session,
+      session,
       authUserId: authUserId,
       method: method,
       scopes: scopes,

@@ -20,8 +20,8 @@ class FakeTokenManager implements TokenManager {
         _usesRefreshTokens = usesRefreshTokens;
 
   @override
-  Future<AuthSuccess> issueToken({
-    required final Session session,
+  Future<AuthSuccess> issueToken(
+    final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
