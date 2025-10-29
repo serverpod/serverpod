@@ -176,9 +176,7 @@ class Server {
     final uri = req.requestedUri;
     serverpod.logVerbose('handleRequest: ${req.method} ${uri.path}');
 
-    // TODO(kasper): Create epic/task for using Relic in API Server.
-    // Associate this issue with that.
-    // TODO(https://github.com/serverpod/serverpod/issues/4102):
+    // ISSUE(https://github.com/serverpod/serverpod/issues/4102):
     // Make httpResponseHeaders a Headers object from the get-go,
     // or better yet, use middleware
     final headers = Headers.build((mh) {
@@ -189,7 +187,7 @@ class Server {
 
     var readBody = true;
 
-    // TODO(https://github.com/serverpod/serverpod/issues/4101):
+    // ISSUE(https://github.com/serverpod/serverpod/issues/4101):
     // Use Router instead of manual dispatch on path and verb
     if (uri.path == '/') {
       // Perform health checks
