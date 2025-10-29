@@ -1,43 +1,61 @@
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+
 import '../../providers/apple.dart';
 import '../../providers/email.dart';
 import '../../providers/google.dart';
 
 /// Centralized access to authentication services.
 class AuthServices {
-  static AuthServices _instance = AuthServices.empty();
+  static AuthServices? _instance;
 
   /// Singleton instance of [AuthServices].
-  static AuthServices get instance => _instance;
+  static AuthServices get instance {
+    if (_instance == null) {
+      throw StateError(
+          'AuthServices is not initialized. Call AuthServices.initialize() to initialize it.');
+    }
+    return _instance!;
+  }
 
   final GoogleIDP? _googleIDP;
   final AppleIDP? _appleIDP;
   final EmailIDP? _emailIDP;
+
+  /// The token manager used to issue and validate tokens.
+  final TokenManager tokenManager;
 
   /// Create [an AuthServices] instance.
   AuthServices({
     final GoogleIDP? googleIDP,
     final AppleIDP? appleIDP,
     final EmailIDP? emailIDP,
+    required this.tokenManager,
   })  : _googleIDP = googleIDP,
         _appleIDP = appleIDP,
         _emailIDP = emailIDP;
 
   /// Create an empty [AuthServices] instance with no configured IDPs.
-  factory AuthServices.empty() => AuthServices(googleIDP: null);
+  factory AuthServices.empty(final TokenManager tokenManager) =>
+      AuthServices(googleIDP: null, tokenManager: tokenManager);
 
   /// Initialize the [AuthServices] singleton.
   static void initialize({
     final GoogleIDPConfig? googleIDPConfig,
     final AppleIDPConfig? appleIDPConfig,
     final EmailIDPConfig? emailIDPConfig,
+    required final TokenManager tokenManager,
   }) {
     _instance = AuthServices(
-      googleIDP:
-          googleIDPConfig != null ? GoogleIDP(config: googleIDPConfig) : null,
-      appleIDP:
-          appleIDPConfig != null ? AppleIDP(config: appleIDPConfig) : null,
-      emailIDP:
-          emailIDPConfig != null ? EmailIDP(config: emailIDPConfig) : null,
+      googleIDP: googleIDPConfig != null
+          ? GoogleIDP(config: googleIDPConfig, tokenIssuer: tokenManager)
+          : null,
+      appleIDP: appleIDPConfig != null
+          ? AppleIDP(config: appleIDPConfig, tokenIssuer: tokenManager)
+          : null,
+      emailIDP: emailIDPConfig != null
+          ? EmailIDP(config: emailIDPConfig, tokenManager: tokenManager)
+          : null,
+      tokenManager: tokenManager,
     );
   }
 }

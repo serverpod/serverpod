@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import 'google_idp_admin.dart';
 import 'google_idp_config.dart';
@@ -30,7 +30,11 @@ final class GoogleIDP {
   /// Creates a new instance of [GoogleIDP].
   GoogleIDP({
     required final GoogleIDPConfig config,
-  }) : utils = GoogleIDPUtils(clientSecret: config.clientSecret) {
+    required final TokenIssuer tokenIssuer,
+  }) : utils = GoogleIDPUtils(
+          clientSecret: config.clientSecret,
+          tokenIssuer: tokenIssuer,
+        ) {
     admin = GoogleIDPAdmin(
       utils: utils,
     );

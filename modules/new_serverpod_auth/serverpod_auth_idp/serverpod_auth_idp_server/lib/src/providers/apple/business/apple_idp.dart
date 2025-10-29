@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
@@ -32,7 +32,10 @@ final class AppleIDP {
   late final AppleIDPUtils utils;
 
   /// Creates a new instance of [AppleIDP].
-  AppleIDP({required final AppleIDPConfig config}) {
+  AppleIDP({
+    required final AppleIDPConfig config,
+    required final TokenIssuer tokenIssuer,
+  }) {
     final siwaConf = SignInWithAppleConfiguration(
       serviceIdentifier: config.serviceIdentifier,
       bundleIdentifier: config.bundleIdentifier,
@@ -44,7 +47,7 @@ final class AppleIDP {
 
     final siwa = SignInWithApple(config: siwaConf);
 
-    utils = AppleIDPUtils(siwa: siwa);
+    utils = AppleIDPUtils(siwa: siwa, tokenIssuer: tokenIssuer);
     admin = AppleIDPAdmin(utils: utils);
   }
 

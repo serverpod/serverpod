@@ -7,6 +7,10 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = AuthSessionsTokenManager(
+    config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
   withServerpod(
     'Given a non-migrated user (legacy user),',
     (final sessionBuilder, final endpoints) {
@@ -40,22 +44,23 @@ void main() {
 
         // Configure EmailAccounts for password reset verification
         AuthServices.initialize(
+            tokenManager: tokenManager,
             emailIDPConfig: EmailIDPConfig(
-          passwordHashPepper: 'test',
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedVerificationCode = verificationCode;
-          },
-        ));
+              passwordHashPepper: 'test',
+              sendPasswordResetVerificationCode: (
+                final session, {
+                required final email,
+                required final passwordResetRequestId,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedVerificationCode = verificationCode;
+              },
+            ));
       });
 
       tearDown(() async {
-        AuthServices.initialize();
+        AuthServices.initialize(tokenManager: tokenManager);
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -148,25 +153,26 @@ void main() {
 
         // Configure EmailAccounts for password reset verification
         AuthServices.initialize(
+            tokenManager: tokenManager,
             emailIDPConfig: EmailIDPConfig(
-          passwordHashPepper: 'test',
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedPasswordResetRequestId = passwordResetRequestId;
-            receivedVerificationCode = verificationCode;
-          },
-          onPasswordResetCompleted:
-              AuthBackwardsCompatibility.clearLegacyPassword,
-        ));
+              passwordHashPepper: 'test',
+              sendPasswordResetVerificationCode: (
+                final session, {
+                required final email,
+                required final passwordResetRequestId,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedPasswordResetRequestId = passwordResetRequestId;
+                receivedVerificationCode = verificationCode;
+              },
+              onPasswordResetCompleted:
+                  AuthBackwardsCompatibility.clearLegacyPassword,
+            ));
       });
 
       tearDown(() async {
-        AuthServices.initialize();
+        AuthServices.initialize(tokenManager: tokenManager);
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -185,7 +191,8 @@ void main() {
             newPassword: newPassword,
           );
 
-          final authInfo = await AuthSessions.authenticationHandler(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );
@@ -218,7 +225,8 @@ void main() {
             password: newPassword,
           );
 
-          final authInfo = await AuthSessions.authenticationHandler(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );

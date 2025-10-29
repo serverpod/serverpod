@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/uint8list_extension.dart';
 
@@ -29,6 +30,7 @@ final class EmailAccountPasswordString extends EmailAccountPassword {
 final class EmailIDPTestFixture {
   late final EmailIDPConfig config;
   late final EmailIDP emailIDP;
+  late final TokenManager tokenManager;
 
   final List<UuidValue> _authUserIds = [];
 
@@ -36,7 +38,21 @@ final class EmailIDPTestFixture {
     this.config = const EmailIDPConfig(
       passwordHashPepper: 'pepper',
     ),
-  }) : emailIDP = EmailIDP(config: config);
+    TokenManager? tokenManager,
+  }) {
+    tokenManager ??= AuthConfig(
+      primaryTokenManager: AuthSessionsTokenManager(
+        config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+      ),
+      identityProviders: [],
+    ).tokenManager;
+
+    // Analyzer incorrectly suggests this should be initialized in the
+    // constructor.
+    // ignore: prefer_initializing_formals
+    this.tokenManager = tokenManager;
+    emailIDP = EmailIDP(config: config, tokenManager: tokenManager);
+  }
 
   Future<EmailAccount> createEmailAccount(
     final Session session, {
