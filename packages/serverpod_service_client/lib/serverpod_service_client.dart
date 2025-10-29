@@ -6,4 +6,5 @@ library;
 export 'src/protocol/protocol.dart';
 export 'src/service_key_manager.dart';
 
-// TODO(#4107): Export any libraries intended for clients of this package.
+// TODO(https://github.com/serverpod/serverpod/issues/4107):
+// Export any libraries intended for clients of this package.

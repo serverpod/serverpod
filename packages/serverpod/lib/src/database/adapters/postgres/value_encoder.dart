@@ -35,7 +35,7 @@ class ValueEncoder extends PostgresTextEncoder {
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {
-      // TODO(#4107):
+      // TODO(https://github.com/serverpod/serverpod/issues/4107):
       // This is a bit of a hack to get ByteData working. Strings that starts
       // with `convert('` and ends with `', 'base64') will be incorrectly
       // encoded to base64. Best would be to find a better way to detect when we

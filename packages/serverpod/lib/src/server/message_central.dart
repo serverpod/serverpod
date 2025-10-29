@@ -13,7 +13,8 @@ abstract class MessageCentralServerpodChannels {
       '_serverpod_revoked_authentication_$userIdentifier';
 }
 
-// TODO(#4094): Support for server clusters.
+// TODO(https://github.com/serverpod/serverpod/issues/4094):
+// Support for server clusters.
 
 /// The callback used by listeners of the [MessageCentral].
 typedef MessageCentralListenerCallback = void Function(
