@@ -15,6 +15,9 @@ export 'package:serverpod/server.dart';
 
 // Web server
 export 'package:serverpod/web_server.dart';
+
+// Relic web framework (provides Middleware, Pipeline, createMiddleware, Handler)
+// Used for experimental middleware feature - see ExperimentalFeatures.middleware
 export 'package:relic/relic.dart' hide ExceptionHandler;
 
 // Database
