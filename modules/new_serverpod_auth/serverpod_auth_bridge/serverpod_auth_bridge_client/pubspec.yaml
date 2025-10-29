@@ -3,16 +3,16 @@
 
 name: serverpod_auth_bridge_client
 description: Serverpod authentication backwards compatibility client module.
-version: 3.0.0-alpha.1
+version: 3.0.0-alpha.3
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod_auth_idp_client: 3.0.0-alpha.1
-  serverpod_auth_core_client: 3.0.0-alpha.1
-  serverpod_client: 3.0.0-alpha.1
+  serverpod_auth_idp_client: 3.0.0-alpha.3
+  serverpod_auth_core_client: 3.0.0-alpha.3
+  serverpod_client: 3.0.0-alpha.3
 
 dependency_overrides:
   serverpod_auth_idp_client:

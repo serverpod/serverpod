@@ -3,7 +3,7 @@
 
 name: serverpod_cloud_storage_gcp
 description: Serverpod integration for Google Cloud Storage
-version: 3.0.0-alpha.1
+version: 3.0.0-alpha.3
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -12,7 +12,7 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  serverpod: 3.0.0-alpha.1
+  serverpod: 3.0.0-alpha.3
   amazon_cognito_identity_dart_2: ^3.5.0
   http: '>=1.1.0 <2.0.0'
   built_collection: ^5.1.1
