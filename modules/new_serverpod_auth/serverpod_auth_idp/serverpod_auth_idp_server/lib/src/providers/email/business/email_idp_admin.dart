@@ -135,18 +135,18 @@ final class EmailIDPAdmin {
   /// given email address.
   Future<void> deleteEmailAccount(
     final Session session, {
-    required String email,
+    required final String email,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
-        email = email.normalizedEmail;
+        final normalizedEmail = email.normalizedEmail;
 
         final account = await EmailAccount.db.findFirstRow(
           session,
-          where: (final t) => t.email.equals(email),
+          where: (final t) => t.email.equals(normalizedEmail),
           transaction: transaction,
         );
 
