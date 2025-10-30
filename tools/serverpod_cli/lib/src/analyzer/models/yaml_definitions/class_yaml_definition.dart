@@ -203,6 +203,10 @@ class ClassYamlDefinition {
                   Keyword.relation,
                 },
               ),
+              ValidateNode(
+                Keyword.columnKey,
+                valueRestriction: restrictions.validateColumnName,
+              ),
             },
           ),
         },

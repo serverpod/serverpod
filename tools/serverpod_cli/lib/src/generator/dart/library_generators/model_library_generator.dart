@@ -1466,11 +1466,13 @@ class SerializableModelLibraryGenerator {
         nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
+      final fieldKey = field.column ?? field.name;
+
       return {
         ...map,
         if (field.type.nullable)
-          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldRef,
-        if (!field.type.nullable) Code("'${field.name}'"): fieldRef,
+          Code("if (${fieldName.symbol} != null) '$fieldKey'"): fieldRef,
+        if (!field.type.nullable) Code("'$fieldKey'"): fieldRef,
       };
     });
 
@@ -2365,7 +2367,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
 
     var constructorArgs = <Expression>[
-      literalString(field.name),
+      literalString(field.column ?? field.name),
       refer('this'),
     ];
 
