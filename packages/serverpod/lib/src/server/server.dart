@@ -624,7 +624,8 @@ class Server {
   }
 
   /// Returns information about the current connections to the server.
-  Future<ConnectionsInfo> connectionsInfo() => _relicServer!.connectionsInfo();
+  Future<ConnectionsInfo> connectionsInfo() async =>
+      await _relicServer?.connectionsInfo() ?? (active: 0, closing: 0, idle: 0);
 }
 
 /// The result of a failed request to the server where the request size
