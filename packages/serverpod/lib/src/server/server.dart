@@ -16,7 +16,7 @@ import 'package:serverpod/src/server/websocket_request_handlers/method_websocket
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
-class Server {
+class Server implements RouterInjectable {
   // Map of [WebSocket] connected to the server.
   // The key is a unique identifier for the connection.
   // The value is a tuple of a [Future] that completes when the connection is
@@ -124,18 +124,37 @@ class Server {
         _securityContext = securityContext,
         _port = port;
 
+  late final _app = RelicApp()..inject(this);
+
+  @override
+  void injectIn(RelicRouter router) {
+    if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
+      router.use('/', _verboseLogging);
+    }
+    router
+      ..use('/', _headers)
+      ..use('/', _reportException)
+      ..get('/', _health)
+      ..get('/websocket',
+          _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket))
+      ..get('/v1/websocket',
+          _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket))
+      ..anyOf({Method.get, Method.options, Method.post},
+          '/serverpod_cloud_storage', _cloudStorage)
+      ..any('/**', _endpoints);
+  }
+
   /// Starts the server.
   /// Returns true if the server was started successfully.
   Future<bool> start(
       {required AuthenticationHandler authenticationHandler}) async {
     _authenticationHandler = authenticationHandler;
     try {
-      final server = RelicServer(() => IOAdapter.bind(
-            io.InternetAddress.anyIPv6,
-            port: _port,
-            context: _securityContext,
-          ));
-      await server.mountAndStart(_relicRequestHandler);
+      final server = await _app.serve(
+        address: io.InternetAddress.anyIPv6,
+        port: _port,
+        securityContext: _securityContext,
+      );
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
@@ -155,152 +174,113 @@ class Server {
     return _running;
   }
 
-  FutureOr<Result> _relicRequestHandler(Request req) async {
-    try {
-      return await _handleRequest(req);
-    } catch (e, stackTrace) {
-      await _reportFrameworkException(
-        e,
-        stackTrace,
-        message:
-            'Internal server error. Request handler failed with exception.',
-        request: req,
-      );
-      return Response.internalServerError(
-        body: Body.fromString('Internal Server Error'),
-      );
-    }
+  Handler _verboseLogging(Handler next) {
+    return (req) async {
+      final path = req.requestedUri.path;
+      serverpod.logVerbose('handleRequest: ${req.method} $path');
+      return await next(req);
+    };
   }
 
-  FutureOr<Result> _handleRequest(Request req) async {
-    final uri = req.requestedUri;
-    serverpod.logVerbose('handleRequest: ${req.method} ${uri.path}');
-
-    // TODO: Make httpResponseHeaders a Headers object from the get-go.
-    // or better yet, use middleware
-    final headers = Headers.build((mh) {
-      for (var rh in httpResponseHeaders.entries) {
-        mh[rh.key] = ['${rh.value}'];
-      }
-    });
-
-    var readBody = true;
-
-    // TODO: Use Router instead of manual dispatch on path and verb
-    if (uri.path == '/') {
-      // Perform health checks
-      var checks = await performHealthChecks(serverpod);
-      var issues = <String>[];
-      var allOk = true;
-      for (var metric in checks.metrics) {
-        if (!metric.isHealthy) {
-          allOk = false;
-          issues.add('${metric.name}: ${metric.value}');
-        }
-      }
-
-      var responseBuffer = StringBuffer();
-      if (allOk) {
-        responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
-      } else {
-        responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
-      }
-      for (var issue in issues) {
-        responseBuffer.writeln(issue);
-      }
-
-      return Response(
-        allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
-        body: Body.fromString(responseBuffer.toString()),
-        headers: headers,
-      );
-    } else if (uri.path == '/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        req,
-        EndpointWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/v1/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        req,
-        MethodWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/serverpod_cloud_storage') {
-      readBody = false;
-    }
-
-    // This OPTIONS check is necessary when making requests from
-    // eg `editor.swagger.io`. It ensures proper handling of preflight requests
-    // with the OPTIONS method.
-    if (req.method == Method.options) {
-      final combinedHeaders = headers.transform((mh) {
-        for (var orh in httpOptionsResponseHeaders.entries) {
-          mh[orh.key] = ['${orh.value}'];
-        }
-        mh.contentLength = 0; // TODO: Why set this explicitly?
-      });
-
-      return Response.ok(headers: combinedHeaders);
-    }
-
-    late final String body;
-    if (readBody) {
+  Handler _reportException(Handler next) {
+    return (req) async {
       try {
-        body = await _readBody(req);
+        return await next(req);
       } on _RequestTooLargeException catch (e) {
-        if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
-          io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
-        }
         return Response(
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
-          headers: headers,
         );
       } catch (e, stackTrace) {
-        await _reportFrameworkException(e, stackTrace,
-            message: 'Internal server error. Failed to read body of request.',
-            request: req);
-        return Response.badRequest(
-          body: Body.fromString('Failed to read request body.'),
-          headers: headers,
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message:
+              'Internal server error. Request handler failed with exception.',
+          request: req,
         );
+        return Response.internalServerError();
       }
-    } else {
-      body = '';
-    }
-
-    var result = await _handleUriCall(uri, body, req);
-    if (serverpod.runtimeSettings.logMalformedCalls) {
-      _logMalformedCalls(result);
-    }
-    return _toResponse(result, headers);
-  }
-
-  void _logMalformedCalls(EndpointResult result) {
-    final error = switch (result) {
-      ResultInvalidParams() => 'Malformed call',
-      ResultNoSuchEndpoint() => 'Malformed call',
-      ResultAuthenticationFailed() => 'Access denied',
-      // ResultInternalServerError // TODO: historically not included
-      _ => null
     };
-    if (error != null) {
-      // TODO: Log to database?
-      io.stderr.writeln('$error: $result');
-    }
   }
 
-  Response _toResponse(EndpointResult result, Headers headers) {
+  Future<Result> _health(Request req) async {
+    final checks = await performHealthChecks(serverpod);
+    final issues = <String>[];
+    var allOk = true;
+    for (var metric in checks.metrics) {
+      if (!metric.isHealthy) {
+        allOk = false;
+        issues.add('${metric.name}: ${metric.value}');
+      }
+    }
+
+    var responseBuffer = StringBuffer();
+    if (allOk) {
+      responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
+    } else {
+      responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
+    }
+    for (var issue in issues) {
+      responseBuffer.writeln(issue);
+    }
+
+    return Response(
+      allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
+      body: Body.fromString(responseBuffer.toString()),
+      //headers: headers,
+    );
+  }
+
+  Handler _headers(Handler next) {
+    return (req) async {
+      final isOptions = req.method == Method.options;
+      // TODO: Make httpResponseHeaders a Headers object from the get-go.
+      // or better yet, use middleware
+      final headers = Headers.build((mh) {
+        for (var rh in httpResponseHeaders.entries) {
+          mh[rh.key] = ['${rh.value}'];
+        }
+        if (isOptions) {
+          for (var orh in httpOptionsResponseHeaders.entries) {
+            mh[orh.key] = ['${orh.value}'];
+          }
+        }
+      });
+
+      // early exit on Method.options
+      if (isOptions) return Response.ok(headers: headers);
+
+      final result = await next(req);
+      return switch (result) {
+        Response() => result.copyWith(headers: headers),
+        _ => result,
+      };
+    };
+  }
+
+  FutureOr<Result> _cloudStorage(Request req) async {
+    final uri = req.requestedUri;
+    assert(uri.path == '/serverpod_cloud_storage');
+    var result = await _handleUriCall(uri, '', req);
+    return _toResponse(result);
+  }
+
+  Future<Response> _endpoints(Request req) async {
+    final body = await _readBody(req);
+    var result = await _handleUriCall(req.requestedUri, body, req);
+    return _toResponse(result);
+  }
+
+  Response _toResponse(EndpointResult result) {
     switch (result) {
       case ResultNoSuchEndpoint():
         return Response.notFound(
           body: Body.fromString(result.errorDescription),
-          headers: headers,
         );
       case ResultInvalidParams():
         return Response.badRequest(
           body: Body.fromString(result.errorDescription),
-          headers: headers,
         );
       case ResultAuthenticationFailed():
         var authFailedStatusCode = switch (result.reason) {
@@ -311,13 +291,11 @@ class Server {
         };
         return Response(
           authFailedStatusCode,
-          headers: headers,
         );
       case ResultInternalServerError():
         return Response.internalServerError(
           body: Body.fromString(
               'Internal server error. Call log id: ${result.sessionLogId}'),
-          headers: headers,
         );
       case ResultStatusCode():
         return Response(
@@ -325,14 +303,12 @@ class Server {
           body: result.message != null
               ? Body.fromString(result.message!)
               : Body.empty(),
-          headers: headers,
         );
       case ExceptionResult():
         var serializedModel =
             serializationManager.encodeWithTypeForProtocol(result.model);
         return Response.badRequest(
           body: Body.fromString(serializedModel, mimeType: MimeType.json),
-          headers: headers,
         );
       case ResultSuccess():
         var value = result.returnValue;
@@ -353,7 +329,7 @@ class Server {
               continue body;
             body:
             case Body():
-              value = Response.ok(body: value, headers: headers);
+              value = Response.ok(body: value);
               continue response;
             response:
             case Response():
@@ -365,45 +341,44 @@ class Server {
             SerializationManager.encodeForProtocol(value),
             mimeType: MimeType.json,
           ),
-          headers: headers,
         );
     }
   }
 
-  FutureOr<Result> _dispatchWebSocketUpgradeRequest(
-    Request req,
+  Handler _dispatchWebSocket(
     Future<void> Function(
       Server,
       RelicWebSocket,
       Request,
       void Function(),
     ) requestHandler,
-  ) async {
-    return WebSocketUpgrade((webSocket) async {
-      try {
-        // TODO(kasper): Should we keep doing this?
-        webSocket.pingInterval = const Duration(seconds: 30);
+  ) {
+    return (req) async {
+      return WebSocketUpgrade((webSocket) async {
+        try {
+          // TODO(kasper): Should we keep doing this?
+          webSocket.pingInterval = const Duration(seconds: 30);
+          var websocketKey = const Uuid().v4();
+          final handlerFuture = requestHandler(
+            this,
+            webSocket,
+            req,
+            () => _webSockets.remove(websocketKey),
+          );
 
-        var websocketKey = const Uuid().v4();
-        final handlerFuture = requestHandler(
-          this,
-          webSocket,
-          req,
-          () => _webSockets.remove(websocketKey),
-        );
+          _webSockets[websocketKey] = (handlerFuture, webSocket);
 
-        _webSockets[websocketKey] = (handlerFuture, webSocket);
-
-        await handlerFuture;
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Failed to upgrade connection to websocket.',
-          operationType: OperationType.stream,
-        );
-      }
-    });
+          await handlerFuture;
+        } catch (e, stackTrace) {
+          await _reportFrameworkException(
+            e,
+            stackTrace,
+            message: 'Failed to upgrade connection to websocket.',
+            operationType: OperationType.stream,
+          );
+        }
+      });
+    };
   }
 
   Future<String> _readBody(Request request) async {
@@ -586,7 +561,7 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _relicServer?.close();
+    await _app.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
@@ -642,14 +617,13 @@ class _RequestTooLargeException implements Exception {
   ///
   /// Contains a human-readable explanation of the error, including the maximum
   /// allowed size and the actual size of the request.
-  final String errorDescription;
+  String get errorDescription =>
+      'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   /// Creates a new [ResultRequestTooLarge] object.
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
-  _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+  const _RequestTooLargeException(this.maxSize);
 
   @override
   String toString() {
