@@ -142,8 +142,8 @@ class FakeTokenManager implements TokenManager {
     try {
       tokenId = utf8.decode(base64Decode(token));
     } catch (e) {
-      /// Silence if the token is not a valid base64 encoded string which can happen when
-      /// interacting with multiple token managers.
+      /// Silence if the token is not a valid base64 encoded string.
+      /// The token is received from client requests and could be anything.
       return null;
     }
 
