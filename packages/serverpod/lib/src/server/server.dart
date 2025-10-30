@@ -82,7 +82,6 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  io.HttpServer? _ioServer;
   RelicServer? _relicServer;
 
   /// Currently not in use.
@@ -128,15 +127,13 @@ class Server {
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     try {
-      final ioServer = await bindHttpServer(
-        io.InternetAddress.anyIPv6,
-        port: _port,
-        context: _securityContext,
-      );
-      final server = RelicServer(IOAdapter(ioServer));
+      final server = RelicServer(() => IOAdapter.bind(
+            io.InternetAddress.anyIPv6,
+            port: _port,
+            context: _securityContext,
+          ));
       await server.mountAndStart(_relicRequestHandler);
-      _ioServer = ioServer;
-      _actualPort = ioServer.port;
+      _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
@@ -155,7 +152,7 @@ class Server {
     return _running;
   }
 
-  FutureOr<HandledContext> _relicRequestHandler(NewContext context) async {
+  FutureOr<HandledContext> _relicRequestHandler(RequestContext context) async {
     try {
       return await _handleRequest(context);
     } catch (e, stackTrace) {
@@ -172,7 +169,7 @@ class Server {
     }
   }
 
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
+  FutureOr<HandledContext> _handleRequest(RequestContext context) async {
     final request = context.request;
     final uri = request.requestedUri;
     serverpod.logVerbose('handleRequest: ${request.method} ${uri.path}');
@@ -373,7 +370,7 @@ class Server {
   }
 
   FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
-    NewContext newContext,
+    RequestContext newContext,
     Future<void> Function(
       Server,
       RelicWebSocket,
@@ -598,7 +595,6 @@ class Server {
 
     // Wait for all WebSockets to close.
     await Future.wait(webSocketCompletions);
-    await _ioServer?.close(force: true);
     _running = false;
   }
 
@@ -626,6 +622,10 @@ class Server {
       context: context,
     );
   }
+
+  /// Returns information about the current connections to the server.
+  Future<ConnectionsInfo> connectionsInfo() async =>
+      await _relicServer?.connectionsInfo() ?? (active: 0, closing: 0, idle: 0);
 }
 
 /// The result of a failed request to the server where the request size
@@ -654,12 +654,4 @@ class _RequestTooLargeException implements Exception {
   String toString() {
     return errorDescription;
   }
-}
-
-// ignore: public_member_api_docs
-extension ServerInternalMethods on Server {
-  /// Returns the underlying [io.HttpServer] instance.
-  ///
-  /// This method is not intended for public use.
-  io.HttpServer? get ioServer => _ioServer;
 }
