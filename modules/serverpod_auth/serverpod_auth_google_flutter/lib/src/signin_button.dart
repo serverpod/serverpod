@@ -23,9 +23,6 @@ class SignInWithGoogleButton extends StatefulWidget {
   /// The style of the button.
   final ButtonStyle? style;
 
-  /// Will output debug prints if set to true.
-  final bool debug;
-
   /// Scopes to request when signing in. Default scopes are userinfo.profile
   /// and email, these should not be included in the [additionalScopes] list.
   final List<String> additionalScopes;
@@ -51,7 +48,6 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.serverClientId,
     this.onSignedIn,
     this.onFailure,
-    this.debug = false,
     this.style,
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
@@ -85,7 +81,6 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Attempt to sign in the user.
         signInWithGoogle(
           widget.caller,
-          debug: widget.debug,
           clientId: widget.clientId,
           serverClientId: widget.serverClientId,
           additionalScopes: widget.additionalScopes,
