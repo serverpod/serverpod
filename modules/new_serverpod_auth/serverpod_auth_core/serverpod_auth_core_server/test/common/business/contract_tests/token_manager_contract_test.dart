@@ -208,7 +208,7 @@ void testSuite<T extends TokenManager>(
       test(
         'when validating an invalid token, then AuthenticationInfo should be null',
         () async {
-          final invalidToken = 'INVALID$tokenId';
+          final invalidToken = 'INVALID${authSuccess.token}';
           final authInfo = await tokenManager.validateToken(
             session,
             invalidToken,
