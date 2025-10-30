@@ -125,7 +125,7 @@ class Server {
 
   late final _app = RelicApp()
     ..use('/', _reportException)
-    ..get('/', _handleRequest)
+    ..get('/', _health)
     ..get('/websocket', _handleRequest)
     ..get('/v1/websocket', _handleRequest)
     ..anyOf({Method.get, Method.options, Method.post},
@@ -177,6 +177,35 @@ class Server {
     };
   }
 
+  Future<ResponseContext> _health(RequestContext ctx) async {
+    final checks = await performHealthChecks(serverpod);
+    final issues = <String>[];
+    var allOk = true;
+    for (var metric in checks.metrics) {
+      if (!metric.isHealthy) {
+        allOk = false;
+        issues.add('${metric.name}: ${metric.value}');
+      }
+    }
+
+    var responseBuffer = StringBuffer();
+    if (allOk) {
+      responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
+    } else {
+      responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
+    }
+    for (var issue in issues) {
+      responseBuffer.writeln(issue);
+    }
+
+    var response = Response(
+      allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
+      body: Body.fromString(responseBuffer.toString()),
+      //headers: headers,
+    );
+    return ctx.respond(response);
+  }
+
   FutureOr<HandledContext> _handleRequest(RequestContext context) async {
     final request = context.request;
     final uri = request.requestedUri;
@@ -193,35 +222,7 @@ class Server {
     var readBody = true;
 
     // TODO: Use Router instead of manual dispatch on path and verb
-    if (uri.path == '/') {
-      // Perform health checks
-      var checks = await performHealthChecks(serverpod);
-      var issues = <String>[];
-      var allOk = true;
-      for (var metric in checks.metrics) {
-        if (!metric.isHealthy) {
-          allOk = false;
-          issues.add('${metric.name}: ${metric.value}');
-        }
-      }
-
-      var responseBuffer = StringBuffer();
-      if (allOk) {
-        responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
-      } else {
-        responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
-      }
-      for (var issue in issues) {
-        responseBuffer.writeln(issue);
-      }
-
-      var response = Response(
-        allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
-        body: Body.fromString(responseBuffer.toString()),
-        headers: headers,
-      );
-      return context.respond(response);
-    } else if (uri.path == '/websocket') {
+    if (uri.path == '/websocket') {
       return await _dispatchWebSocketUpgradeRequest(
         context,
         EndpointWebsocketRequestHandler.handleWebsocket,
