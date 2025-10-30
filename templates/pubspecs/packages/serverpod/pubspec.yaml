@@ -28,7 +28,10 @@ dependencies:
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
-  relic: ^0.9.1
+  relic:
+    git:
+      url: https://github.com/nielsenko/relic.git
+      ref: app-rerun
   retry: ^3.1.1
   synchronized: ^3.1.0
   system_resources: ^1.6.0
