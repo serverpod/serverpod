@@ -123,16 +123,24 @@ class Server {
         _securityContext = securityContext,
         _port = port;
 
+  late final _app = RelicApp()
+    ..use('/', _reportException)
+    ..get('/', _handleRequest)
+    ..get('/websocket', _handleRequest)
+    ..get('/v1/websocket', _handleRequest)
+    ..anyOf({Method.get, Method.options, Method.post},
+        '/serverpod_cloud_storage', _handleRequest)
+    ..any('/**', _handleRequest);
+
   /// Starts the server.
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     try {
-      final server = RelicServer(() => IOAdapter.bind(
-            io.InternetAddress.anyIPv6,
-            port: _port,
-            context: _securityContext,
-          ));
-      await server.mountAndStart(_relicRequestHandler);
+      final server = await _app.serve(
+        address: io.InternetAddress.anyIPv6,
+        port: _port,
+        securityContext: _securityContext,
+      );
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
@@ -152,21 +160,21 @@ class Server {
     return _running;
   }
 
-  FutureOr<HandledContext> _relicRequestHandler(RequestContext context) async {
-    try {
-      return await _handleRequest(context);
-    } catch (e, stackTrace) {
-      await _reportFrameworkException(
-        e,
-        stackTrace,
-        message:
-            'Internal server error. Request handler failed with exception.',
-        request: context.request,
-      );
-      return context.respond(Response.internalServerError(
-        body: Body.fromString('Internal Server Error'),
-      ));
-    }
+  Handler _reportException(Handler next) {
+    return (ctx) async {
+      try {
+        return await next(ctx);
+      } catch (e, stackTrace) {
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message:
+              'Internal server error. Request handler failed with exception.',
+          request: ctx.request,
+        );
+        return ctx.respond(Response.internalServerError());
+      }
+    };
   }
 
   FutureOr<HandledContext> _handleRequest(RequestContext context) async {
@@ -585,7 +593,7 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _relicServer?.close();
+    await _app.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
