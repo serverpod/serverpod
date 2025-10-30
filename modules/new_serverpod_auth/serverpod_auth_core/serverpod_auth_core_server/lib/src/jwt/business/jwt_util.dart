@@ -1,20 +1,29 @@
 import 'dart:convert';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
-import 'authentication_token_secrets.dart';
+import 'authentication_token_config.dart';
 import 'authentication_tokens.dart';
 
-@internal
+/// Utility methods for creating and verifying JWT tokens.
 class JwtUtil {
+  /// Creates a new [JwtUtil] instance.
   JwtUtil({
-    required final AuthenticationTokenSecrets secrets,
-  }) : _secrets = secrets;
+    required final Duration accessTokenLifetime,
+    required final String? issuer,
+    required final AuthenticationTokenAlgorithm algorithm,
+    required final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm,
+  })  : _accessTokenLifetime = accessTokenLifetime,
+        _issuer = issuer,
+        _algorithm = algorithm,
+        _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
 
-  final AuthenticationTokenSecrets _secrets;
+  final AuthenticationTokenAlgorithm _algorithm;
+  final AuthenticationTokenAlgorithm? _fallbackVerificationAlgorithm;
+  final Duration _accessTokenLifetime;
+  final String? _issuer;
 
   /// Creates a new JWT for the given refresh token.
   ///
@@ -58,7 +67,7 @@ class JwtUtil {
       issuer: _issuer,
     );
 
-    final (JWTKey key, JWTAlgorithm algorithm) = switch (_secrets.algorithm) {
+    final (JWTKey key, JWTAlgorithm algorithm) = switch (_algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
           key,
           JWTAlgorithm.HS512
@@ -69,7 +78,7 @@ class JwtUtil {
 
     return jwt.sign(
       key,
-      expiresIn: AuthenticationTokens.config.accessTokenLifetime,
+      expiresIn: _accessTokenLifetime,
       algorithm: algorithm,
     );
   }
@@ -158,11 +167,11 @@ class JwtUtil {
     try {
       return JWT.verify(
         accessToken,
-        _secrets.algorithm.verificationKey,
+        _algorithm.verificationKey,
         issuer: _issuer,
       );
     } catch (_) {
-      final fallbackAlgorithm = _secrets.fallbackVerificationAlgorithm;
+      final fallbackAlgorithm = _fallbackVerificationAlgorithm;
       if (fallbackAlgorithm == null) {
         rethrow;
       }
@@ -174,8 +183,6 @@ class JwtUtil {
       );
     }
   }
-
-  static String? get _issuer => AuthenticationTokens.config.issuer;
 
   /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
   static const _registeredClaims = {
@@ -208,26 +215,3 @@ typedef VerifiedJwtData = ({
   Set<Scope> scopes,
   Map<String, dynamic> extraClaims,
 });
-
-extension on AuthenticationTokenAlgorithmConfiguration {
-  JWTKey get verificationKey {
-    return switch (this) {
-      HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => key,
-      EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final publicKey) =>
-        publicKey,
-    };
-  }
-}
-
-extension on FallbackAuthenticationTokenAlgorithmConfiguration {
-  JWTKey get verificationKey {
-    return switch (this) {
-      HmacSha512FallbackAuthenticationTokenAlgorithmConfiguration(:final key) =>
-        key,
-      EcdsaSha512FallbackAuthenticationTokenAlgorithmConfiguration(
-        :final publicKey
-      ) =>
-        publicKey,
-    };
-  }
-}

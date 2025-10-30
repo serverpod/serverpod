@@ -7,20 +7,21 @@ import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import 'authentication_token_secrets.dart';
-import 'authentication_tokens.dart';
-
 /// Class for hashing and verifying a refresh token's rotating secret.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
-@internal
 final class RefreshTokenSecretHash {
-  RefreshTokenSecretHash({
-    required final AuthenticationTokenSecrets secrets,
-  }) : _secrets = secrets;
+  final int _refreshTokenRotatingSecretSaltLength;
+  final String _refreshTokenHashPepper;
 
-  final AuthenticationTokenSecrets _secrets;
+  /// Creates a new instance of [RefreshTokenSecretHash].
+  RefreshTokenSecretHash({
+    required final int refreshTokenRotatingSecretSaltLength,
+    required final String refreshTokenHashPepper,
+  })  : _refreshTokenRotatingSecretSaltLength =
+            refreshTokenRotatingSecretSaltLength,
+        _refreshTokenHashPepper = refreshTokenHashPepper;
 
   /// Create the hash for the given refresh token secret.
   Future<({Uint8List hash, Uint8List salt})> createHash({
@@ -28,10 +29,10 @@ final class RefreshTokenSecretHash {
     @protected Uint8List? salt,
   }) {
     salt ??= generateRandomBytes(
-      AuthenticationTokens.config.refreshTokenRotatingSecretSaltLength,
+      _refreshTokenRotatingSecretSaltLength,
     );
 
-    final pepper = utf8.encode(_secrets.refreshTokenHashPepper);
+    final pepper = utf8.encode(_refreshTokenHashPepper);
 
     return _createHash(secret: secret, salt: salt, pepper: pepper);
   }

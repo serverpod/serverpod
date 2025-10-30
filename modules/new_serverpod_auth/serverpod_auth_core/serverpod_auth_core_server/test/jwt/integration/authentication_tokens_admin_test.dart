@@ -7,20 +7,22 @@ import 'package:serverpod_auth_core_server/src/generated/jwt/models/refresh_toke
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../utils/authentication_token_secrets_mock.dart';
 
 void main() {
+  final authenticationTokens = AuthenticationTokens(
+    config: AuthenticationTokenConfig(
+      algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+        SecretKey('test-private-key-for-HS512'),
+      ),
+      refreshTokenHashPepper: 'test-pepper',
+    ),
+  );
+  final authenticationTokensAdmin = authenticationTokens.admin;
+
   withServerpod('Given an auth user with an authentication token,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-    });
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -28,7 +30,7 @@ void main() {
       final authUser = await AuthUsers.create(session);
       authUserId = authUser.id;
 
-      await AuthenticationTokens.createTokens(
+      await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -36,13 +38,9 @@ void main() {
       );
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test('when calling `deleteExpiredRefreshTokens`, then it is unaffected.',
         () async {
-      await AuthenticationTokensAdmin().deleteExpiredRefreshTokens(session);
+      await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
 
       final tokens = await RefreshToken.db.find(session);
 
@@ -55,7 +53,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for all users, then it is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
       );
 
@@ -68,7 +66,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for that specific user, then it is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
         authUserId: authUserId,
       );
@@ -82,7 +80,7 @@ void main() {
     test(
         'when calling `findAuthenticationTokens` for another user, then nothing is returned.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
         authUserId: const Uuid().v4obj(),
       );
@@ -92,20 +90,16 @@ void main() {
   });
 
   withServerpod('Given two auth user with 100 authentication tokens each,',
+      // Creating authentication tokens takes time, so we do it once in
+      // setUpAll and then rollback the database after all tests in the group are complete.
+      rollbackDatabase: RollbackDatabase.afterAll,
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId1;
     late UuidValue authUserId2;
     late List<UuidValue> refreshTokenIdsInOrderOfCreation;
 
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-    });
-
-    setUp(() async {
+    setUpAll(() async {
       session = sessionBuilder.build();
 
       authUserId1 = (await AuthUsers.create(session)).id;
@@ -114,7 +108,7 @@ void main() {
 
       for (var i = 0; i < 100; i++) {
         for (final authUserId in [authUserId1, authUserId2]) {
-          final authSuccess = await AuthenticationTokens.createTokens(
+          final authSuccess = await authenticationTokens.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},
@@ -130,14 +124,10 @@ void main() {
       }
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test(
         'when calling `listAuthenticationTokens`, then it returns the first 100 tokens in order of creation date ASC.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
       );
 
@@ -151,7 +141,7 @@ void main() {
     test(
         'when calling `listAuthenticationTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
         offset: 50,
       );
@@ -166,7 +156,7 @@ void main() {
     test(
         "when calling `listAuthenticationTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
         () async {
-      final tokens = await AuthenticationTokensAdmin().listAuthenticationTokens(
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
         session,
         authUserId: authUserId1,
         limit: 2,
@@ -186,7 +176,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `limit: 0`, then it throws.',
         () async {
       await expectLater(
-        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+        () => authenticationTokensAdmin.listAuthenticationTokens(
           session,
           authUserId: authUserId1,
           limit: 0,
@@ -199,7 +189,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `limit: 1001`, then it throws.',
         () async {
       await expectLater(
-        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+        () => authenticationTokensAdmin.listAuthenticationTokens(
           session,
           authUserId: authUserId1,
           limit: 1001,
@@ -212,7 +202,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `offset: -1`, then it throws.',
         () async {
       await expectLater(
-        () => AuthenticationTokensAdmin().listAuthenticationTokens(
+        () => authenticationTokensAdmin.listAuthenticationTokens(
           session,
           authUserId: authUserId1,
           offset: -1,
@@ -227,13 +217,6 @@ void main() {
     late Session session;
     late UuidValue authUserId;
 
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-    });
-
     setUp(() async {
       session = sessionBuilder.build();
 
@@ -244,9 +227,9 @@ void main() {
 
       await withClock(
           Clock.fixed(DateTime.now()
-              .subtract(AuthenticationTokens.config.refreshTokenLifetime)),
+              .subtract(authenticationTokens.config.refreshTokenLifetime)),
           () async {
-        await AuthenticationTokens.createTokens(
+        await authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -255,14 +238,10 @@ void main() {
       });
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test(
         'when calling `deleteExpiredRefreshTokens`, then that token is removed.',
         () async {
-      await AuthenticationTokensAdmin().deleteExpiredRefreshTokens(session);
+      await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
 
       final tokens = await RefreshToken.db.find(session);
 

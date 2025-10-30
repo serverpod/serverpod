@@ -3,13 +3,16 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
-import 'authentication_tokens.dart';
 
 /// Collection of admin functions for managing authentication tokens.
 final class AuthenticationTokensAdmin {
+  final Duration _refreshTokenLifetime;
+
   /// Creates a new admin helper class instance.
   @internal
-  AuthenticationTokensAdmin();
+  AuthenticationTokensAdmin({
+    required final Duration refreshTokenLifetime,
+  }) : _refreshTokenLifetime = refreshTokenLifetime;
 
   /// Removes all expired refresh tokens from the database.
   Future<void> deleteExpiredRefreshTokens(
@@ -17,7 +20,7 @@ final class AuthenticationTokensAdmin {
     final Transaction? transaction,
   }) async {
     final oldestValidRefreshTokenDate =
-        clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
+        clock.now().subtract(_refreshTokenLifetime);
 
     await RefreshToken.db.deleteWhere(
       session,
