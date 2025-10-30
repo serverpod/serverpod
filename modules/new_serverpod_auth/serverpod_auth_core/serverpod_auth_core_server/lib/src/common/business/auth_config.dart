@@ -51,9 +51,9 @@ class AuthConfig {
   /// construct the identity providers used by authentication endpoints. Each factory
   /// creates a provider instance with the appropriate token manager dependency.
   ///
-  /// [additionalTokenManagers] is a map of additional token managers keyed by strategy
-  /// name (e.g., 'jwt', 'session') that handle token lifecycle operations alongside the
-  /// [primaryTokenManager]. The default token manager is always included automatically.
+  /// [additionalTokenManagers] is a list of additional token managers that
+  /// handle token lifecycle operations alongside the [primaryTokenManager].
+  /// The default token manager is always included automatically.
   /// {@endtemplate}
   AuthConfig({
     required final TokenManager primaryTokenManager,
