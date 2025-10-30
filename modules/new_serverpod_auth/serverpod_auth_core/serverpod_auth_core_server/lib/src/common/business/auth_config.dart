@@ -22,8 +22,27 @@ class AuthConfig {
 
   static AuthConfig? _instance;
 
-  /// Sets the [AuthConfig] instance.
+  /// Creates a new [AuthConfig] instance and sets it as the global instance.
   ///
+  /// {@macro auth_config_constructor}
+  factory AuthConfig.set({
+    required final TokenManager primaryTokenManager,
+    required final List<IdentityProviderFactory<IdentityProvider>>
+        identityProviders,
+    final List<TokenManager> additionalTokenManagers = const [],
+  }) {
+    final instance = AuthConfig(
+      primaryTokenManager: primaryTokenManager,
+      identityProviders: identityProviders,
+      additionalTokenManagers: additionalTokenManagers,
+    );
+    return _instance = instance;
+  }
+
+  /// Creates a new [AuthConfig] instance.
+  ///
+  /// Use [AuthConfig.set] to create a new instance and set it as the global instance.
+  /// {@template auth_config_constructor}
   /// [primaryTokenManager] is the primary token manager used by identity providers
   /// for issuing new tokens. Each identity provider can optionally override this
   /// with their own token manager via [IdentityProviderFactory.tokenManagerOverride].
@@ -32,28 +51,15 @@ class AuthConfig {
   /// construct the identity providers used by authentication endpoints. Each factory
   /// creates a provider instance with the appropriate token manager dependency.
   ///
-  /// [additionalTokenManagers] is a map of additional token managers keyed by strategy
-  /// name (e.g., 'jwt', 'session') that handle token lifecycle operations alongside the
-  /// [primaryTokenManager]. The default token manager is always included automatically.
-  factory AuthConfig.set({
+  /// [additionalTokenManagers] is a list of additional token managers that
+  /// handle token lifecycle operations alongside the [primaryTokenManager].
+  /// The default token manager is always included automatically.
+  /// {@endtemplate}
+  AuthConfig({
     required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<IdentityProvider>>
         identityProviders,
     final List<TokenManager> additionalTokenManagers = const [],
-  }) {
-    final instance = AuthConfig._(
-      primaryTokenManager: primaryTokenManager,
-      identityProviders: identityProviders,
-      additionalTokenManagers: additionalTokenManagers,
-    );
-    return _instance = instance;
-  }
-
-  AuthConfig._({
-    required final TokenManager primaryTokenManager,
-    required final List<IdentityProviderFactory<IdentityProvider>>
-        identityProviders,
-    required final List<TokenManager> additionalTokenManagers,
   }) {
     tokenManager = MultiTokenManager(
       primaryTokenManager: primaryTokenManager,

@@ -18,8 +18,18 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
-    authenticationHandler: AuthSessions.authenticationHandler,
   );
+
+  final authConfig = AuthConfig.set(
+    primaryTokenManager: AuthSessionsTokenManager(
+      config: AuthSessionsConfig(
+        sessionKeyHashPepper: 'test-pepper',
+      ),
+    ),
+    identityProviders: [],
+  );
+
+  pod.authenticationHandler = authConfig.authenticationHandler;
 
   AuthServices.initialize(
     googleIDPConfig: GoogleIDPConfig(
@@ -38,6 +48,7 @@ void run(List<String> args) async {
     emailIDPConfig: EmailIDPConfig(
       passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
     ),
+    tokenManager: authConfig.tokenManager,
   );
 
   pod.webServer.addRoute(

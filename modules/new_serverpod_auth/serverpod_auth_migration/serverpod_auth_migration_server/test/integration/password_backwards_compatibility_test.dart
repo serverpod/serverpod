@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_email_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -10,8 +11,14 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = new_auth_core.AuthSessionsTokenManager(
+    config:
+        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
   const config = new_email_idp.EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP = new_email_idp.EmailIDP(config: config);
+  final newEmailIDP =
+      new_email_idp.EmailIDP(config: config, tokenManager: tokenManager);
 
   setUp(() async {
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);

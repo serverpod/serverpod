@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -9,20 +8,27 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import '../util/session_key_hash.dart';
-import 'auth_session_config.dart';
-import 'auth_session_secrets.dart';
 import 'auth_sessions_admin.dart';
+import 'auth_sessions_config.dart';
 import 'session_key.dart';
 
 /// Management functions for [AuthSession]s.
 ///
 /// This should be used instead of [AuthSession.db].
-abstract final class AuthSessions {
-  /// The current session module configuration.
-  static AuthSessionConfig config = AuthSessionConfig();
+final class AuthSessions {
+  final AuthSessionsConfig _config;
+
+  /// The secrets configuration.
+  final AuthSessionKeyHash _sessionKeyHash;
+
+  /// Creates a new [AuthSessions] instance.
+  AuthSessions({
+    required final AuthSessionsConfig config,
+  })  : _config = config,
+        _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
 
   /// Admin-related functions for managing session.
-  static final admin = AuthSessionsAdmin();
+  final admin = AuthSessionsAdmin();
 
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
@@ -32,7 +38,7 @@ abstract final class AuthSessions {
   /// In case the session looks like it was created with this package, but
   /// does not resolve to a valid authentication info (anymore), this will
   /// return `null`, and log details of the reason for rejection.
-  static Future<AuthenticationInfo?> authenticationHandler(
+  Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String key,
   ) async {
@@ -121,7 +127,7 @@ abstract final class AuthSessions {
   ///
   /// In most situations this should not be called directly, but rather through an authentication provider.
   @useResult
-  static Future<AuthSuccess> createSession(
+  Future<AuthSuccess> createSession(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
@@ -161,7 +167,7 @@ abstract final class AuthSessions {
       scopes ??= authUser.scopes;
     }
 
-    final secret = generateRandomBytes(config.sessionKeySecretLength);
+    final secret = generateRandomBytes(_config.sessionKeySecretLength);
     final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
     final scopeNames = <String>{
@@ -196,10 +202,12 @@ abstract final class AuthSessions {
     );
   }
 
-  /// List all sessions belonging to the given [authUserId].
-  static Future<List<AuthSessionInfo>> listSessions(
+  /// List all sessions.
+  ///
+  /// If [authUserId] is provided, only sessions for that user will be listed.
+  Future<List<AuthSessionInfo>> listSessions(
     final Session session, {
-    required final UuidValue authUserId,
+    required final UuidValue? authUserId,
     final Transaction? transaction,
   }) async {
     return admin.findSessions(
@@ -216,9 +224,10 @@ abstract final class AuthSessions {
   ///
   /// Note: The method will not do anything if no authentication information is
   /// found for the user.
-  static Future<List<UuidValue>> destroyAllSessions(
+  Future<List<UuidValue>> destroyAllSessions(
     final Session session, {
     required final UuidValue authUserId,
+    final String? method,
     final Transaction? transaction,
   }) async {
     // Delete all sessions for the user
@@ -247,7 +256,7 @@ abstract final class AuthSessions {
   /// if the token was found and deleted, `false` otherwise.
   ///
   /// If the session does not exist, this method will have no effect.
-  static Future<bool> destroySession(
+  Future<bool> destroySession(
     final Session session, {
     required final UuidValue authSessionId,
     final Transaction? transaction,
@@ -273,15 +282,4 @@ abstract final class AuthSessions {
 
     return true;
   }
-
-  /// The secrets configuration.
-  static final __secrets = AuthSessionSecrets();
-
-  /// Secrets to the used for testing. Also affects the internally used [AuthSessionKeyHash].
-  @visibleForTesting
-  static AuthSessionSecrets? secretsTestOverride;
-  static AuthSessionSecrets get _secrets => secretsTestOverride ?? __secrets;
-
-  static AuthSessionKeyHash get _sessionKeyHash =>
-      AuthSessionKeyHash(secrets: _secrets);
 }

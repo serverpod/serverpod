@@ -9,6 +9,19 @@ import 'serverpod_test_tools.dart';
 import 'session/test_utils.dart';
 
 void main() {
+  final authSessionConfig =
+      AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper');
+
+  final authSessions = AuthSessions(
+    config: authSessionConfig,
+  );
+
+  AuthConfig.set(
+    primaryTokenManager: AuthSessionsTokenManager(
+      config: authSessionConfig,
+    ),
+    identityProviders: [],
+  );
   withServerpod('Given a valid SAS session and a valid JWT token,',
       (final sessionBuilder, final endpoints) {
     late Session session;
@@ -23,7 +36,7 @@ void main() {
 
       session = sessionBuilder.build();
 
-      sasAuthSuccess = (await AuthSessions.createSession(
+      sasAuthSuccess = (await authSessions.createSession(
         session,
         authUserId: await createAuthUser(session),
         scopes: {const Scope('sas')},
@@ -36,10 +49,6 @@ void main() {
         scopes: {const Scope('jwt')},
         method: 'test',
       );
-    });
-
-    tearDown(() {
-      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(

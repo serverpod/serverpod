@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
@@ -36,9 +37,14 @@ typedef AppleAuthSuccess = ({
 /// be sufficient.
 class AppleIDPUtils {
   final SignInWithApple _siwa;
+  final TokenIssuer _tokenIssuer;
 
   /// Creates a new instance of [AppleIDPUtils].
-  AppleIDPUtils({required final SignInWithApple siwa}) : _siwa = siwa;
+  AppleIDPUtils({
+    required final SignInWithApple siwa,
+    required final TokenIssuer tokenIssuer,
+  })  : _siwa = siwa,
+        _tokenIssuer = tokenIssuer;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -145,7 +151,7 @@ class AppleIDPUtils {
       throw AuthUserBlockedException();
     }
 
-    return AuthSessions.createSession(
+    return _tokenIssuer.issueToken(
       session,
       authUserId: authUserId,
       method: method,

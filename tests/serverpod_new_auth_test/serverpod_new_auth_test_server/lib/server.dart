@@ -8,6 +8,8 @@ import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 
+const sessionKeyHashPepper = 'test-pepper';
+
 // This is the starting point of your Serverpod server. In most cases, you will
 // only need to make additions to this file if you add future calls,  are
 // configuring Relic (Serverpod's web-server), or need custom setup work.
@@ -21,11 +23,18 @@ void run(final List<String> args) async {
     authenticationHandler: UnifiedAuthTokens.authenticationHandler,
   );
 
+  AuthConfig.set(
+    primaryTokenManager: AuthSessionsTokenManager(
+        config: AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper)),
+    identityProviders: [],
+  );
+
   AuthServices.initialize(
     emailIDPConfig: EmailIDPConfig(
       passwordHashPepper:
           pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
     ),
+    tokenManager: AuthConfig.instance.tokenManager,
   );
 
   // Setup a default page at the web root.

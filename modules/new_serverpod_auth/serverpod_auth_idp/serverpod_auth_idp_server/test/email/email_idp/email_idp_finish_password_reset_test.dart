@@ -344,8 +344,7 @@ void main() {
       authUserId = authUser.id;
 
       // Create a session before password reset
-      // ignore: unused_result
-      await AuthSessions.createSession(
+      await fixture.tokenManager.issueToken(
         session,
         authUserId: authUserId,
         method: 'email',
@@ -381,13 +380,13 @@ void main() {
       );
 
       // Verify the session was destroyed by checking if it still exists
-      final sessions = await AuthSessions.admin.findSessions(
+      final sessions = await fixture.tokenManager.listTokens(
         session,
         authUserId: authUserId,
       );
 
       expect(sessions, hasLength(1));
-      expect(sessions.single.authUserId, authSuccess.authUserId);
+      expect(sessions.single.userId, authSuccess.authUserId.uuid);
     });
   });
 

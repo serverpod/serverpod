@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp_server_exceptions.dart';
 
@@ -32,8 +33,11 @@ final class EmailIDP {
   /// The configuration for the email identity provider.
   final EmailIDPConfig config;
 
+  final TokenManager _tokenManager;
+
   /// Creates a new instance of [EmailIDP].
-  EmailIDP({required this.config}) {
+  EmailIDP({required this.config, required final TokenManager tokenManager})
+      : _tokenManager = tokenManager {
     utils = EmailIDPUtils(config: config);
     admin = EmailIDPAdmin(utils: utils);
   }
@@ -234,7 +238,7 @@ final class EmailIDP {
       throw AuthUserBlockedException();
     }
 
-    final sessionKey = await AuthSessions.createSession(
+    final sessionKey = await _tokenManager.issueToken(
       session,
       authUserId: authUserId,
       method: method,
@@ -250,11 +254,11 @@ final class EmailIDP {
     final UuidValue authUserId, {
     required final Transaction? transaction,
   }) async {
-    /// TODO: Move to shared auth config and filter on method and auth user id.
-    await AuthSessions.destroyAllSessions(
+    await _tokenManager.revokeAllTokens(
       session,
       authUserId: authUserId,
       transaction: transaction,
+      method: _method,
     );
   }
 }

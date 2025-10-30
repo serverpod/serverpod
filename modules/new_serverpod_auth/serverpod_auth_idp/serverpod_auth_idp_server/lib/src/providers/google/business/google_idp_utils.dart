@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 
 import '../../../generated/protocol.dart';
@@ -68,8 +69,13 @@ class GoogleIDPUtils {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
+  final TokenIssuer _tokenIssuer;
+
   /// Creates a new instance of [GoogleIDPUtils].
-  GoogleIDPUtils({required this.clientSecret});
+  GoogleIDPUtils({
+    required this.clientSecret,
+    required final TokenIssuer tokenIssuer,
+  }) : _tokenIssuer = tokenIssuer;
 
   /// Authenticates a user using an ID token.
   ///
@@ -140,7 +146,7 @@ class GoogleIDPUtils {
       throw AuthUserBlockedException();
     }
 
-    final sessionKey = await AuthSessions.createSession(
+    final sessionKey = await _tokenIssuer.issueToken(
       session,
       authUserId: authUserId,
       method: method,

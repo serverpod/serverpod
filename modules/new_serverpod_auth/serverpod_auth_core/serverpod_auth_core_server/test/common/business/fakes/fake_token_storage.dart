@@ -1,4 +1,5 @@
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
+import 'package:uuid/uuid.dart';
 
 /// In-memory token storage for testing purposes.
 ///
@@ -7,7 +8,6 @@ import 'package:serverpod_auth_core_server/src/common/business/token_manager.dar
 /// the same token data during tests.
 class FakeTokenStorage {
   final Map<String, TokenInfo> _tokens = {};
-  int _tokenCounter = 0;
 
   void storeToken(final TokenInfo token) {
     _tokens[token.tokenId] = token;
@@ -56,20 +56,20 @@ class FakeTokenStorage {
   }
 
   String generateTokenId() {
-    _tokenCounter++;
-    return 'token-$_tokenCounter';
+    return 'fake-token-${const Uuid().v4()}';
   }
 
   String generateRefreshTokenId() {
-    return 'refresh-token-$_tokenCounter';
+    return 'fake-refresh-token-${const Uuid().v4()}';
   }
 
   void clear() {
     _tokens.clear();
-    _tokenCounter = 0;
   }
 
+  /// Should never be called.
   int get tokenCount => _tokens.length;
+
+  /// Should be removed.
   List<TokenInfo> get allTokens => _tokens.values.toList();
-  int get currentTokenCounter => _tokenCounter;
 }
