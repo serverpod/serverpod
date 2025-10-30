@@ -174,8 +174,8 @@ void main() {
         final deleted = await AuthSessionsAdmin().deleteSessions(session);
 
         expect(deleted, hasLength(1));
-        expect(deleted.single.$1, authUserId);
-        expect(deleted.single.$2, authSessionId);
+        expect(deleted.single.authUserId, authUserId);
+        expect(deleted.single.sessionId, authSessionId);
         expect(await AuthSession.db.count(session), 0);
       },
     );
@@ -189,8 +189,8 @@ void main() {
         );
 
         expect(deleted, hasLength(1));
-        expect(deleted.single.$1, authUserId);
-        expect(deleted.single.$2, authSessionId);
+        expect(deleted.single.authUserId, authUserId);
+        expect(deleted.single.sessionId, authSessionId);
         expect(await AuthSession.db.count(session), 0);
       },
     );
@@ -217,8 +217,8 @@ void main() {
         );
 
         expect(deleted, hasLength(1));
-        expect(deleted.single.$1, authUserId);
-        expect(deleted.single.$2, authSessionId);
+        expect(deleted.single.authUserId, authUserId);
+        expect(deleted.single.sessionId, authSessionId);
         expect(await AuthSession.db.count(session), 0);
       },
     );
@@ -245,8 +245,8 @@ void main() {
         );
 
         expect(deleted, hasLength(1));
-        expect(deleted.single.$1, authUserId);
-        expect(deleted.single.$2, authSessionId);
+        expect(deleted.single.authUserId, authUserId);
+        expect(deleted.single.sessionId, authSessionId);
         expect(await AuthSession.db.count(session), 0);
       },
     );

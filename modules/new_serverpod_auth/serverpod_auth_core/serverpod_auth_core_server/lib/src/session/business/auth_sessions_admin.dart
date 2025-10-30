@@ -87,8 +87,8 @@ final class AuthSessionsAdmin {
   /// If [method] is provided, only sessions created with that method will be deleted.
   /// If [authSessionId] is provided, only the session with that ID will be deleted.
   ///
-  /// Returns a list with tuples of (auth user ID, session ID).
-  Future<List<(UuidValue, UuidValue)>> deleteSessions(
+  /// Returns a list with [DeletedSession]s.
+  Future<List<DeletedSession>> deleteSessions(
     final Session session, {
     final UuidValue? authUserId,
     final UuidValue? authSessionId,
@@ -118,7 +118,13 @@ final class AuthSessionsAdmin {
     );
 
     return authSessions
-        .map((final session) => (session.authUserId, session.id!))
+        .map((final session) => (
+              authUserId: session.authUserId,
+              sessionId: session.id!,
+            ))
         .toList();
   }
 }
+
+/// A tuple of (auth user ID, session ID) representing a deleted session.
+typedef DeletedSession = ({UuidValue authUserId, UuidValue sessionId});

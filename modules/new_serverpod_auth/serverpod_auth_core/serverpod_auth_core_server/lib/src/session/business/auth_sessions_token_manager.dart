@@ -1,5 +1,6 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/session/business/auth_sessions_admin.dart';
 
 import '../../common/business/token_manager.dart';
 import '../../generated/protocol.dart';
@@ -83,7 +84,7 @@ class AuthSessionsTokenManager implements TokenManager {
       method: method,
     );
 
-    for (final (authUserId, sessionId) in deletedSessions) {
+    for (final (:authUserId, :sessionId) in deletedSessions) {
       await session.messages.authenticationRevoked(
         authUserId.uuid,
         RevokedAuthenticationAuthId(authId: sessionId.uuid),
@@ -122,7 +123,7 @@ class AuthSessionsTokenManager implements TokenManager {
           'Expected 1 session to be deleted, but got ${deletedSessions.length}');
     }
 
-    final (authUserId, sessionId) = deletedSessions.first;
+    final (:authUserId, :sessionId) = deletedSessions.first;
 
     await session.messages.authenticationRevoked(
       authUserId.uuid,
