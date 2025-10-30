@@ -139,7 +139,12 @@ void main() {
       late UuidValue user1Id;
       late UuidValue user2Id;
 
-      setUp(() {
+      late String defaultManagerToken;
+      late String additionalManager1Token;
+      late String additionalManager1TokenId;
+      late String additionalManager2Token1;
+
+      setUp(() async {
         session = sessionBuilder.build();
         user1Id = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
         user2Id = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440001');
@@ -148,9 +153,18 @@ void main() {
         additionalStorage1 = FakeTokenStorage();
         additionalStorage2 = FakeTokenStorage();
 
-        defaultManager = FakeTokenManager(defaultStorage);
-        additionalManager1 = FakeTokenManager(additionalStorage1);
-        additionalManager2 = FakeTokenManager(additionalStorage2);
+        defaultManager = FakeTokenManager(
+          defaultStorage,
+          tokenIssuer: 'default',
+        );
+        additionalManager1 = FakeTokenManager(
+          additionalStorage1,
+          tokenIssuer: 'additional1',
+        );
+        additionalManager2 = FakeTokenManager(
+          additionalStorage2,
+          tokenIssuer: 'additional2',
+        );
 
         multiTokenManager = MultiTokenManager(
           primaryTokenManager: defaultManager,
@@ -160,37 +174,44 @@ void main() {
           ],
         );
 
-        defaultManager.addToken(TokenInfo(
-          userId: user1Id.toString(),
-          tokenIssuer: 'default',
-          tokenId: 'default-token-1',
+        final defaultManagerAuthSuccess = await defaultManager.issueToken(
+          session,
+          authUserId: user1Id,
+          method: 'email',
           scopes: {const Scope('read')},
-          method: 'email',
-        ));
+        );
+        defaultManagerToken = defaultManagerAuthSuccess.token;
 
-        additionalManager1.addToken(TokenInfo(
-          userId: user1Id.toString(),
-          tokenIssuer: 'additional1',
-          tokenId: 'additional1-token-1',
-          scopes: {const Scope('write')},
+        final additionalManager1AuthSuccess =
+            await additionalManager1.issueToken(
+          session,
+          authUserId: user1Id,
           method: 'oauth',
-        ));
-
-        additionalManager2.addToken(TokenInfo(
-          userId: user2Id.toString(),
-          tokenIssuer: 'additional2',
-          tokenId: 'additional2-token-1',
-          scopes: {const Scope('admin')},
-          method: 'email',
-        ));
-
-        additionalManager2.addToken(TokenInfo(
-          userId: user1Id.toString(),
-          tokenIssuer: 'additional2',
-          tokenId: 'additional2-token-2',
           scopes: {const Scope('write')},
+        );
+        additionalManager1Token = additionalManager1AuthSuccess.token;
+        additionalManager1TokenId = (await additionalManager1.listTokens(
+          session,
+          authUserId: user1Id,
+        ))
+            .single
+            .tokenId;
+
+        final additionalManager2AuthSuccess1 =
+            await additionalManager2.issueToken(
+          session,
+          authUserId: user2Id,
           method: 'email',
-        ));
+          scopes: {const Scope('admin')},
+        );
+        additionalManager2Token1 = additionalManager2AuthSuccess1.token;
+
+        await additionalManager2.issueToken(
+          session,
+          authUserId: user1Id,
+          method: 'email',
+          scopes: {const Scope('write')},
+        );
       });
 
       group('when listing all tokens', () {
@@ -301,31 +322,22 @@ void main() {
         setUp(() async {
           await multiTokenManager.revokeToken(
             session,
-            tokenId: 'additional1-token-1',
+            tokenId: additionalManager1TokenId,
           );
         });
 
-        test('then the token should be removed from all managers', () {
-          expect(defaultStorage.getToken('additional1-token-1'), isNull);
-          expect(additionalStorage1.getToken('additional1-token-1'), isNull);
-          expect(additionalStorage2.getToken('additional1-token-1'), isNull);
-        });
-
-        test('then other tokens should remain', () async {
-          final remainingTokens = await multiTokenManager.listTokens(
+        test('then that token is removed from the list of tokens', () async {
+          final tokens = await multiTokenManager.listTokens(
             session,
             authUserId: null,
             method: null,
           );
-          expect(remainingTokens, hasLength(3));
+
+          expect(tokens, hasLength(3));
           expect(
-            remainingTokens.any((final t) => t.tokenId == 'default-token-1'),
-            isTrue,
-          );
-          expect(
-            remainingTokens
-                .any((final t) => t.tokenId == 'additional2-token-1'),
-            isTrue,
+            tokens.any((final t) => t.tokenId == additionalManager1TokenId),
+            isFalse,
+            reason: 'Token should not be found',
           );
         });
       });
@@ -411,14 +423,10 @@ void main() {
 
           expect(remainingTokens, hasLength(2));
           expect(
-            remainingTokens
-                .any((final t) => t.tokenId == 'additional1-token-1'),
-            isTrue,
-          );
-          expect(
-            remainingTokens
-                .any((final t) => t.tokenId == 'additional2-token-1'),
-            isTrue,
+            remainingTokens.any((final t) =>
+                t.userId == user1Id.toString() && t.method == 'email'),
+            isFalse,
+            reason: 'Tokens matching combined filters should be removed',
           );
         });
       });
@@ -454,7 +462,7 @@ void main() {
         setUp(() async {
           authInfo = await multiTokenManager.validateToken(
             session,
-            'default-token-1',
+            defaultManagerToken,
           );
         });
 
@@ -479,7 +487,7 @@ void main() {
           () async {
         final authInfo = await multiTokenManager.validateToken(
           session,
-          'additional1-token-1',
+          additionalManager1Token,
         );
 
         expect(authInfo, isNotNull);
@@ -495,7 +503,7 @@ void main() {
           () async {
         final authInfo = await multiTokenManager.validateToken(
           session,
-          'additional2-token-1',
+          additionalManager2Token1,
         );
 
         expect(authInfo, isNotNull);
@@ -522,74 +530,109 @@ void main() {
 
         expect(authInfo, isNull);
       });
+    },
+  );
 
-      group('when a token exists in multiple managers', () {
-        setUp(() {
-          additionalManager1.addToken(TokenInfo(
-            userId: user2Id.toString(),
-            tokenIssuer: 'additional1',
-            tokenId: 'duplicate-token',
-            scopes: {const Scope('first-scope')},
-            method: 'method1',
-          ));
+  withServerpod(
+    'Given same token is valid in in primary and additional token manager',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late MultiTokenManager multiTokenManager;
+      const String primaryTokenManagerUser = 'primary-token-manager-user';
 
-          additionalManager2.addToken(TokenInfo(
-            userId: user1Id.toString(),
-            tokenIssuer: 'additional2',
-            tokenId: 'duplicate-token',
-            scopes: {const Scope('second-scope')},
-            method: 'method2',
-          ));
-        });
+      setUp(() {
+        session = sessionBuilder.build();
+        final primaryTokenManager = MockedTokenManager(
+          onValidateToken: (final session, final token) async {
+            return AuthenticationInfo(
+              primaryTokenManagerUser,
+              {const Scope('read')},
+              authId: 'token1',
+            );
+          },
+        );
+        final additionalTokenManager = MockedTokenManager(
+          onValidateToken: (final session, final token) async {
+            return AuthenticationInfo(
+              'additional-token-manager-user',
+              {const Scope('write')},
+              authId: 'token2',
+            );
+          },
+        );
+        multiTokenManager = MultiTokenManager(
+          primaryTokenManager: primaryTokenManager,
+          additionalTokenManagers: [
+            additionalTokenManager,
+          ],
+        );
+      });
 
-        test(
-            'then the first manager with the token should return authentication info',
-            () async {
-          final authInfo = await multiTokenManager.validateToken(
-            session,
-            'duplicate-token',
-          );
+      test(
+          'when validating a token then validation result from primary token manager is returned',
+          () async {
+        final authInfo = await multiTokenManager.validateToken(
+          session,
+          'token',
+        );
 
-          expect(authInfo, isNotNull);
-          expect(authInfo!.userIdentifier, equals(user2Id.toString()));
-          expect(
-            authInfo.scopes.map((final s) => s.name),
-            contains('first-scope'),
-          );
-        });
+        expect(authInfo!.userIdentifier, equals(primaryTokenManagerUser));
       });
     },
   );
 
   withServerpod(
-    'Given no tokens exist',
+    'Given same token is valid in multiple additional token managers',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late MultiTokenManager multiTokenManager;
+      const String firstAdditionalTokenManagerUser =
+          'first-additional-token-manager-user';
 
       setUp(() {
         session = sessionBuilder.build();
-
-        final defaultStorage = FakeTokenStorage();
-        final additionalStorage = FakeTokenStorage();
-
+        final primaryTokenManager = MockedTokenManager(
+          onValidateToken: (final session, final token) async {
+            return null;
+          },
+        );
+        final firstAdditionalTokenManager = MockedTokenManager(
+          onValidateToken: (final session, final token) async {
+            return AuthenticationInfo(
+              firstAdditionalTokenManagerUser,
+              {const Scope('write')},
+              authId: 'token2',
+            );
+          },
+        );
+        final secondAdditionalTokenManager = MockedTokenManager(
+          onValidateToken: (final session, final token) async {
+            return AuthenticationInfo(
+              'second-additional-token-manager-user',
+              {const Scope('read')},
+              authId: 'token3',
+            );
+          },
+        );
         multiTokenManager = MultiTokenManager(
-          primaryTokenManager: FakeTokenManager(defaultStorage),
+          primaryTokenManager: primaryTokenManager,
           additionalTokenManagers: [
-            FakeTokenManager(additionalStorage),
+            firstAdditionalTokenManager,
+            secondAdditionalTokenManager,
           ],
         );
       });
 
-      test('when listing tokens then an empty list should be returned',
+      test(
+          'when validating a token then validation result from first additional token manager is returned',
           () async {
-        final tokens = await multiTokenManager.listTokens(
+        final authInfo = await multiTokenManager.validateToken(
           session,
-          authUserId: null,
-          method: null,
+          'token',
         );
 
-        expect(tokens, isEmpty);
+        expect(
+            authInfo!.userIdentifier, equals(firstAdditionalTokenManagerUser));
       });
     },
   );
@@ -629,8 +672,12 @@ void main() {
           expect(authSuccess.token, isNotEmpty);
         });
 
-        test('then the token should be stored in the default manager', () {
-          expect(storage.tokenCount, equals(1));
+        test('then listing tokens should include the token', () async {
+          await expectLater(
+            multiTokenManager.listTokens(session,
+                authUserId: null, method: null),
+            completion(hasLength(1)),
+          );
         });
       });
 
@@ -662,30 +709,46 @@ void main() {
       late Session session;
       late MultiTokenManager multiTokenManager;
       late List<FakeTokenStorage> storages;
+      const String tokenIssuer1 = 'manager-1';
+      const String tokenIssuer2 = 'manager-2';
+      const String tokenIssuer3 = 'manager-3';
+      const String tokenIssuer4 = 'manager-4';
+      const String tokenIssuer5 = 'manager-5';
+      const List<String> tokenIssuers = [
+        tokenIssuer1,
+        tokenIssuer2,
+        tokenIssuer3,
+        tokenIssuer4,
+        tokenIssuer5
+      ];
 
       setUp(() {
         session = sessionBuilder.build();
         storages = List.generate(5, (final _) => FakeTokenStorage());
+        final tokenManagers = List.generate(
+            5,
+            (final i) =>
+                FakeTokenManager(storages[i], tokenIssuer: tokenIssuers[i]));
 
         multiTokenManager = MultiTokenManager(
-          primaryTokenManager: FakeTokenManager(storages[0]),
+          primaryTokenManager: tokenManagers[0],
           additionalTokenManagers: [
-            FakeTokenManager(storages[1]),
-            FakeTokenManager(storages[2]),
-            FakeTokenManager(storages[3]),
-            FakeTokenManager(storages[4]),
+            tokenManagers[1],
+            tokenManagers[2],
+            tokenManagers[3],
+            tokenManagers[4],
           ],
         );
 
         // Add one token to each manager
         for (var i = 0; i < 5; i++) {
-          storages[i].storeToken(TokenInfo(
-            userId: '550e8400-e29b-41d4-a716-446655440000',
-            tokenIssuer: 'manager-$i',
-            tokenId: 'token-$i',
-            scopes: {Scope('scope-$i')},
-            method: 'method-$i',
-          ));
+          tokenManagers[i].issueToken(
+            session,
+            authUserId:
+                UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+            method: 'email',
+            scopes: {const Scope('read')},
+          );
         }
       });
 
@@ -699,13 +762,7 @@ void main() {
         expect(tokens, hasLength(5));
         expect(
           tokens.map((final t) => t.tokenIssuer).toSet(),
-          containsAll([
-            'manager-0',
-            'manager-1',
-            'manager-2',
-            'manager-3',
-            'manager-4'
-          ]),
+          containsAll(tokenIssuers),
         );
       });
 
@@ -716,9 +773,10 @@ void main() {
           method: null,
         );
 
-        for (final storage in storages) {
-          expect(storage.tokenCount, equals(0));
-        }
+        await expectLater(
+          multiTokenManager.listTokens(session, authUserId: null, method: null),
+          completion(isEmpty),
+        );
       });
     },
   );
@@ -737,8 +795,9 @@ void main() {
       late FakeTokenManager manager3;
       late MultiTokenManager multiTokenManager;
       late UuidValue userId;
+      late String firstManagerTokenId;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
         userId = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
 
@@ -763,32 +822,33 @@ void main() {
         );
 
         // Add tokens to each manager
-        manager1.addToken(TokenInfo(
-          userId: userId.toString(),
-          tokenIssuer: 'jwt',
-          tokenId: 'jwt-token-1',
+        await manager1.issueToken(
+          session,
+          authUserId: userId,
+          method: 'email',
           scopes: {const Scope('read')},
-          method: 'email',
-        ));
-
-        manager2.addToken(TokenInfo(
-          userId: userId.toString(),
-          tokenIssuer: 'session',
-          tokenId: 'session-token-1',
-          scopes: {const Scope('write')},
+        );
+        firstManagerTokenId = (await manager1.listTokens(
+          session,
+          authUserId: userId,
+        ))
+            .single
+            .tokenId;
+        await manager2.issueToken(
+          session,
+          authUserId: userId,
           method: 'oauth',
-        ));
-
-        manager3.addToken(TokenInfo(
-          userId: userId.toString(),
-          tokenIssuer: 'refresh',
-          tokenId: 'refresh-token-1',
-          scopes: {const Scope('refresh')},
+          scopes: {const Scope('write')},
+        );
+        await manager3.issueToken(
+          session,
+          authUserId: userId,
           method: 'email',
-        ));
+          scopes: {const Scope('refresh')},
+        );
       });
 
-      group('when listing tokens with kind filter', () {
+      group('when listing tokens with token issuer filter', () {
         test('then only tokens from the specified manager should be returned',
             () async {
           final jwtTokens = await multiTokenManager.listTokens(
@@ -800,7 +860,6 @@ void main() {
 
           expect(jwtTokens, hasLength(1));
           expect(jwtTokens.first.tokenIssuer, equals('jwt'));
-          expect(jwtTokens.first.tokenId, equals('jwt-token-1'));
         });
 
         test('then session tokens should be returned when kind is session',
@@ -814,7 +873,6 @@ void main() {
 
           expect(sessionTokens, hasLength(1));
           expect(sessionTokens.first.tokenIssuer, equals('session'));
-          expect(sessionTokens.first.tokenId, equals('session-token-1'));
         });
 
         test('then refresh tokens should be returned when kind is refresh',
@@ -828,7 +886,6 @@ void main() {
 
           expect(refreshTokens, hasLength(1));
           expect(refreshTokens.first.tokenIssuer, equals('refresh'));
-          expect(refreshTokens.first.tokenId, equals('refresh-token-1'));
         });
 
         test('then all tokens should be returned when kind is null', () async {
@@ -847,34 +904,26 @@ void main() {
         });
       });
 
-      group('when revoking a token with kind filter', () {
-        test('then only the specified manager should process the revocation',
-            () async {
+      /// What are we testing here?
+      /// That the filter in the fake is correctly implemented?
+      group('when revoking a token with token issuer filter', () {
+        setUp(() async {
           await multiTokenManager.revokeToken(
             session,
-            tokenId: 'jwt-token-1',
+            tokenId: firstManagerTokenId,
             tokenIssuer: 'jwt',
           );
+        });
 
+        test('then only the specified manager should process the revocation',
+            () async {
           expect(storage1.tokenCount, equals(0));
           expect(storage2.tokenCount, equals(1));
           expect(storage3.tokenCount, equals(1));
         });
-
-        test('then other managers should not be affected', () async {
-          await multiTokenManager.revokeToken(
-            session,
-            tokenId: 'session-token-1',
-            tokenIssuer: 'session',
-          );
-
-          expect(storage1.tokenCount, equals(1));
-          expect(storage2.tokenCount, equals(0));
-          expect(storage3.tokenCount, equals(1));
-        });
       });
 
-      group('when revoking all tokens with kind filter', () {
+      group('when revoking all tokens with token issuer filter', () {
         test('then only the specified manager should process the revocation',
             () async {
           await multiTokenManager.revokeAllTokens(
@@ -915,41 +964,106 @@ void main() {
           expect(storage3.tokenCount, equals(0));
         });
       });
-
-      group('when validating a token with kind filter', () {
-        test('then only the specified manager should be used', () async {
-          final authInfo = await multiTokenManager.validateToken(
-            session,
-            'jwt-token-1',
-          );
-
-          expect(authInfo, isNotNull);
-          expect(authInfo!.userIdentifier, equals(userId.toString()));
-        });
-
-        test('then null kind should check all managers', () async {
-          final jwtAuth = await multiTokenManager.validateToken(
-            session,
-            'jwt-token-1',
-          );
-
-          expect(jwtAuth, isNotNull);
-
-          final sessionAuth = await multiTokenManager.validateToken(
-            session,
-            'session-token-1',
-          );
-
-          expect(sessionAuth, isNotNull);
-
-          final refreshAuth = await multiTokenManager.validateToken(
-            session,
-            'refresh-token-1',
-          );
-
-          expect(refreshAuth, isNotNull);
-        });
-      });
     },
   );
+}
+
+class MockedTokenManager implements TokenManager {
+  final List<TokenInfo> Function(Session session,
+      {required UuidValue? authUserId,
+      String? method,
+      String? tokenIssuer,
+      Transaction? transaction})? onListTokens;
+
+  final Future<void> Function(Session session,
+      {required String tokenId,
+      Transaction? transaction,
+      String? tokenIssuer})? onRevokeToken;
+
+  final Future<void> Function(Session session,
+      {required UuidValue? authUserId,
+      Transaction? transaction,
+      String? method,
+      String? tokenIssuer})? onRevokeAllTokens;
+
+  final Future<AuthenticationInfo?> Function(Session session, String token)?
+      onValidateToken;
+
+  final Future<AuthSuccess> Function(Session session,
+      {required UuidValue authUserId,
+      required String method,
+      Set<Scope>? scopes,
+      Transaction? transaction})? onIssueToken;
+
+  MockedTokenManager({
+    this.onListTokens,
+    this.onRevokeToken,
+    this.onRevokeAllTokens,
+    this.onValidateToken,
+    this.onIssueToken,
+  });
+
+  @override
+  Future<List<TokenInfo>> listTokens(
+    final Session session, {
+    required final UuidValue? authUserId,
+    final String? method,
+    final String? tokenIssuer,
+    final Transaction? transaction,
+  }) async {
+    return onListTokens!(session,
+        authUserId: authUserId,
+        method: method,
+        tokenIssuer: tokenIssuer,
+        transaction: transaction);
+  }
+
+  @override
+  Future<void> revokeAllTokens(
+    final Session session, {
+    required final UuidValue? authUserId,
+    final Transaction? transaction,
+    final String? method,
+    final String? tokenIssuer,
+  }) async {
+    return onRevokeAllTokens!(session,
+        authUserId: authUserId,
+        transaction: transaction,
+        method: method,
+        tokenIssuer: tokenIssuer);
+  }
+
+  @override
+  Future<void> revokeToken(
+    final Session session, {
+    required final String tokenId,
+    final Transaction? transaction,
+    final String? tokenIssuer,
+  }) async {
+    return onRevokeToken!(session,
+        tokenId: tokenId, transaction: transaction, tokenIssuer: tokenIssuer);
+  }
+
+  @override
+  Future<AuthenticationInfo?> validateToken(
+    final Session session,
+    final String token,
+  ) async {
+    return onValidateToken!(session, token);
+  }
+
+  @override
+  Future<AuthSuccess> issueToken(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final String method,
+    final Set<Scope>? scopes,
+    final Transaction? transaction,
+  }) async {
+    return onIssueToken!(session,
+        authUserId: authUserId,
+        method: method,
+        scopes: scopes,
+        transaction: transaction);
+  }
 }
