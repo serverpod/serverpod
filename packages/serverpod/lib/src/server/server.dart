@@ -126,8 +126,10 @@ class Server {
   late final _app = RelicApp()
     ..use('/', _reportException)
     ..get('/', _health)
-    ..get('/websocket', _handleRequest)
-    ..get('/v1/websocket', _handleRequest)
+    ..get('/websocket',
+        _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket))
+    ..get('/v1/websocket',
+        _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket))
     ..anyOf({Method.get, Method.options, Method.post},
         '/serverpod_cloud_storage', _handleRequest)
     ..any('/**', _handleRequest);
@@ -221,18 +223,7 @@ class Server {
 
     var readBody = true;
 
-    // TODO: Use Router instead of manual dispatch on path and verb
-    if (uri.path == '/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        EndpointWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/v1/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        MethodWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/serverpod_cloud_storage') {
+    if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
     }
 
@@ -378,40 +369,41 @@ class Server {
     }
   }
 
-  FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
-    RequestContext newContext,
+  Handler _dispatchWebSocket(
     Future<void> Function(
       Server,
       RelicWebSocket,
       Request,
       void Function(),
     ) requestHandler,
-  ) async {
-    return newContext.connect((webSocket) async {
-      try {
-        // TODO(kasper): Should we keep doing this?
-        webSocket.pingInterval = const Duration(seconds: 30);
+  ) {
+    return (ctx) async {
+      return ctx.connect((webSocket) async {
+        try {
+          // TODO(kasper): Should we keep doing this?
+          webSocket.pingInterval = const Duration(seconds: 30);
 
-        var websocketKey = const Uuid().v4();
-        final handlerFuture = requestHandler(
-          this,
-          webSocket,
-          newContext.request,
-          () => _webSockets.remove(websocketKey),
-        );
+          var websocketKey = const Uuid().v4();
+          final handlerFuture = requestHandler(
+            this,
+            webSocket,
+            ctx.request,
+            () => _webSockets.remove(websocketKey),
+          );
 
-        _webSockets[websocketKey] = (handlerFuture, webSocket);
+          _webSockets[websocketKey] = (handlerFuture, webSocket);
 
-        await handlerFuture;
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Failed to upgrade connection to websocket.',
-          operationType: OperationType.stream,
-        );
-      }
-    });
+          await handlerFuture;
+        } catch (e, stackTrace) {
+          await _reportFrameworkException(
+            e,
+            stackTrace,
+            message: 'Failed to upgrade connection to websocket.',
+            operationType: OperationType.stream,
+          );
+        }
+      });
+    };
   }
 
   Future<String> _readBody(Request request) async {
