@@ -10,7 +10,7 @@ import 'session/test_utils.dart';
 
 void main() {
   final authSessionConfig =
-      AuthSessionConfig(sessionKeyHashPepper: 'test-pepper');
+      AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper');
 
   final authSessions = AuthSessions(
     config: authSessionConfig,

@@ -5,7 +5,7 @@ import 'package:serverpod_new_auth_test_server/server.dart';
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
   final _authSessions = AuthSessions(
-    config: AuthSessionConfig(sessionKeyHashPepper: sessionKeyHashPepper),
+    config: AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper),
   );
 
   /// Creates a new test user.

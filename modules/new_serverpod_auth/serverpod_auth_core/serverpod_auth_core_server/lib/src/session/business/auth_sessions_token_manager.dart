@@ -3,8 +3,8 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../common/business/token_manager.dart';
 import '../../generated/protocol.dart';
-import 'auth_session_config.dart';
 import 'auth_sessions.dart';
+import 'auth_sessions_config.dart';
 
 /// Token manager adapter for [AuthSessions].
 ///
@@ -18,7 +18,7 @@ class AuthSessionsTokenManager implements TokenManager {
   final AuthSessions _authSessions;
 
   /// Creates a new [AuthSessionsTokenManager] instance.
-  AuthSessionsTokenManager({required final AuthSessionConfig config})
+  AuthSessionsTokenManager({required final AuthSessionsConfig config})
       : _authSessions = AuthSessions(config: config);
 
   @override

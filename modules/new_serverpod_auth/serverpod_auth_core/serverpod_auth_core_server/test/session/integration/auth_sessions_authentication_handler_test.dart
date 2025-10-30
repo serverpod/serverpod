@@ -10,7 +10,7 @@ import '../test_utils.dart';
 
 void main() {
   final authSessions = AuthSessions(
-    config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   withServerpod(
@@ -103,7 +103,7 @@ void main() {
       'when calling `authenticationHandler` after the pepper has been changed, then it returns `null`.',
       () async {
         final differentPepperAuthSessions = AuthSessions(
-          config: AuthSessionConfig(sessionKeyHashPepper: 'another pepper'),
+          config: AuthSessionsConfig(sessionKeyHashPepper: 'another pepper'),
         );
 
         final authInfo =

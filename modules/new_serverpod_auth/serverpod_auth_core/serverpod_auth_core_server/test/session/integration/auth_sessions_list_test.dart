@@ -8,7 +8,7 @@ import '../test_utils.dart';
 
 void main() {
   final authSessions = AuthSessions(
-    config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   withServerpod('Given an auth session for a user,',

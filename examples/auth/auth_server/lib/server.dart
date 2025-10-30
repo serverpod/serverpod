@@ -22,7 +22,7 @@ void run(List<String> args) async {
 
   final authConfig = AuthConfig.set(
     primaryTokenManager: AuthSessionsTokenManager(
-      config: AuthSessionConfig(
+      config: AuthSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),
     ),

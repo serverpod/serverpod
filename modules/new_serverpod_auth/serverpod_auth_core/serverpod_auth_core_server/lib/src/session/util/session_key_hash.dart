@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../business/auth_session_config.dart';
+import '../business/auth_sessions_config.dart';
 
 @internal
 final class AuthSessionKeyHash {
@@ -43,7 +43,7 @@ final class AuthSessionKeyHash {
     );
   }
 
-  factory AuthSessionKeyHash.fromConfig(final AuthSessionConfig config) {
+  factory AuthSessionKeyHash.fromConfig(final AuthSessionsConfig config) {
     return AuthSessionKeyHash(
       sessionKeyHashSaltLength: config.sessionKeyHashSaltLength,
       sessionKeyHashPepper: config.sessionKeyHashPepper,

@@ -1,5 +1,5 @@
 /// Configuration options for the session module.
-class AuthSessionConfig {
+class AuthSessionsConfig {
   /// Length of the session key secret (which is only stored on the client).
   ///
   /// Defaults to 32 bytes.
@@ -17,7 +17,7 @@ class AuthSessionConfig {
   late final String sessionKeyHashPepper;
 
   /// Create a new user session configuration.
-  AuthSessionConfig({
+  AuthSessionsConfig({
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,

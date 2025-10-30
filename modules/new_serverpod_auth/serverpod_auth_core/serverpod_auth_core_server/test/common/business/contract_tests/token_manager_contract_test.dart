@@ -1008,7 +1008,7 @@ void main() {
     'AuthSessionsTokenManager',
     () {
       return AuthSessionsTokenManager(
-          config: AuthSessionConfig(
+          config: AuthSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ));
     },

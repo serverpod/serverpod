@@ -8,22 +8,22 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import '../util/session_key_hash.dart';
-import 'auth_session_config.dart';
 import 'auth_sessions_admin.dart';
+import 'auth_sessions_config.dart';
 import 'session_key.dart';
 
 /// Management functions for [AuthSession]s.
 ///
 /// This should be used instead of [AuthSession.db].
 final class AuthSessions {
-  final AuthSessionConfig _config;
+  final AuthSessionsConfig _config;
 
   /// The secrets configuration.
   final AuthSessionKeyHash _sessionKeyHash;
 
   /// Creates a new [AuthSessions] instance.
   AuthSessions({
-    required final AuthSessionConfig config,
+    required final AuthSessionsConfig config,
   })  : _config = config,
         _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
 
@@ -202,7 +202,9 @@ final class AuthSessions {
     );
   }
 
-  /// List all sessions belonging to the given [authUserId].
+  /// List all sessions.
+  ///
+  /// If [authUserId] is provided, only sessions for that user will be listed.
   Future<List<AuthSessionInfo>> listSessions(
     final Session session, {
     required final UuidValue? authUserId,

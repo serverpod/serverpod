@@ -25,7 +25,7 @@ void run(final List<String> args) async {
 
   AuthConfig.set(
     primaryTokenManager: AuthSessionsTokenManager(
-        config: AuthSessionConfig(sessionKeyHashPepper: sessionKeyHashPepper)),
+        config: AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper)),
     identityProviders: [],
   );
 

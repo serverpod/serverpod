@@ -8,7 +8,7 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 final tokenManager = AuthSessionsTokenManager(
-  config: AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+  config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
 );
 
 void main() {

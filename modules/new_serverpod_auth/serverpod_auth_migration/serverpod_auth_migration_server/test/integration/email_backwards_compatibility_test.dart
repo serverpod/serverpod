@@ -14,7 +14,7 @@ import './test_tools/serverpod_test_tools.dart';
 void main() {
   final tokenManager = new_auth_core.AuthSessionsTokenManager(
     config:
-        new_auth_core.AuthSessionConfig(sessionKeyHashPepper: 'test-pepper'),
+        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
