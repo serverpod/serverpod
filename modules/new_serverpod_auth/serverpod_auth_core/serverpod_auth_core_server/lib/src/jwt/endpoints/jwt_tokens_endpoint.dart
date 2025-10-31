@@ -4,7 +4,7 @@ import 'package:serverpod_auth_core_server/jwt.dart';
 import '../../common/business/auth_config.dart';
 
 /// Endpoint for JWT tokens management.
-class RefreshJwtTokensEndpoint extends Endpoint {
+abstract class RefreshJwtTokensEndpoint extends Endpoint {
   /// The authentication tokens token manager.
   ///
   /// This is retrieved from the [AuthConfig] instance using the

@@ -23,6 +23,8 @@ googleAccountBackwardsCompatibilityTest:
   - login:
 googleAccount:
   - login:
+jwtRefresh:
+  - refreshAccessToken:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:
