@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
-          .withTypeDefinition('DateTime', false)
-          .withDefaults(defaultPersistValue: '2024-01-01T01:01:01.000Z')
+          .withTypeDateTime(defaultPersistValue: '2024-01-01T01:01:01.000Z')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -110,8 +109,10 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
-          .withTypeDefinition('DateTime', true)
-          .withDefaults(defaultPersistValue: '2024-01-01T01:01:01.000Z')
+          .withTypeDateTime(
+            defaultPersistValue: '2024-01-01T01:01:01.000Z',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -229,8 +230,7 @@ void main() {
     group('when "defaultPersist" is set to "now"', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
-          .withTypeDefinition('DateTime', false)
-          .withDefaults(defaultPersistValue: 'now')
+          .withTypeDateTime(defaultPersistValue: 'now')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -280,8 +280,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
-          .withTypeDefinition('DateTime', false)
-          .withDefaults(defaultModelValue: '2024-01-01T01:01:01.000Z')
+          .withTypeDateTime(defaultModelValue: '2024-01-01T01:01:01.000Z')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -331,8 +330,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('dateTime')
-          .withTypeDefinition('DateTime', true)
-          .withDefaults(defaultModelValue: '2024-01-01T01:01:01.000Z')
+          .withTypeDateTime(
+            defaultModelValue: '2024-01-01T01:01:01.000Z',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

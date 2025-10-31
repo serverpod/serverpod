@@ -29,13 +29,14 @@ void main() {
         var fields = [
           FieldDefinitionBuilder()
               .withName('durationDefault')
-              .withTypeDefinition('Duration', false)
-              .withDefaults(defaultModelValue: '1d 2h 10min 30s 100ms')
+              .withTypeDuration(defaultModelValue: '1d 2h 10min 30s 100ms')
               .build(),
           FieldDefinitionBuilder()
               .withName('durationDefaultNull')
-              .withTypeDefinition('Duration', true)
-              .withDefaults(defaultModelValue: '2d 1h 20min 40s 100ms')
+              .withTypeDuration(
+                defaultModelValue: '2d 1h 20min 40s 100ms',
+                nullable: true,
+              )
               .build(),
         ];
 
@@ -115,8 +116,7 @@ void main() {
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
-                  .withTypeDefinition('Duration', false)
-                  .withDefaults(defaultModelValue: '1d 24h')
+                  .withTypeDuration(defaultModelValue: '1d 24h')
                   .build();
 
               var normalizedModel = ModelClassDefinitionBuilder()
@@ -161,8 +161,7 @@ void main() {
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
-                  .withTypeDefinition('Duration', false)
-                  .withDefaults(defaultModelValue: '0d 48h 60min')
+                  .withTypeDuration(defaultModelValue: '0d 48h 60min')
                   .build();
 
               var normalizedModel = ModelClassDefinitionBuilder()
@@ -221,8 +220,10 @@ void main() {
         var fields = [
           FieldDefinitionBuilder()
               .withName('durationDefaultPersist')
-              .withTypeDefinition('Duration', true)
-              .withDefaults(defaultPersistValue: '1d 2h 10min 30s 100ms')
+              .withTypeDuration(
+                defaultPersistValue: '1d 2h 10min 30s 100ms',
+                nullable: true,
+              )
               .build(),
         ];
 
