@@ -191,7 +191,9 @@ class Serverpod {
         logFailedSessions: true,
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
-        logLevel: internal.LogLevel.info,
+        logLevel: runMode == ServerpodRunMode.development
+            ? internal.LogLevel.debug
+            : internal.LogLevel.info,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
       ),
