@@ -1,6 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-
-import '../../jwt/business/authentication_tokens.dart';
 import '../business/auth_config.dart';
 import '../business/token_manager.dart';
 
@@ -24,12 +22,7 @@ class StatusEndpoint extends Endpoint {
     if (authInfoIdStr == null) return;
     final authInfoId = UuidValue.withValidation(authInfoIdStr);
 
-    if (!await AuthenticationTokens.destroyRefreshToken(
-      session,
-      refreshTokenId: authInfoId,
-    )) {
-      await tokenManager.revokeToken(session, tokenId: authInfoId.toString());
-    }
+    await tokenManager.revokeToken(session, tokenId: authInfoId.toString());
   }
 
   /// Signs out a user from all active devices.
@@ -38,10 +31,6 @@ class StatusEndpoint extends Endpoint {
     if (authUserIdStr == null) return;
     final authUserId = UuidValue.withValidation(authUserIdStr);
 
-    await AuthenticationTokens.destroyAllRefreshTokens(
-      session,
-      authUserId: authUserId,
-    );
     await tokenManager.revokeAllTokens(session, authUserId: authUserId);
   }
 }
