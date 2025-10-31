@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
@@ -45,6 +46,18 @@ class CloudStoragePublicEndpoint extends Endpoint {
       response.headers.contentType = ContentType('application', 'x-font-ttf');
     } else if (extension == '.woff') {
       response.headers.contentType = ContentType('application', 'x-font-woff');
+    }
+
+    // Get file added time so that browsers can cache it
+    final addedTime = await DatabaseCloudStorage('public')
+        .getFileAddedTime(session: session, path: path);
+    if (addedTime != null) {
+      // One year, in seconds
+      response.headers.set(HttpHeaders.cacheControlHeader, 'max-age=31557600');
+      response.headers.set(
+          HttpHeaders.lastModifiedHeader,
+          DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
+              .format(addedTime.toUtc()));
     }
 
     // Retrieve the file from storage and return it.

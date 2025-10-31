@@ -63,6 +63,26 @@ class DatabaseCloudStorage extends CloudStorage {
     );
   }
 
+  /// Returns file's addedTime (when it was uploaded)
+  ///
+  /// May be useful for caching
+  Future<DateTime?> getFileAddedTime(
+      {required Session session, required String path}) async {
+    final query =
+        'SELECT "addedTime" FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND path=${EscapedExpression(path)} AND verified=${EscapedExpression(true)}';
+
+    try {
+      var result = await session.db.unsafeQuery(query);
+      if (result.isNotEmpty) {
+        return result.first.first as DateTime;
+      }
+    } catch (e) {
+      throw CloudStorageException('Failed to get added time. ($e)');
+    }
+
+    return null;
+  }
+
   @override
   Future<ByteData?> retrieveFile({
     required Session session,
