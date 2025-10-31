@@ -123,16 +123,26 @@ class Server {
         _securityContext = securityContext,
         _port = port;
 
+  late final _app = RelicApp()
+    ..use('/', _reportException)
+    ..get('/', _health)
+    ..get('/websocket',
+        _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket))
+    ..get('/v1/websocket',
+        _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket))
+    ..anyOf({Method.get, Method.options, Method.post},
+        '/serverpod_cloud_storage', _handleRequest)
+    ..any('/**', _handleRequest);
+
   /// Starts the server.
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     try {
-      final server = RelicServer(() => IOAdapter.bind(
-            io.InternetAddress.anyIPv6,
-            port: _port,
-            context: _securityContext,
-          ));
-      await server.mountAndStart(_relicRequestHandler);
+      final server = await _app.serve(
+        address: io.InternetAddress.anyIPv6,
+        port: _port,
+        securityContext: _securityContext,
+      );
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
@@ -152,21 +162,55 @@ class Server {
     return _running;
   }
 
-  FutureOr<HandledContext> _relicRequestHandler(RequestContext context) async {
-    try {
-      return await _handleRequest(context);
-    } catch (e, stackTrace) {
-      await _reportFrameworkException(
-        e,
-        stackTrace,
-        message:
-            'Internal server error. Request handler failed with exception.',
-        request: context.request,
-      );
-      return context.respond(Response.internalServerError(
-        body: Body.fromString('Internal Server Error'),
-      ));
+  Handler _reportException(Handler next) {
+    return (ctx) async {
+      try {
+        return await next(ctx);
+      } on _RequestTooLargeException catch (e) {
+        return ctx.respond(Response(
+          io.HttpStatus.requestEntityTooLarge,
+          body: Body.fromString(e.errorDescription),
+        ));
+      } catch (e, stackTrace) {
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message:
+              'Internal server error. Request handler failed with exception.',
+          request: ctx.request,
+        );
+        return ctx.respond(Response.internalServerError());
+      }
+    };
+  }
+
+  Future<ResponseContext> _health(RequestContext ctx) async {
+    final checks = await performHealthChecks(serverpod);
+    final issues = <String>[];
+    var allOk = true;
+    for (var metric in checks.metrics) {
+      if (!metric.isHealthy) {
+        allOk = false;
+        issues.add('${metric.name}: ${metric.value}');
+      }
     }
+
+    var responseBuffer = StringBuffer();
+    if (allOk) {
+      responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
+    } else {
+      responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
+    }
+    for (var issue in issues) {
+      responseBuffer.writeln(issue);
+    }
+
+    var response = Response(
+      allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
+      body: Body.fromString(responseBuffer.toString()),
+      //headers: headers,
+    );
+    return ctx.respond(response);
   }
 
   FutureOr<HandledContext> _handleRequest(RequestContext context) async {
@@ -184,46 +228,7 @@ class Server {
 
     var readBody = true;
 
-    // TODO: Use Router instead of manual dispatch on path and verb
-    if (uri.path == '/') {
-      // Perform health checks
-      var checks = await performHealthChecks(serverpod);
-      var issues = <String>[];
-      var allOk = true;
-      for (var metric in checks.metrics) {
-        if (!metric.isHealthy) {
-          allOk = false;
-          issues.add('${metric.name}: ${metric.value}');
-        }
-      }
-
-      var responseBuffer = StringBuffer();
-      if (allOk) {
-        responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
-      } else {
-        responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
-      }
-      for (var issue in issues) {
-        responseBuffer.writeln(issue);
-      }
-
-      var response = Response(
-        allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
-        body: Body.fromString(responseBuffer.toString()),
-        headers: headers,
-      );
-      return context.respond(response);
-    } else if (uri.path == '/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        EndpointWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/v1/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        MethodWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/serverpod_cloud_storage') {
+    if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
     }
 
@@ -243,27 +248,7 @@ class Server {
 
     late final String body;
     if (readBody) {
-      try {
-        body = await _readBody(request);
-      } on _RequestTooLargeException catch (e) {
-        if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
-          io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
-        }
-        return context.respond(Response(
-          io.HttpStatus.requestEntityTooLarge,
-          body: Body.fromString(e.errorDescription),
-          headers: headers,
-        ));
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(e, stackTrace,
-            message: 'Internal server error. Failed to read body of request.',
-            request: context.request);
-        return context.respond(Response.badRequest(
-          body: Body.fromString('Failed to read request body.'),
-          headers: headers,
-        ));
-      }
+      body = await _readBody(request);
     } else {
       body = '';
     }
@@ -369,40 +354,41 @@ class Server {
     }
   }
 
-  FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
-    RequestContext newContext,
+  Handler _dispatchWebSocket(
     Future<void> Function(
       Server,
       RelicWebSocket,
       Request,
       void Function(),
     ) requestHandler,
-  ) async {
-    return newContext.connect((webSocket) async {
-      try {
-        // TODO(kasper): Should we keep doing this?
-        webSocket.pingInterval = const Duration(seconds: 30);
+  ) {
+    return (ctx) async {
+      return ctx.connect((webSocket) async {
+        try {
+          // TODO(kasper): Should we keep doing this?
+          webSocket.pingInterval = const Duration(seconds: 30);
 
-        var websocketKey = const Uuid().v4();
-        final handlerFuture = requestHandler(
-          this,
-          webSocket,
-          newContext.request,
-          () => _webSockets.remove(websocketKey),
-        );
+          var websocketKey = const Uuid().v4();
+          final handlerFuture = requestHandler(
+            this,
+            webSocket,
+            ctx.request,
+            () => _webSockets.remove(websocketKey),
+          );
 
-        _webSockets[websocketKey] = (handlerFuture, webSocket);
+          _webSockets[websocketKey] = (handlerFuture, webSocket);
 
-        await handlerFuture;
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Failed to upgrade connection to websocket.',
-          operationType: OperationType.stream,
-        );
-      }
-    });
+          await handlerFuture;
+        } catch (e, stackTrace) {
+          await _reportFrameworkException(
+            e,
+            stackTrace,
+            message: 'Failed to upgrade connection to websocket.',
+            operationType: OperationType.stream,
+          );
+        }
+      });
+    };
   }
 
   Future<String> _readBody(Request request) async {
@@ -585,7 +571,7 @@ class Server {
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _relicServer?.close();
+    await _app.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
@@ -641,14 +627,13 @@ class _RequestTooLargeException implements Exception {
   ///
   /// Contains a human-readable explanation of the error, including the maximum
   /// allowed size and the actual size of the request.
-  final String errorDescription;
+  String get errorDescription =>
+      'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   /// Creates a new [ResultRequestTooLarge] object.
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
-  _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+  const _RequestTooLargeException(this.maxSize);
 
   @override
   String toString() {
