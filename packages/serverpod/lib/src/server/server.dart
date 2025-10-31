@@ -62,8 +62,10 @@ class Server {
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
 
+  late AuthenticationHandler _authenticationHandler;
+
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler authenticationHandler;
+  AuthenticationHandler get authenticationHandler => _authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -110,7 +112,6 @@ class Server {
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    required this.authenticationHandler,
     String? name,
     required this.caches,
     io.SecurityContext? securityContext,
@@ -125,7 +126,9 @@ class Server {
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
-  Future<bool> start() async {
+  Future<bool> start(
+      {required AuthenticationHandler authenticationHandler}) async {
+    _authenticationHandler = authenticationHandler;
     try {
       final server = RelicServer(() => IOAdapter.bind(
             io.InternetAddress.anyIPv6,
