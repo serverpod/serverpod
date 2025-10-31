@@ -15,11 +15,11 @@ class AuthSessionsTokenManager implements TokenManager {
   static String get tokenIssuerName => AuthStrategy.session.name;
 
   /// The [AuthSessions] instance.
-  final AuthSessions _authSessions;
+  final AuthSessions authSessions;
 
   /// Creates a new [AuthSessionsTokenManager] instance.
   AuthSessionsTokenManager({required final AuthSessionsConfig config})
-      : _authSessions = AuthSessions(config: config);
+      : authSessions = AuthSessions(config: config);
 
   @override
   Future<AuthSuccess> issueToken(
@@ -29,7 +29,7 @@ class AuthSessionsTokenManager implements TokenManager {
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) {
-    return _authSessions.createSession(
+    return authSessions.createSession(
       session,
       authUserId: authUserId,
       method: method,
@@ -50,7 +50,7 @@ class AuthSessionsTokenManager implements TokenManager {
       return [];
     }
 
-    return (await _authSessions.admin.findSessions(
+    return (await authSessions.admin.findSessions(
       session,
       authUserId: authUserId,
       method: method,
@@ -76,7 +76,7 @@ class AuthSessionsTokenManager implements TokenManager {
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) return;
 
-    final deletedSessions = await _authSessions.admin.deleteSessions(
+    final deletedSessions = await authSessions.admin.deleteSessions(
       session,
       transaction: transaction,
       authUserId: authUserId,
@@ -109,7 +109,7 @@ class AuthSessionsTokenManager implements TokenManager {
       return;
     }
 
-    final deletedSessions = await _authSessions.admin.deleteSessions(
+    final deletedSessions = await authSessions.admin.deleteSessions(
       session,
       authSessionId: authSessionId,
       transaction: transaction,
@@ -135,6 +135,6 @@ class AuthSessionsTokenManager implements TokenManager {
     final Session session,
     final String token,
   ) async {
-    return _authSessions.authenticationHandler(session, token);
+    return authSessions.authenticationHandler(session, token);
   }
 }

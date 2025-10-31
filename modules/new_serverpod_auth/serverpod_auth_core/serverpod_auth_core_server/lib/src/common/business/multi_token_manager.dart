@@ -129,4 +129,14 @@ class MultiTokenManager implements TokenManager {
     }
     return null;
   }
+
+  /// Retrieves the token manager of type [T].
+  T getTokenManager<T extends TokenManager>() {
+    for (final manager in _allTokenManagers) {
+      if (manager is T) {
+        return manager;
+      }
+    }
+    throw StateError('No token manager of type $T found');
+  }
 }

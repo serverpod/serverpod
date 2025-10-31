@@ -102,4 +102,9 @@ class AuthConfig {
   ) async {
     return tokenManager.validateToken(session, key);
   }
+
+  /// Retrieves the token manager of type [T].
+  static T getTokenManager<T extends TokenManager>() {
+    return instance.tokenManager.getTokenManager<T>();
+  }
 }
