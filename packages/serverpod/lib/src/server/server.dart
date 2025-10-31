@@ -127,6 +127,14 @@ class Server {
   /// Returns true if the server was started successfully.
   Future<bool> start() async {
     try {
+      endpoints.initializeEndpoints(this);
+    } catch (e, stackTrace) {
+      await _reportFrameworkException(e, stackTrace,
+          message: 'Failed to initialize endpoints.');
+      return false;
+    }
+
+    try {
       final server = RelicServer(() => IOAdapter.bind(
             io.InternetAddress.anyIPv6,
             port: _port,

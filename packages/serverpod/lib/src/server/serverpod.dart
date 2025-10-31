@@ -537,7 +537,6 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.apiServer,
     );
-    endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
 
@@ -933,7 +932,6 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.insightsServer,
     );
-    endpoints.initializeEndpoints(insightsServer);
 
     return insightsServer;
   }
