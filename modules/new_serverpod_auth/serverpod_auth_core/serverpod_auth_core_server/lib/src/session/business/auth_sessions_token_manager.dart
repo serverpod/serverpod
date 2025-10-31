@@ -1,4 +1,3 @@
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../common/business/token_manager.dart';
@@ -8,8 +7,9 @@ import 'auth_sessions_config.dart';
 
 /// Token manager adapter for [AuthSessions].
 ///
-/// This class is used to bridge the gap between the [AuthSessions] and the [TokenManager] interface.
-/// It delegates all operations to the [AuthSessions] instance.
+/// This class is used to bridge the gap between the [AuthSessions] and the
+/// [TokenManager] interface. It delegates all operations to the [AuthSessions]
+/// instance.
 class AuthSessionsTokenManager implements TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.session.name;

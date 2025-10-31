@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';

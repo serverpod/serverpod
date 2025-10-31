@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';

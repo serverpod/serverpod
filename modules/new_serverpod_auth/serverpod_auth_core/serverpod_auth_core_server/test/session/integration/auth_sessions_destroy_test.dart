@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:test/test.dart';
