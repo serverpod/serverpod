@@ -83,4 +83,54 @@ final class AuthenticationTokensAdmin {
 
     return authenticationTokenInfos;
   }
+
+  /// Deletes the refresh tokens matching the given filters.
+  ///
+  /// If [refreshTokenId] is provided, only the refresh token with that ID will be deleted.
+  /// If [authUserId] is provided, only the refresh tokens for that user will be deleted.
+  /// If [method] is provided, only the refresh tokens created with that method will be deleted.
+  ///
+  /// Returns a list with [DeletedRefreshToken]s.
+  Future<List<DeletedRefreshToken>> deleteRefreshTokens(
+    final Session session, {
+    final UuidValue? refreshTokenId,
+    final UuidValue? authUserId,
+    final String? method,
+    final Transaction? transaction,
+  }) async {
+    final refreshTokens = await RefreshToken.db.deleteWhere(
+      session,
+      where: (final row) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= row.authUserId.equals(authUserId);
+        }
+
+        if (refreshTokenId != null) {
+          expression &= row.id.equals(refreshTokenId);
+        }
+
+        if (method != null) {
+          expression &= row.method.equals(method);
+        }
+
+        return expression;
+      },
+      transaction: transaction,
+    );
+
+    return refreshTokens
+        .map((final refreshToken) => (
+              authUserId: refreshToken.authUserId,
+              refreshTokenId: refreshToken.id!,
+            ))
+        .toList();
+  }
 }
+
+/// A tuple of (refresh token ID) representing a deleted refresh token.
+typedef DeletedRefreshToken = ({
+  UuidValue authUserId,
+  UuidValue refreshTokenId
+});

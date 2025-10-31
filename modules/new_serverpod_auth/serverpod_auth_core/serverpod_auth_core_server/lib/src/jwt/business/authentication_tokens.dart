@@ -282,9 +282,9 @@ final class AuthenticationTokens {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final auths = await RefreshToken.db.deleteWhere(
+    final auths = await admin.deleteRefreshTokens(
       session,
-      where: (final row) => row.authUserId.equals(authUserId),
+      authUserId: authUserId,
       transaction: transaction,
     );
 
@@ -295,10 +295,7 @@ final class AuthenticationTokens {
       RevokedAuthenticationUser(),
     );
 
-    return [
-      for (final auth in auths)
-        if (auth.id != null) auth.id!,
-    ];
+    return auths.map((final auth) => auth.refreshTokenId).toList();
   }
 
   /// Removes a specific refresh token.
@@ -313,9 +310,9 @@ final class AuthenticationTokens {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
   }) async {
-    final refreshToken = (await RefreshToken.db.deleteWhere(
+    final refreshToken = (await admin.deleteRefreshTokens(
       session,
-      where: (final row) => row.id.equals(refreshTokenId),
+      refreshTokenId: refreshTokenId,
       transaction: transaction,
     ))
         .firstOrNull;
