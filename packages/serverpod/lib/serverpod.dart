@@ -42,6 +42,7 @@ export 'diagnostic_events.dart';
 
 // Middleware implementations
 export 'src/server/middleware/logging_middleware.dart';
+export 'src/server/middleware/middleware_validator.dart';
 
 export 'package:meta/meta.dart' show useResult, immutable;
 export 'package:collection/collection.dart' show DeepCollectionEquality;

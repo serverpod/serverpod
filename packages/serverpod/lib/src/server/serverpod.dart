@@ -519,7 +519,7 @@ class Serverpod {
 
     var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
 
-    // Extract middleware from experimental API for logging and passing to Server
+    // Extract middleware from experimental API for passing to Server
     final middleware = _experimental.middleware;
 
     server = Server(
@@ -550,6 +550,22 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+
+    // Validate middleware configuration
+    // Note: We cannot use _internalSession.log() here because enabling logging
+    // on the internal session would cause a circular dependency crash
+    // (DatabaseLogWriter tries to access internalSession during construction).
+    // Instead, we write directly to stderr with proper formatting.
+    if (middleware != null && middleware.isNotEmpty) {
+      MiddlewareValidator.validate(
+        middleware,
+        logWarning: (message) {
+          // Format as a proper log entry for consistency with Serverpod logging
+          final timestamp = DateTime.now().toUtc();
+          stderr.writeln('$timestamp WARNING: $message');
+        },
+      );
+    }
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
