@@ -11,7 +11,7 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
   /// [AuthConfig.getTokenManager] method.
   ///
   /// If a different token manager should be used, override this property.
-  final AuthenticationTokens authenticationTokens =
+  AuthenticationTokens get authenticationTokens =>
       AuthConfig.getTokenManager<AuthenticationTokensTokenManager>()
           .authenticationTokens;
 

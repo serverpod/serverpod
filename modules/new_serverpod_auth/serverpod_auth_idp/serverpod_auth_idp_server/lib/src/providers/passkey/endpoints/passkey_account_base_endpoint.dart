@@ -12,7 +12,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
   ///
   /// If [TokenManager] should be fetched from a different source, override
   /// this method.
-  final TokenManager tokenManager = AuthConfig.instance.tokenManager;
+  TokenManager get tokenManager => AuthConfig.instance.tokenManager;
 
   static const String _method = 'passkey';
 

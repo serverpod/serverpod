@@ -44,7 +44,7 @@ void run(final List<String> args) async {
       passwordHashPepper:
           pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
     ),
-    tokenManager: AuthConfig.instance.tokenManager,
+    tokenManager: authConfig.tokenManager,
   );
 
   // Setup a default page at the web root.
