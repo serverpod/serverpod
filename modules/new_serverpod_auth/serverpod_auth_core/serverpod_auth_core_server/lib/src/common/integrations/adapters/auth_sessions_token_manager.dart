@@ -1,9 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../../common/business/token_manager.dart';
-import '../../generated/protocol.dart';
-import 'auth_sessions.dart';
-import 'auth_sessions_config.dart';
+import '../../../generated/protocol.dart';
+import '../../../session/business/auth_sessions.dart';
+import '../../../session/business/auth_sessions_config.dart';
+import '../token_manager.dart';
 
 /// Token manager adapter for [AuthSessions].
 ///

@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import '../business/auth_config.dart';
-import '../business/token_manager.dart';
+import '../integrations/token_manager.dart';
 
 /// Endpoint for getting status and managing a signed in user.
 class StatusEndpoint extends Endpoint {

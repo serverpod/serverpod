@@ -1,10 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
-import '../../common/business/token_manager.dart';
-import '../../generated/common/models/auth_strategy.dart';
-import 'authentication_token_config.dart';
-import 'authentication_tokens.dart';
+import '../../../generated/common/models/auth_strategy.dart';
+import '../../../jwt/business/authentication_token_config.dart';
+import '../../../jwt/business/authentication_tokens.dart';
+import '../token_manager.dart';
 
 /// Token manager adapter for [AuthenticationTokens].
 ///
