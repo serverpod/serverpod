@@ -87,6 +87,29 @@ void main() {
 
       expect(tokens, isEmpty);
     });
+
+    test(
+        'when calling `findAuthenticationTokens` with matching method, then it is returned.',
+        () async {
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        session,
+        method: 'test',
+      );
+
+      expect(tokens, hasLength(1));
+      expect(tokens.single.authUserId, authUserId);
+    });
+
+    test(
+        'when calling `findAuthenticationTokens` with non-matching method, then nothing is returned.',
+        () async {
+      final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        session,
+        method: 'something else',
+      );
+
+      expect(tokens, isEmpty);
+    });
   });
 
   withServerpod('Given two auth user with 100 authentication tokens each,',

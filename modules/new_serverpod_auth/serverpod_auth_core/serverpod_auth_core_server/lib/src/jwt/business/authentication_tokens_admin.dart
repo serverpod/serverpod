@@ -34,6 +34,7 @@ final class AuthenticationTokensAdmin {
     final Session session, {
     final UuidValue? authUserId,
     final Transaction? transaction,
+    final String? method,
 
     /// How many items to return at maximum. Must be <= 1000.
     final int limit = 100,
@@ -55,6 +56,10 @@ final class AuthenticationTokensAdmin {
           expression &= t.authUserId.equals(authUserId);
         }
 
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
         return expression;
       },
       limit: limit,
@@ -72,6 +77,7 @@ final class AuthenticationTokensAdmin {
           createdAt: refreshToken.createdAt,
           lastUpdatedAt: refreshToken.lastUpdatedAt,
           extraClaimsJSON: refreshToken.extraClaims,
+          method: refreshToken.method,
         ),
     ];
 
