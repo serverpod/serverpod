@@ -166,6 +166,11 @@ class Server {
     return (ctx) async {
       try {
         return await next(ctx);
+      } on _RequestTooLargeException catch (e) {
+        return ctx.respond(Response(
+          io.HttpStatus.requestEntityTooLarge,
+          body: Body.fromString(e.errorDescription),
+        ));
       } catch (e, stackTrace) {
         await _reportFrameworkException(
           e,
@@ -243,27 +248,7 @@ class Server {
 
     late final String body;
     if (readBody) {
-      try {
-        body = await _readBody(request);
-      } on _RequestTooLargeException catch (e) {
-        if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
-          io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
-        }
-        return context.respond(Response(
-          io.HttpStatus.requestEntityTooLarge,
-          body: Body.fromString(e.errorDescription),
-          headers: headers,
-        ));
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(e, stackTrace,
-            message: 'Internal server error. Failed to read body of request.',
-            request: context.request);
-        return context.respond(Response.badRequest(
-          body: Body.fromString('Failed to read request body.'),
-          headers: headers,
-        ));
-      }
+      body = await _readBody(request);
     } else {
       body = '';
     }
@@ -642,14 +627,13 @@ class _RequestTooLargeException implements Exception {
   ///
   /// Contains a human-readable explanation of the error, including the maximum
   /// allowed size and the actual size of the request.
-  final String errorDescription;
+  String get errorDescription =>
+      'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   /// Creates a new [ResultRequestTooLarge] object.
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
-  _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+  const _RequestTooLargeException(this.maxSize);
 
   @override
   String toString() {
