@@ -288,6 +288,67 @@ void main() {
     });
   });
 
+  group(
+      'Given a `ClientAuthSessionManager` with a valid token in storage and an unreachable server',
+      () {
+    setUp(() async {
+      final tempClient = Client('http://localhost:8080/');
+      final testUser = await tempClient.authTest.createTestUser();
+      authSuccess = await tempClient.authTest.createSasToken(testUser);
+
+      storage = TestStorage();
+      await storage.set(authSuccess);
+
+      client = Client(
+        'http://unreachable-server/',
+        connectionTimeout: const Duration(seconds: 20),
+      )..authSessionManager = ClientAuthSessionManager(storage: storage);
+    });
+
+    test(
+        'when calling `validateAuthentication` '
+        'then network error is caught and user is not signed out and returns false.',
+        () async {
+      await client.auth.restore();
+      expect(client.auth.isAuthenticated, isTrue);
+
+      final result = await client.auth
+          .validateAuthentication(timeout: const Duration(seconds: 1));
+
+      expect(result, isFalse);
+      expect(client.auth.isAuthenticated, isTrue);
+    });
+
+    test(
+        'when calling `validateAuthentication with a timeout '
+        'then the timeout interval overrides the default timeout.', () async {
+      await client.auth.restore();
+      expect(client.auth.isAuthenticated, isTrue);
+
+      final (result, elapsed) = await Stopwatch().timeElapsed(
+        client.auth.validateAuthentication(timeout: const Duration(seconds: 1)),
+      );
+
+      expect(result, isFalse);
+      // On web, returns immediately due to client identifying unreachable host.
+      expect(elapsed.inSeconds, lessThanOrEqualTo(1));
+    });
+
+    test(
+        'when calling `initialize` '
+        'then network error is caught and user is not signed out and returns false.',
+        () async {
+      final (result, elapsed) = await Stopwatch().timeElapsed(
+        client.auth.initialize(),
+      );
+
+      expect(result, isFalse);
+      expect(client.auth.isAuthenticated, isTrue);
+      // On web, returns immediately due to client identifying unreachable host.
+      expect(elapsed.inSeconds, lessThanOrEqualTo(2));
+    });
+  });
+
   group('Given two separate client instances with separate session managers',
       () {
     late Client client1;
@@ -316,4 +377,13 @@ void main() {
       expect(client2.auth.isAuthenticated, isFalse);
     });
   });
+}
+
+extension on Stopwatch {
+  Future<(T, Duration)> timeElapsed<T>(Future<T> future) async {
+    start();
+    final result = await future;
+    stop();
+    return (result, elapsed);
+  }
 }
