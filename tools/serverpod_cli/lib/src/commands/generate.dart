@@ -24,6 +24,13 @@ enum GenerateOption<V> implements OptionDefinition<V> {
     defaultsTo: false,
     negatable: false,
     helpText: 'Watch for changes and continuously generate code.',
+  )),
+  directory(StringOption(
+    argName: 'directory',
+    argAbbrev: 'd',
+    defaultsTo: '',
+    helpText:
+        'The directory to generate code for (defaults to current directory).',
   ));
 
   const GenerateOption(this.option);
@@ -46,18 +53,20 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   ) async {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
+    String directory = commandConfig.value(GenerateOption.directory);
 
-    // TODO: add a -d option to select the directory
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(directory);
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    // Directory.current is the server directory
-    var serverPubspecFile = File('pubspec.yaml');
+    var serverPubspecFile = File(path.joinAll([
+      ...config.serverPackageDirectoryPathParts,
+      'pubspec.yaml',
+    ]));
     var clientPubspecFile = File(path.joinAll([
       ...config.clientPackagePathParts,
       'pubspec.yaml',
@@ -85,7 +94,10 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 
     // Also check pubspec.lock files if pubspec validation passes
     if (warnings.isEmpty) {
-      var serverLockFile = File('pubspec.lock');
+      var serverLockFile = File(path.joinAll([
+        ...config.serverPackageDirectoryPathParts,
+        'pubspec.lock',
+      ]));
       var clientLockFile = File(path.joinAll([
         ...config.clientPackagePathParts,
         'pubspec.lock',
