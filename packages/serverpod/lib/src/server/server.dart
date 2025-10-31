@@ -101,6 +101,21 @@ class Server {
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
   final Map<String, dynamic> httpOptionsResponseHeaders;
 
+  /// List of middleware to process HTTP requests.
+  /// Middleware is executed in the order it appears in this list.
+  ///
+  /// This list is immutable to ensure the middleware pipeline remains
+  /// consistent after server construction.
+  ///
+  /// **Note:** WebSocket upgrade requests (`/websocket`, `/v1/websocket`)
+  /// bypass middleware entirely as they require direct access to the
+  /// connection upgrade mechanism.
+  final List<Middleware> _middleware;
+
+  /// Composed handler with middleware pipeline.
+  /// Built once at startup for performance.
+  late final Handler _handler;
+
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
@@ -118,10 +133,17 @@ class Server {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
+    List<Middleware>? middleware,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
         _securityContext = securityContext,
-        _port = port;
+        _port = port,
+        _middleware = middleware != null
+            ? List.unmodifiable(middleware)
+            : const [] {
+    // Build middleware pipeline once at startup
+    _handler = _buildHandler();
+  }
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -152,9 +174,41 @@ class Server {
     return _running;
   }
 
+  /// Builds the complete handler with middleware pipeline.
+  ///
+  /// This method composes all registered middleware using relic's [Pipeline]
+  /// and adds the core [_handleRequest] handler at the end.
+  ///
+  /// Called once during server construction for performance.
+  Handler _buildHandler() {
+    var pipeline = const Pipeline();
+
+    // Add each middleware to the pipeline in order
+    for (var middleware in _middleware) {
+      pipeline = pipeline.addMiddleware(middleware);
+    }
+
+    // Add the core request handler at the end
+    return pipeline.addHandler(_handleRequest);
+  }
+
   FutureOr<HandledContext> _relicRequestHandler(RequestContext context) async {
     try {
-      return await _handleRequest(context);
+      // WebSocket upgrades must bypass middleware because they:
+      // 1. Require access to RequestContext.connect() for hijacking
+      // 2. Don't return a Response (they hijack the connection)
+      final uri = context.request.requestedUri;
+      if (uri.path == '/websocket' || uri.path == '/v1/websocket') {
+        return await _handleRequest(context);
+      }
+
+      // Use middleware pipeline for all other requests
+      if (_middleware.isNotEmpty) {
+        return await _handler(context);
+      } else {
+        // Fast path when no middleware configured
+        return await _handleRequest(context);
+      }
     } catch (e, stackTrace) {
       await _reportFrameworkException(
         e,
