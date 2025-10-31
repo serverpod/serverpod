@@ -1448,6 +1448,10 @@ extension on TypeDefinition {
             ),
           ] else
             Code('$name.\$${index + 1}'),
+          if (!positionalField.isSerializedValue)
+            positionalField.nullable
+                ? const Code('?.toJson()')
+                : const Code('.toJson()'),
           const Code(','),
         ],
         const Code('],'),
