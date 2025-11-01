@@ -2,4 +2,7 @@
 /// in the Serverpod authentication core module.
 library;
 
+export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
+    show SecretKey, ECPrivateKey, ECPublicKey;
+
 export 'src/jwt/jwt.dart';

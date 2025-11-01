@@ -8,8 +8,6 @@ import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 
-const sessionKeyHashPepper = 'test-pepper';
-
 // This is the starting point of your Serverpod server. In most cases, you will
 // only need to make additions to this file if you add future calls,  are
 // configuring Relic (Serverpod's web-server), or need custom setup work.
@@ -20,21 +18,33 @@ void run(final List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
-    authenticationHandler: UnifiedAuthTokens.authenticationHandler,
   );
 
-  AuthConfig.set(
-    primaryTokenManager: AuthSessionsTokenManager(
-        config: AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper)),
-    identityProviders: [],
-  );
+  const universalHashPepper = 'test-pepper';
+  final authConfig = AuthConfig.set(
+      primaryTokenManager: AuthSessionsTokenManager(
+        config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+      ),
+      identityProviders: [],
+      additionalTokenManagers: [
+        AuthenticationTokensTokenManager(
+          config: AuthenticationTokenConfig(
+            refreshTokenHashPepper: universalHashPepper,
+            algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+              SecretKey('test-private-key-for-HS512'),
+            ),
+          ),
+        ),
+      ]);
+
+  pod.authenticationHandler = authConfig.authenticationHandler;
 
   AuthServices.initialize(
     emailIDPConfig: EmailIDPConfig(
       passwordHashPepper:
           pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
     ),
-    tokenManager: AuthConfig.instance.tokenManager,
+    tokenManager: authConfig.tokenManager,
   );
 
   // Setup a default page at the web root.

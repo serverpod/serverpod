@@ -1,12 +1,14 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_new_auth_test_server/server.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
-  final _authSessions = AuthSessions(
-    config: AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper),
-  );
+  late final AuthSessions _authSessions =
+      AuthConfig.getTokenManager<AuthSessionsTokenManager>().authSessions;
+
+  late final AuthenticationTokens _authenticationTokens =
+      AuthConfig.getTokenManager<AuthenticationTokensTokenManager>()
+          .authenticationTokens;
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
@@ -39,7 +41,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthenticationTokens.createTokens(
+    return _authenticationTokens.createTokens(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -52,7 +54,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await AuthenticationTokens.destroyAllRefreshTokens(
+    await _authenticationTokens.destroyAllRefreshTokens(
       session,
       authUserId: authUserId,
     );

@@ -21,6 +21,7 @@ abstract class AuthenticationTokenInfo
     this.extraClaimsJSON,
     required this.lastUpdatedAt,
     required this.createdAt,
+    required this.method,
   });
 
   factory AuthenticationTokenInfo({
@@ -30,6 +31,7 @@ abstract class AuthenticationTokenInfo
     String? extraClaimsJSON,
     required DateTime lastUpdatedAt,
     required DateTime createdAt,
+    required String method,
   }) = _AuthenticationTokenInfoImpl;
 
   factory AuthenticationTokenInfo.fromJson(
@@ -46,6 +48,7 @@ abstract class AuthenticationTokenInfo
           jsonSerialization['lastUpdatedAt']),
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      method: jsonSerialization['method'] as String,
     );
   }
 
@@ -68,6 +71,9 @@ abstract class AuthenticationTokenInfo
   /// The time when this session was initially created.
   DateTime createdAt;
 
+  /// The method through which this token was created.
+  String method;
+
   /// Returns a shallow copy of this [AuthenticationTokenInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -78,6 +84,7 @@ abstract class AuthenticationTokenInfo
     String? extraClaimsJSON,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
+    String? method,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -88,6 +95,7 @@ abstract class AuthenticationTokenInfo
       if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
       'lastUpdatedAt': lastUpdatedAt.toJson(),
       'createdAt': createdAt.toJson(),
+      'method': method,
     };
   }
 
@@ -100,6 +108,7 @@ abstract class AuthenticationTokenInfo
       if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
       'lastUpdatedAt': lastUpdatedAt.toJson(),
       'createdAt': createdAt.toJson(),
+      'method': method,
     };
   }
 
@@ -119,6 +128,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     String? extraClaimsJSON,
     required DateTime lastUpdatedAt,
     required DateTime createdAt,
+    required String method,
   }) : super._(
           id: id,
           authUserId: authUserId,
@@ -126,6 +136,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
           extraClaimsJSON: extraClaimsJSON,
           lastUpdatedAt: lastUpdatedAt,
           createdAt: createdAt,
+          method: method,
         );
 
   /// Returns a shallow copy of this [AuthenticationTokenInfo]
@@ -139,6 +150,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     Object? extraClaimsJSON = _Undefined,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
+    String? method,
   }) {
     return AuthenticationTokenInfo(
       id: id ?? this.id,
@@ -148,6 +160,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
           extraClaimsJSON is String? ? extraClaimsJSON : this.extraClaimsJSON,
       lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
       createdAt: createdAt ?? this.createdAt,
+      method: method ?? this.method,
     );
   }
 }

@@ -3,8 +3,6 @@ import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:meta/meta.dart';
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -12,19 +10,42 @@ import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import 'authentication_info_from_jwt.dart';
 import 'authentication_token_config.dart';
-import 'authentication_token_secrets.dart';
 import 'authentication_tokens_admin.dart';
 import 'jwt_util.dart';
 import 'refresh_token_secret_hash.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
-abstract final class AuthenticationTokens {
+final class AuthenticationTokens {
   /// The current JWT authentication module configuration.
-  static AuthenticationTokenConfig config = AuthenticationTokenConfig();
+  final AuthenticationTokenConfig config;
 
   /// Admin-related functions for managing authentication tokens.
-  static final admin = AuthenticationTokensAdmin();
+  final AuthenticationTokensAdmin admin;
+
+  /// The JWT utility.
+  final JwtUtil jwtUtil;
+
+  /// The refresh token secret hash.
+  final RefreshTokenSecretHash refreshTokenSecretHash;
+
+  /// Creates a new instance of [AuthenticationTokens].
+  AuthenticationTokens({
+    required this.config,
+  })  : admin = AuthenticationTokensAdmin(
+          refreshTokenLifetime: config.refreshTokenLifetime,
+        ),
+        jwtUtil = JwtUtil(
+          accessTokenLifetime: config.accessTokenLifetime,
+          issuer: config.issuer,
+          algorithm: config.algorithm,
+          fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
+        ),
+        refreshTokenSecretHash = RefreshTokenSecretHash(
+          refreshTokenRotatingSecretSaltLength:
+              config.refreshTokenRotatingSecretSaltLength,
+          refreshTokenHashPepper: config.refreshTokenHashPepper,
+        );
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
@@ -32,12 +53,12 @@ abstract final class AuthenticationTokens {
   /// log entry is written.
   ///
   /// Returns `null` in any case where no valid authentication could be derived from the input.
-  static Future<AuthenticationInfo?> authenticationHandler(
+  Future<AuthenticationInfo?> authenticationHandler(
     final Session session,
     final String jwtAccessToken,
   ) async {
     try {
-      final tokenData = _jwtUtil.verifyJwt(jwtAccessToken);
+      final tokenData = jwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
     } on JWTUndefinedException catch (_) {
@@ -60,7 +81,7 @@ abstract final class AuthenticationTokens {
   /// Creates a new token pair for the given auth user.
   ///
   /// This is akin to creating a new session, and should be used after a successful login or registration.
-  static Future<AuthSuccess> createTokens(
+  Future<AuthSuccess> createTokens(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
@@ -101,7 +122,7 @@ abstract final class AuthenticationTokens {
     }
 
     final secret = _generateRefreshTokenRotatingSecret();
-    final newHash = await _refreshTokenSecretHash.createHash(secret: secret);
+    final newHash = await refreshTokenSecretHash.createHash(secret: secret);
 
     final currentTime = clock.now();
 
@@ -121,12 +142,12 @@ abstract final class AuthenticationTokens {
       transaction: transaction,
     );
 
-    final token = _jwtUtil.createJwt(refreshToken);
+    final token = jwtUtil.createJwt(refreshToken);
 
     return AuthSuccess(
       authStrategy: AuthStrategy.jwt.name,
       token: token,
-      tokenExpiresAt: _jwtUtil.extractExpirationDate(token),
+      tokenExpiresAt: jwtUtil.extractExpirationDate(token),
       refreshToken: RefreshTokenString.buildRefreshTokenString(
         refreshToken: refreshToken,
         rotatingSecret: secret,
@@ -139,7 +160,7 @@ abstract final class AuthenticationTokens {
   /// Returns a access token while also rotating the refresh token.
   ///
   /// Invalidates the previous refresh token as security best practice.
-  static Future<AuthSuccess> refreshAccessToken(
+  Future<AuthSuccess> refreshAccessToken(
     final Session session, {
     required final String refreshToken,
     final Transaction? transaction,
@@ -150,7 +171,7 @@ abstract final class AuthenticationTokens {
       transaction: transaction,
     );
 
-    final jwtData = _jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
+    final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
 
     return AuthSuccess(
       authStrategy: AuthStrategy.jwt.name,
@@ -166,7 +187,7 @@ abstract final class AuthenticationTokens {
   ///
   /// This invalidates the previous refresh token.
   /// Previously created access tokens for this refresh token will continue to work until they expire.
-  static Future<TokenPair> rotateRefreshToken(
+  Future<TokenPair> rotateRefreshToken(
     final Session session, {
     required final String refreshToken,
     final Transaction? transaction,
@@ -204,7 +225,7 @@ abstract final class AuthenticationTokens {
       throw RefreshTokenNotFoundException();
     }
 
-    if (refreshTokenRow.isExpired) {
+    if (refreshTokenRow.isExpired(config.refreshTokenLifetime)) {
       await RefreshToken.db.deleteRow(
         session,
         refreshTokenRow,
@@ -214,7 +235,7 @@ abstract final class AuthenticationTokens {
       throw RefreshTokenExpiredException();
     }
 
-    if (!await _refreshTokenSecretHash.validateHash(
+    if (!await refreshTokenSecretHash.validateHash(
       secret: refreshTokenData.rotatingSecret,
       hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
       salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
@@ -229,7 +250,7 @@ abstract final class AuthenticationTokens {
     }
 
     final newSecret = _generateRefreshTokenRotatingSecret();
-    final newHash = await _refreshTokenSecretHash.createHash(secret: newSecret);
+    final newHash = await refreshTokenSecretHash.createHash(secret: newSecret);
 
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
@@ -246,7 +267,7 @@ abstract final class AuthenticationTokens {
         refreshToken: refreshTokenRow,
         rotatingSecret: newSecret,
       ),
-      accessToken: _jwtUtil.createJwt(refreshTokenRow),
+      accessToken: jwtUtil.createJwt(refreshTokenRow),
     );
   }
 
@@ -255,14 +276,14 @@ abstract final class AuthenticationTokens {
   /// Returns the list of IDs of the deleted tokens.
   ///
   /// Active access tokens will continue to work until their expiration time is reached.
-  static Future<List<UuidValue>> destroyAllRefreshTokens(
+  Future<List<UuidValue>> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final auths = await RefreshToken.db.deleteWhere(
+    final auths = await admin.deleteRefreshTokens(
       session,
-      where: (final row) => row.authUserId.equals(authUserId),
+      authUserId: authUserId,
       transaction: transaction,
     );
 
@@ -273,10 +294,7 @@ abstract final class AuthenticationTokens {
       RevokedAuthenticationUser(),
     );
 
-    return [
-      for (final auth in auths)
-        if (auth.id != null) auth.id!,
-    ];
+    return auths.map((final auth) => auth.refreshTokenId).toList();
   }
 
   /// Removes a specific refresh token.
@@ -286,14 +304,14 @@ abstract final class AuthenticationTokens {
   ///
   /// Any access tokens associated with this refresh token will continue to work
   /// until they expire.
-  static Future<bool> destroyRefreshToken(
+  Future<bool> destroyRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
   }) async {
-    final refreshToken = (await RefreshToken.db.deleteWhere(
+    final refreshToken = (await admin.deleteRefreshTokens(
       session,
-      where: (final row) => row.id.equals(refreshTokenId),
+      refreshTokenId: refreshTokenId,
       transaction: transaction,
     ))
         .firstOrNull;
@@ -313,7 +331,7 @@ abstract final class AuthenticationTokens {
   }
 
   /// List all authentication tokens belonging to the given [authUserId].
-  static Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
+  Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -325,31 +343,17 @@ abstract final class AuthenticationTokens {
     );
   }
 
-  static Uint8List _generateRefreshTokenFixedSecret() {
+  Uint8List _generateRefreshTokenFixedSecret() {
     return generateRandomBytes(
-      AuthenticationTokens.config.refreshTokenFixedSecretLength,
+      config.refreshTokenFixedSecretLength,
     );
   }
 
-  static Uint8List _generateRefreshTokenRotatingSecret() {
+  Uint8List _generateRefreshTokenRotatingSecret() {
     return generateRandomBytes(
-      AuthenticationTokens.config.refreshTokenRotatingSecretLength,
+      config.refreshTokenRotatingSecretLength,
     );
   }
-
-  /// The secrets configuration.
-  static final __secrets = AuthenticationTokenSecrets();
-
-  /// Secrets to the used for testing. Also affects the internally used [JwtUtil] and [RefreshTokenSecretHash]
-  @visibleForTesting
-  static AuthenticationTokenSecrets? secretsTestOverride;
-  static AuthenticationTokenSecrets get _secrets =>
-      secretsTestOverride ?? __secrets;
-
-  static JwtUtil get _jwtUtil => JwtUtil(secrets: _secrets);
-
-  static RefreshTokenSecretHash get _refreshTokenSecretHash =>
-      RefreshTokenSecretHash(secrets: _secrets);
 }
 
 extension on Set<Scope> {
@@ -360,9 +364,9 @@ extension on Set<Scope> {
 }
 
 extension on RefreshToken {
-  bool get isExpired {
+  bool isExpired(final Duration refreshTokenLifetime) {
     final oldestAcceptedRefreshTokenDate =
-        clock.now().subtract(AuthenticationTokens.config.refreshTokenLifetime);
+        clock.now().subtract(refreshTokenLifetime);
 
     return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }

@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_core_server/src/common/business/token_manager.dart';
+import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
 import 'package:uuid/uuid.dart';
 
 /// In-memory token storage for testing purposes.

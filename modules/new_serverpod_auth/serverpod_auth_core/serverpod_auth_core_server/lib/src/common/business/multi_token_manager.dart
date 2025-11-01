@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
-import 'token_manager.dart';
+import '../integrations/token_manager.dart';
 
 /// A composite token manager that delegates operations to multiple underlying token managers.
 ///
@@ -128,5 +128,15 @@ class MultiTokenManager implements TokenManager {
       }
     }
     return null;
+  }
+
+  /// Retrieves the token manager of type [T].
+  T getTokenManager<T extends TokenManager>() {
+    for (final manager in _allTokenManagers) {
+      if (manager is T) {
+        return manager;
+      }
+    }
+    throw StateError('No token manager of type $T found');
   }
 }

@@ -117,6 +117,8 @@ class TestEndpoints {
 
   late final _GoogleAccountEndpoint googleAccount;
 
+  late final _JwtRefreshEndpoint jwtRefresh;
+
   late final _PasswordImportingEmailAccountEndpoint
       passwordImportingEmailAccount;
 
@@ -149,6 +151,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     googleAccount = _GoogleAccountEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    jwtRefresh = _JwtRefreshEndpoint(
       endpoints,
       serializationManager,
     );
@@ -814,6 +820,46 @@ class _GoogleAccountEndpoint {
           endpointPath: 'googleAccount',
           methodName: 'login',
           parameters: _i1.testObjectToJson({'idToken': idToken}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.AuthSuccess>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _JwtRefreshEndpoint {
+  _JwtRefreshEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i4.AuthSuccess> refreshAccessToken(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String refreshToken,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'jwtRefresh',
+        method: 'refreshAccessToken',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'jwtRefresh',
+          methodName: 'refreshAccessToken',
+          parameters: _i1.testObjectToJson({'refreshToken': refreshToken}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(

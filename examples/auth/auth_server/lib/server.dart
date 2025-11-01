@@ -21,13 +21,22 @@ void run(List<String> args) async {
   );
 
   final authConfig = AuthConfig.set(
-    primaryTokenManager: AuthSessionsTokenManager(
-      config: AuthSessionsConfig(
-        sessionKeyHashPepper: 'test-pepper',
+      primaryTokenManager: AuthSessionsTokenManager(
+        config: AuthSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+        ),
       ),
-    ),
-    identityProviders: [],
-  );
+      identityProviders: [],
+      additionalTokenManagers: [
+        AuthenticationTokensTokenManager(
+          config: AuthenticationTokenConfig(
+            refreshTokenHashPepper: 'test-pepper',
+            algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+              SecretKey('test-private-key-for-HS512'),
+            ),
+          ),
+        ),
+      ]);
 
   pod.authenticationHandler = authConfig.authenticationHandler;
 

@@ -332,7 +332,7 @@ void main() {
   });
 }
 
-class TestEndpointRefreshJwtToken extends EndpointRefreshJwtTokens {
+class TestEndpointRefreshJwtToken extends EndpointJwtRefresh {
   TestEndpointRefreshJwtToken(super.caller);
 
   int callCount = 0;
