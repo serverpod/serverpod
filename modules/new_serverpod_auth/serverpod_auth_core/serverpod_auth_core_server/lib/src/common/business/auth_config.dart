@@ -27,8 +27,7 @@ class AuthConfig {
   /// {@macro auth_config_constructor}
   factory AuthConfig.set({
     required final TokenManager primaryTokenManager,
-    required final List<IdentityProviderFactory<IdentityProvider>>
-        identityProviders,
+    required final List<IdentityProviderFactory<Object>> identityProviders,
     final List<TokenManager> additionalTokenManagers = const [],
   }) {
     final instance = AuthConfig(
@@ -57,8 +56,7 @@ class AuthConfig {
   /// {@endtemplate}
   AuthConfig({
     required final TokenManager primaryTokenManager,
-    required final List<IdentityProviderFactory<IdentityProvider>>
-        identityProviders,
+    required final List<IdentityProviderFactory<Object>> identityProviders,
     final List<TokenManager> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
@@ -73,7 +71,7 @@ class AuthConfig {
     }
   }
 
-  final Map<Type, IdentityProvider> _providers = {};
+  final Map<Type, Object> _providers = {};
 
   /// Retrieves the identity provider of type [T].
   static T getIdentityProvider<T>() {

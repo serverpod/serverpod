@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 import '../fakes/fakes.dart';
 
-void testSuite<T extends IdentityProvider>(
+void testSuite<T extends Object>(
   final IdentityProviderFactory<T> Function() factoryBuilder,
 ) {
   group(
@@ -22,53 +22,19 @@ void testSuite<T extends IdentityProvider>(
         expect(factory.type, equals(T));
       });
 
-      group('when constructing a provider', () {
-        late IdentityProvider provider;
-
-        setUp(() {
-          provider = factory.construct(tokenManager: tokenManager);
-        });
-
-        test('then the provider should have the supplied token manager', () {
-          expect(provider.tokenIssuer, equals(tokenManager));
-        });
+      test('when constructing a provider the provider should be constructed',
+          () {
+        final provider = factory.construct(tokenManager: tokenManager);
+        expect(provider, isNotNull);
+        expect(provider, isA<T>());
       });
 
-      group('when constructing multiple providers', () {
-        late IdentityProvider provider1;
-        late IdentityProvider provider2;
-
-        setUp(() {
-          provider1 = factory.construct(tokenManager: tokenManager);
-          provider2 = factory.construct(tokenManager: tokenManager);
-        });
-
-        test('then each instance should be unique', () {
-          expect(provider1, isNot(same(provider2)));
-        });
-
-        test('then each instance should have the same token issuer', () {
-          expect(provider1.tokenIssuer, equals(tokenManager));
-          expect(provider2.tokenIssuer, equals(tokenManager));
-        });
-      });
-
-      group('when constructing providers with different token managers', () {
-        late IdentityProvider provider1;
-        late IdentityProvider provider2;
-        late TokenManager tokenManager2;
-
-        setUp(() {
-          tokenManager2 = FakeTokenManager(FakeTokenStorage());
-          provider1 = factory.construct(tokenManager: tokenManager);
-          provider2 = factory.construct(tokenManager: tokenManager2);
-        });
-
-        test('then each provider should have its respective token manager', () {
-          expect(provider1.tokenIssuer, equals(tokenManager));
-          expect(provider2.tokenIssuer, equals(tokenManager2));
-          expect(provider1.tokenIssuer, isNot(equals(tokenManager2)));
-        });
+      test(
+          'when constructing multiple providers the providers should be unique',
+          () {
+        final provider1 = factory.construct(tokenManager: tokenManager);
+        final provider2 = factory.construct(tokenManager: tokenManager);
+        expect(provider1, isNot(same(provider2)));
       });
     },
   );

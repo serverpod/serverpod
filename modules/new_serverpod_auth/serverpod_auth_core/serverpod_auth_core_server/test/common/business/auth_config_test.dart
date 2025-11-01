@@ -11,8 +11,7 @@ void main() {
     'Given AuthConfig is being configured',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -79,8 +78,7 @@ void main() {
     'Given an AuthConfig with identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -163,8 +161,7 @@ void main() {
     'Given an AuthConfig with multiple identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          multipleProviderFactories;
+      late List<IdentityProviderFactory<Object>> multipleProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late FakeIdentityProviderFactory firstFactory;
@@ -204,8 +201,7 @@ void main() {
     'Given an AuthConfig with authentication handler',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
