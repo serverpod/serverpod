@@ -10,33 +10,27 @@ import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/byte_data_extension.dart';
 
 /// Passkey account management functions.
-abstract final class PasskeyIDP {
+final class PasskeyIDP {
   /// Administrative methods for working with Passkey-backed accounts.
-  static late PasskeyIDPAdmin admin;
+  final PasskeyIDPAdmin admin;
 
-  static late PasskeyIDPConfig _config;
-  static late Passkeys _passkeys;
+  /// The configuration for the Passkey identity provider.
+  final PasskeyIDPConfig config;
 
-  /// Sets the configuration and configures the underlying utilities.
-  ///
-  /// This must be set before any methods on this class are invoked.
-  static set config(final PasskeyIDPConfig config) {
-    _config = config;
+  final Passkeys _passkeys;
 
-    _passkeys = Passkeys(
-      config: PasskeysConfig(
-        relyingPartyId: config.hostname,
-      ),
-    );
-
-    admin = PasskeyIDPAdmin();
-  }
-
-  /// Returns the current configuration.
-  static PasskeyIDPConfig get config => _config;
+  /// Creates a new instance of [PasskeyIDP].
+  PasskeyIDP(
+    this.config,
+  )   : admin = PasskeyIDPAdmin(challengeLifetime: config.challengeLifetime),
+        _passkeys = Passkeys(
+          config: PasskeysConfig(
+            relyingPartyId: config.hostname,
+          ),
+        );
 
   /// Creates a new challenge to be used for a subsequent registration or login.
-  static Future<PasskeyChallenge> createChallenge(final Session session) async {
+  Future<PasskeyChallenge> createChallenge(final Session session) async {
     final challengeBytes = await _passkeys.createChallenge();
 
     final challenge = await PasskeyChallenge.db.insertRow(
@@ -48,7 +42,7 @@ abstract final class PasskeyIDP {
   }
 
   /// Links the given passkey to the [session]'s current user.
-  static Future<void> registerPasskey(
+  Future<void> registerPasskey(
     final Session session, {
     required final PasskeyRegistrationRequest request,
     final Transaction? transaction,
@@ -84,7 +78,7 @@ abstract final class PasskeyIDP {
   /// Authenticates the client with the given Passkey credentials.
   ///
   /// Returns the [AuthUser]'s ID upon successful login.
-  static Future<UuidValue> authenticate(
+  Future<UuidValue> authenticate(
     final Session session, {
     required final PasskeyLoginRequest request,
     final Transaction? transaction,
@@ -115,7 +109,7 @@ abstract final class PasskeyIDP {
 
   /// Returns the challenge and deletes it from the database (as each challenge
   /// should only be used once).
-  static Future<PasskeyChallenge> _consumeChallenge(
+  Future<PasskeyChallenge> _consumeChallenge(
     final Session session,
     final UuidValue challengeId, {
     final Transaction? transaction,
@@ -138,7 +132,7 @@ abstract final class PasskeyIDP {
     return challenge.single;
   }
 
-  static Future<PasskeyAccount> _getAccount(
+  Future<PasskeyAccount> _getAccount(
     final Session session, {
     required final ByteData keyId,
     final Transaction? transaction,

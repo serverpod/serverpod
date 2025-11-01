@@ -7,12 +7,18 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Base endpoint for Passkey-based authentication.
-abstract class PasskeyAccountBaseEndpoint extends Endpoint {
+abstract class PasskeyIDPBaseEndpoint extends Endpoint {
   /// Gets the [TokenManager] from the [AuthServices] instance.
   ///
   /// If [TokenManager] should be fetched from a different source, override
   /// this method.
   late final TokenManager tokenManager = AuthServices.instance.tokenManager;
+
+  /// Gets the [PasskeyIDP] instance from the [AuthServices] instance.
+  ///
+  /// If you want to use a different instance, override this getter.
+  late final PasskeyIDP passkeyIDP =
+      AuthServices.getIdentityProvider<PasskeyIDP>();
 
   static const String _method = 'passkey';
 
@@ -20,7 +26,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
   Future<PasskeyChallengeResponse> createChallenge(
     final Session session,
   ) async {
-    final challenge = await PasskeyIDP.createChallenge(session);
+    final challenge = await passkeyIDP.createChallenge(session);
 
     return (id: challenge.id!, challenge: challenge.challenge);
   }
@@ -31,7 +37,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
     required final PasskeyRegistrationRequest registrationRequest,
   }) async {
     return session.db.transaction((final transaction) async {
-      await PasskeyIDP.registerPasskey(
+      await passkeyIDP.registerPasskey(
         session,
         request: registrationRequest,
         transaction: transaction,
@@ -45,7 +51,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
     required final PasskeyLoginRequest loginRequest,
   }) async {
     return session.db.transaction((final transaction) async {
-      final authUserId = await PasskeyIDP.authenticate(
+      final authUserId = await passkeyIDP.authenticate(
         session,
         request: loginRequest,
         transaction: transaction,
