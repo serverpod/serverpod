@@ -22,7 +22,8 @@ import 'utils/email_idp_account_creation_util.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class EmailIDP {
-  static const String _method = 'email';
+  /// The method used to authenticate with the email identity provider.
+  static const String method = 'email';
 
   /// Admin operations to work with email-backed accounts.
   late final EmailIDPAdmin admin;
@@ -43,7 +44,7 @@ final class EmailIDP {
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
-  Future<AuthSuccess> finishPasswordReset(
+  Future<void> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -63,17 +64,11 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        await _destroyAllSessions(
+        await _tokenManager.revokeAllTokens(
           session,
-          authUserId,
+          authUserId: authUserId,
+          method: method,
           transaction: transaction,
-        );
-
-        return _createSession(
-          session,
-          authUserId,
-          transaction: transaction,
-          method: _method,
         );
       }),
     );
@@ -111,7 +106,7 @@ final class EmailIDP {
           session,
           result.authUserId,
           transaction: transaction,
-          method: _method,
+          method: method,
         );
       }),
     );
@@ -140,7 +135,7 @@ final class EmailIDP {
           session,
           authUserId,
           transaction: transaction,
-          method: _method,
+          method: method,
         );
       }),
     );
@@ -247,18 +242,5 @@ final class EmailIDP {
     );
 
     return sessionKey;
-  }
-
-  Future<void> _destroyAllSessions(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction? transaction,
-  }) async {
-    await _tokenManager.revokeAllTokens(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-      method: _method,
-    );
   }
 }
