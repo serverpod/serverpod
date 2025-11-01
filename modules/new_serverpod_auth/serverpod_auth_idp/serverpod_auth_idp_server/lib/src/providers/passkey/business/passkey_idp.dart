@@ -10,17 +10,17 @@ import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/byte_data_extension.dart';
 
 /// Passkey account management functions.
-abstract final class PasskeyAccounts {
+abstract final class PasskeyIDP {
   /// Administrative methods for working with Passkey-backed accounts.
-  static late PasskeyAccountsAdmin admin;
+  static late PasskeyIDPAdmin admin;
 
-  static late PasskeyAccountConfig _config;
+  static late PasskeyIDPConfig _config;
   static late Passkeys _passkeys;
 
   /// Sets the configuration and configures the underlying utilities.
   ///
   /// This must be set before any methods on this class are invoked.
-  static set config(final PasskeyAccountConfig config) {
+  static set config(final PasskeyIDPConfig config) {
     _config = config;
 
     _passkeys = Passkeys(
@@ -29,11 +29,11 @@ abstract final class PasskeyAccounts {
       ),
     );
 
-    admin = PasskeyAccountsAdmin();
+    admin = PasskeyIDPAdmin();
   }
 
   /// Returns the current configuration.
-  static PasskeyAccountConfig get config => _config;
+  static PasskeyIDPConfig get config => _config;
 
   /// Creates a new challenge to be used for a subsequent registration or login.
   static Future<PasskeyChallenge> createChallenge(final Session session) async {

@@ -41,7 +41,7 @@ void main() {
           ),
         );
 
-        PasskeyAccounts.config = PasskeyAccountConfig(
+        PasskeyIDP.config = PasskeyIDPConfig(
           hostname: 'localhost',
         );
       });
@@ -49,7 +49,7 @@ void main() {
       test(
           "when calling `PasskeyAccounts.registerPasskey` before challenge expires, then the passkey is registered for the session's user.",
           () async {
-        await PasskeyAccounts.registerPasskey(
+        await PasskeyIDP.registerPasskey(
           session,
           request: PasskeyRegistrationRequest(
             challengeId: challengeId,
@@ -70,9 +70,9 @@ void main() {
         await expectLater(
           withClock(
             Clock.fixed(
-              DateTime.now().add(PasskeyAccounts.config.challengeLifetime),
+              DateTime.now().add(PasskeyIDP.config.challengeLifetime),
             ),
-            () => PasskeyAccounts.registerPasskey(
+            () => PasskeyIDP.registerPasskey(
               session,
               request: PasskeyRegistrationRequest(
                 challengeId: challengeId,
@@ -105,7 +105,7 @@ void main() {
         session = sessionBuilder.build();
         user = await AuthUsers.create(session);
 
-        PasskeyAccounts.config = PasskeyAccountConfig(
+        PasskeyIDP.config = PasskeyIDPConfig(
           hostname: 'localhost',
         );
 
@@ -119,7 +119,7 @@ void main() {
             ),
           );
 
-          await PasskeyAccounts.registerPasskey(
+          await PasskeyIDP.registerPasskey(
             sessionBuilder
                 .copyWith(
                   authentication: AuthenticationOverride.authenticationInfo(
@@ -149,7 +149,7 @@ void main() {
       test(
           "when calling `PasskeyAccounts.authenticate` with valid login request data, then the user's ID is returned.",
           () async {
-        final authenticatedUser = await PasskeyAccounts.authenticate(
+        final authenticatedUser = await PasskeyIDP.authenticate(
           session,
           request: PasskeyLoginRequest(
             challengeId: loginChallengeId,
@@ -167,7 +167,7 @@ void main() {
           'when calling `PasskeyAccounts.authenticate` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
           () async {
         await expectLater(
-          () => PasskeyAccounts.authenticate(
+          () => PasskeyIDP.authenticate(
             session,
             request: PasskeyLoginRequest(
               challengeId: const Uuid().v4obj(),
@@ -185,7 +185,7 @@ void main() {
           'when calling `PasskeyAccounts.authenticate` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
           () async {
         await expectLater(
-          () => PasskeyAccounts.authenticate(
+          () => PasskeyIDP.authenticate(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -206,7 +206,7 @@ void main() {
         brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
 
         await expectLater(
-          () => PasskeyAccounts.authenticate(
+          () => PasskeyIDP.authenticate(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -230,7 +230,7 @@ void main() {
             '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=';
 
         await expectLater(
-          () => PasskeyAccounts.authenticate(
+          () => PasskeyIDP.authenticate(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -253,7 +253,7 @@ void main() {
         brokenSignature.asUint8List[10] = 0;
 
         await expectLater(
-          () => PasskeyAccounts.authenticate(
+          () => PasskeyIDP.authenticate(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,

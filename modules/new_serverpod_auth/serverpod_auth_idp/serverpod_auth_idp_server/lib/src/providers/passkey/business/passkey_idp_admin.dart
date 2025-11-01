@@ -4,7 +4,7 @@ import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 
 /// Collection of Passkey account admin methods.
-final class PasskeyAccountsAdmin {
+final class PasskeyIDPAdmin {
   /// Removes all challenges from the database which are older than the
   /// challenge lifetime.
   Future<void> deleteExpiredChallenges(final Session session) async {
@@ -12,7 +12,7 @@ final class PasskeyAccountsAdmin {
       session,
       where: (final t) =>
           t.createdAt <
-          clock.now().subtract(PasskeyAccounts.config.challengeLifetime),
+          clock.now().subtract(PasskeyIDP.config.challengeLifetime),
     );
   }
 }

@@ -20,7 +20,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
   Future<PasskeyChallengeResponse> createChallenge(
     final Session session,
   ) async {
-    final challenge = await PasskeyAccounts.createChallenge(session);
+    final challenge = await PasskeyIDP.createChallenge(session);
 
     return (id: challenge.id!, challenge: challenge.challenge);
   }
@@ -31,7 +31,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
     required final PasskeyRegistrationRequest registrationRequest,
   }) async {
     return session.db.transaction((final transaction) async {
-      await PasskeyAccounts.registerPasskey(
+      await PasskeyIDP.registerPasskey(
         session,
         request: registrationRequest,
         transaction: transaction,
@@ -45,7 +45,7 @@ abstract class PasskeyAccountBaseEndpoint extends Endpoint {
     required final PasskeyLoginRequest loginRequest,
   }) async {
     return session.db.transaction((final transaction) async {
-      final authUserId = await PasskeyAccounts.authenticate(
+      final authUserId = await PasskeyIDP.authenticate(
         session,
         request: loginRequest,
         transaction: transaction,
