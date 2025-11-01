@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
-import '../../../common/auth_services.dart';
 import '../apple.dart';
 
 /// Endpoint for handling Sign in with Apple.
@@ -14,7 +14,7 @@ abstract class AppleIDPBaseEndpoint extends Endpoint {
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  AppleIDP get appleIDP => AuthServices.instance.appleIDP;
+  AppleIDP get appleIDP => AuthConfig.getIdentityProvider<AppleIDP>();
 
   /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
