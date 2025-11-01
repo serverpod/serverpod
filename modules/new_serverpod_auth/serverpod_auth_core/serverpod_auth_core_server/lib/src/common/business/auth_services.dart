@@ -52,7 +52,8 @@ class AuthServices {
   ///
   /// [additionalTokenManagers] is a list of additional token managers that
   /// handle token lifecycle operations alongside the [primaryTokenManager].
-  /// The default token manager is always included automatically.
+  /// These additional token managers are also used to validate tokens in the
+  /// same order they are represented in the list.
   /// {@endtemplate}
   AuthServices({
     required final TokenManager primaryTokenManager,
