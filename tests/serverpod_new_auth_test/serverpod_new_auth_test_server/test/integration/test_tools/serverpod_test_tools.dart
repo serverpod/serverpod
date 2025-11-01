@@ -718,7 +718,7 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<_i4.AuthSuccess> finishPasswordReset(
+  _i3.Future<void> finishPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -745,7 +745,7 @@ class _EmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i4.AuthSuccess>);
+        ) as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1012,7 +1012,7 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
-  _i3.Future<_i4.AuthSuccess> finishPasswordReset(
+  _i3.Future<void> finishPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
@@ -1039,7 +1039,7 @@ class _PasswordImportingEmailAccountEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<_i4.AuthSuccess>);
+        ) as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
