@@ -12,7 +12,7 @@ void main() {
   );
 
   tearDown(() {
-    AuthConfig.set(primaryTokenManager: tokenManager, identityProviders: []);
+    AuthServices.set(primaryTokenManager: tokenManager, identityProviders: []);
   });
 
   withServerpod(
@@ -59,7 +59,7 @@ void main() {
             receivedVerificationCode = verificationCode;
           },
         );
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -174,7 +174,7 @@ void main() {
           onPasswordResetCompleted:
               AuthBackwardsCompatibility.clearLegacyPassword,
         );
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -201,7 +201,8 @@ void main() {
             newPassword: newPassword,
           );
 
-          final authInfo = await AuthConfig.instance.tokenManager.validateToken(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );
@@ -234,7 +235,8 @@ void main() {
             password: newPassword,
           );
 
-          final authInfo = await AuthConfig.instance.tokenManager.validateToken(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );

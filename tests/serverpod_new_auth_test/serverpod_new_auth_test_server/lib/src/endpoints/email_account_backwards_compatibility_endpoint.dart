@@ -93,7 +93,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String password,
   }) async {
     final account =
-        await AuthConfig.getIdentityProvider<EmailIDP>().admin.findAccount(
+        await AuthServices.getIdentityProvider<EmailIDP>().admin.findAccount(
               session,
               email: email,
             );

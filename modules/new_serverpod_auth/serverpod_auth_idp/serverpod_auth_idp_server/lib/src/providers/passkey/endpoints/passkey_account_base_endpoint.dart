@@ -8,11 +8,11 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Base endpoint for Passkey-based authentication.
 abstract class PasskeyAccountBaseEndpoint extends Endpoint {
-  /// The token manager to use for the passkey authentication.
+  /// Gets the [TokenManager] from the [AuthServices] instance.
   ///
   /// If [TokenManager] should be fetched from a different source, override
   /// this method.
-  late final TokenManager tokenManager = AuthConfig.instance.tokenManager;
+  late final TokenManager tokenManager = AuthServices.instance.tokenManager;
 
   static const String _method = 'passkey';
 

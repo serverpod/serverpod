@@ -22,18 +22,18 @@ void main() {
   late final new_email_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
-    AuthConfig.set(
+    AuthServices.set(
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
       ],
       primaryTokenManager: tokenManager,
     );
-    newEmailIDP = AuthConfig.getIdentityProvider<new_email_idp.EmailIDP>();
+    newEmailIDP = AuthServices.getIdentityProvider<new_email_idp.EmailIDP>();
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
   });
 
   tearDownAll(() async {
-    AuthConfig.set(
+    AuthServices.set(
       identityProviders: [],
       primaryTokenManager: tokenManager,
     );

@@ -21,7 +21,7 @@ void run(final List<String> args) async {
   );
 
   const universalHashPepper = 'test-pepper';
-  final authConfig = AuthConfig.set(
+  final authConfig = AuthServices.set(
       primaryTokenManager: AuthSessionsTokenManager(
         config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),

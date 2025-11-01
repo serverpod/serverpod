@@ -53,7 +53,7 @@ void run(List<String> args) async {
     passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
   );
 
-  final authConfig = AuthConfig.set(
+  final authServices = AuthServices.set(
       primaryTokenManager: AuthSessionsTokenManager(
         config: authSessionsConfig,
       ),
@@ -68,10 +68,10 @@ void run(List<String> args) async {
         ),
       ]);
 
-  pod.authenticationHandler = authConfig.authenticationHandler;
+  pod.authenticationHandler = authServices.authenticationHandler;
 
   pod.webServer.addRoute(
-    AuthConfig.getIdentityProvider<AppleIDP>().revokedNotificationRoute(),
+    AuthServices.getIdentityProvider<AppleIDP>().revokedNotificationRoute(),
     '/hooks/apple-notification',
   );
 

@@ -7,5 +7,5 @@ export 'package:serverpod_auth_core_server/auth_user.dart';
 export 'package:serverpod_auth_core_server/jwt.dart';
 export 'package:serverpod_auth_core_server/profile.dart';
 export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    show AuthConfig;
+    show AuthServices;
 export 'package:serverpod_auth_core_server/session.dart';

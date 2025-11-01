@@ -13,7 +13,7 @@ final tokenManager = AuthSessionsTokenManager(
 
 void main() {
   setUp(() async {
-    AuthConfig.set(
+    AuthServices.set(
       primaryTokenManager: tokenManager,
       identityProviders: [
         EmailIdentityProviderFactory(
@@ -26,7 +26,7 @@ void main() {
   });
 
   tearDown(() async {
-    AuthConfig.set(
+    AuthServices.set(
       primaryTokenManager: tokenManager,
       identityProviders: [],
     );
@@ -58,7 +58,7 @@ void main() {
               receivedAccountRequestId = accountRequestId;
             },
           );
-          AuthConfig.set(
+          AuthServices.set(
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
@@ -143,7 +143,7 @@ void main() {
               receivedPasswordResetRequestId = passwordResetRequestId;
             },
           );
-          AuthConfig.set(
+          AuthServices.set(
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
@@ -203,7 +203,7 @@ void main() {
           },
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -227,7 +227,7 @@ void main() {
         );
 
         expect(
-          await AuthConfig.instance.tokenManager.validateToken(
+          await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           ),
@@ -355,7 +355,7 @@ void main() {
             receivedPasswordResetCode = verificationCode;
           },
         );
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -377,7 +377,7 @@ void main() {
         );
 
         expect(
-          await AuthConfig.instance.tokenManager.validateToken(
+          await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           ),
@@ -501,7 +501,7 @@ void main() {
         const config = EmailIDPConfig(
           passwordHashPepper: 'test',
         );
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -538,7 +538,8 @@ void main() {
             newPassword: 'NewPassword123!',
           );
 
-          final authInfo = await AuthConfig.instance.tokenManager.validateToken(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );
@@ -694,7 +695,7 @@ void main() {
           passwordHashPepper: 'test',
         );
 
-        AuthConfig.set(
+        AuthServices.set(
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -749,7 +750,7 @@ void main() {
           );
 
           expect(
-            await AuthConfig.instance.tokenManager.validateToken(
+            await AuthServices.instance.tokenManager.validateToken(
               sessionBuilder.build(),
               authSuccess.token,
             ),
@@ -762,7 +763,7 @@ void main() {
         'when trying to use the session key from before the password change, then the authentication handler returns `null`.',
         () async {
           expect(
-            await AuthConfig.instance.tokenManager.validateToken(
+            await AuthServices.instance.tokenManager.validateToken(
               sessionBuilder.build(),
               loginSessionKey,
             ),
@@ -774,7 +775,8 @@ void main() {
       test(
         'when trying to use the session key returned from the password change, then the authentication handler returns the expected user.',
         () async {
-          final authInfo = await AuthConfig.instance.tokenManager.validateToken(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             passwordResetSessionKey,
           );
@@ -814,7 +816,7 @@ extension on TestEndpoints {
       },
     );
 
-    AuthConfig.set(
+    AuthServices.set(
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
@@ -833,7 +835,7 @@ extension on TestEndpoints {
       verificationCode: receivedVerificationCode,
     );
 
-    final authInfo = await AuthConfig.instance.tokenManager.validateToken(
+    final authInfo = await AuthServices.instance.tokenManager.validateToken(
       sessionBuilder.build(),
       authSuccess.token,
     );
@@ -864,7 +866,7 @@ extension on TestEndpoints {
         receivedVerificationCode = verificationCode;
       },
     );
-    AuthConfig.set(
+    AuthServices.set(
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],

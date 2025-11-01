@@ -40,7 +40,7 @@ final class EmailIDPTestFixture {
     ),
     TokenManager? tokenManager,
   }) {
-    tokenManager ??= AuthConfig(
+    tokenManager ??= AuthServices(
       primaryTokenManager: AuthSessionsTokenManager(
         config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
       ),

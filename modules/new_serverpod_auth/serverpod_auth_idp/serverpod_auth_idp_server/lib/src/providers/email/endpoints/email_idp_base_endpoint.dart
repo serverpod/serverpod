@@ -20,7 +20,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  EmailIDP get emailIDP => AuthConfig.getIdentityProvider<EmailIDP>();
+  EmailIDP get emailIDP => AuthServices.getIdentityProvider<EmailIDP>();
 
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.

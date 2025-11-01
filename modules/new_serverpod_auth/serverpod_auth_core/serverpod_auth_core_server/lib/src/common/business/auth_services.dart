@@ -6,31 +6,31 @@ import 'package:serverpod_auth_core_server/src/common/integrations/token_manager
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens
 /// regardless of who issues the token.
-class AuthConfig {
-  /// Returns the singleton instance of [AuthConfig] used by the provider
+class AuthServices {
+  /// Returns the singleton instance of [AuthServices] used by the provider
   /// endpoints.
-  static AuthConfig get instance {
+  static AuthServices get instance {
     final localInstance = _instance;
     if (localInstance == null) {
       throw StateError(
-        'AuthConfig is not set. Call AuthConfig.set() to initialize it before accessing the instance.',
+        'AuthServices is not set. Call AuthServices.set() to initialize it before accessing the instance.',
       );
     }
 
     return localInstance;
   }
 
-  static AuthConfig? _instance;
+  static AuthServices? _instance;
 
-  /// Creates a new [AuthConfig] instance and sets it as the global instance.
+  /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
-  /// {@macro auth_config_constructor}
-  factory AuthConfig.set({
+  /// {@macro auth_services_constructor}
+  factory AuthServices.set({
     required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<Object>> identityProviders,
     final List<TokenManager> additionalTokenManagers = const [],
   }) {
-    final instance = AuthConfig(
+    final instance = AuthServices(
       primaryTokenManager: primaryTokenManager,
       identityProviders: identityProviders,
       additionalTokenManagers: additionalTokenManagers,
@@ -38,10 +38,10 @@ class AuthConfig {
     return _instance = instance;
   }
 
-  /// Creates a new [AuthConfig] instance.
+  /// Creates a new [AuthServices] instance.
   ///
-  /// Use [AuthConfig.set] to create a new instance and set it as the global instance.
-  /// {@template auth_config_constructor}
+  /// Use [AuthServices.set] to create a new instance and set it as the global instance.
+  /// {@template auth_services_constructor}
   /// [primaryTokenManager] is the primary token manager used by identity providers
   /// for issuing new tokens. Each identity provider can optionally override this
   /// with their own token manager via [IdentityProviderFactory.tokenManagerOverride].
@@ -54,7 +54,7 @@ class AuthConfig {
   /// handle token lifecycle operations alongside the [primaryTokenManager].
   /// The default token manager is always included automatically.
   /// {@endtemplate}
-  AuthConfig({
+  AuthServices({
     required final TokenManager primaryTokenManager,
     required final List<IdentityProviderFactory<Object>> identityProviders,
     final List<TokenManager> additionalTokenManagers = const [],
@@ -79,8 +79,8 @@ class AuthConfig {
     if (provider == null) {
       throw StateError(
         'Provider for $T is not registered. '
-        'To register this provider, add its IdentityProviderFactory to the identityProviders list when calling AuthConfig.set(). '
-        'Example: AuthConfig.set(defaultTokenManager: ..., identityProviders: [YourProviderFactory()])',
+        'To register this provider, add its IdentityProviderFactory to the identityProviders list when calling AuthServices.set(). '
+        'Example: AuthServices.set(defaultTokenManager: ..., identityProviders: [YourProviderFactory()])',
       );
     }
     return provider as T;

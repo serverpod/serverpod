@@ -10,10 +10,10 @@ import 'package:serverpod_auth_idp_server/providers/google.dart';
 abstract final class AuthBackwardsCompatibility {
   /// The configuration used for the backwards compatibility.
   ///
-  /// Should match the previous `AuthConfig`.
+  /// Should match the previous `AuthServices`.
   static AuthBackwardsCompatibilityConfig get config =>
       AuthBackwardsCompatibilityConfig(
-        emailIDP: AuthConfig.getIdentityProvider<EmailIDP>(),
+        emailIDP: AuthServices.getIdentityProvider<EmailIDP>(),
       );
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
@@ -210,7 +210,7 @@ abstract final class AuthBackwardsCompatibility {
     required final String idToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails = await AuthConfig.getIdentityProvider<GoogleIDP>()
+    final accountDetails = await AuthServices.getIdentityProvider<GoogleIDP>()
         .admin
         .fetchAccountDetails(
           session,
@@ -229,7 +229,7 @@ abstract final class AuthBackwardsCompatibility {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await AuthConfig.getIdentityProvider<GoogleIDP>()
+        await AuthServices.getIdentityProvider<GoogleIDP>()
             .admin
             .linkGoogleAuthentication(
               session,

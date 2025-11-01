@@ -23,7 +23,7 @@ void main() {
 
     setUp(() {
       session = sessionBuilder.build();
-      AuthConfig.set(
+      AuthServices.set(
         identityProviders: [
           EmailIdentityProviderFactory(newEmailIDPConfig),
         ],
@@ -32,7 +32,7 @@ void main() {
     });
 
     tearDown(() {
-      AuthConfig.set(
+      AuthServices.set(
         identityProviders: [],
         primaryTokenManager: tokenManager,
       );
