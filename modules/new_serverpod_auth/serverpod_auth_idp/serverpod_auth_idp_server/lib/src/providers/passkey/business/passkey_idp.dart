@@ -1,152 +1,121 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:clock/clock.dart';
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/byte_data_extension.dart';
+
+import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
 final class PasskeyIDP {
+  static const String _method = 'passkey';
+
   /// Administrative methods for working with Passkey-backed accounts.
-  final PasskeyIDPAdmin admin;
+  late final PasskeyIDPAdmin admin;
 
   /// The configuration for the Passkey identity provider.
   final PasskeyIDPConfig config;
+
+  /// Utility functions for the Passkey identity provider.
+  late final PasskeyIDPUtils utils;
+
+  final TokenIssuer _tokenIssuer;
 
   final Passkeys _passkeys;
 
   /// Creates a new instance of [PasskeyIDP].
   PasskeyIDP(
-    this.config,
-  )   : admin = PasskeyIDPAdmin(challengeLifetime: config.challengeLifetime),
+    this.config, {
+    required final TokenIssuer tokenIssuer,
+  })  : _tokenIssuer = tokenIssuer,
         _passkeys = Passkeys(
           config: PasskeysConfig(
             relyingPartyId: config.hostname,
           ),
-        );
-
-  /// Creates a new challenge to be used for a subsequent registration or login.
-  Future<PasskeyChallenge> createChallenge(final Session session) async {
-    final challengeBytes = await _passkeys.createChallenge();
-
-    final challenge = await PasskeyChallenge.db.insertRow(
-      session,
-      PasskeyChallenge(challenge: ByteData.sublistView(challengeBytes)),
-    );
-
-    return challenge;
+        ) {
+    utils = PasskeyIDPUtils(
+        challengeLifetime: config.challengeLifetime, passkeys: _passkeys);
+    admin = PasskeyIDPAdmin(
+        challengeLifetime: config.challengeLifetime, utils: utils);
   }
 
-  /// Links the given passkey to the [session]'s current user.
-  Future<void> registerPasskey(
+  /// Creates a new challenge to be used for a subsequent registration or login.
+  Future<PasskeyChallengeResponse> createChallenge(
     final Session session, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final challenge =
+            await utils.createChallenge(session, transaction: transaction);
+
+        return (id: challenge.id!, challenge: challenge.challenge);
+      },
+    );
+  }
+
+  /// Links the given passkey to the given [authUserId].
+  Future<void> register(
+    final Session session, {
+    required final UuidValue authUserId,
     required final PasskeyRegistrationRequest request,
     final Transaction? transaction,
   }) async {
-    final authUserId = (await session.authenticated)!.authUserId;
-
-    final challenge = await _consumeChallenge(
-      session,
-      request.challengeId,
-      transaction: transaction,
-    );
-
-    await _passkeys.verifyRegistration(
-      keyId: request.keyId.asUint8List,
-      attestationObject: request.attestationObject.asUint8List,
-      clientDataJSON: request.clientDataJSON.asUint8List,
-      challenge: challenge.challenge.asUint8List,
-    );
-
-    await PasskeyAccount.db.insertRow(
-      session,
-      PasskeyAccount(
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      await utils.registerPasskey(
+        session,
         authUserId: authUserId,
-        keyId: request.keyId,
-        keyIdBase64: base64Encode(request.keyId.asUint8List),
-        clientDataJSON: request.clientDataJSON,
-        attestationObject: request.attestationObject,
-        originalChallenge: challenge.challenge,
-      ),
-    );
+        request: request,
+        transaction: transaction,
+      );
+    });
   }
 
   /// Authenticates the client with the given Passkey credentials.
   ///
   /// Returns the [AuthUser]'s ID upon successful login.
-  Future<UuidValue> authenticate(
+  Future<AuthSuccess> login(
     final Session session, {
     required final PasskeyLoginRequest request,
     final Transaction? transaction,
   }) async {
-    final challenge = await _consumeChallenge(
-      session,
-      request.challengeId,
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUserId = await utils.authenticate(
+        session,
+        request: request,
+        transaction: transaction,
+      );
 
-    final passkeyAccount = await _getAccount(
-      session,
-      keyId: request.keyId,
-      transaction: transaction,
-    );
+      final authUser = await AuthUsers.get(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
 
-    await _passkeys.verifyLogin(
-      registrationAttestationObject:
-          passkeyAccount.attestationObject.asUint8List,
-      authenticatorData: request.authenticatorData.asUint8List,
-      clientDataJSON: request.clientDataJSON.asUint8List,
-      signature: request.signature.asUint8List,
-      challenge: challenge.challenge.asUint8List,
-    );
+      if (authUser.blocked) {
+        throw AuthUserBlockedException();
+      }
 
-    return passkeyAccount.authUserId;
-  }
-
-  /// Returns the challenge and deletes it from the database (as each challenge
-  /// should only be used once).
-  Future<PasskeyChallenge> _consumeChallenge(
-    final Session session,
-    final UuidValue challengeId, {
-    final Transaction? transaction,
-  }) async {
-    final challenge = await PasskeyChallenge.db.deleteWhere(
-      session,
-      where: (final t) => t.id.equals(challengeId),
-      transaction: transaction,
-    );
-
-    if (challenge.isEmpty) {
-      throw PasskeyChallengeNotFoundException();
-    }
-
-    if (challenge.single.createdAt
-        .isBefore(clock.now().subtract(config.challengeLifetime))) {
-      throw PasskeyChallengeExpiredException();
-    }
-
-    return challenge.single;
-  }
-
-  Future<PasskeyAccount> _getAccount(
-    final Session session, {
-    required final ByteData keyId,
-    final Transaction? transaction,
-  }) async {
-    final account = await PasskeyAccount.db.findFirstRow(
-      session,
-      where: (final t) => t.keyIdBase64.equals(base64Encode(keyId.asUint8List)),
-      transaction: transaction,
-    );
-
-    if (account == null) {
-      throw PasskeyPublicKeyNotFoundException();
-    }
-
-    return account;
+      return _tokenIssuer.issueToken(
+        session,
+        authUserId: authUserId,
+        method: _method,
+        scopes: authUser.scopes,
+        transaction: transaction,
+      );
+    });
   }
 }
+
+/// A challenge to be used for a passkey registration or login.
+typedef PasskeyChallengeResponse = ({
+  UuidValue id,
+  ByteData challenge,
+});

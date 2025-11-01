@@ -1,99 +1,42 @@
-import 'dart:typed_data';
-
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Base endpoint for Passkey-based authentication.
 abstract class PasskeyIDPBaseEndpoint extends Endpoint {
-  /// Gets the [TokenManager] from the [AuthServices] instance.
-  ///
-  /// If [TokenManager] should be fetched from a different source, override
-  /// this method.
-  late final TokenManager tokenManager = AuthServices.instance.tokenManager;
-
   /// Gets the [PasskeyIDP] instance from the [AuthServices] instance.
   ///
   /// If you want to use a different instance, override this getter.
   late final PasskeyIDP passkeyIDP =
       AuthServices.getIdentityProvider<PasskeyIDP>();
 
-  static const String _method = 'passkey';
-
   /// Returns a new challenge to be used for a login or registration request.
   Future<PasskeyChallengeResponse> createChallenge(
     final Session session,
   ) async {
-    final challenge = await passkeyIDP.createChallenge(session);
-
-    return (id: challenge.id!, challenge: challenge.challenge);
+    return await passkeyIDP.createChallenge(session);
   }
 
   /// Registers a Passkey for the [session]'s current user.
+  ///
+  /// Throws if the user is not authenticated.
   Future<void> register(
     final Session session, {
     required final PasskeyRegistrationRequest registrationRequest,
   }) async {
-    return session.db.transaction((final transaction) async {
-      await passkeyIDP.registerPasskey(
-        session,
-        request: registrationRequest,
-        transaction: transaction,
-      );
-    });
+    await passkeyIDP.register(
+      session,
+      authUserId: (await session.authenticated)!.authUserId,
+      request: registrationRequest,
+    );
   }
 
   /// Authenticates the user related to the given Passkey.
-  Future<AuthSuccess> authenticate(
+  Future<AuthSuccess> login(
     final Session session, {
     required final PasskeyLoginRequest loginRequest,
   }) async {
-    return session.db.transaction((final transaction) async {
-      final authUserId = await passkeyIDP.authenticate(
-        session,
-        request: loginRequest,
-        transaction: transaction,
-      );
-
-      return _createSession(
-        session,
-        authUserId,
-        transaction: transaction,
-      );
-    });
-  }
-
-  Future<AuthSuccess> _createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
-  }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await tokenManager.issueToken(
-      session,
-      authUserId: authUserId,
-      method: _method,
-      scopes: authUser.scopes,
-      transaction: transaction,
-    );
-
-    return sessionKey;
+    return await passkeyIDP.login(session, request: loginRequest);
   }
 }
-
-/// A challenge to be used for a passkey registration or login.
-typedef PasskeyChallengeResponse = ({
-  UuidValue id,
-  ByteData challenge,
-});

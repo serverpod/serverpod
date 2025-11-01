@@ -13,10 +13,17 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = AuthSessionsTokenManager(
+    config: AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
+  );
+
   final passKeyIDP = PasskeyIDP(
     PasskeyIDPConfig(
       hostname: 'localhost',
     ),
+    tokenIssuer: tokenManager,
   );
 
   withServerpod(
@@ -51,8 +58,9 @@ void main() {
       test(
           "when calling `PasskeyAccounts.registerPasskey` before challenge expires, then the passkey is registered for the session's user.",
           () async {
-        await passKeyIDP.registerPasskey(
+        await passKeyIDP.register(
           session,
+          authUserId: user.id,
           request: PasskeyRegistrationRequest(
             challengeId: challengeId,
             keyId: _keyId,
@@ -74,8 +82,9 @@ void main() {
             Clock.fixed(
               DateTime.now().add(passKeyIDP.config.challengeLifetime),
             ),
-            () => passKeyIDP.registerPasskey(
+            () => passKeyIDP.register(
               session,
+              authUserId: user.id,
               request: PasskeyRegistrationRequest(
                 challengeId: challengeId,
                 keyId: _keyId,
@@ -117,7 +126,7 @@ void main() {
             ),
           );
 
-          await passKeyIDP.registerPasskey(
+          await passKeyIDP.register(
             sessionBuilder
                 .copyWith(
                   authentication: AuthenticationOverride.authenticationInfo(
@@ -126,6 +135,7 @@ void main() {
                   ),
                 )
                 .build(),
+            authUserId: user.id,
             request: PasskeyRegistrationRequest(
               challengeId: registrationChallengeId,
               keyId: _keyId,
@@ -145,9 +155,9 @@ void main() {
       });
 
       test(
-          "when calling `PasskeyAccounts.authenticate` with valid login request data, then the user's ID is returned.",
+          "when calling `PasskeyAccounts.login` with valid login request data, then the user's ID is returned.",
           () async {
-        final authenticatedUser = await passKeyIDP.authenticate(
+        final authSuccess = await passKeyIDP.login(
           session,
           request: PasskeyLoginRequest(
             challengeId: loginChallengeId,
@@ -158,14 +168,14 @@ void main() {
           ),
         );
 
-        expect(authenticatedUser, user.id);
+        expect(authSuccess.authUserId, user.id);
       });
 
       test(
-          'when calling `PasskeyAccounts.authenticate` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
+          'when calling `PasskeyAccounts.login` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
           () async {
         await expectLater(
-          () => passKeyIDP.authenticate(
+          () => passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: const Uuid().v4obj(),
@@ -180,10 +190,10 @@ void main() {
       });
 
       test(
-          'when calling `PasskeyAccounts.authenticate` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
+          'when calling `PasskeyAccounts.login` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
           () async {
         await expectLater(
-          () => passKeyIDP.authenticate(
+          () => passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -198,13 +208,13 @@ void main() {
       });
 
       test(
-          'when calling `PasskeyAccounts.authenticate` with an invalid authenticator data, then an exception is thrown.',
+          'when calling `PasskeyAccounts.login` with an invalid authenticator data, then an exception is thrown.',
           () async {
         final brokenAuthenticatorData = _loginAuthenticatorData.clone();
         brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
 
         await expectLater(
-          () => passKeyIDP.authenticate(
+          () => passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -220,7 +230,7 @@ void main() {
       });
 
       test(
-          'when calling `PasskeyAccounts.authenticate` with an invalid client data JSON, then an exception is thrown.',
+          'when calling `PasskeyAccounts.login` with an invalid client data JSON, then an exception is thrown.',
           () async {
         final brokenClientDataJsonMap =
             jsonDecode(utf8.decode(_loginClientDataJSON.asUint8List)) as Map;
@@ -228,7 +238,7 @@ void main() {
             '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=';
 
         await expectLater(
-          () => passKeyIDP.authenticate(
+          () => passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -245,13 +255,13 @@ void main() {
       });
 
       test(
-          'when calling `PasskeyAccounts.authenticate` with an invalid signature, then an exception is thrown.',
+          'when calling `PasskeyAccounts.login` with an invalid signature, then an exception is thrown.',
           () async {
         final brokenSignature = _signature.clone();
         brokenSignature.asUint8List[10] = 0;
 
         await expectLater(
-          () => passKeyIDP.authenticate(
+          () => passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
