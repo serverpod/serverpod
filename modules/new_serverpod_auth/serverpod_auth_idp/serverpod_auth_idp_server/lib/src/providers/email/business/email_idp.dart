@@ -102,11 +102,12 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        return _createSession(
+        return _tokenManager.issueToken(
           session,
-          result.authUserId,
-          transaction: transaction,
+          authUserId: result.authUserId,
           method: method,
+          scopes: result.scopes,
+          transaction: transaction,
         );
       }),
     );
@@ -131,11 +132,18 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        return _createSession(
+        final authUser = await AuthUsers.get(
           session,
-          authUserId,
+          authUserId: authUserId,
           transaction: transaction,
+        );
+
+        return _tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
           method: method,
+          scopes: authUser.scopes,
+          transaction: transaction,
         );
       }),
     );
@@ -215,32 +223,5 @@ final class EmailIDP {
         },
       ),
     );
-  }
-
-  Future<AuthSuccess> _createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction? transaction,
-    required final String method,
-  }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await _tokenManager.issueToken(
-      session,
-      authUserId: authUserId,
-      method: method,
-      scopes: authUser.scopes,
-      transaction: transaction,
-    );
-
-    return sessionKey;
   }
 }
