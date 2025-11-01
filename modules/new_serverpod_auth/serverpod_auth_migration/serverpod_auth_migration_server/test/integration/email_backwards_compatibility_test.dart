@@ -17,14 +17,26 @@ void main() {
         new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP =
-      new_auth_idp.EmailIDP(config: config, tokenManager: tokenManager);
+  const newEmailIDPConfig =
+      new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
+  late final new_auth_idp.EmailIDP newEmailIDP;
 
-  setUp(() async {
+  setUpAll(() async {
+    new_auth_core.AuthConfig.set(
+      identityProviders: [
+        new_auth_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
+      ],
+      primaryTokenManager: tokenManager,
+    );
+    newEmailIDP =
+        new_auth_core.AuthConfig.getIdentityProvider<new_auth_idp.EmailIDP>();
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
-    AuthBackwardsCompatibility.config = AuthBackwardsCompatibilityConfig(
-      emailIDP: newEmailIDP,
+  });
+
+  tearDownAll(() async {
+    new_auth_core.AuthConfig.set(
+      identityProviders: [],
+      primaryTokenManager: tokenManager,
     );
   });
 

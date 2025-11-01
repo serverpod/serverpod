@@ -2,16 +2,19 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_bridge_server/src/business/legacy_email_password_validator.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 /// Collections of helper functions to work with legacy authentication data.
 abstract final class AuthBackwardsCompatibility {
   /// The configuration used for the backwards compatibility.
   ///
   /// Should match the previous `AuthConfig`.
-  static var config = AuthBackwardsCompatibilityConfig(
-    emailIDP: AuthServices.instance.emailIDP,
-  );
+  static AuthBackwardsCompatibilityConfig get config =>
+      AuthBackwardsCompatibilityConfig(
+        emailIDP: AuthConfig.getIdentityProvider<EmailIDP>(),
+      );
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
   /// for a `EmailAccount`.
@@ -207,11 +210,12 @@ abstract final class AuthBackwardsCompatibility {
     required final String idToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails =
-        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
-      session,
-      idToken: idToken,
-    );
+    final accountDetails = await AuthConfig.getIdentityProvider<GoogleIDP>()
+        .admin
+        .fetchAccountDetails(
+          session,
+          idToken: idToken,
+        );
 
     final legacyUserIdentifier =
         await LegacyExternalUserIdentifier.db.findFirstRow(
@@ -225,12 +229,14 @@ abstract final class AuthBackwardsCompatibility {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await AuthServices.instance.googleIDP.admin.linkGoogleAuthentication(
-          session,
-          authUserId: legacyUserIdentifier.authUserId,
-          accountDetails: accountDetails,
-          transaction: transaction,
-        );
+        await AuthConfig.getIdentityProvider<GoogleIDP>()
+            .admin
+            .linkGoogleAuthentication(
+              session,
+              authUserId: legacyUserIdentifier.authUserId,
+              accountDetails: accountDetails,
+              transaction: transaction,
+            );
 
         await LegacyExternalUserIdentifier.db.deleteRow(
           session,

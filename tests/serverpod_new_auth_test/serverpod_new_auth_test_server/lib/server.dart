@@ -25,7 +25,14 @@ void run(final List<String> args) async {
       primaryTokenManager: AuthSessionsTokenManager(
         config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),
-      identityProviders: [],
+      identityProviders: [
+        EmailIdentityProviderFactory(
+          EmailIDPConfig(
+            passwordHashPepper:
+                pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
+          ),
+        ),
+      ],
       additionalTokenManagers: [
         AuthenticationTokensTokenManager(
           config: AuthenticationTokenConfig(
@@ -38,14 +45,6 @@ void run(final List<String> args) async {
       ]);
 
   pod.authenticationHandler = authConfig.authenticationHandler;
-
-  AuthServices.initialize(
-    emailIDPConfig: EmailIDPConfig(
-      passwordHashPepper:
-          pod.getPassword('serverpod_auth_idp_email_passwordHashPepper')!,
-    ),
-    tokenManager: authConfig.tokenManager,
-  );
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');

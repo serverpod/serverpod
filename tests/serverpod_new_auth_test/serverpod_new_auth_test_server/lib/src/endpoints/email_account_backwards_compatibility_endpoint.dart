@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -91,10 +92,11 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    final account = await AuthServices.instance.emailIDP.admin.findAccount(
-      session,
-      email: email,
-    );
+    final account =
+        await AuthConfig.getIdentityProvider<EmailIDP>().admin.findAccount(
+              session,
+              email: email,
+            );
 
     if (account == null) {
       throw Exception('No account found for "$email"');

@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_email_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -16,14 +17,25 @@ void main() {
         new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  const config = new_email_idp.EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP =
-      new_email_idp.EmailIDP(config: config, tokenManager: tokenManager);
+  const newEmailIDPConfig =
+      new_email_idp.EmailIDPConfig(passwordHashPepper: 'test');
+  late final new_email_idp.EmailIDP newEmailIDP;
 
-  setUp(() async {
+  setUpAll(() async {
+    AuthConfig.set(
+      identityProviders: [
+        new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
+      ],
+      primaryTokenManager: tokenManager,
+    );
+    newEmailIDP = AuthConfig.getIdentityProvider<new_email_idp.EmailIDP>();
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
-    AuthBackwardsCompatibility.config = AuthBackwardsCompatibilityConfig(
-      emailIDP: newEmailIDP,
+  });
+
+  tearDownAll(() async {
+    AuthConfig.set(
+      identityProviders: [],
+      primaryTokenManager: tokenManager,
     );
   });
   withServerpod(
