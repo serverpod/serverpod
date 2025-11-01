@@ -34,8 +34,8 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
-    test('then serialized is set to int.', () {
-      expect(definition.serialized, EnumSerialization.byIndex);
+    test('then serialized is set to byName.', () {
+      expect(definition.serialized, EnumSerialization.byName);
     });
   });
 

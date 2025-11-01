@@ -1,5 +1,6 @@
 ### Defines a reason for a failed sign in.
 enum: AuthenticationFailReason
+serialized: byIndex
 values:
   - invalidCredentials
   - userCreationDenied
