@@ -4,10 +4,10 @@ import 'package:serverpod_auth_idp_server/core.dart';
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
   late final AuthSessions _authSessions =
-      AuthConfig.getTokenManager<AuthSessionsTokenManager>().authSessions;
+      AuthServices.getTokenManager<AuthSessionsTokenManager>().authSessions;
 
   late final AuthenticationTokens _authenticationTokens =
-      AuthConfig.getTokenManager<AuthenticationTokensTokenManager>()
+      AuthServices.getTokenManager<AuthenticationTokensTokenManager>()
           .authenticationTokens;
 
   /// Creates a new test user.

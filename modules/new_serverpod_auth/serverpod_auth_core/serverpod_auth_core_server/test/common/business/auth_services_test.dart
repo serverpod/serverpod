@@ -8,11 +8,10 @@ import 'fakes/fakes.dart';
 
 void main() {
   withServerpod(
-    'Given AuthConfig is being configured',
+    'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -29,11 +28,11 @@ void main() {
         ];
       });
 
-      group('when AuthConfig.set is called with valid parameters', () {
-        late AuthConfig authConfig;
+      group('when AuthServices.set is called with valid parameters', () {
+        late AuthServices authServices;
 
         setUp(() {
-          authConfig = AuthConfig.set(
+          authServices = AuthServices.set(
             primaryTokenManager: fakeTokenManager,
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
@@ -41,18 +40,18 @@ void main() {
         });
 
         test('then a token manager is accessible', () {
-          expect(authConfig.tokenManager, isA<MultiTokenManager>());
+          expect(authServices.tokenManager, isA<MultiTokenManager>());
         });
       });
 
-      group('when AuthConfig.set is called multiple times', () {
-        late AuthConfig firstConfig;
-        late AuthConfig secondConfig;
+      group('when AuthServices.set is called multiple times', () {
+        late AuthServices firstAuthServices;
+        late AuthServices secondAuthServices;
         late FakeTokenManager secondTokenManager;
         late FakeTokenStorage secondTokenStorage;
 
         setUp(() {
-          firstConfig = AuthConfig.set(
+          firstAuthServices = AuthServices.set(
             primaryTokenManager: fakeTokenManager,
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
@@ -60,7 +59,7 @@ void main() {
 
           secondTokenStorage = FakeTokenStorage();
           secondTokenManager = FakeTokenManager(secondTokenStorage);
-          secondConfig = AuthConfig.set(
+          secondAuthServices = AuthServices.set(
             primaryTokenManager: secondTokenManager,
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
@@ -68,19 +67,18 @@ void main() {
         });
 
         test('then the instance is replaced with the new configuration', () {
-          expect(AuthConfig.instance, equals(secondConfig));
-          expect(AuthConfig.instance, isNot(equals(firstConfig)));
+          expect(AuthServices.instance, equals(secondAuthServices));
+          expect(AuthServices.instance, isNot(equals(firstAuthServices)));
         });
       });
     },
   );
 
   withServerpod(
-    'Given an AuthConfig with identity providers',
+    'Given an AuthServices with identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -96,7 +94,7 @@ void main() {
           FakeTokenManager(fakeTokenStorage),
         ];
 
-        AuthConfig.set(
+        AuthServices.set(
           primaryTokenManager: fakeTokenManager,
           identityProviders: identityProviderFactories,
           additionalTokenManagers: tokenManagers,
@@ -106,13 +104,13 @@ void main() {
       group('when provider is constructed during initialization', () {
         test('then constructed provider should have correct token issuer', () {
           final provider =
-              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+              AuthServices.getIdentityProvider<FakeIdentityProvider>();
           expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
 
         test('then constructed provider should be stored correctly', () {
           final provider =
-              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+              AuthServices.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
           expect(provider, isNotNull);
         });
@@ -123,7 +121,7 @@ void main() {
             'then getProvider should return correct provider instance for registered types',
             () {
           final provider =
-              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+              AuthServices.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
           expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
@@ -131,7 +129,7 @@ void main() {
         test('then StateError should be thrown for unregistered provider types',
             () {
           expect(
-            () => AuthConfig.getIdentityProvider<String>(),
+            () => AuthServices.getIdentityProvider<String>(),
             throwsA(isA<StateError>().having(
               (final e) => e.message,
               'message',
@@ -144,7 +142,8 @@ void main() {
       test(
           'when accessing a registered provider then the provider should be accessible',
           () {
-        final provider = AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+        final provider =
+            AuthServices.getIdentityProvider<FakeIdentityProvider>();
         expect(provider, isA<FakeIdentityProvider>());
       });
 
@@ -152,7 +151,7 @@ void main() {
           'when accessing an unregistered provider then a StateError is thrown',
           () {
         expect(
-          () => AuthConfig.getIdentityProvider<String>(),
+          () => AuthServices.getIdentityProvider<String>(),
           throwsA(isA<StateError>()),
         );
       });
@@ -160,11 +159,10 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthConfig with multiple identity providers',
+    'Given an AuthServices with multiple identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          multipleProviderFactories;
+      late List<IdentityProviderFactory<Object>> multipleProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late FakeIdentityProviderFactory firstFactory;
@@ -182,7 +180,7 @@ void main() {
           FakeTokenManager(fakeTokenStorage),
         ];
 
-        AuthConfig.set(
+        AuthServices.set(
           primaryTokenManager: fakeTokenManager,
           identityProviders: multipleProviderFactories,
           additionalTokenManagers: tokenManagers,
@@ -192,7 +190,7 @@ void main() {
       group('when accessing providers', () {
         test('then each provider should be accessible independently', () {
           final provider =
-              AuthConfig.getIdentityProvider<FakeIdentityProvider>();
+              AuthServices.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
           expect(provider.tokenIssuer, isA<MultiTokenManager>());
         });
@@ -201,15 +199,14 @@ void main() {
   );
 
   withServerpod(
-    'Given an AuthConfig with authentication handler',
+    'Given an AuthServices with authentication handler',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManager fakeTokenManager;
-      late List<IdentityProviderFactory<IdentityProvider>>
-          identityProviderFactories;
+      late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManager> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
-      late AuthConfig authConfig;
+      late AuthServices authServices;
 
       setUp(() {
         session = sessionBuilder.build();
@@ -224,7 +221,7 @@ void main() {
           FakeTokenManager(fakeTokenStorage),
         ];
 
-        authConfig = AuthConfig.set(
+        authServices = AuthServices.set(
           primaryTokenManager: fakeTokenManager,
           identityProviders: identityProviderFactories,
           additionalTokenManagers: tokenManagers,
@@ -242,7 +239,8 @@ void main() {
               scopes: {const Scope('test-scope')});
           validToken = authSuccess.token;
 
-          result = await authConfig.authenticationHandler(session, validToken);
+          result =
+              await authServices.authenticationHandler(session, validToken);
         });
 
         test('then authentication info should be returned', () {
@@ -278,7 +276,7 @@ void main() {
 
         test('then all scopes should be included', () async {
           final result =
-              await authConfig.authenticationHandler(session, validToken);
+              await authServices.authenticationHandler(session, validToken);
 
           expect(result, isNotNull);
           final scopeNames = result!.scopes.map((final s) => s.name);
@@ -290,7 +288,7 @@ void main() {
 
       group('when validating invalid tokens', () {
         test('then null should be returned for invalid token', () async {
-          final result = await authConfig.authenticationHandler(
+          final result = await authServices.authenticationHandler(
             session,
             'invalid-token',
           );
@@ -299,7 +297,7 @@ void main() {
         });
 
         test('then null should be returned for empty token', () async {
-          final result = await authConfig.authenticationHandler(session, '');
+          final result = await authServices.authenticationHandler(session, '');
 
           expect(result, isNull);
         });

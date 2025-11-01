@@ -11,6 +11,10 @@ void main() {
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
+  tearDown(() {
+    AuthServices.set(primaryTokenManager: tokenManager, identityProviders: []);
+  });
+
   withServerpod(
     'Given a non-migrated user (legacy user),',
     (final sessionBuilder, final endpoints) {
@@ -43,24 +47,27 @@ void main() {
         );
 
         // Configure EmailAccounts for password reset verification
-        AuthServices.initialize(
-            tokenManager: tokenManager,
-            emailIDPConfig: EmailIDPConfig(
-              passwordHashPepper: 'test',
-              sendPasswordResetVerificationCode: (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedVerificationCode = verificationCode;
-              },
-            ));
+        final config = EmailIDPConfig(
+          passwordHashPepper: 'test',
+          sendPasswordResetVerificationCode: (
+            final session, {
+            required final email,
+            required final passwordResetRequestId,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedVerificationCode = verificationCode;
+          },
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
       });
 
       tearDown(() async {
-        AuthServices.initialize(tokenManager: tokenManager);
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -152,27 +159,30 @@ void main() {
         newAuthUserId = newAuthUserIdResult!;
 
         // Configure EmailAccounts for password reset verification
-        AuthServices.initialize(
-            tokenManager: tokenManager,
-            emailIDPConfig: EmailIDPConfig(
-              passwordHashPepper: 'test',
-              sendPasswordResetVerificationCode: (
-                final session, {
-                required final email,
-                required final passwordResetRequestId,
-                required final transaction,
-                required final verificationCode,
-              }) {
-                receivedPasswordResetRequestId = passwordResetRequestId;
-                receivedVerificationCode = verificationCode;
-              },
-              onPasswordResetCompleted:
-                  AuthBackwardsCompatibility.clearLegacyPassword,
-            ));
+        final config = EmailIDPConfig(
+          passwordHashPepper: 'test',
+          sendPasswordResetVerificationCode: (
+            final session, {
+            required final email,
+            required final passwordResetRequestId,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedPasswordResetRequestId = passwordResetRequestId;
+            receivedVerificationCode = verificationCode;
+          },
+          onPasswordResetCompleted:
+              AuthBackwardsCompatibility.clearLegacyPassword,
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
       });
 
       tearDown(() async {
-        AuthServices.initialize(tokenManager: tokenManager);
         await _cleanUpDatabase(sessionBuilder.build());
       });
 

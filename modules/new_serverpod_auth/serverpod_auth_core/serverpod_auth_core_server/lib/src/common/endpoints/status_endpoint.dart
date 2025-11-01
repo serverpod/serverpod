@@ -1,14 +1,14 @@
 import 'package:serverpod/serverpod.dart';
-import '../business/auth_config.dart';
+import '../business/auth_services.dart';
 import '../integrations/token_manager.dart';
 
 /// Endpoint for getting status and managing a signed in user.
 class StatusEndpoint extends Endpoint {
-  /// Gets the [TokenManager] from the [AuthConfig] instance.
+  /// Gets the [TokenManager] from the [AuthServices] instance.
   ///
   /// If [TokenManager] should be fetched from a different source, override
   /// this method.
-  TokenManager get tokenManager => AuthConfig.instance.tokenManager;
+  TokenManager get tokenManager => AuthServices.instance.tokenManager;
 
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn(final Session session) async {

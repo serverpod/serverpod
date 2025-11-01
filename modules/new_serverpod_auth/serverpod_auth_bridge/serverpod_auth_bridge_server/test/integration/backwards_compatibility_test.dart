@@ -13,11 +13,7 @@ void main() {
     ),
   );
 
-  const config = EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP = EmailIDP(
-    config: config,
-    tokenManager: tokenManager,
-  );
+  const newEmailIDPConfig = EmailIDPConfig(passwordHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
     final sessionBuilder,
@@ -27,8 +23,18 @@ void main() {
 
     setUp(() {
       session = sessionBuilder.build();
-      AuthBackwardsCompatibility.config = AuthBackwardsCompatibilityConfig(
-        emailIDP: newEmailIDP,
+      AuthServices.set(
+        identityProviders: [
+          EmailIdentityProviderFactory(newEmailIDPConfig),
+        ],
+        primaryTokenManager: tokenManager,
+      );
+    });
+
+    tearDown(() {
+      AuthServices.set(
+        identityProviders: [],
+        primaryTokenManager: tokenManager,
       );
     });
 

@@ -5,11 +5,11 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// Endpoint to convert legacy sessions.
 class SessionMigrationEndpoint extends Endpoint {
-  /// The token manager to use for the session migration.
+  /// Gets the [TokenManager] from the [AuthServices] instance.
   ///
   /// If [TokenManager] should be fetched from a different source, override
   /// this method.
-  TokenManager get tokenManager => AuthConfig.instance.tokenManager;
+  TokenManager get tokenManager => AuthServices.instance.tokenManager;
 
   /// Converts a legacy session into a new token from the token manager.
   Future<AuthSuccess?> convertSession(
