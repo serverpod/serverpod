@@ -10,21 +10,21 @@ void testSuite<T extends Object>(
   group(
     'Given a identity provider factory',
     () {
-      late IdentityProviderFactory<T> factory;
+      late IdentityProviderFactory<T> idpFactory;
       late TokenManager tokenManager;
 
       setUp(() {
-        factory = factoryBuilder();
+        idpFactory = factoryBuilder();
         tokenManager = FakeTokenManager(FakeTokenStorage());
       });
 
       test('when getting type, then the correct type should be returned', () {
-        expect(factory.type, equals(T));
+        expect(idpFactory.type, equals(T));
       });
 
       test('when constructing a provider the provider should be constructed',
           () {
-        final provider = factory.construct(tokenManager: tokenManager);
+        final provider = idpFactory.construct(tokenManager: tokenManager);
         expect(provider, isNotNull);
         expect(provider, isA<T>());
       });
@@ -32,8 +32,8 @@ void testSuite<T extends Object>(
       test(
           'when constructing multiple providers the providers should be unique',
           () {
-        final provider1 = factory.construct(tokenManager: tokenManager);
-        final provider2 = factory.construct(tokenManager: tokenManager);
+        final provider1 = idpFactory.construct(tokenManager: tokenManager);
+        final provider2 = idpFactory.construct(tokenManager: tokenManager);
         expect(provider1, isNot(same(provider2)));
       });
     },
