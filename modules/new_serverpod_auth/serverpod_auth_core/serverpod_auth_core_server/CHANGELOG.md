@@ -7,6 +7,7 @@
 - refactor: BREAKING. Refactors the new email identity provider to clarify the code structure and improve readability.
 - refactor: BREAKING. Consolidates exceptions for new email identity provider. ([@yashas-hm](https://github.com/yashas-hm))
 - refactor: BREAKING. Replaces callbacks with exceptions and return object when validating password hash. ([@yashas-hm](https://github.com/yashas-hm))
+- feat: Adds configuration options for session token properties in `AuthSessionsConfig` including default session lifetime, inactivity timeout, and maximum concurrent sessions per user.
 - feat: Adds support for router fallbacks in the web server.
 - feat: Adds support for clearing storage cache on `ClientAuthSessionManager`.
 - feat: Adds support for supplying image when creating a user profile in new auth module.
