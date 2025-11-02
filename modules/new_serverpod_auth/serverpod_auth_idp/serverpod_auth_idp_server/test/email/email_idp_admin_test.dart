@@ -599,6 +599,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIDPTestFixture fixture;
+      late UuidValue authUserId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
@@ -607,10 +608,11 @@ void main() {
         fixture = EmailIDPTestFixture();
 
         final authUser = await fixture.createAuthUser(session);
+        authUserId = authUser.id;
 
         await fixture.createEmailAccount(
           session,
-          authUserId: authUser.id,
+          authUserId: authUserId,
           email: email,
           password: EmailAccountPassword.fromString(password),
         );
@@ -700,81 +702,6 @@ void main() {
         );
         expect(resetRequestsAfter, isEmpty);
       });
-    },
-  );
-
-  withServerpod(
-    'Given no email account exists for deletion',
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIDPTestFixture fixture;
-
-      setUp(() async {
-        session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
-      });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
-
-      test(
-          'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
-            session,
-            email: 'nonexistent@serverpod.dev',
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      });
-    },
-  );
-
-  withServerpod(
-    'Given an email account with password and password reset request for deletion by auth user ID',
-    rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIDPTestFixture fixture;
-      late UuidValue authUserId;
-      const email = 'test@serverpod.dev';
-      const password = 'Password123!';
-
-      setUp(() async {
-        session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
-
-        final authUser = await fixture.createAuthUser(session);
-        authUserId = authUser.id;
-
-        await fixture.createEmailAccount(
-          session,
-          authUserId: authUserId,
-          email: email,
-          password: EmailAccountPassword.fromString(password),
-        );
-
-        // Create a password reset request
-        await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startPasswordReset(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
-      });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
 
       test(
           'when deleteEmailAccountByAuthUserId is called then account is deleted',
@@ -830,7 +757,7 @@ void main() {
   );
 
   withServerpod(
-    'Given no email account exists for deletion by auth user ID',
+    'Given no email account exists',
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIDPTestFixture fixture;
@@ -842,6 +769,23 @@ void main() {
 
       tearDown(() async {
         await fixture.tearDown(session);
+      });
+
+      test(
+          'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
+            session,
+            email: 'nonexistent@serverpod.dev',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailAccountNotFoundException>()),
+        );
       });
 
       test(
