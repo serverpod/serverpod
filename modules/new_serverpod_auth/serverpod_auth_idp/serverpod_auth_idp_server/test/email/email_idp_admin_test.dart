@@ -617,7 +617,6 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        // Create a password reset request
         await session.db.transaction(
           (final transaction) => fixture.emailIDP.startPasswordReset(
             session,
@@ -642,7 +641,6 @@ void main() {
           ),
         );
 
-        // Verify account was deleted
         final result = await session.db.transaction(
           (final transaction) => fixture.emailIDP.admin.findAccount(
             session,
@@ -665,7 +663,6 @@ void main() {
           ),
         );
 
-        // Verify account was deleted
         final result = await session.db.transaction(
           (final transaction) => fixture.emailIDP.admin.findAccount(
             session,
@@ -680,7 +677,6 @@ void main() {
       test(
           'when deleteEmailAccount is called then related password reset requests are deleted',
           () async {
-        // Verify password reset request exists
         final resetRequestsBefore =
             await EmailAccountPasswordResetRequest.db.find(
           session,
@@ -695,7 +691,6 @@ void main() {
           ),
         );
 
-        // Verify password reset requests were deleted
         final resetRequestsAfter =
             await EmailAccountPasswordResetRequest.db.find(
           session,
@@ -715,7 +710,6 @@ void main() {
           ),
         );
 
-        // Verify account was deleted
         final result = await session.db.transaction(
           (final transaction) => fixture.emailIDP.admin.findAccount(
             session,
@@ -730,7 +724,6 @@ void main() {
       test(
           'when deleteEmailAccountByAuthUserId is called then related password reset requests are deleted',
           () async {
-        // Verify password reset request exists
         final resetRequestsBefore =
             await EmailAccountPasswordResetRequest.db.find(
           session,
@@ -746,7 +739,6 @@ void main() {
           ),
         );
 
-        // Verify password reset requests were deleted
         final resetRequestsAfter =
             await EmailAccountPasswordResetRequest.db.find(
           session,
