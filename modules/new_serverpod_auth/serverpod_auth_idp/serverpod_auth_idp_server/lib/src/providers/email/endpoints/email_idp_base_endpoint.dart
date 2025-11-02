@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/src/integrations/email_identity_provider_factory.dart';
 
-import '../../../common/auth_services.dart';
 import '../email.dart';
 
 /// Base endpoint for email-based accounts.
