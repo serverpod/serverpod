@@ -36,14 +36,6 @@ class AuthSessionsConfig {
   /// Defaults to `null` (no inactivity timeout).
   final Duration? defaultSessionInactivityTimeout;
 
-  /// Maximum number of concurrent sessions allowed per user.
-  ///
-  /// When set, creating a new session will delete the oldest sessions
-  /// if this limit would be exceeded. If `null`, there is no limit.
-  ///
-  /// Defaults to `null` (no limit).
-  final int? maxConcurrentSessionsPerUser;
-
   /// Create a new user session configuration.
   AuthSessionsConfig({
     this.sessionKeySecretLength = 32,
@@ -51,10 +43,8 @@ class AuthSessionsConfig {
     required this.sessionKeyHashPepper,
     this.defaultSessionLifetime,
     this.defaultSessionInactivityTimeout,
-    this.maxConcurrentSessionsPerUser,
   }) {
     _validateSessionKeyHashPepper(sessionKeyHashPepper);
-    _validateMaxConcurrentSessionsPerUser(maxConcurrentSessionsPerUser);
     _validateSessionLifetime(defaultSessionLifetime);
     _validateSessionInactivityTimeout(defaultSessionInactivityTimeout);
   }
@@ -74,18 +64,6 @@ void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {
       sessionKeyHashPepper,
       'sessionKeyHashPepper',
       'must be at least 10 characters long',
-    );
-  }
-}
-
-void _validateMaxConcurrentSessionsPerUser(
-    final int? maxConcurrentSessionsPerUser) {
-  if (maxConcurrentSessionsPerUser != null &&
-      maxConcurrentSessionsPerUser < 1) {
-    throw ArgumentError.value(
-      maxConcurrentSessionsPerUser,
-      'maxConcurrentSessionsPerUser',
-      'must be at least 1 if set',
     );
   }
 }

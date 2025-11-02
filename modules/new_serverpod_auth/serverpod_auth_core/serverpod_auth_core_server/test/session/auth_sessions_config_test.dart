@@ -85,42 +85,6 @@ void main() {
     });
 
     test(
-        'when creating config with valid max concurrent sessions per user then config is created successfully.',
-        () {
-      expect(
-        () => AuthSessionsConfig(
-          sessionKeyHashPepper: '1234567890',
-          maxConcurrentSessionsPerUser: 5,
-        ),
-        returnsNormally,
-      );
-    });
-
-    test(
-        'when creating config with zero max concurrent sessions per user then an error is thrown.',
-        () {
-      expect(
-        () => AuthSessionsConfig(
-          sessionKeyHashPepper: '1234567890',
-          maxConcurrentSessionsPerUser: 0,
-        ),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
-
-    test(
-        'when creating config with negative max concurrent sessions per user then an error is thrown.',
-        () {
-      expect(
-        () => AuthSessionsConfig(
-          sessionKeyHashPepper: '1234567890',
-          maxConcurrentSessionsPerUser: -1,
-        ),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
-
-    test(
         'when creating config with all optional parameters null then config is created successfully.',
         () {
       expect(
@@ -128,7 +92,6 @@ void main() {
           sessionKeyHashPepper: '1234567890',
           defaultSessionLifetime: null,
           defaultSessionInactivityTimeout: null,
-          maxConcurrentSessionsPerUser: null,
         ),
         returnsNormally,
       );

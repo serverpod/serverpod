@@ -179,16 +179,6 @@ final class AuthSessions {
     final effectiveExpireAfterUnusedFor =
         expireAfterUnusedFor ?? _config.defaultSessionInactivityTimeout;
 
-    // Enforce max concurrent sessions per user if configured
-    if (_config.maxConcurrentSessionsPerUser != null) {
-      await _enforceMaxConcurrentSessions(
-        session,
-        authUserId: authUserId,
-        maxSessions: _config.maxConcurrentSessionsPerUser!,
-        transaction: transaction,
-      );
-    }
-
     final secret = generateRandomBytes(_config.sessionKeySecretLength);
     final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
@@ -303,59 +293,5 @@ final class AuthSessions {
     );
 
     return true;
-  }
-
-  /// Enforces the maximum number of concurrent sessions per user by deleting
-  /// the oldest sessions if the limit would be exceeded.
-  ///
-  /// This method is called within a transaction context to help prevent race
-  /// conditions when creating concurrent sessions for the same user.
-  Future<void> _enforceMaxConcurrentSessions(
-    final Session session, {
-    required final UuidValue authUserId,
-    required final int maxSessions,
-    final Transaction? transaction,
-  }) async {
-    // Get sessions for the user, ordered by creation time (oldest first)
-    // We limit the query to fetch only what we need to check
-    final sessions = await AuthSession.db.find(
-      session,
-      where: (final row) => row.authUserId.equals(authUserId),
-      orderBy: (final row) => row.createdAt,
-      limit: maxSessions,
-      transaction: transaction,
-    );
-
-    // Calculate how many sessions need to be deleted
-    // We need to leave room for the new session being created
-    final sessionsToDelete = sessions.length - (maxSessions - 1);
-
-    if (sessionsToDelete > 0) {
-      // Collect IDs of sessions to delete
-      final sessionIdsToDelete = <UuidValue>{};
-      for (var i = 0; i < sessionsToDelete; i++) {
-        if (sessions[i].id != null) {
-          sessionIdsToDelete.add(sessions[i].id!);
-        }
-      }
-
-      // Batch delete the oldest sessions
-      if (sessionIdsToDelete.isNotEmpty) {
-        await AuthSession.db.deleteWhere(
-          session,
-          where: (final row) =>
-              row.id.inSet(sessionIdsToDelete.cast<UuidValue?>()),
-          transaction: transaction,
-        );
-
-        // Send revocation messages for deleted sessions
-        for (final sessionId in sessionIdsToDelete) {
-          await session.messages.authenticationRevoked(
-            authUserId.uuid,
-            RevokedAuthenticationAuthId(authId: sessionId.uuid),
-          );
-        }
-      }
-    }
   }
 }
