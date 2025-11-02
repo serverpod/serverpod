@@ -17,3 +17,9 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
     return AppleIDP(config: config, tokenIssuer: tokenManager);
   }
 }
+
+/// Extension to get the AppleIDP instance from the AuthServices.
+extension AppleIDPGetter on AuthServices {
+  /// Returns the AppleIDP instance from the AuthServices.
+  AppleIDP get appleIDP => AuthServices.getIdentityProvider<AppleIDP>();
+}

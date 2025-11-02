@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/src/integrations/google_identity_provider_factory.dart';
 
 import '../google.dart';
 
@@ -14,7 +15,7 @@ abstract class GoogleIDPBaseEndpoint extends Endpoint {
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  GoogleIDP get googleIDP => AuthServices.getIdentityProvider<GoogleIDP>();
+  GoogleIDP get googleIDP => AuthServices.instance.googleIDP;
 
   /// {@template google_idp_base_endpoint.login}
   /// Validates a Google ID token and either logs in the associated user or

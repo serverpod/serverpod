@@ -92,11 +92,10 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    final account =
-        await AuthServices.getIdentityProvider<EmailIDP>().admin.findAccount(
-              session,
-              email: email,
-            );
+    final account = await AuthServices.instance.emailIDP.admin.findAccount(
+      session,
+      email: email,
+    );
 
     if (account == null) {
       throw Exception('No account found for "$email"');

@@ -18,3 +18,9 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
     return GoogleIDP(config: config, tokenIssuer: tokenManager);
   }
 }
+
+/// Extension to get the GoogleIDP instance from the AuthServices.
+extension GoogleIDPGetter on AuthServices {
+  /// Returns the GoogleIDP instance from the AuthServices.
+  GoogleIDP get googleIDP => AuthServices.getIdentityProvider<GoogleIDP>();
+}

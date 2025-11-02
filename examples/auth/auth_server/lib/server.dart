@@ -71,7 +71,7 @@ void run(List<String> args) async {
   pod.authenticationHandler = authServices.authenticationHandler;
 
   pod.webServer.addRoute(
-    AuthServices.getIdentityProvider<AppleIDP>().revokedNotificationRoute(),
+    AuthServices.instance.appleIDP.revokedNotificationRoute(),
     '/hooks/apple-notification',
   );
 

@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/src/integrations/email_identity_provider_factory.dart';
 
 import '../email.dart';
 
@@ -20,7 +21,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  EmailIDP get emailIDP => AuthServices.getIdentityProvider<EmailIDP>();
+  EmailIDP get emailIDP => AuthServices.instance.emailIDP;
 
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.

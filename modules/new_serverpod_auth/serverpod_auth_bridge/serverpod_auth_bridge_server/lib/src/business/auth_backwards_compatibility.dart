@@ -13,7 +13,7 @@ abstract final class AuthBackwardsCompatibility {
   /// Should match the previous `AuthServices`.
   static AuthBackwardsCompatibilityConfig get config =>
       AuthBackwardsCompatibilityConfig(
-        emailIDP: AuthServices.getIdentityProvider<EmailIDP>(),
+        emailIDP: AuthServices.instance.emailIDP,
       );
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
@@ -210,12 +210,11 @@ abstract final class AuthBackwardsCompatibility {
     required final String idToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails = await AuthServices.getIdentityProvider<GoogleIDP>()
-        .admin
-        .fetchAccountDetails(
-          session,
-          idToken: idToken,
-        );
+    final accountDetails =
+        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
+      session,
+      idToken: idToken,
+    );
 
     final legacyUserIdentifier =
         await LegacyExternalUserIdentifier.db.findFirstRow(
@@ -229,14 +228,12 @@ abstract final class AuthBackwardsCompatibility {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await AuthServices.getIdentityProvider<GoogleIDP>()
-            .admin
-            .linkGoogleAuthentication(
-              session,
-              authUserId: legacyUserIdentifier.authUserId,
-              accountDetails: accountDetails,
-              transaction: transaction,
-            );
+        await AuthServices.instance.googleIDP.admin.linkGoogleAuthentication(
+          session,
+          authUserId: legacyUserIdentifier.authUserId,
+          accountDetails: accountDetails,
+          transaction: transaction,
+        );
 
         await LegacyExternalUserIdentifier.db.deleteRow(
           session,

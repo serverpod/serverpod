@@ -18,3 +18,9 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
     return EmailIDP(config: config, tokenManager: tokenManager);
   }
 }
+
+/// Extension to get the EmailIDP instance from the AuthServices.
+extension EmailIDPGetter on AuthServices {
+  /// Returns the EmailIDP instance from the AuthServices.
+  EmailIDP get emailIDP => AuthServices.getIdentityProvider<EmailIDP>();
+}

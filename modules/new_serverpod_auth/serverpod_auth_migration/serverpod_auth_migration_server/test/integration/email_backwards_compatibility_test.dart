@@ -28,8 +28,7 @@ void main() {
       ],
       primaryTokenManager: tokenManager,
     );
-    newEmailIDP =
-        new_auth_core.AuthServices.getIdentityProvider<new_auth_idp.EmailIDP>();
+    newEmailIDP = new_auth_core.AuthServices.instance.emailIDP;
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
   });
 
