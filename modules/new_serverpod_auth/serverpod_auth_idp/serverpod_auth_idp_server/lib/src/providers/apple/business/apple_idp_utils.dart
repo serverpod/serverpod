@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
@@ -25,7 +24,8 @@ typedef AppleAuthSuccess = ({
   UuidValue appleAccountId,
   UuidValue authUserId,
   AppleAccountDetails details,
-  bool authUserNewlyCreated,
+  bool newAccount,
+  Set<Scope> scopes,
 });
 
 /// Utility functions for the Apple identity provider.
@@ -37,14 +37,11 @@ typedef AppleAuthSuccess = ({
 /// be sufficient.
 class AppleIDPUtils {
   final SignInWithApple _siwa;
-  final TokenIssuer _tokenIssuer;
 
   /// Creates a new instance of [AppleIDPUtils].
   AppleIDPUtils({
     required final SignInWithApple siwa,
-    required final TokenIssuer tokenIssuer,
-  })  : _siwa = siwa,
-        _tokenIssuer = tokenIssuer;
+  }) : _siwa = siwa;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -61,7 +58,7 @@ class AppleIDPUtils {
     required final bool isNativeApplePlatformSignIn,
     final String? firstName,
     final String? lastName,
-    final Transaction? transaction,
+    required final Transaction? transaction,
   }) async {
     final verifiedIdentityToken = await _siwa.verifyIdentityToken(
       identityToken,
@@ -80,83 +77,59 @@ class AppleIDPUtils {
       ),
       transaction: transaction,
     );
-    final authUserNewlyCreated = appleAccount == null;
 
-    if (appleAccount == null) {
+    final createNewAccount = appleAccount == null;
+
+    final AuthUserModel authUser = switch (createNewAccount) {
+      true => await AuthUsers.create(
+          session,
+          transaction: transaction,
+        ),
+      false => await AuthUsers.get(
+          session,
+          authUserId: appleAccount!.authUserId,
+        ),
+    };
+
+    if (createNewAccount) {
       final refreshToken = await _siwa.exchangeAuthorizationCode(
         authorizationCode,
         useBundleIdentifier: isNativeApplePlatformSignIn,
       );
 
-      await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (final transaction) async {
-          final authUser = await AuthUsers.create(
-            session,
-            transaction: transaction,
-          );
-
-          appleAccount = await AppleAccount.db.insertRow(
-            session,
-            AppleAccount(
-              userIdentifier: verifiedIdentityToken.userId,
-              refreshToken: refreshToken.refreshToken,
-              refreshTokenRequestedWithBundleIdentifier:
-                  isNativeApplePlatformSignIn,
-              email: verifiedIdentityToken.email?.toLowerCase(),
-              isEmailVerified: verifiedIdentityToken.emailVerified,
-              isPrivateEmail: verifiedIdentityToken.isPrivateEmail,
-              authUserId: authUser.id,
-              firstName: firstName,
-              lastName: lastName,
-            ),
-            transaction: transaction,
-          );
-        },
+      appleAccount = await AppleAccount.db.insertRow(
+        session,
+        AppleAccount(
+          userIdentifier: verifiedIdentityToken.userId,
+          refreshToken: refreshToken.refreshToken,
+          refreshTokenRequestedWithBundleIdentifier:
+              isNativeApplePlatformSignIn,
+          email: verifiedIdentityToken.email?.toLowerCase(),
+          isEmailVerified: verifiedIdentityToken.emailVerified,
+          isPrivateEmail: verifiedIdentityToken.isPrivateEmail,
+          authUserId: authUser.id,
+          firstName: firstName,
+          lastName: lastName,
+        ),
+        transaction: transaction,
       );
     }
 
     final AppleAccountDetails details = (
-      userIdentifier: appleAccount!.userIdentifier,
-      email: appleAccount!.email,
-      isVerifiedEmail: appleAccount!.isEmailVerified,
-      isPrivateEmail: appleAccount!.isPrivateEmail,
-      firstName: appleAccount!.firstName,
-      lastName: appleAccount!.lastName,
+      userIdentifier: appleAccount.userIdentifier,
+      email: appleAccount.email,
+      isVerifiedEmail: appleAccount.isEmailVerified,
+      isPrivateEmail: appleAccount.isPrivateEmail,
+      firstName: appleAccount.firstName,
+      lastName: appleAccount.lastName,
     );
 
     return (
-      appleAccountId: appleAccount!.id!,
-      authUserId: appleAccount!.authUserId,
+      appleAccountId: appleAccount.id!,
+      authUserId: appleAccount.authUserId,
       details: details,
-      authUserNewlyCreated: authUserNewlyCreated,
-    );
-  }
-
-  /// Creates a new authentication session for the given [authUserId].
-  Future<AuthSuccess> createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
-    required final String method,
-  }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    return _tokenIssuer.issueToken(
-      session,
-      authUserId: authUserId,
-      method: method,
+      newAccount: createNewAccount,
       scopes: authUser.scopes,
-      transaction: transaction,
     );
   }
 

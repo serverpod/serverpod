@@ -31,11 +31,10 @@ void main() {
         final siwa = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleIDPAdmin(
-            utils: AppleIDPUtils(
-          siwa: siwa,
+        admin = AppleIDP.fromSIWA(
+          siwa,
           tokenIssuer: tokenManager,
-        ));
+        ).admin;
       });
 
       test(
