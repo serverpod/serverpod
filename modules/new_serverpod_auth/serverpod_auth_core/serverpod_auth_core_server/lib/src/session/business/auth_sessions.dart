@@ -118,9 +118,11 @@ final class AuthSessions {
   /// The user should have been authenticated before calling this method.
   ///
   /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
+  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionLifetime] (if configured).
   ///
   /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
   /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decommissioned.
+  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionInactivityTimeout] (if configured).
   ///
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
@@ -137,11 +139,14 @@ final class AuthSessions {
     Set<Scope>? scopes,
 
     /// Fixed date at which the session expires.
-    /// If `null` the session will work until it's deleted or when it's been
+    /// If `null`, uses [AuthSessionsConfig.defaultSessionLifetime] to compute expiration time.
+    /// If both are `null`, the session will work until it's deleted or when it's been
     /// inactive for [expireAfterUnusedFor].
     final DateTime? expiresAt,
 
     /// Length of inactivity after which the session is no longer usable.
+    /// If `null`, uses [AuthSessionsConfig.defaultSessionInactivityTimeout].
+    /// If both are `null`, the session is valid until [expiresAt].
     final Duration? expireAfterUnusedFor,
 
     /// Whether to skip the check if the user is blocked (in which case a
@@ -166,6 +171,24 @@ final class AuthSessions {
       scopes ??= authUser.scopes;
     }
 
+    // Apply default values from config
+    final effectiveExpiresAt = expiresAt ??
+        (_config.defaultSessionLifetime != null
+            ? clock.now().add(_config.defaultSessionLifetime!)
+            : null);
+    final effectiveExpireAfterUnusedFor =
+        expireAfterUnusedFor ?? _config.defaultSessionInactivityTimeout;
+
+    // Enforce max concurrent sessions per user if configured
+    if (_config.maxConcurrentSessionsPerUser != null) {
+      await _enforceMaxConcurrentSessions(
+        session,
+        authUserId: authUserId,
+        maxSessions: _config.maxConcurrentSessionsPerUser!,
+        transaction: transaction,
+      );
+    }
+
     final secret = generateRandomBytes(_config.sessionKeySecretLength);
     final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
@@ -180,8 +203,8 @@ final class AuthSessions {
         authUserId: authUserId,
         createdAt: clock.now(),
         lastUsedAt: clock.now(),
-        expiresAt: expiresAt,
-        expireAfterUnusedFor: expireAfterUnusedFor,
+        expiresAt: effectiveExpiresAt,
+        expireAfterUnusedFor: effectiveExpireAfterUnusedFor,
         scopeNames: scopeNames,
         sessionKeyHash: ByteData.sublistView(hash.hash),
         sessionKeySalt: ByteData.sublistView(hash.salt),
@@ -280,5 +303,40 @@ final class AuthSessions {
     );
 
     return true;
+  }
+
+  /// Enforces the maximum number of concurrent sessions per user by deleting
+  /// the oldest sessions if the limit would be exceeded.
+  Future<void> _enforceMaxConcurrentSessions(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final int maxSessions,
+    final Transaction? transaction,
+  }) async {
+    // Get all sessions for the user, ordered by creation time (oldest first)
+    final sessions = await AuthSession.db.find(
+      session,
+      where: (final row) => row.authUserId.equals(authUserId),
+      orderBy: (final row) => row.createdAt,
+      transaction: transaction,
+    );
+
+    // Calculate how many sessions need to be deleted
+    // We need to leave room for the new session being created
+    final sessionsToDelete = sessions.length - (maxSessions - 1);
+
+    if (sessionsToDelete > 0) {
+      // Delete the oldest sessions
+      for (var i = 0; i < sessionsToDelete; i++) {
+        final sessionToDelete = sessions[i];
+        if (sessionToDelete.id != null) {
+          await destroySession(
+            session,
+            authSessionId: sessionToDelete.id!,
+            transaction: transaction,
+          );
+        }
+      }
+    }
   }
 }
