@@ -2,61 +2,46 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 
 import '../../../generated/protocol.dart';
 import 'google_idp_config.dart';
 
 /// Details of the Google Account.
-class GoogleAccountDetails {
+typedef GoogleAccountDetails = ({
   /// Google's user identifier for this account.
-  final String userIdentifier;
+  String userIdentifier,
 
   /// The verified email received from Google.
-  final String email;
+  String email,
 
   /// The user's given name.
-  final String name;
+  String name,
 
   /// The user's full name.
-  final String fullName;
+  String fullName,
 
   /// The user's profile image URL.
-  final Uri? image;
-
-  /// Creates a new instance of [GoogleAccountDetails].
-  GoogleAccountDetails({
-    required this.userIdentifier,
-    required this.email,
-    required this.name,
-    required this.fullName,
-    required this.image,
-  });
-}
+  Uri? image,
+});
 
 /// Result of a successful authentication using Google as identity provider.
-class GoogleAuthSuccess {
+typedef GoogleAuthSuccess = ({
   /// The ID of the `GoogleAccount` database entity.
-  final UuidValue googleAccountId;
+  UuidValue googleAccountId,
 
   /// The ID of the associated `AuthUser`.
-  final UuidValue authUserId;
+  UuidValue authUserId,
 
   /// Details of the Google account.
-  final GoogleAccountDetails details;
+  GoogleAccountDetails details,
 
   /// Whether the associated `AuthUser` was newly created during the
-  final bool isNewUser;
+  bool newAccount,
 
-  /// Creates a new instance of [GoogleAuthSuccess].
-  GoogleAuthSuccess({
-    required this.googleAccountId,
-    required this.authUserId,
-    required this.details,
-    required this.isNewUser,
-  });
-}
+  /// The scopes granted to the associated `AuthUser`.
+  Set<Scope> scopes,
+});
 
 /// Utility functions for the Google identity provider.
 ///
@@ -69,13 +54,10 @@ class GoogleIDPUtils {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
-  final TokenIssuer _tokenIssuer;
-
   /// Creates a new instance of [GoogleIDPUtils].
   GoogleIDPUtils({
     required this.clientSecret,
-    required final TokenIssuer tokenIssuer,
-  }) : _tokenIssuer = tokenIssuer;
+  });
 
   /// Authenticates a user using an ID token.
   ///
@@ -84,7 +66,7 @@ class GoogleIDPUtils {
   Future<GoogleAuthSuccess> authenticate(
     final Session session, {
     required final String idToken,
-    final Transaction? transaction,
+    required final Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
@@ -101,60 +83,34 @@ class GoogleIDPUtils {
 
     final createNewUser = googleAccount == null;
 
-    if (createNewUser) {
-      await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db,
-        transaction,
-        (final transaction) async {
-          final authUser = await AuthUsers.create(
-            session,
-            transaction: transaction,
-          );
+    final AuthUserModel authUser = switch (createNewUser) {
+      true => await AuthUsers.create(
+          session,
+          transaction: transaction,
+        ),
+      false => await AuthUsers.get(
+          session,
+          authUserId: googleAccount!.authUserId,
+          transaction: transaction,
+        ),
+    };
 
-          googleAccount = await linkGoogleAuthentication(
-            session,
-            authUserId: authUser.id,
-            accountDetails: accountDetails,
-            transaction: transaction,
-          );
-        },
+    if (createNewUser) {
+      googleAccount = await linkGoogleAuthentication(
+        session,
+        authUserId: authUser.id,
+        accountDetails: accountDetails,
+        transaction: transaction,
       );
     }
 
-    return GoogleAuthSuccess(
-      googleAccountId: googleAccount!.id!,
-      authUserId: googleAccount!.authUserId,
+    return (
+      googleAccountId: googleAccount.id!,
+      authUserId: googleAccount.authUserId,
       details: accountDetails,
-      isNewUser: createNewUser,
-    );
-  }
-
-  /// Creates a new authentication session for the given [authUserId].
-  Future<AuthSuccess> createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    final Transaction? transaction,
-    required final String method,
-  }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await _tokenIssuer.issueToken(
-      session,
-      authUserId: authUserId,
-      method: method,
+      newAccount: createNewUser,
       scopes: authUser.scopes,
-      transaction: transaction,
     );
-
-    return sessionKey;
   }
 
   /// Returns the account details for the given [idToken].
@@ -234,7 +190,7 @@ class GoogleIDPUtils {
       throw GoogleIdTokenVerificationException();
     }
 
-    return GoogleAccountDetails(
+    return (
       userIdentifier: userId,
       email: email,
       name: name,
