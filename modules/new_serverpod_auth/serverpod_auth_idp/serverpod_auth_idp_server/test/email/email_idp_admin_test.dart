@@ -736,4 +736,131 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given an email account with password and password reset request for deletion by auth user ID',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue authUserId;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+
+        final authUser = await fixture.createAuthUser(session);
+        authUserId = authUser.id;
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUserId,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        // Create a password reset request
+        await session.db.transaction(
+          (final transaction) => fixture.emailIDP.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then account is deleted',
+          () async {
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          ),
+        );
+
+        // Verify account was deleted
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.findAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        expect(result, isNull);
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then related password reset requests are deleted',
+          () async {
+        // Verify password reset request exists
+        final resetRequestsBefore =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsBefore.length, greaterThan(0));
+
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          ),
+        );
+
+        // Verify password reset requests were deleted
+        final resetRequestsAfter =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsAfter, isEmpty);
+      });
+    },
+  );
+
+  withServerpod(
+    'Given no email account exists for deletion by auth user ID',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then it throws EmailAccountNotFoundException',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: const Uuid().v4obj(),
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailAccountNotFoundException>()),
+        );
+      });
+    },
+  );
 }

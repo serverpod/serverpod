@@ -163,6 +163,42 @@ final class EmailIDPAdmin {
     );
   }
 
+  /// Deletes an email account by authentication user ID.
+  ///
+  /// This will delete the email authentication account for the given auth user
+  /// ID. Related data such as password reset requests will be automatically
+  /// deleted due to cascade delete constraints.
+  ///
+  /// Throws an [EmailAccountNotFoundException] if no account exists for the
+  /// given auth user ID.
+  Future<void> deleteEmailAccountByAuthUserId(
+    final Session session, {
+    required final UuidValue authUserId,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await EmailAccount.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(authUserId),
+          transaction: transaction,
+        );
+
+        if (account == null) {
+          throw EmailAccountNotFoundException();
+        }
+
+        await EmailAccount.db.deleteRow(
+          session,
+          account,
+          transaction: transaction,
+        );
+      },
+    );
+  }
+
   /// Gets an email authentication exists for the given email address.
   Future<EmailAccount?> findAccount(
     final Session session, {
