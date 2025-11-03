@@ -142,34 +142,27 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final normalizedEmail = email.normalizedEmail;
-
-        final account = await EmailAccount.db.findFirstRow(
+        final deletedCount = await _utils.deleteAccount(
           session,
-          where: (final t) => t.email.equals(normalizedEmail),
+          email: email,
+          authUserId: null,
           transaction: transaction,
         );
 
-        if (account == null) {
+        if (deletedCount == 0) {
           throw EmailAccountNotFoundException();
         }
-
-        await EmailAccount.db.deleteRow(
-          session,
-          account,
-          transaction: transaction,
-        );
       },
     );
   }
 
-  /// Deletes an email account by authentication user ID.
+  /// Deletes all email accounts by authentication user ID.
   ///
-  /// This will delete the email authentication account for the given auth user
+  /// This will delete all email authentication accounts for the given auth user
   /// ID. Related data such as password reset requests will be automatically
   /// deleted due to cascade delete constraints.
   ///
-  /// Throws an [EmailAccountNotFoundException] if no account exists for the
+  /// Throws an [EmailAccountNotFoundException] if no accounts exist for the
   /// given auth user ID.
   Future<void> deleteEmailAccountByAuthUserId(
     final Session session, {
@@ -180,21 +173,16 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final account = await EmailAccount.db.findFirstRow(
+        final deletedCount = await _utils.deleteAccount(
           session,
-          where: (final t) => t.authUserId.equals(authUserId),
+          email: null,
+          authUserId: authUserId,
           transaction: transaction,
         );
 
-        if (account == null) {
+        if (deletedCount == 0) {
           throw EmailAccountNotFoundException();
         }
-
-        await EmailAccount.db.deleteRow(
-          session,
-          account,
-          transaction: transaction,
-        );
       },
     );
   }

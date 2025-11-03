@@ -1,3 +1,6 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
+
 import '../../../generated/protocol.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
@@ -50,6 +53,53 @@ class EmailIDPUtils {
       passwordHashUtil: passwordHash,
       failedLoginRateLimit: config.failedLoginRateLimit,
     );
+  }
+
+  /// Deletes email accounts matching the provided filters.
+  ///
+  /// Both [email] and [authUserId] are optional nullable parameters that act
+  /// as filters:
+  /// - If [email] is provided, only accounts with that email are deleted.
+  /// - If [authUserId] is provided, only accounts with that auth user ID are deleted.
+  /// - If both are provided, accounts matching both criteria are deleted.
+  /// - If neither is provided, all email accounts are deleted.
+  ///
+  /// Related data such as password reset requests will be automatically
+  /// deleted due to cascade delete constraints.
+  ///
+  /// Returns the number of accounts deleted.
+  Future<int> deleteAccount(
+    final Session session, {
+    final String? email,
+    final UuidValue? authUserId,
+    required final Transaction transaction,
+  }) async {
+    final normalizedEmail = email?.normalizedEmail;
+
+    if (normalizedEmail == null && authUserId == null) {
+      final deletedAccounts = await EmailAccount.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+        transaction: transaction,
+      );
+      return deletedAccounts.length;
+    }
+
+    final deletedAccounts = await EmailAccount.db.deleteWhere(
+      session,
+      where: (final t) {
+        if (normalizedEmail != null && authUserId != null) {
+          return t.email.equals(normalizedEmail) & t.authUserId.equals(authUserId);
+        } else if (normalizedEmail != null) {
+          return t.email.equals(normalizedEmail);
+        } else {
+          return t.authUserId.equals(authUserId!);
+        }
+      },
+      transaction: transaction,
+    );
+
+    return deletedAccounts.length;
   }
 
   /// Replaces server-side exceptions by client-side exceptions, hiding details
