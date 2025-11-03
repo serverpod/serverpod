@@ -530,33 +530,11 @@ void main() {
   );
 
   group('Given a class with table name when generating code', () {
-    var byNameEnumDefinition = EnumDefinitionBuilder()
-        .withClassName('ByNameEnum')
-        .withFileName('by_name_enum')
-        .withSerialized(EnumSerialization.byName)
-        .withValues([
-          ProtocolEnumValueDefinition('byName1'),
-          ProtocolEnumValueDefinition('byName2'),
-        ])
-        .build();
-    var field = FieldDefinitionBuilder()
-        .withName('enumDefault')
-        .withColumn('enum_default')
-        .withEnumDefinition(byNameEnumDefinition, true)
-        .build();
-    var otherField = FieldDefinitionBuilder()
-        .withName('otherField')
-        .withColumn('other_field')
-        .withTypeDefinition('String')
-        .build();
-
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withClassName(testClassName)
           .withTableName(tableName)
-          .withField(field)
-          .withField(otherField)
           .build(),
     ];
 
