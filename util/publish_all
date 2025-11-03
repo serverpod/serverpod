@@ -79,7 +79,7 @@ if [ "$DO_DOWNLOAD" -eq 1 ]; then
     exit 1
   fi
 
-  if ! unzip serverpod-insights-devtools.zip -d "$DEST_DIR"; then
+  if ! unzip serverpod-insights-devtools.zip -d "$(dirname "$DEST_DIR")"; then
     echo ""
     echo "ERROR: Failed to unzip devtools extension file"
     echo ""
