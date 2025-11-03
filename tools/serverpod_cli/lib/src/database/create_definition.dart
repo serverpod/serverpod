@@ -27,7 +27,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
-                  name: column.column ?? column.name,
+                  name: column.columnName,
                   columnType: ColumnType.values.byName(
                     column.type.databaseTypeEnum,
                   ),
