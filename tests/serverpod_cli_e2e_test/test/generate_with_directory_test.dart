@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  var tempPath = path.join(Directory.current.path, 'temp');
+  late Directory tempDir;
   var rootPath = path.join(Directory.current.path, '..', '..');
   var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
 
@@ -30,13 +30,15 @@ void main() async {
       ['pub', 'global', 'activate', '-s', 'path', '.'],
       workingDirectory: cliPath,
     );
-
-    Directory(tempPath).createSync(recursive: true);
   });
 
-  tearDownAll(() async {
-    if (Directory(tempPath).existsSync()) {
-      Directory(tempPath).deleteSync(recursive: true);
+  setUp(() async {
+    tempDir = await Directory.systemTemp.createTemp();
+  });
+
+  tearDown(() async {
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
     }
   });
 
@@ -54,7 +56,7 @@ void main() async {
       createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '--mini', '-v', '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: tempDir.path,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
@@ -72,22 +74,17 @@ void main() async {
 
     tearDown(() async {
       createProcess.kill();
-      // Clean up the created project
-      var projectDir = Directory(path.join(tempPath, projectName));
-      if (projectDir.existsSync()) {
-        projectDir.deleteSync(recursive: true);
-      }
     });
 
     test(
         'then code generation succeeds when using absolute path with -d option.',
         () async {
       // Run generate from temp directory (parent of project) using -d with absolute path
-      var absoluteServerPath = path.join(tempPath, serverDir);
+      var absoluteServerPath = path.join(tempDir.path, serverDir);
       var generateProcess = await Process.start(
         'serverpod',
         ['generate', '-d', absoluteServerPath, '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: tempDir.path,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
@@ -123,7 +120,7 @@ void main() async {
 
       // Verify that generated files exist
       var generatedEndpointsFile = File(path.join(
-        tempPath,
+        tempDir.path,
         serverDir,
         'lib',
         'src',
@@ -137,7 +134,7 @@ void main() async {
       );
 
       var generatedProtocolFile = File(path.join(
-        tempPath,
+        tempDir.path,
         serverDir,
         'lib',
         'src',
@@ -152,7 +149,7 @@ void main() async {
 
       // Verify client files were generated
       var clientProtocolDir = Directory(path.join(
-        tempPath,
+        tempDir.path,
         clientDir,
         'lib',
         'src',
@@ -172,7 +169,7 @@ void main() async {
       var generateProcess = await Process.start(
         'serverpod',
         ['generate', '-d', serverDir, '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: tempDir.path,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
@@ -208,7 +205,7 @@ void main() async {
 
       // Verify that generated files exist
       var generatedEndpointsFile = File(path.join(
-        tempPath,
+        tempDir.path,
         serverDir,
         'lib',
         'src',
@@ -225,11 +222,11 @@ void main() async {
     test(
         'then code generation fails with proper error when directory does not exist.',
         () async {
-      var nonExistentDir = path.join(tempPath, 'nonexistent_server');
+      var nonExistentDir = path.join(tempDir.path, 'nonexistent_server');
       var generateProcess = await Process.start(
         'serverpod',
         ['generate', '-d', nonExistentDir, '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: tempDir.path,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
