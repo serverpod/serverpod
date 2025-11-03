@@ -277,6 +277,11 @@ class SerializableModelFieldDefinition {
   /// ```
   final String? column;
 
+  /// Name of the column to be used when referencing the database.
+  ///
+  /// This will be the [column] if set, with fallback to the [name]
+  String get columnName => column ?? name;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
