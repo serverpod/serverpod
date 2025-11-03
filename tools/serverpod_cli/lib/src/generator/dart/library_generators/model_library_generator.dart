@@ -1665,7 +1665,7 @@ class SerializableModelLibraryGenerator {
         nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
-      final fieldKey = field.column ?? field.name;
+      final fieldKey = field.columnName;
 
       return {
         ...map,
@@ -2705,7 +2705,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
 
     var constructorArgs = <Expression>[
-      literalString(field.column ?? field.name),
+      literalString(field.columnName),
       refer('this'),
     ];
 
