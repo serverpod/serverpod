@@ -176,7 +176,7 @@ void main() {
 
         expect(
           toJsonForProtocolCode.contains(
-            "'$columnName' : $columnFieldName",
+            "'$noColumnFieldName' : $noColumnFieldName",
           ),
           isTrue,
           reason:
