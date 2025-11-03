@@ -2711,7 +2711,7 @@ class SerializableModelLibraryGenerator {
         ..types.addAll([]),
     ).call(
       [
-        literalString(field.name),
+        literalString(field.columnName),
         refer('this'),
         serializedAs,
       ],
