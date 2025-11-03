@@ -38,7 +38,7 @@ final class AppleIDP {
     required final AppleIDPConfig config,
     required final TokenIssuer tokenIssuer,
   }) : _tokenIssuer = tokenIssuer {
-    final siwaConf = SignInWithAppleConfiguration(
+    final signInWithAppleConf = SignInWithAppleConfiguration(
       serviceIdentifier: config.serviceIdentifier,
       bundleIdentifier: config.bundleIdentifier,
       redirectUri: config.redirectUri,
@@ -46,18 +46,18 @@ final class AppleIDP {
       keyId: config.keyId,
       key: config.key,
     );
-    final siwa = SignInWithApple(config: siwaConf);
+    final signInWithApple = SignInWithApple(config: signInWithAppleConf);
 
-    utils = AppleIDPUtils(siwa: siwa);
+    utils = AppleIDPUtils(signInWithApple: signInWithApple);
     admin = AppleIDPAdmin(utils: utils);
   }
 
   /// Creates a new instance of [AppleIDP] from a [SignInWithApple] instance.
-  AppleIDP.fromSIWA(
-    final SignInWithApple siwa, {
+  AppleIDP.fromSignInWithApple(
+    final SignInWithApple signInWithApple, {
     required final TokenIssuer tokenIssuer,
   }) : _tokenIssuer = tokenIssuer {
-    utils = AppleIDPUtils(siwa: siwa);
+    utils = AppleIDPUtils(signInWithApple: signInWithApple);
     admin = AppleIDPAdmin(utils: utils);
   }
 

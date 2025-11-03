@@ -28,11 +28,11 @@ void main() {
         activeUser = await _createAppleBackedUser(session);
         inactiveUser = await _createAppleBackedUser(session);
 
-        final siwa = _SignInWithAppleFake(knownRefreshTokens: {
+        final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleIDP.fromSIWA(
-          siwa,
+        admin = AppleIDP.fromSignInWithApple(
+          signInWithApple,
           tokenIssuer: tokenManager,
         ).admin;
       });

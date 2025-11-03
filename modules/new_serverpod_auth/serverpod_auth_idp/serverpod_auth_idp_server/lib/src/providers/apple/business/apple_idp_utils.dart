@@ -36,12 +36,12 @@ typedef AppleAuthSuccess = ({
 /// But for most cases, the methods exposed by [AppleIDP] and [AppleIDPAdmin] should
 /// be sufficient.
 class AppleIDPUtils {
-  final SignInWithApple _siwa;
+  final SignInWithApple _signInWithApple;
 
   /// Creates a new instance of [AppleIDPUtils].
   AppleIDPUtils({
-    required final SignInWithApple siwa,
-  }) : _siwa = siwa;
+    required final SignInWithApple signInWithApple,
+  }) : _signInWithApple = signInWithApple;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -60,7 +60,7 @@ class AppleIDPUtils {
     final String? lastName,
     required final Transaction? transaction,
   }) async {
-    final verifiedIdentityToken = await _siwa.verifyIdentityToken(
+    final verifiedIdentityToken = await _signInWithApple.verifyIdentityToken(
       identityToken,
       useBundleIdentifier: isNativeApplePlatformSignIn,
       nonce: null,
@@ -92,7 +92,7 @@ class AppleIDPUtils {
     };
 
     if (createNewAccount) {
-      final refreshToken = await _siwa.exchangeAuthorizationCode(
+      final refreshToken = await _signInWithApple.exchangeAuthorizationCode(
         authorizationCode,
         useBundleIdentifier: isNativeApplePlatformSignIn,
       );
@@ -150,7 +150,7 @@ class AppleIDPUtils {
     );
 
     try {
-      await _siwa.validateRefreshToken(
+      await _signInWithApple.validateRefreshToken(
         appleAccount.refreshToken,
         useBundleIdentifier:
             appleAccount.refreshTokenRequestedWithBundleIdentifier,
@@ -205,7 +205,7 @@ class AppleIDPUtils {
 
       final payload = (jsonDecode(body) as Map)['payload'] as String;
 
-      final notification = await _siwa.decodeAppleServerNotification(
+      final notification = await _signInWithApple.decodeAppleServerNotification(
         payload,
       );
 
