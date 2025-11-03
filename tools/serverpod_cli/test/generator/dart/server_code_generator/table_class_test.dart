@@ -1,9 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/enum_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
@@ -527,11 +530,33 @@ void main() {
   );
 
   group('Given a class with table name when generating code', () {
+    var byNameEnumDefinition = EnumDefinitionBuilder()
+        .withClassName('ByNameEnum')
+        .withFileName('by_name_enum')
+        .withSerialized(EnumSerialization.byName)
+        .withValues([
+          ProtocolEnumValueDefinition('byName1'),
+          ProtocolEnumValueDefinition('byName2'),
+        ])
+        .build();
+    var field = FieldDefinitionBuilder()
+        .withName('enumDefault')
+        .withColumn('enum_default')
+        .withEnumDefinition(byNameEnumDefinition, true)
+        .build();
+    var otherField = FieldDefinitionBuilder()
+        .withName('otherField')
+        .withColumn('other_field')
+        .withTypeDefinition('String')
+        .build();
+
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withClassName(testClassName)
           .withTableName(tableName)
+          .withField(field)
+          .withField(otherField)
           .build(),
     ];
 
@@ -832,6 +857,25 @@ void main() {
     const fieldName = 'userName';
     const columnName = 'user_name';
     const columnType = 'String';
+
+    final byNameEnumDefinition = EnumDefinitionBuilder()
+        .withClassName('ByNameEnum')
+        .withFileName('by_name_enum')
+        .withSerialized(EnumSerialization.byName)
+        .withValues([
+          ProtocolEnumValueDefinition('byName1'),
+          ProtocolEnumValueDefinition('byName2'),
+        ])
+        .build();
+
+    const enumFieldName = 'enumDefault';
+    const enumColumnName = 'enum_default';
+    var enumField = FieldDefinitionBuilder()
+        .withName(enumFieldName)
+        .withColumn(enumColumnName)
+        .withEnumDefinition(byNameEnumDefinition, true)
+        .build();
+
     var models = [
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
@@ -846,6 +890,7 @@ void main() {
                 .withShouldPersist(true)
                 .build(),
           )
+          .withField(enumField)
           .build(),
     ];
 
@@ -864,7 +909,7 @@ void main() {
         );
 
     group('then the class named ${testClassName}Table', () {
-      test('has the columnName for the field set to the explicit '
+      test('has the columnName for a general field set to the explicit '
           'column name provided', () {
         var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
           maybeClassNamedExampleTable!,
@@ -877,6 +922,22 @@ void main() {
           reason:
               'columnName for $fieldName set to $columnName not found '
               'in constructor.',
+        );
+      });
+
+      test('has the columnName for an enum field set to the explicit '
+          'column name provided', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          maybeClassNamedExampleTable!,
+          name: null,
+        );
+
+        expect(
+          constructor?.toSource(),
+          contains("$enumFieldName = _i1.ColumnEnum('$enumColumnName', this"),
+          reason:
+              'columnName for $enumFieldName set to $enumColumnName not '
+              'found in constructor.',
         );
       });
     });
