@@ -715,16 +715,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'userProfile',
       endpoint: endpoints['userProfile']!,
       methodConnectors: {
-        'get': _i1.MethodConnector(
-          name: 'get',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
-                  .get(session),
-        ),
         'removeUserImage': _i1.MethodConnector(
           name: 'removeUserImage',
           params: {},
@@ -791,6 +781,16 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['fullName'],
           ),
+        ),
+        'get': _i1.MethodConnector(
+          name: 'get',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
+                  .get(session),
         ),
       },
     );

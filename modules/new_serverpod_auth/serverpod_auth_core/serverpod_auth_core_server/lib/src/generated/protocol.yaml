@@ -2,3 +2,5 @@ status:
   - isSignedIn:
   - signOutDevice:
   - signOutAllDevices:
+userProfileInfo:
+  - get:

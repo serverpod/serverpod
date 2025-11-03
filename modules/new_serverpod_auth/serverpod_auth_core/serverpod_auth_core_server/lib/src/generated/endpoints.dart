@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../common/endpoints/status_endpoint.dart' as _i2;
+import '../profile/endpoints/user_profile_base_endpoint.dart' as _i3;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -22,7 +23,13 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'status',
           'serverpod_auth_core',
-        )
+        ),
+      'userProfileInfo': _i3.UserProfileInfoEndpoint()
+        ..initialize(
+          server,
+          'userProfileInfo',
+          'serverpod_auth_core',
+        ),
     };
     connectors['status'] = _i1.EndpointConnector(
       name: 'status',
@@ -57,6 +64,22 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['status'] as _i2.StatusEndpoint)
                   .signOutAllDevices(session),
         ),
+      },
+    );
+    connectors['userProfileInfo'] = _i1.EndpointConnector(
+      name: 'userProfileInfo',
+      endpoint: endpoints['userProfileInfo']!,
+      methodConnectors: {
+        'get': _i1.MethodConnector(
+          name: 'get',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['userProfileInfo'] as _i3.UserProfileInfoEndpoint)
+                  .get(session),
+        )
       },
     );
   }
