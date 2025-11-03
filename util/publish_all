@@ -61,7 +61,7 @@ if [ -d "$DEST_DIR" ]; then
   echo "Existing devtools build directory found: $DEST_DIR"
   read -p "Remove and download a new devtools build? [y/N]: " REPLY
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    rm -r "$DEST_DIR"
+    rm -rf "$DEST_DIR"
   else
     echo "Skipping download; keeping existing build."
     DO_DOWNLOAD=0
