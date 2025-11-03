@@ -10,6 +10,12 @@ BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
 
+restore_pubspecs() {
+  echo "Restore pubspecs"
+  cd $BASE
+  git reset --hard HEAD
+}
+
 echo "pub get cli"
 cd $CLI_DIR
 dart pub get
@@ -26,6 +32,7 @@ echo "Start at package $PCOUNT_START"
 VERSION=`cat SERVERPOD_VERSION`
 DART_VERSION=`cat DART_VERSION`
 FLUTTER_VERSION=`cat FLUTTER_VERSION`
+INSIGHTS_DEVTOOLS_VERSION=`cat INSIGHTS_DEVTOOLS_VERSION`
 
 if test -z "$VERSION"
 then
@@ -40,11 +47,49 @@ else
   echo 'Git is clean'
 fi
 
-echo "Publish Serverpod version $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)"
+echo "Publish Serverpod version $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION, Insights devtools version: $INSIGHTS_DEVTOOLS_VERSION)"
 
 echo "Updating pubspecs"
 cd $BASE
 dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode production
+
+DEST_DIR=$BASE/packages/serverpod/extension/devtools/build
+
+echo "Download and unzip insights devtools extension and place it in serverpod"
+DO_DOWNLOAD=1
+if [ -d "$DEST_DIR" ]; then
+  echo "Existing devtools build directory found: $DEST_DIR"
+  read -p "Remove and download a new devtools build? [y/N]: " REPLY
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    rm -rf "$DEST_DIR"
+  else
+    echo "Skipping download; keeping existing build."
+    DO_DOWNLOAD=0
+  fi
+fi
+
+if [ "$DO_DOWNLOAD" -eq 1 ]; then
+  if ! curl -fSL https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip -o serverpod-insights-devtools.zip; then
+    echo ""
+    echo "ERROR: Failed to download devtools extension zip file"
+    echo "URL: https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip"
+    echo "Version: $INSIGHTS_DEVTOOLS_VERSION"
+    echo ""
+    restore_pubspecs
+    exit 1
+  fi
+
+  if ! unzip serverpod-insights-devtools.zip -d "$(dirname "$DEST_DIR")"; then
+    echo ""
+    echo "ERROR: Failed to unzip devtools extension file"
+    echo ""
+    restore_pubspecs
+    rm -f serverpod-insights-devtools.zip
+    exit 1
+  fi
+
+  rm serverpod-insights-devtools.zip
+fi
 
 echo "Publish packages"
 
@@ -80,8 +125,7 @@ while read PACKAGE <&3; do
 done 3<PUBLISHABLE_PACKAGES
 
 echo "Restore pubspecs"
-cd $BASE
-git reset --hard HEAD
+restore_pubspecs
 
 echo "dart pub get"
 melos bootstrap
