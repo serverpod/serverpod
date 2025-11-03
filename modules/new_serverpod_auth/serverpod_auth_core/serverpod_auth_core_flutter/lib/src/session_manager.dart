@@ -164,15 +164,16 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         case false:
           await caller.status.signOutDevice();
       }
-
-      // Must be updated after the signout for the server to receive the header
-      // info and recognize the signing out user. Otherwise, the call to the
-      // status endpoint will go with no user info and no signout will be done.
-      await updateSignedInUser(null);
-
       return true;
     } catch (e) {
       return false;
+    } finally {
+      // Must be updated after the signout for the server to receive the header
+      // info and recognize the signing out user. Otherwise, the call to the
+      // status endpoint will go with no user info and no signout will be done.
+      // Called from finally block to ensure the device is disconnected, even
+      // if the call to the server fails.
+      await updateSignedInUser(null);
     }
   }
 
