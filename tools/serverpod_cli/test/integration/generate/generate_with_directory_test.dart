@@ -55,7 +55,7 @@ dependencies:
         throwsA(isA<ServerpodProjectNotFoundException>().having(
           (e) => e.message,
           'message',
-          'Could not find the Serverpod dependency. Are you running serverpod from your '
+          'Could not find the Serverpod dependency in the directory ${serverDir.path}. Are you running serverpod from your '
               'projects root directory?',
         )),
       );
