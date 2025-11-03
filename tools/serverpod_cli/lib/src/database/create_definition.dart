@@ -126,7 +126,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
     foreignKeys.add(
       ForeignKeyDefinition(
         constraintName: '${classDefinition.tableName!}_fk_$i',
-        columns: [field.name],
+        columns: [field.columnName],
         referenceTable: relation.parentTable,
         referenceTableSchema: 'public',
         referenceColumns: ['id'],
