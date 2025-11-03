@@ -27,14 +27,16 @@ final class GoogleIDP {
   /// Utility functions for the Google identity provider.
   final GoogleIDPUtils utils;
 
+  final TokenIssuer _tokenIssuer;
+
   /// Creates a new instance of [GoogleIDP].
   GoogleIDP({
     required final GoogleIDPConfig config,
     required final TokenIssuer tokenIssuer,
-  }) : utils = GoogleIDPUtils(
+  })  : utils = GoogleIDPUtils(
           clientSecret: config.clientSecret,
-          tokenIssuer: tokenIssuer,
-        ) {
+        ),
+        _tokenIssuer = tokenIssuer {
     admin = GoogleIDPAdmin(
       utils: utils,
     );
@@ -44,15 +46,17 @@ final class GoogleIDP {
   Future<AuthSuccess> login(
     final Session session, {
     required final String idToken,
+    final Transaction? transaction,
   }) async {
-    return session.db.transaction((final transaction) async {
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+        session.db, transaction, (final transaction) async {
       final account = await utils.authenticate(
         session,
         idToken: idToken,
         transaction: transaction,
       );
 
-      if (account.isNewUser) {
+      if (account.newAccount) {
         final image = account.details.image;
         try {
           await UserProfiles.createUserProfile(
@@ -75,11 +79,12 @@ final class GoogleIDP {
         }
       }
 
-      return utils.createSession(
+      return _tokenIssuer.issueToken(
         session,
-        account.authUserId,
+        authUserId: account.authUserId,
         transaction: transaction,
         method: _method,
+        scopes: account.scopes,
       );
     });
   }

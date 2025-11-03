@@ -170,16 +170,13 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  ///
-  /// If the reset was successful, a new session is returned and all previous
-  /// active sessions of the user are destroyed.
   @override
-  _i3.Future<_i4.AuthSuccess> finishPasswordReset({
+  _i3.Future<void> finishPasswordReset({
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
     required String newPassword,
   }) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+      caller.callServerEndpoint<void>(
         'emailIDP',
         'finishPasswordReset',
         {

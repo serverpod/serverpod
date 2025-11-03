@@ -529,22 +529,16 @@ void main() {
 
       test(
         'when calling `finishPasswordReset` with the correct verification code, '
-        'then it succeeds returning a valid session key.',
+        'then it succeeds',
         () async {
-          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
+          final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
             newPassword: 'NewPassword123!',
           );
 
-          final authInfo =
-              await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            authSuccess.token,
-          );
-
-          expect(authInfo?.authUserId, authUserId);
+          await expectLater(passwordReset, completes);
         },
       );
 
@@ -686,9 +680,7 @@ void main() {
       const oldPassword = 'Foobar123!';
       const newPassword = 'BarFoo789?';
 
-      late UuidValue authUserId;
       late String loginSessionKey;
-      late String passwordResetSessionKey;
 
       setUp(() async {
         const config = EmailIDPConfig(
@@ -707,10 +699,9 @@ void main() {
           email: email,
           password: oldPassword,
         );
-        authUserId = registrationResult.authUserId;
         loginSessionKey = registrationResult.sessionKey;
 
-        passwordResetSessionKey = await endpoints._changePassword(
+        await endpoints._changePassword(
           sessionBuilder,
           email: email,
           password: newPassword,
@@ -769,19 +760,6 @@ void main() {
             ),
             isNull,
           );
-        },
-      );
-
-      test(
-        'when trying to use the session key returned from the password change, then the authentication handler returns the expected user.',
-        () async {
-          final authInfo =
-              await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            passwordResetSessionKey,
-          );
-
-          expect(authInfo?.authUserId, authUserId);
         },
       );
     },
@@ -885,7 +863,7 @@ extension on TestEndpoints {
   }
 
   /// Returns the new session key after successful password change.
-  Future<String> _changePassword(
+  Future<void> _changePassword(
     final TestSessionBuilder sessionBuilder, {
     required final String email,
     required final String password,
@@ -893,14 +871,12 @@ extension on TestEndpoints {
     final passwordReset =
         await _startPasswordReset(sessionBuilder, email: email);
 
-    final authSuccess = await emailAccount.finishPasswordReset(
+    await emailAccount.finishPasswordReset(
       sessionBuilder,
       passwordResetRequestId: passwordReset.passwordResetRequestId,
       verificationCode: passwordReset.verificationCode,
       newPassword: password,
     );
-
-    return authSuccess.token;
   }
 }
 

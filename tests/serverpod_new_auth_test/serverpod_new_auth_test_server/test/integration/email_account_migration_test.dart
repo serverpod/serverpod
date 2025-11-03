@@ -187,28 +187,21 @@ void main() {
       });
 
       test(
-        'when completing password reset, then it succeeds and returns a valid session key.',
+        'when completing password reset, then it succeeds.',
         () async {
           await endpoints.emailAccount.startPasswordReset(
             sessionBuilder,
             email: email,
           );
 
-          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
+          final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
             newPassword: newPassword,
           );
 
-          final authInfo =
-              await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            authSuccess.token,
-          );
-
-          expect(authInfo, isNotNull);
-          expect(authInfo!.authUserId, newAuthUserId);
+          await expectLater(passwordReset, completes);
         },
       );
 

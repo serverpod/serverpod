@@ -133,11 +133,8 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  ///
-  /// If the reset was successful, a new session is returned and all previous
-  /// active sessions of the user are destroyed.
   /// {@endtemplate}
-  Future<AuthSuccess> finishPasswordReset(
+  Future<void> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,

@@ -31,12 +31,14 @@ final class AppleIDP {
   /// Utility functions for the Apple identity provider.
   late final AppleIDPUtils utils;
 
+  late final TokenIssuer _tokenIssuer;
+
   /// Creates a new instance of [AppleIDP].
   AppleIDP({
     required final AppleIDPConfig config,
     required final TokenIssuer tokenIssuer,
-  }) {
-    final siwaConf = SignInWithAppleConfiguration(
+  }) : _tokenIssuer = tokenIssuer {
+    final signInWithAppleConf = SignInWithAppleConfiguration(
       serviceIdentifier: config.serviceIdentifier,
       bundleIdentifier: config.bundleIdentifier,
       redirectUri: config.redirectUri,
@@ -44,10 +46,18 @@ final class AppleIDP {
       keyId: config.keyId,
       key: config.key,
     );
+    final signInWithApple = SignInWithApple(config: signInWithAppleConf);
 
-    final siwa = SignInWithApple(config: siwaConf);
+    utils = AppleIDPUtils(signInWithApple: signInWithApple);
+    admin = AppleIDPAdmin(utils: utils);
+  }
 
-    utils = AppleIDPUtils(siwa: siwa, tokenIssuer: tokenIssuer);
+  /// Creates a new instance of [AppleIDP] from a [SignInWithApple] instance.
+  AppleIDP.fromSignInWithApple(
+    final SignInWithApple signInWithApple, {
+    required final TokenIssuer tokenIssuer,
+  }) : _tokenIssuer = tokenIssuer {
+    utils = AppleIDPUtils(signInWithApple: signInWithApple);
     admin = AppleIDPAdmin(utils: utils);
   }
 
@@ -63,8 +73,10 @@ final class AppleIDP {
     required final bool isNativeApplePlatformSignIn,
     final String? firstName,
     final String? lastName,
+    final Transaction? transaction,
   }) async {
-    return session.db.transaction((final transaction) async {
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+        session.db, transaction, (final transaction) async {
       final account = await utils.authenticate(
         session,
         identityToken: identityToken,
@@ -75,7 +87,7 @@ final class AppleIDP {
         transaction: transaction,
       );
 
-      if (account.authUserNewlyCreated) {
+      if (account.newAccount) {
         await UserProfiles.createUserProfile(
           session,
           account.authUserId,
@@ -93,11 +105,12 @@ final class AppleIDP {
         );
       }
 
-      return utils.createSession(
+      return _tokenIssuer.issueToken(
         session,
-        account.authUserId,
-        transaction: transaction,
+        authUserId: account.authUserId,
         method: _method,
+        transaction: transaction,
+        scopes: account.scopes,
       );
     });
   }

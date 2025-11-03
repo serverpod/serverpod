@@ -164,6 +164,7 @@ class EmailIDPAccountCreationUtil {
     return EmailIDPCompleteAccountCreationResult._(
       authUserId: authUserId,
       email: verifiedAccountRequest.email,
+      scopes: newUser.scopes,
     );
   }
 
@@ -612,12 +613,16 @@ class EmailIDPCompleteAccountCreationResult {
   /// The ID of the new authentication user.
   final UuidValue authUserId;
 
+  /// The scopes of the new authentication user.
+  final Set<Scope> scopes;
+
   /// The email address used during registration.
   final String email;
 
   EmailIDPCompleteAccountCreationResult._({
     required this.authUserId,
     required this.email,
+    required this.scopes,
   });
 }
 

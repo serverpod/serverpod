@@ -9,7 +9,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given an existing email account',
+    'Given an existing email account with scopes',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
@@ -23,6 +23,12 @@ void main() {
         fixture = EmailIDPTestFixture();
 
         final authUser = await fixture.createAuthUser(session);
+
+        await AuthUsers.update(
+          session,
+          authUserId: authUser.id,
+          scopes: {const Scope('test-scope'), const Scope('admin')},
+        );
 
         await fixture.createEmailAccount(
           session,
@@ -67,6 +73,20 @@ void main() {
             ),
           ),
         );
+      });
+
+      test(
+          'when login is called, then the returned AuthSuccess contains the users scopes',
+          () async {
+        final result = await fixture.emailIDP.login(
+          session,
+          email: email,
+          password: password,
+        );
+
+        expect(result.scopeNames, contains('test-scope'));
+        expect(result.scopeNames, contains('admin'));
+        expect(result.scopeNames, hasLength(2));
       });
     },
   );

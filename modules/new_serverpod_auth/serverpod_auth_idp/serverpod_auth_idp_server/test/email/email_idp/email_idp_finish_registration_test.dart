@@ -86,6 +86,12 @@ void main() {
           expect(profile, isNotNull);
           expect(profile?.email, equals(email));
         });
+
+        test('then the new users has no scopes (default behavior)', () async {
+          final authSuccess = await authSuccessFuture;
+
+          expect(authSuccess.scopeNames, isEmpty);
+        });
       });
 
       test(
