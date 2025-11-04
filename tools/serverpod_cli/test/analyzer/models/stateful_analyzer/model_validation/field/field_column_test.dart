@@ -192,4 +192,38 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with a declared id field with a column name override, '
+    'then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: int?, column=user_id
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason:
+            'Expected an error to be collected when column used on id field, '
+            'but none was generated.',
+      );
+
+      expect(
+        collector.errors.first.message,
+        'The "column" key is not allowed on the "id" field.',
+      );
+    },
+  );
 }
