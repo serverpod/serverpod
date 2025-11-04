@@ -89,7 +89,8 @@ class EmailIDPUtils {
       session,
       where: (final t) {
         if (normalizedEmail != null && authUserId != null) {
-          return t.email.equals(normalizedEmail) & t.authUserId.equals(authUserId);
+          return t.email.equals(normalizedEmail) &
+              t.authUserId.equals(authUserId);
         } else if (normalizedEmail != null) {
           return t.email.equals(normalizedEmail);
         } else {
