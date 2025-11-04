@@ -528,13 +528,178 @@ void main() {
       });
 
       test(
+        'when calling `verifyPasswordResetCode` with the correct verification code, '
+        'then it succeeds',
+        () async {
+          final passwordReset = endpoints.emailAccount.verifyPasswordResetCode(
+            sessionBuilder,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+          );
+
+          await expectLater(passwordReset, completes);
+        },
+      );
+
+      test(
+          'when calling `verifyPasswordResetCode` with the correct verification code after the password reset request has expired, '
+          'then it fails with reason `expired`.', () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+            () => endpoints.emailAccount.verifyPasswordResetCode(
+              sessionBuilder,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: verificationCode,
+            ),
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.expired,
+          )),
+        );
+      });
+
+      test(
+          'when calling `verifyPasswordResetCode` the correct verification code after the email account being deleted, '
+          'then an error is thrown with reason `invalid`.', () async {
+        await EmailAccount.db.deleteWhere(
+          sessionBuilder.build(),
+          where: (final t) => t.authUserId.equals(authUserId),
+        );
+
+        await expectLater(
+          () => endpoints.emailAccount.verifyPasswordResetCode(
+            sessionBuilder,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `verifyPasswordResetCode` with the wrong verification code, '
+          'then it fails with reason `invalid`.', () async {
+        await expectLater(
+          () async => await endpoints.emailAccount.verifyPasswordResetCode(
+            sessionBuilder,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: 'wrong',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
+      test(
+          'when calling `verifyPasswordResetCode` with the wrong verification code after the password reset request has expired, '
+          'then it fails with reason `expired`.', () async {
+        await expectLater(
+          () => withClock(
+            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+            () => endpoints.emailAccount.verifyPasswordResetCode(
+              sessionBuilder,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: 'wrong',
+            ),
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.expired,
+          )),
+        );
+      });
+
+      test(
+          'when calling `finishPasswordReset` with a short password, '
+          'then an error is thrown with reason `policyViolation` regardless of the request ID and verification code.',
+          () async {
+        await expectLater(
+          () => endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId: const Uuid().v4obj(),
+            verificationCode: 'wrong',
+            newPassword: 'short',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final exception) => exception.reason,
+            'Reason',
+            EmailAccountPasswordResetExceptionReason.policyViolation,
+          )),
+        );
+      });
+    },
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
+  );
+
+  withServerpod(
+    'Given an auth user with a verified password reset,',
+    (final sessionBuilder, final endpoints) {
+      const email = 'test@serverpod.dev';
+
+      late UuidValue authUserId;
+      late UuidValue passwordResetRequestId;
+      late String setPasswordVerificationCode;
+      const verificationCodeLifetime = Duration(minutes: 15);
+
+      setUp(() async {
+        const config = EmailIDPConfig(
+          secretHashPepper: 'test',
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
+
+        final registrationResult = await endpoints._registerEmailAccount(
+          sessionBuilder,
+          email: email,
+          password: 'SomePassword123!',
+        );
+        authUserId = registrationResult.authUserId;
+
+        final passwordReset = await endpoints._startPasswordReset(
+          sessionBuilder,
+          email: email,
+        );
+        passwordResetRequestId = passwordReset.passwordResetRequestId;
+        final passwordResetVerificationCode = passwordReset.verificationCode;
+
+        final setPasswordCredentials =
+            await endpoints.emailAccount.verifyPasswordResetCode(
+          sessionBuilder,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: passwordResetVerificationCode,
+        );
+
+        setPasswordVerificationCode = setPasswordCredentials.verificationCode;
+      });
+
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
+      test(
         'when calling `finishPasswordReset` with the correct verification code, '
         'then it succeeds',
         () async {
           final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
+            verificationCode: setPasswordVerificationCode,
             newPassword: 'NewPassword123!',
           );
 
@@ -551,7 +716,7 @@ void main() {
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
               passwordResetRequestId: passwordResetRequestId,
-              verificationCode: verificationCode,
+              verificationCode: setPasswordVerificationCode,
               newPassword: 'NewPassword123!',
             ),
           ),
@@ -575,7 +740,7 @@ void main() {
           () => endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
+            verificationCode: setPasswordVerificationCode,
             newPassword: 'NewPassword123!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -606,8 +771,7 @@ void main() {
 
       test(
           'when calling `finishPasswordReset` with the wrong verification code after the password reset request has expired, '
-          'then it fails with reason `invalid` to not leak that the request exists.',
-          () async {
+          'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
@@ -621,7 +785,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.expired,
           )),
         );
       });
@@ -652,6 +816,24 @@ void main() {
   withServerpod(
     'Given an invalid password reset request id,',
     (final sessionBuilder, final endpoints) {
+      test(
+          'when calling `verifyPasswordResetCode`, '
+          'then it throws generic invalid error that does not leak that the email is not registered.',
+          () async {
+        await expectLater(
+          () => endpoints.emailAccount.verifyPasswordResetCode(
+            sessionBuilder,
+            passwordResetRequestId: const Uuid().v4obj(),
+            verificationCode: '123456',
+          ),
+          throwsA(isA<EmailAccountPasswordResetException>().having(
+            (final e) => e.reason,
+            'reason',
+            EmailAccountPasswordResetExceptionReason.invalid,
+          )),
+        );
+      });
+
       test(
           'when calling `finishPasswordReset`, '
           'then it throws generic invalid error that does not leak that the email is not registered.',
@@ -871,10 +1053,16 @@ extension on TestEndpoints {
     final passwordReset =
         await _startPasswordReset(sessionBuilder, email: email);
 
-    await emailAccount.finishPasswordReset(
+    final setPasswordCredentials = await emailAccount.verifyPasswordResetCode(
       sessionBuilder,
       passwordResetRequestId: passwordReset.passwordResetRequestId,
       verificationCode: passwordReset.verificationCode,
+    );
+
+    await emailAccount.finishPasswordReset(
+      sessionBuilder,
+      passwordResetRequestId: setPasswordCredentials.passwordResetRequestId,
+      verificationCode: setPasswordCredentials.verificationCode,
       newPassword: password,
     );
   }

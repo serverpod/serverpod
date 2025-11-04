@@ -399,26 +399,25 @@ void main() {
     });
 
     test(
-        'when attempting to complete validate the second password reset request then it succeeds and returns password reset request id',
+        'when attempting to verify the second password reset request then it succeeds and returns set password credentials',
         () async {
       final result = session.db.transaction(
-        (final transaction) => fixture.passwordResetUtil.completePasswordReset(
+        (final transaction) =>
+            fixture.passwordResetUtil.verifyPasswordResetCode(
           session,
           passwordResetRequestId: secondPasswordResetRequestId,
           verificationCode: fixedVerificationCode,
-          newPassword: 'NewPassword123!',
           transaction: transaction,
         ),
       );
 
       await expectLater(
         result,
-        completion(isA<UuidValue>()),
+        completion(isA<SetPasswordCredentials>()),
       );
     });
   });
 
-  // Add tests for when multiple password reset request exist for multiple accounts and one user request a second password reset request, then only that users previous request should be invalidated.
   withServerpod('Given password reset requests exist for two users',
       rollbackDatabase: RollbackDatabase.disabled,
       testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -481,7 +480,7 @@ void main() {
     });
 
     test(
-        'when first user requests a second password reset request then second user can still complete its first request',
+        'when first user requests a second password reset request then second user can still verify its first request',
         () async {
       await session.db.transaction(
         (final transaction) => fixture.passwordResetUtil.startPasswordReset(
@@ -492,16 +491,16 @@ void main() {
       );
 
       final result = session.db.transaction(
-        (final transaction) => fixture.passwordResetUtil.completePasswordReset(
+        (final transaction) =>
+            fixture.passwordResetUtil.verifyPasswordResetCode(
           session,
           passwordResetRequestId: secondPasswordResetRequestId,
           verificationCode: fixedVerificationCode,
-          newPassword: 'NewPassword123!',
           transaction: transaction,
         ),
       );
 
-      await expectLater(result, completion(isA<UuidValue>()));
+      await expectLater(result, completion(isA<SetPasswordCredentials>()));
     });
   });
 }

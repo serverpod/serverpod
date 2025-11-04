@@ -54,6 +54,120 @@ void main() {
       });
 
       test(
+          'when deleting password reset requests without older than then request can still be verified',
+          () async {
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.deletePasswordResetRequests(
+            session,
+            olderThan: null,
+            emailAccountId: null,
+            transaction: transaction,
+          ),
+        );
+
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(result, completion(isA<SetPasswordCredentials>()));
+      });
+
+      test(
+          'when deleting request that are older than zero then attempting to verify request throws request not found exception',
+          () async {
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.deletePasswordResetRequests(
+            session,
+            olderThan: Duration.zero,
+            emailAccountId: null,
+            transaction: transaction,
+          ),
+        );
+
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given verified password reset request',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue passwordResetRequestId;
+      const passwordResetVerificationCodeLifetime = Duration(hours: 1);
+      late String setPasswordVerificationCode;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        const verificationCode = '12345678';
+        fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+            passwordResetVerificationCodeLifetime:
+                passwordResetVerificationCodeLifetime,
+          ),
+        );
+
+        final authUser = await fixture.createAuthUser(session);
+
+        const email = 'test@serverpod.dev';
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+
+        passwordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        final setPasswordCredentials = await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+        setPasswordVerificationCode = setPasswordCredentials.verificationCode;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
           'when deleting password reset requests without older than then request can still be completed',
           () async {
         await session.db.transaction(
@@ -71,7 +185,7 @@ void main() {
               fixture.passwordResetUtil.completePasswordReset(
             session,
             passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
+            verificationCode: setPasswordVerificationCode,
             newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
@@ -98,7 +212,7 @@ void main() {
               fixture.passwordResetUtil.completePasswordReset(
             session,
             passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
+            verificationCode: setPasswordVerificationCode,
             newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
@@ -169,7 +283,7 @@ void main() {
     // This test validates that we accurately remove expired requests by
     // attempting to complete a request in the past that should have been removed.
     test(
-        'when deleting password reset requests without older than then attempting to complete request in the past throws request not found exception',
+        'when deleting password reset requests without older than then attempting to verify request in the past throws request not found exception',
         () async {
       await session.db.transaction(
         (final transaction) =>
@@ -184,11 +298,10 @@ void main() {
       await withClock(clockBeforeTimeframe, () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
+              fixture.passwordResetUtil.verifyPasswordResetCode(
             session,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
         );
@@ -261,7 +374,7 @@ void main() {
     });
 
     test(
-        'when deleting password reset request for first user then second user can still complete its request',
+        'when deleting password reset request for first user then second user can still verify its request',
         () async {
       final secondResult = session.db.transaction((final transaction) async {
         await fixture.passwordResetUtil.deletePasswordResetRequests(
@@ -271,16 +384,15 @@ void main() {
           transaction: transaction,
         );
 
-        return fixture.passwordResetUtil.completePasswordReset(
+        return fixture.passwordResetUtil.verifyPasswordResetCode(
           session,
           passwordResetRequestId: secondPasswordResetRequestId,
           verificationCode: verificationCode,
-          newPassword: 'NewPassword123!',
           transaction: transaction,
         );
       });
 
-      await expectLater(secondResult, completion(isA<UuidValue>()));
+      await expectLater(secondResult, completes);
     });
 
     group('when deleting password reset request for all users', () {
@@ -296,14 +408,13 @@ void main() {
         );
       });
 
-      test('then first user cannot complete its request', () async {
+      test('then first user cannot verify its request', () async {
         final firstResult = session.db.transaction(
           (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
+              fixture.passwordResetUtil.verifyPasswordResetCode(
             session,
             passwordResetRequestId: firstPasswordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
         );
@@ -313,14 +424,13 @@ void main() {
         );
       });
 
-      test('then second user cannot complete its request', () async {
+      test('then second user cannot verify its request', () async {
         final secondResult = session.db.transaction(
           (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
+              fixture.passwordResetUtil.verifyPasswordResetCode(
             session,
             passwordResetRequestId: secondPasswordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
         );

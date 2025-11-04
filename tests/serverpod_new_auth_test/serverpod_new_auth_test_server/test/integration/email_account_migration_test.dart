@@ -194,10 +194,18 @@ void main() {
             email: email,
           );
 
-          final passwordReset = endpoints.emailAccount.finishPasswordReset(
+          final setPasswordCredentials =
+              await endpoints.emailAccount.verifyPasswordResetCode(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
+          );
+
+          final passwordReset = endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId:
+                setPasswordCredentials.passwordResetRequestId,
+            verificationCode: setPasswordCredentials.verificationCode,
             newPassword: newPassword,
           );
 
@@ -214,10 +222,18 @@ void main() {
             email: email,
           );
 
-          await endpoints.emailAccount.finishPasswordReset(
+          final setPasswordCredentials =
+              await endpoints.emailAccount.verifyPasswordResetCode(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId:
+                setPasswordCredentials.passwordResetRequestId,
+            verificationCode: setPasswordCredentials.verificationCode,
             newPassword: newPassword,
           );
 
@@ -259,10 +275,18 @@ void main() {
             email: email,
           );
 
-          await endpoints.emailAccount.finishPasswordReset(
+          final setPasswordCredentials =
+              await endpoints.emailAccount.verifyPasswordResetCode(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId:
+                setPasswordCredentials.passwordResetRequestId,
+            verificationCode: setPasswordCredentials.verificationCode,
             newPassword: newPassword,
           );
 
@@ -288,10 +312,18 @@ void main() {
             email: email,
           );
 
-          await endpoints.emailAccount.finishPasswordReset(
+          final setPasswordCredentials =
+              await endpoints.emailAccount.verifyPasswordResetCode(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
+          );
+
+          await endpoints.emailAccount.finishPasswordReset(
+            sessionBuilder,
+            passwordResetRequestId:
+                setPasswordCredentials.passwordResetRequestId,
+            verificationCode: setPasswordCredentials.verificationCode,
             newPassword: newPassword,
           );
 

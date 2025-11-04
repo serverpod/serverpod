@@ -21,13 +21,13 @@ void main() {
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const allowedNewPassword = 'NewPassword123!';
-      late String verificationCode;
+      late String setPasswordVerificationCode;
       const passwordResetVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        verificationCode = const Uuid().v4().toString();
+        final verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
             secretHashPepper: 'pepper',
@@ -53,6 +53,14 @@ void main() {
           session,
           email: email,
         );
+
+        // Verify the password reset code to get the set password token
+        final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+        );
+        setPasswordVerificationCode = verifyResult.verificationCode;
       });
 
       tearDown(() async {
@@ -65,7 +73,7 @@ void main() {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
           passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
+          verificationCode: setPasswordVerificationCode,
           newPassword: allowedNewPassword,
         );
 
@@ -78,7 +86,7 @@ void main() {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
           passwordResetRequestId: passwordResetRequestId,
-          verificationCode: '$verificationCode-invalid',
+          verificationCode: '$setPasswordVerificationCode-invalid',
           newPassword: allowedNewPassword,
         );
 
@@ -100,7 +108,7 @@ void main() {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
           passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
+          verificationCode: setPasswordVerificationCode,
           newPassword: '$allowedNewPassword-invalid',
         );
 
@@ -127,13 +135,13 @@ void main() {
     late UuidValue passwordResetRequestId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String verificationCode;
+    late String setPasswordVerificationCode;
     const passwordResetVerificationCodeLifetime = Duration(hours: 1);
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      verificationCode = const Uuid().v4().toString();
+      final verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
           secretHashPepper: 'pepper',
@@ -162,6 +170,15 @@ void main() {
           session,
           email: email,
         );
+
+        // Verify the password reset code to get the set password token
+        // This happens before expiration check in completePasswordReset
+        final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: verificationCode,
+        );
+        setPasswordVerificationCode = verifyResult.verificationCode;
       });
     });
 
@@ -175,7 +192,7 @@ void main() {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCode,
+        verificationCode: setPasswordVerificationCode,
         newPassword: 'NewPassword123!',
       );
 
@@ -192,12 +209,12 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
-        verificationCode: '$verificationCode-invalid',
+        verificationCode: '$setPasswordVerificationCode-invalid',
         newPassword: 'NewPassword123!',
       );
 
@@ -207,7 +224,7 @@ void main() {
           isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.expired,
           ),
         ),
       );
@@ -262,12 +279,12 @@ void main() {
     late UuidValue passwordResetRequestId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String verificationCode;
+    late String setPasswordVerificationCode;
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      verificationCode = const Uuid().v4().toString();
+      final verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
           secretHashPepper: 'pepper',
@@ -289,6 +306,14 @@ void main() {
         email: email,
       );
 
+      // Verify the password reset code to get the set password token
+      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+      );
+      setPasswordVerificationCode = verifyResult.verificationCode;
+
       // Block the auth user after creating the password reset request
       await AuthUsers.update(
         session,
@@ -305,7 +330,7 @@ void main() {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCode,
+        verificationCode: setPasswordVerificationCode,
         newPassword: 'NewPassword123!',
       );
 
@@ -323,12 +348,12 @@ void main() {
     late UuidValue authUserId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String verificationCode;
+    late String setPasswordVerificationCode;
     const newPassword = 'NewPassword123!';
 
     setUp(() async {
       session = sessionBuilder.build();
-      verificationCode = const Uuid().v4().toString();
+      final verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
           secretHashPepper: 'pepper',
@@ -357,6 +382,14 @@ void main() {
         session,
         email: email,
       );
+
+      // Verify the password reset code to get the set password token
+      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+      );
+      setPasswordVerificationCode = verifyResult.verificationCode;
     });
 
     tearDown(() async {
@@ -370,7 +403,7 @@ void main() {
       await fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCode,
+        verificationCode: setPasswordVerificationCode,
         newPassword: newPassword,
       );
 
@@ -384,84 +417,6 @@ void main() {
     });
   });
 
-  withServerpod(
-    'Given user with maximum allowed invalid password verification code attempts',
-    rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIDPTestFixture fixture;
-      late UuidValue passwordResetRequestId;
-      const email = 'test@serverpod.dev';
-      const password = 'Password123!';
-      late String verificationCode;
-      setUp(() async {
-        session = sessionBuilder.build();
-
-        verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
-            secretHashPepper: 'pepper',
-            passwordResetVerificationCodeGenerator: () => verificationCode,
-            passwordResetVerificationCodeAllowedAttempts: 1,
-          ),
-        );
-
-        final authUser = await fixture.createAuthUser(session);
-        final authUserId = authUser.id;
-
-        await fixture.createEmailAccount(
-          session,
-          authUserId: authUserId,
-          email: email,
-          password: EmailAccountPassword.fromString(password),
-        );
-
-        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
-          session,
-          email: email,
-        );
-
-        try {
-          await fixture.emailIDP.finishPasswordReset(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: '$verificationCode-invalid',
-            newPassword: 'NewPassword123!',
-          );
-        } on EmailAccountPasswordResetException {
-          // Expected
-        }
-      });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
-
-      test(
-          'when finishPasswordReset is called with valid parameters then throws EmailAccountPasswordResetException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.finishPasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: 'NewPassword123!',
-        );
-
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountPasswordResetException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountPasswordResetExceptionReason.invalid,
-            ),
-          ),
-        );
-      });
-    },
-  );
-
   withServerpod('Given completed password reset request',
       rollbackDatabase: RollbackDatabase.disabled,
       testGroupTagsOverride: TestTags.concurrencyOneTestTags,
@@ -472,6 +427,7 @@ void main() {
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
     late String verificationCode;
+    late String setPasswordVerificationCode;
     setUp(() async {
       session = sessionBuilder.build();
       verificationCode = const Uuid().v4().toString();
@@ -493,10 +449,18 @@ void main() {
         email: email,
       );
 
-      await fixture.emailIDP.finishPasswordReset(
+      // Verify the password reset code to get the set password token
+      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
         session,
         passwordResetRequestId: passwordResetRequestId,
         verificationCode: verificationCode,
+      );
+      setPasswordVerificationCode = verifyResult.verificationCode;
+
+      await fixture.emailIDP.finishPasswordReset(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: setPasswordVerificationCode,
         newPassword: 'NewPassword123!',
       );
     });
@@ -511,7 +475,7 @@ void main() {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
-        verificationCode: verificationCode,
+        verificationCode: setPasswordVerificationCode,
         newPassword: 'NewPassword123!',
       );
 
