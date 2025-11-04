@@ -1,8 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 import 'src/generated/protocol.dart';
@@ -18,27 +18,63 @@ void run(List<String> args) async {
     args,
     Protocol(),
     Endpoints(),
-    authenticationHandler: AuthSessions.authenticationHandler,
   );
 
-  AuthServices.initialize(
-    googleIDPConfig: GoogleIDPConfig(
-      clientSecret: GoogleClientSecret.fromJsonString(
-        pod.getPassword('googleClientSecret')!,
-      ),
-    ),
-    appleIDPConfig: AppleIDPConfig(
-      serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
-      bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
-      redirectUri: pod.getPassword('appleRedirectUri')!,
-      teamId: pod.getPassword('appleTeamId')!,
-      keyId: pod.getPassword('appleKeyId')!,
-      key: pod.getPassword('appleKey')!,
-    ),
-    emailIDPConfig: EmailIDPConfig(
-      passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
+  // Configure our token managers.
+  final authSessionsConfig = AuthSessionsConfig(
+    sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
+  );
+
+  final authenticationTokenConfig = AuthenticationTokenConfig(
+    refreshTokenHashPepper:
+        pod.getPassword('authenticationTokenRefreshTokenHashPepper')!,
+    algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+      SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
     ),
   );
+
+  // Configure our identity providers.
+  final googleIDPConfig = GoogleIDPConfig(
+    clientSecret: GoogleClientSecret.fromJsonString(
+      pod.getPassword('googleClientSecret')!,
+    ),
+  );
+
+  final appleIDPConfig = AppleIDPConfig(
+    serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
+    bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
+    redirectUri: pod.getPassword('appleRedirectUri')!,
+    teamId: pod.getPassword('appleTeamId')!,
+    keyId: pod.getPassword('appleKeyId')!,
+    key: pod.getPassword('appleKey')!,
+  );
+
+  final emailIDPConfig = EmailIDPConfig(
+    passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
+  );
+
+  final passkeyIDPConfig = PasskeyIDPConfig(
+    challengeLifetime: Duration(seconds: 30),
+    hostname: 'localhost',
+  );
+
+  final authServices = AuthServices.set(
+      primaryTokenManager: AuthSessionsTokenManager(
+        config: authSessionsConfig,
+      ),
+      identityProviders: [
+        GoogleIdentityProviderFactory(googleIDPConfig),
+        AppleIdentityProviderFactory(appleIDPConfig),
+        EmailIdentityProviderFactory(emailIDPConfig),
+        PasskeyIdentityProviderFactory(passkeyIDPConfig),
+      ],
+      additionalTokenManagers: [
+        AuthenticationTokensTokenManager(
+          config: authenticationTokenConfig,
+        ),
+      ]);
+
+  pod.authenticationHandler = authServices.authenticationHandler;
 
   pod.webServer.addRoute(
     AuthServices.instance.appleIDP.revokedNotificationRoute(),

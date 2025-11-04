@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';

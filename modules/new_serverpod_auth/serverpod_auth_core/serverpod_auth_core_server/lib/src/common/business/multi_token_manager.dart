@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
-import 'token_manager.dart';
+import '../integrations/token_manager.dart';
 
 /// A composite token manager that delegates operations to multiple underlying token managers.
 ///
@@ -34,15 +34,15 @@ class MultiTokenManager implements TokenManager {
   }
 
   @override
-  Future<AuthSuccess> issueToken({
-    required final Session session,
+  Future<AuthSuccess> issueToken(
+    final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) {
     return primaryTokenManager.issueToken(
-      session: session,
+      session,
       authUserId: authUserId,
       method: method,
       scopes: scopes,
@@ -96,6 +96,7 @@ class MultiTokenManager implements TokenManager {
     required final UuidValue? authUserId,
     final String? method,
     final String? tokenIssuer,
+    final Transaction? transaction,
   }) async {
     final tokenLists = await Future.wait(
       _allTokenManagers.map(
@@ -104,6 +105,7 @@ class MultiTokenManager implements TokenManager {
           authUserId: authUserId,
           method: method,
           tokenIssuer: tokenIssuer,
+          transaction: transaction,
         ),
       ),
     );
@@ -126,5 +128,15 @@ class MultiTokenManager implements TokenManager {
       }
     }
     return null;
+  }
+
+  /// Retrieves the token manager of type [T].
+  T getTokenManager<T extends TokenManager>() {
+    for (final manager in _allTokenManagers) {
+      if (manager is T) {
+        return manager;
+      }
+    }
+    throw StateError('No token manager of type $T found');
   }
 }

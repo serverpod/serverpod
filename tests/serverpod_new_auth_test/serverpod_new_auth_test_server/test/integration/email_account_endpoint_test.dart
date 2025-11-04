@@ -7,23 +7,35 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
+final tokenManager = AuthSessionsTokenManager(
+  config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+);
+
 void main() {
   setUp(() async {
-    AuthServices.initialize(
-        emailIDPConfig: const EmailIDPConfig(
-      passwordHashPepper: 'test',
-    ));
+    AuthServices.set(
+      primaryTokenManager: tokenManager,
+      identityProviders: [
+        EmailIdentityProviderFactory(
+          const EmailIDPConfig(
+            passwordHashPepper: 'test',
+          ),
+        ),
+      ],
+    );
   });
 
   tearDown(() async {
-    AuthServices.initialize();
+    AuthServices.set(
+      primaryTokenManager: tokenManager,
+      identityProviders: [],
+    );
   });
 
   withServerpod(
     'Given no users,',
     (final sessionBuilder, final endpoints) {
       tearDown(() async {
-        AuthServices.initialize();
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -33,8 +45,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          AuthServices.initialize(
-              emailIDPConfig: EmailIDPConfig(
+          final config = EmailIDPConfig(
             passwordHashPepper: 'test',
             sendRegistrationVerificationCode: (
               final session, {
@@ -46,7 +57,13 @@ void main() {
               receivedVerificationCode = verificationCode;
               receivedAccountRequestId = accountRequestId;
             },
-          ));
+          );
+          AuthServices.set(
+            identityProviders: [
+              EmailIdentityProviderFactory(config),
+            ],
+            primaryTokenManager: tokenManager,
+          );
 
           clientReceivedRequestId =
               await endpoints.emailAccount.startRegistration(
@@ -109,8 +126,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          AuthServices.initialize(
-              emailIDPConfig: EmailIDPConfig(
+          final config = EmailIDPConfig(
             passwordHashPepper: 'test',
             maxPasswordResetAttempts: const RateLimit(
               timeframe: Duration(seconds: 1),
@@ -126,7 +142,13 @@ void main() {
               receivedVerificationCode = verificationCode;
               receivedPasswordResetRequestId = passwordResetRequestId;
             },
-          ));
+          );
+          AuthServices.set(
+            identityProviders: [
+              EmailIdentityProviderFactory(config),
+            ],
+            primaryTokenManager: tokenManager,
+          );
 
           clientReceivedRequestId =
               await endpoints.emailAccount.startPasswordReset(
@@ -167,8 +189,7 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        AuthServices.initialize(
-            emailIDPConfig: EmailIDPConfig(
+        final config = EmailIDPConfig(
           passwordHashPepper: 'test',
           sendRegistrationVerificationCode: (
             final session, {
@@ -181,17 +202,19 @@ void main() {
             receivedVerificationCode = verificationCode;
           },
           registrationVerificationCodeLifetime: verificationCodeLifetime,
-        ));
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
 
         await endpoints.emailAccount.startRegistration(
           sessionBuilder,
           email: 'test@serverpod.dev',
           password: 'Foobar123!',
         );
-      });
-
-      tearDown(() {
-        AuthServices.initialize();
       });
 
       test(
@@ -204,7 +227,7 @@ void main() {
         );
 
         expect(
-          await AuthSessions.authenticationHandler(
+          await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           ),
@@ -311,34 +334,36 @@ void main() {
           email: email,
           password: password,
         );
-        AuthServices.initialize(
-          emailIDPConfig: EmailIDPConfig(
-            passwordHashPepper: 'test',
-            sendRegistrationVerificationCode: (
-              final session, {
-              required final accountRequestId,
-              required final email,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedVerificationCode = verificationCode;
-            },
-            sendPasswordResetVerificationCode: (
-              final session, {
-              required final email,
-              required final passwordResetRequestId,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedPasswordResetCode = verificationCode;
-            },
-          ),
+        final config = EmailIDPConfig(
+          passwordHashPepper: 'test',
+          sendRegistrationVerificationCode: (
+            final session, {
+            required final accountRequestId,
+            required final email,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedVerificationCode = verificationCode;
+          },
+          sendPasswordResetVerificationCode: (
+            final session, {
+            required final email,
+            required final passwordResetRequestId,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedPasswordResetCode = verificationCode;
+          },
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
         );
       });
 
       tearDown(() async {
-        AuthServices.initialize();
-
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -352,7 +377,7 @@ void main() {
         );
 
         expect(
-          await AuthSessions.authenticationHandler(
+          await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           ),
@@ -447,10 +472,6 @@ void main() {
         );
       });
 
-      tearDown(() {
-        AuthServices.initialize();
-      });
-
       test(
           'when calling `login`, then it throws an `AuthUserBlockedException`.',
           () async {
@@ -477,10 +498,15 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        AuthServices.initialize(
-            emailIDPConfig: const EmailIDPConfig(
+        const config = EmailIDPConfig(
           passwordHashPepper: 'test',
-        ));
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
 
         final registrationResult = await endpoints._registerEmailAccount(
           sessionBuilder,
@@ -498,28 +524,21 @@ void main() {
       });
 
       tearDown(() async {
-        AuthServices.initialize();
-
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
       test(
         'when calling `finishPasswordReset` with the correct verification code, '
-        'then it succeeds returning a valid session key.',
+        'then it succeeds',
         () async {
-          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
+          final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
             newPassword: 'NewPassword123!',
           );
 
-          final authInfo = await AuthSessions.authenticationHandler(
-            sessionBuilder.build(),
-            authSuccess.token,
-          );
-
-          expect(authInfo?.authUserId, authUserId);
+          await expectLater(passwordReset, completes);
         },
       );
 
@@ -661,24 +680,28 @@ void main() {
       const oldPassword = 'Foobar123!';
       const newPassword = 'BarFoo789?';
 
-      late UuidValue authUserId;
       late String loginSessionKey;
-      late String passwordResetSessionKey;
 
       setUp(() async {
-        AuthServices.initialize(
-            emailIDPConfig: const EmailIDPConfig(
+        const config = EmailIDPConfig(
           passwordHashPepper: 'test',
-        ));
+        );
+
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
+
         final registrationResult = await endpoints._registerEmailAccount(
           sessionBuilder,
           email: email,
           password: oldPassword,
         );
-        authUserId = registrationResult.authUserId;
         loginSessionKey = registrationResult.sessionKey;
 
-        passwordResetSessionKey = await endpoints._changePassword(
+        await endpoints._changePassword(
           sessionBuilder,
           email: email,
           password: newPassword,
@@ -686,8 +709,6 @@ void main() {
       });
 
       tearDown(() async {
-        AuthServices.initialize();
-
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -720,7 +741,7 @@ void main() {
           );
 
           expect(
-            await AuthSessions.authenticationHandler(
+            await AuthServices.instance.tokenManager.validateToken(
               sessionBuilder.build(),
               authSuccess.token,
             ),
@@ -733,24 +754,12 @@ void main() {
         'when trying to use the session key from before the password change, then the authentication handler returns `null`.',
         () async {
           expect(
-            await AuthSessions.authenticationHandler(
+            await AuthServices.instance.tokenManager.validateToken(
               sessionBuilder.build(),
               loginSessionKey,
             ),
             isNull,
           );
-        },
-      );
-
-      test(
-        'when trying to use the session key returned from the password change, then the authentication handler returns the expected user.',
-        () async {
-          final authInfo = await AuthSessions.authenticationHandler(
-            sessionBuilder.build(),
-            passwordResetSessionKey,
-          );
-
-          expect(authInfo?.authUserId, authUserId);
         },
       );
     },
@@ -767,8 +776,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
-    AuthServices.initialize(
-        emailIDPConfig: EmailIDPConfig(
+    final config = EmailIDPConfig(
       passwordHashPepper: 'test',
       maxPasswordResetAttempts: const RateLimit(
         timeframe: Duration(seconds: 1),
@@ -784,7 +792,14 @@ extension on TestEndpoints {
         receivedAccountRequestId = accountRequestId;
         receivedVerificationCode = verificationCode;
       },
-    ));
+    );
+
+    AuthServices.set(
+      identityProviders: [
+        EmailIdentityProviderFactory(config),
+      ],
+      primaryTokenManager: tokenManager,
+    );
 
     await emailAccount.startRegistration(
       sessionBuilder,
@@ -798,7 +813,7 @@ extension on TestEndpoints {
       verificationCode: receivedVerificationCode,
     );
 
-    final authInfo = await AuthSessions.authenticationHandler(
+    final authInfo = await AuthServices.instance.tokenManager.validateToken(
       sessionBuilder.build(),
       authSuccess.token,
     );
@@ -816,8 +831,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
-    AuthServices.initialize(
-        emailIDPConfig: EmailIDPConfig(
+    final config = EmailIDPConfig(
       passwordHashPepper: 'test',
       sendPasswordResetVerificationCode: (
         final session, {
@@ -829,7 +843,13 @@ extension on TestEndpoints {
         receivedPasswordResetRequestId = passwordResetRequestId;
         receivedVerificationCode = verificationCode;
       },
-    ));
+    );
+    AuthServices.set(
+      identityProviders: [
+        EmailIdentityProviderFactory(config),
+      ],
+      primaryTokenManager: tokenManager,
+    );
 
     await emailAccount.startPasswordReset(
       sessionBuilder,
@@ -843,7 +863,7 @@ extension on TestEndpoints {
   }
 
   /// Returns the new session key after successful password change.
-  Future<String> _changePassword(
+  Future<void> _changePassword(
     final TestSessionBuilder sessionBuilder, {
     required final String email,
     required final String password,
@@ -851,14 +871,12 @@ extension on TestEndpoints {
     final passwordReset =
         await _startPasswordReset(sessionBuilder, email: email);
 
-    final authSuccess = await emailAccount.finishPasswordReset(
+    await emailAccount.finishPasswordReset(
       sessionBuilder,
       passwordResetRequestId: passwordReset.passwordResetRequestId,
       verificationCode: passwordReset.verificationCode,
       newPassword: password,
     );
-
-    return authSuccess.token;
   }
 }
 

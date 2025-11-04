@@ -80,4 +80,51 @@ final class AuthSessionsAdmin {
 
     return sessionInfos;
   }
+
+  /// Deletes the sessions matching the given filters.
+  ///
+  /// If [authUserId] is provided, only sessions for that user will be deleted.
+  /// If [method] is provided, only sessions created with that method will be deleted.
+  /// If [authSessionId] is provided, only the session with that ID will be deleted.
+  ///
+  /// Returns a list with [DeletedSession]s.
+  Future<List<DeletedSession>> deleteSessions(
+    final Session session, {
+    final UuidValue? authUserId,
+    final UuidValue? authSessionId,
+    final String? method,
+    final Transaction? transaction,
+  }) async {
+    final authSessions = await AuthSession.db.deleteWhere(
+      session,
+      where: (final row) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= row.authUserId.equals(authUserId);
+        }
+
+        if (authSessionId != null) {
+          expression &= row.id.equals(authSessionId);
+        }
+
+        if (method != null) {
+          expression &= row.method.equals(method);
+        }
+
+        return expression;
+      },
+      transaction: transaction,
+    );
+
+    return authSessions
+        .map((final session) => (
+              authUserId: session.authUserId,
+              sessionId: session.id!,
+            ))
+        .toList();
+  }
 }
+
+/// A tuple of (auth user ID, session ID) representing a deleted session.
+typedef DeletedSession = ({UuidValue authUserId, UuidValue sessionId});

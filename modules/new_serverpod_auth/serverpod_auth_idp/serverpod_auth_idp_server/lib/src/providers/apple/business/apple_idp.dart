@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
@@ -23,29 +23,45 @@ import 'apple_idp_utils.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class AppleIDP {
-  static const String _method = 'apple';
+  /// The method used when authenticating with the Apple identity provider.
+  static const String method = 'apple';
 
   /// Admin operations to work with Apple-backed accounts.
   late final AppleIDPAdmin admin;
 
   /// Utility functions for the Apple identity provider.
-  late final AppleIDPUtils utils;
+  final AppleIDPUtils utils;
+
+  /// The configuration for the Apple identity provider.
+  final AppleIDPConfig config;
+
+  final TokenIssuer _tokenIssuer;
+
+  AppleIDP._(
+    this.config,
+    this._tokenIssuer,
+    this.utils,
+    this.admin,
+  );
 
   /// Creates a new instance of [AppleIDP].
-  AppleIDP({required final AppleIDPConfig config}) {
-    final siwaConf = SignInWithAppleConfiguration(
-      serviceIdentifier: config.serviceIdentifier,
-      bundleIdentifier: config.bundleIdentifier,
-      redirectUri: config.redirectUri,
-      teamId: config.teamId,
-      keyId: config.keyId,
-      key: config.key,
+  factory AppleIDP(
+    final AppleIDPConfig config, {
+    required final TokenIssuer tokenIssuer,
+  }) {
+    final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
+
+    final utils = AppleIDPUtils(
+      signInWithApple: SignInWithApple(config: signInWithAppleConfig),
     );
+    final admin = AppleIDPAdmin(utils: utils);
 
-    final siwa = SignInWithApple(config: siwaConf);
-
-    utils = AppleIDPUtils(siwa: siwa);
-    admin = AppleIDPAdmin(utils: utils);
+    return AppleIDP._(
+      config,
+      tokenIssuer,
+      utils,
+      admin,
+    );
   }
 
   /// {@macro apple_idp_base_endpoint.login}
@@ -60,8 +76,10 @@ final class AppleIDP {
     required final bool isNativeApplePlatformSignIn,
     final String? firstName,
     final String? lastName,
+    final Transaction? transaction,
   }) async {
-    return session.db.transaction((final transaction) async {
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+        session.db, transaction, (final transaction) async {
       final account = await utils.authenticate(
         session,
         identityToken: identityToken,
@@ -72,7 +90,7 @@ final class AppleIDP {
         transaction: transaction,
       );
 
-      if (account.authUserNewlyCreated) {
+      if (account.newAccount) {
         await UserProfiles.createUserProfile(
           session,
           account.authUserId,
@@ -90,11 +108,12 @@ final class AppleIDP {
         );
       }
 
-      return utils.createSession(
+      return _tokenIssuer.issueToken(
         session,
-        account.authUserId,
+        authUserId: account.authUserId,
+        method: method,
         transaction: transaction,
-        method: _method,
+        scopes: account.scopes,
       );
     });
   }

@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import 'google_idp_admin.dart';
 import 'google_idp_config.dart';
@@ -19,20 +19,43 @@ import 'google_idp_utils.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class GoogleIDP {
-  static const String _method = 'google';
+  /// The method used when authenticating with the Google identity provider.
+  static const String method = 'google';
 
   /// Admin operations to work with Google-backed accounts.
-  late final GoogleIDPAdmin admin;
+  final GoogleIDPAdmin admin;
 
   /// Utility functions for the Google identity provider.
   final GoogleIDPUtils utils;
 
+  /// The configuration for the Google identity provider.
+  final GoogleIDPConfig config;
+
+  final TokenIssuer _tokenIssuer;
+
+  GoogleIDP._(
+    this.config,
+    this._tokenIssuer,
+    this.utils,
+    this.admin,
+  );
+
   /// Creates a new instance of [GoogleIDP].
-  GoogleIDP({
-    required final GoogleIDPConfig config,
-  }) : utils = GoogleIDPUtils(clientSecret: config.clientSecret) {
-    admin = GoogleIDPAdmin(
+  factory GoogleIDP(
+    final GoogleIDPConfig config, {
+    required final TokenIssuer tokenIssuer,
+  }) {
+    final utils = GoogleIDPUtils(
+      clientSecret: config.clientSecret,
+    );
+    final admin = GoogleIDPAdmin(
       utils: utils,
+    );
+    return GoogleIDP._(
+      config,
+      tokenIssuer,
+      utils,
+      admin,
     );
   }
 
@@ -40,15 +63,17 @@ final class GoogleIDP {
   Future<AuthSuccess> login(
     final Session session, {
     required final String idToken,
+    final Transaction? transaction,
   }) async {
-    return session.db.transaction((final transaction) async {
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+        session.db, transaction, (final transaction) async {
       final account = await utils.authenticate(
         session,
         idToken: idToken,
         transaction: transaction,
       );
 
-      if (account.isNewUser) {
+      if (account.newAccount) {
         final image = account.details.image;
         try {
           await UserProfiles.createUserProfile(
@@ -71,11 +96,12 @@ final class GoogleIDP {
         }
       }
 
-      return utils.createSession(
+      return _tokenIssuer.issueToken(
         session,
-        account.authUserId,
+        authUserId: account.authUserId,
         transaction: transaction,
-        method: _method,
+        method: method,
+        scopes: account.scopes,
       );
     });
   }

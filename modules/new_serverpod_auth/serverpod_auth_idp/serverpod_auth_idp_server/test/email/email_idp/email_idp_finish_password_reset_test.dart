@@ -60,7 +60,7 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with valid parameters then it returns auth session token',
+          'when finishPasswordReset is called with valid parameters then it succeeds',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
@@ -69,7 +69,7 @@ void main() {
           newPassword: allowedNewPassword,
         );
 
-        await expectLater(result, completion(isA<AuthSuccess>()));
+        await expectLater(result, completes);
       });
 
       test(
@@ -301,9 +301,7 @@ void main() {
       await fixture.tearDown(session);
     });
 
-    test(
-        'when finishPasswordReset is called then it throws AuthUserBlockedException',
-        () async {
+    test('when finishPasswordReset is called then completes', () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
@@ -311,10 +309,7 @@ void main() {
         newPassword: 'NewPassword123!',
       );
 
-      await expectLater(
-        result,
-        throwsA(isA<AuthUserBlockedException>()),
-      );
+      await expectLater(result, completes);
     });
   });
 
@@ -344,11 +339,10 @@ void main() {
       authUserId = authUser.id;
 
       // Create a session before password reset
-      // ignore: unused_result
-      await AuthSessions.createSession(
+      await fixture.tokenManager.issueToken(
         session,
         authUserId: authUserId,
-        method: 'email',
+        method: EmailIDP.method,
         scopes: {},
       );
 
@@ -373,7 +367,7 @@ void main() {
         'when finishPasswordReset is called with valid parameters then it destroys all existing sessions',
         () async {
       // Complete password reset
-      final authSuccess = await fixture.emailIDP.finishPasswordReset(
+      await fixture.emailIDP.finishPasswordReset(
         session,
         passwordResetRequestId: passwordResetRequestId,
         verificationCode: verificationCode,
@@ -381,13 +375,12 @@ void main() {
       );
 
       // Verify the session was destroyed by checking if it still exists
-      final sessions = await AuthSessions.admin.findSessions(
+      final sessions = await fixture.tokenManager.listTokens(
         session,
         authUserId: authUserId,
       );
 
-      expect(sessions, hasLength(1));
-      expect(sessions.single.authUserId, authSuccess.authUserId);
+      expect(sessions, isEmpty);
     });
   });
 

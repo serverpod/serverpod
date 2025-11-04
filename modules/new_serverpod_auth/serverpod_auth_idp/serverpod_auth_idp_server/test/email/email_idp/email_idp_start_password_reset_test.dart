@@ -62,14 +62,14 @@ void main() {
             () async {
           final passwordResetRequestId = await passwordResetRequestIdFuture;
 
-          final authSuccessFuture = fixture.emailIDP.finishPasswordReset(
+          final passwordResetResult = fixture.emailIDP.finishPasswordReset(
             session,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
             newPassword: 'NewPassword123!',
           );
 
-          await expectLater(authSuccessFuture, completion(isA<AuthSuccess>()));
+          await expectLater(passwordResetResult, completes);
         });
       });
     },

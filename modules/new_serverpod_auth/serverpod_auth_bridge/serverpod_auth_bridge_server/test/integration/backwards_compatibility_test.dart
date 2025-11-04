@@ -1,13 +1,19 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  const config = EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP = EmailIDP(config: config);
+  final tokenManager = AuthSessionsTokenManager(
+    config: AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
+  );
+
+  const newEmailIDPConfig = EmailIDPConfig(passwordHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
     final sessionBuilder,
@@ -17,8 +23,18 @@ void main() {
 
     setUp(() {
       session = sessionBuilder.build();
-      AuthBackwardsCompatibility.config = AuthBackwardsCompatibilityConfig(
-        emailIDP: newEmailIDP,
+      AuthServices.set(
+        identityProviders: [
+          EmailIdentityProviderFactory(newEmailIDPConfig),
+        ],
+        primaryTokenManager: tokenManager,
+      );
+    });
+
+    tearDown(() {
+      AuthServices.set(
+        identityProviders: [],
+        primaryTokenManager: tokenManager,
       );
     });
 

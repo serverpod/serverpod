@@ -50,11 +50,8 @@ class EndpointStatus extends _i1.EndpointRef {
 
 /// Endpoint for JWT tokens management.
 /// {@category Endpoint}
-class EndpointRefreshJwtTokens extends _i1.EndpointRef {
+abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'serverpod_auth_core.refreshJwtTokens';
 
   /// Creates a new token pair for the given [refreshToken].
   ///
@@ -75,13 +72,7 @@ class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   _i2.Future<_i3.AuthSuccess> refreshAccessToken(
-          {required String refreshToken}) =>
-      caller.callServerEndpoint<_i3.AuthSuccess>(
-        'serverpod_auth_core.refreshJwtTokens',
-        'refreshAccessToken',
-        {'refreshToken': refreshToken},
-        authenticated: false,
-      );
+      {required String refreshToken});
 }
 
 /// Base endpoint for user profile management.
@@ -110,41 +101,14 @@ abstract class EndpointUserProfileBase extends _i1.EndpointRef {
   _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName);
 }
 
-/// Base endpoint for auth sessions.
-///
-/// To expose these endpoint methods on your server, extend this class in a
-/// concrete class.
-/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-/// {@category Endpoint}
-abstract class EndpointSessionBase extends _i1.EndpointRef {
-  EndpointSessionBase(_i1.EndpointCaller caller) : super(caller);
-
-  /// Checks whether the caller is authenticated.
-  ///
-  /// Return `true` if the caller is authentication, `false` otherwise.
-  /// Does not error on missing authentication.
-  _i2.Future<bool> isAuthenticated();
-
-  /// Logs out the current user.
-  ///
-  /// Returns `true` if the user was actually logged out, and `false` if the
-  /// calling session was not valid anymore.
-  _i2.Future<bool> logout({required bool allSessions});
-}
-
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     status = EndpointStatus(this);
-    refreshJwtTokens = EndpointRefreshJwtTokens(this);
   }
 
   late final EndpointStatus status;
 
-  late final EndpointRefreshJwtTokens refreshJwtTokens;
-
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
-        'serverpod_auth_core.status': status,
-        'serverpod_auth_core.refreshJwtTokens': refreshJwtTokens,
-      };
+  Map<String, _i1.EndpointRef> get endpointRefLookup =>
+      {'serverpod_auth_core.status': status};
 }

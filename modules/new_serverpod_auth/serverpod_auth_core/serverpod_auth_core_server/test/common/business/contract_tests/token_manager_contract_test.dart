@@ -1,15 +1,18 @@
 import 'dart:async';
-
-import 'package:serverpod/protocol.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_core_server/session.dart';
 import 'package:test/test.dart';
 
 import '../../../serverpod_test_tools.dart';
 import '../fakes/fake_token_manager.dart';
 import '../fakes/fake_token_storage.dart';
 
+@isTestGroup
 void testSuite<T extends TokenManager>(
+  final String description,
   final T Function() tokenManagerBuilder, {
   required final Future<UuidValue> Function(Session session) createAuthId,
   required final String tokenIssuer,
@@ -40,7 +43,7 @@ void testSuite<T extends TokenManager>(
 
         setUp(() async {
           authSuccessFuture = tokenManager.issueToken(
-            session: session,
+            session,
             authUserId: authId,
             method: 'test-method',
           );
@@ -79,7 +82,7 @@ void testSuite<T extends TokenManager>(
         'when issuing a token with scopes then scopes matches supplied value',
         () async {
           final authSuccess = await tokenManager.issueToken(
-            session: session,
+            session,
             authUserId: authId,
             method: 'test-method',
             scopes: {const Scope('test-scope')},
@@ -97,7 +100,7 @@ void testSuite<T extends TokenManager>(
           final authSuccessFuture =
               session.db.transaction((final transaction) async {
             return await tokenManager.issueToken(
-              session: session,
+              session,
               authUserId: authId,
               method: 'test-method',
               transaction: transaction,
@@ -118,7 +121,7 @@ void testSuite<T extends TokenManager>(
           await session.db.transaction((final transaction) async {
             final savepoint = await transaction.createSavepoint();
             await tokenManager.issueToken(
-              session: session,
+              session,
               authUserId: authId,
               method: 'intentional-rollback',
               transaction: transaction,
@@ -144,6 +147,7 @@ void testSuite<T extends TokenManager>(
       late Session session;
       late UuidValue authId;
       late T tokenManager;
+      late String tokenId;
       late AuthSuccess authSuccess;
       late List<TokenInfo> initialTokens;
 
@@ -152,7 +156,7 @@ void testSuite<T extends TokenManager>(
         authId = await createAuthId(session);
         tokenManager = tokenManagerBuilder();
         authSuccess = await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -161,6 +165,8 @@ void testSuite<T extends TokenManager>(
           session,
           authUserId: authId,
         );
+
+        tokenId = initialTokens.single.tokenId;
       });
 
       tearDown(() async {
@@ -195,11 +201,7 @@ void testSuite<T extends TokenManager>(
         });
 
         test('then authId should match tokenId', () async {
-          final [tokenInfo] = await tokenManager.listTokens(
-            session,
-            authUserId: authId,
-          );
-          expect(authInfo!.authId, tokenInfo.tokenId);
+          expect(authInfo!.authId, tokenId);
         });
       });
 
@@ -217,13 +219,12 @@ void testSuite<T extends TokenManager>(
       );
 
       test(
-        'when revoking the token with a transaction that succeeds '
-        'then token is removed',
+        'when revoking the token with a transaction that succeeds then token is removed',
         () async {
           await session.db.transaction((final transaction) async {
             await tokenManager.revokeToken(
               session,
-              tokenId: authSuccess.token,
+              tokenId: tokenId,
               transaction: transaction,
             );
           });
@@ -234,7 +235,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isFalse,
           );
         },
@@ -251,7 +252,7 @@ void testSuite<T extends TokenManager>(
             final savepoint = await transaction.createSavepoint();
             await tokenManager.revokeToken(
               session,
-              tokenId: authSuccess.token,
+              tokenId: tokenId,
               transaction: transaction,
             );
             await savepoint.rollback();
@@ -263,7 +264,7 @@ void testSuite<T extends TokenManager>(
           );
 
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -275,7 +276,7 @@ void testSuite<T extends TokenManager>(
         () async {
           await tokenManager.revokeToken(
             session,
-            tokenId: authSuccess.token,
+            tokenId: tokenId,
             tokenIssuer: 'INVALID$tokenIssuer',
           );
 
@@ -286,7 +287,7 @@ void testSuite<T extends TokenManager>(
 
           expect(tokens, hasLength(initialTokens.length));
           expect(
-            tokens.any((final t) => t.tokenId == authSuccess.token),
+            tokens.any((final t) => t.tokenId == tokenId),
             isTrue,
           );
         },
@@ -308,21 +309,21 @@ void testSuite<T extends TokenManager>(
         tokenManager = tokenManagerBuilder();
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -596,6 +597,14 @@ void testSuite<T extends TokenManager>(
               authUserId: authId,
               transaction: transaction,
             );
+            final tokens = await tokenManager.listTokens(
+              session,
+              authUserId: authId,
+              transaction: transaction,
+            );
+
+            /// New token can be listed
+            expect(tokens, hasLength(0));
             await savepoint.rollback();
           });
 
@@ -624,19 +633,19 @@ void testSuite<T extends TokenManager>(
         tokenManager = tokenManagerBuilder();
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId,
           method: 'method2',
         );
@@ -722,28 +731,28 @@ void testSuite<T extends TokenManager>(
         authId3 = await createAuthId(session);
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId3,
           method: 'test-method',
           scopes: {const Scope('test-scope')},
@@ -868,25 +877,25 @@ void testSuite<T extends TokenManager>(
         authId2 = await createAuthId(session);
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId1,
           method: 'method2',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'method1',
         );
 
         await tokenManager.issueToken(
-          session: session,
+          session,
           authUserId: authId2,
           method: 'method2',
         );
@@ -980,6 +989,7 @@ void testSuite<T extends TokenManager>(
 void main() {
   final fakeTokenStorage = FakeTokenStorage();
   testSuite(
+    'FakeTokenManager',
     () {
       return FakeTokenManager(fakeTokenStorage);
     },
@@ -992,5 +1002,39 @@ void main() {
     tokenIssuer: 'fake',
     isDatabaseBackedManager: false,
     usesRefreshTokens: false,
+  );
+
+  testSuite(
+    'AuthSessionsTokenManager',
+    () {
+      return AuthSessionsTokenManager(
+          config: AuthSessionsConfig(
+        sessionKeyHashPepper: 'test-pepper',
+      ));
+    },
+    createAuthId: (final session) =>
+        AuthUsers.create(session).then((final value) => value.id),
+    tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
+    isDatabaseBackedManager: true,
+    usesRefreshTokens: false,
+  );
+
+  testSuite(
+    'AuthenticationTokensTokenManager',
+    () {
+      return AuthenticationTokensTokenManager(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+        ),
+      );
+    },
+    createAuthId: (final session) =>
+        AuthUsers.create(session).then((final value) => value.id),
+    tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
+    isDatabaseBackedManager: true,
+    usesRefreshTokens: true,
   );
 }

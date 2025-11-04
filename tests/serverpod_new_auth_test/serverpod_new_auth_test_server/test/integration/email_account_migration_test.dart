@@ -7,6 +7,14 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = AuthSessionsTokenManager(
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
+  tearDown(() {
+    AuthServices.set(primaryTokenManager: tokenManager, identityProviders: []);
+  });
+
   withServerpod(
     'Given a non-migrated user (legacy user),',
     (final sessionBuilder, final endpoints) {
@@ -39,8 +47,7 @@ void main() {
         );
 
         // Configure EmailAccounts for password reset verification
-        AuthServices.initialize(
-            emailIDPConfig: EmailIDPConfig(
+        final config = EmailIDPConfig(
           passwordHashPepper: 'test',
           sendPasswordResetVerificationCode: (
             final session, {
@@ -51,11 +58,16 @@ void main() {
           }) {
             receivedVerificationCode = verificationCode;
           },
-        ));
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
       });
 
       tearDown(() async {
-        AuthServices.initialize();
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
@@ -147,8 +159,7 @@ void main() {
         newAuthUserId = newAuthUserIdResult!;
 
         // Configure EmailAccounts for password reset verification
-        AuthServices.initialize(
-            emailIDPConfig: EmailIDPConfig(
+        final config = EmailIDPConfig(
           passwordHashPepper: 'test',
           sendPasswordResetVerificationCode: (
             final session, {
@@ -162,36 +173,35 @@ void main() {
           },
           onPasswordResetCompleted:
               AuthBackwardsCompatibility.clearLegacyPassword,
-        ));
+        );
+        AuthServices.set(
+          identityProviders: [
+            EmailIdentityProviderFactory(config),
+          ],
+          primaryTokenManager: tokenManager,
+        );
       });
 
       tearDown(() async {
-        AuthServices.initialize();
         await _cleanUpDatabase(sessionBuilder.build());
       });
 
       test(
-        'when completing password reset, then it succeeds and returns a valid session key.',
+        'when completing password reset, then it succeeds.',
         () async {
           await endpoints.emailAccount.startPasswordReset(
             sessionBuilder,
             email: email,
           );
 
-          final authSuccess = await endpoints.emailAccount.finishPasswordReset(
+          final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
             passwordResetRequestId: receivedPasswordResetRequestId!,
             verificationCode: receivedVerificationCode!,
             newPassword: newPassword,
           );
 
-          final authInfo = await AuthSessions.authenticationHandler(
-            sessionBuilder.build(),
-            authSuccess.token,
-          );
-
-          expect(authInfo, isNotNull);
-          expect(authInfo!.authUserId, newAuthUserId);
+          await expectLater(passwordReset, completes);
         },
       );
 
@@ -218,7 +228,8 @@ void main() {
             password: newPassword,
           );
 
-          final authInfo = await AuthSessions.authenticationHandler(
+          final authInfo =
+              await AuthServices.instance.tokenManager.validateToken(
             sessionBuilder.build(),
             authSuccess.token,
           );

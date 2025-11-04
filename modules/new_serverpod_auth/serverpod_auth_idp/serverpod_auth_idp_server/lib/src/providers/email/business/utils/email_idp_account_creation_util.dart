@@ -5,9 +5,9 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../../core.dart';
 import '../../../../generated/protocol.dart';
-import '../../util/byte_data_extension.dart';
+import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
-import '../../util/uint8list_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
 import 'email_idp_password_hash_util.dart';
@@ -164,6 +164,7 @@ class EmailIDPAccountCreationUtil {
     return EmailIDPCompleteAccountCreationResult._(
       authUserId: authUserId,
       email: verifiedAccountRequest.email,
+      scopes: newUser.scopes,
     );
   }
 
@@ -612,12 +613,16 @@ class EmailIDPCompleteAccountCreationResult {
   /// The ID of the new authentication user.
   final UuidValue authUserId;
 
+  /// The scopes of the new authentication user.
+  final Set<Scope> scopes;
+
   /// The email address used during registration.
   final String email;
 
   EmailIDPCompleteAccountCreationResult._({
     required this.authUserId,
     required this.email,
+    required this.scopes,
   });
 }
 

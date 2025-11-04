@@ -176,11 +176,6 @@ class Serverpod {
     storage[cloudStorage.storageId] = cloudStorage;
   }
 
-  /// Sets a custom [AuthenticationHandler] for authenticating users.
-  void setAuthenticationHandler(AuthenticationHandler handler) {
-    authenticationHandler = handler;
-  }
-
   internal.RuntimeSettings _defaultRuntimeSettings(String runMode) {
     return internal.RuntimeSettings(
       logSettings: internal.LogSettings(
@@ -191,7 +186,9 @@ class Serverpod {
         logFailedSessions: true,
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
-        logLevel: internal.LogLevel.info,
+        logLevel: runMode == ServerpodRunMode.development
+            ? internal.LogLevel.debug
+            : internal.LogLevel.info,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
       ),
@@ -519,8 +516,6 @@ class Serverpod {
       redisController,
     );
 
-    var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
-
     server = Server(
       serverpod: this,
       serverId: serverId,
@@ -530,7 +525,6 @@ class Serverpod {
       passwords: _passwords,
       runMode: runMode,
       caches: caches,
-      authenticationHandler: authHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
@@ -686,11 +680,17 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        serversStarted &= await _insightsServer?.start() ?? true;
+        serversStarted &= await _insightsServer?.start(
+              authenticationHandler: serviceAuthenticationHandler,
+            ) ??
+            true;
       }
 
       // Main API server.
-      serversStarted &= await server.start();
+      serversStarted &= await server.start(
+        authenticationHandler:
+            authenticationHandler ?? defaultAuthenticationHandler,
+      );
 
       /// Web server.
       if (Features.enableWebServer(_webServer)) {
@@ -927,7 +927,6 @@ class Serverpod {
       runMode: runMode,
       name: 'Insights',
       caches: caches,
-      authenticationHandler: serviceAuthenticationHandler,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,

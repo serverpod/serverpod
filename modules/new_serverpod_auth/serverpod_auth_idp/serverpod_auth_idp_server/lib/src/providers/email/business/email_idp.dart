@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp_server_exceptions.dart';
 
@@ -21,25 +22,44 @@ import 'utils/email_idp_account_creation_util.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class EmailIDP {
-  static const String _method = 'email';
+  /// The method used when authenticating with the Email identity provider.
+  static const String method = 'email';
 
   /// Admin operations to work with email-backed accounts.
-  late final EmailIDPAdmin admin;
+  final EmailIDPAdmin admin;
 
   /// Utility functions for the email identity provider.
-  late final EmailIDPUtils utils;
+  final EmailIDPUtils utils;
 
   /// The configuration for the email identity provider.
   final EmailIDPConfig config;
 
+  final TokenManager _tokenManager;
+
+  EmailIDP._(
+    this.config,
+    this._tokenManager,
+    this.utils,
+    this.admin,
+  );
+
   /// Creates a new instance of [EmailIDP].
-  EmailIDP({required this.config}) {
-    utils = EmailIDPUtils(config: config);
-    admin = EmailIDPAdmin(utils: utils);
+  factory EmailIDP(
+    final EmailIDPConfig config, {
+    required final TokenManager tokenManager,
+  }) {
+    final utils = EmailIDPUtils(config: config);
+    final admin = EmailIDPAdmin(utils: utils);
+    return EmailIDP._(
+      config,
+      tokenManager,
+      utils,
+      admin,
+    );
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
-  Future<AuthSuccess> finishPasswordReset(
+  Future<void> finishPasswordReset(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -59,17 +79,11 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        await _destroyAllSessions(
+        await _tokenManager.revokeAllTokens(
           session,
-          authUserId,
+          authUserId: authUserId,
+          method: method,
           transaction: transaction,
-        );
-
-        return _createSession(
-          session,
-          authUserId,
-          transaction: transaction,
-          method: _method,
         );
       }),
     );
@@ -103,11 +117,12 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        return _createSession(
+        return _tokenManager.issueToken(
           session,
-          result.authUserId,
+          authUserId: result.authUserId,
+          method: method,
+          scopes: result.scopes,
           transaction: transaction,
-          method: _method,
         );
       }),
     );
@@ -132,11 +147,18 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        return _createSession(
+        final authUser = await AuthUsers.get(
           session,
-          authUserId,
+          authUserId: authUserId,
           transaction: transaction,
-          method: _method,
+        );
+
+        return _tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: method,
+          scopes: authUser.scopes,
+          transaction: transaction,
         );
       }),
     );
@@ -215,46 +237,6 @@ final class EmailIDP {
           return result.accountRequestId ?? const Uuid().v4obj();
         },
       ),
-    );
-  }
-
-  Future<AuthSuccess> _createSession(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction? transaction,
-    required final String method,
-  }) async {
-    final authUser = await AuthUsers.get(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
-    );
-
-    if (authUser.blocked) {
-      throw AuthUserBlockedException();
-    }
-
-    final sessionKey = await AuthSessions.createSession(
-      session,
-      authUserId: authUserId,
-      method: method,
-      scopes: authUser.scopes,
-      transaction: transaction,
-    );
-
-    return sessionKey;
-  }
-
-  Future<void> _destroyAllSessions(
-    final Session session,
-    final UuidValue authUserId, {
-    required final Transaction? transaction,
-  }) async {
-    /// TODO: Move to shared auth config and filter on method and auth user id.
-    await AuthSessions.destroyAllSessions(
-      session,
-      authUserId: authUserId,
-      transaction: transaction,
     );
   }
 }

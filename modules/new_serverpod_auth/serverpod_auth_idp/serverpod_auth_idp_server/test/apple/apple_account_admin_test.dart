@@ -22,10 +22,13 @@ void main() {
         activeUser = await _createAppleBackedUser(session);
         inactiveUser = await _createAppleBackedUser(session);
 
-        final siwa = _SignInWithAppleFake(knownRefreshTokens: {
+        final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleIDPAdmin(utils: AppleIDPUtils(siwa: siwa));
+        final utils = AppleIDPUtils(signInWithApple: signInWithApple);
+        admin = AppleIDPAdmin(
+          utils: utils,
+        );
       });
 
       test(

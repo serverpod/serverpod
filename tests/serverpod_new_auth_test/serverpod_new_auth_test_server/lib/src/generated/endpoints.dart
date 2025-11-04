@@ -18,18 +18,19 @@ import '../endpoints/email_account_endpoint.dart' as _i4;
 import '../endpoints/google_account_backwards_compatibility_test_endpoint.dart'
     as _i5;
 import '../endpoints/google_account_endpoint.dart' as _i6;
-import '../endpoints/password_importing_email_account_endpoint.dart' as _i7;
-import '../endpoints/user_profile_endpoint.dart' as _i8;
-import 'dart:typed_data' as _i9;
+import '../endpoints/jwt_refresh_endpoint.dart' as _i7;
+import '../endpoints/password_importing_email_account_endpoint.dart' as _i8;
+import '../endpoints/user_profile_endpoint.dart' as _i9;
+import 'dart:typed_data' as _i10;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
-    as _i10;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i11;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i12;
-import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i13;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i14;
+import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
+    as _i14;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -67,14 +68,20 @@ class Endpoints extends _i1.EndpointDispatch {
           'googleAccount',
           null,
         ),
+      'jwtRefresh': _i7.JwtRefreshEndpoint()
+        ..initialize(
+          server,
+          'jwtRefresh',
+          null,
+        ),
       'passwordImportingEmailAccount':
-          _i7.PasswordImportingEmailAccountEndpoint()
+          _i8.PasswordImportingEmailAccountEndpoint()
             ..initialize(
               server,
               'passwordImportingEmailAccount',
               null,
             ),
-      'userProfile': _i8.UserProfileEndpoint()
+      'userProfile': _i9.UserProfileEndpoint()
         ..initialize(
           server,
           'userProfile',
@@ -531,6 +538,31 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
+    connectors['jwtRefresh'] = _i1.EndpointConnector(
+      name: 'jwtRefresh',
+      endpoint: endpoints['jwtRefresh']!,
+      methodConnectors: {
+        'refreshAccessToken': _i1.MethodConnector(
+          name: 'refreshAccessToken',
+          params: {
+            'refreshToken': _i1.ParameterDescription(
+              name: 'refreshToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['jwtRefresh'] as _i7.JwtRefreshEndpoint)
+                  .refreshAccessToken(
+            session,
+            refreshToken: params['refreshToken'],
+          ),
+        )
+      },
+    );
     connectors['passwordImportingEmailAccount'] = _i1.EndpointConnector(
       name: 'passwordImportingEmailAccount',
       endpoint: endpoints['passwordImportingEmailAccount']!,
@@ -554,7 +586,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i7.PasswordImportingEmailAccountEndpoint)
+                      as _i8.PasswordImportingEmailAccountEndpoint)
                   .login(
             session,
             email: params['email'],
@@ -580,7 +612,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i7.PasswordImportingEmailAccountEndpoint)
+                      as _i8.PasswordImportingEmailAccountEndpoint)
                   .startRegistration(
             session,
             email: params['email'],
@@ -606,7 +638,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i7.PasswordImportingEmailAccountEndpoint)
+                      as _i8.PasswordImportingEmailAccountEndpoint)
                   .finishRegistration(
             session,
             accountRequestId: params['accountRequestId'],
@@ -627,7 +659,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i7.PasswordImportingEmailAccountEndpoint)
+                      as _i8.PasswordImportingEmailAccountEndpoint)
                   .startPasswordReset(
             session,
             email: params['email'],
@@ -657,7 +689,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['passwordImportingEmailAccount']
-                      as _i7.PasswordImportingEmailAccountEndpoint)
+                      as _i8.PasswordImportingEmailAccountEndpoint)
                   .finishPasswordReset(
             session,
             passwordResetRequestId: params['passwordResetRequestId'],
@@ -678,7 +710,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
                   .get(session),
         ),
         'removeUserImage': _i1.MethodConnector(
@@ -688,7 +720,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
                   .removeUserImage(session),
         ),
         'setUserImage': _i1.MethodConnector(
@@ -696,7 +728,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i9.ByteData>(),
+              type: _i1.getType<_i10.ByteData>(),
               nullable: false,
             )
           },
@@ -704,7 +736,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
                   .setUserImage(
             session,
             params['image'],
@@ -723,7 +755,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
                   .changeUserName(
             session,
             params['userName'],
@@ -742,7 +774,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['userProfile'] as _i8.UserProfileEndpoint)
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
                   .changeFullName(
             session,
             params['fullName'],
@@ -750,14 +782,14 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_bridge'] = _i10.Endpoints()
+    modules['serverpod_auth_bridge'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i11.Endpoints()
+    modules['serverpod_auth_core'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i12.Endpoints()
+    modules['serverpod_auth_idp'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _i13.Endpoints()
+    modules['serverpod_auth_migration'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i14.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i15.Endpoints()..initializeEndpoints(server);
   }
 }

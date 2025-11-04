@@ -39,5 +39,4 @@ dependency_overrides:
     path: ../../../../packages/serverpod_test
 
 false_secrets:
-  - test/jwt/utils/authentication_token_secrets_mock.dart
-  - test/jwt/integration/authentication_token_secrets_test.dart
+  - test/jwt/jwt_util_test.dart

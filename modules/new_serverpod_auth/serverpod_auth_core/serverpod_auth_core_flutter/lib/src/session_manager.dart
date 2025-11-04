@@ -78,7 +78,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         authKeyProvider = JwtAuthKeyProvider(
           getAuthInfo: () async => authInfo.value,
           onRefreshAuthInfo: updateSignedInUser,
-          refreshEndpoint: caller.refreshJwtTokens,
+          refreshEndpoint:
+              caller.client.getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
       case AuthStrategy.session:
         authKeyProvider = SasAuthKeyProvider(

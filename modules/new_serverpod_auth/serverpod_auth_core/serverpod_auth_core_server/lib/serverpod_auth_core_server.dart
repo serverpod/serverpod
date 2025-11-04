@@ -3,8 +3,8 @@
 /// Serverpod IDP module.
 library;
 
-export 'src/common/business/auth_config.dart';
-export 'src/common/business/provider_factory.dart';
-export 'src/common/business/token_manager.dart';
+export 'src/common/business/auth_services.dart';
+export 'src/common/integrations/provider_factory.dart';
+export 'src/common/integrations/token_manager.dart';
 export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart';
