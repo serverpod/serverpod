@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// A divider that takes up all available width.
 class ExpandedDivider extends StatelessWidget {
+  /// Creates an [ExpandedDivider].
   const ExpandedDivider({super.key});
 
   @override

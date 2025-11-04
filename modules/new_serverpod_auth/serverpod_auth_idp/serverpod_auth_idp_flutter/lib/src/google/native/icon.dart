@@ -37,7 +37,7 @@ class GoogleSignInIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final picture = isLoading
-        ? CircularProgressIndicator(
+        ? const CircularProgressIndicator(
             strokeWidth: 2,
             color: Colors.grey,
           )
@@ -45,7 +45,7 @@ class GoogleSignInIcon extends StatelessWidget {
             'assets/images/google.svg',
             package: 'serverpod_auth_idp_flutter',
             colorFilter: isDisabled
-                ? ColorFilter.mode(const Color(0xff9c9c9c), BlendMode.srcIn)
+                ? const ColorFilter.mode(Color(0xff9c9c9c), BlendMode.srcIn)
                 : null,
             fit: BoxFit.scaleDown,
           );

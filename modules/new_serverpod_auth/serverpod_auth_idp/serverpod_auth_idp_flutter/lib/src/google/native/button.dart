@@ -144,7 +144,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
           onPressed: isDisabled ? null : onPressed,
           style: OutlinedButton.styleFrom(
             side: buttonStyle.borderSide,
-            shape: CircleBorder(),
+            shape: const CircleBorder(),
             padding: EdgeInsets.zero,
           ),
           child: GoogleSignInIcon(

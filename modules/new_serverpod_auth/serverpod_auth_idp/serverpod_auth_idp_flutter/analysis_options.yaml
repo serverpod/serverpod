@@ -2,7 +2,7 @@ include: package:serverpod_lints/public_flutter.yaml
 
 linter:
   rules:
-    # TODO: Enable public_member_api_docs when the package is ready.
-    public_member_api_docs: false
+    prefer_const_constructors: true
+    public_member_api_docs: true
     unawaited_futures: true
     discarded_futures: true

@@ -14,9 +14,16 @@ export '../web/wrapper.dart'
 
 /// The style of the rendered Google button.
 class GoogleSignInStyle {
+  /// The size of the button.
   final Size size;
+
+  /// The foreground color of the button.
   final Color foregroundColor;
+
+  /// The background color of the button.
   final Color backgroundColor;
+
+  /// The border radius of the button.
   final BorderRadius borderRadius;
 
   /// Creates a [GoogleSignInStyle] with the given properties.

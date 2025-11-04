@@ -14,7 +14,7 @@ Widget buildIsolatedElementsForStory(
     max: 400,
   );
 
-  final divider = Divider(indent: 0, endIndent: 0);
+  const divider = Divider(indent: 0, endIndent: 0);
 
   return SingleChildScrollView(
     padding: const EdgeInsets.all(24),

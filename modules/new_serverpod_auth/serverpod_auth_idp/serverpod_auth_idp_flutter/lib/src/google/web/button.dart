@@ -30,7 +30,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
 
   /// Builds Google Sign-In button with the icon type.
   factory GoogleSignInWebButton.icon() =>
-      GoogleSignInWebButton(type: GSIButtonType.icon);
+      const GoogleSignInWebButton(type: GSIButtonType.icon);
 
   /// Builds Google Sign-In button compatible with Material's filled button.
   factory GoogleSignInWebButton.filled({
