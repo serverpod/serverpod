@@ -118,7 +118,7 @@ final class AuthSessions {
   /// The user should have been authenticated before calling this method.
   ///
   /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
-  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionLifetime] (if configured).
+  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionLifetime] into the future (if configured).
   ///
   /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
   /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decommissioned.
