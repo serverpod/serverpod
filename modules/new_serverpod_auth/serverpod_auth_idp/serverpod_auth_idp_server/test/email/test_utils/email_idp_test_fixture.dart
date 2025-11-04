@@ -51,7 +51,7 @@ final class EmailIDPTestFixture {
     // constructor.
     // ignore: prefer_initializing_formals
     this.tokenManager = tokenManager;
-    emailIDP = EmailIDP(config: config, tokenManager: tokenManager);
+    emailIDP = EmailIDP(config, tokenManager: tokenManager);
   }
 
   Future<EmailAccount> createEmailAccount(
