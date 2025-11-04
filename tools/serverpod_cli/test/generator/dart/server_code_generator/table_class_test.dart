@@ -850,7 +850,7 @@ void main() {
     const enumColumnName = 'enum_default';
     var enumField = FieldDefinitionBuilder()
         .withName(enumFieldName)
-        .withColumn(enumColumnName)
+        .withColumnNameOverride(enumColumnName)
         .withEnumDefinition(byNameEnumDefinition, true)
         .build();
 
@@ -862,7 +862,7 @@ void main() {
           .withField(
             FieldDefinitionBuilder()
                 .withName(fieldName)
-                .withColumn(columnName)
+                .withColumnNameOverride(columnName)
                 .withTypeDefinition(columnType, true)
                 .withScope(ModelFieldScopeDefinition.all)
                 .withShouldPersist(true)

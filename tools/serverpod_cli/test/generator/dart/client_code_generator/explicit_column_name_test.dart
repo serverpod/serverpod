@@ -37,7 +37,7 @@ void main() {
         .withType(
           TypeDefinitionBuilder().withClassName('String').build(),
         )
-        .withColumn(columnName)
+        .withColumnNameOverride(columnName)
         .build();
     final noColumnField = FieldDefinitionBuilder()
         .withName(noColumnFieldName)

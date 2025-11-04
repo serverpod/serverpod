@@ -158,7 +158,7 @@ void main() {
             .withField(
               FieldDefinitionBuilder()
                   .withName(fieldName)
-                  .withColumn(columnName)
+                  .withColumnNameOverride(columnName)
                   .withTypeDefinition(columnType, true)
                   .withScope(ModelFieldScopeDefinition.all)
                   .withShouldPersist(true)
@@ -196,7 +196,7 @@ void main() {
 
         var field = FieldDefinitionBuilder()
             .withName(relationFieldName)
-            .withColumn(relationColumnName)
+            .withColumnNameOverride(relationColumnName)
             .withIdType(isNullable: true)
             .withRelation(relation)
             .build();
