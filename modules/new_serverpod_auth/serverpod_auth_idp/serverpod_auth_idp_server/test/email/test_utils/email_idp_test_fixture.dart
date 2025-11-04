@@ -6,7 +6,7 @@ import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-      final PasswordHash passwordHash) {
+      final HashResult passwordHash) {
     return EmailAccountPasswordHash(passwordHash);
   }
 
@@ -16,7 +16,7 @@ sealed class EmailAccountPassword {
 }
 
 final class EmailAccountPasswordHash extends EmailAccountPassword {
-  final PasswordHash passwordHash;
+  final HashResult passwordHash;
 
   EmailAccountPasswordHash(this.passwordHash);
 }
@@ -64,7 +64,7 @@ final class EmailIDPTestFixture {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
         await passwordHashUtil.createHash(value: password.password),
-      null => PasswordHash.empty(),
+      null => HashResult.empty(),
     };
 
     return await EmailAccount.db.insertRow(
@@ -104,7 +104,7 @@ final class EmailIDPTestFixture {
         .deleteWhere(session, where: (final _) => Constant.bool(true));
   }
 
-  EmailIDPPasswordHashUtil get passwordHashUtil => emailIDP.utils.passwordHash;
+  EmailIDPHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
   EmailIDPAuthenticationUtil get authenticationUtil =>
       emailIDP.utils.authentication;
   EmailIDPPasswordResetUtil get passwordResetUtil =>

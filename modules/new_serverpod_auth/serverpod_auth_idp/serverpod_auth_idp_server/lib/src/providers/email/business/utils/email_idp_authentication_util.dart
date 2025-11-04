@@ -11,14 +11,14 @@ import 'email_idp_password_hash_util.dart';
 
 /// Authentication utilities for the email identity provider.
 class EmailIDPAuthenticationUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtil;
+  final EmailIDPHashUtil _hashUtil;
   final RateLimit _failedLoginRateLimit;
 
   /// Creates a new instance of [EmailIDPAuthenticationUtil].
   EmailIDPAuthenticationUtil({
-    required final EmailIDPPasswordHashUtil passwordHashUtil,
+    required final EmailIDPHashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
-  })  : _passwordHashUtil = passwordHashUtil,
+  })  : _hashUtil = hashUtil,
         _failedLoginRateLimit = failedLoginRateLimit;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
@@ -60,7 +60,7 @@ class EmailIDPAuthenticationUtil {
       throw EmailAccountNotFoundException();
     }
 
-    if (!await _passwordHashUtil.validateHash(
+    if (!await _hashUtil.validateHash(
       value: password,
       hash: account.passwordHash.asUint8List,
       salt: account.passwordSalt.asUint8List,

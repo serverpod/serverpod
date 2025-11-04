@@ -103,15 +103,15 @@ class EmailIDPAccountCreationResult {
 ///
 /// {@endtemplate}
 class EmailIDPAccountCreationUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtils;
+  final EmailIDPHashUtil _hashUtils;
   final EmailIDPAccountCreationUtilsConfig _config;
 
   /// Creates a new [EmailIDPAccountCreationUtil] instance.
   EmailIDPAccountCreationUtil({
     required final EmailIDPAccountCreationUtilsConfig config,
-    required final EmailIDPPasswordHashUtil passwordHashUtils,
+    required final EmailIDPHashUtil passwordHashUtils,
   })  : _config = config,
-        _passwordHashUtils = passwordHashUtils;
+        _hashUtils = passwordHashUtils;
 
   /// Completes the account creation process by creating a new authentication
   /// user and linking the account request to it.
@@ -190,10 +190,10 @@ class EmailIDPAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = password != null
-        ? await _passwordHashUtils.createHash(
+        ? await _hashUtils.createHash(
             value: password,
           )
-        : PasswordHash.empty();
+        : HashResult.empty();
 
     final account = await EmailAccount.db.insertRow(
       session,
@@ -398,10 +398,10 @@ class EmailIDPAccountCreationUtil {
       }
     }
 
-    final passwordHash = await _passwordHashUtils.createHash(
+    final passwordHash = await _hashUtils.createHash(
       value: password,
     );
-    final verificationCodeHash = await _passwordHashUtils.createHash(
+    final verificationCodeHash = await _hashUtils.createHash(
       value: verificationCode,
     );
 
@@ -480,7 +480,7 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
-    if (!await _passwordHashUtils.validateHash(
+    if (!await _hashUtils.validateHash(
       value: verificationCode,
       hash: request.verificationCodeHash.asUint8List,
       salt: request.verificationCodeSalt.asUint8List,

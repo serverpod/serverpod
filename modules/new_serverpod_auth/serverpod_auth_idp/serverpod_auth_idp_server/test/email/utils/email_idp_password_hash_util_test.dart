@@ -8,7 +8,7 @@ import '../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   group('Given EmailIDPPasswordHashUtil instance', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
+    late EmailIDPHashUtil passwordHashUtil;
     const testSaltLength = 16;
 
     setUp(() {
@@ -111,8 +111,8 @@ void main() {
   });
 
   group('Given a created password hash', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
-    late PasswordHash passwordHash;
+    late EmailIDPHashUtil passwordHashUtil;
+    late HashResult passwordHash;
     const value = 'test-password-123';
     const pepper = 'my-test-pepper';
 
@@ -194,8 +194,8 @@ void main() {
   });
 
   group('Given a password hash created from an empty password', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
-    late PasswordHash emptyPasswordHash;
+    late EmailIDPHashUtil passwordHashUtil;
+    late HashResult emptyPasswordHash;
     setUp(() async {
       final fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(passwordHashPepper: 'test-pepper'),
@@ -219,7 +219,7 @@ void main() {
   group('Given PasswordHash factory', () {
     test('when PasswordHash.empty() is called then creates empty hash and salt',
         () {
-      final emptyPasswordHash = PasswordHash.empty();
+      final emptyPasswordHash = HashResult.empty();
 
       expect(emptyPasswordHash.hash, isEmpty);
       expect(emptyPasswordHash.salt, isEmpty);

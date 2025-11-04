@@ -6,35 +6,35 @@ import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// {@template email_idp_password_hash_util}
+/// {@template email_idp_hash_util}
 /// Class for handling password and verification code hashing in the email
 /// account module.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
 /// {@endtemplate}
-final class EmailIDPPasswordHashUtil {
-  final String _passwordHashPepper;
-  final int _passwordHashSaltLength;
+final class EmailIDPHashUtil {
+  final String _hashPepper;
+  final int _hashSaltLength;
 
-  /// Creates a new instance of [EmailIDPPasswordHashUtil].
-  EmailIDPPasswordHashUtil({
-    required final String passwordHashPepper,
-    required final int passwordHashSaltLength,
-  })  : _passwordHashPepper = passwordHashPepper,
-        _passwordHashSaltLength = passwordHashSaltLength;
+  /// Creates a new instance of [EmailIDPHashUtil].
+  EmailIDPHashUtil({
+    required final String hashPepper,
+    required final int hashSaltLength,
+  })  : _hashPepper = hashPepper,
+        _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [value].
   ///
   /// Applies a random salt, which must be stored with the hash to validate it
   /// later.
-  Future<PasswordHash> createHash({
+  Future<HashResult> createHash({
     required final String value,
     Uint8List? salt,
   }) {
-    salt ??= generateRandomBytes(_passwordHashSaltLength);
+    salt ??= generateRandomBytes(_hashSaltLength);
 
-    final pepper = utf8.encode(_passwordHashPepper);
+    final pepper = utf8.encode(_hashPepper);
 
     return _createHash(
       secret: value,
@@ -62,7 +62,7 @@ final class EmailIDPPasswordHashUtil {
     );
   }
 
-  Future<PasswordHash> _createHash({
+  Future<HashResult> _createHash({
     required final String secret,
     required final Uint8List salt,
     required final Uint8List pepper,
@@ -79,28 +79,30 @@ final class EmailIDPPasswordHashUtil {
 
       final hashBytes = generator.process(utf8.encode(secret));
 
-      return PasswordHash._(hash: hashBytes, salt: salt);
+      return HashResult._(hash: hashBytes, salt: salt);
     });
   }
 }
 
-/// A class for representing a password hash and its salt.
-class PasswordHash {
+/// Class containing the result from hashing a value.
+///
+/// Contains the computed hash and the salt used to compute it.
+class HashResult {
   /// The hash of the password.
   final Uint8List hash;
 
   /// The salt of the password.
   final Uint8List salt;
 
-  /// Creates a new [PasswordHash].
-  PasswordHash._({
+  /// Creates a new [HashResult].
+  HashResult._({
     required this.hash,
     required this.salt,
   });
 
-  /// Creates an empty [PasswordHash].
-  factory PasswordHash.empty() {
-    return PasswordHash._(
+  /// Creates an empty [HashResult].
+  factory HashResult.empty() {
+    return HashResult._(
       hash: Uint8List.fromList([]),
       salt: Uint8List.fromList([]),
     );

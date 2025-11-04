@@ -20,13 +20,13 @@ import 'email_idp_password_hash_util.dart';
 /// deleting expired password reset requests and password reset attempts.
 /// {@endtemplate}
 class EmailIDPPasswordResetUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtil;
+  final EmailIDPHashUtil _passwordHashUtil;
   final EmailIDPPasswordResetUtilsConfig _config;
 
   /// Creates a new [EmailIDPPasswordResetUtil] instance.
   EmailIDPPasswordResetUtil({
     required final EmailIDPPasswordResetUtilsConfig config,
-    required final EmailIDPPasswordHashUtil passwordHashUtils,
+    required final EmailIDPHashUtil passwordHashUtils,
   })  : _config = config,
         _passwordHashUtil = passwordHashUtils;
 
@@ -204,7 +204,7 @@ class EmailIDPPasswordResetUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
-      null => PasswordHash.empty(),
+      null => HashResult.empty(),
       final String value => await _passwordHashUtil.createHash(value: value),
     };
 
