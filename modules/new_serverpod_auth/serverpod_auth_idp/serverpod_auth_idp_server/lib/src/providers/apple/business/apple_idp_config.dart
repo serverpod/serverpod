@@ -1,3 +1,5 @@
+import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
+
 /// Configuration for the Apple identity provider.
 class AppleIDPConfig {
   /// The service identifier for the Sign in with Apple project.
@@ -27,4 +29,19 @@ class AppleIDPConfig {
     required this.keyId,
     required this.key,
   });
+}
+
+/// Extension methods for [AppleIDPConfig].
+extension AppleIDPConfigExtension on AppleIDPConfig {
+  /// Converts the [AppleIDPConfig] to a [SignInWithAppleConfiguration].
+  SignInWithAppleConfiguration toSignInWithAppleConfiguration() {
+    return SignInWithAppleConfiguration(
+      serviceIdentifier: serviceIdentifier,
+      bundleIdentifier: bundleIdentifier,
+      redirectUri: redirectUri,
+      teamId: teamId,
+      keyId: keyId,
+      key: key,
+    );
+  }
 }

@@ -2,7 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/uint8list_extension.dart';
+import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
@@ -51,7 +51,7 @@ final class EmailIDPTestFixture {
     // constructor.
     // ignore: prefer_initializing_formals
     this.tokenManager = tokenManager;
-    emailIDP = EmailIDP(config: config, tokenManager: tokenManager);
+    emailIDP = EmailIDP(config, tokenManager: tokenManager);
   }
 
   Future<EmailAccount> createEmailAccount(

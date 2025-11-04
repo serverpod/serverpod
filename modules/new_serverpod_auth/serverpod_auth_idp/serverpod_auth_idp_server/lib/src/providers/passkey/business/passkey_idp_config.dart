@@ -1,5 +1,5 @@
 /// Configuration for the Passkey account module.
-class PasskeyAccountConfig {
+class PasskeyIDPConfig {
   /// The hostname to be used on the web and associated with any apps.
   ///
   /// This is also known as the "relying party".
@@ -9,7 +9,7 @@ class PasskeyAccountConfig {
   final Duration challengeLifetime;
 
   /// Creates a new configuration.
-  PasskeyAccountConfig({
+  PasskeyIDPConfig({
     required this.hostname,
     this.challengeLifetime = const Duration(minutes: 5),
   });

@@ -14,11 +14,13 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/apple_idp_endpoint.dart' as _i2;
 import '../endpoints/email_idp_endpoint.dart' as _i3;
 import '../endpoints/google_idp_endpoint.dart' as _i4;
-import '../greeting_endpoint.dart' as _i5;
+import '../endpoints/passkey_idp_endpoint.dart' as _i5;
+import '../greeting_endpoint.dart' as _i6;
+import 'package:auth_server/src/generated/protocol.dart' as _i7;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i6;
+    as _i8;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i7;
+    as _i9;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -42,7 +44,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'googleIDP',
           null,
         ),
-      'greeting': _i5.GreetingEndpoint()
+      'passkeyIDP': _i5.PasskeyIDPEndpoint()
+        ..initialize(
+          server,
+          'passkeyIDP',
+          null,
+        ),
+      'greeting': _i6.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -250,6 +258,59 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
+    connectors['passkeyIDP'] = _i1.EndpointConnector(
+      name: 'passkeyIDP',
+      endpoint: endpoints['passkeyIDP']!,
+      methodConnectors: {
+        'createChallenge': _i1.MethodConnector(
+          name: 'createChallenge',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['passkeyIDP'] as _i5.PasskeyIDPEndpoint)
+                  .createChallenge(session)
+                  .then((record) => _i7.mapRecordToJson(record)),
+        ),
+        'register': _i1.MethodConnector(
+          name: 'register',
+          params: {
+            'registrationRequest': _i1.ParameterDescription(
+              name: 'registrationRequest',
+              type: _i1.getType<_i8.PasskeyRegistrationRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['passkeyIDP'] as _i5.PasskeyIDPEndpoint).register(
+            session,
+            registrationRequest: params['registrationRequest'],
+          ),
+        ),
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'loginRequest': _i1.ParameterDescription(
+              name: 'loginRequest',
+              type: _i1.getType<_i8.PasskeyLoginRequest>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['passkeyIDP'] as _i5.PasskeyIDPEndpoint).login(
+            session,
+            loginRequest: params['loginRequest'],
+          ),
+        ),
+      },
+    );
     connectors['greeting'] = _i1.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
@@ -267,16 +328,16 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['greeting'] as _i5.GreetingEndpoint).hello(
+              (endpoints['greeting'] as _i6.GreetingEndpoint).hello(
             session,
             params['name'],
           ),
         )
       },
     );
-    modules['serverpod_auth_idp'] = _i6.Endpoints()
+    modules['serverpod_auth_idp'] = _i8.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i7.Endpoints()
+    modules['serverpod_auth_core'] = _i9.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -15,7 +15,7 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
 
   @override
   EmailIDP construct({required final TokenManager tokenManager}) {
-    return EmailIDP(config: config, tokenManager: tokenManager);
+    return EmailIDP(config, tokenManager: tokenManager);
   }
 }
 

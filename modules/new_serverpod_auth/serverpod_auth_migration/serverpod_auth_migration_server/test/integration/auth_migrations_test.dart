@@ -17,8 +17,7 @@ void main() {
   );
 
   const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP =
-      new_auth_idp.EmailIDP(config: config, tokenManager: tokenManager);
+  final newEmailIDP = new_auth_idp.EmailIDP(config, tokenManager: tokenManager);
 
   setUp(() async {
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);

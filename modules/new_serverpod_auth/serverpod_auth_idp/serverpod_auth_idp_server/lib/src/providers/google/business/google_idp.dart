@@ -19,26 +19,43 @@ import 'google_idp_utils.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class GoogleIDP {
-  static const String _method = 'google';
+  /// The method used when authenticating with the Google identity provider.
+  static const String method = 'google';
 
   /// Admin operations to work with Google-backed accounts.
-  late final GoogleIDPAdmin admin;
+  final GoogleIDPAdmin admin;
 
   /// Utility functions for the Google identity provider.
   final GoogleIDPUtils utils;
 
+  /// The configuration for the Google identity provider.
+  final GoogleIDPConfig config;
+
   final TokenIssuer _tokenIssuer;
 
+  GoogleIDP._(
+    this.config,
+    this._tokenIssuer,
+    this.utils,
+    this.admin,
+  );
+
   /// Creates a new instance of [GoogleIDP].
-  GoogleIDP({
-    required final GoogleIDPConfig config,
+  factory GoogleIDP(
+    final GoogleIDPConfig config, {
     required final TokenIssuer tokenIssuer,
-  })  : utils = GoogleIDPUtils(
-          clientSecret: config.clientSecret,
-        ),
-        _tokenIssuer = tokenIssuer {
-    admin = GoogleIDPAdmin(
+  }) {
+    final utils = GoogleIDPUtils(
+      clientSecret: config.clientSecret,
+    );
+    final admin = GoogleIDPAdmin(
       utils: utils,
+    );
+    return GoogleIDP._(
+      config,
+      tokenIssuer,
+      utils,
+      admin,
     );
   }
 
@@ -83,7 +100,7 @@ final class GoogleIDP {
         session,
         authUserId: account.authUserId,
         transaction: transaction,
-        method: _method,
+        method: method,
         scopes: account.scopes,
       );
     });

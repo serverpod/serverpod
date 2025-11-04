@@ -16,8 +16,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
-import 'package:auth_client/src/protocol/greeting.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'dart:typed_data' as _i5;
+import 'package:auth_client/src/protocol/greeting.dart' as _i6;
+import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
 class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
@@ -207,6 +208,45 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
       );
 }
 
+/// {@category Endpoint}
+class EndpointPasskeyIDP extends _i1.EndpointPasskeyIDPBase {
+  EndpointPasskeyIDP(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'passkeyIDP';
+
+  /// Returns a new challenge to be used for a login or registration request.
+  @override
+  _i3.Future<({_i5.ByteData challenge, _i2.UuidValue id})> createChallenge() =>
+      caller.callServerEndpoint<({_i5.ByteData challenge, _i2.UuidValue id})>(
+        'passkeyIDP',
+        'createChallenge',
+        {},
+      );
+
+  /// Registers a Passkey for the [session]'s current user.
+  ///
+  /// Throws if the user is not authenticated.
+  @override
+  _i3.Future<void> register(
+          {required _i1.PasskeyRegistrationRequest registrationRequest}) =>
+      caller.callServerEndpoint<void>(
+        'passkeyIDP',
+        'register',
+        {'registrationRequest': registrationRequest},
+      );
+
+  /// Authenticates the user related to the given Passkey.
+  @override
+  _i3.Future<_i4.AuthSuccess> login(
+          {required _i1.PasskeyLoginRequest loginRequest}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'passkeyIDP',
+        'login',
+        {'loginRequest': loginRequest},
+      );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -217,8 +257,8 @@ class EndpointGreeting extends _i2.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i5.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i5.Greeting>(
+  _i3.Future<_i6.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i6.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -252,7 +292,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i7.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -265,6 +305,7 @@ class Client extends _i2.ServerpodClientShared {
     appleIDP = EndpointAppleIDP(this);
     emailIDP = EndpointEmailIDP(this);
     googleIDP = EndpointGoogleIDP(this);
+    passkeyIDP = EndpointPasskeyIDP(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
@@ -275,6 +316,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGoogleIDP googleIDP;
 
+  late final EndpointPasskeyIDP passkeyIDP;
+
   late final EndpointGreeting greeting;
 
   late final Modules modules;
@@ -284,6 +327,7 @@ class Client extends _i2.ServerpodClientShared {
         'appleIDP': appleIDP,
         'emailIDP': emailIDP,
         'googleIDP': googleIDP,
+        'passkeyIDP': passkeyIDP,
         'greeting': greeting,
       };
 

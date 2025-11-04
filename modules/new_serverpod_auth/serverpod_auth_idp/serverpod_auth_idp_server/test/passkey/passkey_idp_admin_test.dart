@@ -1,5 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
@@ -7,25 +8,33 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = AuthSessionsTokenManager(
+    config: AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
+  );
+
   withServerpod(
     'Given a pending challenge,',
     (final sessionBuilder, final _) {
       late Session session;
+      final passKeyIDP = PasskeyIDP(
+        PasskeyIDPConfig(
+          hostname: 'localhost',
+        ),
+        tokenIssuer: tokenManager,
+      );
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        PasskeyAccounts.config = PasskeyAccountConfig(
-          hostname: 'localhost',
-        );
-
-        await PasskeyAccounts.createChallenge(session);
+        await passKeyIDP.createChallenge(session);
       });
 
       test(
           'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
           () async {
-        await PasskeyAccounts.admin.deleteExpiredChallenges(session);
+        await passKeyIDP.admin.deleteExpiredChallenges(session);
 
         expect(
           await PasskeyChallenge.db.find(session),
@@ -38,9 +47,9 @@ void main() {
           () async {
         await withClock(
           Clock.fixed(
-            DateTime.now().add(PasskeyAccounts.config.challengeLifetime),
+            DateTime.now().add(passKeyIDP.config.challengeLifetime),
           ),
-          () => PasskeyAccounts.admin.deleteExpiredChallenges(session),
+          () => passKeyIDP.admin.deleteExpiredChallenges(session),
         );
 
         expect(

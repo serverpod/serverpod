@@ -14,7 +14,7 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
 
   @override
   AppleIDP construct({required final TokenManager tokenManager}) {
-    return AppleIDP(config: config, tokenIssuer: tokenManager);
+    return AppleIDP(config, tokenIssuer: tokenManager);
   }
 }
 

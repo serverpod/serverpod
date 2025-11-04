@@ -8,12 +8,6 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
-      sessionKeyHashPepper: 'test-pepper',
-    ),
-  );
-
   withServerpod(
     'Given 1 active and 1 expired Apple-backed auth user,',
     (final sessionBuilder, final _) {
@@ -31,10 +25,10 @@ void main() {
         final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleIDP.fromSignInWithApple(
-          signInWithApple,
-          tokenIssuer: tokenManager,
-        ).admin;
+        final utils = AppleIDPUtils(signInWithApple: signInWithApple);
+        admin = AppleIDPAdmin(
+          utils: utils,
+        );
       });
 
       test(

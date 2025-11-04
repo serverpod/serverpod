@@ -15,7 +15,7 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
 
   @override
   GoogleIDP construct({required final TokenManager tokenManager}) {
-    return GoogleIDP(config: config, tokenIssuer: tokenManager);
+    return GoogleIDP(config, tokenIssuer: tokenManager);
   }
 }
 
