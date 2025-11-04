@@ -9,7 +9,13 @@ import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
 import 'email_idp_password_hash_util.dart';
 
+/// {@template email_idp_authentication_util}
 /// Authentication utilities for the email identity provider.
+///
+/// The main entry point is the [authenticate] method, which can be used to authenticate a user.
+///
+/// This class also contains utility functions for administration tasks, such as deleting failed login attempts.
+/// {@endtemplate}
 class EmailIDPAuthenticationUtil {
   final EmailIDPPasswordHashUtil _passwordHashUtil;
   final RateLimit _failedLoginRateLimit;

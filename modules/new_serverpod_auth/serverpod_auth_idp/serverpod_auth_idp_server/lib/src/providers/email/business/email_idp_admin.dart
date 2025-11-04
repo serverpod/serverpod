@@ -142,14 +142,14 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final deletedCount = await _utils.deleteAccount(
+        final deletedCount = await _utils.account.deleteAccount(
           session,
           email: email,
           authUserId: null,
           transaction: transaction,
         );
 
-        if (deletedCount == 0) {
+        if (deletedCount.isEmpty) {
           throw EmailAccountNotFoundException();
         }
       },
@@ -173,14 +173,14 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final deletedCount = await _utils.deleteAccount(
+        final deletedCount = await _utils.account.deleteAccount(
           session,
           email: null,
           authUserId: authUserId,
           transaction: transaction,
         );
 
-        if (deletedCount == 0) {
+        if (deletedCount.isEmpty) {
           throw EmailAccountNotFoundException();
         }
       },
@@ -190,21 +190,19 @@ final class EmailIDPAdmin {
   /// Gets an email authentication exists for the given email address.
   Future<EmailAccount?> findAccount(
     final Session session, {
-    required String email,
+    required final String email,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
-      email = email.normalizedEmail;
-
-      final account = await EmailAccount.db.findFirstRow(
+    return (await DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.account.listAccounts(
         session,
-        where: (final t) => t.email.equals(email),
+        email: email,
         transaction: transaction,
-      );
-
-      return account;
-    });
+      ),
+    ))
+        .firstOrNull;
   }
 
   /// {@macro email_idp_account_creation_util.find_active_email_account_request}
@@ -244,9 +242,9 @@ final class EmailIDPAdmin {
       (final transaction) async {
         email = email.normalizedEmail;
 
-        final account = (await EmailAccount.db.find(
+        final account = (await _utils.account.listAccounts(
           session,
-          where: (final t) => t.email.equals(email),
+          email: email,
           transaction: transaction,
         ))
             .singleOrNull;

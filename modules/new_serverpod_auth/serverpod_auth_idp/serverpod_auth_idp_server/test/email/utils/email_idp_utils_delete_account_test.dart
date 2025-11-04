@@ -57,7 +57,7 @@ void main() {
           'when deleteAccount is called with email then only that email account is deleted',
           () async {
         final deletedCount = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.deleteAccount(
+          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
             authUserId: null,
@@ -78,7 +78,7 @@ void main() {
           'when deleteAccount is called with authUserId then all accounts for that user are deleted',
           () async {
         final deletedCount = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.deleteAccount(
+          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: null,
             authUserId: authUserId1,
@@ -99,7 +99,7 @@ void main() {
           'when deleteAccount is called with both email and authUserId then only matching account is deleted',
           () async {
         final deletedCount = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.deleteAccount(
+          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
             authUserId: authUserId1,
@@ -120,7 +120,7 @@ void main() {
           'when deleteAccount is called with non-matching filters then no accounts are deleted',
           () async {
         final deletedCount = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.deleteAccount(
+          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
             authUserId: authUserId2,
@@ -138,7 +138,7 @@ void main() {
           'when deleteAccount is called with neither email nor authUserId then all accounts are deleted',
           () async {
         final deletedCount = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.deleteAccount(
+          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: null,
             authUserId: null,
