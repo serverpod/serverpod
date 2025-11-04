@@ -999,6 +999,16 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
+    if (column.length > _maxColumnNameLength) {
+      return [
+        SourceSpanSeverityException(
+          'The column name "$column" exceeds the $_maxColumnNameLength '
+          'character column name limitation.',
+          span,
+        )
+      ];
+    }
+
     var currentModel = parsedModels.findByClassName(definition.className);
 
     if (currentModel is ModelClassDefinition) {
