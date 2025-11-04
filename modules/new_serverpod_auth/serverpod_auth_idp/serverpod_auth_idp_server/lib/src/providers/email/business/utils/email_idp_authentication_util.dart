@@ -4,19 +4,19 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/secret_hash_util.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
-import 'email_idp_password_hash_util.dart';
 
 /// Authentication utilities for the email identity provider.
 class EmailIDPAuthenticationUtil {
-  final EmailIDPHashUtil _hashUtil;
+  final SecretHashUtil _hashUtil;
   final RateLimit _failedLoginRateLimit;
 
   /// Creates a new instance of [EmailIDPAuthenticationUtil].
   EmailIDPAuthenticationUtil({
-    required final EmailIDPHashUtil hashUtil,
+    required final SecretHashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
   })  : _hashUtil = hashUtil,
         _failedLoginRateLimit = failedLoginRateLimit;

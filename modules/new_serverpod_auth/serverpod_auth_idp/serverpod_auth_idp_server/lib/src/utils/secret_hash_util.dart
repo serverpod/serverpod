@@ -6,19 +6,18 @@ import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// {@template email_idp_hash_util}
-/// Class for handling password and verification code hashing in the email
-/// account module.
+/// {@template secret_hash_util}
+/// Class for handling secret hashing.
 ///
 /// Uses the Argon2id algorithm.
 /// See: https://en.wikipedia.org/wiki/Argon2
 /// {@endtemplate}
-final class EmailIDPHashUtil {
+final class SecretHashUtil {
   final String _hashPepper;
   final int _hashSaltLength;
 
-  /// Creates a new instance of [EmailIDPHashUtil].
-  EmailIDPHashUtil({
+  /// Creates a new instance of [SecretHashUtil].
+  SecretHashUtil({
     required final String hashPepper,
     required final int hashSaltLength,
   })  : _hashPepper = hashPepper,

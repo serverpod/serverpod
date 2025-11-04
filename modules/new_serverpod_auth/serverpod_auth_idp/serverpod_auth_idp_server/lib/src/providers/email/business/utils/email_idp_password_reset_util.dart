@@ -4,11 +4,11 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/secret_hash_util.dart';
 import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
-import 'email_idp_password_hash_util.dart';
 
 /// {@template email_idp_password_reset_util}
 /// Class for handling password reset operations in the email account module.
@@ -20,13 +20,13 @@ import 'email_idp_password_hash_util.dart';
 /// deleting expired password reset requests and password reset attempts.
 /// {@endtemplate}
 class EmailIDPPasswordResetUtil {
-  final EmailIDPHashUtil _passwordHashUtil;
+  final SecretHashUtil _passwordHashUtil;
   final EmailIDPPasswordResetUtilsConfig _config;
 
   /// Creates a new [EmailIDPPasswordResetUtil] instance.
   EmailIDPPasswordResetUtil({
     required final EmailIDPPasswordResetUtilsConfig config,
-    required final EmailIDPHashUtil passwordHashUtils,
+    required final SecretHashUtil passwordHashUtils,
   })  : _config = config,
         _passwordHashUtil = passwordHashUtils;
 

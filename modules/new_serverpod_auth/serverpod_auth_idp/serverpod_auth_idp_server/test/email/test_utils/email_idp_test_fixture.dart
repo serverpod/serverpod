@@ -104,7 +104,7 @@ final class EmailIDPTestFixture {
         .deleteWhere(session, where: (final _) => Constant.bool(true));
   }
 
-  EmailIDPHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
+  SecretHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
   EmailIDPAuthenticationUtil get authenticationUtil =>
       emailIDP.utils.authentication;
   EmailIDPPasswordResetUtil get passwordResetUtil =>

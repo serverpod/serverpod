@@ -1,9 +1,9 @@
 import '../../../generated/protocol.dart';
+import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
 import 'utils/email_idp_authentication_util.dart';
-import 'utils/email_idp_password_hash_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
 /// Email account management functions.
@@ -21,7 +21,7 @@ import 'utils/email_idp_password_reset_util.dart';
 /// [EmailIDPAdmin] should be sufficient.
 class EmailIDPUtils {
   /// {@macro email_idp_hash_util}
-  final EmailIDPHashUtil hashUtil;
+  final SecretHashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
   late final EmailIDPAccountCreationUtil accountCreation;
@@ -34,7 +34,7 @@ class EmailIDPUtils {
 
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({required final EmailIDPConfig config})
-      : hashUtil = EmailIDPHashUtil(
+      : hashUtil = SecretHashUtil(
           hashPepper: config.secretHashPepper,
           hashSaltLength: config.secretHashSaltLength,
         ) {

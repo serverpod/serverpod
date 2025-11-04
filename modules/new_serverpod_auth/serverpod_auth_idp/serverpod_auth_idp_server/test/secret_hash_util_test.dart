@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp_config.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/business/utils/email_idp_password_hash_util.dart';
+import 'package:serverpod_auth_idp_server/src/utils/secret_hash_util.dart';
 import 'package:test/test.dart';
 
-import '../test_utils/email_idp_test_fixture.dart';
+import 'email/test_utils/email_idp_test_fixture.dart';
 
 void main() {
   group('Given EmailIDPPasswordHashUtil instance', () {
-    late EmailIDPHashUtil passwordHashUtil;
+    late SecretHashUtil passwordHashUtil;
     const testSaltLength = 16;
 
     setUp(() {
@@ -111,7 +111,7 @@ void main() {
   });
 
   group('Given a created password hash', () {
-    late EmailIDPHashUtil passwordHashUtil;
+    late SecretHashUtil passwordHashUtil;
     late HashResult passwordHash;
     const value = 'test-password-123';
     const pepper = 'my-test-pepper';
@@ -194,7 +194,7 @@ void main() {
   });
 
   group('Given a password hash created from an empty password', () {
-    late EmailIDPHashUtil passwordHashUtil;
+    late SecretHashUtil passwordHashUtil;
     late HashResult emptyPasswordHash;
     setUp(() async {
       final fixture = EmailIDPTestFixture(
