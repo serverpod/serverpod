@@ -16,13 +16,37 @@ class AuthSessionsConfig {
   /// as otherwise all sessions become invalid.
   late final String sessionKeyHashPepper;
 
+  /// Default absolute expiration time for sessions.
+  ///
+  /// When set, new sessions will expire at creation time + this duration.
+  /// If `null`, sessions will not have an absolute expiration time by default.
+  ///
+  /// This can be overridden when creating individual sessions.
+  ///
+  /// Defaults to `null` (no absolute expiration).
+  final Duration? defaultSessionLifetime;
+
+  /// Default inactivity timeout for sessions.
+  ///
+  /// When set, sessions will expire if they go unused for this duration.
+  /// If `null`, sessions will not expire due to inactivity by default.
+  ///
+  /// This can be overridden when creating individual sessions.
+  ///
+  /// Defaults to `null` (no inactivity timeout).
+  final Duration? defaultSessionInactivityTimeout;
+
   /// Create a new user session configuration.
   AuthSessionsConfig({
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,
+    this.defaultSessionLifetime,
+    this.defaultSessionInactivityTimeout,
   }) {
     _validateSessionKeyHashPepper(sessionKeyHashPepper);
+    _validateSessionLifetime(defaultSessionLifetime);
+    _validateSessionInactivityTimeout(defaultSessionInactivityTimeout);
   }
 }
 
@@ -40,6 +64,27 @@ void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {
       sessionKeyHashPepper,
       'sessionKeyHashPepper',
       'must be at least 10 characters long',
+    );
+  }
+}
+
+void _validateSessionLifetime(final Duration? sessionLifetime) {
+  if (sessionLifetime != null && sessionLifetime.isNegative) {
+    throw ArgumentError.value(
+      sessionLifetime,
+      'defaultSessionLifetime',
+      'must not be negative',
+    );
+  }
+}
+
+void _validateSessionInactivityTimeout(
+    final Duration? sessionInactivityTimeout) {
+  if (sessionInactivityTimeout != null && sessionInactivityTimeout.isNegative) {
+    throw ArgumentError.value(
+      sessionInactivityTimeout,
+      'defaultSessionInactivityTimeout',
+      'must not be negative',
     );
   }
 }
