@@ -50,7 +50,7 @@ void run(List<String> args) async {
   );
 
   final emailIDPConfig = EmailIDPConfig(
-    passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
+    secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
   );
 
   final passkeyIDPConfig = PasskeyIDPConfig(

@@ -13,7 +13,7 @@ void main() {
     ),
   );
 
-  const newEmailIDPConfig = EmailIDPConfig(passwordHashPepper: 'test');
+  const newEmailIDPConfig = EmailIDPConfig(secretHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
     final sessionBuilder,

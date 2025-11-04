@@ -35,8 +35,8 @@ class EmailIDPUtils {
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({required final EmailIDPConfig config})
       : hashUtil = EmailIDPHashUtil(
-          hashPepper: config.passwordHashPepper,
-          hashSaltLength: config.passwordHashSaltLength,
+          hashPepper: config.secretHashPepper,
+          hashSaltLength: config.secretHashSaltLength,
         ) {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),

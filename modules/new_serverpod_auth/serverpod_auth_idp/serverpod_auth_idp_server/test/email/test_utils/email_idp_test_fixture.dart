@@ -36,7 +36,7 @@ final class EmailIDPTestFixture {
 
   EmailIDPTestFixture({
     this.config = const EmailIDPConfig(
-      passwordHashPepper: 'pepper',
+      secretHashPepper: 'pepper',
     ),
     TokenManager? tokenManager,
   }) {

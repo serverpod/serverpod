@@ -14,8 +14,8 @@ void main() {
     setUp(() {
       final fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-            passwordHashPepper: 'test-pepper',
-            passwordHashSaltLength: testSaltLength),
+            secretHashPepper: 'test-pepper',
+            secretHashSaltLength: testSaltLength),
       );
       passwordHashUtil = fixture.passwordHashUtil;
     });
@@ -118,7 +118,7 @@ void main() {
 
     setUp(() async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: pepper),
+        config: const EmailIDPConfig(secretHashPepper: pepper),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       passwordHash = await passwordHashUtil.createHash(value: value);
@@ -179,7 +179,7 @@ void main() {
         'when validatedHash is called with valid credentials on a different password hash util using a different pepper then returns false',
         () async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: '$pepper-modified'),
+        config: const EmailIDPConfig(secretHashPepper: '$pepper-modified'),
       );
       final differentPepperPasswordHashUtil = fixture.passwordHashUtil;
 
@@ -198,7 +198,7 @@ void main() {
     late HashResult emptyPasswordHash;
     setUp(() async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: 'test-pepper'),
+        config: const EmailIDPConfig(secretHashPepper: 'test-pepper'),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       emptyPasswordHash = await passwordHashUtil.createHash(value: '');

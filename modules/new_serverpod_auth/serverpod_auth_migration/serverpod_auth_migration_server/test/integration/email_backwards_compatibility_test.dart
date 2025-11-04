@@ -18,7 +18,7 @@ void main() {
   );
 
   const newEmailIDPConfig =
-      new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
+      new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
   late final new_auth_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {

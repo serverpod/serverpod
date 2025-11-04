@@ -18,7 +18,7 @@ void main() {
       identityProviders: [
         EmailIdentityProviderFactory(
           const EmailIDPConfig(
-            passwordHashPepper: 'test',
+            secretHashPepper: 'test',
           ),
         ),
       ],
@@ -46,7 +46,7 @@ void main() {
 
         setUp(() async {
           final config = EmailIDPConfig(
-            passwordHashPepper: 'test',
+            secretHashPepper: 'test',
             sendRegistrationVerificationCode: (
               final session, {
               required final accountRequestId,
@@ -127,7 +127,7 @@ void main() {
 
         setUp(() async {
           final config = EmailIDPConfig(
-            passwordHashPepper: 'test',
+            secretHashPepper: 'test',
             maxPasswordResetAttempts: const RateLimit(
               timeframe: Duration(seconds: 1),
               maxAttempts: 100,
@@ -190,7 +190,7 @@ void main() {
 
       setUp(() async {
         final config = EmailIDPConfig(
-          passwordHashPepper: 'test',
+          secretHashPepper: 'test',
           sendRegistrationVerificationCode: (
             final session, {
             required final accountRequestId,
@@ -335,7 +335,7 @@ void main() {
           password: password,
         );
         final config = EmailIDPConfig(
-          passwordHashPepper: 'test',
+          secretHashPepper: 'test',
           sendRegistrationVerificationCode: (
             final session, {
             required final accountRequestId,
@@ -499,7 +499,7 @@ void main() {
 
       setUp(() async {
         const config = EmailIDPConfig(
-          passwordHashPepper: 'test',
+          secretHashPepper: 'test',
         );
         AuthServices.set(
           identityProviders: [
@@ -684,7 +684,7 @@ void main() {
 
       setUp(() async {
         const config = EmailIDPConfig(
-          passwordHashPepper: 'test',
+          secretHashPepper: 'test',
         );
 
         AuthServices.set(
@@ -777,7 +777,7 @@ extension on TestEndpoints {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
     final config = EmailIDPConfig(
-      passwordHashPepper: 'test',
+      secretHashPepper: 'test',
       maxPasswordResetAttempts: const RateLimit(
         timeframe: Duration(seconds: 1),
         maxAttempts: 100,
@@ -832,7 +832,7 @@ extension on TestEndpoints {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
     final config = EmailIDPConfig(
-      passwordHashPepper: 'test',
+      secretHashPepper: 'test',
       sendPasswordResetVerificationCode: (
         final session, {
         required final email,
