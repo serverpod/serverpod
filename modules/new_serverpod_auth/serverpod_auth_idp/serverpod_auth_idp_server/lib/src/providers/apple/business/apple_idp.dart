@@ -29,36 +29,38 @@ final class AppleIDP {
   late final AppleIDPAdmin admin;
 
   /// Utility functions for the Apple identity provider.
-  late final AppleIDPUtils utils;
+  final AppleIDPUtils utils;
 
-  late final TokenIssuer _tokenIssuer;
+  /// The configuration for the Apple identity provider.
+  final AppleIDPConfig config;
+
+  final TokenIssuer _tokenIssuer;
+
+  AppleIDP._(
+    this.config,
+    this._tokenIssuer,
+    this.utils,
+    this.admin,
+  );
 
   /// Creates a new instance of [AppleIDP].
-  AppleIDP({
-    required final AppleIDPConfig config,
+  factory AppleIDP(
+    final AppleIDPConfig config, {
     required final TokenIssuer tokenIssuer,
-  }) : _tokenIssuer = tokenIssuer {
-    final signInWithAppleConf = SignInWithAppleConfiguration(
-      serviceIdentifier: config.serviceIdentifier,
-      bundleIdentifier: config.bundleIdentifier,
-      redirectUri: config.redirectUri,
-      teamId: config.teamId,
-      keyId: config.keyId,
-      key: config.key,
+  }) {
+    final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
+
+    final utils = AppleIDPUtils(
+      signInWithApple: SignInWithApple(config: signInWithAppleConfig),
     );
-    final signInWithApple = SignInWithApple(config: signInWithAppleConf);
+    final admin = AppleIDPAdmin(utils: utils);
 
-    utils = AppleIDPUtils(signInWithApple: signInWithApple);
-    admin = AppleIDPAdmin(utils: utils);
-  }
-
-  /// Creates a new instance of [AppleIDP] from a [SignInWithApple] instance.
-  AppleIDP.fromSignInWithApple(
-    final SignInWithApple signInWithApple, {
-    required final TokenIssuer tokenIssuer,
-  }) : _tokenIssuer = tokenIssuer {
-    utils = AppleIDPUtils(signInWithApple: signInWithApple);
-    admin = AppleIDPAdmin(utils: utils);
+    return AppleIDP._(
+      config,
+      tokenIssuer,
+      utils,
+      admin,
+    );
   }
 
   /// {@macro apple_idp_base_endpoint.login}

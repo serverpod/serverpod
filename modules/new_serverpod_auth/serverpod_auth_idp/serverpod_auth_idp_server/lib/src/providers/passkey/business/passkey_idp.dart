@@ -15,32 +15,43 @@ final class PasskeyIDP {
   static const String _method = 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
-  late final PasskeyIDPAdmin admin;
+  final PasskeyIDPAdmin admin;
 
   /// The configuration for the Passkey identity provider.
   final PasskeyIDPConfig config;
 
   /// Utility functions for the Passkey identity provider.
-  late final PasskeyIDPUtils utils;
+  final PasskeyIDPUtils utils;
 
   final TokenIssuer _tokenIssuer;
 
-  final Passkeys _passkeys;
+  PasskeyIDP._(
+    this.config,
+    this._tokenIssuer,
+    this.utils,
+    this.admin,
+  );
 
   /// Creates a new instance of [PasskeyIDP].
-  PasskeyIDP(
-    this.config, {
+  factory PasskeyIDP(
+    final PasskeyIDPConfig config, {
     required final TokenIssuer tokenIssuer,
-  })  : _tokenIssuer = tokenIssuer,
-        _passkeys = Passkeys(
-          config: PasskeysConfig(
-            relyingPartyId: config.hostname,
-          ),
-        ) {
-    utils = PasskeyIDPUtils(
-        challengeLifetime: config.challengeLifetime, passkeys: _passkeys);
-    admin = PasskeyIDPAdmin(
-        challengeLifetime: config.challengeLifetime, utils: utils);
+  }) {
+    final utils = PasskeyIDPUtils(
+      challengeLifetime: config.challengeLifetime,
+      passkeys:
+          Passkeys(config: PasskeysConfig(relyingPartyId: config.hostname)),
+    );
+
+    return PasskeyIDP._(
+      config,
+      tokenIssuer,
+      utils,
+      PasskeyIDPAdmin(
+        challengeLifetime: config.challengeLifetime,
+        utils: utils,
+      ),
+    );
   }
 
   /// Creates a new challenge to be used for a subsequent registration or login.

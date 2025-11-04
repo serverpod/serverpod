@@ -26,21 +26,36 @@ final class EmailIDP {
   static const String method = 'email';
 
   /// Admin operations to work with email-backed accounts.
-  late final EmailIDPAdmin admin;
+  final EmailIDPAdmin admin;
 
   /// Utility functions for the email identity provider.
-  late final EmailIDPUtils utils;
+  final EmailIDPUtils utils;
 
   /// The configuration for the email identity provider.
   final EmailIDPConfig config;
 
   final TokenManager _tokenManager;
 
+  EmailIDP._(
+    this.config,
+    this._tokenManager,
+    this.utils,
+    this.admin,
+  );
+
   /// Creates a new instance of [EmailIDP].
-  EmailIDP({required this.config, required final TokenManager tokenManager})
-      : _tokenManager = tokenManager {
-    utils = EmailIDPUtils(config: config);
-    admin = EmailIDPAdmin(utils: utils);
+  factory EmailIDP(
+    final EmailIDPConfig config, {
+    required final TokenManager tokenManager,
+  }) {
+    final utils = EmailIDPUtils(config: config);
+    final admin = EmailIDPAdmin(utils: utils);
+    return EmailIDP._(
+      config,
+      tokenManager,
+      utils,
+      admin,
+    );
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
