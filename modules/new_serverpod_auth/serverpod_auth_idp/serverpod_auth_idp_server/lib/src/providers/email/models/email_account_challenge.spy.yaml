@@ -1,0 +1,11 @@
+class: EmailAccountChallenge
+serverOnly: true
+table: serverpod_auth_idp_email_account_challenge
+fields:
+  id: UuidValue?, defaultPersist=random
+
+  ### The hash of the challenge code sent to the user.
+  challengeCodeHash: ByteData
+
+  ### The salt used to compute the [challengeCodeHash].
+  challengeCodeSalt: ByteData

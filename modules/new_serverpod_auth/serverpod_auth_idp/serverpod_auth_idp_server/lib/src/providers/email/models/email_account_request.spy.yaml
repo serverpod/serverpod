@@ -25,11 +25,8 @@ fields:
   ### The salt used for creating the [passwordHash].
   passwordSalt: ByteData
 
-  ### The hash of the verification code sent to the user.
-  verificationCodeHash: ByteData
-
-  ### The salt used to compute the [verificationCodeHash].
-  verificationCodeSalt: ByteData
+  ### The associated challenge for this request
+  challenge: EmailAccountChallenge?, relation(onDelete=Cascade)
 
   ### Time at which the email address has been verified, or `null` if it did not happen yet.
   ###
