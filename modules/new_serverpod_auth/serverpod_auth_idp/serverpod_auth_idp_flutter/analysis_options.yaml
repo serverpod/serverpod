@@ -1,0 +1,8 @@
+include: package:serverpod_lints/public_flutter.yaml
+
+linter:
+  rules:
+    # TODO: Enable public_member_api_docs when the package is ready.
+    public_member_api_docs: false
+    unawaited_futures: true
+    discarded_futures: true
