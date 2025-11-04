@@ -61,6 +61,9 @@ class EmailIDPPasswordResetUtil {
     final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
       session,
       passwordResetRequestId,
+      include: EmailAccountPasswordResetRequest.include(
+        challenge: EmailAccountChallenge.include(),
+      ),
       transaction: transaction,
     );
 
@@ -81,10 +84,12 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetTooManyVerificationAttemptsException();
     }
 
+    final challenge = resetRequest.getChallenge;
+
     if (!await _passwordHashUtil.validateHash(
       value: verificationCode,
-      hash: resetRequest.verificationCodeHash.asUint8List,
-      salt: resetRequest.verificationCodeSalt.asUint8List,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -270,12 +275,20 @@ class EmailIDPPasswordResetUtil {
       value: verificationCode,
     );
 
+    final challenge = await EmailAccountChallenge.db.insertRow(
+      session,
+      EmailAccountChallenge(
+        challengeCodeHash: verificationCodeHash.hash.asByteData,
+        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
     final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
       session,
       EmailAccountPasswordResetRequest(
         emailAccountId: account.id!,
-        verificationCodeHash: verificationCodeHash.hash.asByteData,
-        verificationCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeId: challenge.id!,
         createdAt: clock.now(),
       ),
       transaction: transaction,
@@ -420,5 +433,15 @@ extension on EmailAccountPasswordResetRequest {
     );
 
     return resetExpiresAt.isBefore(clock.now());
+  }
+
+  EmailAccountChallenge get getChallenge {
+    if (challenge == null) {
+      throw StateError(
+        'Challenge is required for password reset verification',
+      );
+    }
+
+    return challenge!;
   }
 }

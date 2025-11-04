@@ -405,14 +405,22 @@ class EmailIDPAccountCreationUtil {
       value: verificationCode,
     );
 
+    final challenge = await EmailAccountChallenge.db.insertRow(
+      session,
+      EmailAccountChallenge(
+        challengeCodeHash: verificationCodeHash.hash.asByteData,
+        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
     final emailAccountRequest = await EmailAccountRequest.db.insertRow(
       session,
       EmailAccountRequest(
         email: email,
         passwordHash: passwordHash.hash.asByteData,
         passwordSalt: passwordHash.salt.asByteData,
-        verificationCodeHash: verificationCodeHash.hash.asByteData,
-        verificationCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeId: challenge.id!,
         createdAt: clock.now(),
       ),
       transaction: transaction,
@@ -460,6 +468,9 @@ class EmailIDPAccountCreationUtil {
     final request = await EmailAccountRequest.db.findById(
       session,
       accountRequestId,
+      include: EmailAccountRequest.include(
+        challenge: EmailAccountChallenge.include(),
+      ),
       transaction: transaction,
     );
 
@@ -480,10 +491,12 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
+    final challenge = request.getChallenge;
+
     if (!await _hashUtils.validateHash(
       value: verificationCode,
-      hash: request.verificationCodeHash.asUint8List,
-      salt: request.verificationCodeSalt.asUint8List,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailAccountRequestInvalidVerificationCodeException();
     }
@@ -653,6 +666,16 @@ extension on EmailAccountRequest {
     );
 
     return requestExpiresAt.isBefore(clock.now());
+  }
+
+  EmailAccountChallenge get getChallenge {
+    if (challenge == null) {
+      throw StateError(
+        'Challenge is required for account request verification',
+      );
+    }
+
+    return challenge!;
   }
 }
 
