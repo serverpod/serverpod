@@ -266,12 +266,12 @@ class SerializableModelFieldDefinition {
   final bool isRequired;
 
   /// Name of the column in the database
-  final String? column;
+  final String? columnNameOverride;
 
   /// Name of the column to be used when referencing the database.
   ///
-  /// This will be the [column] if set, with fallback to the [name]
-  String get columnName => column ?? name;
+  /// This will be the [columnNameOverride] if set, with fallback to the [name]
+  String get columnName => columnNameOverride ?? name;
 
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
@@ -287,7 +287,7 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
-    this.column,
+    this.columnNameOverride,
   });
 
   /// Returns true, if classes should include this field.

@@ -156,7 +156,7 @@ class FieldDefinitionBuilder {
       defaultModelValue: _defaultModelValue,
       defaultPersistValue: _defaultPersistValue,
       isRequired: _isRequired,
-      column: _column,
+      columnNameOverride: _column,
     );
   }
 }

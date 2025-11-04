@@ -304,7 +304,7 @@ class ModelParser {
 
     final columnNode = node.nodes[Keyword.columnKey];
     final columnValue = columnNode?.value;
-    final column = columnValue is String ? columnValue : null;
+    final columnNameOverride = columnValue is String ? columnValue : null;
 
     var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
@@ -349,7 +349,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
-        column: column,
+        columnNameOverride: columnNameOverride,
       ),
     ];
   }
