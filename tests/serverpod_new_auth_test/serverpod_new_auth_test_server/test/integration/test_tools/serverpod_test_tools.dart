@@ -767,6 +767,7 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
+    required String accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -779,7 +780,10 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccountBackwardsCompatibilityTest',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          parameters: _i1.testObjectToJson({
+            'idToken': idToken,
+            'accessToken': accessToken,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -807,6 +811,7 @@ class _GoogleAccountEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
+    required String accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -819,7 +824,10 @@ class _GoogleAccountEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccount',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          parameters: _i1.testObjectToJson({
+            'idToken': idToken,
+            'accessToken': accessToken,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(

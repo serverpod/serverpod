@@ -314,11 +314,17 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 
@@ -335,11 +341,17 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccount',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 

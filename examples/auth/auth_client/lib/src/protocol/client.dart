@@ -199,11 +199,17 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
+  _i3.Future<_i4.AuthSuccess> login({
+    required String idToken,
+    required String accessToken,
+  }) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleIDP',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 

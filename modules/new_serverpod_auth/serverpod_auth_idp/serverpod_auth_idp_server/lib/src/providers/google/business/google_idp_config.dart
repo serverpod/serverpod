@@ -66,7 +66,7 @@ final class GoogleClientSecret {
       throw const FormatException('Missing "client_secret"');
     }
 
-    final webRedirectUris = web['redirect_uris'] as List<String>?;
+    final webRedirectUris = web['redirect_uris'] as List<dynamic>?;
     if (webRedirectUris == null) {
       throw const FormatException('Missing "redirect_uris"');
     }
@@ -74,7 +74,7 @@ final class GoogleClientSecret {
     return GoogleClientSecret._(
       clientId: webClientId,
       clientSecret: webClientSecret,
-      redirectUris: webRedirectUris,
+      redirectUris: webRedirectUris.cast<String>(),
     );
   }
 
