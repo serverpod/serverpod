@@ -1009,6 +1009,15 @@ class Restrictions {
       ];
     }
 
+    if ((parentNodeName == defaultPrimaryKeyName)) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.columnKey}" key is not allowed on the "id" field.',
+          span,
+        )
+      ];
+    }
+
     if (column.length > _maxColumnNameLength) {
       return [
         SourceSpanSeverityException(
