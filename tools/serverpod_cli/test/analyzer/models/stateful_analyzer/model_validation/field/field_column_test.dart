@@ -162,4 +162,34 @@ void main() {
           'Expected the error message to indicate an explicit column name is too long.',
     );
   });
+
+  test(
+    'Given a class without a table but with a field with a column name override, '
+    'then collect an error that the table must be defined.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, column=user_name
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The "table" property must be defined in the class to set the column '
+        'on a field.',
+      );
+    },
+  );
 }
