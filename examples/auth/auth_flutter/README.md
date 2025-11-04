@@ -1,15 +1,43 @@
 # auth_flutter
 
-A new Flutter project with Serverpod.
+The example Flutter application for Serverpod's authentication module.
 
-## Getting Started
+See the [Serverpod documentation](https://docs.serverpod.dev) for more
+information.
 
-This project is a starting point for a Flutter application that is using
-Serverpod.
+## Sign-In With Google Setup
 
-A great starting point for learning Serverpod is our documentation site at:
-[https://docs.serverpod.dev](https://docs.serverpod.dev).
+Additional steps are required to run the app with Google Sign-In. For web,
+replace the `GOOGLE_CLIENT_ID` in the `web/index.html` file with the client ID
+from your Google Cloud project.
 
-To run the project, first make sure that the server is running, then do:
+For iOS and Android, run the app passing the `--dart-define` flag with the
+Google client ID:
 
-    flutter run
+```bash
+flutter run \
+  --dart-define=GOOGLE_CLIENT_ID=your_google_client_id \
+  --dart-define=GOOGLE_SERVER_CLIENT_ID=your_google_server_client_id
+```
+
+Also make sure to add the reversed client ID for iOS as indicated in the
+[official documentation](https://developers.google.com/identity/sign-in/ios/start-integrating):
+
+```xml
+<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
+<!-- Google Sign-in Section -->
+<key>CFBundleURLTypes</key>
+<array>
+	<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+			<!-- TODO Replace this value: -->
+			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+			<string>com.googleusercontent.apps.REVERSED_GOOGLE_CLIENT_ID</string>
+		</array>
+	</dict>
+</array>
+<!-- End of the Google Sign-in Section -->
+```
