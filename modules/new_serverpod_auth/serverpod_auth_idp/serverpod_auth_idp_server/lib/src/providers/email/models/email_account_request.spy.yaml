@@ -26,7 +26,7 @@ fields:
   passwordSalt: ByteData
 
   ### The associated challenge for this request
-  challenge: EmailAccountChallenge?, relation(onDelete=Cascade)
+  challenge: SecretChallenge?, relation(onDelete=Cascade)
 
   ### Time at which the email address has been verified, or `null` if it did not happen yet.
   ###
