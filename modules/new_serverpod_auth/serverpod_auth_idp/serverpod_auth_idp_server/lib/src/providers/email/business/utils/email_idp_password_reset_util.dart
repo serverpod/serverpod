@@ -62,7 +62,7 @@ class EmailIDPPasswordResetUtil {
       session,
       passwordResetRequestId,
       include: EmailAccountPasswordResetRequest.include(
-        challenge: EmailAccountChallenge.include(),
+        challenge: SecretChallenge.include(),
       ),
       transaction: transaction,
     );
@@ -275,9 +275,9 @@ class EmailIDPPasswordResetUtil {
       value: verificationCode,
     );
 
-    final challenge = await EmailAccountChallenge.db.insertRow(
+    final challenge = await SecretChallenge.db.insertRow(
       session,
-      EmailAccountChallenge(
+      SecretChallenge(
         challengeCodeHash: verificationCodeHash.hash.asByteData,
         challengeCodeSalt: verificationCodeHash.salt.asByteData,
       ),
@@ -435,7 +435,7 @@ extension on EmailAccountPasswordResetRequest {
     return resetExpiresAt.isBefore(clock.now());
   }
 
-  EmailAccountChallenge get getChallenge {
+  SecretChallenge get getChallenge {
     if (challenge == null) {
       throw StateError(
         'Challenge is required for password reset verification',

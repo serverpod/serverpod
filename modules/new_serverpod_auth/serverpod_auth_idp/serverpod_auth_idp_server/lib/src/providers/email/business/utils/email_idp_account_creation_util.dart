@@ -405,9 +405,9 @@ class EmailIDPAccountCreationUtil {
       value: verificationCode,
     );
 
-    final challenge = await EmailAccountChallenge.db.insertRow(
+    final challenge = await SecretChallenge.db.insertRow(
       session,
-      EmailAccountChallenge(
+      SecretChallenge(
         challengeCodeHash: verificationCodeHash.hash.asByteData,
         challengeCodeSalt: verificationCodeHash.salt.asByteData,
       ),
@@ -469,7 +469,7 @@ class EmailIDPAccountCreationUtil {
       session,
       accountRequestId,
       include: EmailAccountRequest.include(
-        challenge: EmailAccountChallenge.include(),
+        challenge: SecretChallenge.include(),
       ),
       transaction: transaction,
     );
@@ -668,7 +668,7 @@ extension on EmailAccountRequest {
     return requestExpiresAt.isBefore(clock.now());
   }
 
-  EmailAccountChallenge get getChallenge {
+  SecretChallenge get getChallenge {
     if (challenge == null) {
       throw StateError(
         'Challenge is required for account request verification',
