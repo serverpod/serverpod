@@ -13,23 +13,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-abstract class EmailAccountChallenge
+abstract class SecretChallenge
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  EmailAccountChallenge._({
+  SecretChallenge._({
     this.id,
     required this.challengeCodeHash,
     required this.challengeCodeSalt,
   });
 
-  factory EmailAccountChallenge({
+  factory SecretChallenge({
     _i1.UuidValue? id,
     required _i2.ByteData challengeCodeHash,
     required _i2.ByteData challengeCodeSalt,
-  }) = _EmailAccountChallengeImpl;
+  }) = _SecretChallengeImpl;
 
-  factory EmailAccountChallenge.fromJson(
-      Map<String, dynamic> jsonSerialization) {
-    return EmailAccountChallenge(
+  factory SecretChallenge.fromJson(Map<String, dynamic> jsonSerialization) {
+    return SecretChallenge(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
@@ -40,9 +39,9 @@ abstract class EmailAccountChallenge
     );
   }
 
-  static final t = EmailAccountChallengeTable();
+  static final t = SecretChallengeTable();
 
-  static const db = EmailAccountChallengeRepository._();
+  static const db = SecretChallengeRepository._();
 
   @override
   _i1.UuidValue? id;
@@ -56,10 +55,10 @@ abstract class EmailAccountChallenge
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
-  /// Returns a shallow copy of this [EmailAccountChallenge]
+  /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAccountChallenge copyWith({
+  SecretChallenge copyWith({
     _i1.UuidValue? id,
     _i2.ByteData? challengeCodeHash,
     _i2.ByteData? challengeCodeSalt,
@@ -78,26 +77,26 @@ abstract class EmailAccountChallenge
     return {};
   }
 
-  static EmailAccountChallengeInclude include() {
-    return EmailAccountChallengeInclude._();
+  static SecretChallengeInclude include() {
+    return SecretChallengeInclude._();
   }
 
-  static EmailAccountChallengeIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAccountChallengeTable>? where,
+  static SecretChallengeIncludeList includeList({
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountChallengeTable>? orderBy,
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountChallengeTable>? orderByList,
-    EmailAccountChallengeInclude? include,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    SecretChallengeInclude? include,
   }) {
-    return EmailAccountChallengeIncludeList._(
+    return SecretChallengeIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(EmailAccountChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
       orderDescending: orderDescending,
-      orderByList: orderByList?.call(EmailAccountChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
       include: include,
     );
   }
@@ -110,8 +109,8 @@ abstract class EmailAccountChallenge
 
 class _Undefined {}
 
-class _EmailAccountChallengeImpl extends EmailAccountChallenge {
-  _EmailAccountChallengeImpl({
+class _SecretChallengeImpl extends SecretChallenge {
+  _SecretChallengeImpl({
     _i1.UuidValue? id,
     required _i2.ByteData challengeCodeHash,
     required _i2.ByteData challengeCodeSalt,
@@ -121,16 +120,16 @@ class _EmailAccountChallengeImpl extends EmailAccountChallenge {
           challengeCodeSalt: challengeCodeSalt,
         );
 
-  /// Returns a shallow copy of this [EmailAccountChallenge]
+  /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailAccountChallenge copyWith({
+  SecretChallenge copyWith({
     Object? id = _Undefined,
     _i2.ByteData? challengeCodeHash,
     _i2.ByteData? challengeCodeSalt,
   }) {
-    return EmailAccountChallenge(
+    return SecretChallenge(
       id: id is _i1.UuidValue? ? id : this.id,
       challengeCodeHash: challengeCodeHash ?? this.challengeCodeHash.clone(),
       challengeCodeSalt: challengeCodeSalt ?? this.challengeCodeSalt.clone(),
@@ -138,9 +137,8 @@ class _EmailAccountChallengeImpl extends EmailAccountChallenge {
   }
 }
 
-class EmailAccountChallengeUpdateTable
-    extends _i1.UpdateTable<EmailAccountChallengeTable> {
-  EmailAccountChallengeUpdateTable(super.table);
+class SecretChallengeUpdateTable extends _i1.UpdateTable<SecretChallengeTable> {
+  SecretChallengeUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeHash(
           _i2.ByteData value) =>
@@ -157,10 +155,10 @@ class EmailAccountChallengeUpdateTable
       );
 }
 
-class EmailAccountChallengeTable extends _i1.Table<_i1.UuidValue?> {
-  EmailAccountChallengeTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_email_account_challenge') {
-    updateTable = EmailAccountChallengeUpdateTable(this);
+class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
+  SecretChallengeTable({super.tableRelation})
+      : super(tableName: 'serverpod_auth_idp_secret_challenge') {
+    updateTable = SecretChallengeUpdateTable(this);
     challengeCodeHash = _i1.ColumnByteData(
       'challengeCodeHash',
       this,
@@ -171,7 +169,7 @@ class EmailAccountChallengeTable extends _i1.Table<_i1.UuidValue?> {
     );
   }
 
-  late final EmailAccountChallengeUpdateTable updateTable;
+  late final SecretChallengeUpdateTable updateTable;
 
   /// The hash of the challenge code sent to the user.
   late final _i1.ColumnByteData challengeCodeHash;
@@ -187,19 +185,19 @@ class EmailAccountChallengeTable extends _i1.Table<_i1.UuidValue?> {
       ];
 }
 
-class EmailAccountChallengeInclude extends _i1.IncludeObject {
-  EmailAccountChallengeInclude._();
+class SecretChallengeInclude extends _i1.IncludeObject {
+  SecretChallengeInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountChallenge.t;
+  _i1.Table<_i1.UuidValue?> get table => SecretChallenge.t;
 }
 
-class EmailAccountChallengeIncludeList extends _i1.IncludeList {
-  EmailAccountChallengeIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAccountChallengeTable>? where,
+class SecretChallengeIncludeList extends _i1.IncludeList {
+  SecretChallengeIncludeList._({
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -207,20 +205,20 @@ class EmailAccountChallengeIncludeList extends _i1.IncludeList {
     super.orderByList,
     super.include,
   }) {
-    super.where = where?.call(EmailAccountChallenge.t);
+    super.where = where?.call(SecretChallenge.t);
   }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountChallenge.t;
+  _i1.Table<_i1.UuidValue?> get table => SecretChallenge.t;
 }
 
-class EmailAccountChallengeRepository {
-  const EmailAccountChallengeRepository._();
+class SecretChallengeRepository {
+  const SecretChallengeRepository._();
 
-  /// Returns a list of [EmailAccountChallenge]s matching the given query parameters.
+  /// Returns a list of [SecretChallenge]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -242,20 +240,20 @@ class EmailAccountChallengeRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<EmailAccountChallenge>> find(
+  Future<List<SecretChallenge>> find(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountChallengeTable>? where,
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountChallengeTable>? orderBy,
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountChallengeTable>? orderByList,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<EmailAccountChallenge>(
-      where: where?.call(EmailAccountChallenge.t),
-      orderBy: orderBy?.call(EmailAccountChallenge.t),
-      orderByList: orderByList?.call(EmailAccountChallenge.t),
+    return session.db.find<SecretChallenge>(
+      where: where?.call(SecretChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -263,7 +261,7 @@ class EmailAccountChallengeRepository {
     );
   }
 
-  /// Returns the first matching [EmailAccountChallenge] matching the given query parameters.
+  /// Returns the first matching [SecretChallenge] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -280,178 +278,178 @@ class EmailAccountChallengeRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<EmailAccountChallenge?> findFirstRow(
+  Future<SecretChallenge?> findFirstRow(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountChallengeTable>? where,
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountChallengeTable>? orderBy,
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
     bool orderDescending = false,
-    _i1.OrderByListBuilder<EmailAccountChallengeTable>? orderByList,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findFirstRow<EmailAccountChallenge>(
-      where: where?.call(EmailAccountChallenge.t),
-      orderBy: orderBy?.call(EmailAccountChallenge.t),
-      orderByList: orderByList?.call(EmailAccountChallenge.t),
+    return session.db.findFirstRow<SecretChallenge>(
+      where: where?.call(SecretChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
     );
   }
 
-  /// Finds a single [EmailAccountChallenge] by its [id] or null if no such row exists.
-  Future<EmailAccountChallenge?> findById(
+  /// Finds a single [SecretChallenge] by its [id] or null if no such row exists.
+  Future<SecretChallenge?> findById(
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAccountChallenge>(
+    return session.db.findById<SecretChallenge>(
       id,
       transaction: transaction,
     );
   }
 
-  /// Inserts all [EmailAccountChallenge]s in the list and returns the inserted rows.
+  /// Inserts all [SecretChallenge]s in the list and returns the inserted rows.
   ///
-  /// The returned [EmailAccountChallenge]s will have their `id` fields set.
+  /// The returned [SecretChallenge]s will have their `id` fields set.
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
-  Future<List<EmailAccountChallenge>> insert(
+  Future<List<SecretChallenge>> insert(
     _i1.Session session,
-    List<EmailAccountChallenge> rows, {
+    List<SecretChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAccountChallenge>(
+    return session.db.insert<SecretChallenge>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Inserts a single [EmailAccountChallenge] and returns the inserted row.
+  /// Inserts a single [SecretChallenge] and returns the inserted row.
   ///
-  /// The returned [EmailAccountChallenge] will have its `id` field set.
-  Future<EmailAccountChallenge> insertRow(
+  /// The returned [SecretChallenge] will have its `id` field set.
+  Future<SecretChallenge> insertRow(
     _i1.Session session,
-    EmailAccountChallenge row, {
+    SecretChallenge row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAccountChallenge>(
+    return session.db.insertRow<SecretChallenge>(
       row,
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountChallenge]s in the list and returns the updated rows. If
+  /// Updates all [SecretChallenge]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
-  Future<List<EmailAccountChallenge>> update(
+  Future<List<SecretChallenge>> update(
     _i1.Session session,
-    List<EmailAccountChallenge> rows, {
-    _i1.ColumnSelections<EmailAccountChallengeTable>? columns,
+    List<SecretChallenge> rows, {
+    _i1.ColumnSelections<SecretChallengeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.update<EmailAccountChallenge>(
+    return session.db.update<SecretChallenge>(
       rows,
-      columns: columns?.call(EmailAccountChallenge.t),
+      columns: columns?.call(SecretChallenge.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [EmailAccountChallenge]. The row needs to have its id set.
+  /// Updates a single [SecretChallenge]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  Future<EmailAccountChallenge> updateRow(
+  Future<SecretChallenge> updateRow(
     _i1.Session session,
-    EmailAccountChallenge row, {
-    _i1.ColumnSelections<EmailAccountChallengeTable>? columns,
+    SecretChallenge row, {
+    _i1.ColumnSelections<SecretChallengeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateRow<EmailAccountChallenge>(
+    return session.db.updateRow<SecretChallenge>(
       row,
-      columns: columns?.call(EmailAccountChallenge.t),
+      columns: columns?.call(SecretChallenge.t),
       transaction: transaction,
     );
   }
 
-  /// Updates a single [EmailAccountChallenge] by its [id] with the specified [columnValues].
+  /// Updates a single [SecretChallenge] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
-  Future<EmailAccountChallenge?> updateById(
+  Future<SecretChallenge?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountChallengeUpdateTable>
+    required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
         columnValues,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateById<EmailAccountChallenge>(
+    return session.db.updateById<SecretChallenge>(
       id,
-      columnValues: columnValues(EmailAccountChallenge.t.updateTable),
+      columnValues: columnValues(SecretChallenge.t.updateTable),
       transaction: transaction,
     );
   }
 
-  /// Updates all [EmailAccountChallenge]s matching the [where] expression with the specified [columnValues].
+  /// Updates all [SecretChallenge]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
-  Future<List<EmailAccountChallenge>> updateWhere(
+  Future<List<SecretChallenge>> updateWhere(
     _i1.Session session, {
-    required _i1.ColumnValueListBuilder<EmailAccountChallengeUpdateTable>
+    required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
         columnValues,
-    required _i1.WhereExpressionBuilder<EmailAccountChallengeTable> where,
+    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountChallengeTable>? orderByList,
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.updateWhere<EmailAccountChallenge>(
-      columnValues: columnValues(EmailAccountChallenge.t.updateTable),
-      where: where(EmailAccountChallenge.t),
+    return session.db.updateWhere<SecretChallenge>(
+      columnValues: columnValues(SecretChallenge.t.updateTable),
+      where: where(SecretChallenge.t),
       limit: limit,
       offset: offset,
-      orderBy: orderBy?.call(EmailAccountChallenge.t),
-      orderByList: orderByList?.call(EmailAccountChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
       orderDescending: orderDescending,
       transaction: transaction,
     );
   }
 
-  /// Deletes all [EmailAccountChallenge]s in the list and returns the deleted rows.
+  /// Deletes all [SecretChallenge]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
-  Future<List<EmailAccountChallenge>> delete(
+  Future<List<SecretChallenge>> delete(
     _i1.Session session,
-    List<EmailAccountChallenge> rows, {
+    List<SecretChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAccountChallenge>(
+    return session.db.delete<SecretChallenge>(
       rows,
       transaction: transaction,
     );
   }
 
-  /// Deletes a single [EmailAccountChallenge].
-  Future<EmailAccountChallenge> deleteRow(
+  /// Deletes a single [SecretChallenge].
+  Future<SecretChallenge> deleteRow(
     _i1.Session session,
-    EmailAccountChallenge row, {
+    SecretChallenge row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAccountChallenge>(
+    return session.db.deleteRow<SecretChallenge>(
       row,
       transaction: transaction,
     );
   }
 
   /// Deletes all rows matching the [where] expression.
-  Future<List<EmailAccountChallenge>> deleteWhere(
+  Future<List<SecretChallenge>> deleteWhere(
     _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailAccountChallengeTable> where,
+    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteWhere<EmailAccountChallenge>(
-      where: where(EmailAccountChallenge.t),
+    return session.db.deleteWhere<SecretChallenge>(
+      where: where(SecretChallenge.t),
       transaction: transaction,
     );
   }
@@ -460,12 +458,12 @@ class EmailAccountChallengeRepository {
   /// will return the count of all rows in the table.
   Future<int> count(
     _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailAccountChallengeTable>? where,
+    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<EmailAccountChallenge>(
-      where: where?.call(EmailAccountChallenge.t),
+    return session.db.count<SecretChallenge>(
+      where: where?.call(SecretChallenge.t),
       limit: limit,
       transaction: transaction,
     );

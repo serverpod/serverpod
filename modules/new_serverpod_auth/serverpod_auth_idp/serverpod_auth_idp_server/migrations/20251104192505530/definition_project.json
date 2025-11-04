@@ -213,49 +213,6 @@
       "managed": true
     },
     {
-      "name": "serverpod_auth_idp_email_account_challenge",
-      "dartName": "EmailAccountChallenge",
-      "module": "serverpod_auth_idp",
-      "schema": "public",
-      "columns": [
-        {
-          "name": "id",
-          "columnType": 7,
-          "isNullable": false,
-          "columnDefault": "gen_random_uuid()",
-          "dartType": "UuidValue?"
-        },
-        {
-          "name": "challengeCodeHash",
-          "columnType": 5,
-          "isNullable": false,
-          "dartType": "dart:typed_data:ByteData"
-        },
-        {
-          "name": "challengeCodeSalt",
-          "columnType": 5,
-          "isNullable": false,
-          "dartType": "dart:typed_data:ByteData"
-        }
-      ],
-      "foreignKeys": [],
-      "indexes": [
-        {
-          "indexName": "serverpod_auth_idp_email_account_challenge_pkey",
-          "elements": [
-            {
-              "type": 0,
-              "definition": "id"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": true
-        }
-      ],
-      "managed": true
-    },
-    {
       "name": "serverpod_auth_idp_email_account_failed_login_attempt",
       "dartName": "EmailAccountFailedLoginAttempt",
       "module": "serverpod_auth_idp",
@@ -467,7 +424,7 @@
           "columns": [
             "challengeId"
           ],
-          "referenceTable": "serverpod_auth_idp_email_account_challenge",
+          "referenceTable": "serverpod_auth_idp_secret_challenge",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -634,7 +591,7 @@
           "columns": [
             "challengeId"
           ],
-          "referenceTable": "serverpod_auth_idp_email_account_challenge",
+          "referenceTable": "serverpod_auth_idp_secret_challenge",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
@@ -968,6 +925,49 @@
       "indexes": [
         {
           "indexName": "serverpod_auth_idp_passkey_challenge_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "serverpod_auth_idp_secret_challenge",
+      "dartName": "SecretChallenge",
+      "module": "serverpod_auth_idp",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "gen_random_uuid()",
+          "dartType": "UuidValue?"
+        },
+        {
+          "name": "challengeCodeHash",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
+        },
+        {
+          "name": "challengeCodeSalt",
+          "columnType": 5,
+          "isNullable": false,
+          "dartType": "dart:typed_data:ByteData"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "serverpod_auth_idp_secret_challenge_pkey",
           "elements": [
             {
               "type": 0,

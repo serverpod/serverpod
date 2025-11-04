@@ -14,7 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../providers/email/models/email_account.dart' as _i2;
-import '../../../providers/email/models/email_account_challenge.dart' as _i3;
+import '../../../common/models/secret_challenge.dart' as _i3;
 
 abstract class EmailAccountPasswordResetRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -33,7 +33,7 @@ abstract class EmailAccountPasswordResetRequest
     _i2.EmailAccount? emailAccount,
     DateTime? createdAt,
     required _i1.UuidValue challengeId,
-    _i3.EmailAccountChallenge? challenge,
+    _i3.SecretChallenge? challenge,
   }) = _EmailAccountPasswordResetRequestImpl;
 
   factory EmailAccountPasswordResetRequest.fromJson(
@@ -54,7 +54,7 @@ abstract class EmailAccountPasswordResetRequest
           _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
       challenge: jsonSerialization['challenge'] == null
           ? null
-          : _i3.EmailAccountChallenge.fromJson(
+          : _i3.SecretChallenge.fromJson(
               (jsonSerialization['challenge'] as Map<String, dynamic>)),
     );
   }
@@ -77,7 +77,7 @@ abstract class EmailAccountPasswordResetRequest
   _i1.UuidValue challengeId;
 
   /// The associated challenge for this reset request
-  _i3.EmailAccountChallenge? challenge;
+  _i3.SecretChallenge? challenge;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -91,7 +91,7 @@ abstract class EmailAccountPasswordResetRequest
     _i2.EmailAccount? emailAccount,
     DateTime? createdAt,
     _i1.UuidValue? challengeId,
-    _i3.EmailAccountChallenge? challenge,
+    _i3.SecretChallenge? challenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -112,7 +112,7 @@ abstract class EmailAccountPasswordResetRequest
 
   static EmailAccountPasswordResetRequestInclude include({
     _i2.EmailAccountInclude? emailAccount,
-    _i3.EmailAccountChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? challenge,
   }) {
     return EmailAccountPasswordResetRequestInclude._(
       emailAccount: emailAccount,
@@ -156,7 +156,7 @@ class _EmailAccountPasswordResetRequestImpl
     _i2.EmailAccount? emailAccount,
     DateTime? createdAt,
     required _i1.UuidValue challengeId,
-    _i3.EmailAccountChallenge? challenge,
+    _i3.SecretChallenge? challenge,
   }) : super._(
           id: id,
           emailAccountId: emailAccountId,
@@ -186,7 +186,7 @@ class _EmailAccountPasswordResetRequestImpl
           : this.emailAccount?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i3.EmailAccountChallenge?
+      challenge: challenge is _i3.SecretChallenge?
           ? challenge
           : this.challenge?.copyWith(),
     );
@@ -252,7 +252,7 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnUuid challengeId;
 
   /// The associated challenge for this reset request
-  _i3.EmailAccountChallengeTable? _challenge;
+  _i3.SecretChallengeTable? _challenge;
 
   _i2.EmailAccountTable get emailAccount {
     if (_emailAccount != null) return _emailAccount!;
@@ -267,15 +267,15 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
     return _emailAccount!;
   }
 
-  _i3.EmailAccountChallengeTable get challenge {
+  _i3.SecretChallengeTable get challenge {
     if (_challenge != null) return _challenge!;
     _challenge = _i1.createRelationTable(
       relationFieldName: 'challenge',
       field: EmailAccountPasswordResetRequest.t.challengeId,
-      foreignField: _i3.EmailAccountChallenge.t.id,
+      foreignField: _i3.SecretChallenge.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.EmailAccountChallengeTable(tableRelation: foreignTableRelation),
+          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _challenge!;
   }
@@ -303,7 +303,7 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
 class EmailAccountPasswordResetRequestInclude extends _i1.IncludeObject {
   EmailAccountPasswordResetRequestInclude._({
     _i2.EmailAccountInclude? emailAccount,
-    _i3.EmailAccountChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? challenge,
   }) {
     _emailAccount = emailAccount;
     _challenge = challenge;
@@ -311,7 +311,7 @@ class EmailAccountPasswordResetRequestInclude extends _i1.IncludeObject {
 
   _i2.EmailAccountInclude? _emailAccount;
 
-  _i3.EmailAccountChallengeInclude? _challenge;
+  _i3.SecretChallengeInclude? _challenge;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -640,12 +640,12 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
     );
   }
 
-  /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [EmailAccountChallenge]
-  /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `challengeId` to refer to the [EmailAccountChallenge].
+  /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [SecretChallenge]
+  /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
   Future<void> challenge(
     _i1.Session session,
     EmailAccountPasswordResetRequest emailAccountPasswordResetRequest,
-    _i3.EmailAccountChallenge challenge, {
+    _i3.SecretChallenge challenge, {
     _i1.Transaction? transaction,
   }) async {
     if (emailAccountPasswordResetRequest.id == null) {

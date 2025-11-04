@@ -14,9 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
-import 'providers/apple/models/apple_account.dart' as _i4;
-import 'providers/email/models/email_account.dart' as _i5;
-import 'providers/email/models/email_account_challenge.dart' as _i6;
+import 'common/models/secret_challenge.dart' as _i4;
+import 'providers/apple/models/apple_account.dart' as _i5;
+import 'providers/email/models/email_account.dart' as _i6;
 import 'providers/email/models/email_account_failed_login_attempt.dart' as _i7;
 import 'providers/email/models/email_account_password_reset_complete_attempt.dart'
     as _i8;
@@ -53,9 +53,9 @@ import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i26;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i27;
 import 'dart:typed_data' as _i28;
+export 'common/models/secret_challenge.dart';
 export 'providers/apple/models/apple_account.dart';
 export 'providers/email/models/email_account.dart';
-export 'providers/email/models/email_account_challenge.dart';
 export 'providers/email/models/email_account_failed_login_attempt.dart';
 export 'providers/email/models/email_account_password_reset_complete_attempt.dart';
 export 'providers/email/models/email_account_password_reset_request.dart';
@@ -296,50 +296,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'serverpod_auth_idp_email_account_challenge',
-      dartName: 'EmailAccountChallenge',
-      schema: 'public',
-      module: 'serverpod_auth_idp',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: false,
-          dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid()',
-        ),
-        _i2.ColumnDefinition(
-          name: 'challengeCodeHash',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'challengeCodeSalt',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_idp_email_account_challenge_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'serverpod_auth_idp_email_account_failed_login_attempt',
       dartName: 'EmailAccountFailedLoginAttempt',
       schema: 'public',
@@ -555,7 +511,7 @@ class Protocol extends _i1.SerializationManagerServer {
           constraintName:
               'serverpod_auth_idp_email_account_password_reset_request_fk_1',
           columns: ['challengeId'],
-          referenceTable: 'serverpod_auth_idp_email_account_challenge',
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -725,7 +681,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_email_account_request_fk_0',
           columns: ['challengeId'],
-          referenceTable: 'serverpod_auth_idp_email_account_challenge',
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
           onUpdate: _i2.ForeignKeyAction.noAction,
@@ -1073,6 +1029,50 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_secret_challenge',
+      dartName: 'SecretChallenge',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeCodeHash',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeCodeSalt',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_secret_challenge_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
   ];
 
@@ -1082,14 +1082,14 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i4.AppleAccount) {
-      return _i4.AppleAccount.fromJson(data) as T;
+    if (t == _i4.SecretChallenge) {
+      return _i4.SecretChallenge.fromJson(data) as T;
     }
-    if (t == _i5.EmailAccount) {
-      return _i5.EmailAccount.fromJson(data) as T;
+    if (t == _i5.AppleAccount) {
+      return _i5.AppleAccount.fromJson(data) as T;
     }
-    if (t == _i6.EmailAccountChallenge) {
-      return _i6.EmailAccountChallenge.fromJson(data) as T;
+    if (t == _i6.EmailAccount) {
+      return _i6.EmailAccount.fromJson(data) as T;
     }
     if (t == _i7.EmailAccountFailedLoginAttempt) {
       return _i7.EmailAccountFailedLoginAttempt.fromJson(data) as T;
@@ -1154,15 +1154,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i27.PasskeyRegistrationRequest) {
       return _i27.PasskeyRegistrationRequest.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.AppleAccount?>()) {
-      return (data != null ? _i4.AppleAccount.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.SecretChallenge?>()) {
+      return (data != null ? _i4.SecretChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.EmailAccount?>()) {
-      return (data != null ? _i5.EmailAccount.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.AppleAccount?>()) {
+      return (data != null ? _i5.AppleAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.EmailAccountChallenge?>()) {
-      return (data != null ? _i6.EmailAccountChallenge.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i6.EmailAccount?>()) {
+      return (data != null ? _i6.EmailAccount.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i7.EmailAccountFailedLoginAttempt?>()) {
       return (data != null
@@ -1282,12 +1281,12 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i4.AppleAccount():
+      case _i4.SecretChallenge():
+        return 'SecretChallenge';
+      case _i5.AppleAccount():
         return 'AppleAccount';
-      case _i5.EmailAccount():
+      case _i6.EmailAccount():
         return 'EmailAccount';
-      case _i6.EmailAccountChallenge():
-        return 'EmailAccountChallenge';
       case _i7.EmailAccountFailedLoginAttempt():
         return 'EmailAccountFailedLoginAttempt';
       case _i8.EmailAccountPasswordResetCompleteAttempt():
@@ -1348,14 +1347,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'SecretChallenge') {
+      return deserialize<_i4.SecretChallenge>(data['data']);
+    }
     if (dataClassName == 'AppleAccount') {
-      return deserialize<_i4.AppleAccount>(data['data']);
+      return deserialize<_i5.AppleAccount>(data['data']);
     }
     if (dataClassName == 'EmailAccount') {
-      return deserialize<_i5.EmailAccount>(data['data']);
-    }
-    if (dataClassName == 'EmailAccountChallenge') {
-      return deserialize<_i6.EmailAccountChallenge>(data['data']);
+      return deserialize<_i6.EmailAccount>(data['data']);
     }
     if (dataClassName == 'EmailAccountFailedLoginAttempt') {
       return deserialize<_i7.EmailAccountFailedLoginAttempt>(data['data']);
@@ -1450,12 +1449,12 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i4.AppleAccount:
-        return _i4.AppleAccount.t;
-      case _i5.EmailAccount:
-        return _i5.EmailAccount.t;
-      case _i6.EmailAccountChallenge:
-        return _i6.EmailAccountChallenge.t;
+      case _i4.SecretChallenge:
+        return _i4.SecretChallenge.t;
+      case _i5.AppleAccount:
+        return _i5.AppleAccount.t;
+      case _i6.EmailAccount:
+        return _i6.EmailAccount.t;
       case _i7.EmailAccountFailedLoginAttempt:
         return _i7.EmailAccountFailedLoginAttempt.t;
       case _i8.EmailAccountPasswordResetCompleteAttempt:

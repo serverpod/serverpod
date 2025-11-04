@@ -8,7 +8,7 @@
     },
     {
       "module": "serverpod_auth_idp",
-      "version": "20251104144259468"
+      "version": "20251104192505530"
     },
     {
       "module": "serverpod_auth_core",

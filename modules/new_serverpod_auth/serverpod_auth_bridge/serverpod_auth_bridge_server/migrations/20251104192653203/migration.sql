@@ -1,15 +1,6 @@
 BEGIN;
 
 --
--- ACTION CREATE TABLE
---
-CREATE TABLE "serverpod_auth_idp_email_account_challenge" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "challengeCodeHash" bytea NOT NULL,
-    "challengeCodeSalt" bytea NOT NULL
-);
-
---
 -- ACTION DROP TABLE
 --
 DROP TABLE "serverpod_auth_idp_email_account_password_reset_request" CASCADE;
@@ -46,6 +37,15 @@ CREATE TABLE "serverpod_auth_idp_email_account_request" (
 CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_request_email" ON "serverpod_auth_idp_email_account_request" USING btree ("email");
 
 --
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "serverpod_auth_idp_secret_challenge" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "challengeCodeHash" bytea NOT NULL,
+    "challengeCodeSalt" bytea NOT NULL
+);
+
+--
 -- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset_request"
@@ -57,7 +57,7 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset_request"
 ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset_request"
     ADD CONSTRAINT "serverpod_auth_idp_email_account_password_reset_request_fk_1"
     FOREIGN KEY("challengeId")
-    REFERENCES "serverpod_auth_idp_email_account_challenge"("id")
+    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -67,18 +67,18 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account_password_reset_request"
 ALTER TABLE ONLY "serverpod_auth_idp_email_account_request"
     ADD CONSTRAINT "serverpod_auth_idp_email_account_request_fk_0"
     FOREIGN KEY("challengeId")
-    REFERENCES "serverpod_auth_idp_email_account_challenge"("id")
+    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 
 --
--- MIGRATION VERSION FOR auth
+-- MIGRATION VERSION FOR serverpod_auth_bridge
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('auth', '20251104151357094', now())
+    VALUES ('serverpod_auth_bridge', '20251104192653203', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251104151357094', "timestamp" = now();
+    DO UPDATE SET "version" = '20251104192653203', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -89,20 +89,20 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20250825102336032-v3-0-0', "timestamp" = now();
 
 --
--- MIGRATION VERSION FOR serverpod_auth_idp
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20251104144259468', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251104144259468', "timestamp" = now();
-
---
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod_auth_core', '20250825102357155-v3-0-0', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20250825102357155-v3-0-0', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_idp
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_idp', '20251104192505530', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20251104192505530', "timestamp" = now();
 
 
 COMMIT;
