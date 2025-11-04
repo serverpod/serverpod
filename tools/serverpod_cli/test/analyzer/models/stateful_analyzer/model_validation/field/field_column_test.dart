@@ -123,4 +123,43 @@ void main() {
       );
     },
   );
+
+  test(
+      'Given a class with an explicit column name longer than 61 characters, '
+      'then an error is collected.', () {
+    const column =
+        'thisNameIsExactly62CharsLongAndThereforeInvalidAsTheColumnName';
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          longField: String, column=$column
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error to be collected, but none was generated.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The column name "$column" exceeds the 61 character column name limitation.',
+      reason:
+          'Expected the error message to indicate an explicit column name is too long.',
+    );
+  });
 }
