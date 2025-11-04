@@ -81,4 +81,46 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with an explicit column name matching a field name, '
+    'then an error is collected.',
+    () {
+      const columnName = 'user';
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            $columnName: String
+            ${columnName}Name: String, column=$columnName
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error to be collected, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The column "$columnName" should only be used for a single field.',
+        reason:
+            'Expected the error message to indicate a column should only be '
+            'used for a single field.',
+      );
+    },
+  );
 }
