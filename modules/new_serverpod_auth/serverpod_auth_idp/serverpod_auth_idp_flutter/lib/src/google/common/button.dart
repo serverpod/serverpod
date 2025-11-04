@@ -35,14 +35,6 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
   /// The maximum width is 400 pixels.
   final double minimumWidth;
 
-  /// The pre-set locale of the button text.
-  ///
-  /// If not set, the device's default locale is used.
-  ///
-  /// Different users might see different versions of localized buttons, possibly
-  /// with different sizes.
-  final String? locale;
-
   /// A wrapper function to the rendered button to ensure style consistency.
   ///
   /// This wrapper ensures the consistency of the rendered button with the rest
@@ -69,7 +61,6 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
       this.shape = GSIButtonShape.pill,
       this.logoAlignment = GSIButtonLogoAlignment.left,
       this.minimumWidth = 240,
-      this.locale,
       this.buttonWrapper = wrapAsOutline,
       super.key})
       : assert(

@@ -6,6 +6,14 @@ import 'wrapper.dart';
 
 /// A widget that renders the Google Sign-In button for web.
 class GoogleSignInWebButton extends GoogleSignInBaseButton {
+  /// The pre-set locale of the button text.
+  ///
+  /// If not set, the device's default locale is used.
+  ///
+  /// Different users might see different versions of localized buttons, possibly
+  /// with different sizes.
+  final String? locale;
+
   /// Creates a Google Sign-In button for web.
   const GoogleSignInWebButton({
     super.type,
@@ -15,7 +23,7 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     super.shape,
     super.logoAlignment,
     super.minimumWidth,
-    super.locale,
+    this.locale,
     super.buttonWrapper,
     super.key,
   });

@@ -20,6 +20,9 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
   /// Whether the button is disabled.
   final bool isDisabled;
 
+  /// A function to generate the button text based on the current configuration.
+  final String Function({bool isLoading})? getButtonText;
+
   /// Creates a Google Sign-In button for native platforms.
   const GoogleSignInNativeButton({
     required this.onPressed,
@@ -32,7 +35,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     super.shape,
     super.logoAlignment,
     super.minimumWidth,
-    super.locale,
+    this.getButtonText,
     super.buttonWrapper,
     super.key,
   });
@@ -172,7 +175,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         GSIButtonSize.small => const EdgeInsets.symmetric(vertical: 4),
       },
       child: Text(
-        _getButtonText(),
+        getButtonText?.call(isLoading: isLoading) ?? _getButtonText(),
         style: GoogleFonts.roboto(
           fontSize: 14,
           letterSpacing: 0.7,
@@ -232,7 +235,6 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     );
   }
 
-  // TODO: Implement proper localization based on locale parameter
   String _getButtonText() {
     if (isLoading) return 'Signing in...';
     return switch (text) {
