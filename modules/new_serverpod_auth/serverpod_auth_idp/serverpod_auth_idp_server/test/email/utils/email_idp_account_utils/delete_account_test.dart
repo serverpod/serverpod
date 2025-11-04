@@ -64,8 +64,8 @@ void main() {
           ),
         );
 
-        expect(deletedAccounts.length, equals(1));
-        expect(deletedAccounts.first.email, equals(email1));
+        expect(deletedAccounts, hasLength(1));
+        expect(deletedAccounts.single.email, equals(email1));
 
         final remainingAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.listAccounts(
@@ -73,10 +73,10 @@ void main() {
             transaction: transaction,
           ),
         );
-        expect(remainingAccounts.length, equals(2));
-        expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
-        expect(remainingAccounts.any((final a) => a.email == email2), isTrue);
-        expect(remainingAccounts.any((final a) => a.email == email3), isTrue);
+        expect(remainingAccounts, hasLength(2));
+        final remainingEmails = remainingAccounts.map((final a) => a.email);
+        expect(remainingEmails, isNot(contains(email1)));
+        expect(remainingEmails, containsAll([email2, email3]));
       });
 
       test(
@@ -91,7 +91,9 @@ void main() {
           ),
         );
 
-        expect(deletedAccounts.length, equals(2));
+        expect(deletedAccounts, hasLength(2));
+        final deletedEmails = deletedAccounts.map((final a) => a.email);
+        expect(deletedEmails, containsAll([email1, email2]));
         expect(
           deletedAccounts.every((final a) => a.authUserId == authUserId1),
           isTrue,
@@ -103,10 +105,8 @@ void main() {
             transaction: transaction,
           ),
         );
-        expect(remainingAccounts.length, equals(1));
-        expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
-        expect(remainingAccounts.any((final a) => a.email == email2), isFalse);
-        expect(remainingAccounts.any((final a) => a.email == email3), isTrue);
+        expect(remainingAccounts, hasLength(1));
+        expect(remainingAccounts.single.email, equals(email3));
       });
 
       test(
@@ -121,9 +121,9 @@ void main() {
           ),
         );
 
-        expect(deletedAccounts.length, equals(1));
-        expect(deletedAccounts.first.email, equals(email1));
-        expect(deletedAccounts.first.authUserId, equals(authUserId1));
+        expect(deletedAccounts, hasLength(1));
+        expect(deletedAccounts.single.email, equals(email1));
+        expect(deletedAccounts.single.authUserId, equals(authUserId1));
 
         final remainingAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.listAccounts(
@@ -131,10 +131,10 @@ void main() {
             transaction: transaction,
           ),
         );
-        expect(remainingAccounts.length, equals(2));
-        expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
-        expect(remainingAccounts.any((final a) => a.email == email2), isTrue);
-        expect(remainingAccounts.any((final a) => a.email == email3), isTrue);
+        expect(remainingAccounts, hasLength(2));
+        final remainingEmails = remainingAccounts.map((final a) => a.email);
+        expect(remainingEmails, containsAll([email2, email3]));
+        expect(remainingEmails, isNot(contains(email1)));
       });
 
       test(
@@ -157,7 +157,7 @@ void main() {
             transaction: transaction,
           ),
         );
-        expect(remainingAccounts.length, equals(3));
+        expect(remainingAccounts, hasLength(3));
       });
 
       test(
@@ -172,7 +172,9 @@ void main() {
           ),
         );
 
-        expect(deletedAccounts.length, equals(3));
+        expect(deletedAccounts, hasLength(3));
+        final deletedEmails = deletedAccounts.map((final a) => a.email);
+        expect(deletedEmails, containsAll([email1, email2, email3]));
 
         final remainingAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.listAccounts(

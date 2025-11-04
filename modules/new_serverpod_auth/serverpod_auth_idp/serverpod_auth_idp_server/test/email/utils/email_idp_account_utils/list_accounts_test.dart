@@ -63,8 +63,8 @@ void main() {
           ),
         );
 
-        expect(accounts.length, equals(1));
-        expect(accounts.first.email, equals(email1));
+        expect(accounts, hasLength(1));
+        expect(accounts.single.email, equals(email1));
       });
 
       test(
@@ -78,13 +78,13 @@ void main() {
           ),
         );
 
-        expect(accounts.length, equals(2));
+        expect(accounts, hasLength(2));
+        final emails = accounts.map((final a) => a.email);
+        expect(emails, containsAll([email1, email2]));
         expect(
           accounts.every((final a) => a.authUserId == authUserId1),
           isTrue,
         );
-        expect(accounts.any((final a) => a.email == email1), isTrue);
-        expect(accounts.any((final a) => a.email == email2), isTrue);
       });
 
       test(
@@ -99,9 +99,9 @@ void main() {
           ),
         );
 
-        expect(accounts.length, equals(1));
-        expect(accounts.first.email, equals(email1));
-        expect(accounts.first.authUserId, equals(authUserId1));
+        expect(accounts, hasLength(1));
+        expect(accounts.single.email, equals(email1));
+        expect(accounts.single.authUserId, equals(authUserId1));
       });
 
       test(
@@ -129,10 +129,9 @@ void main() {
           ),
         );
 
-        expect(accounts.length, equals(3));
-        expect(accounts.any((final a) => a.email == email1), isTrue);
-        expect(accounts.any((final a) => a.email == email2), isTrue);
-        expect(accounts.any((final a) => a.email == email3), isTrue);
+        expect(accounts, hasLength(3));
+        final emails = accounts.map((final a) => a.email);
+        expect(emails, containsAll([email1, email2, email3]));
       });
 
       test(
@@ -146,8 +145,8 @@ void main() {
           ),
         );
 
-        expect(accounts.length, equals(1));
-        expect(accounts.first.email, equals(email1));
+        expect(accounts, hasLength(1));
+        expect(accounts.single.email, equals(email1));
       });
     },
   );
