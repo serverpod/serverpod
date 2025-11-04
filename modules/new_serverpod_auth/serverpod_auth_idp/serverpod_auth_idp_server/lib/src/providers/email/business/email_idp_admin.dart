@@ -142,14 +142,14 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final deletedCount = await _utils.account.deleteAccount(
+        final deleted = await _utils.account.deleteAccount(
           session,
           email: email,
           authUserId: null,
           transaction: transaction,
         );
 
-        if (deletedCount.isEmpty) {
+        if (deleted.isEmpty) {
           throw EmailAccountNotFoundException();
         }
       },
@@ -173,14 +173,14 @@ final class EmailIDPAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        final deletedCount = await _utils.account.deleteAccount(
+        final deleted = await _utils.account.deleteAccount(
           session,
           email: null,
           authUserId: authUserId,
           transaction: transaction,
         );
 
-        if (deletedCount.isEmpty) {
+        if (deleted.isEmpty) {
           throw EmailAccountNotFoundException();
         }
       },
