@@ -119,6 +119,18 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     return emailIDP.startPasswordReset(session, email: email);
   }
 
+  // Future<String> validatePasswordResetVerificationCode(
+  //   final Session session, {
+  //   required final UuidValue passwordResetRequestId,
+  //   required final String verificationCode,
+  // }) async {
+  //   return emailIDP.validatePasswordResetVerificationCode(
+  //     session,
+  //     passwordResetRequestId: passwordResetRequestId,
+  //     verificationCode: verificationCode,
+  //   );
+  // }
+
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
   ///

@@ -1,0 +1,42 @@
+{
+  "actions": [
+    {
+      "type": "alterTable",
+      "alterTable": {
+        "name": "serverpod_auth_idp_email_account_password_reset_request",
+        "schema": "public",
+        "addColumns": [
+          {
+            "name": "setPasswordChallengeId",
+            "columnType": 7,
+            "isNullable": true,
+            "dartType": "UuidValue?"
+          }
+        ],
+        "deleteColumns": [],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [
+          {
+            "constraintName": "serverpod_auth_idp_email_account_password_reset_request_fk_2",
+            "columns": [
+              "setPasswordChallengeId"
+            ],
+            "referenceTable": "serverpod_auth_idp_secret_challenge",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "deleteForeignKeys": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
