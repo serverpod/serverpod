@@ -23,7 +23,8 @@ import 'apple_idp_utils.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class AppleIDP {
-  static const String _method = 'apple';
+  /// The method used when authenticating with the Apple identity provider.
+  static const String method = 'apple';
 
   /// Admin operations to work with Apple-backed accounts.
   late final AppleIDPAdmin admin;
@@ -110,7 +111,7 @@ final class AppleIDP {
       return _tokenIssuer.issueToken(
         session,
         authUserId: account.authUserId,
-        method: _method,
+        method: method,
         transaction: transaction,
         scopes: account.scopes,
       );

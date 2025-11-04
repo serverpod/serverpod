@@ -22,7 +22,7 @@ import 'utils/email_idp_account_creation_util.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class EmailIDP {
-  /// The method used to authenticate with the email identity provider.
+  /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 
   /// Admin operations to work with email-backed accounts.

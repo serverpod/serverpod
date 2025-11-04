@@ -19,7 +19,8 @@ import 'google_idp_utils.dart';
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
 final class GoogleIDP {
-  static const String _method = 'google';
+  /// The method used when authenticating with the Google identity provider.
+  static const String method = 'google';
 
   /// Admin operations to work with Google-backed accounts.
   final GoogleIDPAdmin admin;
@@ -99,7 +100,7 @@ final class GoogleIDP {
         session,
         authUserId: account.authUserId,
         transaction: transaction,
-        method: _method,
+        method: method,
         scopes: account.scopes,
       );
     });

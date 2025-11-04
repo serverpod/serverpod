@@ -12,7 +12,8 @@ import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
 final class PasskeyIDP {
-  static const String _method = 'passkey';
+  /// The method used when authenticating with the Passkey identity provider.
+  static const String method = 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
   final PasskeyIDPAdmin admin;
@@ -118,7 +119,7 @@ final class PasskeyIDP {
       return _tokenIssuer.issueToken(
         session,
         authUserId: authUserId,
-        method: _method,
+        method: method,
         scopes: authUser.scopes,
         transaction: transaction,
       );
