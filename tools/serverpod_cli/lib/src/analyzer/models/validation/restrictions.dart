@@ -999,6 +999,16 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.table}" property must be defined in the class to set '
+          'the ${Keyword.columnKey} on a field.',
+          span,
+        )
+      ];
+    }
+
     if (column.length > _maxColumnNameLength) {
       return [
         SourceSpanSeverityException(
