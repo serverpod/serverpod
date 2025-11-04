@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   clock: ^1.1.1
-  dart_jsonwebtoken: ^3.3.1
+  dart_jsonwebtoken: ^3.1.0
   email_validator: '>=2.1.17 <4.0.0'
   googleapis: '>=11.0.0 <16.0.0'
   googleapis_auth: '>=1.6.0 <3.0.0'

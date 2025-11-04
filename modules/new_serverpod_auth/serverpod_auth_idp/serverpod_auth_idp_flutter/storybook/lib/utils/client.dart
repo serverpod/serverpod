@@ -93,7 +93,8 @@ class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
   Future<AuthSuccess> login({
     required String idToken,
     required String accessToken,
-  }) => Future.value(_mockData.authSuccess);
+  }) =>
+      Future.value(_mockData.authSuccess);
 }
 
 class Modules {
@@ -106,12 +107,12 @@ class Modules {
 
 class Client extends ServerpodClientShared {
   Client(String host)
-    : super(
-        host,
-        Protocol(),
-        connectionTimeout: const Duration(seconds: 1),
-        streamingConnectionTimeout: const Duration(seconds: 1),
-      ) {
+      : super(
+          host,
+          Protocol(),
+          connectionTimeout: const Duration(seconds: 1),
+          streamingConnectionTimeout: const Duration(seconds: 1),
+        ) {
     authEmail = EndpointAuthEmail(this);
     googleIDP = GoogleIDPEndpoint(this);
     modules = Modules(this);
@@ -125,14 +126,14 @@ class Client extends ServerpodClientShared {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-    'emailAuth': authEmail,
-    'googleIDP': googleIDP,
-  };
+        'emailAuth': authEmail,
+        'googleIDP': googleIDP,
+      };
 
   @override
   Map<String, ModuleEndpointCaller> get moduleLookup => {
-    'serverpod_auth_core': modules.auth,
-  };
+        'serverpod_auth_core': modules.auth,
+      };
 
   @override
   Future<T> callServerEndpoint<T>(
@@ -159,9 +160,9 @@ class MockAuthData {
   UuidValue? passwordResetRequestId;
 
   AuthSuccess get authSuccess => AuthSuccess(
-    authStrategy: AuthStrategy.session.name,
-    token: 'session-key',
-    authUserId: authUserId,
-    scopeNames: {},
-  );
+        authStrategy: AuthStrategy.session.name,
+        token: 'session-key',
+        authUserId: authUserId,
+        scopeNames: {},
+      );
 }
