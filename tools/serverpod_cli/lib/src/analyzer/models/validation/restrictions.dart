@@ -2144,7 +2144,7 @@ class Restrictions {
     String column,
   ) {
     return currentModel.fields
-        .where((field) => field.columnNameOverride == column)
+        .where((field) => field.columnName == column)
         .toList();
   }
 }
