@@ -77,6 +77,7 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
         reason: EmailAccountRequestExceptionReason.invalid,
       );
     }
+    _mockData.password = newPassword;
     return _mockData.authSuccess;
   }
 }
@@ -142,7 +143,7 @@ class Client extends ServerpodClientShared {
     Map<String, dynamic> args, {
     bool authenticated = true,
   }) async {
-    throw ServerpodClientException('This is a mock client.', -1);
+    throw const ServerpodClientException('This is a mock client.', -1);
   }
 }
 

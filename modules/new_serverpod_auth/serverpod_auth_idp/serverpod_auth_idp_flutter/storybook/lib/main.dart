@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
       initialStory: 'Home',
       plugins: StorybookPlugins(
         enableTimeDilation: true,
-        initialDeviceFrameData: DeviceFrameData(
+        initialDeviceFrameData: const DeviceFrameData(
           visibility: DeviceFrameVisibility.visible,
           orientation: Orientation.portrait,
         ),

@@ -14,11 +14,7 @@ Widget buildIsolatedElementsForStory(
     max: 400,
   );
 
-  final divider = Divider(
-    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
-    indent: 0,
-    endIndent: 0,
-  );
+  final divider = Divider(indent: 0, endIndent: 0);
 
   return SingleChildScrollView(
     padding: const EdgeInsets.all(24),

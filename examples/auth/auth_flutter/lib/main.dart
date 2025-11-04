@@ -132,12 +132,16 @@ class ConnectedScreen extends StatelessWidget {
             ProfileWidget(client: client),
             const Text('You are connected'),
             FilledButton(
-              onPressed: client.auth.signOutDevice,
+              onPressed: () async {
+                await client.auth.signOutDevice();
+              },
               child: const Text('Sign out'),
             ),
             if (client.auth.idp.hasGoogle)
               FilledButton(
-                onPressed: client.auth.disconnectGoogleAccount,
+                onPressed: () async {
+                  await client.auth.disconnectGoogleAccount();
+                },
                 child: const Text('Disconnect Google'),
               ),
           ],

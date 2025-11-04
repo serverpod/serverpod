@@ -28,16 +28,16 @@ Also make sure to add the reversed client ID for iOS as indicated in the
 <!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
 <array>
-	<dict>
-		<key>CFBundleTypeRole</key>
-		<string>Editor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
-			<string>com.googleusercontent.apps.REVERSED_GOOGLE_CLIENT_ID</string>
-		</array>
-	</dict>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <!-- TODO Replace this value: -->
+            <!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+            <string>com.googleusercontent.apps.REVERSED_GOOGLE_CLIENT_ID</string>
+        </array>
+    </dict>
 </array>
 <!-- End of the Google Sign-in Section -->
 ```

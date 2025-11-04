@@ -118,8 +118,11 @@ class GoogleIdTokenVerifier {
     }
 
     _ongoingCacheUpdate = _updateCachedKeySet();
-    await _ongoingCacheUpdate;
-    _ongoingCacheUpdate = null;
+    try {
+      await _ongoingCacheUpdate;
+    } finally {
+      _ongoingCacheUpdate = null;
+    }
     return _cachedKeySet.keys;
   }
 
