@@ -13,7 +13,7 @@ class FieldDefinitionBuilder {
   dynamic _defaultModelValue;
   dynamic _defaultPersistValue;
   bool _isRequired;
-  String? _column;
+  String? _columnNameOverride;
 
   FieldDefinitionBuilder()
     : _name = 'name',
@@ -26,7 +26,7 @@ class FieldDefinitionBuilder {
       _defaultModelValue = null,
       _defaultPersistValue = null,
       _isRequired = false,
-      _column = null;
+      _columnNameOverride = null;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -140,8 +140,8 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withColumn(String column) {
-    _column = column;
+  FieldDefinitionBuilder withColumnNameOverride(String column) {
+    _columnNameOverride = column;
     return this;
   }
 
@@ -156,7 +156,7 @@ class FieldDefinitionBuilder {
       defaultModelValue: _defaultModelValue,
       defaultPersistValue: _defaultPersistValue,
       isRequired: _isRequired,
-      columnNameOverride: _column,
+      columnNameOverride: _columnNameOverride,
     );
   }
 }
