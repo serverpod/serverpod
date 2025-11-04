@@ -1,9 +1,8 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tools/serverpod_test_tools.dart';
-import '../test_utils/email_idp_test_fixture.dart';
+import '../../../test_tools/serverpod_test_tools.dart';
+import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
@@ -56,7 +55,7 @@ void main() {
       test(
           'when deleteAccount is called with email then only that email account is deleted',
           () async {
-        final deletedCount = await session.db.transaction(
+        final deletedAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
@@ -65,9 +64,15 @@ void main() {
           ),
         );
 
-        expect(deletedCount, equals(1));
+        expect(deletedAccounts.length, equals(1));
+        expect(deletedAccounts.first.email, equals(email1));
 
-        final remainingAccounts = await EmailAccount.db.find(session);
+        final remainingAccounts = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+            session,
+            transaction: transaction,
+          ),
+        );
         expect(remainingAccounts.length, equals(2));
         expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
         expect(remainingAccounts.any((final a) => a.email == email2), isTrue);
@@ -77,7 +82,7 @@ void main() {
       test(
           'when deleteAccount is called with authUserId then all accounts for that user are deleted',
           () async {
-        final deletedCount = await session.db.transaction(
+        final deletedAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: null,
@@ -86,9 +91,18 @@ void main() {
           ),
         );
 
-        expect(deletedCount, equals(2));
+        expect(deletedAccounts.length, equals(2));
+        expect(
+          deletedAccounts.every((final a) => a.authUserId == authUserId1),
+          isTrue,
+        );
 
-        final remainingAccounts = await EmailAccount.db.find(session);
+        final remainingAccounts = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+            session,
+            transaction: transaction,
+          ),
+        );
         expect(remainingAccounts.length, equals(1));
         expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
         expect(remainingAccounts.any((final a) => a.email == email2), isFalse);
@@ -98,7 +112,7 @@ void main() {
       test(
           'when deleteAccount is called with both email and authUserId then only matching account is deleted',
           () async {
-        final deletedCount = await session.db.transaction(
+        final deletedAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
@@ -107,9 +121,16 @@ void main() {
           ),
         );
 
-        expect(deletedCount, equals(1));
+        expect(deletedAccounts.length, equals(1));
+        expect(deletedAccounts.first.email, equals(email1));
+        expect(deletedAccounts.first.authUserId, equals(authUserId1));
 
-        final remainingAccounts = await EmailAccount.db.find(session);
+        final remainingAccounts = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+            session,
+            transaction: transaction,
+          ),
+        );
         expect(remainingAccounts.length, equals(2));
         expect(remainingAccounts.any((final a) => a.email == email1), isFalse);
         expect(remainingAccounts.any((final a) => a.email == email2), isTrue);
@@ -119,7 +140,7 @@ void main() {
       test(
           'when deleteAccount is called with non-matching filters then no accounts are deleted',
           () async {
-        final deletedCount = await session.db.transaction(
+        final deletedAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: email1,
@@ -128,16 +149,21 @@ void main() {
           ),
         );
 
-        expect(deletedCount, equals(0));
+        expect(deletedAccounts, isEmpty);
 
-        final remainingAccounts = await EmailAccount.db.find(session);
+        final remainingAccounts = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+            session,
+            transaction: transaction,
+          ),
+        );
         expect(remainingAccounts.length, equals(3));
       });
 
       test(
           'when deleteAccount is called with neither email nor authUserId then all accounts are deleted',
           () async {
-        final deletedCount = await session.db.transaction(
+        final deletedAccounts = await session.db.transaction(
           (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
             session,
             email: null,
@@ -146,9 +172,14 @@ void main() {
           ),
         );
 
-        expect(deletedCount, equals(3));
+        expect(deletedAccounts.length, equals(3));
 
-        final remainingAccounts = await EmailAccount.db.find(session);
+        final remainingAccounts = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+            session,
+            transaction: transaction,
+          ),
+        );
         expect(remainingAccounts, isEmpty);
       });
     },
