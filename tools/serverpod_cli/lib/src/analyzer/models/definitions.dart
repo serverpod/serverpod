@@ -266,15 +266,6 @@ class SerializableModelFieldDefinition {
   final bool isRequired;
 
   /// Name of the column in the database
-  /// This should be set if the column name is not a camelCaseString
-  /// and will therefore be different from the field name.
-  ///
-  /// Example yaml use
-  /// ```yaml
-  /// class: Example
-  /// fields:
-  ///   userName: String, column=user_name
-  /// ```
   final String? column;
 
   /// Name of the column to be used when referencing the database.
