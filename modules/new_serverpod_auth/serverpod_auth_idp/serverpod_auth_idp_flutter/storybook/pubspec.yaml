@@ -12,7 +12,10 @@ dependencies:
     sdk: flutter
   serverpod_auth_idp_flutter:
     path: ../
-  storybook_toolkit: ^2.0.0-dev.3
+  storybook_toolkit:
+    git:
+      url: https://github.com/serverpod/storybook_toolkit.git
+      ref: c7765c1382d9bd395a825048239257f3e58ee8f2
 
 dev_dependencies:
   flutter_test:
