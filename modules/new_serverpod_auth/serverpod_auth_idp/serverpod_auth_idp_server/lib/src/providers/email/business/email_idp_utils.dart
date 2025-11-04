@@ -109,6 +109,7 @@ extension on EmailPasswordResetServerException {
       case EmailPasswordResetTooManyVerificationAttemptsException():
       case EmailPasswordResetVerificationCodeAlreadyUsedException():
       case EmailPasswordResetEmailNotFoundException():
+      case EmailPasswordResetSetPasswordTokenNotFoundException():
         return EmailAccountPasswordResetExceptionReason.invalid;
       case EmailPasswordResetPasswordPolicyViolationException():
         return EmailAccountPasswordResetExceptionReason.policyViolation;
