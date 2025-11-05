@@ -574,6 +574,180 @@ void main() {
       expect(authSuccess, isNotNull);
     });
   });
+
+  withServerpod(
+      'Given an AuthenticationTokenConfig with onRefreshTokenCreation hook,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+    });
+
+    test(
+        'when requesting a new token pair with the hook configured, then hook claims are included in the access token.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          onRefreshTokenCreation: (session, authUserId) async {
+            return {'hookClaim': 'hookValue', 'userRole': 'admin'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'hookValue');
+      expect(payload['userRole'], 'admin');
+    });
+
+    test(
+        'when requesting a new token pair with both hook and extraClaims, then both are included with hook taking precedence on conflicts.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          onRefreshTokenCreation: (session, authUserId) async {
+            return {'hookClaim': 'fromHook', 'conflictKey': 'hookWins'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        extraClaims: {'paramClaim': 'fromParam', 'conflictKey': 'paramLoses'},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'fromHook');
+      expect(payload['paramClaim'], 'fromParam');
+      expect(payload['conflictKey'], 'hookWins');
+    });
+
+    test(
+        'when rotating tokens created with a hook, then hook claims are preserved.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          onRefreshTokenCreation: (session, authUserId) async {
+            return {'hookClaim': 'persistsAcrossRotation'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final rotatedTokenPair =
+          await authenticationTokensWithHook.rotateRefreshToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'persistsAcrossRotation');
+    });
+
+    test(
+        'when hook returns null, then no extra claims are added from the hook.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          onRefreshTokenCreation: (session, authUserId) async {
+            return null;
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      // Should only contain standard claims, no custom ones
+      expect(payload.containsKey('hookClaim'), isFalse);
+    });
+
+    test(
+        'when hook accesses session context, then it can fetch additional data.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          onRefreshTokenCreation: (session, authUserId) async {
+            // Hook can fetch additional data from database using session
+            final authUser = await AuthUsers.get(
+              session,
+              authUserId: authUserId,
+            );
+            return {
+              'userId': authUser.id.toString(),
+              'userExists': true,
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['userId'], authUserId.toString());
+      expect(payload['userExists'], isTrue);
+    });
+  });
 }
 
 UuidValue _extractRefreshTokenId(final String accessToken) {

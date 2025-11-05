@@ -121,6 +121,23 @@ final class AuthenticationTokens {
       scopes ??= authUser.scopes;
     }
 
+    // Invoke the hook to get extra claims if configured
+    final hookClaims = config.onRefreshTokenCreation != null
+        ? await config.onRefreshTokenCreation!(session, authUserId)
+        : null;
+
+    // Merge extraClaims with hookClaims, with hookClaims taking precedence
+    final Map<String, dynamic>? mergedExtraClaims;
+    if (hookClaims == null && extraClaims == null) {
+      mergedExtraClaims = null;
+    } else if (hookClaims == null) {
+      mergedExtraClaims = extraClaims;
+    } else if (extraClaims == null) {
+      mergedExtraClaims = hookClaims;
+    } else {
+      mergedExtraClaims = {...extraClaims, ...hookClaims};
+    }
+
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);
 
@@ -134,7 +151,8 @@ final class AuthenticationTokens {
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
-        extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
+        extraClaims:
+            mergedExtraClaims != null ? jsonEncode(mergedExtraClaims) : null,
         createdAt: currentTime,
         lastUpdatedAt: currentTime,
         method: method,

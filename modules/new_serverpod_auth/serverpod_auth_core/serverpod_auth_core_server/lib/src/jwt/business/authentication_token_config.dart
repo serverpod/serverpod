@@ -1,4 +1,5 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:serverpod/serverpod.dart';
 
 /// Configuration for an authentication token algorithm.
 sealed class AuthenticationTokenAlgorithm {
@@ -87,6 +88,31 @@ class AuthenticationTokenConfig {
   /// Defaults to 16.
   final int refreshTokenRotatingSecretSaltLength;
 
+  /// Optional hook invoked when a refresh token is created.
+  ///
+  /// This hook is called during token creation and allows developers to add
+  /// custom claims to the refresh token. The hook receives the session and
+  /// the authenticated user ID as parameters, enabling it to fetch any
+  /// additional information needed.
+  ///
+  /// The returned map contains extra claims to be included in the refresh
+  /// token payload. These claims will be embedded in every access token
+  /// (including across rotations) and sent along with any request.
+  ///
+  /// If both this hook and the `extraClaims` parameter in `createTokens` are
+  /// provided, the claims will be merged, with the hook's claims taking
+  /// precedence in case of conflicts.
+  ///
+  /// Example use case: Adding user roles, feature flags, or other
+  /// session-related metadata to reduce database round-trips.
+  ///
+  /// Claims must not conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// or Serverpod's internal claims (those starting with "dev.serverpod.").
+  final Future<Map<String, dynamic>?> Function(
+    Session session,
+    UuidValue authUserId,
+  )? onRefreshTokenCreation;
+
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
     required this.algorithm,
@@ -98,6 +124,7 @@ class AuthenticationTokenConfig {
     this.refreshTokenFixedSecretLength = 16,
     this.refreshTokenRotatingSecretLength = 64,
     this.refreshTokenRotatingSecretSaltLength = 16,
+    this.onRefreshTokenCreation,
   }) {
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
   }
