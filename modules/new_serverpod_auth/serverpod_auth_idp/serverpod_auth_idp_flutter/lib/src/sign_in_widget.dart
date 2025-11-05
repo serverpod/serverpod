@@ -48,11 +48,15 @@ class SignInWidget extends StatefulWidget {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// Customized widget to use for Google sign-in.
+  final GoogleSignInWidget? googleSignInWidget;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.googleSignInWidget,
     super.key,
   });
 
@@ -90,11 +94,12 @@ class _SignInWidgetState extends State<SignInWidget> {
         if (auth.idp.hasGoogle)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: GoogleSignInWidget(
-              client: widget.client,
-              onAuthenticated: widget.onAuthenticated,
-              onError: widget.onError,
-            ),
+            child: widget.googleSignInWidget ??
+                GoogleSignInWidget(
+                  client: widget.client,
+                  onAuthenticated: widget.onAuthenticated,
+                  onError: widget.onError,
+                ),
           ),
         // TODO: Add the Apple sign-in widget.
         // if (auth.idp.hasApple)

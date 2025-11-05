@@ -101,19 +101,30 @@ class SignInScreen extends StatelessWidget {
         client: client,
         // NOTE: No need to call navigation here if it gets done on the
         // client.auth.authInfo listener.
-        onAuthenticated: () {
-          context.showSnackBar(
-            message: 'User authenticated.',
-            backgroundColor: Colors.green,
-          );
-        },
-        onError: (error) {
-          context.showSnackBar(
-            message: 'Authentication failed: $error',
-            backgroundColor: Colors.red,
-          );
-        },
+        onAuthenticated: () => onAuthenticated(context),
+        onError: (error) => onError(context, error),
+        // NOTE: To customize widgets, pass the desired widget here.
+        // googleSignInWidget: GoogleSignInWidget(
+        //   client: client,
+        //   onAuthenticated: () => onAuthenticated(context),
+        //   onError: (error) => onError(context, error),
+        //   scopes: const [],
+        // ),
       ),
+    );
+  }
+
+  void onAuthenticated(BuildContext context) {
+    context.showSnackBar(
+      message: 'User authenticated.',
+      backgroundColor: Colors.green,
+    );
+  }
+
+  void onError(BuildContext context, Object error) {
+    context.showSnackBar(
+      message: 'Authentication failed: $error',
+      backgroundColor: Colors.red,
     );
   }
 }
