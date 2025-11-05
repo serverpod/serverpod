@@ -668,4 +668,89 @@ void main() {
       });
     },
   );
+
+  withServerpod('Given a custom setPasswordTokenGenerator is used',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+      (final sessionBuilder, final endpoints) {
+    const customSetPasswordToken = 'custom-token';
+    late Session session;
+    late EmailIDPTestFixture fixture;
+    late UuidValue passwordResetRequestId;
+    late String verificationCode;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      verificationCode = const Uuid().v4().toString();
+      fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+        secretHashPepper: 'pepper',
+        passwordResetVerificationCodeGenerator: () => verificationCode,
+        passwordResetVerificationCodeLifetime: const Duration(hours: 1),
+        setPasswordTokenGenerator: () => customSetPasswordToken,
+      ));
+
+      final authUser = await fixture.createAuthUser(session);
+
+      const email = 'test@serverpod.dev';
+      await fixture.createEmailAccount(
+        session,
+        authUserId: authUser.id,
+        email: email,
+        password: EmailAccountPassword.fromString('Foobar123!'),
+      );
+
+      passwordResetRequestId = await session.db.transaction(
+        (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+          session,
+          email: email,
+          transaction: transaction,
+        ),
+      );
+    });
+
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
+
+    group(
+        'when verify password reset code is called with generated verification code',
+        () {
+      late Future<SetPasswordCredentials> verifyPasswordResetCodeResult;
+
+      setUp(() async {
+        verifyPasswordResetCodeResult = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      test('then the custom token is returned', () async {
+        final result = await verifyPasswordResetCodeResult;
+        expect(result.passwordResetRequestId, equals(passwordResetRequestId));
+        expect(result.verificationCode, customSetPasswordToken);
+      });
+
+      test('then custom token can be used complete password reset', () async {
+        await verifyPasswordResetCodeResult;
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.completePasswordReset(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: customSetPasswordToken,
+            newPassword: 'new-password',
+            transaction: transaction,
+          ),
+        );
+        await expectLater(result, completes);
+      });
+    });
+  });
 }
