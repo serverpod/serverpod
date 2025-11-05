@@ -200,8 +200,8 @@ class AppleIDPUtils {
   Handler serverNotificationHandler(
     final FutureOr<void> Function(AppleServerNotification notification) handler,
   ) {
-    return (final Context ctx) async {
-      final body = await utf8.decodeStream(ctx.request.body.read());
+    return (final Request req) async {
+      final body = await utf8.decodeStream(req.body.read());
 
       final payload = (jsonDecode(body) as Map)['payload'] as String;
 
@@ -211,7 +211,7 @@ class AppleIDPUtils {
 
       await handler(notification);
 
-      return (ctx as RespondableContext).respond(Response.ok());
+      return Response.ok();
     };
   }
 }
