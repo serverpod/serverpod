@@ -163,6 +163,19 @@ class EmailIDPPasswordResetUtil {
     required final String verificationCode,
     required final Transaction transaction,
   }) async {
+    if (await _hasTooManyPasswordResetCompleteAttempts(
+      session,
+      passwordResetRequestId: passwordResetRequestId,
+    )) {
+      await EmailAccountPasswordResetRequest.db.deleteWhere(
+        session,
+        where: (final t) => t.id.equals(passwordResetRequestId),
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetTooManyVerificationAttemptsException();
+    }
+
     final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
       session,
       passwordResetRequestId,
@@ -175,19 +188,6 @@ class EmailIDPPasswordResetUtil {
 
     if (resetRequest == null) {
       throw EmailPasswordResetRequestNotFoundException();
-    }
-
-    if (await _hasTooManyPasswordResetCompleteAttempts(
-      session,
-      passwordResetRequestId: resetRequest.id!,
-    )) {
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        // passing no transaction, so this will not be rolled back
-      );
-
-      throw EmailPasswordResetTooManyVerificationAttemptsException();
     }
 
     if (resetRequest.isVerificationCodeUsed) {

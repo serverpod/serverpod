@@ -648,7 +648,7 @@ void main() {
       });
 
       test(
-          'when verify password reset code is called with valid verification code then throws not found exception',
+          'when verify password reset code is called with valid verification code then too many attempts exception is thrown',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
@@ -662,7 +662,77 @@ void main() {
 
         await expectLater(
           result,
-          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          throwsA(
+              isA<EmailPasswordResetTooManyVerificationAttemptsException>()),
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given no password reset request exists',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue nonExistentPasswordResetRequestId;
+      const passwordResetVerificationCodeAllowedAttempts = 1;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeAllowedAttempts:
+                passwordResetVerificationCodeAllowedAttempts,
+            passwordResetVerificationCodeGenerator: () => '12345678',
+            passwordResetVerificationCodeLifetime: const Duration(days: 1),
+          ),
+        );
+
+        nonExistentPasswordResetRequestId = const Uuid().v4obj();
+
+        // Make attempts up to the limit with invalid verification codes
+        for (int i = 0; i < passwordResetVerificationCodeAllowedAttempts; i++) {
+          try {
+            await session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.verifyPasswordResetCode(
+                session,
+                passwordResetRequestId: nonExistentPasswordResetRequestId,
+                verificationCode: 'wrong-code',
+                transaction: transaction,
+              ),
+            );
+          } on EmailPasswordResetRequestNotFoundException {
+            // Expected - the request doesn't exist
+          }
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when verify password reset code is called and it exceeds the maximum number of allowed verification attempts then it throws too many attempts exception',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: nonExistentPasswordResetRequestId,
+            verificationCode: 'any-code',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+              isA<EmailPasswordResetTooManyVerificationAttemptsException>()),
         );
       });
     },

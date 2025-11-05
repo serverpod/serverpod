@@ -94,8 +94,9 @@ extension on EmailAccountRequestServerException {
       case EmailAccountRequestInvalidVerificationCodeException():
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
-      case EmailAccountRequestVerificationTooManyAttemptsException():
         return EmailAccountRequestExceptionReason.invalid;
+      case EmailAccountRequestVerificationTooManyAttemptsException():
+        return EmailAccountRequestExceptionReason.tooManyAttempts;
       case EmailPasswordPolicyViolationException():
         return EmailAccountRequestExceptionReason.policyViolation;
       case EmailAccountRequestVerificationExpiredException():
@@ -110,12 +111,13 @@ extension on EmailPasswordResetServerException {
       case EmailPasswordResetAccountNotFoundException():
       case EmailPasswordResetInvalidVerificationCodeException():
       case EmailPasswordResetRequestNotFoundException():
-      case EmailPasswordResetTooManyAttemptsException():
-      case EmailPasswordResetTooManyVerificationAttemptsException():
       case EmailPasswordResetVerificationCodeAlreadyUsedException():
       case EmailPasswordResetEmailNotFoundException():
       case EmailPasswordResetNotVerifiedException():
         return EmailAccountPasswordResetExceptionReason.invalid;
+      case EmailPasswordResetTooManyAttemptsException():
+      case EmailPasswordResetTooManyVerificationAttemptsException():
+        return EmailAccountPasswordResetExceptionReason.tooManyAttempts;
       case EmailPasswordResetPasswordPolicyViolationException():
         return EmailAccountPasswordResetExceptionReason.policyViolation;
       case EmailPasswordResetRequestExpiredException():
