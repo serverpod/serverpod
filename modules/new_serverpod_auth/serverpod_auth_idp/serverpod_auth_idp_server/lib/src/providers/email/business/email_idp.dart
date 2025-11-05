@@ -8,6 +8,7 @@ import 'email_idp_admin.dart';
 import 'email_idp_config.dart';
 import 'email_idp_utils.dart';
 import 'utils/email_idp_account_creation_util.dart';
+import 'utils/email_idp_password_reset_util.dart';
 
 /// Main class for the email identity provider.
 /// The methods defined here are intended to be called from an endpoint.
@@ -235,6 +236,29 @@ final class EmailIDP {
           // using the difference on the version bit of the uuid to determine whether
           // an email is registered or not.
           return result.accountRequestId ?? const Uuid().v4obj();
+        },
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_password_reset_code}
+  Future<SetPasswordCredentials> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+        () async {
+          return await utils.passwordReset.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          );
         },
       ),
     );

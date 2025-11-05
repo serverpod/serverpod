@@ -81,6 +81,10 @@ final class EmailPasswordResetEmailNotFoundException
 final class EmailPasswordResetTooManyVerificationAttemptsException
     extends EmailPasswordResetServerException {}
 
+/// Exception thrown when trying to validate a password reset verification code that has already been used.
+final class EmailPasswordResetVerificationCodeAlreadyUsedException
+    extends EmailPasswordResetServerException {}
+
 /// Base exception for all email related errors.
 ///
 /// These exceptions are for internal purposes only and must not be exposed to

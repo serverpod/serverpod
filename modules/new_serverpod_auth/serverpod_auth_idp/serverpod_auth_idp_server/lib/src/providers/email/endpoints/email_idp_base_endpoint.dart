@@ -119,17 +119,30 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     return emailIDP.startPasswordReset(session, email: email);
   }
 
-  // Future<String> validatePasswordResetVerificationCode(
-  //   final Session session, {
-  //   required final UuidValue passwordResetRequestId,
-  //   required final String verificationCode,
-  // }) async {
-  //   return emailIDP.validatePasswordResetVerificationCode(
-  //     session,
-  //     passwordResetRequestId: passwordResetRequestId,
-  //     verificationCode: verificationCode,
-  //   );
-  // }
+  /// {@template email_account_base_endpoint.verify_password_reset_code}
+  /// Verifies a password reset code and returns the credentials for setting the password.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  /// {@endtemplate}
+  Future<SetPasswordCredentials> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIDP.verifyPasswordResetCode(
+      session,
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode,
+    );
+  }
 
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
