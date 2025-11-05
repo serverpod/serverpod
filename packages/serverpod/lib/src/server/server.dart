@@ -155,27 +155,26 @@ class Server {
     return _running;
   }
 
-  FutureOr<HandledContext> _relicRequestHandler(RequestContext context) async {
+  FutureOr<Result> _relicRequestHandler(Request req) async {
     try {
-      return await _handleRequest(context);
+      return await _handleRequest(req);
     } catch (e, stackTrace) {
       await _reportFrameworkException(
         e,
         stackTrace,
         message:
             'Internal server error. Request handler failed with exception.',
-        request: context.request,
+        request: req,
       );
-      return context.respond(Response.internalServerError(
+      return Response.internalServerError(
         body: Body.fromString('Internal Server Error'),
-      ));
+      );
     }
   }
 
-  FutureOr<HandledContext> _handleRequest(RequestContext context) async {
-    final request = context.request;
-    final uri = request.requestedUri;
-    serverpod.logVerbose('handleRequest: ${request.method} ${uri.path}');
+  FutureOr<Result> _handleRequest(Request req) async {
+    final uri = req.requestedUri;
+    serverpod.logVerbose('handleRequest: ${req.method} ${uri.path}');
 
     // TODO: Make httpResponseHeaders a Headers object from the get-go.
     // or better yet, use middleware
@@ -210,20 +209,19 @@ class Server {
         responseBuffer.writeln(issue);
       }
 
-      var response = Response(
+      return Response(
         allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
         body: Body.fromString(responseBuffer.toString()),
         headers: headers,
       );
-      return context.respond(response);
     } else if (uri.path == '/websocket') {
       return await _dispatchWebSocketUpgradeRequest(
-        context,
+        req,
         EndpointWebsocketRequestHandler.handleWebsocket,
       );
     } else if (uri.path == '/v1/websocket') {
       return await _dispatchWebSocketUpgradeRequest(
-        context,
+        req,
         MethodWebsocketRequestHandler.handleWebsocket,
       );
     } else if (uri.path == '/serverpod_cloud_storage') {
@@ -233,7 +231,7 @@ class Server {
     // This OPTIONS check is necessary when making requests from
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
-    if (request.method == Method.options) {
+    if (req.method == Method.options) {
       final combinedHeaders = headers.transform((mh) {
         for (var orh in httpOptionsResponseHeaders.entries) {
           mh[orh.key] = ['${orh.value}'];
@@ -241,44 +239,44 @@ class Server {
         mh.contentLength = 0; // TODO: Why set this explicitly?
       });
 
-      return context.respond(Response.ok(headers: combinedHeaders));
+      return Response.ok(headers: combinedHeaders);
     }
 
     late final String body;
     if (readBody) {
       try {
-        body = await _readBody(request);
+        body = await _readBody(req);
       } on _RequestTooLargeException catch (e) {
         if (serverpod.runtimeSettings.logMalformedCalls) {
           // TODO: Log to database?
           io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
         }
-        return context.respond(Response(
+        return Response(
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
           headers: headers,
-        ));
+        );
       } catch (e, stackTrace) {
         await _reportFrameworkException(e, stackTrace,
             message: 'Internal server error. Failed to read body of request.',
-            request: context.request);
-        return context.respond(Response.badRequest(
+            request: req);
+        return Response.badRequest(
           body: Body.fromString('Failed to read request body.'),
           headers: headers,
-        ));
+        );
       }
     } else {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body, request);
+    var result = await _handleUriCall(uri, body, req);
     if (serverpod.runtimeSettings.logMalformedCalls) {
       _logMalformedCalls(result);
     }
-    return context.respond(_toResponse(result, headers));
+    return _toResponse(result, headers);
   }
 
-  void _logMalformedCalls(Result result) {
+  void _logMalformedCalls(EndpointResult result) {
     final error = switch (result) {
       ResultInvalidParams() => 'Malformed call',
       ResultNoSuchEndpoint() => 'Malformed call',
@@ -292,7 +290,7 @@ class Server {
     }
   }
 
-  Response _toResponse(Result result, Headers headers) {
+  Response _toResponse(EndpointResult result, Headers headers) {
     switch (result) {
       case ResultNoSuchEndpoint():
         return Response.notFound(
@@ -372,8 +370,8 @@ class Server {
     }
   }
 
-  FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
-    RequestContext newContext,
+  FutureOr<Result> _dispatchWebSocketUpgradeRequest(
+    Request req,
     Future<void> Function(
       Server,
       RelicWebSocket,
@@ -381,7 +379,7 @@ class Server {
       void Function(),
     ) requestHandler,
   ) async {
-    return newContext.connect((webSocket) async {
+    return WebSocketUpgrade((webSocket) async {
       try {
         // TODO(kasper): Should we keep doing this?
         webSocket.pingInterval = const Duration(seconds: 30);
@@ -390,7 +388,7 @@ class Server {
         final handlerFuture = requestHandler(
           this,
           webSocket,
-          newContext.request,
+          req,
           () => _webSockets.remove(websocketKey),
         );
 
@@ -430,7 +428,7 @@ class Server {
     return const Utf8Decoder().convert(builder.takeBytes());
   }
 
-  Future<Result> _handleUriCall(
+  Future<EndpointResult> _handleUriCall(
     Uri uri,
     String body,
     Request request,

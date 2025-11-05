@@ -12,7 +12,7 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 dependencies:
   http: '>=1.1.0 <2.0.0'
-  relic: ^0.9.1
+  relic: ^0.10.0
   serverpod: 3.0.0-alpha.3
   serverpod_auth_server: 3.0.0-alpha.3
   serverpod_cloud_storage_s3: 3.0.0-alpha.3
