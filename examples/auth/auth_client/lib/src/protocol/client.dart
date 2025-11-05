@@ -158,7 +158,40 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns the credentials for setting the password.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i3.Future<({_i2.UuidValue passwordResetRequestId, String verificationCode})>
+      verifyPasswordResetCode({
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+          caller.callServerEndpoint<
+              ({
+                _i2.UuidValue passwordResetRequestId,
+                String verificationCode
+              })>(
+            'emailIDP',
+            'verifyPasswordResetCode',
+            {
+              'passwordResetRequestId': passwordResetRequestId,
+              'verificationCode': verificationCode,
+            },
+          );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset

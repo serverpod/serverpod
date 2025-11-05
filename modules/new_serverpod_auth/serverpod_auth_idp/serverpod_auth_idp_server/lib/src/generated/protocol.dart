@@ -1277,6 +1277,18 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i27.PasskeyRegistrationRequest.fromJson(data)
           : null) as T;
     }
+    if (t ==
+        _i1.getType<
+            ({
+              _i1.UuidValue passwordResetRequestId,
+              String verificationCode
+            })>()) {
+      return (
+        passwordResetRequestId: deserialize<_i1.UuidValue>(
+            ((data as Map)['n'] as Map)['passwordResetRequestId']),
+        verificationCode: deserialize<String>(data['n']['verificationCode']),
+      ) as T;
+    }
     if (t == _i1.getType<({_i28.ByteData challenge, _i1.UuidValue id})>()) {
       return (
         challenge: deserialize<_i28.ByteData>(
@@ -1510,6 +1522,17 @@ class Protocol extends _i1.SerializationManagerServer {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
+  }
+  if (record is ({
+    _i1.UuidValue passwordResetRequestId,
+    String verificationCode
+  })) {
+    return {
+      "n": {
+        "passwordResetRequestId": record.passwordResetRequestId,
+        "verificationCode": record.verificationCode,
+      },
+    };
   }
   if (record is ({_i28.ByteData challenge, _i1.UuidValue id})) {
     return {

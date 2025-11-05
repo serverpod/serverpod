@@ -18,7 +18,9 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
-import 'dart:typed_data' as _i6;
+import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart'
+    as _i6;
+import 'dart:typed_data' as _i7;
 import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart';
 import 'package:serverpod_new_auth_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -718,6 +720,46 @@ class _EmailAccountEndpoint {
     });
   }
 
+  _i3.Future<({_i2.UuidValue passwordResetRequestId, String verificationCode})>
+      verifyPasswordResetCode(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'emailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i6.Protocol().deserialize<
+                ({
+                  _i2.UuidValue passwordResetRequestId,
+                  String verificationCode
+                })>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<void> finishPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
@@ -1012,6 +1054,46 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
+  _i3.Future<({_i2.UuidValue passwordResetRequestId, String verificationCode})>
+      verifyPasswordResetCode(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'passwordImportingEmailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passwordImportingEmailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((record) => _i6.Protocol().deserialize<
+                ({
+                  _i2.UuidValue passwordResetRequestId,
+                  String verificationCode
+                })>(record));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<void> finishPasswordReset(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
@@ -1114,7 +1196,7 @@ class _UserProfileEndpoint {
 
   _i3.Future<_i4.UserProfileModel> setUserImage(
     _i1.TestSessionBuilder sessionBuilder,
-    _i6.ByteData image,
+    _i7.ByteData image,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
