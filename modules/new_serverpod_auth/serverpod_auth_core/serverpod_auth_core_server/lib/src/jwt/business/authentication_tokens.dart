@@ -127,16 +127,9 @@ final class AuthenticationTokens {
         : null;
 
     // Merge extraClaims with hookClaims, with hookClaims taking precedence
-    final Map<String, dynamic>? mergedExtraClaims;
-    if (hookClaims == null && extraClaims == null) {
-      mergedExtraClaims = null;
-    } else if (hookClaims == null) {
-      mergedExtraClaims = extraClaims;
-    } else if (extraClaims == null) {
-      mergedExtraClaims = hookClaims;
-    } else {
-      mergedExtraClaims = {...extraClaims, ...hookClaims};
-    }
+    final mergedExtraClaims = {...?extraClaims, ...?hookClaims};
+    final encodedExtraClaims =
+        mergedExtraClaims.isNotEmpty ? jsonEncode(mergedExtraClaims) : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);
@@ -151,8 +144,7 @@ final class AuthenticationTokens {
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
-        extraClaims:
-            mergedExtraClaims != null ? jsonEncode(mergedExtraClaims) : null,
+        extraClaims: encodedExtraClaims,
         createdAt: currentTime,
         lastUpdatedAt: currentTime,
         method: method,
