@@ -58,21 +58,19 @@ abstract class Session implements DatabaseAccessor {
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
   void updateAuthenticated(AuthenticationInfo? info) {
-    _initialized = true;
+    _authenticationInitialized = true;
     _authenticated = info;
   }
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get authenticated async {
-    if (!_initialized) await _initialize();
-    return _authenticated;
-  }
+  ///
+  /// This property is initialized automatically by the framework before
+  /// endpoint methods are invoked.
+  AuthenticationInfo? get authenticated => _authenticated;
 
   /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await authenticated) != null;
-  }
+  bool get isUserSignedIn => _authenticated != null;
 
   String? _authenticationKey;
 
@@ -206,16 +204,7 @@ abstract class Session implements DatabaseAccessor {
     );
   }
 
-  bool _initialized = false;
-
-  Future<void> _initialize() async {
-    var authKey = _authenticationKey;
-    if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
-    }
-
-    _initialized = true;
-  }
+  bool _authenticationInitialized = false;
 
   /// Returns the duration this session has been open.
   Duration get duration => DateTime.now().difference(_startTime);
@@ -344,6 +333,41 @@ class MethodCallSession extends Session {
     super.remoteInfo,
   })  : _method = method,
         super(method: method);
+
+  /// Creates a new [MethodCallSession] with authentication initialized.
+  ///
+  /// This factory method creates a session and initializes authentication
+  /// before returning it. Use this method when you need authentication to be
+  /// ready immediately after session creation.
+  static Future<MethodCallSession> create({
+    required Server server,
+    required Uri uri,
+    required String body,
+    required String path,
+    required Request request,
+    required String method,
+    required String endpoint,
+    required Map<String, dynamic> queryParameters,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    final session = MethodCallSession(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      request: request,
+      method: method,
+      endpoint: endpoint,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -358,6 +382,29 @@ class WebCallSession extends Session {
     super.enableLogging = true,
     super.remoteInfo,
   });
+
+  /// Creates a new [WebCallSession] with authentication initialized.
+  ///
+  /// This factory method creates a session and initializes authentication
+  /// before returning it. Use this method when you need authentication to be
+  /// ready immediately after session creation.
+  static Future<WebCallSession> create({
+    required Server server,
+    required String endpoint,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    final session = WebCallSession(
+      server: server,
+      endpoint: endpoint,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
 }
 
 /// When a connection is made to the [Server] to an endpoint method that uses a
@@ -383,6 +430,31 @@ class MethodStreamSession extends Session {
     required this.connectionId,
   })  : _method = method,
         super(method: method);
+
+  /// Creates a new [MethodStreamSession] with authentication initialized.
+  ///
+  /// This factory method creates a session and initializes authentication
+  /// before returning it. Use this method when you need authentication to be
+  /// ready immediately after session creation.
+  static Future<MethodStreamSession> create({
+    required Server server,
+    required bool enableLogging,
+    required String? authenticationKey,
+    required String endpoint,
+    required String method,
+    required UuidValue connectionId,
+  }) async {
+    final session = MethodStreamSession(
+      server: server,
+      enableLogging: enableLogging,
+      authenticationKey: authenticationKey,
+      endpoint: endpoint,
+      method: method,
+      connectionId: connectionId,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -435,11 +507,29 @@ class StreamingSession extends Session {
     _authenticationKey = queryParameters['auth'];
   }
 
-  /// Updates the authentication key for the streaming session.
-  @internal
-  void updateAuthenticationKey(String? authenticationKey) {
-    _authenticationKey = authenticationKey;
-    _initialized = false;
+  /// Creates a new [StreamingSession] with authentication initialized.
+  ///
+  /// This factory method creates a session and initializes authentication
+  /// before returning it. Use this method when you need authentication to be
+  /// ready immediately after session creation.
+  static Future<StreamingSession> create({
+    required Server server,
+    required Uri uri,
+    required Request request,
+    required RelicWebSocket webSocket,
+    String endpoint = 'StreamingSession',
+    bool enableLogging = true,
+  }) async {
+    final session = StreamingSession(
+      server: server,
+      uri: uri,
+      request: request,
+      webSocket: webSocket,
+      endpoint: endpoint,
+      enableLogging: enableLogging,
+    );
+    await session.initializeAuthentication();
+    return session;
   }
 }
 
@@ -703,6 +793,56 @@ extension SessionInternalMethods on Session {
     _messageId = id + 1;
 
     return id;
+  }
+}
+
+/// Provides authentication initialization support for sessions.
+///
+/// This extension manages the lazy initialization of authentication information
+/// for sessions, ensuring that authentication is resolved exactly once per session
+/// and making the authentication data immediately available without async operations.
+extension SessionAuthenticationInitializationExtension on Session {
+  /// Initializes authentication for this session.
+  ///
+  /// This method resolves the authentication information for the current session
+  /// by calling the server's authentication handler with the session's authentication key.
+  /// The authentication information is cached in the session, making subsequent accesses
+  /// to [Session.authenticated] synchronous and efficient.
+  ///
+  /// This method is idempotent - calling it multiple times will only initialize
+  /// authentication once. Subsequent calls will return immediately without performing
+  /// any work.
+  Future<void> initializeAuthentication() async {
+    if (_authenticationInitialized) return;
+
+    var authKey = authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
+    }
+
+    _authenticationInitialized = true;
+  }
+
+  /// Updates the authentication key and re-initializes authentication.
+  ///
+  /// This method sets a new authentication key for the session and triggers
+  /// re-initialization of the authentication information. This is useful for
+  /// scenarios where authentication needs to be refreshed or changed mid-session.
+  ///
+  /// After calling this method, the [Session.authenticated] property will reflect
+  /// the authentication status for the new key.
+  // TODO: Move this to an extension method on StreamingSession.
+  // TODO: Make static Session.create
+  Future<void> updateAuthenticationKey(String? authenticationKey) async {
+    _authenticationKey = authenticationKey;
+
+    if (authenticationKey == null) {
+      _authenticated = null;
+      _authenticationInitialized = true;
+    } else {
+      _authenticationInitialized = false;
+      await initializeAuthentication();
+    }
   }
 }
 
