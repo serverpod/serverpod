@@ -41,3 +41,13 @@ Also make sure to add the reversed client ID for iOS as indicated in the
 </array>
 <!-- End of the Google Sign-in Section -->
 ```
+
+To run the app for web, make sure to specify the hostname and port using the
+same port configured on the Google OAuth credentials (usually 7357):
+
+```bash
+flutter run -d chrome --web-hostname localhost --web-port 7357
+```
+
+> For more information on how to configure the credentials for each platform
+> see the [Google Sign-In for Flutter documentation](https://pub.dev/packages/google_sign_in).
