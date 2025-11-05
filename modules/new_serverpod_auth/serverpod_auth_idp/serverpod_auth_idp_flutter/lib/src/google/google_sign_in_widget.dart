@@ -77,6 +77,12 @@ class GoogleSignInWidget extends StatefulWidget {
   /// initial launch.
   final bool attemptLightweightSignIn;
 
+  /// Scopes to request from Google.
+  ///
+  /// The default scopes are `email` and `profile`, which will give access to
+  /// retrieving the profile name and picture automatically.
+  final List<String> scopes;
+
   /// The button type: icon, or standard button.
   final GSIButtonType type;
 
@@ -147,6 +153,8 @@ class GoogleSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.attemptLightweightSignIn = true,
+    this.scopes = GoogleAuthController.defaultScopes,
     this.type = GSIButtonType.standard,
     this.theme = GSIButtonTheme.outline,
     this.size = GSIButtonSize.large,
@@ -157,7 +165,6 @@ class GoogleSignInWidget extends StatefulWidget {
     this.getButtonText,
     this.locale,
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
-    this.attemptLightweightSignIn = true,
     super.key,
   }) : assert(
           (controller == null || client == null),
@@ -181,6 +188,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
           onAuthenticated: widget.onAuthenticated,
           onError: widget.onError,
           attemptLightweightSignIn: widget.attemptLightweightSignIn,
+          scopes: widget.scopes,
         );
     _controller.addListener(_onControllerStateChanged);
   }

@@ -15,7 +15,7 @@ final class GoogleIDPAdmin {
   Future<GoogleAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
   }) async {
     return utils.fetchAccountDetails(
       session,

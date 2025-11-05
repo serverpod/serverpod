@@ -75,7 +75,7 @@ class GoogleIDPUtils {
   Future<GoogleAuthSuccess> authenticate(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
     required final Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
@@ -128,12 +128,13 @@ class GoogleIDPUtils {
   Future<GoogleAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
   }) async {
     final String clientId = config.clientSecret.clientId;
 
+    Map<String, dynamic> data;
     try {
-      await GoogleIdTokenVerifier.verifyOAuth2Token(
+      data = await GoogleIdTokenVerifier.verifyOAuth2Token(
         idToken,
         audience: clientId,
       );
@@ -141,20 +142,27 @@ class GoogleIDPUtils {
       session.logAndThrow('Failed to verify ID token from Google');
     }
 
-    final response = await http.get(
-      Uri.https('www.googleapis.com', '/oauth2/v3/userinfo'),
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
+    if (accessToken != null) {
+      final response = await http.get(
+        Uri.https('www.googleapis.com', '/oauth2/v3/userinfo'),
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
 
-    if (response.statusCode != 200) {
-      session.logAndThrow('Failed to get user info from Google');
+      if (response.statusCode != 200) {
+        session.logAndThrow('Failed to get user info from Google');
+      }
+
+      data = jsonDecode(response.body);
     }
 
-    final data = jsonDecode(response.body);
-    if (data is! Map<String, dynamic>) {
-      session.logAndThrow('Token not a JSON map object');
+    try {
+      return _parseAccountDetails(data);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from Google: $e');
     }
+  }
 
+  GoogleAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
     final userId = data['sub'] as String?;
     final email = data['email'] as String?;
     final name = data['given_name'] as String?;
@@ -163,7 +171,7 @@ class GoogleIDPUtils {
     final verifiedEmail = data['email_verified'] as bool?;
 
     if (userId == null || email == null) {
-      session.logAndThrow('Missing required data on user info');
+      throw GoogleUserInfoMissingDataException();
     }
 
     final details = (
@@ -178,7 +186,7 @@ class GoogleIDPUtils {
     try {
       config.googleAccountDetailsValidation(details);
     } catch (e) {
-      session.logAndThrow('Invalid user info from Google: $e');
+      throw GoogleUserInfoMissingDataException();
     }
 
     return details;
@@ -211,3 +219,6 @@ extension on Session {
     throw GoogleIdTokenVerificationException();
   }
 }
+
+/// Exception thrown when the user info from Google is missing required data.
+class GoogleUserInfoMissingDataException implements Exception {}

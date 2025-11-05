@@ -316,7 +316,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   @override
   _i2.Future<_i3.AuthSuccess> login({
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
@@ -343,7 +343,7 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   @override
   _i2.Future<_i3.AuthSuccess> login({
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccount',

@@ -93,7 +93,7 @@ class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
   @override
   Future<AuthSuccess> login({
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) =>
       Future.value(_mockData.authSuccess);
 }

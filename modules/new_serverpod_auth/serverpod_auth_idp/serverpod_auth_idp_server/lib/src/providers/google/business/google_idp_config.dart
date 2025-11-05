@@ -3,6 +3,12 @@ import 'dart:io';
 
 import 'google_idp_utils.dart';
 
+/// Function to be called to check whether a Google account details match the
+/// requirements during registration.
+typedef GoogleAccountDetailsValidation = void Function(
+  GoogleAccountDetails accountDetails,
+);
+
 /// Configuration for the Google identity provider.
 class GoogleIDPConfig {
   /// The client secret used for the Google sign-in.
@@ -10,7 +16,11 @@ class GoogleIDPConfig {
 
   /// Validation function for Google account details.
   ///
-  /// This can be used to enforce additional requirements on the Google account
+  /// This function should throw an exception if the account details do not
+  /// match the requirements. If the function returns normally, the account
+  /// is considered valid.
+  ///
+  /// It can be used to enforce additional requirements on the Google account
   /// details before allowing the user to sign in. These details will be
   /// extracted using the `people` API and may not be available if the user has
   /// not granted the app access to their profile or if the user is part of an
@@ -21,7 +31,7 @@ class GoogleIDPConfig {
   /// To avoid blocking real users (from privacy-restricted workspaces, accounts
   /// without avatars, unverified secondary emails) from signing in, adjust your
   /// validation function with care.
-  final void Function(GoogleAccountDetails) googleAccountDetailsValidation;
+  final GoogleAccountDetailsValidation googleAccountDetailsValidation;
 
   /// Creates a new instance of [GoogleIDPConfig].
   GoogleIDPConfig({
@@ -36,7 +46,7 @@ class GoogleIDPConfig {
     if (accountDetails.name == null ||
         accountDetails.fullName == null ||
         accountDetails.verifiedEmail != true) {
-      throw const FormatException('Missing required data on user info');
+      throw GoogleUserInfoMissingDataException();
     }
   }
 }

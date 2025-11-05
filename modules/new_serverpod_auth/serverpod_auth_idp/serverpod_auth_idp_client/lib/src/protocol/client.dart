@@ -158,7 +158,7 @@ abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
   /// If a new user is created an associated [UserProfile] is also created.
   _i2.Future<_i3.AuthSuccess> login({
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   });
 }
 

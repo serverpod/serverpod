@@ -46,7 +46,7 @@ final class GoogleIDP {
   Future<AuthSuccess> login(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
     final Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(

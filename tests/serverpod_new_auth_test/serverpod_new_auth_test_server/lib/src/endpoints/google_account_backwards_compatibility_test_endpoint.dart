@@ -10,7 +10,7 @@ class GoogleAccountBackwardsCompatibilityTestEndpoint
   Future<AuthSuccess> login(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
   }) async {
     await AuthBackwardsCompatibility.importGoogleAccount(
       session,

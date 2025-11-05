@@ -767,7 +767,7 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -811,7 +811,7 @@ class _GoogleAccountEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =

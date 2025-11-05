@@ -201,7 +201,7 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   @override
   _i3.Future<_i4.AuthSuccess> login({
     required String idToken,
-    required String accessToken,
+    required String? accessToken,
   }) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleIDP',

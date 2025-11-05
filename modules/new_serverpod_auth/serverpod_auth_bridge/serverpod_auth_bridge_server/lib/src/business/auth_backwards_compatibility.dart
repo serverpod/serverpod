@@ -208,7 +208,7 @@ abstract final class AuthBackwardsCompatibility {
   static Future<void> importGoogleAccount(
     final Session session, {
     required final String idToken,
-    required final String accessToken,
+    required final String? accessToken,
     final Transaction? transaction,
   }) async {
     final accountDetails =

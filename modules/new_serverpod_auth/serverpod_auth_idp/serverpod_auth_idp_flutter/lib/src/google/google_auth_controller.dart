@@ -53,15 +53,28 @@ class GoogleAuthController extends ChangeNotifier {
   /// initial launch.
   final bool attemptLightweightSignIn;
 
+  /// Scopes to request from Google.
+  ///
+  /// The default scopes are `email` and `profile`, which will give access to
+  /// retrieving the profile name and picture automatically.
+  final List<String> scopes;
+
   /// Creates a Google authentication controller.
   GoogleAuthController({
     required this.client,
     this.onAuthenticated,
     this.onError,
     this.attemptLightweightSignIn = true,
+    this.scopes = defaultScopes,
   }) {
     unawaited(_initialize());
   }
+
+  /// Default scopes to request from Google.
+  static const defaultScopes = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+  ];
 
   GoogleAuthState _state = GoogleAuthState.initializing;
 
@@ -88,11 +101,6 @@ class GoogleAuthController extends ChangeNotifier {
   /// The current error, if any.
   Object? get error => _state == GoogleAuthState.error ? _error : null;
   Object? _error;
-
-  static const _scopes = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-  ];
 
   /// Initializes the Google Sign-In service and sets up auth event listeners.
   Future<void> _initialize() async {
@@ -138,7 +146,7 @@ class GoogleAuthController extends ChangeNotifier {
 
     // Only need to initialize the sign-in. The scopes authorization and server
     // side authentication is handled by the authentication event listener.
-    await GoogleSignIn.instance.authenticate(scopeHint: _scopes);
+    await GoogleSignIn.instance.authenticate(scopeHint: scopes);
   }
 
   /// Handles authentication events from the Google Sign-In service.
@@ -154,18 +162,15 @@ class GoogleAuthController extends ChangeNotifier {
     }
   }
 
-  /// Handles authentication errors from the Google Sign-In service.
-  Future<void> _handleAuthenticationError(Object error) async {
-    _error = error;
-    _setState(GoogleAuthState.error);
-    onError?.call(error);
-  }
-
   /// Handles the server-side sign-in process with the Google ID token.
   Future<void> _handleServerSideSignIn(GoogleSignInAccount account) async {
     try {
-      final authorization =
-          await account.authorizationClient.ensureAuthorized(_scopes);
+      String? accessToken;
+      if (scopes.isNotEmpty) {
+        final authorization =
+            await account.authorizationClient.ensureAuthorized(scopes);
+        accessToken = authorization.accessToken;
+      }
 
       final idToken = account.authentication.idToken;
       if (idToken == null) {
@@ -175,7 +180,7 @@ class GoogleAuthController extends ChangeNotifier {
       final endpoint = client.getEndpointOfType<EndpointGoogleIDPBase>();
       final authSuccess = await endpoint.login(
         idToken: idToken,
-        accessToken: authorization.accessToken,
+        accessToken: accessToken,
       );
 
       await client.auth.updateSignedInUser(authSuccess);
@@ -187,6 +192,13 @@ class GoogleAuthController extends ChangeNotifier {
       _setState(GoogleAuthState.error);
       onError?.call(error);
     }
+  }
+
+  /// Handles authentication errors from the Google Sign-In service.
+  Future<void> _handleAuthenticationError(Object error) async {
+    _error = error;
+    _setState(GoogleAuthState.error);
+    onError?.call(error);
   }
 
   /// Sets the current state of the authentication flow and notifies listeners.

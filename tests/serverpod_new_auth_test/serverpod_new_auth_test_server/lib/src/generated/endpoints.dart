@@ -502,8 +502,8 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'accessToken': _i1.ParameterDescription(
               name: 'accessToken',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
           },
           call: (
@@ -534,8 +534,8 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'accessToken': _i1.ParameterDescription(
               name: 'accessToken',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
           },
           call: (
