@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
@@ -93,6 +95,68 @@ void main() {
             ),
           ),
         );
+      });
+
+      group(
+          'when verifyPasswordResetCode is called multiple times in quick succession',
+          () {
+        late Future<List<SetPasswordCredentials>> attempts;
+        const numberOfAttempts = 3;
+
+        setUp(() async {
+          attempts = List.generate(
+            numberOfAttempts,
+            (final _) => fixture.emailIDP.verifyPasswordResetCode(
+              session,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: verificationCode,
+            ),
+          ).wait;
+        });
+
+        test(
+            'then all attempts except one throw EmailAccountPasswordResetException with reason "invalid"',
+            () async {
+          await expectLater(
+            attempts,
+            throwsA(
+              isA<ParallelWaitError>()
+                  .having(
+                    (final e) => (e.errors as List<AsyncError?>).nonNulls,
+                    'errors',
+                    hasLength(numberOfAttempts - 1),
+                  )
+                  .having(
+                    (final e) => (e.errors as List<AsyncError?>).nonNulls.map(
+                          (final e) => e.error,
+                        ),
+                    'errors',
+                    everyElement(
+                      isA<EmailAccountPasswordResetException>().having(
+                        (final e) => e.reason,
+                        'reason',
+                        equals(
+                            EmailAccountPasswordResetExceptionReason.invalid),
+                      ),
+                    ),
+                  ),
+            ),
+          );
+        });
+
+        test('then only one attempts succeeds', () async {
+          await expectLater(
+            attempts,
+            throwsA(
+              isA<ParallelWaitError>().having(
+                (final e) =>
+                    (e.values as List<SetPasswordCredentials?>).nonNulls,
+                'values',
+                hasLength(1),
+              ),
+            ),
+          );
+        });
       });
 
       test(

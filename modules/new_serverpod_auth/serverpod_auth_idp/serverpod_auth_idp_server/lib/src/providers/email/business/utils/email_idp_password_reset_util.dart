@@ -212,6 +212,30 @@ class EmailIDPPasswordResetUtil {
       value: setPasswordToken,
     );
 
+    await _insertSetPasswordChallenge(
+      session,
+      transaction: transaction,
+      resetRequestId: resetRequest.id!,
+      setPasswordTokenHash: setPasswordTokenHash,
+    );
+
+    return (
+      passwordResetRequestId: resetRequest.id!,
+      verificationCode: setPasswordToken,
+    );
+  }
+
+  /// Inserts a new set password challenge and updates the password reset request to link to it.
+  ///
+  /// Will throw [EmailPasswordResetVerificationCodeAlreadyUsedException]
+  /// if the verification has already been set.
+  Future<void> _insertSetPasswordChallenge(
+    final Session session, {
+    required final Transaction transaction,
+    required final UuidValue resetRequestId,
+    required final HashResult setPasswordTokenHash,
+  }) async {
+    final savePoint = await transaction.createSavepoint();
     final setPasswordChallenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
@@ -221,18 +245,21 @@ class EmailIDPPasswordResetUtil {
       transaction: transaction,
     );
 
-    await EmailAccountPasswordResetRequest.db.updateRow(
+    final updated = await EmailAccountPasswordResetRequest.db.updateWhere(
       session,
-      resetRequest.copyWith(
-        setPasswordChallengeId: setPasswordChallenge.id!,
-      ),
+      columnValues: (final t) =>
+          [t.setPasswordChallengeId(setPasswordChallenge.id!)],
+      where: (final t) =>
+          t.id.equals(resetRequestId) & t.setPasswordChallengeId.equals(null),
       transaction: transaction,
     );
 
-    return (
-      passwordResetRequestId: resetRequest.id!,
-      verificationCode: setPasswordToken,
-    );
+    if (updated.isEmpty) {
+      await savePoint.rollback();
+      throw EmailPasswordResetVerificationCodeAlreadyUsedException();
+    }
+
+    await savePoint.release();
   }
 
   /// Deletes password reset requests older than [olderThan].
