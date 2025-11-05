@@ -94,10 +94,13 @@ extension on EmailAccountRequestServerException {
       case EmailAccountRequestInvalidVerificationCodeException():
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
+      case EmailAccountRequestEmailAlreadyRegisteredException():
+      case EmailAccountRequestEmailAlreadyRequestedException():
         return EmailAccountRequestExceptionReason.invalid;
       case EmailAccountRequestVerificationTooManyAttemptsException():
         return EmailAccountRequestExceptionReason.tooManyAttempts;
       case EmailPasswordPolicyViolationException():
+      case EmailAccountRequestInvalidEmailException():
         return EmailAccountRequestExceptionReason.policyViolation;
       case EmailAccountRequestVerificationExpiredException():
         return EmailAccountRequestExceptionReason.expired;

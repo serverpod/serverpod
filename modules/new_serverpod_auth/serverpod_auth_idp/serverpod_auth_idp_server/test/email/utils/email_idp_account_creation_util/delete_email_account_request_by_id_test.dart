@@ -29,7 +29,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -38,8 +38,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {
@@ -101,7 +99,7 @@ void main() {
           ),
         );
 
-        final firstResult = await session.db.transaction(
+        firstAccountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -110,9 +108,8 @@ void main() {
             transaction: transaction,
           ),
         );
-        firstAccountRequestId = firstResult.accountRequestId!;
 
-        final secondResult = await session.db.transaction(
+        secondAccountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -121,7 +118,6 @@ void main() {
             transaction: transaction,
           ),
         );
-        secondAccountRequestId = secondResult.accountRequestId!;
       });
 
       tearDown(() async {

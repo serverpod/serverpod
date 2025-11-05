@@ -38,9 +38,9 @@ void main() {
       });
 
       test(
-          'when starting account creation with valid email and password then it returns account request created result with account request id',
+          'when starting account creation with valid email and password then it returns account request id',
           () async {
-        final result = await session.db.transaction(
+        final accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -50,16 +50,13 @@ void main() {
           ),
         );
 
-        expect(result.result,
-            equals(EmailAccountRequestResult.accountRequestCreated));
-        expect(result.accountRequestId, isNotNull);
-        expect(result.accountRequestId, isA<UuidValue>());
+        expect(accountRequestId, isA<UuidValue>());
       });
 
       test(
           'when starting account creation with uppercase email then account creation can be verified with lowercase email',
           () async {
-        final result = await session.db.transaction(
+        final accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -73,7 +70,7 @@ void main() {
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
             session,
-            accountRequestId: result.accountRequestId!,
+            accountRequestId: accountRequestId,
             verificationCode: verificationCode,
             transaction: transaction,
           ),
@@ -85,7 +82,7 @@ void main() {
       test(
           'when starting account creation with email with spaces then account create can be verified with trimmed email',
           () async {
-        final result = await session.db.transaction(
+        final accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -99,7 +96,7 @@ void main() {
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
             session,
-            accountRequestId: result.accountRequestId!,
+            accountRequestId: accountRequestId,
             verificationCode: verificationCode,
             transaction: transaction,
           ),
@@ -128,9 +125,9 @@ void main() {
       });
 
       test(
-          'when starting account creation with invalid email format then it returns email invalid result',
+          'when starting account creation with invalid email format then it throws email invalid exception',
           () async {
-        final result = await session.db.transaction(
+        final startAccountCreationFuture = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -140,8 +137,10 @@ void main() {
           ),
         );
 
-        expect(result.result, equals(EmailAccountRequestResult.emailInvalid));
-        expect(result.accountRequestId, isNull);
+        await expectLater(
+          startAccountCreationFuture,
+          throwsA(isA<EmailAccountRequestInvalidEmailException>()),
+        );
       });
     },
   );
@@ -183,7 +182,7 @@ void main() {
         ),
       );
 
-      final result = await session.db.transaction(
+      accountRequestId = await session.db.transaction(
         (final transaction) => fixture.accountCreationUtil.startAccountCreation(
           session,
           email: email,
@@ -191,8 +190,6 @@ void main() {
           transaction: transaction,
         ),
       );
-
-      accountRequestId = result.accountRequestId!;
     });
 
     tearDown(() async {
@@ -247,9 +244,9 @@ void main() {
       });
 
       test(
-          'when starting account creation with same email then it returns email already registered result',
+          'when starting account creation with same email then it throws email already registered exception',
           () async {
-        final result = await session.db.transaction(
+        final startAccountCreationFuture = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -259,9 +256,10 @@ void main() {
           ),
         );
 
-        expect(result.result,
-            equals(EmailAccountRequestResult.emailAlreadyRegistered));
-        expect(result.accountRequestId, isNull);
+        await expectLater(
+          startAccountCreationFuture,
+          throwsA(isA<EmailAccountRequestEmailAlreadyRegisteredException>()),
+        );
       });
     },
   );
@@ -298,9 +296,9 @@ void main() {
       });
 
       test(
-          'when starting account creation with same email then it returns email already requested result',
+          'when starting account creation with same email then it throws email already requested exception',
           () async {
-        final result = await session.db.transaction(
+        final startAccountCreationFuture = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -310,9 +308,10 @@ void main() {
           ),
         );
 
-        expect(result.result,
-            equals(EmailAccountRequestResult.emailAlreadyRequested));
-        expect(result.accountRequestId, isNull);
+        await expectLater(
+          startAccountCreationFuture,
+          throwsA(isA<EmailAccountRequestEmailAlreadyRequestedException>()),
+        );
       });
     },
   );
@@ -363,9 +362,9 @@ void main() {
       });
 
       test(
-          'when starting account creation with same email then it returns account request created result',
+          'when starting account creation with same email then a new account request is created',
           () async {
-        final result = session.db.transaction(
+        final startAccountCreationFuture = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -376,11 +375,9 @@ void main() {
         );
 
         await expectLater(
-            result,
-            completion(isA<EmailIDPAccountCreationResult>().having(
-                (final result) => result.result,
-                'result',
-                equals(EmailAccountRequestResult.accountRequestCreated))));
+          startAccountCreationFuture,
+          completion(isA<UuidValue>()),
+        );
       });
     },
   );

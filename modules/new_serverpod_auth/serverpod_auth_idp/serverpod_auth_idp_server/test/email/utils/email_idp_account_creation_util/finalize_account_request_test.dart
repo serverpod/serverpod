@@ -31,7 +31,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -40,8 +40,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Verify the request
         await session.db.transaction(
@@ -134,7 +132,7 @@ void main() {
 
         fixture = EmailIDPTestFixture();
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -143,8 +141,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Create auth user but don't verify the request
         final authUser = await fixture.createAuthUser(session);
@@ -200,7 +196,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -209,8 +205,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Verify and finalize the request
         await session.db.transaction(
