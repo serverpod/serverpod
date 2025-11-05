@@ -131,7 +131,8 @@ class ServerDirectoryFinder {
 
         var searchDepth = isAtBoundary ? 2 : 1;
         candidates.addAll(
-          _searchChildrenRecursive(current, maxDepth: searchDepth, visited: visited),
+          _searchChildrenRecursive(current,
+              maxDepth: searchDepth, visited: visited),
         );
 
         if (isAtBoundary) break;
@@ -267,8 +268,8 @@ class ServerDirectoryFinder {
           if (content.contains('workspace:')) return true;
         } catch (_) {}
       }
-      var homeDir = Platform.environment['HOME'] ??
-          Platform.environment['USERPROFILE'];
+      var homeDir =
+          Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
       if (homeDir != null && p.normalize(dir.path) == p.normalize(homeDir)) {
         return true;
       }
