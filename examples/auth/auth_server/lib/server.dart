@@ -1,8 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 import 'src/generated/protocol.dart';
@@ -50,7 +50,12 @@ void run(List<String> args) async {
   );
 
   final emailIDPConfig = EmailIDPConfig(
-    passwordHashPepper: pod.getPassword('emailPasswordHashPepper')!,
+    secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
+  );
+
+  final passkeyIDPConfig = PasskeyIDPConfig(
+    challengeLifetime: Duration(seconds: 30),
+    hostname: 'localhost',
   );
 
   final authServices = AuthServices.set(
@@ -61,6 +66,7 @@ void run(List<String> args) async {
         GoogleIdentityProviderFactory(googleIDPConfig),
         AppleIdentityProviderFactory(appleIDPConfig),
         EmailIdentityProviderFactory(emailIDPConfig),
+        PasskeyIdentityProviderFactory(passkeyIDPConfig),
       ],
       additionalTokenManagers: [
         AuthenticationTokensTokenManager(

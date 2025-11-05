@@ -30,8 +30,8 @@ abstract class TestWebSocketServer {
     void Function(Uri webSocketHost)? onConnected,
     void Function(RelicWebSocket webSocket) webSocketHandler,
   ) async {
-    FutureOr<HandledContext> requestHandler(RequestContext context) async {
-      return context.connect(webSocketHandler);
+    FutureOr<Result> requestHandler(Request req) async {
+      return WebSocketUpgrade(webSocketHandler);
     }
 
     final server = RelicServer(

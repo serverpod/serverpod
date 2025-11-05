@@ -5,12 +5,12 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../../core.dart';
 import '../../../../generated/protocol.dart';
-import '../../util/byte_data_extension.dart';
+import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/secret_hash_util.dart';
+import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
-import '../../util/uint8list_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
-import 'email_idp_password_hash_util.dart';
 
 /// This describes the detailed status of the account creation operation.
 ///
@@ -103,15 +103,15 @@ class EmailIDPAccountCreationResult {
 ///
 /// {@endtemplate}
 class EmailIDPAccountCreationUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtils;
+  final SecretHashUtil _hashUtils;
   final EmailIDPAccountCreationUtilsConfig _config;
 
   /// Creates a new [EmailIDPAccountCreationUtil] instance.
   EmailIDPAccountCreationUtil({
     required final EmailIDPAccountCreationUtilsConfig config,
-    required final EmailIDPPasswordHashUtil passwordHashUtils,
+    required final SecretHashUtil passwordHashUtils,
   })  : _config = config,
-        _passwordHashUtils = passwordHashUtils;
+        _hashUtils = passwordHashUtils;
 
   /// Completes the account creation process by creating a new authentication
   /// user and linking the account request to it.
@@ -190,10 +190,10 @@ class EmailIDPAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = password != null
-        ? await _passwordHashUtils.createHash(
+        ? await _hashUtils.createHash(
             value: password,
           )
-        : PasswordHash.empty();
+        : HashResult.empty();
 
     final account = await EmailAccount.db.insertRow(
       session,
@@ -398,11 +398,20 @@ class EmailIDPAccountCreationUtil {
       }
     }
 
-    final passwordHash = await _passwordHashUtils.createHash(
+    final passwordHash = await _hashUtils.createHash(
       value: password,
     );
-    final verificationCodeHash = await _passwordHashUtils.createHash(
+    final verificationCodeHash = await _hashUtils.createHash(
       value: verificationCode,
+    );
+
+    final challenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(
+        challengeCodeHash: verificationCodeHash.hash.asByteData,
+        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+      ),
+      transaction: transaction,
     );
 
     final emailAccountRequest = await EmailAccountRequest.db.insertRow(
@@ -411,8 +420,7 @@ class EmailIDPAccountCreationUtil {
         email: email,
         passwordHash: passwordHash.hash.asByteData,
         passwordSalt: passwordHash.salt.asByteData,
-        verificationCodeHash: verificationCodeHash.hash.asByteData,
-        verificationCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeId: challenge.id!,
         createdAt: clock.now(),
       ),
       transaction: transaction,
@@ -460,6 +468,9 @@ class EmailIDPAccountCreationUtil {
     final request = await EmailAccountRequest.db.findById(
       session,
       accountRequestId,
+      include: EmailAccountRequest.include(
+        challenge: SecretChallenge.include(),
+      ),
       transaction: transaction,
     );
 
@@ -480,10 +491,12 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
-    if (!await _passwordHashUtils.validateHash(
+    final challenge = request.getChallenge;
+
+    if (!await _hashUtils.validateHash(
       value: verificationCode,
-      hash: request.verificationCodeHash.asUint8List,
-      salt: request.verificationCodeSalt.asUint8List,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailAccountRequestInvalidVerificationCodeException();
     }
@@ -653,6 +666,16 @@ extension on EmailAccountRequest {
     );
 
     return requestExpiresAt.isBefore(clock.now());
+  }
+
+  SecretChallenge get getChallenge {
+    if (challenge == null) {
+      throw StateError(
+        'Challenge is required for account request verification',
+      );
+    }
+
+    return challenge!;
   }
 }
 

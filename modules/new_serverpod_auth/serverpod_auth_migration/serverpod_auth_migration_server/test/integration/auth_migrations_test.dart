@@ -16,9 +16,8 @@ void main() {
         new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  const config = new_auth_idp.EmailIDPConfig(passwordHashPepper: 'test');
-  final newEmailIDP =
-      new_auth_idp.EmailIDP(config: config, tokenManager: tokenManager);
+  const config = new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
+  final newEmailIDP = new_auth_idp.EmailIDP(config, tokenManager: tokenManager);
 
   setUp(() async {
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);

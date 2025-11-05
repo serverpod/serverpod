@@ -2,11 +2,11 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/uint8list_extension.dart';
+import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-      final PasswordHash passwordHash) {
+      final HashResult passwordHash) {
     return EmailAccountPasswordHash(passwordHash);
   }
 
@@ -16,7 +16,7 @@ sealed class EmailAccountPassword {
 }
 
 final class EmailAccountPasswordHash extends EmailAccountPassword {
-  final PasswordHash passwordHash;
+  final HashResult passwordHash;
 
   EmailAccountPasswordHash(this.passwordHash);
 }
@@ -36,7 +36,7 @@ final class EmailIDPTestFixture {
 
   EmailIDPTestFixture({
     this.config = const EmailIDPConfig(
-      passwordHashPepper: 'pepper',
+      secretHashPepper: 'pepper',
     ),
     TokenManager? tokenManager,
   }) {
@@ -51,7 +51,7 @@ final class EmailIDPTestFixture {
     // constructor.
     // ignore: prefer_initializing_formals
     this.tokenManager = tokenManager;
-    emailIDP = EmailIDP(config: config, tokenManager: tokenManager);
+    emailIDP = EmailIDP(config, tokenManager: tokenManager);
   }
 
   Future<EmailAccount> createEmailAccount(
@@ -64,7 +64,7 @@ final class EmailIDPTestFixture {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
         await passwordHashUtil.createHash(value: password.password),
-      null => PasswordHash.empty(),
+      null => HashResult.empty(),
     };
 
     return await EmailAccount.db.insertRow(
@@ -104,7 +104,7 @@ final class EmailIDPTestFixture {
         .deleteWhere(session, where: (final _) => Constant.bool(true));
   }
 
-  EmailIDPPasswordHashUtil get passwordHashUtil => emailIDP.utils.passwordHash;
+  SecretHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
   EmailIDPAuthenticationUtil get authenticationUtil =>
       emailIDP.utils.authentication;
   EmailIDPPasswordResetUtil get passwordResetUtil =>

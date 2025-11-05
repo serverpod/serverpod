@@ -164,18 +164,20 @@ abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
 
 /// Base endpoint for Passkey-based authentication.
 /// {@category Endpoint}
-abstract class EndpointPasskeyAccountBase extends _i1.EndpointRef {
-  EndpointPasskeyAccountBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointPasskeyIDPBase extends _i1.EndpointRef {
+  EndpointPasskeyIDPBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Returns a new challenge to be used for a login or registration request.
   _i2.Future<({_i4.ByteData challenge, _i1.UuidValue id})> createChallenge();
 
   /// Registers a Passkey for the [session]'s current user.
+  ///
+  /// Throws if the user is not authenticated.
   _i2.Future<void> register(
       {required _i5.PasskeyRegistrationRequest registrationRequest});
 
   /// Authenticates the user related to the given Passkey.
-  _i2.Future<_i3.AuthSuccess> authenticate(
+  _i2.Future<_i3.AuthSuccess> login(
       {required _i6.PasskeyLoginRequest loginRequest});
 }
 

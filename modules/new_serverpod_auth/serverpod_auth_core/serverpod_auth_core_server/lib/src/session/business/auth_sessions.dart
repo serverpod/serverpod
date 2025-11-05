@@ -118,9 +118,11 @@ final class AuthSessions {
   /// The user should have been authenticated before calling this method.
   ///
   /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
+  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionLifetime] into the future (if configured).
   ///
   /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
   /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decommissioned.
+  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionInactivityTimeout] (if configured).
   ///
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
@@ -137,11 +139,14 @@ final class AuthSessions {
     Set<Scope>? scopes,
 
     /// Fixed date at which the session expires.
-    /// If `null` the session will work until it's deleted or when it's been
+    /// If `null`, uses [AuthSessionsConfig.defaultSessionLifetime] to compute expiration time.
+    /// If both are `null`, the session will work until it's deleted or when it's been
     /// inactive for [expireAfterUnusedFor].
     final DateTime? expiresAt,
 
     /// Length of inactivity after which the session is no longer usable.
+    /// If `null`, uses [AuthSessionsConfig.defaultSessionInactivityTimeout].
+    /// If both are `null`, the session is valid until [expiresAt].
     final Duration? expireAfterUnusedFor,
 
     /// Whether to skip the check if the user is blocked (in which case a
@@ -166,6 +171,14 @@ final class AuthSessions {
       scopes ??= authUser.scopes;
     }
 
+    // Apply default values from config
+    final effectiveExpiresAt = expiresAt ??
+        (_config.defaultSessionLifetime != null
+            ? clock.now().add(_config.defaultSessionLifetime!)
+            : null);
+    final effectiveExpireAfterUnusedFor =
+        expireAfterUnusedFor ?? _config.defaultSessionInactivityTimeout;
+
     final secret = generateRandomBytes(_config.sessionKeySecretLength);
     final hash = _sessionKeyHash.createSessionKeyHash(secret: secret);
 
@@ -180,8 +193,8 @@ final class AuthSessions {
         authUserId: authUserId,
         createdAt: clock.now(),
         lastUsedAt: clock.now(),
-        expiresAt: expiresAt,
-        expireAfterUnusedFor: expireAfterUnusedFor,
+        expiresAt: effectiveExpiresAt,
+        expireAfterUnusedFor: effectiveExpireAfterUnusedFor,
         scopeNames: scopeNames,
         sessionKeyHash: ByteData.sublistView(hash.hash),
         sessionKeySalt: ByteData.sublistView(hash.salt),

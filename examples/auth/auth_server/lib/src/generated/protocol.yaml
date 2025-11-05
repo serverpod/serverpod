@@ -8,5 +8,9 @@ emailIDP:
   - finishPasswordReset:
 googleIDP:
   - login:
+passkeyIDP:
+  - createChallenge:
+  - register:
+  - login:
 greeting:
   - hello:

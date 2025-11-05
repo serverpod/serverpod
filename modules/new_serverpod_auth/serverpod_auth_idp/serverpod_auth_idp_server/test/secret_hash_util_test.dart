@@ -1,21 +1,21 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp_config.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/business/utils/email_idp_password_hash_util.dart';
+import 'package:serverpod_auth_idp_server/src/utils/secret_hash_util.dart';
 import 'package:test/test.dart';
 
-import '../test_utils/email_idp_test_fixture.dart';
+import 'email/test_utils/email_idp_test_fixture.dart';
 
 void main() {
   group('Given EmailIDPPasswordHashUtil instance', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
+    late SecretHashUtil passwordHashUtil;
     const testSaltLength = 16;
 
     setUp(() {
       final fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-            passwordHashPepper: 'test-pepper',
-            passwordHashSaltLength: testSaltLength),
+            secretHashPepper: 'test-pepper',
+            secretHashSaltLength: testSaltLength),
       );
       passwordHashUtil = fixture.passwordHashUtil;
     });
@@ -111,14 +111,14 @@ void main() {
   });
 
   group('Given a created password hash', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
-    late PasswordHash passwordHash;
+    late SecretHashUtil passwordHashUtil;
+    late HashResult passwordHash;
     const value = 'test-password-123';
     const pepper = 'my-test-pepper';
 
     setUp(() async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: pepper),
+        config: const EmailIDPConfig(secretHashPepper: pepper),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       passwordHash = await passwordHashUtil.createHash(value: value);
@@ -179,7 +179,7 @@ void main() {
         'when validatedHash is called with valid credentials on a different password hash util using a different pepper then returns false',
         () async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: '$pepper-modified'),
+        config: const EmailIDPConfig(secretHashPepper: '$pepper-modified'),
       );
       final differentPepperPasswordHashUtil = fixture.passwordHashUtil;
 
@@ -194,11 +194,11 @@ void main() {
   });
 
   group('Given a password hash created from an empty password', () {
-    late EmailIDPPasswordHashUtil passwordHashUtil;
-    late PasswordHash emptyPasswordHash;
+    late SecretHashUtil passwordHashUtil;
+    late HashResult emptyPasswordHash;
     setUp(() async {
       final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(passwordHashPepper: 'test-pepper'),
+        config: const EmailIDPConfig(secretHashPepper: 'test-pepper'),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       emptyPasswordHash = await passwordHashUtil.createHash(value: '');
@@ -219,7 +219,7 @@ void main() {
   group('Given PasswordHash factory', () {
     test('when PasswordHash.empty() is called then creates empty hash and salt',
         () {
-      final emptyPasswordHash = PasswordHash.empty();
+      final emptyPasswordHash = HashResult.empty();
 
       expect(emptyPasswordHash.hash, isEmpty);
       expect(emptyPasswordHash.salt, isEmpty);

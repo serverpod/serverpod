@@ -77,7 +77,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             registrationVerificationCodeLifetime:
                 registrationVerificationCodeLifetime,
           ),
