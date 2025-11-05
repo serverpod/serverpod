@@ -597,7 +597,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (session, authUserId) async {
+          onRefreshTokenCreation: (final session, final authUserId) async {
             return {'hookClaim': 'hookValue', 'userRole': 'admin'};
           },
         ),
@@ -626,7 +626,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (session, authUserId) async {
+          onRefreshTokenCreation: (final session, final authUserId) async {
             return {'hookClaim': 'fromHook', 'conflictKey': 'hookWins'};
           },
         ),
@@ -657,7 +657,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (session, authUserId) async {
+          onRefreshTokenCreation: (final session, final authUserId) async {
             return {'hookClaim': 'persistsAcrossRotation'};
           },
         ),
@@ -691,7 +691,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (session, authUserId) async {
+          onRefreshTokenCreation: (final session, final authUserId) async {
             return null;
           },
         ),
@@ -720,7 +720,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (session, authUserId) async {
+          onRefreshTokenCreation: (final session, final authUserId) async {
             // Hook can fetch additional data from database using session
             final authUser = await AuthUsers.get(
               session,
