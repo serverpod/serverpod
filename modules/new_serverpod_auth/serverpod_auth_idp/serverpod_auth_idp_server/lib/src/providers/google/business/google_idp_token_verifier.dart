@@ -49,12 +49,10 @@ class GoogleIdTokenVerifier {
   static Future<Map<String, dynamic>> verifyOAuth2Token(
     final String idToken, {
     final String? audience,
-    final int clockSkewInSeconds = 0,
   }) async {
     final idInfo = await _verifyToken(
       idToken,
       audience: audience,
-      clockSkewInSeconds: clockSkewInSeconds,
     );
 
     final issuer = idInfo['iss'] as String?;
@@ -69,7 +67,6 @@ class GoogleIdTokenVerifier {
   static Future<Map<String, dynamic>> _verifyToken(
     final String idToken, {
     final String? audience,
-    final int clockSkewInSeconds = 0,
   }) async {
     final keys = await _getKeys();
 
@@ -93,11 +90,7 @@ class GoogleIdTokenVerifier {
     }
 
     final payload = verifiedJwt.payload as Map<String, dynamic>;
-    _validateClaims(
-      payload,
-      audience: audience,
-      clockSkewInSeconds: clockSkewInSeconds,
-    );
+    _validateClaims(payload, audience: audience);
     return payload;
   }
 
@@ -161,17 +154,15 @@ class GoogleIdTokenVerifier {
   static void _validateClaims(
     final Map<String, dynamic> claims, {
     final String? audience,
-    final int clockSkewInSeconds = 0,
   }) {
     final now = const Clock().now();
-    final clockSkew = Duration(seconds: clockSkewInSeconds);
 
     final exp = claims['exp'] as int?;
     if (exp == null) {
       throw GoogleIdTokenValidationServerException('Missing expiry claim');
     }
     final expiry = DateTime.fromMillisecondsSinceEpoch(exp * 1000, isUtc: true);
-    if (expiry.add(clockSkew).isBefore(now)) {
+    if (expiry.isBefore(now)) {
       throw GoogleIdTokenValidationServerException('Token expired');
     }
 
@@ -181,7 +172,7 @@ class GoogleIdTokenVerifier {
     }
     final issuedAt =
         DateTime.fromMillisecondsSinceEpoch(iat * 1000, isUtc: true);
-    if (issuedAt.subtract(clockSkew).isAfter(now)) {
+    if (issuedAt.isAfter(now)) {
       throw GoogleIdTokenValidationServerException('Invalid issued at time');
     }
 
