@@ -191,6 +191,33 @@ class Server implements RouterInjectable {
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
         );
+      } on EndpointDispatchException catch (e) {
+        return switch (e) {
+          EndpointNotFoundException() =>
+            Response.notFound(body: Body.fromString(e.message)),
+          NotAuthorizedException() => Response(switch (e.reason) {
+              AuthenticationFailureReason.unauthenticated =>
+                io.HttpStatus.unauthorized,
+              AuthenticationFailureReason.insufficientAccess =>
+                io.HttpStatus.forbidden,
+            }),
+          MethodNotFoundException() ||
+          InvalidEndpointMethodTypeException() ||
+          InvalidParametersException() =>
+            Response.badRequest(body: Body.fromString(e.message)),
+        };
+      } on SerializableException catch (e) {
+        return Response.badRequest(
+          body: Body.fromString(
+              serializationManager.encodeWithTypeForProtocol(e),
+              mimeType: MimeType.json),
+        );
+      } on HeaderException catch (e) {
+        return Response.badRequest(body: Body.fromString(e.httpResponseBody));
+      } on AuthHeaderEncodingException catch (_) {
+        return Response.badRequest(
+            body:
+                Body.fromString('Request has invalid "authorization" header'));
       } catch (e, stackTrace) {
         await _reportFrameworkException(
           e,
@@ -262,87 +289,12 @@ class Server implements RouterInjectable {
   FutureOr<Result> _cloudStorage(Request req) async {
     final uri = req.requestedUri;
     assert(uri.path == '/serverpod_cloud_storage');
-    var result = await _handleUriCall(uri, '', req);
-    return _toResponse(result);
+    return await _handleUriCall(uri, '', req);
   }
 
   Future<Response> _endpoints(Request req) async {
     final body = await _readBody(req);
-    var result = await _handleUriCall(req.requestedUri, body, req);
-    return _toResponse(result);
-  }
-
-  Response _toResponse(EndpointResult result) {
-    switch (result) {
-      case ResultNoSuchEndpoint():
-        return Response.notFound(
-          body: Body.fromString(result.errorDescription),
-        );
-      case ResultInvalidParams():
-        return Response.badRequest(
-          body: Body.fromString(result.errorDescription),
-        );
-      case ResultAuthenticationFailed():
-        var authFailedStatusCode = switch (result.reason) {
-          AuthenticationFailureReason.unauthenticated =>
-            io.HttpStatus.unauthorized,
-          AuthenticationFailureReason.insufficientAccess =>
-            io.HttpStatus.forbidden,
-        };
-        return Response(
-          authFailedStatusCode,
-        );
-      case ResultInternalServerError():
-        return Response.internalServerError(
-          body: Body.fromString(
-              'Internal server error. Call log id: ${result.sessionLogId}'),
-        );
-      case ResultStatusCode():
-        return Response(
-          result.statusCode,
-          body: result.message != null
-              ? Body.fromString(result.message!)
-              : Body.empty(),
-        );
-      case ExceptionResult():
-        var serializedModel =
-            serializationManager.encodeWithTypeForProtocol(result.model);
-        return Response.badRequest(
-          body: Body.fromString(serializedModel, mimeType: MimeType.json),
-        );
-      case ResultSuccess():
-        var value = result.returnValue;
-        if (result.sendAsRaw) {
-          switch (value) {
-            case String():
-              value = Body.fromString(value);
-              continue body;
-            case Stream<Uint8List>():
-              value = Body.fromDataStream(value);
-              continue body;
-            case ByteData():
-              value = Uint8List.sublistView(value);
-              continue bytes;
-            bytes:
-            case Uint8List():
-              value = Body.fromData(value);
-              continue body;
-            body:
-            case Body():
-              value = Response.ok(body: value);
-              continue response;
-            response:
-            case Response():
-              return value;
-          }
-        }
-        return Response.ok(
-          body: Body.fromString(
-            SerializationManager.encodeForProtocol(value),
-            mimeType: MimeType.json,
-          ),
-        );
-    }
+    return await _handleUriCall(req.requestedUri, body, req);
   }
 
   Handler _dispatchWebSocket(
@@ -403,7 +355,7 @@ class Server implements RouterInjectable {
     return const Utf8Decoder().convert(builder.takeBytes());
   }
 
-  Future<EndpointResult> _handleUriCall(
+  Future<Response> _handleUriCall(
     Uri uri,
     String body,
     Request request,
@@ -411,7 +363,7 @@ class Server implements RouterInjectable {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams('Endpoint name is not valid');
+      throw InvalidParametersException('Endpoint name is not valid');
     }
 
     // Read query parameters
@@ -421,7 +373,7 @@ class Server implements RouterInjectable {
       try {
         queryParameters = jsonDecode(body);
       } catch (_) {
-        return ResultInvalidParams('Invalid JSON in body');
+        throw InvalidParametersException('Invalid JSON in body');
       }
     }
 
@@ -443,9 +395,7 @@ class Server implements RouterInjectable {
       if (method is String) {
         methodName = method;
       } else {
-        return ResultInvalidParams(
-          'No method name specified',
-        );
+        throw InvalidParametersException('No method name specified');
       }
     }
 
@@ -455,19 +405,8 @@ class Server implements RouterInjectable {
     String? authenticationKey;
     String? authenticationHeaderValue;
 
-    try {
-      authenticationHeaderValue = request.headers.authorization?.headerValue;
-      authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    } catch (e) {
-      if (e is AuthHeaderEncodingException || e is InvalidHeaderException) {
-        return ResultStatusCode(
-          400,
-          'Request has invalid "authorization" header',
-        );
-      } else {
-        rethrow;
-      }
-    }
+    authenticationHeaderValue = request.headers.authorization?.headerValue;
+    authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
     authenticationKey ??= queryParameters['auth'] as String?;
 
     MethodCallSession? maybeSession;
@@ -504,9 +443,7 @@ class Server implements RouterInjectable {
           space: OriginSpace.framework,
           context: contextFromRequest(this, request, OperationType.method),
         );
-
-        return ResultInternalServerError(
-            'Session was not created', StackTrace.current, 0);
+        return Response.internalServerError();
       }
 
       try {
@@ -515,9 +452,37 @@ class Server implements RouterInjectable {
           methodCallContext.arguments,
         );
 
-        return ResultSuccess(
-          result,
-          sendAsRaw: methodCallContext.endpoint.sendAsRaw,
+        // Handle success - construct Response directly
+        var value = result;
+        if (methodCallContext.endpoint.sendAsRaw) {
+          switch (value) {
+            case String():
+              value = Body.fromString(value);
+              continue body;
+            case Stream<Uint8List>():
+              value = Body.fromDataStream(value);
+              continue body;
+            case ByteData():
+              value = Uint8List.sublistView(value);
+              continue bytes;
+            bytes:
+            case Uint8List():
+              value = Body.fromData(value);
+              continue body;
+            body:
+            case Body():
+              value = Response.ok(body: value);
+              continue response;
+            response:
+            case Response():
+              return value;
+          }
+        }
+        return Response.ok(
+          body: Body.fromString(
+            SerializationManager.encodeForProtocol(value),
+            mimeType: MimeType.json,
+          ),
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
@@ -527,34 +492,11 @@ class Server implements RouterInjectable {
           space: OriginSpace.application,
           context: contextFromSession(session, request: request),
         );
-
+        await session.close(error: e, stackTrace: stackTrace);
         rethrow;
       }
-    } on MethodNotFoundException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on InvalidEndpointMethodTypeException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on EndpointNotFoundException catch (e) {
-      return ResultNoSuchEndpoint(e.message);
-    } on NotAuthorizedException catch (e) {
-      return e.authenticationFailedResult;
-    } on InvalidParametersException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on SerializableException catch (exception) {
-      return ExceptionResult(model: exception);
-    } on Exception catch (e, stackTrace) {
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
-    } catch (e, stackTrace) {
-      // Something did not work out
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
     } finally {
-      await maybeSession?.close();
+      await maybeSession?.close(); // safe to close twice
     }
   }
 
