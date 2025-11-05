@@ -155,9 +155,14 @@ class GoogleIDPUtils {
       data = jsonDecode(response.body);
     }
 
+    GoogleAccountDetails details;
     try {
-      final details = _parseAccountDetails(data);
+      details = _parseAccountDetails(data);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from Google: $e');
+    }
 
+    try {
       final getExtraInfoCallback = config.getExtraGoogleInfoCallback;
       if (accessToken != null && getExtraInfoCallback != null) {
         await getExtraInfoCallback(
@@ -167,10 +172,11 @@ class GoogleIDPUtils {
           transaction: null,
         );
       }
-      return details;
     } catch (e) {
-      session.logAndThrow('Invalid user info from Google: $e');
+      session.logAndThrow('Failed to get extra Google account info: $e');
     }
+
+    return details;
   }
 
   GoogleAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
