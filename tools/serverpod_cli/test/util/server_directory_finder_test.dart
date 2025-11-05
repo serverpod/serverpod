@@ -76,8 +76,8 @@ dependencies:
         var projectName = 'myapp';
         var serverDir =
             await createMockServerDirectory(tempDir, '${projectName}_server');
-        var flutterDir =
-            await createMockNonServerDirectory(tempDir, '${projectName}_flutter');
+        var flutterDir = await createMockNonServerDirectory(
+            tempDir, '${projectName}_flutter');
 
         var result = ServerDirectoryFinder.search(flutterDir);
 
@@ -98,8 +98,8 @@ dependencies:
         var projectName = 'myapp';
         var serverDir =
             await createMockServerDirectory(tempDir, '${projectName}_server');
-        var clientDir =
-            await createMockNonServerDirectory(tempDir, '${projectName}_client');
+        var clientDir = await createMockNonServerDirectory(
+            tempDir, '${projectName}_client');
 
         var result = ServerDirectoryFinder.search(clientDir);
 
@@ -137,7 +137,8 @@ dependencies:
       () async {
         var nestedDir = Directory(path.join(tempDir.path, 'level1', 'level2'));
         await nestedDir.create(recursive: true);
-        var serverDir = await createMockServerDirectory(nestedDir, 'test_server');
+        var serverDir =
+            await createMockServerDirectory(nestedDir, 'test_server');
 
         var result = ServerDirectoryFinder.search(tempDir);
 
@@ -275,7 +276,8 @@ dependencies:
         var result = ServerDirectoryFinder.search(serverDir);
         expect(result.status, equals(SearchStatus.found));
 
-        var deepDir = Directory(path.join(serverDir.path, 'lib', 'src', 'models'));
+        var deepDir =
+            Directory(path.join(serverDir.path, 'lib', 'src', 'models'));
         await deepDir.create(recursive: true);
 
         result = ServerDirectoryFinder.search(deepDir);
@@ -290,7 +292,8 @@ dependencies:
       'then it stops at the workspace boundary',
       () async {
         var melosFile = File(path.join(tempDir.path, 'melos.yaml'));
-        await melosFile.writeAsString('name: my_workspace\npackages:\n  - packages/**\n');
+        await melosFile
+            .writeAsString('name: my_workspace\npackages:\n  - packages/**\n');
 
         var packagesDir = Directory(path.join(tempDir.path, 'packages'));
         await packagesDir.create(recursive: true);
@@ -310,7 +313,8 @@ dependencies:
       'when searching from inside boundary, '
       'then it does not find server outside boundary',
       () async {
-        var outsideDir = Directory(path.join(tempDir.parent.path, 'outside_repo'));
+        var outsideDir =
+            Directory(path.join(tempDir.parent.path, 'outside_repo'));
         await outsideDir.create(recursive: true);
         await createMockServerDirectory(outsideDir, 'server_outside');
 
@@ -341,7 +345,8 @@ dependencies:
         var gitDir = Directory(path.join(tempDir.path, '.git'));
         await gitDir.create(recursive: true);
 
-        var insideServerDir = await createMockServerDirectory(tempDir, 'myproject_server');
+        var insideServerDir =
+            await createMockServerDirectory(tempDir, 'myproject_server');
 
         var result = ServerDirectoryFinder.search(tempDir);
 
@@ -369,7 +374,8 @@ dependencies:
 
         var backendDir = Directory(path.join(tempDir.path, 'backend'));
         await backendDir.create(recursive: true);
-        var serverDir = await createMockServerDirectory(backendDir, 'myproject_server');
+        var serverDir =
+            await createMockServerDirectory(backendDir, 'myproject_server');
 
         var result = ServerDirectoryFinder.search(appsDir);
 
