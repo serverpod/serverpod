@@ -156,7 +156,18 @@ class GoogleIDPUtils {
     }
 
     try {
-      return _parseAccountDetails(data);
+      final details = _parseAccountDetails(data);
+
+      final getExtraInfoCallback = config.getExtraGoogleInfoCallback;
+      if (accessToken != null && getExtraInfoCallback != null) {
+        await getExtraInfoCallback(
+          session,
+          accountDetails: details,
+          accessToken: accessToken,
+          transaction: null,
+        );
+      }
+      return details;
     } catch (e) {
       session.logAndThrow('Invalid user info from Google: $e');
     }
