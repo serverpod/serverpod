@@ -31,10 +31,10 @@ void run(List<String> args) async {
     algorithm: AuthenticationTokenAlgorithm.hmacSha512(
       SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
     ),
-    // Optional: Add custom claims to refresh tokens when they are created.
-    // This hook is invoked when a new refresh token is created and allows
-    // you to add custom claims that will be included in all access tokens
-    // (including across rotations).
+    // Optional: Provide extra claims to add to refresh tokens.
+    // This function is invoked when a new refresh token is created and allows
+    // you to dynamically add custom claims that will be included in all access
+    // tokens (including across rotations).
     //
     // Example use cases:
     // - Add user roles or permissions
@@ -42,7 +42,7 @@ void run(List<String> args) async {
     // - Add session-related metadata
     //
     // Uncomment the following to enable:
-    // onRefreshTokenCreation: (session, authUserId) async {
+    // extraClaimsProvider: (session, authUserId) async {
     //   // Fetch additional user data from the database if needed
     //   // final user = await MyUserInfo.db.findFirstRow(
     //   //   session,

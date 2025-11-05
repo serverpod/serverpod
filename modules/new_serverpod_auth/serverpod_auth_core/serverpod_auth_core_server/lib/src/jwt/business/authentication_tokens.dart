@@ -121,13 +121,13 @@ final class AuthenticationTokens {
       scopes ??= authUser.scopes;
     }
 
-    // Invoke the hook to get extra claims if configured
-    final hookClaims = config.onRefreshTokenCreation != null
-        ? await config.onRefreshTokenCreation!(session, authUserId)
+    // Invoke the extra claims provider if configured
+    final providerClaims = config.extraClaimsProvider != null
+        ? await config.extraClaimsProvider!(session, authUserId)
         : null;
 
-    // Merge extraClaims with hookClaims, with hookClaims taking precedence
-    final mergedExtraClaims = {...?extraClaims, ...?hookClaims};
+    // Merge extraClaims with providerClaims, with providerClaims taking precedence
+    final mergedExtraClaims = {...?extraClaims, ...?providerClaims};
     final encodedExtraClaims =
         mergedExtraClaims.isNotEmpty ? jsonEncode(mergedExtraClaims) : null;
 

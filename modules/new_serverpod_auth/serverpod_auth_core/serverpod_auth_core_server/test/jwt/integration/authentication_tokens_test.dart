@@ -575,8 +575,7 @@ void main() {
     });
   });
 
-  withServerpod(
-      'Given an AuthenticationTokenConfig with onRefreshTokenCreation hook,',
+  withServerpod('Given an AuthenticationTokenConfig with extraClaimsProvider,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -589,7 +588,7 @@ void main() {
     });
 
     test(
-        'when requesting a new token pair with the hook configured, then hook claims are included in the access token.',
+        'when requesting a new token pair with the provider configured, then provider claims are included in the access token.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -597,7 +596,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (final session, final authUserId) async {
+          extraClaimsProvider: (final session, final authUserId) async {
             return {'hookClaim': 'hookValue', 'userRole': 'admin'};
           },
         ),
@@ -618,7 +617,7 @@ void main() {
     });
 
     test(
-        'when requesting a new token pair with both hook and extraClaims, then both are included with hook taking precedence on conflicts.',
+        'when requesting a new token pair with both provider and extraClaims, then both are included with provider taking precedence on conflicts.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -626,7 +625,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (final session, final authUserId) async {
+          extraClaimsProvider: (final session, final authUserId) async {
             return {'hookClaim': 'fromHook', 'conflictKey': 'hookWins'};
           },
         ),
@@ -649,7 +648,7 @@ void main() {
     });
 
     test(
-        'when rotating tokens created with a hook, then hook claims are preserved.',
+        'when rotating tokens created with a provider, then provider claims are preserved.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -657,7 +656,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (final session, final authUserId) async {
+          extraClaimsProvider: (final session, final authUserId) async {
             return {'hookClaim': 'persistsAcrossRotation'};
           },
         ),
@@ -683,7 +682,7 @@ void main() {
     });
 
     test(
-        'when hook returns null, then no extra claims are added from the hook.',
+        'when provider returns null, then no extra claims are added from the provider.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -691,7 +690,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (final session, final authUserId) async {
+          extraClaimsProvider: (final session, final authUserId) async {
             return null;
           },
         ),
@@ -712,7 +711,7 @@ void main() {
     });
 
     test(
-        'when hook accesses session context, then it can fetch additional data.',
+        'when provider accesses session context, then it can fetch additional data.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -720,8 +719,8 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          onRefreshTokenCreation: (final session, final authUserId) async {
-            // Hook can fetch additional data from database using session
+          extraClaimsProvider: (final session, final authUserId) async {
+            // Provider can fetch additional data from database using session
             final authUser = await AuthUsers.get(
               session,
               authUserId: authUserId,
