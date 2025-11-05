@@ -58,8 +58,8 @@ final class GoogleIDP {
         transaction: transaction,
       );
 
+      final image = account.details.image;
       if (account.newAccount) {
-        final image = account.details.image;
         try {
           await UserProfiles.createUserProfile(
             session,
@@ -74,6 +74,29 @@ final class GoogleIDP {
         } catch (e, stackTrace) {
           session.log(
             'Failed to create user profile for new Google user.',
+            level: LogLevel.error,
+            exception: e,
+            stackTrace: stackTrace,
+          );
+        }
+      } else if (image != null) {
+        try {
+          final user = await UserProfile.db.findFirstRow(
+            session,
+            where: (final t) => t.authUserId.equals(account.authUserId),
+            transaction: transaction,
+          );
+          if (user != null && user.image == null) {
+            await UserProfiles.setUserImageFromUrl(
+              session,
+              account.authUserId,
+              image,
+              transaction: transaction,
+            );
+          }
+        } catch (e, stackTrace) {
+          session.log(
+            'Failed to update user profile image for existing Google user.',
             level: LogLevel.error,
             exception: e,
             stackTrace: stackTrace,
