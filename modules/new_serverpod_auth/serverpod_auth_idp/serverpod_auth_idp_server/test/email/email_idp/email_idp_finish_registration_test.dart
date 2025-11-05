@@ -28,7 +28,7 @@ void main() {
         verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
                 accountRequestVerificationCodeLifetime,
@@ -135,7 +135,7 @@ void main() {
       verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           registrationVerificationCodeGenerator: () => verificationCode,
           registrationVerificationCodeLifetime:
               accountRequestVerificationCodeLifetime,

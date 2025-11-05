@@ -1,0 +1,292 @@
+{
+  "actions": [
+    {
+      "type": "deleteTable",
+      "deleteTable": "serverpod_auth_idp_email_account_password_reset_request"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "serverpod_auth_idp_email_account_password_reset_request",
+        "dartName": "EmailAccountPasswordResetRequest",
+        "module": "serverpod_auth_idp",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "emailAccountId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "challengeId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "serverpod_auth_idp_email_account_password_reset_request_fk_0",
+            "columns": [
+              "emailAccountId"
+            ],
+            "referenceTable": "serverpod_auth_idp_email_account",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          },
+          {
+            "constraintName": "serverpod_auth_idp_email_account_password_reset_request_fk_1",
+            "columns": [
+              "challengeId"
+            ],
+            "referenceTable": "serverpod_auth_idp_secret_challenge",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_idp_email_account_password_reset_request_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "deleteTable",
+      "deleteTable": "serverpod_auth_idp_email_account_request"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "serverpod_auth_idp_email_account_request",
+        "dartName": "EmailAccountRequest",
+        "module": "serverpod_auth_idp",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "createdAt",
+            "columnType": 4,
+            "isNullable": false,
+            "columnDefault": "CURRENT_TIMESTAMP",
+            "dartType": "DateTime"
+          },
+          {
+            "name": "email",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "passwordHash",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "passwordSalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "challengeId",
+            "columnType": 7,
+            "isNullable": false,
+            "dartType": "UuidValue"
+          },
+          {
+            "name": "verifiedAt",
+            "columnType": 4,
+            "isNullable": true,
+            "dartType": "DateTime?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "serverpod_auth_idp_email_account_request_fk_0",
+            "columns": [
+              "challengeId"
+            ],
+            "referenceTable": "serverpod_auth_idp_secret_challenge",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 4
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_idp_email_account_request_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "indexName": "serverpod_auth_idp_email_account_request_email",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "email"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "serverpod_auth_idp_secret_challenge",
+        "dartName": "SecretChallenge",
+        "module": "serverpod_auth_idp",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 7,
+            "isNullable": false,
+            "columnDefault": "gen_random_uuid()",
+            "dartType": "UuidValue?"
+          },
+          {
+            "name": "challengeCodeHash",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          },
+          {
+            "name": "challengeCodeSalt",
+            "columnType": 5,
+            "isNullable": false,
+            "dartType": "dart:typed_data:ByteData"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "serverpod_auth_idp_secret_challenge_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"verificationCodeHash\" of table \"serverpod_auth_idp_email_account_password_reset_request\" will be dropped.",
+      "table": "serverpod_auth_idp_email_account_password_reset_request",
+      "columns": [
+        "verificationCodeHash"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"verificationCodeSalt\" of table \"serverpod_auth_idp_email_account_password_reset_request\" will be dropped.",
+      "table": "serverpod_auth_idp_email_account_password_reset_request",
+      "columns": [
+        "verificationCodeSalt"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"serverpod_auth_idp_email_account_password_reset_request\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "serverpod_auth_idp_email_account_password_reset_request",
+      "columns": [
+        "challengeId"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"verificationCodeHash\" of table \"serverpod_auth_idp_email_account_request\" will be dropped.",
+      "table": "serverpod_auth_idp_email_account_request",
+      "columns": [
+        "verificationCodeHash"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "columnDropped",
+      "message": "Column \"verificationCodeSalt\" of table \"serverpod_auth_idp_email_account_request\" will be dropped.",
+      "table": "serverpod_auth_idp_email_account_request",
+      "columns": [
+        "verificationCodeSalt"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"serverpod_auth_idp_email_account_request\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "serverpod_auth_idp_email_account_request",
+      "columns": [
+        "challengeId"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

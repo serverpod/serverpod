@@ -24,7 +24,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
                 passwordResetVerificationCodeLifetime,
@@ -129,7 +129,7 @@ void main() {
 
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           passwordResetVerificationCodeGenerator: () => verificationCode,
           passwordResetVerificationCodeLifetime:
               passwordResetVerificationCodeLifetime,
@@ -217,7 +217,7 @@ void main() {
 
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           passwordResetVerificationCodeGenerator: () => verificationCode,
         ),
       );

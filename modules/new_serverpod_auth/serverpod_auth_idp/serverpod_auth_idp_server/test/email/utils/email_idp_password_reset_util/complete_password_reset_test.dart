@@ -31,7 +31,7 @@ void main() {
         verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
             config: EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           passwordResetVerificationCodeGenerator: () => verificationCode,
           passwordValidationFunction: (final password) =>
               password == allowedNewPassword,
@@ -185,7 +185,7 @@ void main() {
       final verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           passwordResetVerificationCodeGenerator: () => verificationCode,
           onPasswordResetCompleted: (
             final session, {
@@ -255,7 +255,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
         );
@@ -336,7 +336,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeAllowedAttempts: 2,
           ),
@@ -420,7 +420,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
                 passwordResetVerificationCodeLifetime,
@@ -514,7 +514,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-              passwordHashPepper: 'pepper',
+              secretHashPepper: 'pepper',
               passwordResetVerificationCodeAllowedAttempts: 1,
               passwordResetVerificationCodeGenerator: () => verificationCode,
               passwordResetVerificationCodeLifetime: const Duration(days: 1)),
@@ -600,7 +600,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeAllowedAttempts: 1,
             passwordResetVerificationCodeLifetime: Duration(days: 1),
           ),

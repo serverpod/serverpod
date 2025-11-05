@@ -42,7 +42,7 @@ typedef SendRegistrationVerificationCodeFunction = void Function(
 /// {@endtemplate}
 class EmailIDPConfig {
   /// The pepper used for hashing passwords and verification codes.
-  final String passwordHashPepper;
+  final String secretHashPepper;
 
   /// The time for the registration email verification code to be valid.
   ///
@@ -112,13 +112,13 @@ class EmailIDPConfig {
   /// The length of the random hash in bytes to be used for each password.
   ///
   /// Defaults to 16.
-  final int passwordHashSaltLength;
+  final int secretHashSaltLength;
 
   /// Create a new email account configuration.
   ///
   /// Set [current] to apply this configuration.
   const EmailIDPConfig({
-    required this.passwordHashPepper,
+    required this.secretHashPepper,
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
@@ -140,7 +140,7 @@ class EmailIDPConfig {
       timeframe: Duration(hours: 1),
       maxAttempts: 3,
     ),
-    this.passwordHashSaltLength = 16,
+    this.secretHashSaltLength = 16,
   });
 }
 
