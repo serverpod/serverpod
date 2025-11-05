@@ -34,7 +34,7 @@ class PubspecBuilder {
   String _name = 'package_name';
   Version _version = Version.parse('1.0.0');
   String _description = 'A sample package';
-  Version _sdk = Version.parse('3.6.0');
+  Version _sdk = Version.parse('3.7.0');
 
   List<PubspecDependency> _dependencies = [];
   List<PubspecDependency> _devDependencies = [];

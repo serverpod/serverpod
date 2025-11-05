@@ -3,7 +3,7 @@ description: Serverpod core authentication client module.
 version: 3.0.0-alpha.3
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.7.0 <4.0.0'
 
 dependencies:
   serverpod_client: 3.0.0-alpha.3

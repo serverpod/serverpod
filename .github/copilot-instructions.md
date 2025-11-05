@@ -44,7 +44,7 @@ When working with pull requests in this repository, **ALWAYS**:
 **CRITICAL**: Install these exact versions to ensure compatibility:
 
 ### Required Tools
-1. **Dart SDK**: `>=3.5.0 <4.0.0` (required)
+1. **Dart SDK**: `>=3.7.0 <4.0.0` (required)
 2. **Flutter SDK**: `>=3.24.0` (required for Flutter components)
    - **Tested versions**: 3.24.0, 3.32.1 (latest)
    - **Project default**: 3.24.5 (from `.fvmrc`)
@@ -76,7 +76,7 @@ sudo snap install flutter --classic
 dart pub global activate melos
 
 # Verify installations
-dart --version     # Should be >= 3.5.0
+dart --version     # Should be >= 3.7.0
 flutter --version  # Should be >= 3.24.0
 docker --version   # Should work
 git --version      # Should work

@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "1.18.0"
 sdks:
-  dart: ">=3.5.0 <4.0.0"
+  dart: ">=3.7.0 <4.0.0"
   flutter: ">=3.24.0"
 ''';
 
@@ -59,7 +59,7 @@ sdks:
       });
 
       test('then it returns correct SDK constraints', () {
-        expect(parser.dartSdkConstraint?.toString(), '>=3.5.0 <4.0.0');
+        expect(parser.dartSdkConstraint?.toString(), '>=3.7.0 <4.0.0');
         expect(parser.flutterSdkConstraint?.toString(), '>=3.24.0');
       });
 
