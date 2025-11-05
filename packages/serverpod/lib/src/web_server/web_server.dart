@@ -169,7 +169,7 @@ class _SessionMiddleware extends MiddlewareObject {
   @override
   Handler call(Handler next) {
     return (req) async {
-      final session = WebCallSession(
+      final session = await WebCallSession.create(
         server: _server,
         endpoint: req.requestedUri.path,
         authenticationKey: req.headers.authorization?.headerValue,

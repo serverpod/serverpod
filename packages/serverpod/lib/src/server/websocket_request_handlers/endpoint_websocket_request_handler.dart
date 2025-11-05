@@ -23,7 +23,7 @@ abstract class EndpointWebsocketRequestHandler {
     void Function() onClosed,
   ) async {
     try {
-      var session = StreamingSession(
+      var session = await StreamingSession.create(
         server: server,
         uri: request.requestedUri,
         request: request,
@@ -68,7 +68,8 @@ abstract class EndpointWebsocketRequestHandler {
               );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
-              session.updateAuthenticationKey(unwrapAuthHeaderValue(authKey));
+              await session
+                  .updateAuthenticationKey(unwrapAuthHeaderValue(authKey));
             }
             continue;
           }
