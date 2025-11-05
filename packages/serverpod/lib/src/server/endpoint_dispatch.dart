@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
@@ -56,7 +58,7 @@ abstract class EndpointDispatch {
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodStreamCallContext> getMethodStreamCallContext({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -108,7 +110,7 @@ abstract class EndpointDispatch {
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodCallContext> getMethodCallContext({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -137,7 +139,7 @@ abstract class EndpointDispatch {
 
   Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
       _getEndpointMethodConnector({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -163,17 +165,17 @@ abstract class EndpointDispatch {
 
   Future<EndpointConnector> _getEndpointConnector(
       String endpointPath,
-      Session Function(EndpointConnector connector)
+      FutureOr<Session> Function(EndpointConnector connector)
           createSessionCallback) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint not found');
     }
 
-    var session = createSessionCallback(connector);
+    var session = await createSessionCallback(connector);
 
-    var authenticationFailureReason = await canUserAccessEndpoint(
-      () => session.authenticated,
+    var authenticationFailureReason = canUserAccessEndpoint(
+      session.authenticated,
       connector.endpoint.requireLogin,
       connector.endpoint.requiredScopes,
     );
@@ -191,23 +193,23 @@ abstract class EndpointDispatch {
   /// Checks if a user can access an [Endpoint]. If access is granted null is
   /// returned, otherwise an [AuthenticationFailureReason] describing the issue is
   /// returned.
-  static Future<AuthenticationFailureReason?> canUserAccessEndpoint(
-    Future<AuthenticationInfo?> Function() authInfoProvider,
+  static AuthenticationFailureReason? canUserAccessEndpoint(
+    AuthenticationInfo? authInfo,
     bool requiresLogin,
     Set<Scope> requiredScopes,
-  ) async {
+  ) {
     var authenticationRequired = requiresLogin || requiredScopes.isNotEmpty;
 
     if (!authenticationRequired) {
       return null;
     }
 
-    var info = await authInfoProvider();
-    if (info == null) {
+    if (authInfo == null) {
       return AuthenticationFailureReason.unauthenticated;
     }
 
-    var missingUserScopes = Set.from(requiredScopes)..removeAll(info.scopes);
+    var missingUserScopes = Set.from(requiredScopes)
+      ..removeAll(authInfo.scopes);
 
     if (missingUserScopes.isNotEmpty) {
       return AuthenticationFailureReason.insufficientAccess;
