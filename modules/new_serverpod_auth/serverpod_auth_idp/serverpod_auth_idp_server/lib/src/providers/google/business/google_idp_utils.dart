@@ -9,6 +9,11 @@ import 'google_idp_config.dart';
 import 'google_idp_token_verifier.dart';
 
 /// Details of the Google Account.
+///
+/// All nullable fields are not guaranteed to be available from Google OpenID
+/// docs, since the user may have not granted the app access to their profile or
+/// if the user is part of an organization that has restricted access to profile
+/// information.
 typedef GoogleAccountDetails = ({
   /// Google's user identifier for this account.
   String userIdentifier,
@@ -17,13 +22,16 @@ typedef GoogleAccountDetails = ({
   String email,
 
   /// The user's given name.
-  String name,
+  String? name,
 
   /// The user's full name.
-  String fullName,
+  String? fullName,
 
   /// The user's profile image URL.
   Uri? image,
+
+  /// Whether the email is verified.
+  bool? verifiedEmail,
 });
 
 /// Result of a successful authentication using Google as identity provider.
@@ -52,12 +60,12 @@ typedef GoogleAuthSuccess = ({
 /// But for most cases, the methods exposed by [GoogleIDP] and
 /// [GoogleIDPAdmin] should be sufficient.
 class GoogleIDPUtils {
-  /// The client secret used for the Google sign-in.
-  final GoogleClientSecret clientSecret;
+  /// Configuration for the Google identity provider.
+  final GoogleIDPConfig config;
 
   /// Creates a new instance of [GoogleIDPUtils].
   GoogleIDPUtils({
-    required this.clientSecret,
+    required this.config,
   });
 
   /// Authenticates a user using an access token.
@@ -122,7 +130,7 @@ class GoogleIDPUtils {
     required final String idToken,
     required final String accessToken,
   }) async {
-    final String clientId = clientSecret.clientId;
+    final String clientId = config.clientSecret.clientId;
 
     try {
       await GoogleIdTokenVerifier.verifyOAuth2Token(
@@ -154,22 +162,26 @@ class GoogleIDPUtils {
     final image = data['picture'] as String?;
     final verifiedEmail = data['email_verified'] as bool?;
 
-    if (userId == null ||
-        email == null ||
-        name == null ||
-        fullName == null ||
-        image == null ||
-        verifiedEmail != true) {
+    if (userId == null || email == null) {
       session.logAndThrow('Missing required data on user info');
     }
 
-    return (
+    final details = (
       userIdentifier: userId,
       email: email,
       name: name,
       fullName: fullName,
-      image: Uri.tryParse(image),
+      image: image != null ? Uri.tryParse(image) : null,
+      verifiedEmail: verifiedEmail,
     );
+
+    try {
+      config.googleAccountDetailsValidation(details);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from Google: $e');
+    }
+
+    return details;
   }
 
   /// Adds a Google authentication to the given [authUserId].

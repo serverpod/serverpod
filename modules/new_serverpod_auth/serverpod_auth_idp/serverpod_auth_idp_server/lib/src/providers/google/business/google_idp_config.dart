@@ -1,15 +1,44 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'google_idp_utils.dart';
+
 /// Configuration for the Google identity provider.
 class GoogleIDPConfig {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
+  /// Validation function for Google account details.
+  ///
+  /// This can be used to enforce additional requirements on the Google account
+  /// details before allowing the user to sign in. These details will be
+  /// extracted using the `people` API and may not be available if the user has
+  /// not granted the app access to their profile or if the user is part of an
+  /// organization that has restricted access to the profile information. Note
+  /// that even `verifiedEmail` is not guaranteed to be true (e.g. accounts
+  /// created from developers.google.com).
+  ///
+  /// To avoid blocking real users (from privacy-restricted workspaces, accounts
+  /// without avatars, unverified secondary emails) from signing in, adjust your
+  /// validation function with care.
+  final void Function(GoogleAccountDetails) googleAccountDetailsValidation;
+
   /// Creates a new instance of [GoogleIDPConfig].
   GoogleIDPConfig({
     required this.clientSecret,
+    this.googleAccountDetailsValidation = validateGoogleAccountDetails,
   });
+
+  /// Default validation function for extracted Google account details.
+  static void validateGoogleAccountDetails(
+    final GoogleAccountDetails accountDetails,
+  ) {
+    if (accountDetails.name == null ||
+        accountDetails.fullName == null ||
+        accountDetails.verifiedEmail != true) {
+      throw const FormatException('Missing required data on user info');
+    }
+  }
 }
 
 /// Contains information about the credentials for the server to access Google's

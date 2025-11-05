@@ -34,7 +34,7 @@ final class GoogleIDP {
     required final GoogleIDPConfig config,
     required final TokenIssuer tokenIssuer,
   })  : utils = GoogleIDPUtils(
-          clientSecret: config.clientSecret,
+          config: config,
         ),
         _tokenIssuer = tokenIssuer {
     admin = GoogleIDPAdmin(
@@ -65,7 +65,7 @@ final class GoogleIDP {
             session,
             account.authUserId,
             UserProfileData(
-              fullName: account.details.fullName.trim(),
+              fullName: account.details.fullName?.trim(),
               email: account.details.email,
             ),
             transaction: transaction,
