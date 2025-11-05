@@ -14,7 +14,8 @@ export 'src/generated/protocol.dart'
 export 'src/server/run_mode.dart';
 export 'src/server/server.dart';
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
-export 'src/server/session.dart' hide SessionInternalMethods;
+export 'src/server/session.dart'
+    hide SessionInternalMethods, SessionAuthenticationInitializationExtension;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;
 
 export 'package:serverpod_shared/serverpod_shared.dart'
