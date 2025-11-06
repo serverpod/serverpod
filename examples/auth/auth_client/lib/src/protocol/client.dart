@@ -158,7 +158,8 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         {'email': email},
       );
 
-  /// Verifies a password reset code and returns the credentials for setting the password.
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -170,23 +171,18 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
   @override
-  _i3.Future<({_i2.UuidValue passwordResetRequestId, String verificationCode})>
-      verifyPasswordResetCode({
+  _i3.Future<String> verifyPasswordResetCode({
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
   }) =>
-          caller.callServerEndpoint<
-              ({
-                _i2.UuidValue passwordResetRequestId,
-                String verificationCode
-              })>(
-            'emailIDP',
-            'verifyPasswordResetCode',
-            {
-              'passwordResetRequestId': passwordResetRequestId,
-              'verificationCode': verificationCode,
-            },
-          );
+      caller.callServerEndpoint<String>(
+        'emailIDP',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
 
   /// Completes a password reset request by setting a new password.
   ///
@@ -206,16 +202,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i3.Future<void> finishPasswordReset({
-    required _i2.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'emailIDP',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );

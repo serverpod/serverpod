@@ -221,22 +221,16 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['emailIDP'] as _i3.EmailIDPEndpoint)
                   .verifyPasswordResetCode(
-                    session,
-                    passwordResetRequestId: params['passwordResetRequestId'],
-                    verificationCode: params['verificationCode'],
-                  )
-                  .then((record) => _i7.mapRecordToJson(record)),
+            session,
+            passwordResetRequestId: params['passwordResetRequestId'],
+            verificationCode: params['verificationCode'],
+          ),
         ),
         'finishPasswordReset': _i1.MethodConnector(
           name: 'finishPasswordReset',
           params: {
-            'passwordResetRequestId': _i1.ParameterDescription(
-              name: 'passwordResetRequestId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-            'verificationCode': _i1.ParameterDescription(
-              name: 'verificationCode',
+            'finishPasswordResetToken': _i1.ParameterDescription(
+              name: 'finishPasswordResetToken',
               type: _i1.getType<String>(),
               nullable: false,
             ),
@@ -253,8 +247,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['emailIDP'] as _i3.EmailIDPEndpoint)
                   .finishPasswordReset(
             session,
-            passwordResetRequestId: params['passwordResetRequestId'],
-            verificationCode: params['verificationCode'],
+            finishPasswordResetToken: params['finishPasswordResetToken'],
             newPassword: params['newPassword'],
           ),
         ),

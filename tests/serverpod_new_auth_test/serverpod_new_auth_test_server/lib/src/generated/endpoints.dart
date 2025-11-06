@@ -21,18 +21,16 @@ import '../endpoints/google_account_endpoint.dart' as _i6;
 import '../endpoints/jwt_refresh_endpoint.dart' as _i7;
 import '../endpoints/password_importing_email_account_endpoint.dart' as _i8;
 import '../endpoints/user_profile_endpoint.dart' as _i9;
-import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart'
-    as _i10;
-import 'dart:typed_data' as _i11;
+import 'dart:typed_data' as _i10;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
-    as _i12;
+    as _i11;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i13;
+    as _i12;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i14;
+    as _i13;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
-    as _i15;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i16;
+    as _i14;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -476,22 +474,16 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['emailAccount'] as _i4.EmailAccountEndpoint)
                   .verifyPasswordResetCode(
-                    session,
-                    passwordResetRequestId: params['passwordResetRequestId'],
-                    verificationCode: params['verificationCode'],
-                  )
-                  .then((record) => _i10.mapRecordToJson(record)),
+            session,
+            passwordResetRequestId: params['passwordResetRequestId'],
+            verificationCode: params['verificationCode'],
+          ),
         ),
         'finishPasswordReset': _i1.MethodConnector(
           name: 'finishPasswordReset',
           params: {
-            'passwordResetRequestId': _i1.ParameterDescription(
-              name: 'passwordResetRequestId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-            'verificationCode': _i1.ParameterDescription(
-              name: 'verificationCode',
+            'finishPasswordResetToken': _i1.ParameterDescription(
+              name: 'finishPasswordResetToken',
               type: _i1.getType<String>(),
               nullable: false,
             ),
@@ -508,8 +500,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['emailAccount'] as _i4.EmailAccountEndpoint)
                   .finishPasswordReset(
             session,
-            passwordResetRequestId: params['passwordResetRequestId'],
-            verificationCode: params['verificationCode'],
+            finishPasswordResetToken: params['finishPasswordResetToken'],
             newPassword: params['newPassword'],
           ),
         ),
@@ -726,22 +717,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['passwordImportingEmailAccount']
                       as _i8.PasswordImportingEmailAccountEndpoint)
                   .verifyPasswordResetCode(
-                    session,
-                    passwordResetRequestId: params['passwordResetRequestId'],
-                    verificationCode: params['verificationCode'],
-                  )
-                  .then((record) => _i10.mapRecordToJson(record)),
+            session,
+            passwordResetRequestId: params['passwordResetRequestId'],
+            verificationCode: params['verificationCode'],
+          ),
         ),
         'finishPasswordReset': _i1.MethodConnector(
           name: 'finishPasswordReset',
           params: {
-            'passwordResetRequestId': _i1.ParameterDescription(
-              name: 'passwordResetRequestId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-            'verificationCode': _i1.ParameterDescription(
-              name: 'verificationCode',
+            'finishPasswordResetToken': _i1.ParameterDescription(
+              name: 'finishPasswordResetToken',
               type: _i1.getType<String>(),
               nullable: false,
             ),
@@ -759,8 +744,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       as _i8.PasswordImportingEmailAccountEndpoint)
                   .finishPasswordReset(
             session,
-            passwordResetRequestId: params['passwordResetRequestId'],
-            verificationCode: params['verificationCode'],
+            finishPasswordResetToken: params['finishPasswordResetToken'],
             newPassword: params['newPassword'],
           ),
         ),
@@ -785,7 +769,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i11.ByteData>(),
+              type: _i1.getType<_i10.ByteData>(),
               nullable: false,
             )
           },
@@ -849,14 +833,14 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_bridge'] = _i12.Endpoints()
+    modules['serverpod_auth_bridge'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i13.Endpoints()
+    modules['serverpod_auth_core'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i14.Endpoints()
+    modules['serverpod_auth_idp'] = _i13.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_migration'] = _i15.Endpoints()
+    modules['serverpod_auth_migration'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i16.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i15.Endpoints()..initializeEndpoints(server);
   }
 }

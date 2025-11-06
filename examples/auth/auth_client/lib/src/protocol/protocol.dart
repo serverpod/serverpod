@@ -39,18 +39,6 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i2.Greeting?>()) {
       return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
     }
-    if (t ==
-        _i1.getType<
-            ({
-              _i1.UuidValue passwordResetRequestId,
-              String verificationCode
-            })>()) {
-      return (
-        passwordResetRequestId: deserialize<_i1.UuidValue>(
-            ((data as Map)['n'] as Map)['passwordResetRequestId']),
-        verificationCode: deserialize<String>(data['n']['verificationCode']),
-      ) as T;
-    }
     if (t == _i1.getType<({_i3.ByteData challenge, _i1.UuidValue id})>()) {
       return (
         challenge:
@@ -115,17 +103,6 @@ class Protocol extends _i1.SerializationManager {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
-  }
-  if (record is ({
-    _i1.UuidValue passwordResetRequestId,
-    String verificationCode
-  })) {
-    return {
-      "n": {
-        "passwordResetRequestId": record.passwordResetRequestId,
-        "verificationCode": record.verificationCode,
-      },
-    };
   }
   if (record is ({_i3.ByteData challenge, _i1.UuidValue id})) {
     return {
