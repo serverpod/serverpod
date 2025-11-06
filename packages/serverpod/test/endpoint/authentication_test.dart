@@ -32,11 +32,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.unauthenticated,
-      );
+      expect(result, AuthenticationFailureReason.unauthenticated);
     });
 
     test(
@@ -50,11 +46,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.unauthenticated,
-      );
+      expect(result, AuthenticationFailureReason.unauthenticated);
     });
 
     test(
@@ -68,11 +60,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.unauthenticated,
-      );
+      expect(result, AuthenticationFailureReason.unauthenticated);
     });
   });
 
@@ -122,11 +110,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.insufficientAccess,
-      );
+      expect(result, AuthenticationFailureReason.insufficientAccess);
     });
 
     test(
@@ -140,11 +124,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.insufficientAccess,
-      );
+      expect(result, AuthenticationFailureReason.insufficientAccess);
     });
   });
 
@@ -208,11 +188,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.insufficientAccess,
-      );
+      expect(result, AuthenticationFailureReason.insufficientAccess);
     });
 
     test(
@@ -240,11 +216,7 @@ void main() {
         requiredScopes,
       );
 
-      expect(result, isNotNull);
-      expect(
-        (result as ResultAuthenticationFailed).reason,
-        AuthenticationFailureReason.insufficientAccess,
-      );
+      expect(result, AuthenticationFailureReason.insufficientAccess);
     });
   });
 }
