@@ -596,7 +596,8 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId) async {
+          extraClaimsProvider:
+              (final session, final authUserId, final extraClaims) async {
             return {'hookClaim': 'hookValue', 'userRole': 'admin'};
           },
         ),
@@ -617,7 +618,7 @@ void main() {
     });
 
     test(
-        'when requesting a new token pair with both provider and extraClaims, then both are included with provider taking precedence on conflicts.',
+        'when requesting a new token pair with both provider and extraClaims, then provider can control how claims are merged.',
         () async {
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
@@ -625,8 +626,14 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId) async {
-            return {'hookClaim': 'fromHook', 'conflictKey': 'hookWins'};
+          extraClaimsProvider:
+              (final session, final authUserId, final extraClaims) async {
+            // Provider can decide how to merge extraClaims
+            return {
+              ...?extraClaims,
+              'providerClaim': 'fromProvider',
+              'conflictKey': 'providerWins'
+            };
           },
         ),
       );
@@ -642,9 +649,9 @@ void main() {
       final decodedToken = JWT.decode(authSuccess.token);
       final payload = decodedToken.payload as Map;
 
-      expect(payload['hookClaim'], 'fromHook');
+      expect(payload['providerClaim'], 'fromProvider');
       expect(payload['paramClaim'], 'fromParam');
-      expect(payload['conflictKey'], 'hookWins');
+      expect(payload['conflictKey'], 'providerWins');
     });
 
     test(
@@ -656,7 +663,8 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId) async {
+          extraClaimsProvider:
+              (final session, final authUserId, final extraClaims) async {
             return {'hookClaim': 'persistsAcrossRotation'};
           },
         ),
@@ -690,7 +698,8 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId) async {
+          extraClaimsProvider:
+              (final session, final authUserId, final extraClaims) async {
             return null;
           },
         ),
@@ -719,7 +728,8 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId) async {
+          extraClaimsProvider:
+              (final session, final authUserId, final extraClaims) async {
             // Provider can fetch additional data from database using session
             final authUser = await AuthUsers.get(
               session,

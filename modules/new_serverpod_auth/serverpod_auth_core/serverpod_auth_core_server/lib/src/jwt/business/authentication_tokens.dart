@@ -122,14 +122,13 @@ final class AuthenticationTokens {
     }
 
     // Invoke the extra claims provider if configured
-    final providerClaims = config.extraClaimsProvider != null
-        ? await config.extraClaimsProvider!(session, authUserId)
-        : null;
-
-    // Merge extraClaims with providerClaims, with providerClaims taking precedence
-    final mergedExtraClaims = {...?extraClaims, ...?providerClaims};
+    final mergedExtraClaims = config.extraClaimsProvider != null
+        ? await config.extraClaimsProvider!(session, authUserId, extraClaims)
+        : extraClaims;
     final encodedExtraClaims =
-        mergedExtraClaims.isNotEmpty ? jsonEncode(mergedExtraClaims) : null;
+        mergedExtraClaims != null && mergedExtraClaims.isNotEmpty
+            ? jsonEncode(mergedExtraClaims)
+            : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);

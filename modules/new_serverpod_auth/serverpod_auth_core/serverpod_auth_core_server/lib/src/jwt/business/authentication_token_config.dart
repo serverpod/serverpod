@@ -92,16 +92,18 @@ class AuthenticationTokenConfig {
   ///
   /// This function is called during refresh token creation and allows developers
   /// to dynamically add custom claims to the token. The function receives the
-  /// session and the authenticated user ID as parameters, enabling it to fetch
-  /// any additional information needed.
+  /// session, the authenticated user ID, and any extra claims already provided
+  /// as parameters, enabling it to fetch any additional information needed and
+  /// decide how to merge with existing claims.
   ///
   /// The returned map contains extra claims to be included in the refresh
   /// token payload. These claims will be embedded in every access token
   /// (including across rotations) and sent along with any request.
   ///
-  /// If both this provider and the `extraClaims` parameter in `createTokens` are
-  /// provided, the claims will be merged, with the provider's claims taking
-  /// precedence in case of conflicts.
+  /// The provider receives the `extraClaims` parameter from `createTokens` and
+  /// can decide how to merge them. If the provider returns null, only the
+  /// `extraClaims` parameter will be used. If both are provided, it's up to
+  /// the provider to handle the merging logic.
   ///
   /// Example use case: Adding user roles, feature flags, or other
   /// session-related metadata to reduce database round-trips.
@@ -111,6 +113,7 @@ class AuthenticationTokenConfig {
   final Future<Map<String, dynamic>?> Function(
     Session session,
     UuidValue authUserId,
+    Map<String, dynamic>? extraClaims,
   )? extraClaimsProvider;
 
   /// Create a new user profile configuration.
