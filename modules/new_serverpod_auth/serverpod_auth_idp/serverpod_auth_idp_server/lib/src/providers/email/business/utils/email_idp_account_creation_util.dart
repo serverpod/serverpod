@@ -445,6 +445,15 @@ class EmailIDPAccountCreationUtil {
     // NOTE: The attempt counting runs in a separate transaction, so that it is
     // never rolled back with the parent transaction.
     return session.db.transaction((final transaction) async {
+      final savePoint = await transaction.createSavepoint();
+      final recentRequests =
+          await EmailAccountRequestCompletionAttempt.db.count(
+        session,
+        where: (final t) =>
+            t.emailAccountRequestId.equals(emailAccountRequestId),
+        transaction: transaction,
+      );
+
       await EmailAccountRequestCompletionAttempt.db.insertRow(
         session,
         EmailAccountRequestCompletionAttempt(
@@ -454,16 +463,15 @@ class EmailIDPAccountCreationUtil {
         transaction: transaction,
       );
 
-      final recentRequests =
-          await EmailAccountRequestCompletionAttempt.db.count(
-        session,
-        where: (final t) =>
-            t.emailAccountRequestId.equals(emailAccountRequestId),
-        transaction: transaction,
-      );
+      if (recentRequests >=
+          _config.registrationVerificationCodeAllowedAttempts) {
+        await savePoint.rollback();
+        return true;
+      }
 
-      return recentRequests >
-          _config.registrationVerificationCodeAllowedAttempts;
+      await savePoint.release();
+
+      return false;
     });
   }
 

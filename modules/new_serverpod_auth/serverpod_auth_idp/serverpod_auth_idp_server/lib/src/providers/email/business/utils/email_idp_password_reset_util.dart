@@ -450,6 +450,7 @@ class EmailIDPPasswordResetUtil {
     // never rolled back with the parent transaction.
     return session.db.transaction(
       (final transaction) async {
+        final savePoint = await transaction.createSavepoint();
         await EmailAccountPasswordResetCompleteAttempt.db.insertRow(
           session,
           EmailAccountPasswordResetCompleteAttempt(
@@ -467,7 +468,14 @@ class EmailIDPPasswordResetUtil {
           transaction: transaction,
         );
 
-        return attempts > _config.passwordResetVerificationCodeAllowedAttempts;
+        if (attempts > _config.passwordResetVerificationCodeAllowedAttempts) {
+          await savePoint.rollback();
+          return true;
+        }
+
+        await savePoint.release();
+
+        return false;
       },
     );
   }
@@ -479,6 +487,7 @@ class EmailIDPPasswordResetUtil {
     // NOTE: The attempt counting runs in a separate transaction, so that it is
     // never rolled back with the parent transaction.
     return session.db.transaction((final transaction) async {
+      final savePoint = await transaction.createSavepoint();
       await EmailAccountPasswordResetRequestAttempt.db.insertRow(
         session,
         EmailAccountPasswordResetRequestAttempt(
@@ -502,7 +511,14 @@ class EmailIDPPasswordResetUtil {
         transaction: transaction,
       );
 
-      return recentRequests > _config.maxPasswordResetAttempts.maxAttempts;
+      if (recentRequests > _config.maxPasswordResetAttempts.maxAttempts) {
+        await savePoint.rollback();
+        return true;
+      }
+
+      await savePoint.release();
+
+      return false;
     });
   }
 
