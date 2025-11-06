@@ -232,38 +232,20 @@ class Server implements RouterInjectable {
   }
 
   Future<Result> _health(Request req) async {
-    final checks = await performHealthChecks(serverpod);
-    final issues = <String>[];
-    var allOk = true;
-    for (var metric in checks.metrics) {
-      if (!metric.isHealthy) {
-        allOk = false;
-        issues.add('${metric.name}: ${metric.value}');
+    final metrics = (await performHealthChecks(serverpod)).metrics;
+    final ok = metrics.every((m) => m.isHealthy);
+    return Response(ok ? 200 : 503, body: Body.fromDataStream(() async* {
+      final now = DateTime.timestamp();
+      yield utf8.encode('${ok ? 'OK' : 'SADNESS'} $now\r\n');
+      for (final metric in metrics) {
+        yield utf8.encode('${metric.name}: ${metric.value}\r\n');
       }
-    }
-
-    var responseBuffer = StringBuffer();
-    if (allOk) {
-      responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
-    } else {
-      responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
-    }
-    for (var issue in issues) {
-      responseBuffer.writeln(issue);
-    }
-
-    return Response(
-      allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
-      body: Body.fromString(responseBuffer.toString()),
-      //headers: headers,
-    );
+    }()));
   }
 
   Handler _headers(Handler next) {
     return (req) async {
       final isOptions = req.method == Method.options;
-      // TODO: Make httpResponseHeaders a Headers object from the get-go.
-      // or better yet, use middleware
       final headers = Headers.build((mh) {
         for (var rh in httpResponseHeaders.entries) {
           mh[rh.key] = ['${rh.value}'];
@@ -315,7 +297,6 @@ class Server implements RouterInjectable {
     return (req) async {
       return WebSocketUpgrade((webSocket) async {
         try {
-          // TODO(kasper): Should we keep doing this?
           webSocket.pingInterval = const Duration(seconds: 30);
           var websocketKey = const Uuid().v4();
           final handlerFuture = requestHandler(
@@ -458,36 +439,10 @@ class Server implements RouterInjectable {
           session,
           methodCallContext.arguments,
         );
-
-        // Handle success - construct Response directly
-        var value = result;
-        if (methodCallContext.endpoint.sendAsRaw) {
-          switch (value) {
-            case String():
-              value = Body.fromString(value);
-              continue body;
-            case Stream<Uint8List>():
-              value = Body.fromDataStream(value);
-              continue body;
-            case ByteData():
-              value = Uint8List.sublistView(value);
-              continue bytes;
-            bytes:
-            case Uint8List():
-              value = Body.fromData(value);
-              continue body;
-            body:
-            case Body():
-              value = Response.ok(body: value);
-              continue response;
-            response:
-            case Response():
-              return value;
-          }
-        }
+        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
         return Response.ok(
           body: Body.fromString(
-            SerializationManager.encodeForProtocol(value),
+            SerializationManager.encodeForProtocol(result),
             mimeType: MimeType.json,
           ),
         );
@@ -505,6 +460,21 @@ class Server implements RouterInjectable {
     } finally {
       await maybeSession?.close(); // safe to close twice
     }
+  }
+
+  Response _toResponse(dynamic value) {
+    if (value is Response) return value;
+    final body = value is Body
+        ? value
+        : switch (value) {
+            String() => Body.fromString(value),
+            Stream<Uint8List>() => Body.fromDataStream(value),
+            ByteData() => Body.fromData(Uint8List.sublistView(value)),
+            Uint8List() => Body.fromData(value),
+            _ => throw ArgumentError.value(
+                value, 'value', 'Cannot be converted to Response'),
+          };
+    return Response.ok(body: body);
   }
 
   /// Shuts the server down.
