@@ -45,3 +45,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Platforms that can be created for local testing
+android/
+ios/
+linux/
+macos/
+windows/

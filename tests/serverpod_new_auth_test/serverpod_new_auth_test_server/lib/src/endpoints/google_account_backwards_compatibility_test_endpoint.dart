@@ -10,12 +10,18 @@ class GoogleAccountBackwardsCompatibilityTestEndpoint
   Future<AuthSuccess> login(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
   }) async {
     await AuthBackwardsCompatibility.importGoogleAccount(
       session,
       idToken: idToken,
+      accessToken: accessToken,
     );
 
-    return super.login(session, idToken: idToken);
+    return super.login(
+      session,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
   }
 }

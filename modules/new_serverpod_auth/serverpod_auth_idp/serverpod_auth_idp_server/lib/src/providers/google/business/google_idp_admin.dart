@@ -11,12 +11,17 @@ final class GoogleIDPAdmin {
   /// Creates a new instance of [GoogleIDPAdmin].
   GoogleIDPAdmin({required this.utils});
 
-  /// Returns the account details for the given [idToken].
+  /// Returns the account details for the given [idToken] and [accessToken].
   Future<GoogleAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
   }) async {
-    return utils.fetchAccountDetails(session, idToken: idToken);
+    return utils.fetchAccountDetails(
+      session,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
   }
 
   /// Adds a Google authentication to the given [authUserId].

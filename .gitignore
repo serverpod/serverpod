@@ -13,6 +13,7 @@ doc/api/
 *.ipr
 *.iws
 
+**/devtools_options.yaml
 **/pubspec_overrides.yaml
 
 

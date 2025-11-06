@@ -3,12 +3,8 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
 
-/// Base endpoint for user profile management.
-///
-/// To expose these endpoint methods on your server, extend this class in a
-/// concrete class.
-/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-abstract class UserProfileBaseEndpoint extends Endpoint {
+/// Endpoint for read-only access to user profile information.
+class UserProfileInfoEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
@@ -23,7 +19,13 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
 
     return profile;
   }
+}
 
+/// Base endpoint for user profile management.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class on your server.
+abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
   Future<UserProfileModel> removeUserImage(final Session session) async {
