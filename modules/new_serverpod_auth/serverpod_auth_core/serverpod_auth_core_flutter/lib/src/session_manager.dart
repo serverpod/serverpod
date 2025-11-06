@@ -126,7 +126,12 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     Duration timeout = const Duration(seconds: 2),
   }) async {
     await restore();
-    return validateAuthentication(timeout: timeout);
+    try {
+      await validateAuthentication(timeout: timeout);
+      return true;
+    } on ServerpodClientException catch (_) {
+      return false;
+    }
   }
 
   /// Restore the current sign in status from the storage. If the underlying
@@ -150,18 +155,14 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Verifies the current sign in status of the user with the server and
   /// updates the authentication info, if needed. If the user authentication is
-  /// no longer valid, the user is signed out from the current device. In case
-  /// of network or internal server errors, the user is not signed out. The
+  /// no longer valid, the user is signed out from the current device. If the
+  /// sign out fails for any reason, returns false. Otherwise, returns true.
+  /// Other exceptions during the validation are propagated to the caller. The
   /// [timeout] parameter can be used to override the default client timeout.
   Future<bool> validateAuthentication({Duration? timeout}) async {
-    try {
-      return await _validateAuthentication().timeout(
-        timeout ?? caller.client.connectionTimeout,
-        onTimeout: () => false,
-      );
-    } on ServerpodClientException catch (_) {
-      return false;
-    }
+    return await _validateAuthentication().timeout(
+      timeout ?? caller.client.connectionTimeout,
+    );
   }
 
   Future<bool> _validateAuthentication() async {

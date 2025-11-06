@@ -307,29 +307,32 @@ void main() {
 
     test(
         'when calling `validateAuthentication` '
-        'then network error is caught and user is not signed out and returns false.',
+        'then network error is propagated and user is not signed out.',
         () async {
       await client.auth.restore();
       expect(client.auth.isAuthenticated, isTrue);
 
-      final result = await client.auth
-          .validateAuthentication(timeout: const Duration(seconds: 1));
+      await expectLater(
+        client.auth.validateAuthentication(timeout: const Duration(seconds: 1)),
+        throwsA(isA<ServerpodClientException>()),
+      );
 
-      expect(result, isFalse);
       expect(client.auth.isAuthenticated, isTrue);
     });
 
     test(
-        'when calling `validateAuthentication with a timeout '
+        'when calling `validateAuthentication` with a timeout '
         'then the timeout interval overrides the default timeout.', () async {
       await client.auth.restore();
       expect(client.auth.isAuthenticated, isTrue);
 
-      final (result, elapsed) = await Stopwatch().timeElapsed(
-        client.auth.validateAuthentication(timeout: const Duration(seconds: 1)),
+      final future = client.auth
+          .validateAuthentication(timeout: const Duration(seconds: 1));
+
+      final (_, elapsed) = await Stopwatch().timeElapsed(
+        expectLater(future, throwsA(isA<ServerpodClientException>())),
       );
 
-      expect(result, isFalse);
       // On web, returns immediately due to client identifying unreachable host.
       expect(elapsed.inSeconds, lessThanOrEqualTo(1));
     });
