@@ -100,14 +100,6 @@ class AuthenticationTokenConfig {
   /// token payload. These claims will be embedded in every access token
   /// (including across rotations) and sent along with any request.
   ///
-  /// The provider receives the `extraClaims` parameter from `createTokens` and
-  /// can decide how to merge them. If the provider returns null, only the
-  /// `extraClaims` parameter will be used. If both are provided, it's up to
-  /// the provider to handle the merging logic.
-  ///
-  /// Example use case: Adding user roles, feature flags, or other
-  /// session-related metadata to reduce database round-trips.
-  ///
   /// Claims must not conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   /// or Serverpod's internal claims (those starting with "dev.serverpod.").
   final Future<Map<String, dynamic>?> Function(
