@@ -622,13 +622,12 @@ void main() {
 
       test(
           'when calling `finishPasswordReset` with a short password, '
-          'then an error is thrown with reason `policyViolation` regardless of the request ID and verification code.',
+          'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: const Uuid().v4obj(),
-            verificationCode: 'wrong',
+            finishPasswordResetToken: const Uuid().v4(),
             newPassword: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -650,7 +649,7 @@ void main() {
 
       late UuidValue authUserId;
       late UuidValue passwordResetRequestId;
-      late String setPasswordVerificationCode;
+      late String finishPasswordResetToken;
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
@@ -678,14 +677,12 @@ void main() {
         passwordResetRequestId = passwordReset.passwordResetRequestId;
         final passwordResetVerificationCode = passwordReset.verificationCode;
 
-        final setPasswordCredentials =
+        finishPasswordResetToken =
             await endpoints.emailAccount.verifyPasswordResetCode(
           sessionBuilder,
           passwordResetRequestId: passwordResetRequestId,
           verificationCode: passwordResetVerificationCode,
         );
-
-        setPasswordVerificationCode = setPasswordCredentials.verificationCode;
       });
 
       tearDown(() async {
@@ -693,13 +690,12 @@ void main() {
       });
 
       test(
-        'when calling `finishPasswordReset` with the correct verification code, '
+        'when calling `finishPasswordReset` with the correct finish password reset token, '
         'then it succeeds',
         () async {
           final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: setPasswordVerificationCode,
+            finishPasswordResetToken: finishPasswordResetToken,
             newPassword: 'NewPassword123!',
           );
 
@@ -708,15 +704,14 @@ void main() {
       );
 
       test(
-          'when calling `finishPasswordReset` with the correct verification code after the password reset request has expired, '
+          'when calling `finishPasswordReset` with the correct finish password reset token after the password reset request has expired, '
           'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
-              passwordResetRequestId: passwordResetRequestId,
-              verificationCode: setPasswordVerificationCode,
+              finishPasswordResetToken: finishPasswordResetToken,
               newPassword: 'NewPassword123!',
             ),
           ),
@@ -729,7 +724,7 @@ void main() {
       });
 
       test(
-          'when calling `finishPasswordReset` the correct verification code after the email account being deleted, '
+          'when calling `finishPasswordReset` the correct finish password reset token after the email account being deleted, '
           'then an error is thrown with reason `invalid`.', () async {
         await EmailAccount.db.deleteWhere(
           sessionBuilder.build(),
@@ -739,8 +734,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: setPasswordVerificationCode,
+            finishPasswordResetToken: finishPasswordResetToken,
             newPassword: 'NewPassword123!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -752,13 +746,12 @@ void main() {
       });
 
       test(
-          'when calling `finishPasswordReset` with the wrong verification code, '
+          'when calling `finishPasswordReset` with the wrong finish password reset token, '
           'then it fails with reason `invalid`.', () async {
         await expectLater(
           () async => await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: 'wrong',
+            finishPasswordResetToken: const Uuid().v4(),
             newPassword: 'NewPassword123!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -770,15 +763,14 @@ void main() {
       });
 
       test(
-          'when calling `finishPasswordReset` with the wrong verification code after the password reset request has expired, '
+          'when calling `finishPasswordReset` with the wrong finish password reset token after the password reset request has expired, '
           'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
-              passwordResetRequestId: passwordResetRequestId,
-              verificationCode: 'wrong',
+              finishPasswordResetToken: finishPasswordResetToken,
               newPassword: 'NewPassword123!',
             ),
           ),
@@ -791,14 +783,13 @@ void main() {
       });
 
       test(
-          'when calling `finishPasswordReset` with a short password, '
-          'then an error is thrown with reason `policyViolation` regardless of the request ID and verification code.',
+          'when calling `finishPasswordReset` with a short password and wrong finish password reset token, '
+          'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
           () async {
         await expectLater(
           () => endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: const Uuid().v4obj(),
-            verificationCode: 'wrong',
+            finishPasswordResetToken: const Uuid().v4(),
             newPassword: 'short',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -841,8 +832,7 @@ void main() {
         await expectLater(
           () => endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
-            passwordResetRequestId: const Uuid().v4obj(),
-            verificationCode: '123456',
+            finishPasswordResetToken: const Uuid().v4(),
             newPassword: 'NewPassword123!',
           ),
           throwsA(isA<EmailAccountPasswordResetException>().having(
@@ -1053,7 +1043,7 @@ extension on TestEndpoints {
     final passwordReset =
         await _startPasswordReset(sessionBuilder, email: email);
 
-    final setPasswordCredentials = await emailAccount.verifyPasswordResetCode(
+    final finishPasswordResetToken = await emailAccount.verifyPasswordResetCode(
       sessionBuilder,
       passwordResetRequestId: passwordReset.passwordResetRequestId,
       verificationCode: passwordReset.verificationCode,
@@ -1061,8 +1051,7 @@ extension on TestEndpoints {
 
     await emailAccount.finishPasswordReset(
       sessionBuilder,
-      passwordResetRequestId: setPasswordCredentials.passwordResetRequestId,
-      verificationCode: setPasswordCredentials.verificationCode,
+      finishPasswordResetToken: finishPasswordResetToken,
       newPassword: password,
     );
   }
