@@ -160,6 +160,23 @@ class ServerTestToolsGenerator {
             ],
           );
 
+        // Add deprecated annotations if present
+        for (var annotation in method.annotations) {
+          if (annotation.name == 'deprecated') {
+            methodBuilder.annotations.add(refer('deprecated'));
+          } else if (annotation.name == 'Deprecated') {
+            if (annotation.arguments != null &&
+                annotation.arguments!.isNotEmpty) {
+              methodBuilder.annotations.add(
+                refer('Deprecated')
+                    .call([CodeExpression(Code(annotation.arguments!.first))]),
+              );
+            } else {
+              methodBuilder.annotations.add(refer('Deprecated').call([]));
+            }
+          }
+        }
+
         methodBuilder.body = returnsStream || hasStreamParameter
             ? _buildEndpointStreamMethodCall(endpoint, method,
                 hasStreamParameter: hasStreamParameter,
