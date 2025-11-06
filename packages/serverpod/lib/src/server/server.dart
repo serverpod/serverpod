@@ -231,14 +231,14 @@ class Server implements RouterInjectable {
     };
   }
 
-  Future<Result> _health(Request req) async {
+  Future<Result> _health(Request _) async {
     final metrics = (await performHealthChecks(serverpod)).metrics;
     final issues = metrics.where((m) => !m.isHealthy);
     final ok = issues.isEmpty;
-    if (ok) return Response.ok(body: Body.fromString('OK'));
+    final now = DateTime.timestamp();
+    if (ok) return Response.ok(body: Body.fromString('OK $now'));
     return Response(503, body: Body.fromDataStream(() async* {
-      final now = DateTime.timestamp();
-      yield utf8.encode('${ok ? 'OK' : 'SADNESS'} $now\r\n');
+      yield utf8.encode('SADNESS $now\r\n');
       for (final metric in issues) {
         yield utf8.encode('${metric.name}: ${metric.value}\r\n');
       }
