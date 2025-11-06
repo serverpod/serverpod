@@ -12,6 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception to be thrown if the Google ID token verification fails.
+///
+/// This is a generic exception that does not expose any details regarding the
+/// cause of the failure to avoid leaking information to potential attackers.
 abstract class GoogleIdTokenVerificationException
     implements _i1.SerializableException, _i1.SerializableModel {
   GoogleIdTokenVerificationException._();

@@ -34,8 +34,8 @@ passwordImportingEmailAccount:
   - verifyPasswordResetCode:
   - finishPasswordReset:
 userProfile:
-  - get:
   - removeUserImage:
   - setUserImage:
   - changeUserName:
   - changeFullName:
+  - get:

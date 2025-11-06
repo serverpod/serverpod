@@ -56,7 +56,7 @@ class ServerpodClientRequestDelegateImpl
       return data;
     } on http.ClientException catch (e) {
       var message = 'Unknown server response code. ($e)';
-      throw (ServerpodClientException(message, -1));
+      throw ServerpodClientException(message, -1);
     }
   }
 

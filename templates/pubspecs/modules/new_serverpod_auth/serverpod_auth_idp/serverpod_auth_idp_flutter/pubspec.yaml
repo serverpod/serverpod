@@ -1,0 +1,54 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_idp_flutter
+description: Flutter package for the next version of the Serverpod authentication module.
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  animations: ^2.1.0
+  email_validator: '>=2.1.17 <4.0.0'
+  flutter_svg: ^2.2.1
+  google_fonts: ^6.3.2
+  google_sign_in: ^7.2.0
+  google_sign_in_web: ^1.1.0
+  pinput: ^5.0.0
+  provider: ^6.1.2
+  serverpod_auth_core_client: SERVERPOD_VERSION
+  serverpod_auth_core_flutter: SERVERPOD_VERSION
+  serverpod_auth_idp_client: SERVERPOD_VERSION
+  sign_in_with_apple: ^7.0.1
+  styled_text: ^8.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  serverpod_lints: SERVERPOD_VERSION
+
+dependency_overrides:
+  serverpod_auth_core_client:
+    path: ../../serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_flutter:
+    path: ../../serverpod_auth_core/serverpod_auth_core_flutter
+  serverpod_auth_idp_client:
+    path: ../serverpod_auth_idp_client
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

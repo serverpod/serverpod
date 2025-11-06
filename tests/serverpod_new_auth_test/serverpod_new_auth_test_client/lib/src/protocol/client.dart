@@ -347,11 +347,17 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String? accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 
@@ -368,11 +374,17 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String? accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccount',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 
@@ -569,20 +581,11 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
 
 /// Endpoint to view and edit one's profile.
 /// {@category Endpoint}
-class EndpointUserProfile extends _i3.EndpointUserProfileBase {
+class EndpointUserProfile extends _i3.EndpointUserProfileEditBase {
   EndpointUserProfile(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'userProfile';
-
-  /// Returns the user profile of the current user.
-  @override
-  _i2.Future<_i3.UserProfileModel> get() =>
-      caller.callServerEndpoint<_i3.UserProfileModel>(
-        'userProfile',
-        'get',
-        {},
-      );
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
@@ -619,6 +622,15 @@ class EndpointUserProfile extends _i3.EndpointUserProfileBase {
         'userProfile',
         'changeFullName',
         {'fullName': fullName},
+      );
+
+  /// Returns the user profile of the current user.
+  @override
+  _i2.Future<_i3.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i3.UserProfileModel>(
+        'userProfile',
+        'get',
+        {},
       );
 }
 
