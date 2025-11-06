@@ -233,11 +233,13 @@ class Server implements RouterInjectable {
 
   Future<Result> _health(Request req) async {
     final metrics = (await performHealthChecks(serverpod)).metrics;
-    final ok = metrics.every((m) => m.isHealthy);
-    return Response(ok ? 200 : 503, body: Body.fromDataStream(() async* {
+    final issues = metrics.where((m) => !m.isHealthy);
+    final ok = issues.isEmpty;
+    if (ok) return Response.ok(body: Body.fromString('OK'));
+    return Response(503, body: Body.fromDataStream(() async* {
       final now = DateTime.timestamp();
       yield utf8.encode('${ok ? 'OK' : 'SADNESS'} $now\r\n');
-      for (final metric in metrics) {
+      for (final metric in issues) {
         yield utf8.encode('${metric.name}: ${metric.value}\r\n');
       }
     }()));
@@ -462,7 +464,7 @@ class Server implements RouterInjectable {
     }
   }
 
-  Response _toResponse(dynamic value) {
+  static Response _toResponse(dynamic value) {
     if (value is Response) return value;
     final body = value is Body
         ? value
