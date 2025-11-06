@@ -591,4 +591,212 @@ void main() {
       await expectLater(result, throwsA(isA<EmailAccountLoginException>()));
     });
   });
+
+  withServerpod(
+    'Given an email account with password and password reset request',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue authUserId;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+
+        final authUser = await fixture.createAuthUser(session);
+        authUserId = authUser.id;
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUserId,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        await session.db.transaction(
+          (final transaction) => fixture.emailIDP.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when deleteEmailAccount is called with lowercase email then account is deleted',
+          () async {
+        await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.findAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        expect(result, isNull);
+      });
+
+      test(
+          'when deleteEmailAccount is called with uppercase email then account is deleted',
+          () async {
+        await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
+            session,
+            email: email.toUpperCase(),
+            transaction: transaction,
+          ),
+        );
+
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.findAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        expect(result, isNull);
+      });
+
+      test(
+          'when deleteEmailAccount is called then related password reset requests are deleted',
+          () async {
+        final resetRequestsBefore =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsBefore.length, greaterThan(0));
+
+        await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        final resetRequestsAfter =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsAfter, isEmpty);
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then account is deleted',
+          () async {
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          ),
+        );
+
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.findAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+
+        expect(result, isNull);
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then related password reset requests are deleted',
+          () async {
+        final resetRequestsBefore =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsBefore.length, greaterThan(0));
+
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          ),
+        );
+
+        final resetRequestsAfter =
+            await EmailAccountPasswordResetRequest.db.find(
+          session,
+        );
+        expect(resetRequestsAfter, isEmpty);
+      });
+    },
+  );
+
+  withServerpod(
+    'Given no email account exists',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+          'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
+            session,
+            email: 'nonexistent@serverpod.dev',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailAccountNotFoundException>()),
+        );
+      });
+
+      test(
+          'when deleteEmailAccountByAuthUserId is called then it throws EmailAccountNotFoundException',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
+            session,
+            authUserId: const Uuid().v4obj(),
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailAccountNotFoundException>()),
+        );
+      });
+    },
+  );
 }

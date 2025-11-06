@@ -3,6 +3,7 @@ import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
+import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
@@ -32,12 +33,16 @@ class EmailIDPUtils {
   /// {@macro email_idp_authentication_utils}
   late final EmailIDPAuthenticationUtil authentication;
 
+  /// {@macro email_idp_account_utils}
+  final EmailIDPAccountUtils account;
+
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({required final EmailIDPConfig config})
       : hashUtil = SecretHashUtil(
           hashPepper: config.secretHashPepper,
           hashSaltLength: config.secretHashSaltLength,
-        ) {
+        ),
+        account = EmailIDPAccountUtils() {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
       passwordHashUtils: hashUtil,
