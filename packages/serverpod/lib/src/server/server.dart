@@ -280,7 +280,14 @@ class Server implements RouterInjectable {
 
       final result = await next(req);
       return switch (result) {
-        Response() => result.copyWith(headers: headers),
+        Response() => result.copyWith(
+            headers: result.headers.isEmpty
+                ? headers
+                : result.headers.transform((mh) {
+                    for (final h in headers.entries) {
+                      mh[h.key] ??= h.value;
+                    }
+                  })),
         _ => result,
       };
     };
