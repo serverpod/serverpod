@@ -262,8 +262,10 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -278,6 +280,8 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
@@ -308,8 +312,6 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
@@ -500,8 +502,10 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -516,6 +520,8 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
@@ -546,8 +552,6 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
