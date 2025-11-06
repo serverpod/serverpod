@@ -280,12 +280,12 @@ class Server implements RouterInjectable {
   FutureOr<Result> _cloudStorage(Request req) async {
     final uri = req.requestedUri;
     assert(uri.path == '/serverpod_cloud_storage');
-    return await _handleUriCall(uri, '', req);
+    return await _handleEndpointCall(uri, '', req);
   }
 
   Future<Response> _endpoints(Request req) async {
     final body = await _readBody(req);
-    return await _handleUriCall(req.requestedUri, body, req);
+    return await _handleEndpointCall(req.requestedUri, body, req);
   }
 
   Handler _dispatchWebSocket(
@@ -345,7 +345,7 @@ class Server implements RouterInjectable {
     return const Utf8Decoder().convert(builder.takeBytes());
   }
 
-  Future<Response> _handleUriCall(
+  Future<Response> _handleEndpointCall(
     Uri uri,
     String body,
     Request request,
