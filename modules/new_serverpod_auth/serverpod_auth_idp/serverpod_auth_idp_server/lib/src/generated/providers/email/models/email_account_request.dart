@@ -9,9 +9,12 @@
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import '../../../common/models/secret_challenge.dart' as _i3;
 
 /// Pending email account registration.
 ///
@@ -26,8 +29,8 @@ abstract class EmailAccountRequest
     required this.email,
     required this.passwordHash,
     required this.passwordSalt,
-    required this.verificationCodeHash,
-    required this.verificationCodeSalt,
+    required this.challengeId,
+    this.challenge,
     this.verifiedAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -37,8 +40,8 @@ abstract class EmailAccountRequest
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
-    required _i2.ByteData verificationCodeHash,
-    required _i2.ByteData verificationCodeSalt,
+    required _i1.UuidValue challengeId,
+    _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
   }) = _EmailAccountRequestImpl;
 
@@ -54,10 +57,12 @@ abstract class EmailAccountRequest
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
       passwordSalt:
           _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
-      verificationCodeHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['verificationCodeHash']),
-      verificationCodeSalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['verificationCodeSalt']),
+      challengeId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
+      challenge: jsonSerialization['challenge'] == null
+          ? null
+          : _i3.SecretChallenge.fromJson(
+              (jsonSerialization['challenge'] as Map<String, dynamic>)),
       verifiedAt: jsonSerialization['verifiedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['verifiedAt']),
@@ -87,11 +92,10 @@ abstract class EmailAccountRequest
   /// The salt used for creating the [passwordHash].
   _i2.ByteData passwordSalt;
 
-  /// The hash of the verification code sent to the user.
-  _i2.ByteData verificationCodeHash;
+  _i1.UuidValue challengeId;
 
-  /// The salt used to compute the [verificationCodeHash].
-  _i2.ByteData verificationCodeSalt;
+  /// The associated challenge for this request
+  _i3.SecretChallenge? challenge;
 
   /// Time at which the email address has been verified, or `null` if it did not happen yet.
   ///
@@ -110,8 +114,8 @@ abstract class EmailAccountRequest
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
-    _i2.ByteData? verificationCodeHash,
-    _i2.ByteData? verificationCodeSalt,
+    _i1.UuidValue? challengeId,
+    _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
   });
   @override
@@ -122,8 +126,8 @@ abstract class EmailAccountRequest
       'email': email,
       'passwordHash': passwordHash.toJson(),
       'passwordSalt': passwordSalt.toJson(),
-      'verificationCodeHash': verificationCodeHash.toJson(),
-      'verificationCodeSalt': verificationCodeSalt.toJson(),
+      'challengeId': challengeId.toJson(),
+      if (challenge != null) 'challenge': challenge?.toJson(),
       if (verifiedAt != null) 'verifiedAt': verifiedAt?.toJson(),
     };
   }
@@ -133,8 +137,9 @@ abstract class EmailAccountRequest
     return {};
   }
 
-  static EmailAccountRequestInclude include() {
-    return EmailAccountRequestInclude._();
+  static EmailAccountRequestInclude include(
+      {_i3.SecretChallengeInclude? challenge}) {
+    return EmailAccountRequestInclude._(challenge: challenge);
   }
 
   static EmailAccountRequestIncludeList includeList({
@@ -172,8 +177,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     required String email,
     required _i2.ByteData passwordHash,
     required _i2.ByteData passwordSalt,
-    required _i2.ByteData verificationCodeHash,
-    required _i2.ByteData verificationCodeSalt,
+    required _i1.UuidValue challengeId,
+    _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
   }) : super._(
           id: id,
@@ -181,8 +186,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
           email: email,
           passwordHash: passwordHash,
           passwordSalt: passwordSalt,
-          verificationCodeHash: verificationCodeHash,
-          verificationCodeSalt: verificationCodeSalt,
+          challengeId: challengeId,
+          challenge: challenge,
           verifiedAt: verifiedAt,
         );
 
@@ -196,8 +201,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     String? email,
     _i2.ByteData? passwordHash,
     _i2.ByteData? passwordSalt,
-    _i2.ByteData? verificationCodeHash,
-    _i2.ByteData? verificationCodeSalt,
+    _i1.UuidValue? challengeId,
+    Object? challenge = _Undefined,
     Object? verifiedAt = _Undefined,
   }) {
     return EmailAccountRequest(
@@ -206,10 +211,10 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash.clone(),
       passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
-      verificationCodeHash:
-          verificationCodeHash ?? this.verificationCodeHash.clone(),
-      verificationCodeSalt:
-          verificationCodeSalt ?? this.verificationCodeSalt.clone(),
+      challengeId: challengeId ?? this.challengeId,
+      challenge: challenge is _i3.SecretChallenge?
+          ? challenge
+          : this.challenge?.copyWith(),
       verifiedAt: verifiedAt is DateTime? ? verifiedAt : this.verifiedAt,
     );
   }
@@ -244,17 +249,10 @@ class EmailAccountRequestUpdateTable
         value,
       );
 
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> verificationCodeHash(
-          _i2.ByteData value) =>
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> challengeId(
+          _i1.UuidValue value) =>
       _i1.ColumnValue(
-        table.verificationCodeHash,
-        value,
-      );
-
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> verificationCodeSalt(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.verificationCodeSalt,
+        table.challengeId,
         value,
       );
 
@@ -286,12 +284,8 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       'passwordSalt',
       this,
     );
-    verificationCodeHash = _i1.ColumnByteData(
-      'verificationCodeHash',
-      this,
-    );
-    verificationCodeSalt = _i1.ColumnByteData(
-      'verificationCodeSalt',
+    challengeId = _i1.ColumnUuid(
+      'challengeId',
       this,
     );
     verifiedAt = _i1.ColumnDateTime(
@@ -318,16 +312,28 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// The salt used for creating the [passwordHash].
   late final _i1.ColumnByteData passwordSalt;
 
-  /// The hash of the verification code sent to the user.
-  late final _i1.ColumnByteData verificationCodeHash;
+  late final _i1.ColumnUuid challengeId;
 
-  /// The salt used to compute the [verificationCodeHash].
-  late final _i1.ColumnByteData verificationCodeSalt;
+  /// The associated challenge for this request
+  _i3.SecretChallengeTable? _challenge;
 
   /// Time at which the email address has been verified, or `null` if it did not happen yet.
   ///
   /// The requests can only be turned into an account if this is non-`null`.
   late final _i1.ColumnDateTime verifiedAt;
+
+  _i3.SecretChallengeTable get challenge {
+    if (_challenge != null) return _challenge!;
+    _challenge = _i1.createRelationTable(
+      relationFieldName: 'challenge',
+      field: EmailAccountRequest.t.challengeId,
+      foreignField: _i3.SecretChallenge.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
+    );
+    return _challenge!;
+  }
 
   @override
   List<_i1.Column> get columns => [
@@ -336,17 +342,28 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
         email,
         passwordHash,
         passwordSalt,
-        verificationCodeHash,
-        verificationCodeSalt,
+        challengeId,
         verifiedAt,
       ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'challenge') {
+      return challenge;
+    }
+    return null;
+  }
 }
 
 class EmailAccountRequestInclude extends _i1.IncludeObject {
-  EmailAccountRequestInclude._();
+  EmailAccountRequestInclude._({_i3.SecretChallengeInclude? challenge}) {
+    _challenge = challenge;
+  }
+
+  _i3.SecretChallengeInclude? _challenge;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {'challenge': _challenge};
 
   @override
   _i1.Table<_i1.UuidValue?> get table => EmailAccountRequest.t;
@@ -374,6 +391,8 @@ class EmailAccountRequestIncludeList extends _i1.IncludeList {
 
 class EmailAccountRequestRepository {
   const EmailAccountRequestRepository._();
+
+  final attachRow = const EmailAccountRequestAttachRowRepository._();
 
   /// Returns a list of [EmailAccountRequest]s matching the given query parameters.
   ///
@@ -406,6 +425,7 @@ class EmailAccountRequestRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    EmailAccountRequestInclude? include,
   }) async {
     return session.db.find<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -415,6 +435,7 @@ class EmailAccountRequestRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -443,6 +464,7 @@ class EmailAccountRequestRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    EmailAccountRequestInclude? include,
   }) async {
     return session.db.findFirstRow<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -451,6 +473,7 @@ class EmailAccountRequestRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -459,10 +482,12 @@ class EmailAccountRequestRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
+    EmailAccountRequestInclude? include,
   }) async {
     return session.db.findById<EmailAccountRequest>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -622,6 +647,34 @@ class EmailAccountRequestRepository {
     return session.db.count<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+}
+
+class EmailAccountRequestAttachRowRepository {
+  const EmailAccountRequestAttachRowRepository._();
+
+  /// Creates a relation between the given [EmailAccountRequest] and [SecretChallenge]
+  /// by setting the [EmailAccountRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
+  Future<void> challenge(
+    _i1.Session session,
+    EmailAccountRequest emailAccountRequest,
+    _i3.SecretChallenge challenge, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountRequest.id == null) {
+      throw ArgumentError.notNull('emailAccountRequest.id');
+    }
+    if (challenge.id == null) {
+      throw ArgumentError.notNull('challenge.id');
+    }
+
+    var $emailAccountRequest =
+        emailAccountRequest.copyWith(challengeId: challenge.id);
+    await session.db.updateRow<EmailAccountRequest>(
+      $emailAccountRequest,
+      columns: [EmailAccountRequest.t.challengeId],
       transaction: transaction,
     );
   }

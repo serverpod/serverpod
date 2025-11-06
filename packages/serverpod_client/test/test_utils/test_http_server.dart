@@ -37,8 +37,8 @@ abstract class TestHttpServer {
     void Function(Uri httpHost)? onConnected,
     HttpRequestHandler httpRequestHandler,
   ) async {
-    FutureOr<HandledContext> requestHandler(RequestContext context) async {
-      return context.respond(await httpRequestHandler(context.request));
+    FutureOr<Result> requestHandler(Request req) async {
+      return await httpRequestHandler(req);
     }
 
     final server = RelicServer(

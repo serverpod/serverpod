@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 /// Route for serving static assets.
 class StaticRoute extends Route {
   static CacheControlHeader? _defaultFactory(
-    RequestContext ctx,
+    Request ctx,
     FileInfo fileInfo,
   ) =>
       null;
@@ -62,7 +62,6 @@ class StaticRoute extends Route {
   }
 
   @override
-  FutureOr<HandledContext> handleCall(
-          Session session, RequestContext context) =>
+  FutureOr<Result> handleCall(Session session, Request context) =>
       _handler(context);
 }

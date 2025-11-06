@@ -26,7 +26,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),
         );
@@ -125,7 +125,7 @@ void main() {
       );
       fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           maxPasswordResetAttempts: maxPasswordResetAttempts,
         ),
       );
@@ -207,7 +207,7 @@ void main() {
       );
       fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           maxPasswordResetAttempts: maxPasswordResetAttempts,
         ),
       );

@@ -4,10 +4,10 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/secret_hash_util.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
-import 'email_idp_password_hash_util.dart';
 
 /// {@template email_idp_authentication_util}
 /// Authentication utilities for the email identity provider.
@@ -17,14 +17,14 @@ import 'email_idp_password_hash_util.dart';
 /// This class also contains utility functions for administration tasks, such as deleting failed login attempts.
 /// {@endtemplate}
 class EmailIDPAuthenticationUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtil;
+  final SecretHashUtil _hashUtil;
   final RateLimit _failedLoginRateLimit;
 
   /// Creates a new instance of [EmailIDPAuthenticationUtil].
   EmailIDPAuthenticationUtil({
-    required final EmailIDPPasswordHashUtil passwordHashUtil,
+    required final SecretHashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
-  })  : _passwordHashUtil = passwordHashUtil,
+  })  : _hashUtil = hashUtil,
         _failedLoginRateLimit = failedLoginRateLimit;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
@@ -66,7 +66,7 @@ class EmailIDPAuthenticationUtil {
       throw EmailAccountNotFoundException();
     }
 
-    if (!await _passwordHashUtil.validateHash(
+    if (!await _hashUtil.validateHash(
       value: password,
       hash: account.passwordHash.asUint8List,
       salt: account.passwordSalt.asUint8List,

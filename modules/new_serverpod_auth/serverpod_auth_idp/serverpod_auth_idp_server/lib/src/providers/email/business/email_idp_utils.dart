@@ -1,10 +1,10 @@
 import '../../../generated/protocol.dart';
+import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
 import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
-import 'utils/email_idp_password_hash_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
 /// Email account management functions.
@@ -13,7 +13,7 @@ import 'utils/email_idp_password_reset_util.dart';
 /// and administration flows. The building blocks are accessible through properties
 /// divided up into related groups.
 ///
-/// - [passwordHash] - Utilities for hashing passwords and verification codes
+/// - [hashUtil] - Utilities for hashing passwords and verification codes
 /// - [authentication] - Utilities for authenticating users
 /// - [accountCreation] - Utilities for creating and verifying email accounts
 /// - [passwordReset] - Utilities for resetting passwords
@@ -21,8 +21,8 @@ import 'utils/email_idp_password_reset_util.dart';
 /// For most standard use cases, the methods exposed by [EmailIDP] and
 /// [EmailIDPAdmin] should be sufficient.
 class EmailIDPUtils {
-  /// {@macro email_idp_password_hash_util}
-  final EmailIDPPasswordHashUtil passwordHash;
+  /// {@macro email_idp_hash_util}
+  final SecretHashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
   late final EmailIDPAccountCreationUtil accountCreation;
@@ -38,21 +38,21 @@ class EmailIDPUtils {
 
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({required final EmailIDPConfig config})
-      : passwordHash = EmailIDPPasswordHashUtil(
-          passwordHashPepper: config.passwordHashPepper,
-          passwordHashSaltLength: config.passwordHashSaltLength,
+      : hashUtil = SecretHashUtil(
+          hashPepper: config.secretHashPepper,
+          hashSaltLength: config.secretHashSaltLength,
         ),
         account = EmailIDPAccountUtils() {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
-      passwordHashUtils: passwordHash,
+      passwordHashUtils: hashUtil,
     );
     passwordReset = EmailIDPPasswordResetUtil(
       config: EmailIDPPasswordResetUtilsConfig.fromEmailIDPConfig(config),
-      passwordHashUtils: passwordHash,
+      passwordHashUtils: hashUtil,
     );
     authentication = EmailIDPAuthenticationUtil(
-      passwordHashUtil: passwordHash,
+      hashUtil: hashUtil,
       failedLoginRateLimit: config.failedLoginRateLimit,
     );
   }

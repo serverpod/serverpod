@@ -99,15 +99,14 @@ void main() {
 /// Test route that requires authentication (uses ctx.authInfo)
 class TestRoute extends Route {
   @override
-  FutureOr<HandledContext> handleCall(Session session, RequestContext context) {
-    return context.respond(
-        Response.ok(body: Body.fromString(context.authInfo.userIdentifier)));
+  FutureOr<Result> handleCall(Session session, Request req) {
+    return Response.ok(body: Body.fromString(req.authInfo.userIdentifier));
   }
 }
 
 final _authInfoProperty = ContextProperty<AuthenticationInfo>('authInfo');
 
-extension on Context {
+extension on Request {
   AuthenticationInfo get authInfo => _authInfoProperty[this];
 }
 
@@ -115,7 +114,7 @@ class _AuthMiddleware {
   Handler call(Handler next) {
     return (ctx) async {
       final info = await ctx.session.authenticated;
-      if (info == null) return ctx.respond(Response.unauthorized());
+      if (info == null) return Response.unauthorized();
       _authInfoProperty[ctx] = info;
       return next(ctx);
     };

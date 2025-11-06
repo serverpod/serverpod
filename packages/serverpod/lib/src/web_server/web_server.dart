@@ -168,17 +168,16 @@ class _SessionMiddleware extends MiddlewareObject {
 
   @override
   Handler call(Handler next) {
-    return (ctx) async {
-      final request = ctx.request;
+    return (req) async {
       final session = WebCallSession(
         server: _server,
-        endpoint: request.requestedUri.path,
-        authenticationKey: request.headers.authorization?.headerValue,
-        remoteInfo: request.remoteInfo,
+        endpoint: req.requestedUri.path,
+        authenticationKey: req.headers.authorization?.headerValue,
+        remoteInfo: req.remoteInfo,
       );
-      _sessionProperty[ctx] = session;
+      _sessionProperty[req] = session;
       try {
-        return await next(ctx);
+        return await next(req);
       } finally {
         await session.close();
       }
@@ -193,18 +192,18 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
 
   @override
   Handler call(Handler next) {
-    return (ctx) async {
+    return (req) async {
       try {
-        return await next(ctx);
+        return await next(req);
       } catch (e, stackTrace) {
         await _webServer._reportException(
           e,
           stackTrace,
           space: OriginSpace.application,
-          session: ctx.sessionOrNull,
-          request: ctx.request,
+          session: req.sessionOrNull,
+          request: req,
         );
-        return ctx.respond(Response.internalServerError());
+        return Response.internalServerError();
       }
     };
   }
@@ -213,7 +212,7 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
 final _sessionProperty = ContextProperty<Session>();
 
 /// [Session] related extension methods for [Context].
-extension SessionEx on Context {
+extension SessionEx on Request {
   /// The session associated with this request context.
   ///
   /// Throws, if no session has been initiated.
@@ -248,12 +247,12 @@ abstract class Route extends HandlerObject {
   /// Handles a call to this route, by extracting [Session] from context and
   /// forwarding to [handleCall].
   @override
-  FutureOr<HandledContext> call(RequestContext context) {
+  FutureOr<Result> call(Request context) {
     return handleCall(context.session, context);
   }
 
   /// Handles a call to this route.
-  FutureOr<HandledContext> handleCall(Session session, RequestContext context);
+  FutureOr<Result> handleCall(Session session, Request context);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
@@ -264,15 +263,15 @@ abstract class WidgetRoute extends Route {
   Future<WebWidget> build(Session session, Request request);
 
   @override
-  FutureOr<HandledContext> handleCall(
+  FutureOr<Result> handleCall(
     Session session,
-    RequestContext context,
+    Request req,
   ) async {
-    var widget = await build(session, context.request);
+    var widget = await build(session, req);
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.respond(Response.seeOther(uri));
+      return Response.seeOther(uri);
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
@@ -284,9 +283,9 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    return context.respond(Response.ok(
+    return Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
       headers: headers,
-    ));
+    );
   }
 }

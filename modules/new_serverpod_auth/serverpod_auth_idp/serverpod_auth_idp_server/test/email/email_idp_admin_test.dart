@@ -221,7 +221,7 @@ void main() {
 
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
-            passwordHashPepper: 'pepper',
+            secretHashPepper: 'pepper',
             passwordResetVerificationCodeLifetime: passwordResetLifetime,
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -446,7 +446,7 @@ void main() {
       session = sessionBuilder.build();
       fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           maxPasswordResetAttempts: maxPasswordResetAttempts,
         ),
       );
@@ -515,7 +515,7 @@ void main() {
       session = sessionBuilder.build();
       fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-          passwordHashPepper: 'pepper',
+          secretHashPepper: 'pepper',
           failedLoginRateLimit: maxFailedLoginAttempts,
         ),
       );

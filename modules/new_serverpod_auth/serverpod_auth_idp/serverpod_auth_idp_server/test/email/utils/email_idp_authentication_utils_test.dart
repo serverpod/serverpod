@@ -132,7 +132,7 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'test-pepper',
+            secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
         );
@@ -266,7 +266,7 @@ void main() {
         );
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'test-pepper',
+            secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
         );
@@ -343,7 +343,7 @@ void main() {
         );
         fixture = EmailIDPTestFixture(
           config: const EmailIDPConfig(
-            passwordHashPepper: 'test-pepper',
+            secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
         );
@@ -421,7 +421,7 @@ void main() {
       session = sessionBuilder.build();
       fixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
-          passwordHashPepper: 'test-pepper',
+          secretHashPepper: 'test-pepper',
           failedLoginRateLimit: failedLoginRateLimit,
         ),
       );

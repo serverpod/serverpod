@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/serverpod.dart' hide Message;
 
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 

@@ -4,11 +4,11 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
+import '../../../../utils/secret_hash_util.dart';
 import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
-import 'email_idp_password_hash_util.dart';
 
 /// {@template email_idp_password_reset_util}
 /// Class for handling password reset operations in the email account module.
@@ -20,13 +20,13 @@ import 'email_idp_password_hash_util.dart';
 /// deleting expired password reset requests and password reset attempts.
 /// {@endtemplate}
 class EmailIDPPasswordResetUtil {
-  final EmailIDPPasswordHashUtil _passwordHashUtil;
+  final SecretHashUtil _passwordHashUtil;
   final EmailIDPPasswordResetUtilsConfig _config;
 
   /// Creates a new [EmailIDPPasswordResetUtil] instance.
   EmailIDPPasswordResetUtil({
     required final EmailIDPPasswordResetUtilsConfig config,
-    required final EmailIDPPasswordHashUtil passwordHashUtils,
+    required final SecretHashUtil passwordHashUtils,
   })  : _config = config,
         _passwordHashUtil = passwordHashUtils;
 
@@ -61,6 +61,9 @@ class EmailIDPPasswordResetUtil {
     final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
       session,
       passwordResetRequestId,
+      include: EmailAccountPasswordResetRequest.include(
+        challenge: SecretChallenge.include(),
+      ),
       transaction: transaction,
     );
 
@@ -81,10 +84,12 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetTooManyVerificationAttemptsException();
     }
 
+    final challenge = resetRequest.getChallenge;
+
     if (!await _passwordHashUtil.validateHash(
       value: verificationCode,
-      hash: resetRequest.verificationCodeHash.asUint8List,
-      salt: resetRequest.verificationCodeSalt.asUint8List,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -204,7 +209,7 @@ class EmailIDPPasswordResetUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
-      null => PasswordHash.empty(),
+      null => HashResult.empty(),
       final String value => await _passwordHashUtil.createHash(value: value),
     };
 
@@ -270,12 +275,20 @@ class EmailIDPPasswordResetUtil {
       value: verificationCode,
     );
 
+    final challenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(
+        challengeCodeHash: verificationCodeHash.hash.asByteData,
+        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
     final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
       session,
       EmailAccountPasswordResetRequest(
         emailAccountId: account.id!,
-        verificationCodeHash: verificationCodeHash.hash.asByteData,
-        verificationCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeId: challenge.id!,
         createdAt: clock.now(),
       ),
       transaction: transaction,
@@ -420,5 +433,15 @@ extension on EmailAccountPasswordResetRequest {
     );
 
     return resetExpiresAt.isBefore(clock.now());
+  }
+
+  SecretChallenge get getChallenge {
+    if (challenge == null) {
+      throw StateError(
+        'Challenge is required for password reset verification',
+      );
+    }
+
+    return challenge!;
   }
 }
