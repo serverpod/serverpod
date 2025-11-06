@@ -270,13 +270,15 @@ void main() {
         // Verify expired request by trying to complete it withing request lifetime
         final result = withClock(
           clockBeforeTimeframe,
-          () => session.db.transaction((final transaction) => fixture
-              .emailIDP.utils.passwordReset
-              .completePasswordReset(session,
-                  passwordResetRequestId: expiredRequestId,
-                  verificationCode: verificationCode,
-                  newPassword: 'Password123!',
-                  transaction: transaction)),
+          () => session.db.transaction(
+            (final transaction) =>
+                fixture.emailIDP.utils.passwordReset.verifyPasswordResetCode(
+              session,
+              passwordResetRequestId: expiredRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
+          ),
         );
 
         await expectLater(

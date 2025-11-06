@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
@@ -32,9 +34,17 @@ class EmailIDPPasswordResetUtil {
 
   /// Returns the auth user ID for the successfully changed password.
   ///
+  /// This method should only be called after the [verifyPasswordResetCode]
+  /// method has been called successfully.
+  ///
+  /// The method takes the [completePasswordResetToken] returned from
+  /// [verifyPasswordResetCode] and uses it to complete the password reset.
+  ///
   /// Can throw the following [EmailPasswordResetServerException] subclasses:
   /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
   ///   be found for [passwordResetRequestId].
+  /// - [EmailPasswordResetNotVerifiedException] if the set
+  ///   password token has not been set.
   /// - [EmailPasswordResetRequestExpiredException] if the reset request has
   ///   expired and has not been cleaned up yet.
   /// - [EmailPasswordResetPasswordPolicyViolationException] if the new password
@@ -43,14 +53,9 @@ class EmailIDPPasswordResetUtil {
   ///   made too many attempts trying to complete the password reset.
   /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
   ///   [verificationCode] is not valid.
-  ///
-  /// In case of an invalid [verificationCode] or [passwordResetRequestId], the
-  /// failed password reset completion will be logged to the database outside
-  /// of the [transaction] and can not be rolled back.
   Future<UuidValue> completePasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String completePasswordResetToken,
     required final String newPassword,
     required final Transaction transaction,
   }) async {
@@ -58,11 +63,17 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetPasswordPolicyViolationException();
     }
 
+    final credentials =
+        _tryDecodeCompletePasswordResetToken(completePasswordResetToken);
+    if (credentials == null) {
+      throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
     final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
       session,
-      passwordResetRequestId,
+      credentials.passwordResetRequestId,
       include: EmailAccountPasswordResetRequest.include(
-        challenge: SecretChallenge.include(),
+        setPasswordChallenge: SecretChallenge.include(),
       ),
       transaction: transaction,
     );
@@ -71,25 +82,15 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetRequestNotFoundException();
     }
 
-    if (await _hasTooManyPasswordResetCompleteAttempts(
-      session,
-      passwordResetRequestId: resetRequest.id!,
-    )) {
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        // passing no transaction, so this will not be rolled back
-      );
-
-      throw EmailPasswordResetTooManyVerificationAttemptsException();
+    final setPasswordChallenge = resetRequest.setPasswordChallenge;
+    if (setPasswordChallenge == null) {
+      throw EmailPasswordResetNotVerifiedException();
     }
 
-    final challenge = resetRequest.getChallenge;
-
     if (!await _passwordHashUtil.validateHash(
-      value: verificationCode,
-      hash: challenge.challengeCodeHash.asUint8List,
-      salt: challenge.challengeCodeSalt.asUint8List,
+      value: credentials.verificationCode,
+      hash: setPasswordChallenge.challengeCodeHash.asUint8List,
+      salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -131,6 +132,141 @@ class EmailIDPPasswordResetUtil {
     );
 
     return account.authUserId;
+  }
+
+  /// Returns the credentials for setting the password for the password reset request.
+  ///
+  /// This method should only be called after the [startPasswordReset] method
+  /// has been called successfully.
+  ///
+  /// The method returns a [completePasswordResetToken] that can be used to
+  /// complete the password reset.
+  ///
+  /// Can throw the following [EmailPasswordResetServerException] subclasses:
+  /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
+  ///   be found for [passwordResetRequestId].
+  /// - [EmailPasswordResetRequestExpiredException] if the reset request has
+  ///   expired and has not been cleaned up yet.
+  /// - [EmailPasswordResetVerificationCodeAlreadyUsedException] if the
+  ///    verification code has already been used.
+  /// - [EmailPasswordResetTooManyVerificationAttemptsException] if the user has
+  ///   made too many attempts trying to complete the password reset.
+  /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
+  ///   [verificationCode] is not valid.
+  ///
+  /// In case of an invalid [verificationCode] or [passwordResetRequestId], the
+  /// failed password reset completion will be logged to the database outside
+  /// of the [transaction] and can not be rolled back.
+  Future<String> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+    required final Transaction transaction,
+  }) async {
+    final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
+      session,
+      passwordResetRequestId,
+      include: EmailAccountPasswordResetRequest.include(
+        challenge: SecretChallenge.include(),
+        setPasswordChallenge: SecretChallenge.include(),
+      ),
+      transaction: transaction,
+    );
+
+    if (resetRequest == null) {
+      throw EmailPasswordResetRequestNotFoundException();
+    }
+
+    if (await _hasTooManyPasswordResetCompleteAttempts(
+      session,
+      passwordResetRequestId: resetRequest.id!,
+    )) {
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetTooManyVerificationAttemptsException();
+    }
+
+    if (resetRequest.isVerificationCodeUsed) {
+      throw EmailPasswordResetVerificationCodeAlreadyUsedException();
+    }
+
+    final challenge = resetRequest.getChallenge;
+
+    if (!await _passwordHashUtil.validateHash(
+      value: verificationCode,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
+    )) {
+      throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
+    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetRequestExpiredException();
+    }
+
+    final setPasswordToken = const Uuid().v4();
+    final setPasswordTokenHash = await _passwordHashUtil.createHash(
+      value: setPasswordToken,
+    );
+
+    await _insertSetPasswordChallenge(
+      session,
+      transaction: transaction,
+      resetRequestId: resetRequest.id!,
+      setPasswordTokenHash: setPasswordTokenHash,
+    );
+
+    return _encodeCompletePasswordResetToken(
+      resetRequest.id!,
+      setPasswordToken,
+    );
+  }
+
+  /// Inserts a new set password challenge and updates the password reset request to link to it.
+  ///
+  /// Will throw [EmailPasswordResetVerificationCodeAlreadyUsedException]
+  /// if the verification has already been set.
+  Future<void> _insertSetPasswordChallenge(
+    final Session session, {
+    required final Transaction transaction,
+    required final UuidValue resetRequestId,
+    required final HashResult setPasswordTokenHash,
+  }) async {
+    final savePoint = await transaction.createSavepoint();
+    final setPasswordChallenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(
+        challengeCodeHash: setPasswordTokenHash.hash.asByteData,
+        challengeCodeSalt: setPasswordTokenHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
+    final updated = await EmailAccountPasswordResetRequest.db.updateWhere(
+      session,
+      columnValues: (final t) =>
+          [t.setPasswordChallengeId(setPasswordChallenge.id!)],
+      where: (final t) =>
+          t.id.equals(resetRequestId) & t.setPasswordChallengeId.equals(null),
+      transaction: transaction,
+    );
+
+    if (updated.isEmpty) {
+      await savePoint.rollback();
+      throw EmailPasswordResetVerificationCodeAlreadyUsedException();
+    }
+
+    await savePoint.release();
   }
 
   /// Deletes password reset requests older than [olderThan].
@@ -369,6 +505,43 @@ class EmailIDPPasswordResetUtil {
       return recentRequests > _config.maxPasswordResetAttempts.maxAttempts;
     });
   }
+
+  String _encodeCompletePasswordResetToken(
+    final UuidValue passwordResetRequestId,
+    final String setPasswordToken,
+  ) {
+    return base64Encode(
+      utf8.encode('$passwordResetRequestId:$setPasswordToken'),
+    );
+  }
+
+  CompletePasswordResetCredentials? _tryDecodeCompletePasswordResetToken(
+    final String token,
+  ) {
+    final String decoded;
+    try {
+      decoded = utf8.decode(base64Decode(token));
+    } catch (e) {
+      return null;
+    }
+
+    final parts = decoded.split(':');
+    if (parts.length != 2) {
+      return null;
+    }
+
+    final UuidValue passwordResetRequestId;
+    try {
+      passwordResetRequestId = UuidValue.withValidation(parts[0]);
+    } catch (e) {
+      return null;
+    }
+
+    return (
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: parts[1],
+    );
+  }
 }
 
 /// Configuration options for the [EmailIDPPasswordResetUtil] class.
@@ -444,4 +617,12 @@ extension on EmailAccountPasswordResetRequest {
 
     return challenge!;
   }
+
+  bool get isVerificationCodeUsed => setPasswordChallenge != null;
 }
+
+/// The credentials for setting the password for the password reset request.
+typedef CompletePasswordResetCredentials = ({
+  UuidValue passwordResetRequestId,
+  String verificationCode,
+});

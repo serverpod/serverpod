@@ -119,8 +119,37 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     return emailIDP.startPasswordReset(session, email: email);
   }
 
+  /// {@template email_account_base_endpoint.verify_password_reset_code}
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  /// {@endtemplate}
+  Future<String> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIDP.verifyPasswordResetCode(
+      session,
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode,
+    );
+  }
+
   /// {@template email_account_base_endpoint.finish_password_reset}
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -136,14 +165,12 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// {@endtemplate}
   Future<void> finishPasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String finishPasswordResetToken,
     required final String newPassword,
   }) async {
     return emailIDP.finishPasswordReset(
       session,
-      passwordResetRequestId: passwordResetRequestId,
-      verificationCode: verificationCode,
+      finishPasswordResetToken: finishPasswordResetToken,
       newPassword: newPassword,
     );
   }

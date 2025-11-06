@@ -123,7 +123,27 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   /// account has been involved in too many reset attempts.
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  _i2.Future<String> verifyPasswordResetCode({
+    required _i1.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  });
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -137,8 +157,7 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   _i2.Future<void> finishPasswordReset({
-    required _i1.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   });
 }

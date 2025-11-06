@@ -158,7 +158,36 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i3.Future<String> verifyPasswordResetCode({
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailIDP',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -173,16 +202,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i3.Future<void> finishPasswordReset({
-    required _i2.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'emailIDP',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );

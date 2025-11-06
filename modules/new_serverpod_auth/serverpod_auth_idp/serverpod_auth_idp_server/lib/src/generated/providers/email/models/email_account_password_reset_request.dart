@@ -25,6 +25,8 @@ abstract class EmailAccountPasswordResetRequest
     DateTime? createdAt,
     required this.challengeId,
     this.challenge,
+    this.setPasswordChallengeId,
+    this.setPasswordChallenge,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccountPasswordResetRequest({
@@ -34,6 +36,8 @@ abstract class EmailAccountPasswordResetRequest
     DateTime? createdAt,
     required _i1.UuidValue challengeId,
     _i3.SecretChallenge? challenge,
+    _i1.UuidValue? setPasswordChallengeId,
+    _i3.SecretChallenge? setPasswordChallenge,
   }) = _EmailAccountPasswordResetRequestImpl;
 
   factory EmailAccountPasswordResetRequest.fromJson(
@@ -56,6 +60,16 @@ abstract class EmailAccountPasswordResetRequest
           ? null
           : _i3.SecretChallenge.fromJson(
               (jsonSerialization['challenge'] as Map<String, dynamic>)),
+      setPasswordChallengeId:
+          jsonSerialization['setPasswordChallengeId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                  jsonSerialization['setPasswordChallengeId']),
+      setPasswordChallenge: jsonSerialization['setPasswordChallenge'] == null
+          ? null
+          : _i3.SecretChallenge.fromJson(
+              (jsonSerialization['setPasswordChallenge']
+                  as Map<String, dynamic>)),
     );
   }
 
@@ -79,6 +93,12 @@ abstract class EmailAccountPasswordResetRequest
   /// The associated challenge for this reset request
   _i3.SecretChallenge? challenge;
 
+  _i1.UuidValue? setPasswordChallengeId;
+
+  /// Used to complete the password reset when setting the password.
+  /// This will be set after the password reset challenge has been validated.
+  _i3.SecretChallenge? setPasswordChallenge;
+
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
@@ -92,6 +112,8 @@ abstract class EmailAccountPasswordResetRequest
     DateTime? createdAt,
     _i1.UuidValue? challengeId,
     _i3.SecretChallenge? challenge,
+    _i1.UuidValue? setPasswordChallengeId,
+    _i3.SecretChallenge? setPasswordChallenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -102,6 +124,10 @@ abstract class EmailAccountPasswordResetRequest
       'createdAt': createdAt.toJson(),
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
+      if (setPasswordChallengeId != null)
+        'setPasswordChallengeId': setPasswordChallengeId?.toJson(),
+      if (setPasswordChallenge != null)
+        'setPasswordChallenge': setPasswordChallenge?.toJson(),
     };
   }
 
@@ -113,10 +139,12 @@ abstract class EmailAccountPasswordResetRequest
   static EmailAccountPasswordResetRequestInclude include({
     _i2.EmailAccountInclude? emailAccount,
     _i3.SecretChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? setPasswordChallenge,
   }) {
     return EmailAccountPasswordResetRequestInclude._(
       emailAccount: emailAccount,
       challenge: challenge,
+      setPasswordChallenge: setPasswordChallenge,
     );
   }
 
@@ -157,6 +185,8 @@ class _EmailAccountPasswordResetRequestImpl
     DateTime? createdAt,
     required _i1.UuidValue challengeId,
     _i3.SecretChallenge? challenge,
+    _i1.UuidValue? setPasswordChallengeId,
+    _i3.SecretChallenge? setPasswordChallenge,
   }) : super._(
           id: id,
           emailAccountId: emailAccountId,
@@ -164,6 +194,8 @@ class _EmailAccountPasswordResetRequestImpl
           createdAt: createdAt,
           challengeId: challengeId,
           challenge: challenge,
+          setPasswordChallengeId: setPasswordChallengeId,
+          setPasswordChallenge: setPasswordChallenge,
         );
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetRequest]
@@ -177,6 +209,8 @@ class _EmailAccountPasswordResetRequestImpl
     DateTime? createdAt,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
+    Object? setPasswordChallengeId = _Undefined,
+    Object? setPasswordChallenge = _Undefined,
   }) {
     return EmailAccountPasswordResetRequest(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -189,6 +223,12 @@ class _EmailAccountPasswordResetRequestImpl
       challenge: challenge is _i3.SecretChallenge?
           ? challenge
           : this.challenge?.copyWith(),
+      setPasswordChallengeId: setPasswordChallengeId is _i1.UuidValue?
+          ? setPasswordChallengeId
+          : this.setPasswordChallengeId,
+      setPasswordChallenge: setPasswordChallenge is _i3.SecretChallenge?
+          ? setPasswordChallenge
+          : this.setPasswordChallenge?.copyWith(),
     );
   }
 }
@@ -216,6 +256,13 @@ class EmailAccountPasswordResetRequestUpdateTable
         table.challengeId,
         value,
       );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> setPasswordChallengeId(
+          _i1.UuidValue? value) =>
+      _i1.ColumnValue(
+        table.setPasswordChallengeId,
+        value,
+      );
 }
 
 class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
@@ -237,6 +284,10 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
       'challengeId',
       this,
     );
+    setPasswordChallengeId = _i1.ColumnUuid(
+      'setPasswordChallengeId',
+      this,
+    );
   }
 
   late final EmailAccountPasswordResetRequestUpdateTable updateTable;
@@ -253,6 +304,12 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
 
   /// The associated challenge for this reset request
   _i3.SecretChallengeTable? _challenge;
+
+  late final _i1.ColumnUuid setPasswordChallengeId;
+
+  /// Used to complete the password reset when setting the password.
+  /// This will be set after the password reset challenge has been validated.
+  _i3.SecretChallengeTable? _setPasswordChallenge;
 
   _i2.EmailAccountTable get emailAccount {
     if (_emailAccount != null) return _emailAccount!;
@@ -280,12 +337,26 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
     return _challenge!;
   }
 
+  _i3.SecretChallengeTable get setPasswordChallenge {
+    if (_setPasswordChallenge != null) return _setPasswordChallenge!;
+    _setPasswordChallenge = _i1.createRelationTable(
+      relationFieldName: 'setPasswordChallenge',
+      field: EmailAccountPasswordResetRequest.t.setPasswordChallengeId,
+      foreignField: _i3.SecretChallenge.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
+    );
+    return _setPasswordChallenge!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
         emailAccountId,
         createdAt,
         challengeId,
+        setPasswordChallengeId,
       ];
 
   @override
@@ -296,6 +367,9 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
     if (relationField == 'challenge') {
       return challenge;
     }
+    if (relationField == 'setPasswordChallenge') {
+      return setPasswordChallenge;
+    }
     return null;
   }
 }
@@ -304,19 +378,24 @@ class EmailAccountPasswordResetRequestInclude extends _i1.IncludeObject {
   EmailAccountPasswordResetRequestInclude._({
     _i2.EmailAccountInclude? emailAccount,
     _i3.SecretChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? setPasswordChallenge,
   }) {
     _emailAccount = emailAccount;
     _challenge = challenge;
+    _setPasswordChallenge = setPasswordChallenge;
   }
 
   _i2.EmailAccountInclude? _emailAccount;
 
   _i3.SecretChallengeInclude? _challenge;
 
+  _i3.SecretChallengeInclude? _setPasswordChallenge;
+
   @override
   Map<String, _i1.Include?> get includes => {
         'emailAccount': _emailAccount,
         'challenge': _challenge,
+        'setPasswordChallenge': _setPasswordChallenge,
       };
 
   @override
@@ -348,6 +427,9 @@ class EmailAccountPasswordResetRequestRepository {
 
   final attachRow =
       const EmailAccountPasswordResetRequestAttachRowRepository._();
+
+  final detachRow =
+      const EmailAccountPasswordResetRequestDetachRowRepository._();
 
   /// Returns a list of [EmailAccountPasswordResetRequest]s matching the given query parameters.
   ///
@@ -660,6 +742,57 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
     await session.db.updateRow<EmailAccountPasswordResetRequest>(
       $emailAccountPasswordResetRequest,
       columns: [EmailAccountPasswordResetRequest.t.challengeId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between the given [EmailAccountPasswordResetRequest] and [SecretChallenge]
+  /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `setPasswordChallengeId` to refer to the [SecretChallenge].
+  Future<void> setPasswordChallenge(
+    _i1.Session session,
+    EmailAccountPasswordResetRequest emailAccountPasswordResetRequest,
+    _i3.SecretChallenge setPasswordChallenge, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountPasswordResetRequest.id == null) {
+      throw ArgumentError.notNull('emailAccountPasswordResetRequest.id');
+    }
+    if (setPasswordChallenge.id == null) {
+      throw ArgumentError.notNull('setPasswordChallenge.id');
+    }
+
+    var $emailAccountPasswordResetRequest = emailAccountPasswordResetRequest
+        .copyWith(setPasswordChallengeId: setPasswordChallenge.id);
+    await session.db.updateRow<EmailAccountPasswordResetRequest>(
+      $emailAccountPasswordResetRequest,
+      columns: [EmailAccountPasswordResetRequest.t.setPasswordChallengeId],
+      transaction: transaction,
+    );
+  }
+}
+
+class EmailAccountPasswordResetRequestDetachRowRepository {
+  const EmailAccountPasswordResetRequestDetachRowRepository._();
+
+  /// Detaches the relation between this [EmailAccountPasswordResetRequest] and the [SecretChallenge] set in `setPasswordChallenge`
+  /// by setting the [EmailAccountPasswordResetRequest]'s foreign key `setPasswordChallengeId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> setPasswordChallenge(
+    _i1.Session session,
+    EmailAccountPasswordResetRequest emailAccountPasswordResetRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountPasswordResetRequest.id == null) {
+      throw ArgumentError.notNull('emailAccountPasswordResetRequest.id');
+    }
+
+    var $emailAccountPasswordResetRequest =
+        emailAccountPasswordResetRequest.copyWith(setPasswordChallengeId: null);
+    await session.db.updateRow<EmailAccountPasswordResetRequest>(
+      $emailAccountPasswordResetRequest,
+      columns: [EmailAccountPasswordResetRequest.t.setPasswordChallengeId],
       transaction: transaction,
     );
   }

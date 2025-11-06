@@ -272,7 +272,36 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i2.Future<String> verifyPasswordResetCode({
+    required _i1.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -287,16 +316,14 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i2.Future<void> finishPasswordReset({
-    required _i1.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'emailAccount',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );
@@ -483,7 +510,36 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i2.Future<String> verifyPasswordResetCode({
+    required _i1.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'passwordImportingEmailAccount',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -498,16 +554,14 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i2.Future<void> finishPasswordReset({
-    required _i1.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'passwordImportingEmailAccount',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );

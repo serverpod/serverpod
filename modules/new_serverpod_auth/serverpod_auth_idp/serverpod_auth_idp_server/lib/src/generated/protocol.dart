@@ -494,6 +494,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'UuidValue',
         ),
+        _i2.ColumnDefinition(
+          name: 'setPasswordChallengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -511,6 +517,17 @@ class Protocol extends _i1.SerializationManagerServer {
           constraintName:
               'serverpod_auth_idp_email_account_password_reset_request_fk_1',
           columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName:
+              'serverpod_auth_idp_email_account_password_reset_request_fk_2',
+          columns: ['setPasswordChallengeId'],
           referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],

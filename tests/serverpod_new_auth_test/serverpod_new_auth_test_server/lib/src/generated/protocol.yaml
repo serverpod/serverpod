@@ -18,6 +18,7 @@ emailAccount:
   - startRegistration:
   - finishRegistration:
   - startPasswordReset:
+  - verifyPasswordResetCode:
   - finishPasswordReset:
 googleAccountBackwardsCompatibilityTest:
   - login:
@@ -30,6 +31,7 @@ passwordImportingEmailAccount:
   - startRegistration:
   - finishRegistration:
   - startPasswordReset:
+  - verifyPasswordResetCode:
   - finishPasswordReset:
 userProfile:
   - removeUserImage:

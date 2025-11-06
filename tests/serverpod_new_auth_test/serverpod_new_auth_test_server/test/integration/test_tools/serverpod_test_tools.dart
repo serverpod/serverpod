@@ -718,10 +718,42 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> finishPasswordReset(
+  _i3.Future<String> verifyPasswordResetCode(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'emailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> finishPasswordReset(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String finishPasswordResetToken,
     required String newPassword,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -736,8 +768,7 @@ class _EmailAccountEndpoint {
           endpointPath: 'emailAccount',
           methodName: 'finishPasswordReset',
           parameters: _i1.testObjectToJson({
-            'passwordResetRequestId': passwordResetRequestId,
-            'verificationCode': verificationCode,
+            'finishPasswordResetToken': finishPasswordResetToken,
             'newPassword': newPassword,
           }),
           serializationManager: _serializationManager,
@@ -1020,10 +1051,42 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> finishPasswordReset(
+  _i3.Future<String> verifyPasswordResetCode(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'passwordImportingEmailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passwordImportingEmailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> finishPasswordReset(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String finishPasswordResetToken,
     required String newPassword,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1038,8 +1101,7 @@ class _PasswordImportingEmailAccountEndpoint {
           endpointPath: 'passwordImportingEmailAccount',
           methodName: 'finishPasswordReset',
           parameters: _i1.testObjectToJson({
-            'passwordResetRequestId': passwordResetRequestId,
-            'verificationCode': verificationCode,
+            'finishPasswordResetToken': finishPasswordResetToken,
             'newPassword': newPassword,
           }),
           serializationManager: _serializationManager,

@@ -61,8 +61,7 @@ final class EmailIDP {
   /// {@macro email_account_base_endpoint.finish_password_reset}
   Future<void> finishPasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String finishPasswordResetToken,
     required final String newPassword,
     final Transaction? transaction,
   }) async {
@@ -73,8 +72,7 @@ final class EmailIDP {
           EmailIDPUtils.withReplacedServerEmailException(() async {
         final authUserId = await utils.passwordReset.completePasswordReset(
           session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
+          completePasswordResetToken: finishPasswordResetToken,
           newPassword: newPassword,
           transaction: transaction,
         );
@@ -235,6 +233,29 @@ final class EmailIDP {
           // using the difference on the version bit of the uuid to determine whether
           // an email is registered or not.
           return result.accountRequestId ?? const Uuid().v4obj();
+        },
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_password_reset_code}
+  Future<String> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+        () async {
+          return await utils.passwordReset.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          );
         },
       ),
     );

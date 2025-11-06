@@ -67,9 +67,22 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
 
   @override
   Future<AuthSuccess> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) async {
+    if (finishPasswordResetToken != _mockData.passwordResetToken) {
+      throw EmailAccountRequestException(
+        reason: EmailAccountRequestExceptionReason.invalid,
+      );
+    }
+    _mockData.password = newPassword;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<String> verifyPasswordResetCode({
     required UuidValue passwordResetRequestId,
     required String verificationCode,
-    required String newPassword,
   }) async {
     if (passwordResetRequestId != _mockData.passwordResetRequestId ||
         verificationCode != _mockData.passwordResetCode) {
@@ -77,8 +90,9 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
         reason: EmailAccountRequestExceptionReason.invalid,
       );
     }
-    _mockData.password = newPassword;
-    return _mockData.authSuccess;
+    final finishPasswordResetToken = const Uuid().v4();
+    _mockData.passwordResetToken = finishPasswordResetToken;
+    return finishPasswordResetToken;
   }
 }
 
@@ -156,6 +170,7 @@ class MockAuthData {
   String? password;
   String? verificationCode;
   String? passwordResetCode;
+  String? passwordResetToken;
 
   UuidValue? accountRequestId;
   UuidValue? passwordResetRequestId;
