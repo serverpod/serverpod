@@ -32,6 +32,8 @@ abstract class EmailAccountRequest
     required this.challengeId,
     this.challenge,
     this.verifiedAt,
+    this.completeAccountCreationChallengeId,
+    this.completeAccountCreationChallenge,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccountRequest({
@@ -43,6 +45,8 @@ abstract class EmailAccountRequest
     required _i1.UuidValue challengeId,
     _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
+    _i1.UuidValue? completeAccountCreationChallengeId,
+    _i3.SecretChallenge? completeAccountCreationChallenge,
   }) = _EmailAccountRequestImpl;
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -66,6 +70,17 @@ abstract class EmailAccountRequest
       verifiedAt: jsonSerialization['verifiedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['verifiedAt']),
+      completeAccountCreationChallengeId:
+          jsonSerialization['completeAccountCreationChallengeId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                  jsonSerialization['completeAccountCreationChallengeId']),
+      completeAccountCreationChallenge:
+          jsonSerialization['completeAccountCreationChallenge'] == null
+              ? null
+              : _i3.SecretChallenge.fromJson(
+                  (jsonSerialization['completeAccountCreationChallenge']
+                      as Map<String, dynamic>)),
     );
   }
 
@@ -102,6 +117,12 @@ abstract class EmailAccountRequest
   /// The requests can only be turned into an account if this is non-`null`.
   DateTime? verifiedAt;
 
+  _i1.UuidValue? completeAccountCreationChallengeId;
+
+  /// Used to complete the account creation when finalizing the account.
+  /// This will be set after the account creation challenge has been validated.
+  _i3.SecretChallenge? completeAccountCreationChallenge;
+
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
 
@@ -117,6 +138,8 @@ abstract class EmailAccountRequest
     _i1.UuidValue? challengeId,
     _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
+    _i1.UuidValue? completeAccountCreationChallengeId,
+    _i3.SecretChallenge? completeAccountCreationChallenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -129,6 +152,12 @@ abstract class EmailAccountRequest
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
       if (verifiedAt != null) 'verifiedAt': verifiedAt?.toJson(),
+      if (completeAccountCreationChallengeId != null)
+        'completeAccountCreationChallengeId':
+            completeAccountCreationChallengeId?.toJson(),
+      if (completeAccountCreationChallenge != null)
+        'completeAccountCreationChallenge':
+            completeAccountCreationChallenge?.toJson(),
     };
   }
 
@@ -137,9 +166,14 @@ abstract class EmailAccountRequest
     return {};
   }
 
-  static EmailAccountRequestInclude include(
-      {_i3.SecretChallengeInclude? challenge}) {
-    return EmailAccountRequestInclude._(challenge: challenge);
+  static EmailAccountRequestInclude include({
+    _i3.SecretChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? completeAccountCreationChallenge,
+  }) {
+    return EmailAccountRequestInclude._(
+      challenge: challenge,
+      completeAccountCreationChallenge: completeAccountCreationChallenge,
+    );
   }
 
   static EmailAccountRequestIncludeList includeList({
@@ -180,6 +214,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     required _i1.UuidValue challengeId,
     _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
+    _i1.UuidValue? completeAccountCreationChallengeId,
+    _i3.SecretChallenge? completeAccountCreationChallenge,
   }) : super._(
           id: id,
           createdAt: createdAt,
@@ -189,6 +225,9 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
           challengeId: challengeId,
           challenge: challenge,
           verifiedAt: verifiedAt,
+          completeAccountCreationChallengeId:
+              completeAccountCreationChallengeId,
+          completeAccountCreationChallenge: completeAccountCreationChallenge,
         );
 
   /// Returns a shallow copy of this [EmailAccountRequest]
@@ -204,6 +243,8 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
     Object? verifiedAt = _Undefined,
+    Object? completeAccountCreationChallengeId = _Undefined,
+    Object? completeAccountCreationChallenge = _Undefined,
   }) {
     return EmailAccountRequest(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -216,6 +257,14 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
           ? challenge
           : this.challenge?.copyWith(),
       verifiedAt: verifiedAt is DateTime? ? verifiedAt : this.verifiedAt,
+      completeAccountCreationChallengeId:
+          completeAccountCreationChallengeId is _i1.UuidValue?
+              ? completeAccountCreationChallengeId
+              : this.completeAccountCreationChallengeId,
+      completeAccountCreationChallenge:
+          completeAccountCreationChallenge is _i3.SecretChallenge?
+              ? completeAccountCreationChallenge
+              : this.completeAccountCreationChallenge?.copyWith(),
     );
   }
 }
@@ -261,6 +310,13 @@ class EmailAccountRequestUpdateTable
         table.verifiedAt,
         value,
       );
+
+  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue>
+      completeAccountCreationChallengeId(_i1.UuidValue? value) =>
+          _i1.ColumnValue(
+            table.completeAccountCreationChallengeId,
+            value,
+          );
 }
 
 class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
@@ -290,6 +346,10 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
     );
     verifiedAt = _i1.ColumnDateTime(
       'verifiedAt',
+      this,
+    );
+    completeAccountCreationChallengeId = _i1.ColumnUuid(
+      'completeAccountCreationChallengeId',
       this,
     );
   }
@@ -322,6 +382,12 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   /// The requests can only be turned into an account if this is non-`null`.
   late final _i1.ColumnDateTime verifiedAt;
 
+  late final _i1.ColumnUuid completeAccountCreationChallengeId;
+
+  /// Used to complete the account creation when finalizing the account.
+  /// This will be set after the account creation challenge has been validated.
+  _i3.SecretChallengeTable? _completeAccountCreationChallenge;
+
   _i3.SecretChallengeTable get challenge {
     if (_challenge != null) return _challenge!;
     _challenge = _i1.createRelationTable(
@@ -335,6 +401,20 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
     return _challenge!;
   }
 
+  _i3.SecretChallengeTable get completeAccountCreationChallenge {
+    if (_completeAccountCreationChallenge != null)
+      return _completeAccountCreationChallenge!;
+    _completeAccountCreationChallenge = _i1.createRelationTable(
+      relationFieldName: 'completeAccountCreationChallenge',
+      field: EmailAccountRequest.t.completeAccountCreationChallengeId,
+      foreignField: _i3.SecretChallenge.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
+    );
+    return _completeAccountCreationChallenge!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -344,6 +424,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
         passwordSalt,
         challengeId,
         verifiedAt,
+        completeAccountCreationChallengeId,
       ];
 
   @override
@@ -351,19 +432,31 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
     if (relationField == 'challenge') {
       return challenge;
     }
+    if (relationField == 'completeAccountCreationChallenge') {
+      return completeAccountCreationChallenge;
+    }
     return null;
   }
 }
 
 class EmailAccountRequestInclude extends _i1.IncludeObject {
-  EmailAccountRequestInclude._({_i3.SecretChallengeInclude? challenge}) {
+  EmailAccountRequestInclude._({
+    _i3.SecretChallengeInclude? challenge,
+    _i3.SecretChallengeInclude? completeAccountCreationChallenge,
+  }) {
     _challenge = challenge;
+    _completeAccountCreationChallenge = completeAccountCreationChallenge;
   }
 
   _i3.SecretChallengeInclude? _challenge;
 
+  _i3.SecretChallengeInclude? _completeAccountCreationChallenge;
+
   @override
-  Map<String, _i1.Include?> get includes => {'challenge': _challenge};
+  Map<String, _i1.Include?> get includes => {
+        'challenge': _challenge,
+        'completeAccountCreationChallenge': _completeAccountCreationChallenge,
+      };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => EmailAccountRequest.t;
@@ -393,6 +486,8 @@ class EmailAccountRequestRepository {
   const EmailAccountRequestRepository._();
 
   final attachRow = const EmailAccountRequestAttachRowRepository._();
+
+  final detachRow = const EmailAccountRequestDetachRowRepository._();
 
   /// Returns a list of [EmailAccountRequest]s matching the given query parameters.
   ///
@@ -675,6 +770,58 @@ class EmailAccountRequestAttachRowRepository {
     await session.db.updateRow<EmailAccountRequest>(
       $emailAccountRequest,
       columns: [EmailAccountRequest.t.challengeId],
+      transaction: transaction,
+    );
+  }
+
+  /// Creates a relation between the given [EmailAccountRequest] and [SecretChallenge]
+  /// by setting the [EmailAccountRequest]'s foreign key `completeAccountCreationChallengeId` to refer to the [SecretChallenge].
+  Future<void> completeAccountCreationChallenge(
+    _i1.Session session,
+    EmailAccountRequest emailAccountRequest,
+    _i3.SecretChallenge completeAccountCreationChallenge, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountRequest.id == null) {
+      throw ArgumentError.notNull('emailAccountRequest.id');
+    }
+    if (completeAccountCreationChallenge.id == null) {
+      throw ArgumentError.notNull('completeAccountCreationChallenge.id');
+    }
+
+    var $emailAccountRequest = emailAccountRequest.copyWith(
+        completeAccountCreationChallengeId:
+            completeAccountCreationChallenge.id);
+    await session.db.updateRow<EmailAccountRequest>(
+      $emailAccountRequest,
+      columns: [EmailAccountRequest.t.completeAccountCreationChallengeId],
+      transaction: transaction,
+    );
+  }
+}
+
+class EmailAccountRequestDetachRowRepository {
+  const EmailAccountRequestDetachRowRepository._();
+
+  /// Detaches the relation between this [EmailAccountRequest] and the [SecretChallenge] set in `completeAccountCreationChallenge`
+  /// by setting the [EmailAccountRequest]'s foreign key `completeAccountCreationChallengeId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> completeAccountCreationChallenge(
+    _i1.Session session,
+    EmailAccountRequest emailAccountRequest, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (emailAccountRequest.id == null) {
+      throw ArgumentError.notNull('emailAccountRequest.id');
+    }
+
+    var $emailAccountRequest =
+        emailAccountRequest.copyWith(completeAccountCreationChallengeId: null);
+    await session.db.updateRow<EmailAccountRequest>(
+      $emailAccountRequest,
+      columns: [EmailAccountRequest.t.completeAccountCreationChallengeId],
       transaction: transaction,
     );
   }

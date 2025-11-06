@@ -98,10 +98,19 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final result = await utils.accountCreation.completeAccountCreation(
+        // Step 1: Verify the verification code and get completion token
+        final completeAccountCreationToken =
+            await utils.accountCreation.verifyAccountCreationCode(
           session,
           accountRequestId: accountRequestId,
           verificationCode: verificationCode,
+          transaction: transaction,
+        );
+
+        // Step 2: Complete the account creation using the token
+        final result = await utils.accountCreation.completeAccountCreation(
+          session,
+          completeAccountCreationToken: completeAccountCreationToken,
           transaction: transaction,
         );
 

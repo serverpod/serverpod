@@ -54,13 +54,22 @@ void main() {
             completeAccountCreationFuture;
         setUp(() async {
           completeAccountCreationFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
+            (final transaction) async {
+              // First verify the verification code to get the token
+              final token =
+                  await fixture.accountCreationUtil.verifyAccountCreationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              );
+              // Then complete the account creation with the token
+              return fixture.accountCreationUtil.completeAccountCreation(
+                session,
+                completeAccountCreationToken: token,
+                transaction: transaction,
+              );
+            },
           );
         });
         test('then it succeeds and returns result with auth user id and email',
@@ -112,11 +121,11 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with invalid verification code then it throws invalid verification code exception',
+          'when verify account creation code is called with invalid verification code then it throws invalid verification code exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
+              fixture.accountCreationUtil.verifyAccountCreationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: '$verificationCode-invalid',
@@ -131,7 +140,7 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with valid code after expiration then it throws verification expired exception',
+          'when verify account creation code is called with valid code after expiration then it throws verification expired exception',
           () async {
         const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -144,7 +153,7 @@ void main() {
           () async {
             final result = session.db.transaction(
               (final transaction) =>
-                  fixture.accountCreationUtil.completeAccountCreation(
+                  fixture.accountCreationUtil.verifyAccountCreationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -182,11 +191,11 @@ void main() {
       });
 
       test(
-          'when complete account creation is called then it throws request not found exception',
+          'when verify account creation code is called then it throws request not found exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
+              fixture.accountCreationUtil.verifyAccountCreationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -240,7 +249,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
+                fixture.accountCreationUtil.verifyAccountCreationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -260,13 +269,20 @@ void main() {
           'when complete account creation is called with valid verification code then it succeeds and returns result',
           () async {
         final result = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+          (final transaction) async {
+            final token =
+                await fixture.accountCreationUtil.verifyAccountCreationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            );
+            return fixture.accountCreationUtil.completeAccountCreation(
+              session,
+              completeAccountCreationToken: token,
+              transaction: transaction,
+            );
+          },
         );
 
         expect(result, isNotNull);
@@ -314,7 +330,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
+                fixture.accountCreationUtil.verifyAccountCreationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -331,11 +347,11 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with valid verification code then it throws too many attempts exception',
+          'when verify account creation code is called with valid verification code then it throws too many attempts exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
+              fixture.accountCreationUtil.verifyAccountCreationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,

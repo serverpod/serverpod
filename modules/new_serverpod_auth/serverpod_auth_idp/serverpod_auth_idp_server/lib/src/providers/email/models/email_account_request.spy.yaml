@@ -33,6 +33,10 @@ fields:
   ### The requests can only be turned into an account if this is non-`null`.
   verifiedAt: DateTime?
 
+  ### Used to complete the account creation when finalizing the account.
+  ### This will be set after the account creation challenge has been validated.
+  completeAccountCreationChallenge: SecretChallenge?, relation(onDelete=Cascade, optional)
+
 indexes:
   serverpod_auth_idp_email_account_request_email:
     fields: email

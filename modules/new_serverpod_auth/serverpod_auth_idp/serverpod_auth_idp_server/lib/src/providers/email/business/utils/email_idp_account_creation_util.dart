@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:clock/clock.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
@@ -34,38 +36,77 @@ class EmailIDPAccountCreationUtil {
   })  : _config = config,
         _hashUtils = passwordHashUtils;
 
-  /// Completes the account creation process by creating a new authentication
-  /// user and linking the account request to it.
+  /// Returns the auth user ID for the successfully created account.
   ///
-  /// Returns the result of the operation with the ID of the new authentication
-  /// user and the email address used during registration.
+  /// This method should only be called after the [verifyAccountCreationCode]
+  /// method has been called successfully.
   ///
-  /// Internally this will first verify the verification code via
-  /// [verifyAccountRequest], then create a new [AuthUser] and finally link the
-  /// email account to it via [finalizeAccountRequest].
+  /// The method takes the [completeAccountCreationToken] returned from
+  /// [verifyAccountCreationCode] and uses it to complete the account creation.
   ///
   /// Can throw the following [EmailAccountRequestServerException] subclasses:
-  /// - [EmailAccountRequestNotFoundException] if the request does not exist.
-  /// - [EmailAccountRequestVerificationExpiredException] if the request is
-  ///   completed with the correct verification code, but has already expired.
-  /// - [EmailAccountRequestVerificationTooManyAttemptsException] in case the
-  ///   user has made too many attempts to verify the account.
+  /// - [EmailAccountRequestNotFoundException] if no account request could
+  ///   be found for [accountRequestId].
+  /// - [EmailAccountRequestNotVerifiedException] if the complete account
+  ///   creation token has not been set.
+  /// - [EmailAccountRequestVerificationExpiredException] if the account request has
+  ///   expired and has not been cleaned up yet.
+  /// - [EmailAccountRequestVerificationTooManyAttemptsException] if the user has
+  ///   made too many attempts trying to complete the account creation.
   /// - [EmailAccountRequestInvalidVerificationCodeException] if the provided
-  ///   verification code is not valid.
-  ///
-  /// In case of an invalid [verificationCode], the failed attempt will be
-  /// logged to the database outside of the [transaction] and can not be rolled
-  /// back.
+  ///   [completeAccountCreationToken] is not valid.
   Future<EmailIDPCompleteAccountCreationResult> completeAccountCreation(
     final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
+    required final String completeAccountCreationToken,
     required final Transaction transaction,
   }) async {
-    final verifiedAccountRequest = await verifyAccountRequest(
+    final credentials =
+        _tryDecodeCompleteAccountCreationToken(completeAccountCreationToken);
+    if (credentials == null) {
+      throw EmailAccountRequestInvalidVerificationCodeException();
+    }
+
+    final accountRequest = await EmailAccountRequest.db.findById(
       session,
-      accountRequestId: accountRequestId,
-      verificationCode: verificationCode,
+      credentials.accountRequestId,
+      include: EmailAccountRequest.include(
+        completeAccountCreationChallenge: SecretChallenge.include(),
+      ),
+      transaction: transaction,
+    );
+
+    if (accountRequest == null) {
+      throw EmailAccountRequestNotFoundException();
+    }
+
+    final completeAccountCreationChallenge =
+        accountRequest.completeAccountCreationChallenge;
+    if (completeAccountCreationChallenge == null) {
+      throw EmailAccountRequestNotVerifiedException();
+    }
+
+    if (!await _hashUtils.validateHash(
+      value: credentials.verificationCode,
+      hash: completeAccountCreationChallenge.challengeCodeHash.asUint8List,
+      salt: completeAccountCreationChallenge.challengeCodeSalt.asUint8List,
+    )) {
+      throw EmailAccountRequestInvalidVerificationCodeException();
+    }
+
+    if (accountRequest
+        .isExpired(_config.registrationVerificationCodeLifetime)) {
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        accountRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailAccountRequestVerificationExpiredException();
+    }
+
+    await EmailAccountRequest.db.deleteRow(
+      session,
+      accountRequest,
       transaction: transaction,
     );
 
@@ -75,18 +116,166 @@ class EmailIDPAccountCreationUtil {
     );
     final authUserId = newUser.id;
 
-    await finalizeAccountRequest(
+    await EmailAccount.db.insertRow(
       session,
-      accountRequestId: verifiedAccountRequest.id!,
-      authUserId: authUserId,
+      EmailAccount(
+        authUserId: authUserId,
+        email: accountRequest.email,
+        passwordHash: accountRequest.passwordHash,
+        passwordSalt: accountRequest.passwordSalt,
+      ),
       transaction: transaction,
     );
 
     return EmailIDPCompleteAccountCreationResult._(
       authUserId: authUserId,
-      email: verifiedAccountRequest.email,
+      email: accountRequest.email,
       scopes: newUser.scopes,
     );
+  }
+
+  /// Returns the credentials for completing the account creation.
+  ///
+  /// This method should only be called after the [startAccountCreation] method
+  /// has been called successfully.
+  ///
+  /// The method returns a [completeAccountCreationToken] that can be used to
+  /// complete the account creation.
+  ///
+  /// Can throw the following [EmailAccountRequestServerException] subclasses:
+  /// - [EmailAccountRequestNotFoundException] if no account request could
+  ///   be found for [accountRequestId].
+  /// - [EmailAccountRequestVerificationExpiredException] if the account request has
+  ///   expired and has not been cleaned up yet.
+  /// - [EmailAccountRequestVerificationCodeAlreadyUsedException] if the
+  ///    verification code has already been used.
+  /// - [EmailAccountRequestVerificationTooManyAttemptsException] if the user has
+  ///   made too many attempts trying to complete the account creation.
+  /// - [EmailAccountRequestInvalidVerificationCodeException] if the provided
+  ///   [verificationCode] is not valid.
+  ///
+  /// In case of an invalid [verificationCode] or [accountRequestId], the
+  /// failed account creation completion will be logged to the database outside
+  /// of the [transaction] and can not be rolled back.
+  Future<String> verifyAccountCreationCode(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
+    required final Transaction transaction,
+  }) async {
+    if (await _hasTooManyEmailAccountCompletionAttempts(
+      session,
+      emailAccountRequestId: accountRequestId,
+    )) {
+      await EmailAccountRequest.db.deleteWhere(
+        session,
+        // Only delete requests that have not been verified yet.
+        // This ensures we don't delete requests if verifyAccountCreationCode is
+        // accidentally called again.
+        where: (final t) =>
+            t.id.equals(accountRequestId) &
+            t.completeAccountCreationChallengeId.equals(null),
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailAccountRequestVerificationTooManyAttemptsException();
+    }
+
+    final accountRequest = await EmailAccountRequest.db.findById(
+      session,
+      accountRequestId,
+      include: EmailAccountRequest.include(
+        challenge: SecretChallenge.include(),
+        completeAccountCreationChallenge: SecretChallenge.include(),
+      ),
+      transaction: transaction,
+    );
+
+    if (accountRequest == null) {
+      throw EmailAccountRequestNotFoundException();
+    }
+
+    if (accountRequest.isVerificationCodeUsed) {
+      throw EmailAccountRequestVerificationCodeAlreadyUsedException();
+    }
+
+    final challenge = accountRequest.getChallenge;
+
+    if (!await _hashUtils.validateHash(
+      value: verificationCode,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
+    )) {
+      throw EmailAccountRequestInvalidVerificationCodeException();
+    }
+
+    if (accountRequest
+        .isExpired(_config.registrationVerificationCodeLifetime)) {
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        accountRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailAccountRequestVerificationExpiredException();
+    }
+
+    final completeAccountCreationToken = const Uuid().v4();
+    final completeAccountCreationTokenHash = await _hashUtils.createHash(
+      value: completeAccountCreationToken,
+    );
+
+    await _insertCompleteAccountCreationChallenge(
+      session,
+      transaction: transaction,
+      accountRequestId: accountRequest.id!,
+      completeAccountCreationTokenHash: completeAccountCreationTokenHash,
+    );
+
+    return _encodeCompleteAccountCreationToken(
+      accountRequest.id!,
+      completeAccountCreationToken,
+    );
+  }
+
+  /// Inserts a new complete account creation challenge and updates the account request to link to it.
+  ///
+  /// Will throw [EmailAccountRequestVerificationCodeAlreadyUsedException]
+  /// if the verification has already been set.
+  Future<void> _insertCompleteAccountCreationChallenge(
+    final Session session, {
+    required final Transaction transaction,
+    required final UuidValue accountRequestId,
+    required final HashResult completeAccountCreationTokenHash,
+  }) async {
+    final savePoint = await transaction.createSavepoint();
+    final completeAccountCreationChallenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(
+        challengeCodeHash: completeAccountCreationTokenHash.hash.asByteData,
+        challengeCodeSalt: completeAccountCreationTokenHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
+    final updated = await EmailAccountRequest.db.updateWhere(
+      session,
+      columnValues: (final t) => [
+        t.completeAccountCreationChallengeId(
+            completeAccountCreationChallenge.id!)
+      ],
+      where: (final t) =>
+          t.id.equals(accountRequestId) &
+          t.completeAccountCreationChallengeId.equals(null),
+      transaction: transaction,
+    );
+
+    if (updated.isEmpty) {
+      await savePoint.rollback();
+      throw EmailAccountRequestVerificationCodeAlreadyUsedException();
+    }
+
+    await savePoint.release();
   }
 
   /// {@template email_idp_account_creation_util.create_email_authentication}
@@ -502,6 +691,43 @@ class EmailIDPAccountCreationUtil {
 
     return request;
   }
+
+  String _encodeCompleteAccountCreationToken(
+    final UuidValue accountRequestId,
+    final String completeAccountCreationToken,
+  ) {
+    return base64Encode(
+      utf8.encode('$accountRequestId:$completeAccountCreationToken'),
+    );
+  }
+
+  CompleteAccountCreationCredentials? _tryDecodeCompleteAccountCreationToken(
+    final String token,
+  ) {
+    final String decoded;
+    try {
+      decoded = utf8.decode(base64Decode(token));
+    } catch (e) {
+      return null;
+    }
+
+    final parts = decoded.split(':');
+    if (parts.length != 2) {
+      return null;
+    }
+
+    final UuidValue accountRequestId;
+    try {
+      accountRequestId = UuidValue.withValidation(parts[0]);
+    } catch (e) {
+      return null;
+    }
+
+    return (
+      accountRequestId: accountRequestId,
+      verificationCode: parts[1],
+    );
+  }
 }
 
 /// Configuration for the [EmailIDPAccountCreationUtil] class.
@@ -604,6 +830,8 @@ extension on EmailAccountRequest {
 
     return challenge!;
   }
+
+  bool get isVerificationCodeUsed => completeAccountCreationChallenge != null;
 }
 
 /// Extension methods for [EmailAccountRequest].
@@ -611,3 +839,9 @@ extension EmailAccountRequestExtension on EmailAccountRequest {
   /// Checks whether the account request has been verified.
   bool get isVerified => verifiedAt != null;
 }
+
+/// The credentials for completing the account creation.
+typedef CompleteAccountCreationCredentials = ({
+  UuidValue accountRequestId,
+  String verificationCode,
+});

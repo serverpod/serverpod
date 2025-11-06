@@ -28,6 +28,10 @@ final class EmailAccountRequestVerificationExpiredException
 final class EmailAccountRequestVerificationTooManyAttemptsException
     extends EmailAccountRequestServerException {}
 
+/// Exception thrown when trying to validate an account creation verification code that has already been used.
+final class EmailAccountRequestVerificationCodeAlreadyUsedException
+    extends EmailAccountRequestServerException {}
+
 /// Exception thrown for login attempts with invalid credentials.
 final class EmailAuthenticationInvalidCredentialsException
     extends EmailLoginServerException {}

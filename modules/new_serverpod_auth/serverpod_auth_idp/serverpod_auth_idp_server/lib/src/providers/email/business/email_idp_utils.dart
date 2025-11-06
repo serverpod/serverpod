@@ -98,6 +98,7 @@ extension on EmailAccountRequestServerException {
       case EmailAccountRequestNotVerifiedException():
       case EmailAccountAlreadyRegisteredException():
       case EmailAccountRequestAlreadyExistsException():
+      case EmailAccountRequestVerificationCodeAlreadyUsedException():
         return EmailAccountRequestExceptionReason.invalid;
       case EmailAccountRequestVerificationTooManyAttemptsException():
         return EmailAccountRequestExceptionReason.tooManyAttempts;
