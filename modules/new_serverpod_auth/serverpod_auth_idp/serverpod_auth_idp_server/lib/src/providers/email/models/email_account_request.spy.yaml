@@ -7,7 +7,7 @@ class: EmailAccountRequest
 serverOnly: true
 table: serverpod_auth_idp_email_account_request
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The time when this authentication was created.
   createdAt: DateTime, default=now

@@ -190,7 +190,7 @@ final class EmailIDP {
             // one used by the [EmailAccountPasswordResetRequestAttempt] model to
             // prevent attackers from using the difference on the version bit of the
             // uuid to determine whether an email is registered or not.
-            return const Uuid().v4obj();
+            return const Uuid().v7obj();
           }
         },
       ),
@@ -241,7 +241,7 @@ final class EmailIDP {
             // one used by the [EmailAccountRequest] model to prevent attackers from
             // using the difference on the version bit of the uuid to determine whether
             // an email is registered or not.
-            return const Uuid().v4obj();
+            return const Uuid().v7obj();
           }
         },
       ),

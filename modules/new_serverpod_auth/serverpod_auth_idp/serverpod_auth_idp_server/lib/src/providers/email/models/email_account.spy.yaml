@@ -3,7 +3,7 @@ class: EmailAccount
 serverOnly: true
 table: serverpod_auth_idp_email_account
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this profile belongs to
   authUser: module:auth:AuthUser?, relation(onDelete=Cascade)

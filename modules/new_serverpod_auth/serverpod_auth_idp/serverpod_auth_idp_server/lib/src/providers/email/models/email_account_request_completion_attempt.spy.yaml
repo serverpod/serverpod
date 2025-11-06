@@ -4,7 +4,7 @@ class: EmailAccountRequestCompletionAttempt
 serverOnly: true
 table: serverpod_auth_idp_email_account_request_completion
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The time of the reset attempt.
   attemptedAt: DateTime, defaultModel=now
