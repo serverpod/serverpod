@@ -18,8 +18,11 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
       _PositionalParameter _ => _parent
           .describe(description)
           .add(' passed "$_value" positional argument'),
-      _NamedParameter argumentType => _parent.describe(description).add(
-          ' passed "$_value" argument for "${argumentType.parameterName}" parameter'),
+      _NamedParameter argumentType => _parent
+          .describe(description)
+          .add(
+            ' passed "$_value" argument for "${argumentType.parameterName}" parameter',
+          ),
     };
   }
 
@@ -46,10 +49,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
       output.write(
         'does not contain argument "$_value" in super initializer. Found arguments: [',
       );
-      output.writeAll(
-        arguments.value.map((e) => e.toSource()),
-        ', ',
-      );
+      output.writeAll(arguments.value.map((e) => e.toSource()), ', ');
       output.write(']');
       return mismatchDescription.add(output.toString());
     }
@@ -57,9 +57,7 @@ class _ArgumentMatcherImpl extends Matcher implements ArgumentMatcher {
     output.write('contains argument "$_value" but ');
     switch (_parameterType) {
       case _PositionalParameter _:
-        output.write(
-          'it is not a positional argument in super initializer',
-        );
+        output.write('it is not a positional argument in super initializer');
       case _NamedParameter argumentType:
         output.write(
           'it is not passed to a named parameter "${argumentType.parameterName}" in super initializer',
@@ -124,7 +122,7 @@ extension on Expression {
 
     return switch (namedArgumentType) {
       _PositionalParameter _ => resolvedThis is SimpleIdentifier,
-      _NamedParameter _ => resolvedThis is NamedExpression
+      _NamedParameter _ => resolvedThis is NamedExpression,
     };
   }
 

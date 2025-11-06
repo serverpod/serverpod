@@ -15,20 +15,21 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to "random", then the field\'s default persist value is "random".',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist=random
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -41,20 +42,21 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to "random_v7", then the field\'s default persist value is "random_v7".',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist=random_v7
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -67,20 +69,21 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to a valid UUID string with single quotes, then the field\'s default persist value is the provided UUID string.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-446655440000'
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -97,20 +100,21 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to a valid UUID string with double quotes, then the field\'s default persist value is the provided UUID string converted to single quotes.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist="550e8400-e29b-41d4-a716-446655440000"
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -127,19 +131,20 @@ void main() {
       'when the field is of type UUID and the defaultPersist is empty, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist=
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -155,19 +160,20 @@ void main() {
       'when the field is of type UUID with an invalid defaultPersist value, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           uuidInvalid: UuidValue?, defaultPersist=INVALID_UUID
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -183,19 +189,20 @@ void main() {
       'when the field is of type UUID with a malformed UUID in single quotes, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidMalformed: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-INVALID'
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -211,19 +218,20 @@ void main() {
       'when the field is of type UUID with a malformed UUID in double quotes, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidMalformed: UuidValue?, defaultPersist="550e8400-e29b-41d4-a716-INVALID"
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -239,19 +247,20 @@ void main() {
       'when the field is of type UUID with a non-nullable type, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue, defaultPersist=random
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -267,19 +276,20 @@ void main() {
       'when the field has the "!persist" keyword, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue?, defaultPersist=random, !persist
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -292,27 +302,26 @@ void main() {
     );
   });
 
-  group(
-      'Given a class with a declared id field with a "defaultPersist" keyword',
-      () {
+  group('Given a class with a declared id field with a "defaultPersist" keyword', () {
     group(
       'when the field is of type UUID and the defaultPersist is set to "random"',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: UuidValue?, defaultPersist=random
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         late final definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         test('then no errors are collected.', () {
           expect(collector.errors, isEmpty);
@@ -333,20 +342,21 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to "random_v7"',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: UuidValue?, defaultPersist=random_v7
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         late final definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         test('then no errors are collected.', () {
           expect(collector.errors, isEmpty);
@@ -367,19 +377,20 @@ void main() {
       'when the field is of type UUID and the defaultPersist is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: UuidValue?, defaultPersist=
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -396,19 +407,20 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to a constant value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: UuidValue?, defaultPersist='550e8400-e29b-41d4-a716-446655440000'
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -426,19 +438,20 @@ void main() {
       'when the field is of type UUID and the defaultPersist is set to an invalid value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: UuidValue?, defaultPersist=test
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -455,19 +468,20 @@ void main() {
       'when the field is of type UUID with a non-nullable type, then an error is generated.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             uuidType: UuidValue, defaultPersist=random
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

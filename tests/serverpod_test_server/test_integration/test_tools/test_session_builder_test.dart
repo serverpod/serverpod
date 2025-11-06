@@ -11,14 +11,15 @@ void main() {
       late AuthenticationInfo? authenticationInfo;
 
       setUp(() async {
-        final session = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                '123',
-                {},
-              ),
-            )
-            .build();
+        final session =
+            sessionBuilder
+                .copyWith(
+                  authentication: AuthenticationOverride.authenticationInfo(
+                    '123',
+                    {},
+                  ),
+                )
+                .build();
 
         authenticationInfo = await session.authenticated;
       });
@@ -46,27 +47,25 @@ void main() {
       late AuthenticationInfo? authenticationInfo;
 
       setUp(() async {
-        final session = sessionBuilder
-            .copyWith(
-              authentication: AuthenticationOverride.authenticationInfo(
-                uuidString,
-                {},
-              ),
-            )
-            .build();
+        final session =
+            sessionBuilder
+                .copyWith(
+                  authentication: AuthenticationOverride.authenticationInfo(
+                    uuidString,
+                    {},
+                  ),
+                )
+                .build();
 
         authenticationInfo = await session.authenticated;
       });
 
-      test(
-        "when inspecting the legacy `userId` property, then it throws.",
-        () {
-          expect(
-            () => authenticationInfo?.userId,
-            throwsA(isA<FormatException>()),
-          );
-        },
-      );
+      test("when inspecting the legacy `userId` property, then it throws.", () {
+        expect(
+          () => authenticationInfo?.userId,
+          throwsA(isA<FormatException>()),
+        );
+      });
 
       test(
         "when inspecting the `userIdentifier` property, then it returns the stringified value.",

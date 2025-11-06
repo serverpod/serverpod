@@ -48,8 +48,10 @@ class Copier {
     var fileName = p.basename(srcFile.path);
     if (fileName.startsWith('.')) return;
 
-    var dstFileName =
-        _replace(p.join(relativePath, fileName), fileNameReplacements);
+    var dstFileName = _replace(
+      p.join(relativePath, fileName),
+      fileNameReplacements,
+    );
     log.debug(
       p.join(dstDir.path, relativePath, fileName),
       type: TextLogType.bullet,
@@ -87,8 +89,5 @@ class Replacement {
   String slotName;
   String replacement;
 
-  Replacement({
-    required this.slotName,
-    required this.replacement,
-  });
+  Replacement({required this.slotName, required this.replacement});
 }

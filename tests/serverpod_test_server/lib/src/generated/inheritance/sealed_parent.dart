@@ -18,10 +18,7 @@ part 'sealed_other_child.dart';
 
 sealed class SealedParent
     implements _i2.SerializableModel, _i2.ProtocolSerialization {
-  SealedParent({
-    required this.sealedInt,
-    required this.sealedString,
-  });
+  SealedParent({required this.sealedInt, required this.sealedString});
 
   int sealedInt;
 

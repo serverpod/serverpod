@@ -31,9 +31,10 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
 
   factory ChildClassWithoutId.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChildClassWithoutId(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
@@ -82,11 +83,11 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
     required String parentField,
     required String childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.

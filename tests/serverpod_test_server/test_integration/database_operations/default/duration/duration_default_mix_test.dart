@@ -7,20 +7,20 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default Duration fields,', () {
-    tearDownAll(() async => DurationDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DurationDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "durationDefaultAndDefaultModel" field value should match the default value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DurationDefaultMix.t.tableName}" ("durationDefaultAndDefaultModel", "durationDefaultAndDefaultPersist", "durationDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DurationDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.durationDefaultAndDefaultModel,
@@ -40,12 +40,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "durationDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DurationDefaultMix.t.tableName}" ("durationDefaultAndDefaultModel", "durationDefaultAndDefaultPersist", "durationDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DurationDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.durationDefaultAndDefaultPersist,
@@ -65,12 +63,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "durationDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DurationDefaultMix.t.tableName}" ("durationDefaultAndDefaultModel", "durationDefaultAndDefaultPersist", "durationDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DurationDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.durationDefaultModelAndDefaultPersist,

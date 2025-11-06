@@ -15,11 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Provides high level information about a cache.
 abstract class CacheInfo
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  CacheInfo._({
-    required this.numEntries,
-    required this.maxEntries,
-    this.keys,
-  });
+  CacheInfo._({required this.numEntries, required this.maxEntries, this.keys});
 
   factory CacheInfo({
     required int numEntries,
@@ -31,9 +27,10 @@ abstract class CacheInfo
     return CacheInfo(
       numEntries: jsonSerialization['numEntries'] as int,
       maxEntries: jsonSerialization['maxEntries'] as int,
-      keys: (jsonSerialization['keys'] as List?)
-          ?.map((e) => e as String)
-          .toList(),
+      keys:
+          (jsonSerialization['keys'] as List?)
+              ?.map((e) => e as String)
+              .toList(),
     );
   }
 
@@ -49,11 +46,7 @@ abstract class CacheInfo
   /// Returns a shallow copy of this [CacheInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CacheInfo copyWith({
-    int? numEntries,
-    int? maxEntries,
-    List<String>? keys,
-  });
+  CacheInfo copyWith({int? numEntries, int? maxEntries, List<String>? keys});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -85,11 +78,7 @@ class _CacheInfoImpl extends CacheInfo {
     required int numEntries,
     required int maxEntries,
     List<String>? keys,
-  }) : super._(
-          numEntries: numEntries,
-          maxEntries: maxEntries,
-          keys: keys,
-        );
+  }) : super._(numEntries: numEntries, maxEntries: maxEntries, keys: keys);
 
   /// Returns a shallow copy of this [CacheInfo]
   /// with some or all fields replaced by the given arguments.

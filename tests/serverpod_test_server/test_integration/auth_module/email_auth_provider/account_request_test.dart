@@ -18,7 +18,7 @@ void main() async {
           session,
           email: 'test@serverpod.dev',
           verificationCode: 'somecode',
-        )
+        ),
       },
     );
 
@@ -36,10 +36,7 @@ void main() async {
     });
   });
 
-  withServerpod('Given existing account request', (
-    sessionBuilder,
-    _,
-  ) {
+  withServerpod('Given existing account request', (sessionBuilder, _) {
     var session = sessionBuilder.build();
     var username = 'test';
     var password = 'password';
@@ -62,16 +59,14 @@ void main() async {
 
     group('when creating account with incorrect validation code', () {
       late UserInfo? response;
-      setUp(
-        () async {
-          var incorrectVerificationCode = 'incorrect-$verificationCode';
-          response = await Emails.tryCreateAccount(
-            session,
-            email: email,
-            verificationCode: incorrectVerificationCode,
-          );
-        },
-      );
+      setUp(() async {
+        var incorrectVerificationCode = 'incorrect-$verificationCode';
+        response = await Emails.tryCreateAccount(
+          session,
+          email: email,
+          verificationCode: incorrectVerificationCode,
+        );
+      });
 
       test('then create account request is not removed', () async {
         var accountRequests = await EmailCreateAccountRequest.db.count(
@@ -96,54 +91,51 @@ void main() async {
       });
     });
     group(
-        'when creating account with incorrect email then null is returned and no account is created',
-        () {
-      late UserInfo? response;
-      setUp(
-        () async {
+      'when creating account with incorrect email then null is returned and no account is created',
+      () {
+        late UserInfo? response;
+        setUp(() async {
           var incorrectEmail = 'incorrect.$email';
           response = await Emails.tryCreateAccount(
             session,
             email: incorrectEmail,
             verificationCode: verificationCode,
           );
-        },
-      );
+        });
 
-      test('then create account request is not removed', () async {
-        var accountRequests = await EmailCreateAccountRequest.db.count(
-          session,
-          where: (t) => Constant.bool(true),
-        );
+        test('then create account request is not removed', () async {
+          var accountRequests = await EmailCreateAccountRequest.db.count(
+            session,
+            where: (t) => Constant.bool(true),
+          );
 
-        expect(accountRequests, 1);
-      });
+          expect(accountRequests, 1);
+        });
 
-      test('then null is returned', () async {
-        expect(response, isNull);
-      });
+        test('then null is returned', () async {
+          expect(response, isNull);
+        });
 
-      test('then no account is created', () async {
-        var accounts = await UserInfo.db.count(
-          session,
-          where: (t) => Constant.bool(true),
-        );
+        test('then no account is created', () async {
+          var accounts = await UserInfo.db.count(
+            session,
+            where: (t) => Constant.bool(true),
+          );
 
-        expect(accounts, 0);
-      });
-    });
+          expect(accounts, 0);
+        });
+      },
+    );
 
     group('when creating account with correct email and validation code', () {
       late UserInfo? response;
-      setUp(
-        () async {
-          response = await Emails.tryCreateAccount(
-            session,
-            email: email,
-            verificationCode: verificationCode,
-          );
-        },
-      );
+      setUp(() async {
+        response = await Emails.tryCreateAccount(
+          session,
+          email: email,
+          verificationCode: verificationCode,
+        );
+      });
 
       test('then account is created', () async {
         var accounts = await UserInfo.db.find(

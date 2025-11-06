@@ -30,8 +30,8 @@ abstract class RefreshToken
     required this.rotatingSecretSalt,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
-  })  : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
-        createdAt = createdAt ?? DateTime.now();
+  }) : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory RefreshToken({
     _i1.UuidValue? id,
@@ -49,30 +49,41 @@ abstract class RefreshToken
 
   factory RefreshToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return RefreshToken(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
       extraClaims: jsonSerialization['extraClaims'] as String?,
       method: jsonSerialization['method'] as String,
-      fixedSecret:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['fixedSecret']),
+      fixedSecret: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['fixedSecret'],
+      ),
       rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['rotatingSecretHash']),
+        jsonSerialization['rotatingSecretHash'],
+      ),
       rotatingSecretSalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['rotatingSecretSalt']),
+        jsonSerialization['rotatingSecretSalt'],
+      ),
       lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['lastUpdatedAt']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+        jsonSerialization['lastUpdatedAt'],
+      ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
     );
   }
 
@@ -226,18 +237,18 @@ class _RefreshTokenImpl extends RefreshToken {
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          scopeNames: scopeNames,
-          extraClaims: extraClaims,
-          method: method,
-          fixedSecret: fixedSecret,
-          rotatingSecretHash: rotatingSecretHash,
-          rotatingSecretSalt: rotatingSecretSalt,
-          lastUpdatedAt: lastUpdatedAt,
-          createdAt: createdAt,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         scopeNames: scopeNames,
+         extraClaims: extraClaims,
+         method: method,
+         fixedSecret: fixedSecret,
+         rotatingSecretHash: rotatingSecretHash,
+         rotatingSecretSalt: rotatingSecretSalt,
+         lastUpdatedAt: lastUpdatedAt,
+         createdAt: createdAt,
+       );
 
   /// Returns a shallow copy of this [RefreshToken]
   /// with some or all fields replaced by the given arguments.
@@ -277,103 +288,49 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
   RefreshTokenUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
-  _i1.ColumnValue<String, String> extraClaims(String? value) => _i1.ColumnValue(
-        table.extraClaims,
-        value,
-      );
+  _i1.ColumnValue<String, String> extraClaims(String? value) =>
+      _i1.ColumnValue(table.extraClaims, value);
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String value) =>
+      _i1.ColumnValue(table.method, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> fixedSecret(_i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.fixedSecret,
-        value,
-      );
+      _i1.ColumnValue(table.fixedSecret, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretHash(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.rotatingSecretHash,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.rotatingSecretHash, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretSalt(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.rotatingSecretSalt,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.rotatingSecretSalt, value);
 
   _i1.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.lastUpdatedAt,
-        value,
-      );
+      _i1.ColumnValue(table.lastUpdatedAt, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 }
 
 class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   RefreshTokenTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
+    : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
     updateTable = RefreshTokenUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
-      'scopeNames',
-      this,
-    );
-    extraClaims = _i1.ColumnString(
-      'extraClaims',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
-    fixedSecret = _i1.ColumnByteData(
-      'fixedSecret',
-      this,
-    );
-    rotatingSecretHash = _i1.ColumnByteData(
-      'rotatingSecretHash',
-      this,
-    );
-    rotatingSecretSalt = _i1.ColumnByteData(
-      'rotatingSecretSalt',
-      this,
-    );
-    lastUpdatedAt = _i1.ColumnDateTime(
-      'lastUpdatedAt',
-      this,
-      hasDefault: true,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-      hasDefault: true,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    scopeNames = _i1.ColumnSerializable<Set<String>>('scopeNames', this);
+    extraClaims = _i1.ColumnString('extraClaims', this);
+    method = _i1.ColumnString('method', this);
+    fixedSecret = _i1.ColumnByteData('fixedSecret', this);
+    rotatingSecretHash = _i1.ColumnByteData('rotatingSecretHash', this);
+    rotatingSecretSalt = _i1.ColumnByteData('rotatingSecretSalt', this);
+    lastUpdatedAt = _i1.ColumnDateTime('lastUpdatedAt', this, hasDefault: true);
+    createdAt = _i1.ColumnDateTime('createdAt', this, hasDefault: true);
   }
 
   late final RefreshTokenUpdateTable updateTable;
@@ -441,25 +398,26 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       field: RefreshToken.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        scopeNames,
-        extraClaims,
-        method,
-        fixedSecret,
-        rotatingSecretHash,
-        rotatingSecretSalt,
-        lastUpdatedAt,
-        createdAt,
-      ];
+    id,
+    authUserId,
+    scopeNames,
+    extraClaims,
+    method,
+    fixedSecret,
+    rotatingSecretHash,
+    rotatingSecretSalt,
+    lastUpdatedAt,
+    createdAt,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -617,10 +575,7 @@ class RefreshTokenRepository {
     List<RefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RefreshToken>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<RefreshToken>(rows, transaction: transaction);
   }
 
   /// Inserts a single [RefreshToken] and returns the inserted row.
@@ -631,10 +586,7 @@ class RefreshTokenRepository {
     RefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<RefreshToken>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<RefreshToken>(row, transaction: transaction);
   }
 
   /// Updates all [RefreshToken]s in the list and returns the updated rows. If
@@ -719,10 +671,7 @@ class RefreshTokenRepository {
     List<RefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RefreshToken>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<RefreshToken>(rows, transaction: transaction);
   }
 
   /// Deletes a single [RefreshToken].
@@ -731,10 +680,7 @@ class RefreshTokenRepository {
     RefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<RefreshToken>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<RefreshToken>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -24,10 +24,7 @@ class EnumValueRestriction<T extends Enum> extends ValueRestriction {
   final List<T> enums;
   final CustomEnumValueRestriction<T>? additionalRestriction;
 
-  EnumValueRestriction({
-    required this.enums,
-    this.additionalRestriction,
-  });
+  EnumValueRestriction({required this.enums, this.additionalRestriction});
 
   @override
   List<SourceSpanSeverityException> validate(
@@ -41,7 +38,7 @@ class EnumValueRestriction<T extends Enum> extends ValueRestriction {
       SourceSpanSeverityException(
         '"$value" is not a valid property. Valid properties are $options.',
         span,
-      )
+      ),
     ];
 
     if (value is! String) return errors;
@@ -70,10 +67,7 @@ class BooleanValueRestriction extends ValueRestriction {
     if (value is bool) return [];
 
     var errors = [
-      SourceSpanSeverityException(
-        'The value must be a boolean.',
-        span,
-      )
+      SourceSpanSeverityException('The value must be a boolean.', span),
     ];
 
     if (value is! String) return errors;
@@ -96,10 +90,7 @@ class StringValueRestriction extends ValueRestriction {
   ) {
     if (value is! String) {
       return [
-        SourceSpanSeverityException(
-          'The property must be a String.',
-          span,
-        )
+        SourceSpanSeverityException('The property must be a String.', span),
       ];
     }
 

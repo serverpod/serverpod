@@ -17,10 +17,7 @@ part 'sealed_grandchild.dart';
 part 'sealed_other_child.dart';
 
 sealed class SealedParent implements _i2.SerializableModel {
-  SealedParent({
-    required this.sealedInt,
-    required this.sealedString,
-  });
+  SealedParent({required this.sealedInt, required this.sealedString});
 
   int sealedInt;
 

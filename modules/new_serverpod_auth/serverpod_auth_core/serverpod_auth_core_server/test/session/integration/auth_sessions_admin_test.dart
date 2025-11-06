@@ -12,8 +12,10 @@ void main() {
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  withServerpod('Given an auth session,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late UuidValue authSessionId;
@@ -34,21 +36,12 @@ void main() {
       authSessionId = (await AuthSession.db.find(session)).single.id!;
     });
 
-    test(
-      'when calling `findSessions`, then it is returned.',
-      () async {
-        final sessions = await AuthSessionsAdmin().findSessions(session);
+    test('when calling `findSessions`, then it is returned.', () async {
+      final sessions = await AuthSessionsAdmin().findSessions(session);
 
-        expect(
-          sessions,
-          hasLength(1),
-        );
-        expect(
-          sessions.single.id,
-          authSessionId,
-        );
-      },
-    );
+      expect(sessions, hasLength(1));
+      expect(sessions.single.id, authSessionId);
+    });
 
     test(
       'when calling `findSessions` for the user, then it is returned.',
@@ -58,14 +51,8 @@ void main() {
           authUserId: authUserId,
         );
 
-        expect(
-          sessions,
-          hasLength(1),
-        );
-        expect(
-          sessions.single.id,
-          authSessionId,
-        );
+        expect(sessions, hasLength(1));
+        expect(sessions.single.id, authSessionId);
       },
     );
 
@@ -89,14 +76,8 @@ void main() {
           method: 'test',
         );
 
-        expect(
-          sessions,
-          hasLength(1),
-        );
-        expect(
-          sessions.single.id,
-          authSessionId,
-        );
+        expect(sessions, hasLength(1));
+        expect(sessions.single.id, authSessionId);
       },
     );
 
@@ -121,14 +102,8 @@ void main() {
           method: 'test',
         );
 
-        expect(
-          sessions,
-          hasLength(1),
-        );
-        expect(
-          sessions.single.id,
-          authSessionId,
-        );
+        expect(sessions, hasLength(1));
+        expect(sessions.single.id, authSessionId);
       },
     );
 
@@ -146,8 +121,10 @@ void main() {
     );
   });
 
-  withServerpod('Given an auth session,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late UuidValue authSessionId;
@@ -279,85 +256,78 @@ void main() {
     );
   });
 
-  withServerpod(
-    'Given an auth session expiring in 1 day,',
-    (final sessionBuilder, final endpoints) {
-      final expiresAt = DateTime.now().add(const Duration(days: 1));
-      late Session session;
+  withServerpod('Given an auth session expiring in 1 day,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    final expiresAt = DateTime.now().add(const Duration(days: 1));
+    late Session session;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        final authUserId = await createAuthUser(session);
+      final authUserId = await createAuthUser(session);
 
-        // ignore: unused_result
-        await authSessions.createSession(
-          session,
-          authUserId: authUserId,
-          scopes: {},
-          expiresAt: expiresAt,
-          method: 'test',
-        );
-      });
+      // ignore: unused_result
+      await authSessions.createSession(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        expiresAt: expiresAt,
+        method: 'test',
+      );
+    });
 
-      test('when calling `deleteExpiredSessions` right away, then it is kept.',
-          () async {
+    test(
+      'when calling `deleteExpiredSessions` right away, then it is kept.',
+      () async {
         await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
-    },
-  );
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+  });
 
-  withServerpod(
-    'Given an expired auth session,',
-    (final sessionBuilder, final endpoints) {
-      final expiresAt = DateTime.now().subtract(const Duration(days: 1));
-      late Session session;
+  withServerpod('Given an expired auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    final expiresAt = DateTime.now().subtract(const Duration(days: 1));
+    late Session session;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        final authUserId = await createAuthUser(session);
+      final authUserId = await createAuthUser(session);
 
-        // ignore: unused_result
-        await authSessions.createSession(
-          session,
-          authUserId: authUserId,
-          scopes: {},
-          expiresAt: expiresAt,
-          method: 'test',
-        );
-      });
+      // ignore: unused_result
+      await authSessions.createSession(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        expiresAt: expiresAt,
+        method: 'test',
+      );
+    });
 
-      test('when calling `deleteExpiredSessions`, then it is deleted.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(session);
+    test('when calling `deleteExpiredSessions`, then it is deleted.', () async {
+      await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          0,
-        );
-      });
+      expect(await AuthSession.db.count(session), 0);
+    });
 
-      test(
-          'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
-          () async {
+    test(
+      'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
+      () async {
         await AuthSessionsAdmin().deleteExpiredSessions(
           session,
           deleteExpired: false,
         );
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
-    },
-  );
+        expect(await AuthSession.db.count(session), 1);
+      },
+    );
+  });
 
   withServerpod(
     'Given an auth session expiring after 10 minutes of inactivity,',
@@ -383,10 +353,7 @@ void main() {
       test('when calling `deleteExpiredSessions`, then it is kept.', () async {
         await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
+        expect(await AuthSession.db.count(session), 1);
       });
     },
   );
@@ -420,29 +387,26 @@ void main() {
         );
       });
 
-      test('when calling `deleteExpiredSessions`, then it is deleted.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(session);
+      test(
+        'when calling `deleteExpiredSessions`, then it is deleted.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          0,
-        );
-      });
+          expect(await AuthSession.db.count(session), 0);
+        },
+      );
 
       test(
-          'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(
-          session,
-          deleteInactive: false,
-        );
+        'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(
+            session,
+            deleteInactive: false,
+          );
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
+          expect(await AuthSession.db.count(session), 1);
+        },
+      );
     },
   );
 }

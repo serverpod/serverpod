@@ -43,13 +43,15 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
 
     var severityErrors = errors.whereType<SourceSpanSeverityException>();
 
-    var hasErrors = severityErrors.isEmpty ||
+    var hasErrors =
+        severityErrors.isEmpty ||
         severityErrors
             .where((error) => error.severity == SourceSpanSeverity.error)
             .isNotEmpty;
-    var hasWarnings = severityErrors
-        .where((error) => error.severity == SourceSpanSeverity.warning)
-        .isNotEmpty;
+    var hasWarnings =
+        severityErrors
+            .where((error) => error.severity == SourceSpanSeverity.warning)
+            .isNotEmpty;
 
     if (hasErrors) {
       log.error(logMessage, newParagraph: true);

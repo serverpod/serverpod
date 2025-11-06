@@ -12,24 +12,25 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions
-        .whereType<ModelClassDefinition>()
-        .forEach((classDefinition) {
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
       _resolveInheritance(classDefinition, modelDefinitions);
     });
 
     // Then resolve inherited id fields or create default id fields.
-    modelDefinitions
-        .whereType<ModelClassDefinition>()
-        .forEach((classDefinition) {
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
       _resolveIdField(classDefinition);
     });
 
     // Then resolve everything else, including relations on inherited ids.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      var fields = classDefinition is ModelClassDefinition
-          ? classDefinition.fieldsIncludingInherited
-          : classDefinition.fields;
+      var fields =
+          classDefinition is ModelClassDefinition
+              ? classDefinition.fieldsIncludingInherited
+              : classDefinition.fields;
 
       for (var fieldDefinition in fields) {
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
@@ -62,10 +63,11 @@ class ModelDependencyResolver {
     }
     var parentClassName = extendedClass.className;
 
-    var parentClass = modelDefinitions
-        .whereType<ModelClassDefinition>()
-        .where((element) => element.className == parentClassName)
-        .firstOrNull;
+    var parentClass =
+        modelDefinitions
+            .whereType<ModelClassDefinition>()
+            .where((element) => element.className == parentClassName)
+            .firstOrNull;
 
     if (parentClass == null) {
       return;
@@ -83,7 +85,8 @@ class ModelDependencyResolver {
 
     final defaultIdType = SupportedIdType.int;
 
-    var maybeIdField = classDefinition.parentClass?.fieldsIncludingInherited
+    var maybeIdField =
+        classDefinition.parentClass?.fieldsIncludingInherited
             .where((f) => f.name == defaultPrimaryKeyName)
             .firstOrNull ??
         classDefinition.fields
@@ -92,9 +95,10 @@ class ModelDependencyResolver {
 
     var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
 
-    var defaultPersistValue = (maybeIdField != null)
-        ? maybeIdField.defaultPersistValue
-        : defaultIdType.defaultValue;
+    var defaultPersistValue =
+        (maybeIdField != null)
+            ? maybeIdField.defaultPersistValue
+            : defaultIdType.defaultValue;
 
     // The 'int' id type can be specified without a default value.
     if (maybeIdField?.type.className == 'int') {
@@ -114,9 +118,7 @@ class ModelDependencyResolver {
         '/// the id will be null.',
       ];
     } else {
-      defaultIdFieldDoc = [
-        '/// The id of the object.',
-      ];
+      defaultIdFieldDoc = ['/// The id of the object.'];
     }
 
     classDefinition.fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
@@ -142,16 +144,18 @@ class ModelDependencyResolver {
     var indexes = classDefinition.indexes;
     if (indexes.isEmpty) return;
 
-    var indexesContainingField = indexes
-        .where((index) => index.fields.contains(fieldDefinition.name))
-        .toList();
+    var indexesContainingField =
+        indexes
+            .where((index) => index.fields.contains(fieldDefinition.name))
+            .toList();
 
     fieldDefinition.indexes = indexesContainingField;
   }
 
   static TypeDefinition _resolveProtocolReference(
-      SerializableModelFieldDefinition fieldDefinition,
-      List<SerializableModelDefinition> modelDefinitions) {
+    SerializableModelFieldDefinition fieldDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
       modelDefinitions,
     );
@@ -169,9 +173,10 @@ class ModelDependencyResolver {
     }
 
     var enumDefinitionList = modelDefinitions.whereType<EnumDefinition>().where(
-        (e) =>
-            e.className == typeDefinition.className &&
-            e.type.moduleAlias == typeDefinition.moduleAlias);
+      (e) =>
+          e.className == typeDefinition.className &&
+          e.type.moduleAlias == typeDefinition.moduleAlias,
+    );
 
     if (enumDefinitionList.isEmpty) return;
 
@@ -189,10 +194,11 @@ class ModelDependencyResolver {
     var referenceClass = modelDefinitions
         .cast<SerializableModelDefinition?>()
         .firstWhere(
-            (model) =>
-                model?.className == fieldDefinition.type.className &&
-                model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
-            orElse: () => null);
+          (model) =>
+              model?.className == fieldDefinition.type.className &&
+              model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
+          orElse: () => null,
+        );
 
     if (referenceClass is! ModelClassDefinition) return;
 
@@ -266,9 +272,10 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       name: relation.name,
-      parentTableIdType: relation.isForeignKeyOrigin
-          ? classDefinition.idField.type
-          : referenceClass.idField.type,
+      parentTableIdType:
+          relation.isForeignKeyOrigin
+              ? classDefinition.idField.type
+              : referenceClass.idField.type,
       parentTable: tableName,
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
@@ -285,9 +292,10 @@ class ModelDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
-    var relationFieldType = relation.nullableRelation
-        ? referenceDefinition.idField.type.asNullable
-        : referenceDefinition.idField.type.asNonNullable;
+    var relationFieldType =
+        relation.nullableRelation
+            ? referenceDefinition.idField.type.asNullable
+            : referenceDefinition.idField.type.asNonNullable;
 
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
@@ -409,10 +417,7 @@ class ModelDependencyResolver {
     SerializableModelFieldDefinition fieldDefinition,
     SerializableModelFieldDefinition foreignRelationField,
   ) {
-    var insertIndex = max(
-      classDefinition.fields.indexOf(fieldDefinition),
-      0,
-    );
+    var insertIndex = max(classDefinition.fields.indexOf(fieldDefinition), 0);
     classDefinition.fields = [
       ...classDefinition.fields.take(insertIndex),
       foreignRelationField,
@@ -439,11 +444,12 @@ class ModelDependencyResolver {
     var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
-    var referenceClass =
-        modelDefinitions.cast<SerializableModelDefinition?>().firstWhere(
-              (model) => model?.className == referenceClassName,
-              orElse: () => null,
-            );
+    var referenceClass = modelDefinitions
+        .cast<SerializableModelDefinition?>()
+        .firstWhere(
+          (model) => model?.className == referenceClassName,
+          orElse: () => null,
+        );
 
     if (referenceClass is! ModelClassDefinition) return;
 
@@ -473,9 +479,7 @@ class ModelDependencyResolver {
         isRequired: false,
       );
 
-      referenceClass.fields.add(
-        foreignField,
-      );
+      referenceClass.fields.add(foreignField);
 
       fieldDefinition.relation = ListRelationDefinition(
         name: autoRelationName,
@@ -507,7 +511,8 @@ class ModelDependencyResolver {
       if (foreignRelation is ForeignRelationDefinition) {
         foreignFieldName = foreignField.name;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
-        foreignFieldName = foreignRelation.fieldName ??
+        foreignFieldName =
+            foreignRelation.fieldName ??
             _createImplicitForeignIdFieldName(foreignField.name);
       }
 

@@ -30,8 +30,8 @@ abstract class AuthSession
     required this.sessionKeyHash,
     required this.sessionKeySalt,
     required this.method,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        lastUsedAt = lastUsedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       lastUsedAt = lastUsedAt ?? DateTime.now();
 
   factory AuthSession({
     _i1.UuidValue? id,
@@ -49,33 +49,48 @@ abstract class AuthSession
 
   factory AuthSession.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthSession(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      lastUsedAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
-      expiresAt: jsonSerialization['expiresAt'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
-      expireAfterUnusedFor: jsonSerialization['expireAfterUnusedFor'] == null
-          ? null
-          : _i1.DurationJsonExtension.fromJson(
-              jsonSerialization['expireAfterUnusedFor']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      lastUsedAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['lastUsedAt'],
+      ),
+      expiresAt:
+          jsonSerialization['expiresAt'] == null
+              ? null
+              : _i1.DateTimeJsonExtension.fromJson(
+                jsonSerialization['expiresAt'],
+              ),
+      expireAfterUnusedFor:
+          jsonSerialization['expireAfterUnusedFor'] == null
+              ? null
+              : _i1.DurationJsonExtension.fromJson(
+                jsonSerialization['expireAfterUnusedFor'],
+              ),
       sessionKeyHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['sessionKeyHash']),
+        jsonSerialization['sessionKeyHash'],
+      ),
       sessionKeySalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['sessionKeySalt']),
+        jsonSerialization['sessionKeySalt'],
+      ),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -218,18 +233,18 @@ class _AuthSessionImpl extends AuthSession {
     required _i3.ByteData sessionKeySalt,
     required String method,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          scopeNames: scopeNames,
-          createdAt: createdAt,
-          lastUsedAt: lastUsedAt,
-          expiresAt: expiresAt,
-          expireAfterUnusedFor: expireAfterUnusedFor,
-          sessionKeyHash: sessionKeyHash,
-          sessionKeySalt: sessionKeySalt,
-          method: method,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         scopeNames: scopeNames,
+         createdAt: createdAt,
+         lastUsedAt: lastUsedAt,
+         expiresAt: expiresAt,
+         expireAfterUnusedFor: expireAfterUnusedFor,
+         sessionKeyHash: sessionKeyHash,
+         sessionKeySalt: sessionKeySalt,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthSession]
   /// with some or all fields replaced by the given arguments.
@@ -257,9 +272,10 @@ class _AuthSessionImpl extends AuthSession {
       createdAt: createdAt ?? this.createdAt,
       lastUsedAt: lastUsedAt ?? this.lastUsedAt,
       expiresAt: expiresAt is DateTime? ? expiresAt : this.expiresAt,
-      expireAfterUnusedFor: expireAfterUnusedFor is Duration?
-          ? expireAfterUnusedFor
-          : this.expireAfterUnusedFor,
+      expireAfterUnusedFor:
+          expireAfterUnusedFor is Duration?
+              ? expireAfterUnusedFor
+              : this.expireAfterUnusedFor,
       sessionKeyHash: sessionKeyHash ?? this.sessionKeyHash.clone(),
       sessionKeySalt: sessionKeySalt ?? this.sessionKeySalt.clone(),
       method: method ?? this.method,
@@ -271,104 +287,49 @@ class AuthSessionUpdateTable extends _i1.UpdateTable<AuthSessionTable> {
   AuthSessionUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.lastUsedAt,
-        value,
-      );
+      _i1.ColumnValue(table.lastUsedAt, value);
 
   _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime? value) =>
-      _i1.ColumnValue(
-        table.expiresAt,
-        value,
-      );
+      _i1.ColumnValue(table.expiresAt, value);
 
   _i1.ColumnValue<Duration, Duration> expireAfterUnusedFor(Duration? value) =>
-      _i1.ColumnValue(
-        table.expireAfterUnusedFor,
-        value,
-      );
+      _i1.ColumnValue(table.expireAfterUnusedFor, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeyHash(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.sessionKeyHash,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.sessionKeyHash, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeySalt(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.sessionKeySalt,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.sessionKeySalt, value);
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String value) =>
+      _i1.ColumnValue(table.method, value);
 }
 
 class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
   AuthSessionTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_session') {
+    : super(tableName: 'serverpod_auth_core_session') {
     updateTable = AuthSessionUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
-      'scopeNames',
-      this,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-      hasDefault: true,
-    );
-    lastUsedAt = _i1.ColumnDateTime(
-      'lastUsedAt',
-      this,
-      hasDefault: true,
-    );
-    expiresAt = _i1.ColumnDateTime(
-      'expiresAt',
-      this,
-    );
-    expireAfterUnusedFor = _i1.ColumnDuration(
-      'expireAfterUnusedFor',
-      this,
-    );
-    sessionKeyHash = _i1.ColumnByteData(
-      'sessionKeyHash',
-      this,
-    );
-    sessionKeySalt = _i1.ColumnByteData(
-      'sessionKeySalt',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    scopeNames = _i1.ColumnSerializable<Set<String>>('scopeNames', this);
+    createdAt = _i1.ColumnDateTime('createdAt', this, hasDefault: true);
+    lastUsedAt = _i1.ColumnDateTime('lastUsedAt', this, hasDefault: true);
+    expiresAt = _i1.ColumnDateTime('expiresAt', this);
+    expireAfterUnusedFor = _i1.ColumnDuration('expireAfterUnusedFor', this);
+    sessionKeyHash = _i1.ColumnByteData('sessionKeyHash', this);
+    sessionKeySalt = _i1.ColumnByteData('sessionKeySalt', this);
+    method = _i1.ColumnString('method', this);
   }
 
   late final AuthSessionUpdateTable updateTable;
@@ -423,25 +384,26 @@ class AuthSessionTable extends _i1.Table<_i1.UuidValue?> {
       field: AuthSession.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        scopeNames,
-        createdAt,
-        lastUsedAt,
-        expiresAt,
-        expireAfterUnusedFor,
-        sessionKeyHash,
-        sessionKeySalt,
-        method,
-      ];
+    id,
+    authUserId,
+    scopeNames,
+    createdAt,
+    lastUsedAt,
+    expiresAt,
+    expireAfterUnusedFor,
+    sessionKeyHash,
+    sessionKeySalt,
+    method,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -599,10 +561,7 @@ class AuthSessionRepository {
     List<AuthSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<AuthSession>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<AuthSession>(rows, transaction: transaction);
   }
 
   /// Inserts a single [AuthSession] and returns the inserted row.
@@ -613,10 +572,7 @@ class AuthSessionRepository {
     AuthSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<AuthSession>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<AuthSession>(row, transaction: transaction);
   }
 
   /// Updates all [AuthSession]s in the list and returns the updated rows. If
@@ -701,10 +657,7 @@ class AuthSessionRepository {
     List<AuthSession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<AuthSession>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<AuthSession>(rows, transaction: transaction);
   }
 
   /// Deletes a single [AuthSession].
@@ -713,10 +666,7 @@ class AuthSessionRepository {
     AuthSession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<AuthSession>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<AuthSession>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

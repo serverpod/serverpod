@@ -9,54 +9,41 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
-      sessionKeyHashPepper: 'test-pepper',
-    ),
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  withServerpod(
-    'Given a pending challenge,',
-    (final sessionBuilder, final _) {
-      late Session session;
-      final passKeyIDP = PasskeyIDP(
-        PasskeyIDPConfig(
-          hostname: 'localhost',
-        ),
-        tokenIssuer: tokenManager,
-      );
+  withServerpod('Given a pending challenge,', (final sessionBuilder, final _) {
+    late Session session;
+    final passKeyIDP = PasskeyIDP(
+      PasskeyIDPConfig(hostname: 'localhost'),
+      tokenIssuer: tokenManager,
+    );
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        await passKeyIDP.createChallenge(session);
-      });
+      await passKeyIDP.createChallenge(session);
+    });
 
-      test(
-          'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
-          () async {
+    test(
+      'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
+      () async {
         await passKeyIDP.admin.deleteExpiredChallenges(session);
 
-        expect(
-          await PasskeyChallenge.db.find(session),
-          hasLength(1),
-        );
-      });
+        expect(await PasskeyChallenge.db.find(session), hasLength(1));
+      },
+    );
 
-      test(
-          'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
-          () async {
+    test(
+      'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
+      () async {
         await withClock(
-          Clock.fixed(
-            DateTime.now().add(passKeyIDP.config.challengeLifetime),
-          ),
+          Clock.fixed(DateTime.now().add(passKeyIDP.config.challengeLifetime)),
           () => passKeyIDP.admin.deleteExpiredChallenges(session),
         );
 
-        expect(
-          await PasskeyChallenge.db.find(session),
-          isEmpty,
-        );
-      });
-    },
-  );
+        expect(await PasskeyChallenge.db.find(session), isEmpty);
+      },
+    );
+  });
 }

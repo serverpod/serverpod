@@ -75,11 +75,11 @@ class _ChildClassImpl extends ChildClass {
     required String parentField,
     required int childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ChildClass]
   /// with some or all fields replaced by the given arguments.

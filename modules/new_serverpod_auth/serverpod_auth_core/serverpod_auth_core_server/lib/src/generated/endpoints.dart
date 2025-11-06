@@ -18,18 +18,12 @@ class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'status': _i2.StatusEndpoint()
-        ..initialize(
-          server,
-          'status',
-          'serverpod_auth_core',
-        ),
-      'userProfileInfo': _i3.UserProfileInfoEndpoint()
-        ..initialize(
-          server,
-          'userProfileInfo',
-          'serverpod_auth_core',
-        ),
+      'status':
+          _i2.StatusEndpoint()
+            ..initialize(server, 'status', 'serverpod_auth_core'),
+      'userProfileInfo':
+          _i3.UserProfileInfoEndpoint()
+            ..initialize(server, 'userProfileInfo', 'serverpod_auth_core'),
     };
     connectors['status'] = _i1.EndpointConnector(
       name: 'status',
@@ -38,31 +32,29 @@ class Endpoints extends _i1.EndpointDispatch {
         'isSignedIn': _i1.MethodConnector(
           name: 'isSignedIn',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['status'] as _i2.StatusEndpoint).isSignedIn(session),
+          call:
+              (_i1.Session session, Map<String, dynamic> params) async =>
+                  (endpoints['status'] as _i2.StatusEndpoint).isSignedIn(
+                    session,
+                  ),
         ),
         'signOutDevice': _i1.MethodConnector(
           name: 'signOutDevice',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['status'] as _i2.StatusEndpoint)
-                  .signOutDevice(session),
+          call:
+              (_i1.Session session, Map<String, dynamic> params) async =>
+                  (endpoints['status'] as _i2.StatusEndpoint).signOutDevice(
+                    session,
+                  ),
         ),
         'signOutAllDevices': _i1.MethodConnector(
           name: 'signOutAllDevices',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['status'] as _i2.StatusEndpoint)
-                  .signOutAllDevices(session),
+          call:
+              (_i1.Session session, Map<String, dynamic> params) async =>
+                  (endpoints['status'] as _i2.StatusEndpoint).signOutAllDevices(
+                    session,
+                  ),
         ),
       },
     );
@@ -73,13 +65,11 @@ class Endpoints extends _i1.EndpointDispatch {
         'get': _i1.MethodConnector(
           name: 'get',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['userProfileInfo'] as _i3.UserProfileInfoEndpoint)
-                  .get(session),
-        )
+          call:
+              (_i1.Session session, Map<String, dynamic> params) async =>
+                  (endpoints['userProfileInfo'] as _i3.UserProfileInfoEndpoint)
+                      .get(session),
+        ),
       },
     );
   }

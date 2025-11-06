@@ -71,11 +71,7 @@ void main() async {
     test(
       'when updateSession is not provided (default behavior) then the session is updated with authentication info',
       () async {
-        await UserAuthentication.signInUser(
-          session,
-          userId,
-          'email',
-        );
+        await UserAuthentication.signInUser(session, userId, 'email');
 
         var auth = await session.authenticated;
 

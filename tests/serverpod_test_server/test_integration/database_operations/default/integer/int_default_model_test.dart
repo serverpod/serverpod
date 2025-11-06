@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" fields,', () {
-    tearDownAll(() async => IntDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => IntDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=10" field value should be 10',
@@ -39,9 +41,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "intDefaultModel" field value should match the provided value',
       () async {
-        var specificObject = IntDefaultModel(
-          intDefaultModel: 30,
-        );
+        var specificObject = IntDefaultModel(intDefaultModel: 30);
         var specificDatabaseObject = await IntDefaultModel.db.insertRow(
           session,
           specificObject,
@@ -53,9 +53,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "intDefaultModelNull" field value should match the provided value',
       () async {
-        var specificObject = IntDefaultModel(
-          intDefaultModelNull: 40,
-        );
+        var specificObject = IntDefaultModel(intDefaultModelNull: 40);
         var specificDatabaseObject = await IntDefaultModel.db.insertRow(
           session,
           specificObject,

@@ -34,8 +34,9 @@ abstract class EmailReset
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      expiration: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['expiration'],
+      ),
     );
   }
 
@@ -126,11 +127,11 @@ class _EmailResetImpl extends EmailReset {
     required String verificationCode,
     required DateTime expiration,
   }) : super._(
-          id: id,
-          userId: userId,
-          verificationCode: verificationCode,
-          expiration: expiration,
-        );
+         id: id,
+         userId: userId,
+         verificationCode: verificationCode,
+         expiration: expiration,
+       );
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
@@ -154,40 +155,23 @@ class _EmailResetImpl extends EmailReset {
 class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
   EmailResetUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userId(int value) =>
+      _i1.ColumnValue(table.userId, value);
 
   _i1.ColumnValue<String, String> verificationCode(String value) =>
-      _i1.ColumnValue(
-        table.verificationCode,
-        value,
-      );
+      _i1.ColumnValue(table.verificationCode, value);
 
   _i1.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
-      _i1.ColumnValue(
-        table.expiration,
-        value,
-      );
+      _i1.ColumnValue(table.expiration, value);
 }
 
 class EmailResetTable extends _i1.Table<int?> {
   EmailResetTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_reset') {
+    : super(tableName: 'serverpod_email_reset') {
     updateTable = EmailResetUpdateTable(this);
-    userId = _i1.ColumnInt(
-      'userId',
-      this,
-    );
-    verificationCode = _i1.ColumnString(
-      'verificationCode',
-      this,
-    );
-    expiration = _i1.ColumnDateTime(
-      'expiration',
-      this,
-    );
+    userId = _i1.ColumnInt('userId', this);
+    verificationCode = _i1.ColumnString('verificationCode', this);
+    expiration = _i1.ColumnDateTime('expiration', this);
   }
 
   late final EmailResetUpdateTable updateTable;
@@ -202,12 +186,7 @@ class EmailResetTable extends _i1.Table<int?> {
   late final _i1.ColumnDateTime expiration;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        userId,
-        verificationCode,
-        expiration,
-      ];
+  List<_i1.Column> get columns => [id, userId, verificationCode, expiration];
 }
 
 class EmailResetInclude extends _i1.IncludeObject {
@@ -328,10 +307,7 @@ class EmailResetRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailReset>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<EmailReset>(id, transaction: transaction);
   }
 
   /// Inserts all [EmailReset]s in the list and returns the inserted rows.
@@ -345,10 +321,7 @@ class EmailResetRepository {
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailReset>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<EmailReset>(rows, transaction: transaction);
   }
 
   /// Inserts a single [EmailReset] and returns the inserted row.
@@ -359,10 +332,7 @@ class EmailResetRepository {
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailReset>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<EmailReset>(row, transaction: transaction);
   }
 
   /// Updates all [EmailReset]s in the list and returns the updated rows. If
@@ -447,10 +417,7 @@ class EmailResetRepository {
     List<EmailReset> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailReset>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<EmailReset>(rows, transaction: transaction);
   }
 
   /// Deletes a single [EmailReset].
@@ -459,10 +426,7 @@ class EmailResetRepository {
     EmailReset row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailReset>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<EmailReset>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

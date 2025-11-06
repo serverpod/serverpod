@@ -42,20 +42,26 @@ abstract class Citizen
     return Citizen(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      address: jsonSerialization['address'] == null
-          ? null
-          : _i2.Address.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
+      address:
+          jsonSerialization['address'] == null
+              ? null
+              : _i2.Address.fromJson(
+                (jsonSerialization['address'] as Map<String, dynamic>),
+              ),
       companyId: jsonSerialization['companyId'] as int,
-      company: jsonSerialization['company'] == null
-          ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+      company:
+          jsonSerialization['company'] == null
+              ? null
+              : _i3.Company.fromJson(
+                (jsonSerialization['company'] as Map<String, dynamic>),
+              ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
-      oldCompany: jsonSerialization['oldCompany'] == null
-          ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+      oldCompany:
+          jsonSerialization['oldCompany'] == null
+              ? null
+              : _i3.Company.fromJson(
+                (jsonSerialization['oldCompany'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -169,14 +175,14 @@ class _CitizenImpl extends Citizen {
     int? oldCompanyId,
     _i3.Company? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -207,37 +213,22 @@ class _CitizenImpl extends Citizen {
 class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
   CitizenUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
-        table.companyId,
-        value,
-      );
+  _i1.ColumnValue<int, int> companyId(int value) =>
+      _i1.ColumnValue(table.companyId, value);
 
-  _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
-        table.oldCompanyId,
-        value,
-      );
+  _i1.ColumnValue<int, int> oldCompanyId(int? value) =>
+      _i1.ColumnValue(table.oldCompanyId, value);
 }
 
 class CitizenTable extends _i1.Table<int?> {
   CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
     updateTable = CitizenUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    companyId = _i1.ColumnInt(
-      'companyId',
-      this,
-    );
-    oldCompanyId = _i1.ColumnInt(
-      'oldCompanyId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    companyId = _i1.ColumnInt('companyId', this);
+    oldCompanyId = _i1.ColumnInt('oldCompanyId', this);
   }
 
   late final CitizenUpdateTable updateTable;
@@ -261,8 +252,9 @@ class CitizenTable extends _i1.Table<int?> {
       field: Citizen.t.id,
       foreignField: _i2.Address.t.inhabitantId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AddressTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
@@ -274,8 +266,9 @@ class CitizenTable extends _i1.Table<int?> {
       field: Citizen.t.companyId,
       foreignField: _i3.Company.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
@@ -287,19 +280,15 @@ class CitizenTable extends _i1.Table<int?> {
       field: Citizen.t.oldCompanyId,
       foreignField: _i3.Company.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        companyId,
-        oldCompanyId,
-      ];
+  List<_i1.Column> get columns => [id, name, companyId, oldCompanyId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -335,10 +324,10 @@ class CitizenInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'address': _address,
-        'company': _company,
-        'oldCompany': _oldCompany,
-      };
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
 
   @override
   _i1.Table<int?> get table => Citizen.t;
@@ -479,10 +468,7 @@ class CitizenRepository {
     List<Citizen> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Citizen>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Citizen>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Citizen] and returns the inserted row.
@@ -493,10 +479,7 @@ class CitizenRepository {
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Citizen>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Citizen>(row, transaction: transaction);
   }
 
   /// Updates all [Citizen]s in the list and returns the updated rows. If
@@ -581,10 +564,7 @@ class CitizenRepository {
     List<Citizen> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Citizen>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Citizen>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Citizen].
@@ -593,10 +573,7 @@ class CitizenRepository {
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Citizen>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Citizen>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

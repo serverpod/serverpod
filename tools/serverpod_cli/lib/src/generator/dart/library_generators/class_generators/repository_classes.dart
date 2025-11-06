@@ -8,10 +8,7 @@ class BuildRepositoryClass {
   final bool serverCode;
   final GeneratorConfig config;
 
-  BuildRepositoryClass({
-    required this.serverCode,
-    required this.config,
-  });
+  BuildRepositoryClass({required this.serverCode, required this.config});
 
   Class buildModelRepositoryClass(
     String className,
@@ -19,17 +16,21 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
     TypeReference idTypeReference,
   ) {
-    var relationFields = fields.where((field) =>
-        field.relation is ObjectRelationDefinition ||
-        field.relation is ListRelationDefinition);
+    var relationFields = fields.where(
+      (field) =>
+          field.relation is ObjectRelationDefinition ||
+          field.relation is ListRelationDefinition,
+    );
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Repository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
         ..fields.addAll([
           if (hasAttachOperations(fields))
             Field((fieldBuilder) {
@@ -43,8 +44,9 @@ class BuildRepositoryClass {
               fieldBuilder
                 ..name = 'attachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment =
-                    Code('const ${className}AttachRowRepository._()');
+                ..assignment = Code(
+                  'const ${className}AttachRowRepository._()',
+                );
             }),
           if (hasDetachOperations(fields))
             Field((fieldBuilder) {
@@ -58,8 +60,9 @@ class BuildRepositoryClass {
               fieldBuilder
                 ..name = 'detachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment =
-                    Code('const ${className}DetachRowRepository._()');
+                ..assignment = Code(
+                  'const ${className}DetachRowRepository._()',
+                );
             }),
         ])
         ..methods.addAll([
@@ -88,16 +91,16 @@ class BuildRepositoryClass {
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}AttachRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildAttachMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
+        ..methods.addAll(
+          _buildAttachMethods(fields, className, classDefinition),
+        );
     });
   }
 
@@ -109,16 +112,16 @@ class BuildRepositoryClass {
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}AttachRowRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildAttachRowMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
+        ..methods.addAll(
+          _buildAttachRowMethods(fields, className, classDefinition),
+        );
     });
   }
 
@@ -130,16 +133,16 @@ class BuildRepositoryClass {
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}DetachRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildDetachMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
+        ..methods.addAll(
+          _buildDetachMethods(fields, className, classDefinition),
+        );
     });
   }
 
@@ -151,16 +154,16 @@ class BuildRepositoryClass {
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}DetachRowRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildDetachRowMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
+        ..methods.addAll(
+          _buildDetachRowMethods(fields, className, classDefinition),
+        );
     });
   }
 
@@ -177,12 +180,14 @@ class BuildRepositoryClass {
   }
 
   bool hasDetachRowOperations(List<SerializableModelFieldDefinition> fields) {
-    return fields
-        .any((f) => _isNullableObjectRelation(f) || _isNullableListRelation(f));
+    return fields.any(
+      (f) => _isNullableObjectRelation(f) || _isNullableListRelation(f),
+    );
   }
 
   bool hasImplicitClassOperations(
-      List<SerializableModelFieldDefinition> fields) {
+    List<SerializableModelFieldDefinition> fields,
+  ) {
     return fields.any((e) => e.hiddenSerializableField(serverCode));
   }
 
@@ -195,23 +200,23 @@ class BuildRepositoryClass {
     return relation is ListRelationDefinition && relation.nullableRelation;
   }
 
-  bool _isObjectRelation(
-    SerializableModelFieldDefinition field,
-  ) {
+  bool _isObjectRelation(SerializableModelFieldDefinition field) {
     return field.relation is ObjectRelationDefinition;
   }
 
-  bool _isNullableObjectRelation(
-    SerializableModelFieldDefinition field,
-  ) {
+  bool _isNullableObjectRelation(SerializableModelFieldDefinition field) {
     var relation = field.relation;
     return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 
-  Method _buildFindMethod(String className,
-      Iterable<SerializableModelFieldDefinition> objectRelationFields) {
-    return Method((m) => m
-      ..docs.add('''
+  Method _buildFindMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) =>
+          m
+            ..docs.add('''
 /// Returns a list of [$className]s matching the given query parameters.
 ///
 /// Use [where] to specify which items to include in the return value.
@@ -234,105 +239,153 @@ class BuildRepositoryClass {
 ///   limit: 100,
 /// );
 /// ```''')
-      ..name = 'find'
-      ..returns = TypeReference(
-        (r) => r
-          ..symbol = 'Future'
-          ..types.add(TypeReference(
-            (r) => r
-              ..symbol = 'List'
-              ..types.add(
-                TypeReference(
-                  (r) => r..symbol = className,
-                ),
+            ..name = 'find'
+            ..returns = TypeReference(
+              (r) =>
+                  r
+                    ..symbol = 'Future'
+                    ..types.add(
+                      TypeReference(
+                        (r) =>
+                            r
+                              ..symbol = 'List'
+                              ..types.add(
+                                TypeReference((r) => r..symbol = className),
+                              ),
+                      ),
+                    ),
+            )
+            ..requiredParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = refer(
+                        'Session',
+                        'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'session',
               ),
-          )),
-      )
-      ..requiredParameters.addAll([
-        Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
-      ])
-      ..optionalParameters.addAll([
-        Parameter((p) => p
-          ..type = typeWhereExpressionBuilder(
-            className,
-            serverCode,
-          )
-          ..name = 'where'
-          ..named = true),
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'int')
-          ..name = 'limit'
-          ..named = true),
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'int')
-          ..name = 'offset'
-          ..named = true),
-        Parameter((p) => p
-          ..type = typeOrderByBuilder(className, serverCode)
-          ..name = 'orderBy'
-          ..named = true),
-        Parameter((p) => p
-          ..type = refer('bool')
-          ..name = 'orderDescending'
-          ..defaultTo = const Code('false')
-          ..named = true),
-        Parameter((p) => p
-          ..type = typeOrderByListBuilder(className, serverCode)
-          ..name = 'orderByList'
-          ..named = true),
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'Transaction'
-            ..url = 'package:serverpod/serverpod.dart')
-          ..name = 'transaction'
-          ..named = true),
-        if (objectRelationFields.isNotEmpty)
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = '${className}Include')
-            ..name = 'include'
-            ..named = true),
-      ])
-      ..modifier = MethodModifier.async
-      ..body = refer('session')
-          .property('db')
-          .property('find')
-          .call([], {
-            'where': refer('where').nullSafeProperty('call').call(
-              [refer(className).property('t')],
-            ),
-            'orderBy': refer('orderBy').nullSafeProperty('call').call(
-              [refer(className).property('t')],
-            ),
-            'orderByList': refer('orderByList').nullSafeProperty('call').call(
-              [refer(className).property('t')],
-            ),
-            'orderDescending': refer('orderDescending'),
-            'limit': refer('limit'),
-            'offset': refer('offset'),
-            'transaction': refer('transaction'),
-            if (objectRelationFields.isNotEmpty) 'include': refer('include'),
-          }, [
-            refer(className)
-          ])
-          .returned
-          .statement);
+            ])
+            ..optionalParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeWhereExpressionBuilder(className, serverCode)
+                      ..name = 'where'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'int',
+                      )
+                      ..name = 'limit'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'int',
+                      )
+                      ..name = 'offset'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeOrderByBuilder(className, serverCode)
+                      ..name = 'orderBy'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = refer('bool')
+                      ..name = 'orderDescending'
+                      ..defaultTo = const Code('false')
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeOrderByListBuilder(className, serverCode)
+                      ..name = 'orderByList'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'Transaction'
+                              ..url = 'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'transaction'
+                      ..named = true,
+              ),
+              if (objectRelationFields.isNotEmpty)
+                Parameter(
+                  (p) =>
+                      p
+                        ..type = TypeReference(
+                          (b) =>
+                              b
+                                ..isNullable = true
+                                ..symbol = '${className}Include',
+                        )
+                        ..name = 'include'
+                        ..named = true,
+                ),
+            ])
+            ..modifier = MethodModifier.async
+            ..body =
+                refer('session')
+                    .property('db')
+                    .property('find')
+                    .call(
+                      [],
+                      {
+                        'where': refer('where').nullSafeProperty('call').call([
+                          refer(className).property('t'),
+                        ]),
+                        'orderBy': refer('orderBy')
+                            .nullSafeProperty('call')
+                            .call([refer(className).property('t')]),
+                        'orderByList': refer('orderByList')
+                            .nullSafeProperty('call')
+                            .call([refer(className).property('t')]),
+                        'orderDescending': refer('orderDescending'),
+                        'limit': refer('limit'),
+                        'offset': refer('offset'),
+                        'transaction': refer('transaction'),
+                        if (objectRelationFields.isNotEmpty)
+                          'include': refer('include'),
+                      },
+                      [refer(className)],
+                    )
+                    .returned
+                    .statement,
+    );
   }
 
   Method _buildFindFirstRow(
     String className,
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
   ) {
-    return Method((m) => m
-      ..docs.add('''
+    return Method(
+      (m) =>
+          m
+            ..docs.add('''
 /// Returns the first matching [$className] matching the given query parameters.
 ///
 /// Use [where] to specify which items to include in the return value.
@@ -350,88 +403,128 @@ class BuildRepositoryClass {
 ///   orderBy: (t) => t.age,
 /// );
 /// ```''')
-      ..name = 'findFirstRow'
-      ..returns = TypeReference(
-        (r) => r
-          ..symbol = 'Future'
-          ..types.add(TypeReference(
-            (r) => r
-              ..symbol = className
-              ..isNullable = true,
-          )),
-      )
-      ..requiredParameters.addAll([
-        Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
-      ])
-      ..optionalParameters.addAll([
-        Parameter((p) => p
-          ..type = typeWhereExpressionBuilder(
-            className,
-            serverCode,
-          )
-          ..name = 'where'
-          ..named = true),
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'int')
-          ..name = 'offset'
-          ..named = true),
-        Parameter((p) => p
-          ..type = typeOrderByBuilder(className, serverCode)
-          ..name = 'orderBy'
-          ..named = true),
-        Parameter((p) => p
-          ..type = refer('bool')
-          ..name = 'orderDescending'
-          ..defaultTo = const Code('false')
-          ..named = true),
-        Parameter((p) => p
-          ..type = typeOrderByListBuilder(className, serverCode)
-          ..name = 'orderByList'
-          ..named = true),
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'Transaction'
-            ..url = 'package:serverpod/serverpod.dart')
-          ..name = 'transaction'
-          ..named = true),
-        if (objectRelationFields.isNotEmpty)
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = '${className}Include')
-            ..name = 'include'
-            ..named = true),
-      ])
-      ..modifier = MethodModifier.async
-      ..body = refer('session')
-          .property('db')
-          .property('findFirstRow')
-          .call(
-            [],
-            {
-              'where': refer('where').nullSafeProperty('call').call(
-                [refer(className).property('t')],
+            ..name = 'findFirstRow'
+            ..returns = TypeReference(
+              (r) =>
+                  r
+                    ..symbol = 'Future'
+                    ..types.add(
+                      TypeReference(
+                        (r) =>
+                            r
+                              ..symbol = className
+                              ..isNullable = true,
+                      ),
+                    ),
+            )
+            ..requiredParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = refer(
+                        'Session',
+                        'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'session',
               ),
-              'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                [refer(className).property('t')],
+            ])
+            ..optionalParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeWhereExpressionBuilder(className, serverCode)
+                      ..name = 'where'
+                      ..named = true,
               ),
-              'orderByList': refer('orderByList').nullSafeProperty('call').call(
-                [refer(className).property('t')],
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'int',
+                      )
+                      ..name = 'offset'
+                      ..named = true,
               ),
-              'orderDescending': refer('orderDescending'),
-              'offset': refer('offset'),
-              'transaction': refer('transaction'),
-              if (objectRelationFields.isNotEmpty) 'include': refer('include'),
-            },
-            [refer(className)],
-          )
-          .returned
-          .statement);
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeOrderByBuilder(className, serverCode)
+                      ..name = 'orderBy'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = refer('bool')
+                      ..name = 'orderDescending'
+                      ..defaultTo = const Code('false')
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = typeOrderByListBuilder(className, serverCode)
+                      ..name = 'orderByList'
+                      ..named = true,
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'Transaction'
+                              ..url = 'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'transaction'
+                      ..named = true,
+              ),
+              if (objectRelationFields.isNotEmpty)
+                Parameter(
+                  (p) =>
+                      p
+                        ..type = TypeReference(
+                          (b) =>
+                              b
+                                ..isNullable = true
+                                ..symbol = '${className}Include',
+                        )
+                        ..name = 'include'
+                        ..named = true,
+                ),
+            ])
+            ..modifier = MethodModifier.async
+            ..body =
+                refer('session')
+                    .property('db')
+                    .property('findFirstRow')
+                    .call(
+                      [],
+                      {
+                        'where': refer('where').nullSafeProperty('call').call([
+                          refer(className).property('t'),
+                        ]),
+                        'orderBy': refer('orderBy')
+                            .nullSafeProperty('call')
+                            .call([refer(className).property('t')]),
+                        'orderByList': refer('orderByList')
+                            .nullSafeProperty('call')
+                            .call([refer(className).property('t')]),
+                        'orderDescending': refer('orderDescending'),
+                        'offset': refer('offset'),
+                        'transaction': refer('transaction'),
+                        if (objectRelationFields.isNotEmpty)
+                          'include': refer('include'),
+                      },
+                      [refer(className)],
+                    )
+                    .returned
+                    .statement,
+    );
   }
 
   Method _buildFindByIdMethod(
@@ -439,58 +532,90 @@ class BuildRepositoryClass {
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
     TypeReference idTypeReference,
   ) {
-    return Method((m) => m
-      ..docs.add(
-        '/// Finds a single [$className] by its [id] or null if no such row exists.',
-      )
-      ..name = 'findById'
-      ..returns = TypeReference(
-        (r) => r
-          ..symbol = 'Future'
-          ..types.add(TypeReference(
-            (r) => r
-              ..symbol = className
-              ..isNullable = true,
-          )),
-      )
-      ..requiredParameters.addAll([
-        Parameter((p) => p
-          ..type = refer('Session', 'package:serverpod/serverpod.dart')
-          ..name = 'session'),
-        Parameter((p) => p
-          ..type = idTypeReference.rebuild((u) => u.isNullable = false)
-          ..name = 'id'),
-      ])
-      ..optionalParameters.addAll([
-        Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'Transaction'
-            ..url = 'package:serverpod/serverpod.dart')
-          ..name = 'transaction'
-          ..named = true),
-        if (objectRelationFields.isNotEmpty)
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = '${className}Include')
-            ..name = 'include'
-            ..named = true),
-      ])
-      ..modifier = MethodModifier.async
-      ..body = refer('session')
-          .property('db')
-          .property('findById')
-          .call(
-            [refer('id')],
-            {
-              'transaction': refer('transaction'),
-              if (objectRelationFields.isNotEmpty) 'include': refer('include'),
-            },
-            [refer(className)],
-          )
-          .returned
-          .statement);
+    return Method(
+      (m) =>
+          m
+            ..docs.add(
+              '/// Finds a single [$className] by its [id] or null if no such row exists.',
+            )
+            ..name = 'findById'
+            ..returns = TypeReference(
+              (r) =>
+                  r
+                    ..symbol = 'Future'
+                    ..types.add(
+                      TypeReference(
+                        (r) =>
+                            r
+                              ..symbol = className
+                              ..isNullable = true,
+                      ),
+                    ),
+            )
+            ..requiredParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = refer(
+                        'Session',
+                        'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'session',
+              ),
+              Parameter(
+                (p) =>
+                    p
+                      ..type = idTypeReference.rebuild(
+                        (u) => u.isNullable = false,
+                      )
+                      ..name = 'id',
+              ),
+            ])
+            ..optionalParameters.addAll([
+              Parameter(
+                (p) =>
+                    p
+                      ..type = TypeReference(
+                        (b) =>
+                            b
+                              ..isNullable = true
+                              ..symbol = 'Transaction'
+                              ..url = 'package:serverpod/serverpod.dart',
+                      )
+                      ..name = 'transaction'
+                      ..named = true,
+              ),
+              if (objectRelationFields.isNotEmpty)
+                Parameter(
+                  (p) =>
+                      p
+                        ..type = TypeReference(
+                          (b) =>
+                              b
+                                ..isNullable = true
+                                ..symbol = '${className}Include',
+                        )
+                        ..name = 'include'
+                        ..named = true,
+                ),
+            ])
+            ..modifier = MethodModifier.async
+            ..body =
+                refer('session')
+                    .property('db')
+                    .property('findById')
+                    .call(
+                      [refer('id')],
+                      {
+                        'transaction': refer('transaction'),
+                        if (objectRelationFields.isNotEmpty)
+                          'include': refer('include'),
+                      },
+                      [refer(className)],
+                    )
+                    .returned
+                    .statement,
+    );
   }
 
   Method _buildInsertMethod(String className) {
@@ -505,40 +630,50 @@ class BuildRepositoryClass {
 /// insert, none of the rows will be inserted.''')
         ..name = 'insert'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(refer('List<$className>')),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(refer('List<$className>')),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer('List<$className>')
-            ..name = 'rows'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('List<$className>')
+                  ..name = 'rows',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('insert')
-            .call([
-              refer('rows')
-            ], {
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('insert')
+                .call([refer('rows')], {'transaction': refer('transaction')}, [
+                  refer(className),
+                ])
+                .returned
+                .statement;
     });
   }
 
@@ -551,40 +686,50 @@ class BuildRepositoryClass {
 /// The returned [$className] will have its `id` field set.''')
         ..name = 'insertRow'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(refer(className)),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(refer(className)),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer(className)
-            ..name = 'row'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer(className)
+                  ..name = 'row',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('insertRow')
-            .call([
-              refer('row')
-            ], {
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('insertRow')
+                .call([refer('row')], {'transaction': refer('transaction')}, [
+                  refer(className),
+                ])
+                .returned
+                .statement;
     });
   }
 
@@ -599,50 +744,70 @@ class BuildRepositoryClass {
 /// update, none of the rows will be updated.''')
         ..name = 'update'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(refer('List<$className>')),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(refer('List<$className>')),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer('List<$className>')
-            ..name = 'rows'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('List<$className>')
+                  ..name = 'rows',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'ColumnSelections<${className}Table>'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columns'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'ColumnSelections<${className}Table>'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'columns'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('update')
-            .call([
-              refer('rows')
-            ], {
-              'columns': refer('columns').nullSafeProperty('call').call([
-                refer(className).property('t'),
-              ]),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('update')
+                .call(
+                  [refer('rows')],
+                  {
+                    'columns': refer('columns').nullSafeProperty('call').call([
+                      refer(className).property('t'),
+                    ]),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
@@ -655,55 +820,77 @@ class BuildRepositoryClass {
 /// columns. Defaults to all columns.''')
         ..name = 'updateRow'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(refer(className)),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(refer(className)),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer(className)
-            ..name = 'row'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer(className)
+                  ..name = 'row',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'ColumnSelections<${className}Table>'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columns'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'ColumnSelections<${className}Table>'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'columns'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('updateRow')
-            .call([
-              refer('row')
-            ], {
-              'columns': refer('columns').nullSafeProperty('call').call([
-                refer(className).property('t'),
-              ]),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('updateRow')
+                .call(
+                  [refer('row')],
+                  {
+                    'columns': refer('columns').nullSafeProperty('call').call([
+                      refer(className).property('t'),
+                    ]),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
   Method _buildUpdateByIdMethod(
-      String className, TypeReference idTypeReference) {
+    String className,
+    TypeReference idTypeReference,
+  ) {
     return Method((methodBuilder) {
       methodBuilder
         ..docs.add('''
@@ -711,54 +898,78 @@ class BuildRepositoryClass {
 /// Returns the updated row or null if no row with the given id exists.''')
         ..name = 'updateById'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(TypeReference(
-              (r) => r
-                ..symbol = className
-                ..isNullable = true,
-            )),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(
+                  TypeReference(
+                    (r) =>
+                        r
+                          ..symbol = className
+                          ..isNullable = true,
+                  ),
+                ),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = idTypeReference.rebuild((u) => u.isNullable = false)
-            ..name = 'id'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = idTypeReference.rebuild((u) => u.isNullable = false)
+                  ..name = 'id',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columnValues'
-            ..named = true
-            ..required = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..symbol =
+                              'ColumnValueListBuilder<${className}UpdateTable>'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'columnValues'
+                  ..named = true
+                  ..required = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('updateById')
-            .call([
-              refer('id'),
-            ], {
-              'columnValues': refer('columnValues').call([
-                refer(className).property('t').property('updateTable'),
-              ]),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('updateById')
+                .call(
+                  [refer('id')],
+                  {
+                    'columnValues': refer('columnValues').call([
+                      refer(className).property('t').property('updateTable'),
+                    ]),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
@@ -770,95 +981,145 @@ class BuildRepositoryClass {
 /// Returns the list of updated rows.''')
         ..name = 'updateWhere'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(TypeReference(
-              (r) => r
-                ..symbol = 'List'
-                ..types.add(refer(className)),
-            )),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(
+                  TypeReference(
+                    (r) =>
+                        r
+                          ..symbol = 'List'
+                          ..types.add(refer(className)),
+                  ),
+                ),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..symbol = 'ColumnValueListBuilder<${className}UpdateTable>'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'columnValues'
-            ..named = true
-            ..required = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..symbol = 'WhereExpressionBuilder<${className}Table>'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'where'
-            ..named = true
-            ..required = true),
-          Parameter((p) => p
-            ..type = refer('int?', 'dart:core')
-            ..name = 'limit'
-            ..named = true),
-          Parameter((p) => p
-            ..type = refer('int?', 'dart:core')
-            ..name = 'offset'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..symbol = 'OrderByBuilder<${className}Table>'
-              ..url = 'package:serverpod/serverpod.dart'
-              ..isNullable = true)
-            ..name = 'orderBy'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..symbol = 'OrderByListBuilder<${className}Table>'
-              ..url = 'package:serverpod/serverpod.dart'
-              ..isNullable = true)
-            ..name = 'orderByList'
-            ..named = true),
-          Parameter((p) => p
-            ..type = refer('bool', 'dart:core')
-            ..name = 'orderDescending'
-            ..named = true
-            ..defaultTo = const Code('false')),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..symbol =
+                              'ColumnValueListBuilder<${className}UpdateTable>'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'columnValues'
+                  ..named = true
+                  ..required = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..symbol = 'WhereExpressionBuilder<${className}Table>'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'where'
+                  ..named = true
+                  ..required = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('int?', 'dart:core')
+                  ..name = 'limit'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('int?', 'dart:core')
+                  ..name = 'offset'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..symbol = 'OrderByBuilder<${className}Table>'
+                          ..url = 'package:serverpod/serverpod.dart'
+                          ..isNullable = true,
+                  )
+                  ..name = 'orderBy'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..symbol = 'OrderByListBuilder<${className}Table>'
+                          ..url = 'package:serverpod/serverpod.dart'
+                          ..isNullable = true,
+                  )
+                  ..name = 'orderByList'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('bool', 'dart:core')
+                  ..name = 'orderDescending'
+                  ..named = true
+                  ..defaultTo = const Code('false'),
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('updateWhere')
-            .call([], {
-              'columnValues': refer('columnValues').call([
-                refer(className).property('t').property('updateTable'),
-              ]),
-              'where': refer('where').call([
-                refer(className).property('t'),
-              ]),
-              'limit': refer('limit'),
-              'offset': refer('offset'),
-              'orderBy': refer('orderBy')
-                  .nullSafeProperty('call')
-                  .call([refer(className).property('t')]),
-              'orderByList': refer('orderByList')
-                  .nullSafeProperty('call')
-                  .call([refer(className).property('t')]),
-              'orderDescending': refer('orderDescending'),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('updateWhere')
+                .call(
+                  [],
+                  {
+                    'columnValues': refer('columnValues').call([
+                      refer(className).property('t').property('updateTable'),
+                    ]),
+                    'where': refer(
+                      'where',
+                    ).call([refer(className).property('t')]),
+                    'limit': refer('limit'),
+                    'offset': refer('offset'),
+                    'orderBy': refer('orderBy').nullSafeProperty('call').call([
+                      refer(className).property('t'),
+                    ]),
+                    'orderByList': refer('orderByList')
+                        .nullSafeProperty('call')
+                        .call([refer(className).property('t')]),
+                    'orderDescending': refer('orderDescending'),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
@@ -871,48 +1132,59 @@ class BuildRepositoryClass {
 /// be deleted, none of the rows will be deleted.''')
         ..name = 'delete'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(TypeReference(
-              (r) => r
-                ..symbol = 'List'
+          (r) =>
+              r
+                ..symbol = 'Future'
                 ..types.add(
                   TypeReference(
-                    (r) => r..symbol = className,
+                    (r) =>
+                        r
+                          ..symbol = 'List'
+                          ..types.add(
+                            TypeReference((r) => r..symbol = className),
+                          ),
                   ),
                 ),
-            )),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer('List<$className>')
-            ..name = 'rows'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('List<$className>')
+                  ..name = 'rows',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('delete')
-            .call([
-              refer('rows')
-            ], {
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('delete')
+                .call([refer('rows')], {'transaction': refer('transaction')}, [
+                  refer(className),
+                ])
+                .returned
+                .statement;
     });
   }
 
@@ -922,42 +1194,50 @@ class BuildRepositoryClass {
         ..docs.add('/// Deletes a single [$className].')
         ..name = 'deleteRow'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(TypeReference(
-              (r) => r..symbol = className,
-            )),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(TypeReference((r) => r..symbol = className)),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
-          Parameter((p) => p
-            ..type = refer(className)
-            ..name = 'row'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer(className)
+                  ..name = 'row',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('deleteRow')
-            .call([
-              refer('row')
-            ], {
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('deleteRow')
+                .call([refer('row')], {'transaction': refer('transaction')}, [
+                  refer(className),
+                ])
+                .returned
+                .statement;
     });
   }
 
@@ -967,53 +1247,72 @@ class BuildRepositoryClass {
         ..docs.add('/// Deletes all rows matching the [where] expression.')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(TypeReference(
-              (r) => r
-                ..symbol = 'List'
+          (r) =>
+              r
+                ..symbol = 'Future'
                 ..types.add(
                   TypeReference(
-                    (r) => r..symbol = className,
+                    (r) =>
+                        r
+                          ..symbol = 'List'
+                          ..types.add(
+                            TypeReference((r) => r..symbol = className),
+                          ),
                   ),
                 ),
-            )),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..required = true
-            ..type = typeWhereExpressionBuilder(
-              className,
-              serverCode,
-              nullable: false,
-            )
-            ..name = 'where'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..required = true
+                  ..type = typeWhereExpressionBuilder(
+                    className,
+                    serverCode,
+                    nullable: false,
+                  )
+                  ..name = 'where'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('deleteWhere')
-            .call([], {
-              'where': refer('where').call([refer(className).property('t')]),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('deleteWhere')
+                .call(
+                  [],
+                  {
+                    'where': refer(
+                      'where',
+                    ).call([refer(className).property('t')]),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
@@ -1025,52 +1324,71 @@ class BuildRepositoryClass {
 /// will return the count of all rows in the table.''')
         ..name = 'count'
         ..returns = TypeReference(
-          (r) => r
-            ..symbol = 'Future'
-            ..types.add(refer('int')),
+          (r) =>
+              r
+                ..symbol = 'Future'
+                ..types.add(refer('int')),
         )
         ..requiredParameters.addAll([
-          Parameter((p) => p
-            ..type = refer('Session', 'package:serverpod/serverpod.dart')
-            ..name = 'session'),
+          Parameter(
+            (p) =>
+                p
+                  ..type = refer('Session', 'package:serverpod/serverpod.dart')
+                  ..name = 'session',
+          ),
         ])
         ..optionalParameters.addAll([
-          Parameter((p) => p
-            ..type = typeWhereExpressionBuilder(
-              className,
-              serverCode,
-            )
-            ..name = 'where'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'int')
-            ..name = 'limit'
-            ..named = true),
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = typeWhereExpressionBuilder(className, serverCode)
+                  ..name = 'where'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'int',
+                  )
+                  ..name = 'limit'
+                  ..named = true,
+          ),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('count')
-            .call([], {
-              'where': refer('where').nullSafeProperty('call').call(
-                [refer(className).property('t')],
-              ),
-              'limit': refer('limit'),
-              'transaction': refer('transaction'),
-            }, [
-              refer(className)
-            ])
-            .returned
-            .statement;
+        ..body =
+            refer('session')
+                .property('db')
+                .property('count')
+                .call(
+                  [],
+                  {
+                    'where': refer('where').nullSafeProperty('call').call([
+                      refer(className).property('t'),
+                    ]),
+                    'limit': refer('limit'),
+                    'transaction': refer('transaction'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement;
     });
   }
 
@@ -1079,7 +1397,9 @@ class BuildRepositoryClass {
     String className,
     ClassDefinition classDefinition,
   ) {
-    return fields.where(_isListRelation).map(
+    return fields
+        .where(_isListRelation)
+        .map(
           (field) => _buildAttachFromListRelationField(
             className,
             field,
@@ -1094,20 +1414,24 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return [
-      ...fields.where(_isObjectRelation).map(
+      ...fields
+          .where(_isObjectRelation)
+          .map(
             (field) => _buildAttachRowFromObjectRelationField(
               className,
               field,
               classDefinition,
             ),
           ),
-      ...fields.where(_isListRelation).map(
+      ...fields
+          .where(_isListRelation)
+          .map(
             (field) => _buildAttachRowFromListRelationField(
               className,
               field,
               classDefinition,
             ),
-          )
+          ),
     ];
   }
 
@@ -1161,29 +1485,36 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..modifier = MethodModifier.async
-        ..body = relation.implicitForeignField
-            ? _buildAttachImplementationBlockImplicitListRelation(
-                className,
-                otherClassFieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              )
-            : _buildAttachImplementationBlockExplicitListRelation(
-                otherClassFieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              );
+        ..body =
+            relation.implicitForeignField
+                ? _buildAttachImplementationBlockImplicitListRelation(
+                  className,
+                  otherClassFieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                )
+                : _buildAttachImplementationBlockExplicitListRelation(
+                  otherClassFieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                );
       const Code('');
     });
   }
@@ -1233,29 +1564,36 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..modifier = MethodModifier.async
-        ..body = relation.implicitForeignField
-            ? _buildAttachRowImplementationBlockImplicit(
-                className,
-                otherClassFieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              )
-            : _buildAttachRowImplementationBlockExplicit(
-                otherClassFieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              );
+        ..body =
+            relation.implicitForeignField
+                ? _buildAttachRowImplementationBlockImplicit(
+                  className,
+                  otherClassFieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                )
+                : _buildAttachRowImplementationBlockExplicit(
+                  otherClassFieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                );
       const Code('');
     });
   }
@@ -1303,28 +1641,35 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..modifier = MethodModifier.async
-        ..body = relation.isForeignKeyOrigin
-            ? _buildAttachRowImplementationBlockExplicit(
-                classFieldName,
-                otherClassFieldName,
-                relation.fieldName,
-                refer(className),
-              )
-            : _buildAttachRowImplementationBlockExplicit(
-                otherClassFieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              );
+        ..body =
+            relation.isForeignKeyOrigin
+                ? _buildAttachRowImplementationBlockExplicit(
+                  classFieldName,
+                  otherClassFieldName,
+                  relation.fieldName,
+                  refer(className),
+                )
+                : _buildAttachRowImplementationBlockExplicit(
+                  otherClassFieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                );
       const Code('');
     });
   }
@@ -1447,11 +1792,13 @@ class BuildRepositoryClass {
   ) {
     return fields
         .where(_isNullableListRelation)
-        .map((field) => _buildDetachFromListRelationField(
-              className,
-              field,
-              classDefinition,
-            ));
+        .map(
+          (field) => _buildDetachFromListRelationField(
+            className,
+            field,
+            classDefinition,
+          ),
+        );
   }
 
   Iterable<Method> _buildDetachRowMethods(
@@ -1460,7 +1807,9 @@ class BuildRepositoryClass {
     ClassDefinition classDefinition,
   ) {
     return [
-      ...fields.where(_isNullableObjectRelation).map(
+      ...fields
+          .where(_isNullableObjectRelation)
+          .map(
             (field) => _buildDetachRowFromObjectRelationField(
               className,
               field,
@@ -1469,11 +1818,13 @@ class BuildRepositoryClass {
           ),
       ...fields
           .where(_isNullableListRelation)
-          .map((field) => _buildDetachRowFromListRelationField(
-                className,
-                field,
-                classDefinition,
-              )),
+          .map(
+            (field) => _buildDetachRowFromListRelationField(
+              className,
+              field,
+              classDefinition,
+            ),
+          ),
     ];
   }
 
@@ -1522,31 +1873,38 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
-        ..body = relation.implicitForeignField
-            ? _buildDetachImplementationBlockImplicitListRelation(
-                className,
-                fieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              )
-            : _buildDetachImplementationBlockExplicitListRelation(
-                className,
-                fieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              );
+        ..body =
+            relation.implicitForeignField
+                ? _buildDetachImplementationBlockImplicitListRelation(
+                  className,
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                )
+                : _buildDetachImplementationBlockExplicitListRelation(
+                  className,
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                );
       const Code('');
     });
   }
@@ -1595,31 +1953,38 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
-        ..body = relation.implicitForeignField
-            ? _buildDetachRowImplementationBlockImplicitListRelation(
-                className,
-                fieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              )
-            : _buildDetachRowImplementationBlockExplicitListRelation(
-                className,
-                fieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                foreignType,
-              );
+        ..body =
+            relation.implicitForeignField
+                ? _buildDetachRowImplementationBlockImplicitListRelation(
+                  className,
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                )
+                : _buildDetachRowImplementationBlockExplicitListRelation(
+                  className,
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  foreignType,
+                );
       const Code('');
     });
   }
@@ -1656,34 +2021,41 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = 'Transaction'
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'transaction'
-            ..named = true),
+          Parameter(
+            (p) =>
+                p
+                  ..type = TypeReference(
+                    (b) =>
+                        b
+                          ..isNullable = true
+                          ..symbol = 'Transaction'
+                          ..url = 'package:serverpod/serverpod.dart',
+                  )
+                  ..name = 'transaction'
+                  ..named = true,
+          ),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
-        ..body = relation.isForeignKeyOrigin
-            ? _buildDetachRowImplementationBlockOriginSide(
-                fieldName,
-                classFieldName,
-                relation.fieldName,
-                className,
-              )
-            : _buildDetachRowImplementationBlockForeignSide(
-                fieldName,
-                classFieldName,
-                relation.foreignFieldName,
-                field.type.reference(
-                  serverCode,
-                  nullable: false,
-                  subDirParts: classDefinition.subDirParts,
-                  config: config,
-                ),
-              );
+        ..body =
+            relation.isForeignKeyOrigin
+                ? _buildDetachRowImplementationBlockOriginSide(
+                  fieldName,
+                  classFieldName,
+                  relation.fieldName,
+                  className,
+                )
+                : _buildDetachRowImplementationBlockForeignSide(
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  field.type.reference(
+                    serverCode,
+                    nullable: false,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  ),
+                );
       const Code('');
     });
   }
@@ -1697,24 +2069,22 @@ class BuildRepositoryClass {
   ) {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
-              const Code(''),
-              _buildImplicitCopyClassListField(
-                foreignClass,
-                fieldName,
-                implicitForeignKeyFieldName,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                fieldName,
-                implicitForeignKeyFieldName,
-                foreignClass,
-                _UpdateMethod.update,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+            const Code(''),
+            _buildImplicitCopyClassListField(
+              foreignClass,
+              fieldName,
+              implicitForeignKeyFieldName,
+              refer('null'),
+            ),
+            _buildUpdateField(
+              fieldName,
+              implicitForeignKeyFieldName,
+              foreignClass,
+              _UpdateMethod.update,
+            ),
+          ]))
         .build();
   }
 
@@ -1726,23 +2096,17 @@ class BuildRepositoryClass {
     Reference foreignClass,
   ) {
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
-              const Code(''),
-              _buildCopyWithListField(
-                fieldName,
-                foreignKeyField,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                fieldName,
-                foreignKeyField,
-                foreignClass,
-                _UpdateMethod.update,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+            const Code(''),
+            _buildCopyWithListField(fieldName, foreignKeyField, refer('null')),
+            _buildUpdateField(
+              fieldName,
+              foreignKeyField,
+              foreignClass,
+              _UpdateMethod.update,
+            ),
+          ]))
         .build();
   }
 
@@ -1753,23 +2117,21 @@ class BuildRepositoryClass {
     String className,
   ) {
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
-              const Code(''),
-              _buildCopyWithSingleField(
-                classFieldName,
-                foreignKeyField,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                classFieldName,
-                foreignKeyField,
-                refer(className),
-                _UpdateMethod.updateRow,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            const Code(''),
+            _buildCopyWithSingleField(
+              classFieldName,
+              foreignKeyField,
+              refer('null'),
+            ),
+            _buildUpdateField(
+              classFieldName,
+              foreignKeyField,
+              refer(className),
+              _UpdateMethod.updateRow,
+            ),
+          ]))
         .build();
   }
 
@@ -1781,35 +2143,33 @@ class BuildRepositoryClass {
   ) {
     var localCopyVariable = '\$$fieldName';
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              declareVar(localCopyVariable)
-                  .assign(refer(classFieldName).property(fieldName))
-                  .statement,
-              const Code(''),
-              _buildCodeBlockThrowIfFieldIsNull(
-                localCopyVariable,
-                '$classFieldName.$fieldName',
-              ),
-              _buildCodeBlockThrowIfIdIsNull(
-                localCopyVariable,
-                '$classFieldName.$fieldName.id',
-              ),
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
-              const Code(''),
-              _buildCopyWithSingleField(
-                localCopyVariable,
-                foreignKeyField,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                localCopyVariable,
-                foreignKeyField,
-                foreignClass,
-                _UpdateMethod.updateRow,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            declareVar(
+              localCopyVariable,
+            ).assign(refer(classFieldName).property(fieldName)).statement,
+            const Code(''),
+            _buildCodeBlockThrowIfFieldIsNull(
+              localCopyVariable,
+              '$classFieldName.$fieldName',
+            ),
+            _buildCodeBlockThrowIfIdIsNull(
+              localCopyVariable,
+              '$classFieldName.$fieldName.id',
+            ),
+            _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            const Code(''),
+            _buildCopyWithSingleField(
+              localCopyVariable,
+              foreignKeyField,
+              refer('null'),
+            ),
+            _buildUpdateField(
+              localCopyVariable,
+              foreignKeyField,
+              foreignClass,
+              _UpdateMethod.updateRow,
+            ),
+          ]))
         .build();
   }
 
@@ -1821,23 +2181,21 @@ class BuildRepositoryClass {
     Reference foreignClass,
   ) {
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfIdIsNull(fieldName),
-              const Code(''),
-              _buildCopyWithSingleField(
-                fieldName,
-                foreignKeyField,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                fieldName,
-                foreignKeyField,
-                foreignClass,
-                _UpdateMethod.updateRow,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(fieldName),
+            const Code(''),
+            _buildCopyWithSingleField(
+              fieldName,
+              foreignKeyField,
+              refer('null'),
+            ),
+            _buildUpdateField(
+              fieldName,
+              foreignKeyField,
+              foreignClass,
+              _UpdateMethod.updateRow,
+            ),
+          ]))
         .build();
   }
 
@@ -1851,24 +2209,22 @@ class BuildRepositoryClass {
     var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
 
     return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfIdIsNull(fieldName),
-              const Code(''),
-              _buildImplicitCopyClassSingleField(
-                foreignClass,
-                fieldName,
-                implicitForeignKeyFieldName,
-                refer('null'),
-              ),
-              _buildUpdateField(
-                fieldName,
-                implicitForeignKeyFieldName,
-                foreignClass,
-                _UpdateMethod.updateRow,
-              ),
-            ],
-          ))
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(fieldName),
+            const Code(''),
+            _buildImplicitCopyClassSingleField(
+              foreignClass,
+              fieldName,
+              implicitForeignKeyFieldName,
+              refer('null'),
+            ),
+            _buildUpdateField(
+              fieldName,
+              implicitForeignKeyFieldName,
+              foreignClass,
+              _UpdateMethod.updateRow,
+            ),
+          ]))
         .build();
   }
 
@@ -1893,11 +2249,10 @@ class BuildRepositoryClass {
     var error = errorRef ?? nullCheckRef;
     return Block.of([
       Code('if ($nullCheckRef == null) {'),
-      refer('ArgumentError', 'dart:core')
-          .property('notNull')
-          .call([refer('\'$error\'')])
-          .thrown
-          .statement,
+      refer(
+        'ArgumentError',
+        'dart:core',
+      ).property('notNull').call([refer('\'$error\'')]).thrown.statement,
       const Code('}'),
     ]);
   }
@@ -1910,11 +2265,10 @@ class BuildRepositoryClass {
     var error = errorRef ?? '$variableName.$nullCheckField';
     return Block.of([
       Code('if ($variableName.any((e) => e.$nullCheckField == null)) {'),
-      refer('ArgumentError', 'dart:core')
-          .property('notNull')
-          .call([refer('\'$error\'')])
-          .thrown
-          .statement,
+      refer(
+        'ArgumentError',
+        'dart:core',
+      ).property('notNull').call([refer('\'$error\'')]).thrown.statement,
       const Code('}'),
     ]);
   }
@@ -1928,9 +2282,11 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(refer(rowName).property('copyWith').call([], {
-                  fieldName: assignment,
-                }))
+                .assign(
+                  refer(
+                    rowName,
+                  ).property('copyWith').call([], {fieldName: assignment}),
+                )
                 .statement,
           ))
         .build();
@@ -1946,17 +2302,25 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(refer(rowName)
-                    .property('map')
-                    .call([
-                      Method((b) => b
-                        ..requiredParameters.add(Parameter((p) => p.name = 'e'))
-                        ..body = refer('e').property('copyWith').call([], {
-                          fieldName: assignment,
-                        }).code).closure
-                    ])
-                    .property('toList')
-                    .call([]))
+                .assign(
+                  refer(rowName)
+                      .property('map')
+                      .call([
+                        Method(
+                          (b) =>
+                              b
+                                ..requiredParameters.add(
+                                  Parameter((p) => p.name = 'e'),
+                                )
+                                ..body =
+                                    refer('e').property('copyWith').call([], {
+                                      fieldName: assignment,
+                                    }).code,
+                        ).closure,
+                      ])
+                      .property('toList')
+                      .call([]),
+                )
                 .statement,
           ))
         .build();
@@ -1972,12 +2336,14 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(_buildCallImplicitClass(
-                  foreignClass,
-                  rowName,
-                  fieldName,
-                  assignment,
-                ))
+                .assign(
+                  _buildCallImplicitClass(
+                    foreignClass,
+                    rowName,
+                    fieldName,
+                    assignment,
+                  ),
+                )
                 .statement,
           ))
         .build();
@@ -1994,20 +2360,28 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(refer(rowName)
-                    .property('map')
-                    .call([
-                      Method((b) => b
-                        ..requiredParameters.add(Parameter((p) => p.name = 'e'))
-                        ..body = _buildCallImplicitClass(
-                          foreignClass,
-                          'e',
-                          fieldName,
-                          assignment,
-                        ).code).closure
-                    ])
-                    .property('toList')
-                    .call([]))
+                .assign(
+                  refer(rowName)
+                      .property('map')
+                      .call([
+                        Method(
+                          (b) =>
+                              b
+                                ..requiredParameters.add(
+                                  Parameter((p) => p.name = 'e'),
+                                )
+                                ..body =
+                                    _buildCallImplicitClass(
+                                      foreignClass,
+                                      'e',
+                                      fieldName,
+                                      assignment,
+                                    ).code,
+                        ).closure,
+                      ])
+                      .property('toList')
+                      .call([]),
+                )
                 .statement,
           ))
         .build();
@@ -2021,12 +2395,9 @@ class BuildRepositoryClass {
   ) {
     assert(baseClassReference.symbol != null);
     return refer(
-            '${baseClassReference.symbol!}Implicit', baseClassReference.url)
-        .call([
-      refer(baseClassVariable)
-    ], {
-      fieldName: assignment,
-    });
+      '${baseClassReference.symbol!}Implicit',
+      baseClassReference.url,
+    ).call([refer(baseClassVariable)], {fieldName: assignment});
   }
 
   Code _buildUpdateField(
@@ -2052,16 +2423,16 @@ class BuildRepositoryClass {
             refer('session')
                 .property('db')
                 .property(property)
-                .call([
-                  refer(localCopyVariable)
-                ], {
-                  'columns': literalList(
-                    [classReference.property('t').property(fieldName)],
-                  ),
-                  'transaction': refer('transaction'),
-                }, [
-                  classReference,
-                ])
+                .call(
+                  [refer(localCopyVariable)],
+                  {
+                    'columns': literalList([
+                      classReference.property('t').property(fieldName),
+                    ]),
+                    'transaction': refer('transaction'),
+                  },
+                  [classReference],
+                )
                 .awaited
                 .statement,
           ]))
@@ -2074,7 +2445,4 @@ class BuildRepositoryClass {
   }
 }
 
-enum _UpdateMethod {
-  update,
-  updateRow,
-}
+enum _UpdateMethod { update, updateRow }

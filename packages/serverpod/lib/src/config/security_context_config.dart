@@ -12,9 +12,5 @@ class SecurityContextConfig {
   final SecurityContext? insightsServer;
 
   /// Creates a new [SecurityContextConfig] object.
-  SecurityContextConfig({
-    this.apiServer,
-    this.webServer,
-    this.insightsServer,
-  });
+  SecurityContextConfig({this.apiServer, this.webServer, this.insightsServer});
 }

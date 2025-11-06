@@ -9,24 +9,26 @@ import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 import '../../../generated/protocol.dart';
 
 /// Details of the Apple account.
-typedef AppleAccountDetails = ({
-  /// Apple's permanent user identifier for this account
-  String userIdentifier,
-  String? email,
-  bool? isVerifiedEmail,
-  bool? isPrivateEmail,
-  String? firstName,
-  String? lastName,
-});
+typedef AppleAccountDetails =
+    ({
+      /// Apple's permanent user identifier for this account
+      String userIdentifier,
+      String? email,
+      bool? isVerifiedEmail,
+      bool? isPrivateEmail,
+      String? firstName,
+      String? lastName,
+    });
 
 /// Details of a successful Apple-based authentication.
-typedef AppleAuthSuccess = ({
-  UuidValue appleAccountId,
-  UuidValue authUserId,
-  AppleAccountDetails details,
-  bool newAccount,
-  Set<Scope> scopes,
-});
+typedef AppleAuthSuccess =
+    ({
+      UuidValue appleAccountId,
+      UuidValue authUserId,
+      AppleAccountDetails details,
+      bool newAccount,
+      Set<Scope> scopes,
+    });
 
 /// Utility functions for the Apple identity provider.
 ///
@@ -39,9 +41,8 @@ class AppleIDPUtils {
   final SignInWithApple _signInWithApple;
 
   /// Creates a new instance of [AppleIDPUtils].
-  AppleIDPUtils({
-    required final SignInWithApple signInWithApple,
-  }) : _signInWithApple = signInWithApple;
+  AppleIDPUtils({required final SignInWithApple signInWithApple})
+    : _signInWithApple = signInWithApple;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -72,23 +73,18 @@ class AppleIDPUtils {
 
     var appleAccount = await AppleAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
-        verifiedIdentityToken.userId,
-      ),
+      where: (final t) => t.userIdentifier.equals(verifiedIdentityToken.userId),
       transaction: transaction,
     );
 
     final createNewAccount = appleAccount == null;
 
     final AuthUserModel authUser = switch (createNewAccount) {
-      true => await AuthUsers.create(
-          session,
-          transaction: transaction,
-        ),
+      true => await AuthUsers.create(session, transaction: transaction),
       false => await AuthUsers.get(
-          session,
-          authUserId: appleAccount!.authUserId,
-        ),
+        session,
+        authUserId: appleAccount!.authUserId,
+      ),
     };
 
     if (createNewAccount) {
@@ -142,7 +138,7 @@ class AppleIDPUtils {
     final Session session, {
     required final AppleAccount appleAccount,
     required final void Function(UuidValue authUserId)
-        onExpiredUserAuthentication,
+    onExpiredUserAuthentication,
   }) async {
     await AppleAccount.db.updateRow(
       session,

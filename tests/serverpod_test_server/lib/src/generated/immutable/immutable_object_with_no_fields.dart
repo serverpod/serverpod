@@ -21,7 +21,8 @@ abstract class ImmutableObjectWithNoFields
       _ImmutableObjectWithNoFieldsImpl;
 
   factory ImmutableObjectWithNoFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithNoFields();
   }
 
@@ -31,10 +32,7 @@ abstract class ImmutableObjectWithNoFields
   ImmutableObjectWithNoFields copyWith();
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithNoFields;
   }

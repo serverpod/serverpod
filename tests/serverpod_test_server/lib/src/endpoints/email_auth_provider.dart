@@ -38,14 +38,8 @@ class EmailAuthTestMethods extends Endpoint {
         session,
         where: (t) => Constant.bool(true),
       ),
-      EmailAuth.db.deleteWhere(
-        session,
-        where: (t) => Constant.bool(true),
-      ),
-      UserImage.db.deleteWhere(
-        session,
-        where: (t) => Constant.bool(true),
-      ),
+      EmailAuth.db.deleteWhere(session, where: (t) => Constant.bool(true)),
+      UserImage.db.deleteWhere(session, where: (t) => Constant.bool(true)),
       UserInfo.db.deleteWhere(session, where: (t) => Constant.bool(true)),
       EmailReset.db.deleteWhere(session, where: (t) => Constant.bool(true)),
     ]);

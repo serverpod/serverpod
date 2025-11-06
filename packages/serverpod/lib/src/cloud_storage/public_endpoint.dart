@@ -31,8 +31,10 @@ class CloudStoragePublicEndpoint extends Endpoint {
   /// Retrieves a file from the public database cloud storage.
   Future<Body?> file(MethodCallSession session, String path) async {
     // Fetch the file from storage.
-    var file =
-        await session.storage.retrieveFile(storageId: 'public', path: path);
+    var file = await session.storage.retrieveFile(
+      storageId: 'public',
+      path: path,
+    );
 
     if (file == null) {
       throw EndpointNotFoundException('File not found: $path');
@@ -46,14 +48,19 @@ class CloudStoragePublicEndpoint extends Endpoint {
   }
 
   /// Uploads a file to the public database cloud storage.
-  Future<bool> upload(MethodCallSession session, String storageId, String path,
-      String key) async {
+  Future<bool> upload(
+    MethodCallSession session,
+    String storageId,
+    String path,
+    String key,
+  ) async {
     // Confirm that we are allowed to do the upload
-    var uploadInfo =
-        await session.db.findFirstRow<CloudStorageDirectUploadEntry>(
-      where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
-          CloudStorageDirectUploadEntry.t.path.equals(path),
-    );
+    var uploadInfo = await session.db
+        .findFirstRow<CloudStorageDirectUploadEntry>(
+          where:
+              CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
+              CloudStorageDirectUploadEntry.t.path.equals(path),
+        );
 
     if (uploadInfo == null) return false;
 
@@ -133,8 +140,12 @@ class CloudStoragePublicEndpoint extends Endpoint {
             ),
           },
           call: (Session session, Map<String, dynamic> params) async {
-            return upload(session as MethodCallSession, params['storage'],
-                params['path'], params['key']);
+            return upload(
+              session as MethodCallSession,
+              params['storage'],
+              params['path'],
+              params['key'],
+            );
           },
         ),
       },

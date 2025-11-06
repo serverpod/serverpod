@@ -16,15 +16,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// health checks.
 abstract class ReadWriteTestEntry
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ReadWriteTestEntry._({
-    this.id,
-    required this.number,
-  });
+  ReadWriteTestEntry._({this.id, required this.number});
 
-  factory ReadWriteTestEntry({
-    int? id,
-    required int number,
-  }) = _ReadWriteTestEntryImpl;
+  factory ReadWriteTestEntry({int? id, required int number}) =
+      _ReadWriteTestEntryImpl;
 
   factory ReadWriteTestEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return ReadWriteTestEntry(
@@ -49,24 +44,15 @@ abstract class ReadWriteTestEntry
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ReadWriteTestEntry copyWith({
-    int? id,
-    int? number,
-  });
+  ReadWriteTestEntry copyWith({int? id, int? number});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'number': number,
-    };
+    return {if (id != null) 'id': id, 'number': number};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'number': number,
-    };
+    return {if (id != null) 'id': id, 'number': number};
   }
 
   static ReadWriteTestEntryInclude include() {
@@ -102,22 +88,14 @@ abstract class ReadWriteTestEntry
 class _Undefined {}
 
 class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
-  _ReadWriteTestEntryImpl({
-    int? id,
-    required int number,
-  }) : super._(
-          id: id,
-          number: number,
-        );
+  _ReadWriteTestEntryImpl({int? id, required int number})
+    : super._(id: id, number: number);
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ReadWriteTestEntry copyWith({
-    Object? id = _Undefined,
-    int? number,
-  }) {
+  ReadWriteTestEntry copyWith({Object? id = _Undefined, int? number}) {
     return ReadWriteTestEntry(
       id: id is int? ? id : this.id,
       number: number ?? this.number,
@@ -129,20 +107,15 @@ class ReadWriteTestEntryUpdateTable
     extends _i1.UpdateTable<ReadWriteTestEntryTable> {
   ReadWriteTestEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+  _i1.ColumnValue<int, int> number(int value) =>
+      _i1.ColumnValue(table.number, value);
 }
 
 class ReadWriteTestEntryTable extends _i1.Table<int?> {
   ReadWriteTestEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_readwrite_test') {
+    : super(tableName: 'serverpod_readwrite_test') {
     updateTable = ReadWriteTestEntryUpdateTable(this);
-    number = _i1.ColumnInt(
-      'number',
-      this,
-    );
+    number = _i1.ColumnInt('number', this);
   }
 
   late final ReadWriteTestEntryUpdateTable updateTable;
@@ -151,10 +124,7 @@ class ReadWriteTestEntryTable extends _i1.Table<int?> {
   late final _i1.ColumnInt number;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        number,
-      ];
+  List<_i1.Column> get columns => [id, number];
 }
 
 class ReadWriteTestEntryInclude extends _i1.IncludeObject {
@@ -352,7 +322,7 @@ class ReadWriteTestEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ReadWriteTestEntry>(
@@ -367,7 +337,7 @@ class ReadWriteTestEntryRepository {
   Future<List<ReadWriteTestEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     int? limit,
     int? offset,

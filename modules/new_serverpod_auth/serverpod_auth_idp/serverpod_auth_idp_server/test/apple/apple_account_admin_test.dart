@@ -8,32 +8,31 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'Given 1 active and 1 expired Apple-backed auth user,',
-    (final sessionBuilder, final _) {
-      late Session session;
-      late UuidValue activeUser;
-      late UuidValue inactiveUser;
-      late AppleIDPAdmin admin;
+  withServerpod('Given 1 active and 1 expired Apple-backed auth user,', (
+    final sessionBuilder,
+    final _,
+  ) {
+    late Session session;
+    late UuidValue activeUser;
+    late UuidValue inactiveUser;
+    late AppleIDPAdmin admin;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        activeUser = await _createAppleBackedUser(session);
-        inactiveUser = await _createAppleBackedUser(session);
+      activeUser = await _createAppleBackedUser(session);
+      inactiveUser = await _createAppleBackedUser(session);
 
-        final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
-          activeUser.uuid,
-        });
-        final utils = AppleIDPUtils(signInWithApple: signInWithApple);
-        admin = AppleIDPAdmin(
-          utils: utils,
-        );
-      });
+      final signInWithApple = _SignInWithAppleFake(
+        knownRefreshTokens: {activeUser.uuid},
+      );
+      final utils = AppleIDPUtils(signInWithApple: signInWithApple);
+      admin = AppleIDPAdmin(utils: utils);
+    });
 
-      test(
-          'when calling `AppleAccountsAdmin.checkAccountStatus`, then the callback is invoked for the expired one.',
-          () async {
+    test(
+      'when calling `AppleAccountsAdmin.checkAccountStatus`, then the callback is invoked for the expired one.',
+      () async {
         final expiredUsers = <UuidValue>{};
 
         await admin.checkAccountStatus(
@@ -42,11 +41,12 @@ void main() {
         );
 
         expect(expiredUsers, equals({inactiveUser}));
-      });
+      },
+    );
 
-      test(
-          'when calling `AppleAccountsAdmin.checkAccountStatus`, then all `lastRefreshedAt` timestamps are updated.',
-          () async {
+    test(
+      'when calling `AppleAccountsAdmin.checkAccountStatus`, then all `lastRefreshedAt` timestamps are updated.',
+      () async {
         final timeBeforeUpdate = DateTime.now();
 
         await admin.checkAccountStatus(
@@ -60,9 +60,9 @@ void main() {
             isTrue,
           );
         }
-      });
-    },
-  );
+      },
+    );
+  });
 }
 
 /// Creates an `AuthUser` with Apple authentication with a refresh token equal to the user id.
@@ -94,9 +94,7 @@ Future<UuidValue> _createAppleBackedUser(final Session session) async {
 class _SignInWithAppleFake extends Fake implements SignInWithApple {
   final Set<String> knownRefreshTokens;
 
-  _SignInWithAppleFake({
-    required this.knownRefreshTokens,
-  });
+  _SignInWithAppleFake({required this.knownRefreshTokens});
 
   @override
   Future<RefreshTokenValidationResponse> validateRefreshToken(

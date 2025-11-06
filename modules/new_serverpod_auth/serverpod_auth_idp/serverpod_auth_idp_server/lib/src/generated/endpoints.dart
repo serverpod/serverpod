@@ -17,7 +17,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    modules['serverpod_auth_core'] = _i2.Endpoints()
-      ..initializeEndpoints(server);
+    modules['serverpod_auth_core'] =
+        _i2.Endpoints()..initializeEndpoints(server);
   }
 }

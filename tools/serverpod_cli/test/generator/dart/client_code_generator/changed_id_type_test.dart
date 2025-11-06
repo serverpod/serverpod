@@ -31,7 +31,7 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .withIdFieldType(SupportedIdType.int)
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -44,9 +44,9 @@ void main() {
 
     late final maybeClassNamedExample =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+          compilationUnit,
+          name: testClassName,
+        );
 
     test('then the class has id in constructor with type "int".', () {
       var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
@@ -81,7 +81,7 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .withIdFieldType(SupportedIdType.uuidV4)
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -94,9 +94,9 @@ void main() {
 
     late final maybeClassNamedExample =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
+          compilationUnit,
+          name: testClassName,
+        );
 
     test('then the class has id in constructor with type "UuidValue".', () {
       var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(

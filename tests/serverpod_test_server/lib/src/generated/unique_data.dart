@@ -14,17 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UniqueData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UniqueData._({
-    this.id,
-    required this.number,
-    required this.email,
-  });
+  UniqueData._({this.id, required this.number, required this.email});
 
-  factory UniqueData({
-    int? id,
-    required int number,
-    required String email,
-  }) = _UniqueDataImpl;
+  factory UniqueData({int? id, required int number, required String email}) =
+      _UniqueDataImpl;
 
   factory UniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UniqueData(
@@ -51,27 +44,15 @@ abstract class UniqueData
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UniqueData copyWith({
-    int? id,
-    int? number,
-    String? email,
-  });
+  UniqueData copyWith({int? id, int? number, String? email});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'number': number,
-      'email': email,
-    };
+    return {if (id != null) 'id': id, 'number': number, 'email': email};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'number': number,
-      'email': email,
-    };
+    return {if (id != null) 'id': id, 'number': number, 'email': email};
   }
 
   static UniqueDataInclude include() {
@@ -107,25 +88,14 @@ abstract class UniqueData
 class _Undefined {}
 
 class _UniqueDataImpl extends UniqueData {
-  _UniqueDataImpl({
-    int? id,
-    required int number,
-    required String email,
-  }) : super._(
-          id: id,
-          number: number,
-          email: email,
-        );
+  _UniqueDataImpl({int? id, required int number, required String email})
+    : super._(id: id, number: number, email: email);
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UniqueData copyWith({
-    Object? id = _Undefined,
-    int? number,
-    String? email,
-  }) {
+  UniqueData copyWith({Object? id = _Undefined, int? number, String? email}) {
     return UniqueData(
       id: id is int? ? id : this.id,
       number: number ?? this.number,
@@ -137,28 +107,18 @@ class _UniqueDataImpl extends UniqueData {
 class UniqueDataUpdateTable extends _i1.UpdateTable<UniqueDataTable> {
   UniqueDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+  _i1.ColumnValue<int, int> number(int value) =>
+      _i1.ColumnValue(table.number, value);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 }
 
 class UniqueDataTable extends _i1.Table<int?> {
   UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
     updateTable = UniqueDataUpdateTable(this);
-    number = _i1.ColumnInt(
-      'number',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
+    number = _i1.ColumnInt('number', this);
+    email = _i1.ColumnString('email', this);
   }
 
   late final UniqueDataUpdateTable updateTable;
@@ -168,11 +128,7 @@ class UniqueDataTable extends _i1.Table<int?> {
   late final _i1.ColumnString email;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        number,
-        email,
-      ];
+  List<_i1.Column> get columns => [id, number, email];
 }
 
 class UniqueDataInclude extends _i1.IncludeObject {
@@ -293,10 +249,7 @@ class UniqueDataRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UniqueData>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UniqueData>(id, transaction: transaction);
   }
 
   /// Inserts all [UniqueData]s in the list and returns the inserted rows.
@@ -310,10 +263,7 @@ class UniqueDataRepository {
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UniqueData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UniqueData>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UniqueData] and returns the inserted row.
@@ -324,10 +274,7 @@ class UniqueDataRepository {
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UniqueData>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UniqueData>(row, transaction: transaction);
   }
 
   /// Updates all [UniqueData]s in the list and returns the updated rows. If
@@ -412,10 +359,7 @@ class UniqueDataRepository {
     List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UniqueData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UniqueData>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UniqueData].
@@ -424,10 +368,7 @@ class UniqueDataRepository {
     UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UniqueData>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UniqueData>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

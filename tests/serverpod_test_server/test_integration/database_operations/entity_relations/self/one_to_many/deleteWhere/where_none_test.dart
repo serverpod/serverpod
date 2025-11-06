@@ -94,9 +94,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens.none(
-            (o) => o.name.ilike('kitt%') | o.name.ilike('smul%'),
-          ),
+          where:
+              (t) => t.kittens.none(
+                (o) => o.name.ilike('kitt%') | o.name.ilike('smul%'),
+              ),
         );
 
         expect(deletedCats, hasLength(2));
@@ -118,9 +119,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) =>
-              t.kittens.none((o) => o.name.ilike('kitt%')) &
-              t.kittens.none((o) => o.name.ilike('smul%')),
+          where:
+              (t) =>
+                  t.kittens.none((o) => o.name.ilike('kitt%')) &
+                  t.kittens.none((o) => o.name.ilike('smul%')),
         );
 
         expect(deletedCats, hasLength(2));
@@ -183,9 +185,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens.none(
-            (o) => o.kittens.none((o) => o.name.ilike('kitt%')),
-          ),
+          where:
+              (t) => t.kittens.none(
+                (o) => o.kittens.none((o) => o.name.ilike('kitt%')),
+              ),
         );
 
         expect(deletedCats, hasLength(3));

@@ -7,20 +7,20 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => IntDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => IntDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "intDefaultAndDefaultModel" field value should match the default value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${IntDefaultMix.t.tableName}" ("intDefaultAndDefaultModel", "intDefaultAndDefaultPersist", "intDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await IntDefaultMix.db.findFirstRow(session);
         expect(databaseObject?.intDefaultAndDefaultModel, 10);
       },
@@ -29,12 +29,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "intDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${IntDefaultMix.t.tableName}" ("intDefaultAndDefaultModel", "intDefaultAndDefaultPersist", "intDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await IntDefaultMix.db.findFirstRow(session);
         expect(databaseObject?.intDefaultAndDefaultPersist, 20);
       },
@@ -43,12 +41,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "intDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${IntDefaultMix.t.tableName}" ("intDefaultAndDefaultModel", "intDefaultAndDefaultPersist", "intDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await IntDefaultMix.db.findFirstRow(session);
         expect(databaseObject?.intDefaultModelAndDefaultPersist, 20);
       },
@@ -57,9 +53,7 @@ void main() async {
     test(
       'when creating a record in the database with specific values, then the "intDefaultAndDefaultModel" field value should match the provided value',
       () async {
-        var specificObject = IntDefaultMix(
-          intDefaultAndDefaultModel: 30,
-        );
+        var specificObject = IntDefaultMix(intDefaultAndDefaultModel: 30);
         var specificDatabaseObject = await IntDefaultMix.db.insertRow(
           session,
           specificObject,
@@ -71,9 +65,7 @@ void main() async {
     test(
       'when creating a record in the database with specific values, then the "intDefaultAndDefaultPersist" field value should match the provided value',
       () async {
-        var specificObject = IntDefaultMix(
-          intDefaultAndDefaultPersist: 40,
-        );
+        var specificObject = IntDefaultMix(intDefaultAndDefaultPersist: 40);
         var specificDatabaseObject = await IntDefaultMix.db.insertRow(
           session,
           specificObject,

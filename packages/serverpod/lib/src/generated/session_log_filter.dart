@@ -124,14 +124,14 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     required bool open,
     int? lastSessionLogId,
   }) : super._(
-          endpoint: endpoint,
-          method: method,
-          futureCall: futureCall,
-          slow: slow,
-          error: error,
-          open: open,
-          lastSessionLogId: lastSessionLogId,
-        );
+         endpoint: endpoint,
+         method: method,
+         futureCall: futureCall,
+         slow: slow,
+         error: error,
+         open: open,
+         lastSessionLogId: lastSessionLogId,
+       );
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.

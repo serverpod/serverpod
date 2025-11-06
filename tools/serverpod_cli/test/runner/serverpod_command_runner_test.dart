@@ -138,12 +138,7 @@ class TestFixture {
   final ServerpodCommandRunner runner;
   final MockLogOutput logOutput;
 
-  TestFixture(
-    this.analytics,
-    this.mockCommand,
-    this.runner,
-    this.logOutput,
-  );
+  TestFixture(this.analytics, this.mockCommand, this.runner, this.logOutput);
 }
 
 TestFixture createTestFixture(MockLogger testLogger, Version version) {
@@ -179,48 +174,51 @@ void main() {
       expect(log.logLevel, equals(LogLevel.info));
     });
 
-    test('when only --${BetterCommandRunnerFlags.verbose} flag is provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.verbose}',
-      ];
+    test(
+      'when only --${BetterCommandRunnerFlags.verbose} flag is provided',
+      () async {
+        List<String> args = ['--${BetterCommandRunnerFlags.verbose}'];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.debug));
-    });
-    test('when only --${BetterCommandRunnerFlags.quiet} flag is provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.quiet}',
-      ];
+        expect(log.logLevel, equals(LogLevel.debug));
+      },
+    );
+    test(
+      'when only --${BetterCommandRunnerFlags.quiet} flag is provided',
+      () async {
+        List<String> args = ['--${BetterCommandRunnerFlags.quiet}'];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.nothing));
-    });
+        expect(log.logLevel, equals(LogLevel.nothing));
+      },
+    );
 
     test(
-        'when --${BetterCommandRunnerFlags.verbose} and --${BetterCommandRunnerFlags.quiet} flags are provided',
-        () async {
-      List<String> args = [
-        '--${BetterCommandRunnerFlags.verbose}',
-        '--${BetterCommandRunnerFlags.quiet}',
-      ];
+      'when --${BetterCommandRunnerFlags.verbose} and --${BetterCommandRunnerFlags.quiet} flags are provided',
+      () async {
+        List<String> args = [
+          '--${BetterCommandRunnerFlags.verbose}',
+          '--${BetterCommandRunnerFlags.quiet}',
+        ];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.debug));
-    });
+        expect(log.logLevel, equals(LogLevel.debug));
+      },
+    );
 
-    test('when ${LanguageServerCommand.commandName} command is provided',
-        () async {
-      List<String> args = [LanguageServerCommand.commandName];
+    test(
+      'when ${LanguageServerCommand.commandName} command is provided',
+      () async {
+        List<String> args = [LanguageServerCommand.commandName];
 
-      await fixture.runner.run(args);
+        await fixture.runner.run(args);
 
-      expect(log.logLevel, equals(LogLevel.nothing));
-    });
+        expect(log.logLevel, equals(LogLevel.nothing));
+      },
+    );
   });
 
   test('Given version subcommand when run then prints only version', () async {
@@ -231,12 +229,14 @@ void main() {
     expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
   });
 
-  test('Given --version flag when run then should exit early and not show help',
-      () async {
-    await fixture.runner.run(['--version']);
+  test(
+    'Given --version flag when run then should exit early and not show help',
+    () async {
+      await fixture.runner.run(['--version']);
 
-    var logOutput = fixture.logOutput;
-    expect(logOutput.messages, hasLength(1));
-    expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
-  });
+      var logOutput = fixture.logOutput;
+      expect(logOutput.messages, hasLength(1));
+      expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
+    },
+  );
 }

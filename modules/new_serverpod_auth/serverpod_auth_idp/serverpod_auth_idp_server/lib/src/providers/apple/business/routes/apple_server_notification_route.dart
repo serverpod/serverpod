@@ -9,14 +9,11 @@ class AppleRevokedNotificationRoute extends Route {
 
   /// Creates a new route to handle Apple IDP revoked notifications.
   AppleRevokedNotificationRoute({required final AppleIDPUtils utils})
-      : _utils = utils,
-        super(methods: {Method.post});
+    : _utils = utils,
+      super(methods: {Method.post});
 
   @override
-  FutureOr<Result> handleCall(
-    final Session _,
-    final Request context,
-  ) {
+  FutureOr<Result> handleCall(final Session _, final Request context) {
     return _utils.revokedNotificationHandler()(context);
   }
 }

@@ -17,11 +17,7 @@ import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class StudentUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  StudentUuid._({
-    this.id,
-    required this.name,
-    this.enrollments,
-  });
+  StudentUuid._({this.id, required this.name, this.enrollments});
 
   factory StudentUuid({
     _i1.UuidValue? id,
@@ -31,13 +27,17 @@ abstract class StudentUuid
 
   factory StudentUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return StudentUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments:
+          (jsonSerialization['enrollments'] as List?)
+              ?.map(
+                (e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -79,13 +79,15 @@ abstract class StudentUuid
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static StudentUuidInclude include(
-      {_i2.EnrollmentIntIncludeList? enrollments}) {
+  static StudentUuidInclude include({
+    _i2.EnrollmentIntIncludeList? enrollments,
+  }) {
     return StudentUuidInclude._(enrollments: enrollments);
   }
 
@@ -122,11 +124,7 @@ class _StudentUuidImpl extends StudentUuid {
     _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
-  }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+  }) : super._(id: id, name: name, enrollments: enrollments);
 
   /// Returns a shallow copy of this [StudentUuid]
   /// with some or all fields replaced by the given arguments.
@@ -140,9 +138,10 @@ class _StudentUuidImpl extends StudentUuid {
     return StudentUuid(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments:
+          enrollments is List<_i2.EnrollmentInt>?
+              ? enrollments
+              : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -150,19 +149,14 @@ class _StudentUuidImpl extends StudentUuid {
 class StudentUuidUpdateTable extends _i1.UpdateTable<StudentUuidTable> {
   StudentUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
   StudentUuidTable({super.tableRelation}) : super(tableName: 'student_uuid') {
     updateTable = StudentUuidUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final StudentUuidUpdateTable updateTable;
@@ -180,8 +174,9 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: StudentUuid.t.id,
       foreignField: _i2.EnrollmentInt.t.studentId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
@@ -193,22 +188,21 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: StudentUuid.t.id,
       foreignField: _i2.EnrollmentInt.t.studentId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -368,10 +362,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<StudentUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<StudentUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [StudentUuid] and returns the inserted row.
@@ -382,10 +373,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<StudentUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<StudentUuid>(row, transaction: transaction);
   }
 
   /// Updates all [StudentUuid]s in the list and returns the updated rows. If
@@ -470,10 +458,7 @@ class StudentUuidRepository {
     List<StudentUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<StudentUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<StudentUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [StudentUuid].
@@ -482,10 +467,7 @@ class StudentUuidRepository {
     StudentUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<StudentUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<StudentUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.
@@ -534,9 +516,10 @@ class StudentUuidAttachRepository {
       throw ArgumentError.notNull('studentUuid.id');
     }
 
-    var $enrollmentInt = enrollmentInt
-        .map((e) => e.copyWith(studentId: studentUuid.id))
-        .toList();
+    var $enrollmentInt =
+        enrollmentInt
+            .map((e) => e.copyWith(studentId: studentUuid.id))
+            .toList();
     await session.db.update<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.studentId],

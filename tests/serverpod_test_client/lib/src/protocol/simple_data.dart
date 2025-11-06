@@ -14,15 +14,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
 abstract class SimpleData implements _i1.SerializableModel {
-  SimpleData._({
-    this.id,
-    required this.num,
-  });
+  SimpleData._({this.id, required this.num});
 
-  factory SimpleData({
-    int? id,
-    required int num,
-  }) = _SimpleDataImpl;
+  factory SimpleData({int? id, required int num}) = _SimpleDataImpl;
 
   factory SimpleData.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleData(
@@ -44,16 +38,10 @@ abstract class SimpleData implements _i1.SerializableModel {
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  SimpleData copyWith({
-    int? id,
-    int? num,
-  });
+  SimpleData copyWith({int? id, int? num});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'num': num,
-    };
+    return {if (id != null) 'id': id, 'num': num};
   }
 
   @override
@@ -65,25 +53,13 @@ abstract class SimpleData implements _i1.SerializableModel {
 class _Undefined {}
 
 class _SimpleDataImpl extends SimpleData {
-  _SimpleDataImpl({
-    int? id,
-    required int num,
-  }) : super._(
-          id: id,
-          num: num,
-        );
+  _SimpleDataImpl({int? id, required int num}) : super._(id: id, num: num);
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  SimpleData copyWith({
-    Object? id = _Undefined,
-    int? num,
-  }) {
-    return SimpleData(
-      id: id is int? ? id : this.id,
-      num: num ?? this.num,
-    );
+  SimpleData copyWith({Object? id = _Undefined, int? num}) {
+    return SimpleData(id: id is int? ? id : this.id, num: num ?? this.num);
   }
 }

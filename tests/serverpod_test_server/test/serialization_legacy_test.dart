@@ -60,28 +60,23 @@ void main() {
       for (var i = 0; i < 256; i++) {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
       }
-      expect(unpacked.aUuid,
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(
+        unpacked.aUuid,
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
     });
 
     test('Object with enum', () {
       var object = ObjectWithEnum(
-          testEnum: TestEnum.one,
-          nullableEnum: null,
-          nullableEnumList: [
-            TestEnum.one,
-            null,
-            TestEnum.three
-          ],
-          enumList: [
-            TestEnum.one,
-            TestEnum.two,
-            TestEnum.three
-          ],
-          enumListList: [
-            [TestEnum.one, TestEnum.two],
-            [TestEnum.two, TestEnum.one]
-          ]);
+        testEnum: TestEnum.one,
+        nullableEnum: null,
+        nullableEnumList: [TestEnum.one, null, TestEnum.three],
+        enumList: [TestEnum.one, TestEnum.two, TestEnum.three],
+        enumListList: [
+          [TestEnum.one, TestEnum.two],
+          [TestEnum.two, TestEnum.one],
+        ],
+      );
 
       var s = SerializationManager.encode(object);
       var unpacked = protocol.deserialize<ObjectWithEnum>(jsonDecode(s));
@@ -124,18 +119,12 @@ void main() {
         anIntMap: {'0': 0, '1': 1, '2': 2},
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
         aDuration: const Duration(seconds: 1),
-        aDurationList: const [
-          Duration(seconds: 1),
-          Duration(minutes: 1),
-        ],
-        aListWithNullableDurations: const [
-          Duration(seconds: 1),
-          null,
-        ],
+        aDurationList: const [Duration(seconds: 1), Duration(minutes: 1)],
+        aListWithNullableDurations: const [Duration(seconds: 1), null],
         aUuid: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
         aUuidList: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
         ],
         aListWithNullableUuids: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
@@ -180,7 +169,9 @@ void main() {
 
       expect(unpacked.aListWithNullableByteDatas.length, equals(2));
       expect(
-          unpacked.aListWithNullableByteDatas[0]!.lengthInBytes, equals(256));
+        unpacked.aListWithNullableByteDatas[0]!.lengthInBytes,
+        equals(256),
+      );
       expect(unpacked.aListWithNullableByteDatas[1], isNull);
 
       expect(unpacked.aListWithNullableDurations.length, equals(2));
@@ -188,8 +179,10 @@ void main() {
       expect(unpacked.aListWithNullableDurations[1], isNull);
 
       expect(unpacked.aListWithNullableUuids.length, equals(2));
-      expect(unpacked.aListWithNullableUuids[0],
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(
+        unpacked.aListWithNullableUuids[0],
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
       expect(unpacked.aListWithNullableUuids[1], isNull);
 
       expect(unpacked.aNullableInt, isNull);
@@ -254,27 +247,18 @@ void main() {
         aNullableListWithNullableByteDatas: [createByteData(), null],
         anIntMap: {'0': 0, '1': 1, '2': 2},
         aMapWithNullableInts: {'0': 0, '1': null, '2': 2},
-        aDurationList: const [
-          Duration(seconds: 1),
-          Duration(minutes: 1),
-        ],
-        aListWithNullableDurations: const [
-          Duration(seconds: 1),
-          null,
-        ],
+        aDurationList: const [Duration(seconds: 1), Duration(minutes: 1)],
+        aListWithNullableDurations: const [Duration(seconds: 1), null],
         aNullableDurationList: const [
           Duration(seconds: 1),
           Duration(minutes: 1),
         ],
         aDuration: const Duration(seconds: 1),
         aNullableDuration: const Duration(seconds: 1),
-        aNullableListWithNullableDurations: [
-          const Duration(seconds: 1),
-          null,
-        ],
+        aNullableListWithNullableDurations: [const Duration(seconds: 1), null],
         aUuidList: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
         ],
         aListWithNullableUuids: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
@@ -282,11 +266,12 @@ void main() {
         ],
         aNullableUuidList: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
         ],
         aUuid: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-        aNullableUuid:
-            UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aNullableUuid: UuidValue.fromString(
+          'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        ),
         aNullableListWithNullableUuids: [
           UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
@@ -303,8 +288,10 @@ void main() {
       expect(unpacked.aNullableByteData!.lengthInBytes, equals(256));
       expect(unpacked.aNullableObject!.num, equals(42));
       expect(unpacked.aNullableDuration, equals(const Duration(seconds: 1)));
-      expect(unpacked.aNullableUuid,
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(
+        unpacked.aNullableUuid,
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
 
       expect(unpacked.aNullableIntList!.length, equals(2));
       expect(unpacked.aNullableIntList![0], equals(10));
@@ -328,7 +315,9 @@ void main() {
 
       expect(unpacked.aNullableListWithNullableDateTimes!.length, equals(2));
       expect(
-          unpacked.aNullableListWithNullableDateTimes![0]!.year, equals(1976));
+        unpacked.aNullableListWithNullableDateTimes![0]!.year,
+        equals(1976),
+      );
       expect(unpacked.aNullableListWithNullableDateTimes![1], isNull);
 
       expect(unpacked.aNullableByteDataList!.length, equals(2));
@@ -336,8 +325,10 @@ void main() {
       expect(unpacked.aNullableByteDataList![1].lengthInBytes, equals(256));
 
       expect(unpacked.aNullableListWithNullableByteDatas!.length, equals(2));
-      expect(unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes,
-          equals(256));
+      expect(
+        unpacked.aNullableListWithNullableByteDatas![0]!.lengthInBytes,
+        equals(256),
+      );
       expect(unpacked.aNullableListWithNullableByteDatas![1], isNull);
 
       expect(unpacked.aNullableDurationList!.length, equals(2));
@@ -345,19 +336,27 @@ void main() {
       expect(unpacked.aNullableDurationList![1].inMinutes, equals(1));
 
       expect(unpacked.aNullableUuidList!.length, equals(2));
-      expect(unpacked.aNullableUuidList![0],
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
-      expect(unpacked.aNullableUuidList![1],
-          equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+      expect(
+        unpacked.aNullableUuidList![0],
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
+      expect(
+        unpacked.aNullableUuidList![1],
+        equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')),
+      );
 
       expect(unpacked.aNullableListWithNullableDurations!.length, equals(2));
-      expect(unpacked.aNullableListWithNullableDurations![0]!.inSeconds,
-          equals(1));
+      expect(
+        unpacked.aNullableListWithNullableDurations![0]!.inSeconds,
+        equals(1),
+      );
       expect(unpacked.aNullableListWithNullableDurations![1], isNull);
 
       expect(unpacked.aNullableListWithNullableUuids!.length, equals(2));
-      expect(unpacked.aNullableListWithNullableUuids![0],
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(
+        unpacked.aNullableListWithNullableUuids![0],
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
       expect(unpacked.aNullableListWithNullableUuids![1], isNull);
     });
 
@@ -375,10 +374,7 @@ void main() {
           '2021': DateTime.utc(2021),
           '2022': DateTime.utc(2022),
         },
-        byteDataMap: {
-          '0': createByteData(),
-          '1': createByteData(),
-        },
+        byteDataMap: {'0': createByteData(), '1': createByteData()},
         nullableDataMap: {
           '0': SimpleData(num: 0),
           '1': null,
@@ -391,19 +387,13 @@ void main() {
           '2021': null,
           '2022': DateTime.utc(2022),
         },
-        nullableByteDataMap: {
-          '0': createByteData(),
-          '1': null,
-        },
+        nullableByteDataMap: {'0': createByteData(), '1': null},
         intIntMap: {1: 1, 2: 4, 3: 9},
         durationMap: {
           '0': const Duration(seconds: 1),
           '1': const Duration(minutes: 1),
         },
-        nullableDurationMap: {
-          '0': const Duration(seconds: 1),
-          '1': null,
-        },
+        nullableDurationMap: {'0': const Duration(seconds: 1), '1': null},
         uuidMap: {
           '0': UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           '1': UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
@@ -438,10 +428,14 @@ void main() {
       expect(unpacked.durationMap['0']!.inSeconds, equals(equals(1)));
       expect(unpacked.durationMap['1']!.inMinutes, equals(equals(1)));
 
-      expect(unpacked.uuidMap['0'],
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
-      expect(unpacked.uuidMap['1'],
-          equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+      expect(
+        unpacked.uuidMap['0'],
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
+      expect(
+        unpacked.uuidMap['1'],
+        equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')),
+      );
 
       expect(unpacked.nullableDataMap['0']!.num, equals(0));
       expect(unpacked.nullableDataMap['1'], isNull);
@@ -465,8 +459,10 @@ void main() {
       expect(unpacked.nullableDurationMap['0']!.inSeconds, equals(1));
       expect(unpacked.nullableDurationMap['1'], isNull);
 
-      expect(unpacked.nullableUuidMap['0']!,
-          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+      expect(
+        unpacked.nullableUuidMap['0']!,
+        equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')),
+      );
       expect(unpacked.nullableUuidMap['1'], isNull);
 
       expect(unpacked.intIntMap.length, equals(3));

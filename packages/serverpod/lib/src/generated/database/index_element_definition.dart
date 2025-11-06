@@ -16,10 +16,7 @@ import '../database/index_element_definition_type.dart' as _i2;
 /// Defines an element of an index.
 abstract class IndexElementDefinition
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  IndexElementDefinition._({
-    required this.type,
-    required this.definition,
-  });
+  IndexElementDefinition._({required this.type, required this.definition});
 
   factory IndexElementDefinition({
     required _i2.IndexElementDefinitionType type,
@@ -27,10 +24,12 @@ abstract class IndexElementDefinition
   }) = _IndexElementDefinitionImpl;
 
   factory IndexElementDefinition.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return IndexElementDefinition(
       type: _i2.IndexElementDefinitionType.fromJson(
-          (jsonSerialization['type'] as int)),
+        (jsonSerialization['type'] as int),
+      ),
       definition: jsonSerialization['definition'] as String,
     );
   }
@@ -50,18 +49,12 @@ abstract class IndexElementDefinition
   });
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'type': type.toJson(),
-      'definition': definition,
-    };
+    return {'type': type.toJson(), 'definition': definition};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'type': type.toJson(),
-      'definition': definition,
-    };
+    return {'type': type.toJson(), 'definition': definition};
   }
 
   @override
@@ -74,10 +67,7 @@ class _IndexElementDefinitionImpl extends IndexElementDefinition {
   _IndexElementDefinitionImpl({
     required _i2.IndexElementDefinitionType type,
     required String definition,
-  }) : super._(
-          type: type,
-          definition: definition,
-        );
+  }) : super._(type: type, definition: definition);
 
   /// Returns a shallow copy of this [IndexElementDefinition]
   /// with some or all fields replaced by the given arguments.

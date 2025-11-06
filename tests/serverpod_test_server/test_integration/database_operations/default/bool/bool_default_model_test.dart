@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" fields,', () {
-    tearDownAll(() async => BoolDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => BoolDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=true" field value should be true',
@@ -51,9 +53,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "boolDefaultModelTrue" field value should match the provided value',
       () async {
-        var specificObject = BoolDefaultModel(
-          boolDefaultModelTrue: false,
-        );
+        var specificObject = BoolDefaultModel(boolDefaultModelTrue: false);
         var specificDatabaseObject = await BoolDefaultModel.db.insertRow(
           session,
           specificObject,
@@ -65,9 +65,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "boolDefaultModelFalse" field value should match the provided value',
       () async {
-        var specificObject = BoolDefaultModel(
-          boolDefaultModelFalse: true,
-        );
+        var specificObject = BoolDefaultModel(boolDefaultModelFalse: true);
         var specificDatabaseObject = await BoolDefaultModel.db.insertRow(
           session,
           specificObject,
@@ -79,9 +77,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "boolDefaultModelNullFalse" field value should match the provided value',
       () async {
-        var specificObject = BoolDefaultModel(
-          boolDefaultModelNullFalse: true,
-        );
+        var specificObject = BoolDefaultModel(boolDefaultModelNullFalse: true);
         var specificDatabaseObject = await BoolDefaultModel.db.insertRow(
           session,
           specificObject,

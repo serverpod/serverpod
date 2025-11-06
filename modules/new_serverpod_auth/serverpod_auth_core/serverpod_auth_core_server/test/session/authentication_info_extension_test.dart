@@ -14,10 +14,12 @@ void main() {
       authId: authId.uuid,
     );
 
-    test('when reading the `authSessionId` field, then the UUID is returned.',
-        () {
-      expect(authenticationInfo.authSessionId, authId);
-    });
+    test(
+      'when reading the `authSessionId` field, then the UUID is returned.',
+      () {
+        expect(authenticationInfo.authSessionId, authId);
+      },
+    );
   });
 
   group('Given an `AuthenticationInfo` with a `null` `authId`', () {
@@ -28,25 +30,15 @@ void main() {
     );
 
     test('when reading the `authSessionId` field, then it throws.', () {
-      expect(
-        () => authenticationInfo.authSessionId,
-        throwsA(isA<TypeError>()),
-      );
+      expect(() => authenticationInfo.authSessionId, throwsA(isA<TypeError>()));
     });
   });
 
   group('Given an `AuthenticationInfo` with a non-UUID `authId`', () {
-    final authenticationInfo = AuthenticationInfo(
-      '123',
-      {},
-      authId: 'foo-bar',
-    );
+    final authenticationInfo = AuthenticationInfo('123', {}, authId: 'foo-bar');
 
     test('when reading the `authSessionId` field, then it throws.', () {
-      expect(
-        () => authenticationInfo.authSessionId,
-        throwsFormatException,
-      );
+      expect(() => authenticationInfo.authSessionId, throwsFormatException);
     });
   });
 }

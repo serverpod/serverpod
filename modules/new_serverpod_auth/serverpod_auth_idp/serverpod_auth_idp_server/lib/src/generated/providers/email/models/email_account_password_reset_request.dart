@@ -37,25 +37,34 @@ abstract class EmailAccountPasswordResetRequest
   }) = _EmailAccountPasswordResetRequestImpl;
 
   factory EmailAccountPasswordResetRequest.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailAccountPasswordResetRequest(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       emailAccountId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['emailAccountId']),
-      emailAccount: jsonSerialization['emailAccount'] == null
-          ? null
-          : _i2.EmailAccount.fromJson(
-              (jsonSerialization['emailAccount'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      challengeId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
-      challenge: jsonSerialization['challenge'] == null
-          ? null
-          : _i3.SecretChallenge.fromJson(
-              (jsonSerialization['challenge'] as Map<String, dynamic>)),
+        jsonSerialization['emailAccountId'],
+      ),
+      emailAccount:
+          jsonSerialization['emailAccount'] == null
+              ? null
+              : _i2.EmailAccount.fromJson(
+                (jsonSerialization['emailAccount'] as Map<String, dynamic>),
+              ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      challengeId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['challengeId'],
+      ),
+      challenge:
+          jsonSerialization['challenge'] == null
+              ? null
+              : _i3.SecretChallenge.fromJson(
+                (jsonSerialization['challenge'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -158,13 +167,13 @@ class _EmailAccountPasswordResetRequestImpl
     required _i1.UuidValue challengeId,
     _i3.SecretChallenge? challenge,
   }) : super._(
-          id: id,
-          emailAccountId: emailAccountId,
-          emailAccount: emailAccount,
-          createdAt: createdAt,
-          challengeId: challengeId,
-          challenge: challenge,
-        );
+         id: id,
+         emailAccountId: emailAccountId,
+         emailAccount: emailAccount,
+         createdAt: createdAt,
+         challengeId: challengeId,
+         challenge: challenge,
+       );
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetRequest]
   /// with some or all fields replaced by the given arguments.
@@ -181,14 +190,16 @@ class _EmailAccountPasswordResetRequestImpl
     return EmailAccountPasswordResetRequest(
       id: id is _i1.UuidValue? ? id : this.id,
       emailAccountId: emailAccountId ?? this.emailAccountId,
-      emailAccount: emailAccount is _i2.EmailAccount?
-          ? emailAccount
-          : this.emailAccount?.copyWith(),
+      emailAccount:
+          emailAccount is _i2.EmailAccount?
+              ? emailAccount
+              : this.emailAccount?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i3.SecretChallenge?
-          ? challenge
-          : this.challenge?.copyWith(),
+      challenge:
+          challenge is _i3.SecretChallenge?
+              ? challenge
+              : this.challenge?.copyWith(),
     );
   }
 }
@@ -198,45 +209,26 @@ class EmailAccountPasswordResetRequestUpdateTable
   EmailAccountPasswordResetRequestUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.emailAccountId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.emailAccountId, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> challengeId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.challengeId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.challengeId, value);
 }
 
 class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetRequestTable({super.tableRelation})
-      : super(
-            tableName:
-                'serverpod_auth_idp_email_account_password_reset_request') {
+    : super(
+        tableName: 'serverpod_auth_idp_email_account_password_reset_request',
+      ) {
     updateTable = EmailAccountPasswordResetRequestUpdateTable(this);
-    emailAccountId = _i1.ColumnUuid(
-      'emailAccountId',
-      this,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-      hasDefault: true,
-    );
-    challengeId = _i1.ColumnUuid(
-      'challengeId',
-      this,
-    );
+    emailAccountId = _i1.ColumnUuid('emailAccountId', this);
+    createdAt = _i1.ColumnDateTime('createdAt', this, hasDefault: true);
+    challengeId = _i1.ColumnUuid('challengeId', this);
   }
 
   late final EmailAccountPasswordResetRequestUpdateTable updateTable;
@@ -261,8 +253,9 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
       field: EmailAccountPasswordResetRequest.t.emailAccountId,
       foreignField: _i2.EmailAccount.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EmailAccountTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EmailAccountTable(tableRelation: foreignTableRelation),
     );
     return _emailAccount!;
   }
@@ -274,19 +267,15 @@ class EmailAccountPasswordResetRequestTable extends _i1.Table<_i1.UuidValue?> {
       field: EmailAccountPasswordResetRequest.t.challengeId,
       foreignField: _i3.SecretChallenge.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _challenge!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        emailAccountId,
-        createdAt,
-        challengeId,
-      ];
+  List<_i1.Column> get columns => [id, emailAccountId, createdAt, challengeId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -315,9 +304,9 @@ class EmailAccountPasswordResetRequestInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'emailAccount': _emailAccount,
-        'challenge': _challenge,
-      };
+    'emailAccount': _emailAccount,
+    'challenge': _challenge,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => EmailAccountPasswordResetRequest.t;
@@ -516,15 +505,17 @@ class EmailAccountPasswordResetRequestRepository {
   Future<EmailAccountPasswordResetRequest?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1
-        .ColumnValueListBuilder<EmailAccountPasswordResetRequestUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      EmailAccountPasswordResetRequestUpdateTable
+    >
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetRequest>(
       id,
-      columnValues:
-          columnValues(EmailAccountPasswordResetRequest.t.updateTable),
+      columnValues: columnValues(
+        EmailAccountPasswordResetRequest.t.updateTable,
+      ),
       transaction: transaction,
     );
   }
@@ -533,11 +524,12 @@ class EmailAccountPasswordResetRequestRepository {
   /// Returns the list of updated rows.
   Future<List<EmailAccountPasswordResetRequest>> updateWhere(
     _i1.Session session, {
-    required _i1
-        .ColumnValueListBuilder<EmailAccountPasswordResetRequestUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      EmailAccountPasswordResetRequestUpdateTable
+    >
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
@@ -546,8 +538,9 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetRequest>(
-      columnValues:
-          columnValues(EmailAccountPasswordResetRequest.t.updateTable),
+      columnValues: columnValues(
+        EmailAccountPasswordResetRequest.t.updateTable,
+      ),
       where: where(EmailAccountPasswordResetRequest.t),
       limit: limit,
       offset: offset,
@@ -588,7 +581,7 @@ class EmailAccountPasswordResetRequestRepository {
   Future<List<EmailAccountPasswordResetRequest>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
-        where,
+    where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetRequest>(
@@ -655,8 +648,8 @@ class EmailAccountPasswordResetRequestAttachRowRepository {
       throw ArgumentError.notNull('challenge.id');
     }
 
-    var $emailAccountPasswordResetRequest =
-        emailAccountPasswordResetRequest.copyWith(challengeId: challenge.id);
+    var $emailAccountPasswordResetRequest = emailAccountPasswordResetRequest
+        .copyWith(challengeId: challenge.id);
     await session.db.updateRow<EmailAccountPasswordResetRequest>(
       $emailAccountPasswordResetRequest,
       columns: [EmailAccountPasswordResetRequest.t.challengeId],

@@ -19,10 +19,10 @@ abstract class IntDefaultMix
     int? intDefaultAndDefaultModel,
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
-  })  : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
-        intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
-        intDefaultModelAndDefaultPersist =
-            intDefaultModelAndDefaultPersist ?? 10;
+  }) : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
+       intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
+       intDefaultModelAndDefaultPersist =
+           intDefaultModelAndDefaultPersist ?? 10;
 
   factory IntDefaultMix({
     int? id,
@@ -127,11 +127,11 @@ class _IntDefaultMixImpl extends IntDefaultMix {
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          intDefaultAndDefaultModel: intDefaultAndDefaultModel,
-          intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
-          intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         intDefaultAndDefaultModel: intDefaultAndDefaultModel,
+         intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
+         intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [IntDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,8 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultAndDefaultModel ?? this.intDefaultAndDefaultModel,
       intDefaultAndDefaultPersist:
           intDefaultAndDefaultPersist ?? this.intDefaultAndDefaultPersist,
-      intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist ??
+      intDefaultModelAndDefaultPersist:
+          intDefaultModelAndDefaultPersist ??
           this.intDefaultModelAndDefaultPersist,
     );
   }
@@ -159,27 +160,18 @@ class IntDefaultMixUpdateTable extends _i1.UpdateTable<IntDefaultMixTable> {
   IntDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultAndDefaultModel(int value) =>
-      _i1.ColumnValue(
-        table.intDefaultAndDefaultModel,
-        value,
-      );
+      _i1.ColumnValue(table.intDefaultAndDefaultModel, value);
 
   _i1.ColumnValue<int, int> intDefaultAndDefaultPersist(int value) =>
-      _i1.ColumnValue(
-        table.intDefaultAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.intDefaultAndDefaultPersist, value);
 
   _i1.ColumnValue<int, int> intDefaultModelAndDefaultPersist(int value) =>
-      _i1.ColumnValue(
-        table.intDefaultModelAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.intDefaultModelAndDefaultPersist, value);
 }
 
 class IntDefaultMixTable extends _i1.Table<int?> {
   IntDefaultMixTable({super.tableRelation})
-      : super(tableName: 'int_default_mix') {
+    : super(tableName: 'int_default_mix') {
     updateTable = IntDefaultMixUpdateTable(this);
     intDefaultAndDefaultModel = _i1.ColumnInt(
       'intDefaultAndDefaultModel',
@@ -208,11 +200,11 @@ class IntDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        intDefaultAndDefaultModel,
-        intDefaultAndDefaultPersist,
-        intDefaultModelAndDefaultPersist,
-      ];
+    id,
+    intDefaultAndDefaultModel,
+    intDefaultAndDefaultPersist,
+    intDefaultModelAndDefaultPersist,
+  ];
 }
 
 class IntDefaultMixInclude extends _i1.IncludeObject {
@@ -333,10 +325,7 @@ class IntDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<IntDefaultMix>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<IntDefaultMix>(id, transaction: transaction);
   }
 
   /// Inserts all [IntDefaultMix]s in the list and returns the inserted rows.
@@ -350,10 +339,7 @@ class IntDefaultMixRepository {
     List<IntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<IntDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<IntDefaultMix>(rows, transaction: transaction);
   }
 
   /// Inserts a single [IntDefaultMix] and returns the inserted row.
@@ -364,10 +350,7 @@ class IntDefaultMixRepository {
     IntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<IntDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<IntDefaultMix>(row, transaction: transaction);
   }
 
   /// Updates all [IntDefaultMix]s in the list and returns the updated rows. If
@@ -452,10 +435,7 @@ class IntDefaultMixRepository {
     List<IntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<IntDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<IntDefaultMix>(rows, transaction: transaction);
   }
 
   /// Deletes a single [IntDefaultMix].
@@ -464,10 +444,7 @@ class IntDefaultMixRepository {
     IntDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<IntDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<IntDefaultMix>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

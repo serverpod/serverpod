@@ -28,35 +28,35 @@ void main() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
-  group('Given a transaction that does not match required database transaction',
-      () {
-    var invalidTransactionType = MockTransaction();
-    test('when calling `update` then an error is thrown.', () async {
-      expect(
-        session.db.transaction<void>((transaction) async {
-          await UniqueData.db.update(
-            session,
-            [UniqueData(number: 1, email: '')],
-            transaction: invalidTransactionType,
-          );
-        }),
-        throwsArgumentError,
-      );
-    });
+  group(
+    'Given a transaction that does not match required database transaction',
+    () {
+      var invalidTransactionType = MockTransaction();
+      test('when calling `update` then an error is thrown.', () async {
+        expect(
+          session.db.transaction<void>((transaction) async {
+            await UniqueData.db.update(session, [
+              UniqueData(number: 1, email: ''),
+            ], transaction: invalidTransactionType);
+          }),
+          throwsArgumentError,
+        );
+      });
 
-    test('when calling `updateRow` then an error is thrown.', () async {
-      expect(
-        session.db.transaction<void>((transaction) async {
-          await UniqueData.db.updateRow(
-            session,
-            UniqueData(number: 1, email: ''),
-            transaction: invalidTransactionType,
-          );
-        }),
-        throwsArgumentError,
-      );
-    });
-  });
+      test('when calling `updateRow` then an error is thrown.', () async {
+        expect(
+          session.db.transaction<void>((transaction) async {
+            await UniqueData.db.updateRow(
+              session,
+              UniqueData(number: 1, email: ''),
+              transaction: invalidTransactionType,
+            );
+          }),
+          throwsArgumentError,
+        );
+      });
+    },
+  );
 
   group('Given updating an object inside a transaction that is committed', () {
     late UniqueData insertedData;
@@ -69,19 +69,14 @@ void main() async {
 
     test('when calling `update` then does update the object.', () async {
       await session.db.transaction((transaction) async {
-        await UniqueData.db.update(
-          session,
-          [insertedData.copyWith(number: 222)],
-          transaction: transaction,
-        );
+        await UniqueData.db.update(session, [
+          insertedData.copyWith(number: 222),
+        ], transaction: transaction);
       });
 
       var updatedData = await UniqueData.db.find(session);
       expect(updatedData, hasLength(1));
-      expect(
-        updatedData.first.number,
-        222,
-      );
+      expect(updatedData.first.number, 222);
     });
 
     test('when calling `updateRow` then does update the object.', () async {
@@ -94,50 +89,39 @@ void main() async {
       });
 
       var updatedData = await UniqueData.db.findFirstRow(session);
-      expect(
-        updatedData?.number,
-        222,
-      );
+      expect(updatedData?.number, 222);
     });
   });
 
-  group('Given inserting object and starting transaction that is cancelled',
-      () {
+  group('Given inserting object and starting transaction that is cancelled', () {
     late UniqueData insertedData;
     setUp(() async {
       var data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
-      insertedData = await UniqueData.db.insertRow(
-        session,
-        data,
-      );
+      insertedData = await UniqueData.db.insertRow(session, data);
     });
 
     test(
-        'when calling `update` before cancelling then does not update the object.',
-        () async {
-      await session.db.transaction(
-        (transaction) async {
-          await UniqueData.db.update(
-            session,
-            [insertedData.copyWith(number: 222)],
-            transaction: transaction,
-          );
+      'when calling `update` before cancelling then does not update the object.',
+      () async {
+        await session.db.transaction((transaction) async {
+          await UniqueData.db.update(session, [
+            insertedData.copyWith(number: 222),
+          ], transaction: transaction);
 
           await transaction.cancel();
-        },
-      );
+        });
 
-      var fetchedData = await UniqueData.db.find(session);
-      expect(fetchedData, hasLength(1));
-      expect(fetchedData.first.number, 111);
-    });
+        var fetchedData = await UniqueData.db.find(session);
+        expect(fetchedData, hasLength(1));
+        expect(fetchedData.first.number, 111);
+      },
+    );
 
     test(
-        'when calling `updateRow` before cancelling then does not update the object.',
-        () async {
-      await session.db.transaction(
-        (transaction) async {
+      'when calling `updateRow` before cancelling then does not update the object.',
+      () async {
+        await session.db.transaction((transaction) async {
           await UniqueData.db.updateRow(
             session,
             insertedData.copyWith(number: 222),
@@ -145,12 +129,12 @@ void main() async {
           );
 
           await transaction.cancel();
-        },
-      );
+        });
 
-      var fetchedData = await UniqueData.db.find(session);
-      expect(fetchedData, hasLength(1));
-      expect(fetchedData.first.number, 111);
-    });
+        var fetchedData = await UniqueData.db.find(session);
+        expect(fetchedData, hasLength(1));
+        expect(fetchedData.first.number, 111);
+      },
+    );
   });
 }

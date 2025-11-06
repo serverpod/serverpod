@@ -13,18 +13,14 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class UserNoteWithALongName implements _i1.SerializableModel {
-  UserNoteWithALongName._({
-    this.id,
-    required this.name,
-  });
+  UserNoteWithALongName._({this.id, required this.name});
 
-  factory UserNoteWithALongName({
-    int? id,
-    required String name,
-  }) = _UserNoteWithALongNameImpl;
+  factory UserNoteWithALongName({int? id, required String name}) =
+      _UserNoteWithALongNameImpl;
 
   factory UserNoteWithALongName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return UserNoteWithALongName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -41,16 +37,10 @@ abstract class UserNoteWithALongName implements _i1.SerializableModel {
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserNoteWithALongName copyWith({
-    int? id,
-    String? name,
-  });
+  UserNoteWithALongName copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   @override
@@ -62,22 +52,14 @@ abstract class UserNoteWithALongName implements _i1.SerializableModel {
 class _Undefined {}
 
 class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
-  _UserNoteWithALongNameImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _UserNoteWithALongNameImpl({int? id, required String name})
+    : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserNoteWithALongName copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  UserNoteWithALongName copyWith({Object? id = _Undefined, String? name}) {
     return UserNoteWithALongName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,

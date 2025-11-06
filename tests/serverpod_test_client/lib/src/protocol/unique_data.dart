@@ -13,17 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class UniqueData implements _i1.SerializableModel {
-  UniqueData._({
-    this.id,
-    required this.number,
-    required this.email,
-  });
+  UniqueData._({this.id, required this.number, required this.email});
 
-  factory UniqueData({
-    int? id,
-    required int number,
-    required String email,
-  }) = _UniqueDataImpl;
+  factory UniqueData({int? id, required int number, required String email}) =
+      _UniqueDataImpl;
 
   factory UniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UniqueData(
@@ -45,18 +38,10 @@ abstract class UniqueData implements _i1.SerializableModel {
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UniqueData copyWith({
-    int? id,
-    int? number,
-    String? email,
-  });
+  UniqueData copyWith({int? id, int? number, String? email});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'number': number,
-      'email': email,
-    };
+    return {if (id != null) 'id': id, 'number': number, 'email': email};
   }
 
   @override
@@ -68,25 +53,14 @@ abstract class UniqueData implements _i1.SerializableModel {
 class _Undefined {}
 
 class _UniqueDataImpl extends UniqueData {
-  _UniqueDataImpl({
-    int? id,
-    required int number,
-    required String email,
-  }) : super._(
-          id: id,
-          number: number,
-          email: email,
-        );
+  _UniqueDataImpl({int? id, required int number, required String email})
+    : super._(id: id, number: number, email: email);
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UniqueData copyWith({
-    Object? id = _Undefined,
-    int? number,
-    String? email,
-  }) {
+  UniqueData copyWith({Object? id = _Undefined, int? number, String? email}) {
     return UniqueData(
       id: id is int? ? id : this.id,
       number: number ?? this.number,

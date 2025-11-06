@@ -8,15 +8,12 @@ class MigrationVersions {
   /// Provides a list of all available migration versions of a module.
   /// Returns an empty list if no migrations are available or if the module
   /// directory does not exist.
-  static List<String> listVersions({
-    required Directory projectDirectory,
-  }) {
-    var directory =
-        MigrationConstants.migrationsBaseDirectory(projectDirectory);
+  static List<String> listVersions({required Directory projectDirectory}) {
+    var directory = MigrationConstants.migrationsBaseDirectory(
+      projectDirectory,
+    );
 
-    var moduleDirectory = Directory(path.join(
-      directory.path,
-    ));
+    var moduleDirectory = Directory(path.join(directory.path));
 
     if (!moduleDirectory.existsSync()) {
       return [];

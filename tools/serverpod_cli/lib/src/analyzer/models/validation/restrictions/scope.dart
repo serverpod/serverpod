@@ -14,9 +14,7 @@ class ScopeValueRestriction
     ModelFieldScopeDefinition.none,
   };
 
-  ScopeValueRestriction({
-    required this.restrictions,
-  });
+  ScopeValueRestriction({required this.restrictions});
 
   @override
   List<SourceSpanSeverityException> validate(
@@ -41,7 +39,7 @@ class ScopeValueRestriction
         SourceSpanSeverityException(
           'The field "$parentNodeName" cannot have the "${Keyword.scope}" property set to "${value.name}" when the class is marked as server only. Allowed properties are $allowedProperties.',
           span,
-        )
+        ),
       ];
     } else if (document.serverOnly &&
         value == ModelFieldScopeDefinition.serverOnly) {
@@ -51,7 +49,7 @@ class ScopeValueRestriction
           span,
           severity: SourceSpanSeverity.info,
           tags: [SourceSpanTag.unnecessary],
-        )
+        ),
       ];
     } else if (document.serverOnly &&
         value == ModelFieldScopeDefinition.none &&

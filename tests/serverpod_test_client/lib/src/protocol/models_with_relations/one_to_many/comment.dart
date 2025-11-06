@@ -33,10 +33,12 @@ abstract class Comment implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       orderId: jsonSerialization['orderId'] as int,
-      order: jsonSerialization['order'] == null
-          ? null
-          : _i2.Order.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+      order:
+          jsonSerialization['order'] == null
+              ? null
+              : _i2.Order.fromJson(
+                (jsonSerialization['order'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -85,11 +87,11 @@ class _CommentImpl extends Comment {
     required int orderId,
     _i2.Order? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.

@@ -10,17 +10,17 @@ final class AuthenticationTokensAdmin {
 
   /// Creates a new admin helper class instance.
   @internal
-  AuthenticationTokensAdmin({
-    required final Duration refreshTokenLifetime,
-  }) : _refreshTokenLifetime = refreshTokenLifetime;
+  AuthenticationTokensAdmin({required final Duration refreshTokenLifetime})
+    : _refreshTokenLifetime = refreshTokenLifetime;
 
   /// Removes all expired refresh tokens from the database.
   Future<void> deleteExpiredRefreshTokens(
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final oldestValidRefreshTokenDate =
-        clock.now().subtract(_refreshTokenLifetime);
+    final oldestValidRefreshTokenDate = clock.now().subtract(
+      _refreshTokenLifetime,
+    );
 
     await RefreshToken.db.deleteWhere(
       session,
@@ -121,16 +121,16 @@ final class AuthenticationTokensAdmin {
     );
 
     return refreshTokens
-        .map((final refreshToken) => (
-              authUserId: refreshToken.authUserId,
-              refreshTokenId: refreshToken.id!,
-            ))
+        .map(
+          (final refreshToken) => (
+            authUserId: refreshToken.authUserId,
+            refreshTokenId: refreshToken.id!,
+          ),
+        )
         .toList();
   }
 }
 
 /// A tuple of (refresh token ID) representing a deleted refresh token.
-typedef DeletedRefreshToken = ({
-  UuidValue authUserId,
-  UuidValue refreshTokenId
-});
+typedef DeletedRefreshToken =
+    ({UuidValue authUserId, UuidValue refreshTokenId});

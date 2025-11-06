@@ -15,10 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// A pair of refresh and access tokens, in their external format.
 abstract class TokenPair
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  TokenPair._({
-    required this.refreshToken,
-    required this.accessToken,
-  });
+  TokenPair._({required this.refreshToken, required this.accessToken});
 
   factory TokenPair({
     required String refreshToken,
@@ -43,24 +40,15 @@ abstract class TokenPair
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  TokenPair copyWith({
-    String? refreshToken,
-    String? accessToken,
-  });
+  TokenPair copyWith({String? refreshToken, String? accessToken});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'refreshToken': refreshToken,
-      'accessToken': accessToken,
-    };
+    return {'refreshToken': refreshToken, 'accessToken': accessToken};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'refreshToken': refreshToken,
-      'accessToken': accessToken,
-    };
+    return {'refreshToken': refreshToken, 'accessToken': accessToken};
   }
 
   @override
@@ -70,22 +58,14 @@ abstract class TokenPair
 }
 
 class _TokenPairImpl extends TokenPair {
-  _TokenPairImpl({
-    required String refreshToken,
-    required String accessToken,
-  }) : super._(
-          refreshToken: refreshToken,
-          accessToken: accessToken,
-        );
+  _TokenPairImpl({required String refreshToken, required String accessToken})
+    : super._(refreshToken: refreshToken, accessToken: accessToken);
 
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  TokenPair copyWith({
-    String? refreshToken,
-    String? accessToken,
-  }) {
+  TokenPair copyWith({String? refreshToken, String? accessToken}) {
     return TokenPair(
       refreshToken: refreshToken ?? this.refreshToken,
       accessToken: accessToken ?? this.accessToken,

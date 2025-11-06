@@ -13,11 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ObjectWithIndex implements _i1.SerializableModel {
-  ObjectWithIndex._({
-    this.id,
-    required this.indexed,
-    required this.indexed2,
-  });
+  ObjectWithIndex._({this.id, required this.indexed, required this.indexed2});
 
   factory ObjectWithIndex({
     int? id,
@@ -45,18 +41,10 @@ abstract class ObjectWithIndex implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithIndex copyWith({
-    int? id,
-    int? indexed,
-    int? indexed2,
-  });
+  ObjectWithIndex copyWith({int? id, int? indexed, int? indexed2});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
+    return {if (id != null) 'id': id, 'indexed': indexed, 'indexed2': indexed2};
   }
 
   @override
@@ -68,15 +56,8 @@ abstract class ObjectWithIndex implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ObjectWithIndexImpl extends ObjectWithIndex {
-  _ObjectWithIndexImpl({
-    int? id,
-    required int indexed,
-    required int indexed2,
-  }) : super._(
-          id: id,
-          indexed: indexed,
-          indexed2: indexed2,
-        );
+  _ObjectWithIndexImpl({int? id, required int indexed, required int indexed2})
+    : super._(id: id, indexed: indexed, indexed2: indexed2);
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.

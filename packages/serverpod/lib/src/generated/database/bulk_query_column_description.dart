@@ -20,9 +20,11 @@ abstract class BulkQueryColumnDescription
       _BulkQueryColumnDescriptionImpl;
 
   factory BulkQueryColumnDescription.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return BulkQueryColumnDescription(
-        name: jsonSerialization['name'] as String);
+      name: jsonSerialization['name'] as String,
+    );
   }
 
   String name;

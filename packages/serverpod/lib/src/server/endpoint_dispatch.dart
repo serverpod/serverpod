@@ -57,15 +57,18 @@ abstract class EndpointDispatch {
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodStreamCallContext> getMethodStreamCallContext({
     required Session Function(EndpointConnector connector)
-        createSessionCallback,
+    createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> arguments,
     required SerializationManager serializationManager,
     required List<String> requestedInputStreams,
   }) async {
-    var (methodConnector, endpoint, parsedArguments) =
-        await _getEndpointMethodConnector(
+    var (
+      methodConnector,
+      endpoint,
+      parsedArguments,
+    ) = await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -109,14 +112,17 @@ abstract class EndpointDispatch {
   /// If the found method is not a [MethodConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodCallContext> getMethodCallContext({
     required Session Function(EndpointConnector connector)
-        createSessionCallback,
+    createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> parameters,
     required SerializationManager serializationManager,
   }) async {
-    var (methodConnector, endpoint, parsedArguments) =
-        await _getEndpointMethodConnector(
+    var (
+      methodConnector,
+      endpoint,
+      parsedArguments,
+    ) = await _getEndpointMethodConnector(
       createSessionCallback: createSessionCallback,
       endpointPath: endpointPath,
       methodName: methodName,
@@ -136,16 +142,18 @@ abstract class EndpointDispatch {
   }
 
   Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
-      _getEndpointMethodConnector({
+  _getEndpointMethodConnector({
     required Session Function(EndpointConnector connector)
-        createSessionCallback,
+    createSessionCallback,
     required String endpointPath,
     required String methodName,
     required Map<String, dynamic> arguments,
     required SerializationManager serializationManager,
   }) async {
-    var endpointConnector =
-        await _getEndpointConnector(endpointPath, createSessionCallback);
+    var endpointConnector = await _getEndpointConnector(
+      endpointPath,
+      createSessionCallback,
+    );
 
     var methodConnector = endpointConnector.methodConnectors[methodName];
     if (methodConnector == null) {
@@ -162,9 +170,9 @@ abstract class EndpointDispatch {
   }
 
   Future<EndpointConnector> _getEndpointConnector(
-      String endpointPath,
-      Session Function(EndpointConnector connector)
-          createSessionCallback) async {
+    String endpointPath,
+    Session Function(EndpointConnector connector) createSessionCallback,
+  ) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
       throw EndpointNotFoundException('Endpoint not found');
@@ -234,7 +242,8 @@ abstract class EndpointDispatch {
         streamDescriptions.add(description);
       } else if (!description.nullable) {
         throw InvalidParametersException(
-            'Missing required stream parameter: ${description.name}');
+          'Missing required stream parameter: ${description.name}',
+        );
       }
     }
 
@@ -263,8 +272,8 @@ class EndpointConnector {
 }
 
 /// Calls a named method referenced in a [MethodConnector].
-typedef MethodCall = Future Function(
-    Session session, Map<String, dynamic> params);
+typedef MethodCall =
+    Future Function(Session session, Map<String, dynamic> params);
 
 /// The [EndpointMethodConnector] is a base class for connectors that connect
 /// methods their implementation.
@@ -276,10 +285,7 @@ abstract class EndpointMethodConnector {
   final Map<String, ParameterDescription> params;
 
   /// Creates a new [EndpointMethodConnector].
-  EndpointMethodConnector({
-    required this.name,
-    required this.params,
-  });
+  EndpointMethodConnector({required this.name, required this.params});
 }
 
 /// The [MethodConnector] hooks up a method with its name and the actual call
@@ -348,11 +354,12 @@ class MethodStreamCallContext {
 }
 
 /// Calls a named method referenced in a [MethodStreamConnector].
-typedef MethodStream = dynamic Function(
-  Session session,
-  Map<String, dynamic> params,
-  Map<String, Stream<dynamic>> streamParams,
-);
+typedef MethodStream =
+    dynamic Function(
+      Session session,
+      Map<String, dynamic> params,
+      Map<String, Stream<dynamic>> streamParams,
+    );
 
 /// The type of return value from a [MethodStreamConnector].
 enum MethodStreamReturnType {
@@ -401,8 +408,11 @@ class ParameterDescription {
   final bool nullable;
 
   /// Creates a new [ParameterDescription].
-  ParameterDescription(
-      {required this.name, required this.type, required this.nullable});
+  ParameterDescription({
+    required this.name,
+    required this.type,
+    required this.nullable,
+  });
 }
 
 /// Description of a stream parameter.
@@ -487,8 +497,10 @@ class NotAuthorizedException extends EndpointDispatchException {
   ResultAuthenticationFailed authenticationFailedResult;
 
   /// Creates a new [NotAuthorizedException].
-  NotAuthorizedException(this.authenticationFailedResult,
-      {this.message = 'Not authorized'});
+  NotAuthorizedException(
+    this.authenticationFailedResult, {
+    this.message = 'Not authorized',
+  });
 }
 
 /// The endpoint was not found.
@@ -615,9 +627,7 @@ final class ExceptionResult<T extends SerializableException>
   final T model;
 
   /// Creates a new [ExceptionResult].
-  ExceptionResult({
-    required this.model,
-  });
+  ExceptionResult({required this.model});
 
   @override
   String toString() => 'ExceptionResult(entity: $model)';

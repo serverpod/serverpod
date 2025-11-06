@@ -15,20 +15,21 @@ void main() {
       'when the field is of type double and the defaultModel is set to "10.5", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             doubleType: double, defaultModel=10.5
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -41,20 +42,21 @@ void main() {
       'when the field is of type double and the defaultModel is set to "20.5", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             doubleType: double, defaultModel=20.5
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -68,20 +70,21 @@ void main() {
       'when the field is of type double and the defaultModel is set to an integer "10", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             doubleType: double, defaultModel=10
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -94,19 +97,20 @@ void main() {
       'when the field is of type double and the defaultModel is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             doubleType: double, defaultModel=
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -122,19 +126,20 @@ void main() {
       'when the field is of type double with an invalid defaultModel value "TEN.POINT_FIVE", then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           doubleInvalid: double?, defaultModel=TEN.POINT_FIVE
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -150,19 +155,20 @@ void main() {
       'when the field is of type double with an invalid defaultModel value containing non-numeric characters, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           doubleInvalid: double?, defaultModel=10.5a
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -178,19 +184,20 @@ void main() {
       'when the field is of type double with an invalid defaultModel value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             doubleInvalid: double?, defaultModel=test
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

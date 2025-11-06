@@ -33,11 +33,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -46,11 +46,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
       });
 
@@ -59,22 +59,23 @@ void main() {
       });
 
       test(
-          'when get verified email account request by id is called then it returns the account request',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when get verified email account request by id is called then it returns the account request',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNotNull);
-        expect(request.id, equals(accountRequestId));
-        expect(request.email, equals(email));
-        expect(request.verifiedAt, isNotNull);
-      });
+          expect(request, isNotNull);
+          expect(request.id, equals(accountRequestId));
+          expect(request.email, equals(email));
+          expect(request.verifiedAt, isNotNull);
+        },
+      );
     },
   );
 
@@ -97,11 +98,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -112,22 +113,23 @@ void main() {
       });
 
       test(
-          'when get verified email account request by id is called then it throws request not verified exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when get verified email account request by id is called then it throws request not verified exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotVerifiedException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotVerifiedException>()),
+          );
+        },
+      );
     },
   );
 
@@ -150,22 +152,23 @@ void main() {
       });
 
       test(
-          'when get verified email account request by id is called then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when get verified email account request by id is called then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.getVerifiedEmailAccountRequestById(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 }

@@ -60,12 +60,7 @@ abstract class EmailAuth
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAuth copyWith({
-    int? id,
-    int? userId,
-    String? email,
-    String? hash,
-  });
+  EmailAuth copyWith({int? id, int? userId, String? email, String? hash});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -124,12 +119,7 @@ class _EmailAuthImpl extends EmailAuth {
     required int userId,
     required String email,
     required String hash,
-  }) : super._(
-          id: id,
-          userId: userId,
-          email: email,
-          hash: hash,
-        );
+  }) : super._(id: id, userId: userId, email: email, hash: hash);
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
@@ -153,38 +143,23 @@ class _EmailAuthImpl extends EmailAuth {
 class EmailAuthUpdateTable extends _i1.UpdateTable<EmailAuthTable> {
   EmailAuthUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userId(int value) =>
+      _i1.ColumnValue(table.userId, value);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+  _i1.ColumnValue<String, String> hash(String value) =>
+      _i1.ColumnValue(table.hash, value);
 }
 
 class EmailAuthTable extends _i1.Table<int?> {
   EmailAuthTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_auth') {
+    : super(tableName: 'serverpod_email_auth') {
     updateTable = EmailAuthUpdateTable(this);
-    userId = _i1.ColumnInt(
-      'userId',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    hash = _i1.ColumnString(
-      'hash',
-      this,
-    );
+    userId = _i1.ColumnInt('userId', this);
+    email = _i1.ColumnString('email', this);
+    hash = _i1.ColumnString('hash', this);
   }
 
   late final EmailAuthUpdateTable updateTable;
@@ -199,12 +174,7 @@ class EmailAuthTable extends _i1.Table<int?> {
   late final _i1.ColumnString hash;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        userId,
-        email,
-        hash,
-      ];
+  List<_i1.Column> get columns => [id, userId, email, hash];
 }
 
 class EmailAuthInclude extends _i1.IncludeObject {
@@ -325,10 +295,7 @@ class EmailAuthRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailAuth>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<EmailAuth>(id, transaction: transaction);
   }
 
   /// Inserts all [EmailAuth]s in the list and returns the inserted rows.
@@ -342,10 +309,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAuth>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<EmailAuth>(rows, transaction: transaction);
   }
 
   /// Inserts a single [EmailAuth] and returns the inserted row.
@@ -356,10 +320,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAuth>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<EmailAuth>(row, transaction: transaction);
   }
 
   /// Updates all [EmailAuth]s in the list and returns the updated rows. If
@@ -444,10 +405,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAuth>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<EmailAuth>(rows, transaction: transaction);
   }
 
   /// Deletes a single [EmailAuth].
@@ -456,10 +414,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAuth>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<EmailAuth>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

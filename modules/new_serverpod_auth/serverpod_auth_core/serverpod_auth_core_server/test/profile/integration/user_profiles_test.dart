@@ -8,248 +8,243 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'Given an existing `AuthUser`,',
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late UuidValue authUserId;
+  withServerpod('Given an existing `AuthUser`,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late UuidValue authUserId;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        UserProfileConfig.current = UserProfileConfig(
-          /// Mock image fetch function that returns a 1x1 pixel PNG.
-          imageFetchFunc: (final _) => onePixelPng,
+      UserProfileConfig.current = UserProfileConfig(
+        /// Mock image fetch function that returns a 1x1 pixel PNG.
+        imageFetchFunc: (final _) => onePixelPng,
+      );
+
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+    });
+
+    test(
+      'when creating a user profile, then it can be looked up by the auth user ID.',
+      () async {
+        await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(userName: 'test_user'),
         );
 
-        final authUser = await AuthUsers.create(session);
-        authUserId = authUser.id;
-      });
+        final foundUserProfile =
+            await UserProfiles.maybeFindUserProfileByUserId(
+              session,
+              authUserId,
+            );
 
-      test(
-        'when creating a user profile, then it can be looked up by the auth user ID.',
-        () async {
-          await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(userName: 'test_user'),
-          );
+        expect(foundUserProfile?.authUserId, authUserId);
+        expect(foundUserProfile?.userName, 'test_user');
+      },
+    );
 
-          final foundUserProfile =
-              await UserProfiles.maybeFindUserProfileByUserId(
-            session,
-            authUserId,
-          );
+    test(
+      'when creating a new user profile, then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
+      () async {
+        UserProfileConfig.current = UserProfileConfig(
+          onBeforeUserProfileCreated:
+              (
+                final session,
+                final authUserId,
+                final userProfile, {
+                required final transaction,
+              }) => userProfile.copyWith(fullName: 'overwritten full name'),
+        );
 
-          expect(foundUserProfile?.authUserId, authUserId);
-          expect(foundUserProfile?.userName, 'test_user');
-        },
-      );
+        final createdUserProfile = await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(),
+        );
 
-      test(
-        'when creating a new user profile, then `onBeforeUserProfileCreated` can be used to modify it before persisting.',
-        () async {
-          UserProfileConfig.current = UserProfileConfig(
-            onBeforeUserProfileCreated: (
-              final session,
-              final authUserId,
-              final userProfile, {
-              required final transaction,
-            }) =>
-                userProfile.copyWith(fullName: 'overwritten full name'),
-          );
+        expect(createdUserProfile.fullName, 'overwritten full name');
+      },
+    );
 
-          final createdUserProfile = await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(),
-          );
-
-          expect(
-            createdUserProfile.fullName,
-            'overwritten full name',
-          );
-        },
-      );
-
-      test(
-        'when creating a new user profile, then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
-        () async {
-          UserProfileModel? createdProfileFromCallback;
-          UserProfileConfig.current =
-              UserProfileConfig(onAfterUserProfileCreated: (
+    test(
+      'when creating a new user profile, then `onAfterUserProfileCreated` is invoked with the new profile after it has been written to the database.',
+      () async {
+        UserProfileModel? createdProfileFromCallback;
+        UserProfileConfig.current = UserProfileConfig(
+          onAfterUserProfileCreated: (
             final session,
             final userProfile, {
             required final transaction,
           }) {
             createdProfileFromCallback = userProfile;
-          });
+          },
+        );
 
-          final createdUserProfile = await UserProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(),
-          );
+        final createdUserProfile = await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(),
+        );
 
-          expect(
-            createdUserProfile.toJsonForProtocol(),
-            equals(createdProfileFromCallback?.toJsonForProtocol()),
-          );
-        },
-      );
+        expect(
+          createdUserProfile.toJsonForProtocol(),
+          equals(createdProfileFromCallback?.toJsonForProtocol()),
+        );
+      },
+    );
 
-      test(
-        'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
-        () async {
-          UserProfileConfig.current =
-              UserProfileConfig(onBeforeUserProfileCreated: (
+    test(
+      'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+      () async {
+        UserProfileConfig.current = UserProfileConfig(
+          onBeforeUserProfileCreated: (
             final session,
             final authUserId,
             final userProfile, {
             required final transaction,
           }) {
             throw UnimplementedError();
-          });
+          },
+        );
 
-          await expectLater(
-            () => UserProfiles.createUserProfile(
-              session,
-              authUserId,
-              UserProfileData(),
-            ),
-            throwsA(isA<UnimplementedError>()),
-          );
+        await expectLater(
+          () => UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(),
+          ),
+          throwsA(isA<UnimplementedError>()),
+        );
 
-          expect(await UserProfile.db.find(session), isEmpty);
-        },
-      );
+        expect(await UserProfile.db.find(session), isEmpty);
+      },
+    );
 
-      test(
-        'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
-        () async {
-          UserProfileConfig.current =
-              UserProfileConfig(onAfterUserProfileCreated: (
+    test(
+      'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
+      () async {
+        UserProfileConfig.current = UserProfileConfig(
+          onAfterUserProfileCreated: (
             final session,
             final userProfile, {
             required final transaction,
           }) {
             throw UnimplementedError();
-          });
+          },
+        );
 
-          await expectLater(
-            () => UserProfiles.createUserProfile(
-              session,
-              authUserId,
-              UserProfileData(),
-            ),
-            throwsA(isA<UnimplementedError>()),
-          );
-
-          expect(await UserProfile.db.find(session), isEmpty);
-        },
-      );
-
-      test(
-        'when creating a new profile, then the email is stored in lower-case.',
-        () async {
-          final createdUserProfile = await UserProfiles.createUserProfile(
+        await expectLater(
+          () => UserProfiles.createUserProfile(
             session,
             authUserId,
-            UserProfileData(
-              email: 'Test@serverpod.Dev',
+            UserProfileData(),
+          ),
+          throwsA(isA<UnimplementedError>()),
+        );
+
+        expect(await UserProfile.db.find(session), isEmpty);
+      },
+    );
+
+    test(
+      'when creating a new profile, then the email is stored in lower-case.',
+      () async {
+        final createdUserProfile = await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(email: 'Test@serverpod.Dev'),
+        );
+
+        expect(createdUserProfile.email, 'test@serverpod.dev');
+      },
+    );
+
+    test(
+      "when attempting to read a user's profile before it was created, then a `UserProfileNotFoundException` is thrown.",
+      () async {
+        await expectLater(
+          () => UserProfiles.findUserProfileByUserId(session, authUserId),
+          throwsA(isA<UserProfileNotFoundException>()),
+        );
+      },
+    );
+
+    group(
+      'when creating a user profile with image url, then image is accessible on user.',
+      () {
+        late UserProfileModel createdProfile;
+        setUp(() async {
+          createdProfile = await UserProfiles.createUserProfile(
+            session,
+            authUserId,
+            UserProfileData(userName: 'test_user'),
+            imageSource: UserImageFromUrl.parse(
+              'https://serverpod.dev/external-profile-image.png',
             ),
+          );
+        });
+
+        test('then the returned profile contains the image URL.', () async {
+          expect(
+            createdProfile.imageUrl.toString(),
+            allOf(startsWith('http://localhost'), endsWith('.jpg')),
+          );
+        });
+
+        test('then image is accessible stored user.', () async {
+          final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
           );
 
           expect(
-            createdUserProfile.email,
-            'test@serverpod.dev',
+            foundUserProfile.imageUrl.toString(),
+            allOf(startsWith('http://localhost'), endsWith('.jpg')),
           );
-        },
-      );
+        });
+      },
+    );
 
-      test(
-        "when attempting to read a user's profile before it was created, then a `UserProfileNotFoundException` is thrown.",
-        () async {
-          await expectLater(
-            () => UserProfiles.findUserProfileByUserId(session, authUserId),
-            throwsA(isA<UserProfileNotFoundException>()),
-          );
-        },
-      );
+    group('when creating a user profile with image bytes', () {
+      late UserProfileModel createdProfile;
+      setUp(() async {
+        createdProfile = await UserProfiles.createUserProfile(
+          session,
+          authUserId,
+          UserProfileData(userName: 'test_user'),
+          imageSource: UserImageFromBytes(onePixelPng),
+        );
+      });
 
-      group(
-        'when creating a user profile with image url, then image is accessible on user.',
-        () {
-          late UserProfileModel createdProfile;
-          setUp(() async {
-            createdProfile = await UserProfiles.createUserProfile(
-              session,
-              authUserId,
-              UserProfileData(userName: 'test_user'),
-              imageSource: UserImageFromUrl.parse(
-                  'https://serverpod.dev/external-profile-image.png'),
-            );
-          });
+      test('then the returned profile contains the image URL.', () async {
+        expect(
+          createdProfile.imageUrl.toString(),
+          allOf(startsWith('http://localhost'), endsWith('.jpg')),
+        );
+      });
 
-          test('then the returned profile contains the image URL.', () async {
-            expect(
-              createdProfile.imageUrl.toString(),
-              allOf(startsWith('http://localhost'), endsWith('.jpg')),
-            );
-          });
+      test('then image is accessible stored user.', () async {
+        final foundUserProfile = await UserProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
 
-          test('then image is accessible stored user.', () async {
-            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
-              session,
-              authUserId,
-            );
+        expect(
+          foundUserProfile.imageUrl.toString(),
+          allOf(startsWith('http://localhost'), endsWith('.jpg')),
+        );
+      });
+    });
+  });
 
-            expect(
-              foundUserProfile.imageUrl.toString(),
-              allOf(startsWith('http://localhost'), endsWith('.jpg')),
-            );
-          });
-        },
-      );
-
-      group(
-        'when creating a user profile with image bytes',
-        () {
-          late UserProfileModel createdProfile;
-          setUp(() async {
-            createdProfile = await UserProfiles.createUserProfile(
-              session,
-              authUserId,
-              UserProfileData(userName: 'test_user'),
-              imageSource: UserImageFromBytes(onePixelPng),
-            );
-          });
-
-          test('then the returned profile contains the image URL.', () async {
-            expect(
-              createdProfile.imageUrl.toString(),
-              allOf(startsWith('http://localhost'), endsWith('.jpg')),
-            );
-          });
-
-          test('then image is accessible stored user.', () async {
-            final foundUserProfile = await UserProfiles.findUserProfileByUserId(
-              session,
-              authUserId,
-            );
-
-            expect(
-              foundUserProfile.imageUrl.toString(),
-              allOf(startsWith('http://localhost'), endsWith('.jpg')),
-            );
-          });
-        },
-      );
-    },
-  );
-
-  withServerpod('Given an `AuthUser` with an empty profile,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an `AuthUser` with an empty profile,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
 
@@ -283,9 +278,7 @@ void main() {
             isA<Exception>().having(
               (final e) => e.toString(),
               'message',
-              contains(
-                'duplicate key value violates unique constraint',
-              ),
+              contains('duplicate key value violates unique constraint'),
             ),
           ),
         );
@@ -296,18 +289,19 @@ void main() {
       'when updating a user profile, then `onBeforeUserProfileUpdated` is invoked with the new profile to be set.',
       () async {
         UserProfileData? updatedProfileFromCallback;
-        UserProfileConfig.current =
-            UserProfileConfig(onBeforeUserProfileUpdated: (
-          final session,
-          final authUserId,
-          final userProfile, {
-          required final transaction,
-        }) {
-          updatedProfileFromCallback = userProfile;
-          return userProfile.copyWith(
-            userName: 'username from onBeforeUserProfileUpdated hook',
-          );
-        });
+        UserProfileConfig.current = UserProfileConfig(
+          onBeforeUserProfileUpdated: (
+            final session,
+            final authUserId,
+            final userProfile, {
+            required final transaction,
+          }) {
+            updatedProfileFromCallback = userProfile;
+            return userProfile.copyWith(
+              userName: 'username from onBeforeUserProfileUpdated hook',
+            );
+          },
+        );
 
         final updatedUserProfile = await UserProfiles.changeFullName(
           session,
@@ -315,10 +309,7 @@ void main() {
           'Updated full name',
         );
 
-        expect(
-          updatedProfileFromCallback!.fullName,
-          'Updated full name',
-        );
+        expect(updatedProfileFromCallback!.fullName, 'Updated full name');
         expect(
           updatedUserProfile.userName,
           'username from onBeforeUserProfileUpdated hook',
@@ -329,15 +320,16 @@ void main() {
     test(
       'when `onBeforeUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
       () async {
-        UserProfileConfig.current =
-            UserProfileConfig(onBeforeUserProfileUpdated: (
-          final session,
-          final authUserId,
-          final userProfile, {
-          required final transaction,
-        }) {
-          throw UnimplementedError();
-        });
+        UserProfileConfig.current = UserProfileConfig(
+          onBeforeUserProfileUpdated: (
+            final session,
+            final authUserId,
+            final userProfile, {
+            required final transaction,
+          }) {
+            throw UnimplementedError();
+          },
+        );
 
         await expectLater(
           () => UserProfiles.changeFullName(
@@ -352,24 +344,22 @@ void main() {
           session,
           authUserId,
         );
-        expect(
-          profile.fullName,
-          isNull,
-        );
+        expect(profile.fullName, isNull);
       },
     );
 
     test(
       'when `onAfterUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
       () async {
-        UserProfileConfig.current =
-            UserProfileConfig(onAfterUserProfileUpdated: (
-          final session,
-          final userProfile, {
-          required final transaction,
-        }) {
-          throw UnimplementedError();
-        });
+        UserProfileConfig.current = UserProfileConfig(
+          onAfterUserProfileUpdated: (
+            final session,
+            final userProfile, {
+            required final transaction,
+          }) {
+            throw UnimplementedError();
+          },
+        );
 
         await expectLater(
           () => UserProfiles.changeFullName(
@@ -384,10 +374,7 @@ void main() {
           session,
           authUserId,
         );
-        expect(
-          profile.fullName,
-          isNull,
-        );
+        expect(profile.fullName, isNull);
       },
     );
 
@@ -395,14 +382,15 @@ void main() {
       'when updating a user profile, then `onAfterUserProfileUpdated` is invoked with the updated profile.',
       () async {
         UserProfileModel? updatedProfileFromCallback;
-        UserProfileConfig.current =
-            UserProfileConfig(onAfterUserProfileUpdated: (
-          final session,
-          final userProfile, {
-          required final transaction,
-        }) {
-          updatedProfileFromCallback = userProfile;
-        });
+        UserProfileConfig.current = UserProfileConfig(
+          onAfterUserProfileUpdated: (
+            final session,
+            final userProfile, {
+            required final transaction,
+          }) {
+            updatedProfileFromCallback = userProfile;
+          },
+        );
 
         await UserProfiles.changeFullName(
           session,
@@ -410,10 +398,7 @@ void main() {
           'Updated full name',
         );
 
-        expect(
-          updatedProfileFromCallback!.fullName,
-          'Updated full name',
-        );
+        expect(updatedProfileFromCallback!.fullName, 'Updated full name');
       },
     );
 
@@ -472,10 +457,7 @@ void main() {
           authUserId,
         );
 
-        expect(
-          profileAfterUpdate.imageUrl,
-          updatedResult.imageUrl,
-        );
+        expect(profileAfterUpdate.imageUrl, updatedResult.imageUrl);
       },
     );
 
@@ -485,9 +467,7 @@ void main() {
         final updatedResult = await UserProfiles.setUserImageFromUrl(
           session,
           authUserId,
-          Uri.parse(
-            'https://serverpod.dev/external-profile-image.png',
-          ),
+          Uri.parse('https://serverpod.dev/external-profile-image.png'),
         );
 
         expect(
@@ -500,16 +480,15 @@ void main() {
           authUserId,
         );
 
-        expect(
-          profileAfterUpdate.imageUrl,
-          updatedResult.imageUrl,
-        );
+        expect(profileAfterUpdate.imageUrl, updatedResult.imageUrl);
       },
     );
   });
 
-  withServerpod('Given an `AuthUser` with a profile with an image,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an `AuthUser` with a profile with an image,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
 
@@ -525,134 +504,119 @@ void main() {
         UserProfileData(),
       );
 
-      await UserProfiles.setDefaultUserImage(
-        session,
-        authUserId,
-      );
-    });
-
-    test('when deleting the user profile, then the auth user is unaffected.',
-        () async {
-      final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(userProfile, isNotNull);
-      expect(userProfile?.imageUrl, isNotNull);
-
-      await UserProfiles.deleteProfileForUser(session, authUserId);
-
-      final profileAfterDelete =
-          await UserProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
-
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        authUserAfterDelete,
-        isNotNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
-      );
+      await UserProfiles.setDefaultUserImage(session, authUserId);
     });
 
     test(
-        'when deleting the user profile, then the images are deleted from storage as well.',
-        () async {
-      final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(userProfile, isNotNull);
-      expect(userProfile?.imageUrl, isNotNull);
+      'when deleting the user profile, then the auth user is unaffected.',
+      () async {
+        final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(userProfile, isNotNull);
+        expect(userProfile?.imageUrl, isNotNull);
 
-      final imageBeforeDelete =
-          (await UserProfileImage.db.find(session)).single;
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeDelete.storageId,
-          path: imageBeforeDelete.path,
-        ),
-        isTrue,
-      );
+        await UserProfiles.deleteProfileForUser(session, authUserId);
 
-      await UserProfiles.deleteProfileForUser(session, authUserId);
+        final profileAfterDelete =
+            await UserProfiles.maybeFindUserProfileByUserId(
+              session,
+              authUserId,
+            );
+        final authUserAfterDelete = await AuthUser.db.findById(
+          session,
+          authUserId,
+        );
+        final profileImagesAfterDelete = await UserProfileImage.db.find(
+          session,
+        );
 
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeDelete.storageId,
-          path: imageBeforeDelete.path,
-        ),
-        isFalse,
-      );
-    });
+        expect(profileAfterDelete, isNull);
+        expect(authUserAfterDelete, isNotNull);
+        expect(profileImagesAfterDelete, isEmpty);
+      },
+    );
 
-    test('when deleting the auth user, then the profile is cleaned up as well.',
-        () async {
-      await AuthUsers.delete(session, authUserId: authUserId);
+    test(
+      'when deleting the user profile, then the images are deleted from storage as well.',
+      () async {
+        final userProfile = await UserProfiles.maybeFindUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(userProfile, isNotNull);
+        expect(userProfile?.imageUrl, isNotNull);
 
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileAfterDelete =
-          await UserProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
+        final imageBeforeDelete =
+            (await UserProfileImage.db.find(session)).single;
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeDelete.storageId,
+            path: imageBeforeDelete.path,
+          ),
+          isTrue,
+        );
 
-      expect(
-        authUserAfterDelete,
-        isNull,
-      );
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
-      );
-    });
+        await UserProfiles.deleteProfileForUser(session, authUserId);
+
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeDelete.storageId,
+            path: imageBeforeDelete.path,
+          ),
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'when deleting the auth user, then the profile is cleaned up as well.',
+      () async {
+        await AuthUsers.delete(session, authUserId: authUserId);
+
+        final authUserAfterDelete = await AuthUser.db.findById(
+          session,
+          authUserId,
+        );
+        final profileAfterDelete =
+            await UserProfiles.maybeFindUserProfileByUserId(
+              session,
+              authUserId,
+            );
+        final profileImagesAfterDelete = await UserProfileImage.db.find(
+          session,
+        );
+
+        expect(authUserAfterDelete, isNull);
+        expect(profileAfterDelete, isNull);
+        expect(profileImagesAfterDelete, isEmpty);
+      },
+    );
   });
 
-  withServerpod(
-    'Given an existing `AuthUser`,',
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late UuidValue authUserId;
+  withServerpod('Given an existing `AuthUser`,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late UuidValue authUserId;
 
-      setUp(() async {
-        session = sessionBuilder.build();
+    setUp(() async {
+      session = sessionBuilder.build();
 
-        final authUser = await AuthUsers.create(session);
-        authUserId = authUser.id;
-      });
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+    });
 
-      tearDown(() async {
-        // also cleans up related profile and profile images
-        await AuthUsers.delete(session, authUserId: authUserId);
-      });
+    tearDown(() async {
+      // also cleans up related profile and profile images
+      await AuthUsers.delete(session, authUserId: authUserId);
+    });
 
-      test(
-          'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
-          () async {
+    test(
+      'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
+      () async {
         expect(session.transaction, isNull);
 
         await session.db.transaction<void>((final transaction) async {
@@ -683,11 +647,7 @@ void main() {
           );
 
           await expectLater(
-            () => UserProfiles.changeUserName(
-              session,
-              authUserId,
-              'updated',
-            ),
+            () => UserProfiles.changeUserName(session, authUserId, 'updated'),
             throwsA(isA<UserProfileNotFoundException>()),
           );
 
@@ -695,10 +655,9 @@ void main() {
         });
 
         expect(await UserProfile.db.count(session), 0);
-      });
-    },
-    rollbackDatabase: RollbackDatabase.disabled,
-  );
+      },
+    );
+  }, rollbackDatabase: RollbackDatabase.disabled);
 }
 
 final onePixelPng = base64Decode(

@@ -35,10 +35,12 @@ abstract class RelatedUniqueData
     return RelatedUniqueData(
       id: jsonSerialization['id'] as int?,
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
-      uniqueData: jsonSerialization['uniqueData'] == null
-          ? null
-          : _i2.UniqueData.fromJson(
-              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
+      uniqueData:
+          jsonSerialization['uniqueData'] == null
+              ? null
+              : _i2.UniqueData.fromJson(
+                (jsonSerialization['uniqueData'] as Map<String, dynamic>),
+              ),
       number: jsonSerialization['number'] as int,
     );
   }
@@ -127,11 +129,11 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     _i2.UniqueData? uniqueData,
     required int number,
   }) : super._(
-          id: id,
-          uniqueDataId: uniqueDataId,
-          uniqueData: uniqueData,
-          number: number,
-        );
+         id: id,
+         uniqueDataId: uniqueDataId,
+         uniqueData: uniqueData,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -146,9 +148,10 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _i2.UniqueData?
-          ? uniqueData
-          : this.uniqueData?.copyWith(),
+      uniqueData:
+          uniqueData is _i2.UniqueData?
+              ? uniqueData
+              : this.uniqueData?.copyWith(),
       number: number ?? this.number,
     );
   }
@@ -158,29 +161,19 @@ class RelatedUniqueDataUpdateTable
     extends _i1.UpdateTable<RelatedUniqueDataTable> {
   RelatedUniqueDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
-        table.uniqueDataId,
-        value,
-      );
+  _i1.ColumnValue<int, int> uniqueDataId(int value) =>
+      _i1.ColumnValue(table.uniqueDataId, value);
 
-  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+  _i1.ColumnValue<int, int> number(int value) =>
+      _i1.ColumnValue(table.number, value);
 }
 
 class RelatedUniqueDataTable extends _i1.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
-      : super(tableName: 'related_unique_data') {
+    : super(tableName: 'related_unique_data') {
     updateTable = RelatedUniqueDataUpdateTable(this);
-    uniqueDataId = _i1.ColumnInt(
-      'uniqueDataId',
-      this,
-    );
-    number = _i1.ColumnInt(
-      'number',
-      this,
-    );
+    uniqueDataId = _i1.ColumnInt('uniqueDataId', this);
+    number = _i1.ColumnInt('number', this);
   }
 
   late final RelatedUniqueDataUpdateTable updateTable;
@@ -198,18 +191,15 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
       field: RelatedUniqueData.t.uniqueDataId,
       foreignField: _i2.UniqueData.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.UniqueDataTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.UniqueDataTable(tableRelation: foreignTableRelation),
     );
     return _uniqueData!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        uniqueDataId,
-        number,
-      ];
+  List<_i1.Column> get columns => [id, uniqueDataId, number];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -367,10 +357,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<RelatedUniqueData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<RelatedUniqueData>(rows, transaction: transaction);
   }
 
   /// Inserts a single [RelatedUniqueData] and returns the inserted row.
@@ -427,7 +414,7 @@ class RelatedUniqueDataRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
@@ -442,7 +429,7 @@ class RelatedUniqueDataRepository {
   Future<List<RelatedUniqueData>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     int? limit,
     int? offset,
@@ -471,10 +458,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<RelatedUniqueData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<RelatedUniqueData>(rows, transaction: transaction);
   }
 
   /// Deletes a single [RelatedUniqueData].
@@ -535,8 +519,9 @@ class RelatedUniqueDataAttachRowRepository {
       throw ArgumentError.notNull('uniqueData.id');
     }
 
-    var $relatedUniqueData =
-        relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
+    var $relatedUniqueData = relatedUniqueData.copyWith(
+      uniqueDataId: uniqueData.id,
+    );
     await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],

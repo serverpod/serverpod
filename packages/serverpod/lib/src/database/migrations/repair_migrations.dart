@@ -10,16 +10,14 @@ class RepairMigration {
   /// The SQL to run to repair the database.
   final String sqlMigration;
 
-  RepairMigration._({
-    required this.versionName,
-    required this.sqlMigration,
-  });
+  RepairMigration._({required this.versionName, required this.sqlMigration});
 
   /// Loads the repair migration from the repair migration directory.
   /// Returns null if no repair migration is found.
   static RepairMigration? load(Directory projectRootDirectory) {
-    var repairMigrationDirectory =
-        MigrationConstants.repairMigrationDirectory(projectRootDirectory);
+    var repairMigrationDirectory = MigrationConstants.repairMigrationDirectory(
+      projectRootDirectory,
+    );
 
     if (!repairMigrationDirectory.existsSync()) {
       return null;
@@ -32,11 +30,12 @@ class RepairMigration {
     }
 
     var migrationSqlFile = repairMigrationFiles.cast<File?>().firstWhere(
-          (element) => element != null
+      (element) =>
+          element != null
               ? path.basename(element.path).endsWith('.sql')
               : false,
-          orElse: () => null,
-        );
+      orElse: () => null,
+    );
 
     if (migrationSqlFile == null) {
       return null;
@@ -45,9 +44,6 @@ class RepairMigration {
     var version = path.basename(migrationSqlFile.path).split('.').first;
     var sqlMigration = migrationSqlFile.readAsStringSync();
 
-    return RepairMigration._(
-      versionName: version,
-      sqlMigration: sqlMigration,
-    );
+    return RepairMigration._(versionName: version, sqlMigration: sqlMigration);
   }
 }

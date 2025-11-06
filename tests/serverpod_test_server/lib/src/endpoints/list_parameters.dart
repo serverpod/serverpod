@@ -9,7 +9,9 @@ class ListParametersEndpoint extends Endpoint {
   }
 
   Future<List<List<int>>> returnIntListList(
-      Session session, List<List<int>> list) async {
+    Session session,
+    List<List<int>> list,
+  ) async {
     return list;
   }
 
@@ -62,10 +64,7 @@ class ListParametersEndpoint extends Endpoint {
     return list;
   }
 
-  Future<List<bool>> returnBoolList(
-    Session session,
-    List<bool> list,
-  ) async {
+  Future<List<bool>> returnBoolList(Session session, List<bool> list) async {
     return list;
   }
 

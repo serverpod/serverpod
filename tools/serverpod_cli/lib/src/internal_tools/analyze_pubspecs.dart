@@ -30,8 +30,10 @@ Future<bool> pubspecDependenciesMatch({
     return false;
   }
 
-  var pubspecFiles = findPubspecsFiles(directory,
-      ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets']);
+  var pubspecFiles = findPubspecsFiles(
+    directory,
+    ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets'],
+  );
 
   Map<String, List<_ServerpodDependency>> dependencies;
   try {
@@ -43,8 +45,10 @@ Future<bool> pubspecDependenciesMatch({
   }
 
   var ignoredPackages = _loadIgnoredPackages(directory);
-  var mismatchedDeps =
-      _findMismatchedDependencies(dependencies, ignoredPackages);
+  var mismatchedDeps = _findMismatchedDependencies(
+    dependencies,
+    ignoredPackages,
+  );
 
   if (mismatchedDeps.isNotEmpty) {
     _printMismatchedDependencies(mismatchedDeps, dependencies);
@@ -108,10 +112,7 @@ Future<bool> _checkLatestVersion(
         log.info('pub:   ^$latestPubVersion');
         log.info('found in:');
         for (var dep in deps) {
-          log.info(
-            dep.serverpodPackage,
-            type: TextLogType.bullet,
-          );
+          log.info(dep.serverpodPackage, type: TextLogType.bullet);
         }
       }
     }
@@ -124,14 +125,13 @@ Future<bool> _checkLatestVersion(
   return latestVersionMatch;
 }
 
-void _printMismatchedDependencies(Set<String> mismatchedDeps,
-    Map<String, List<_ServerpodDependency>> dependencies) {
+void _printMismatchedDependencies(
+  Set<String> mismatchedDeps,
+  Map<String, List<_ServerpodDependency>> dependencies,
+) {
   log.error('Found mismatched dependencies:');
   for (var depName in mismatchedDeps) {
-    log.error(
-      depName,
-      type: const RawLogType(),
-    );
+    log.error(depName, type: const RawLogType());
     var deps = dependencies[depName]!;
     for (var dep in deps) {
       log.error(

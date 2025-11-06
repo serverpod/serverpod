@@ -17,11 +17,8 @@ import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class CourseUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  CourseUuid._({
-    _i1.UuidValue? id,
-    required this.name,
-    this.enrollments,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  CourseUuid._({_i1.UuidValue? id, required this.name, this.enrollments})
+    : id = id ?? _i1.Uuid().v7obj();
 
   factory CourseUuid({
     _i1.UuidValue? id,
@@ -31,13 +28,17 @@ abstract class CourseUuid
 
   factory CourseUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CourseUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments:
+          (jsonSerialization['enrollments'] as List?)
+              ?.map(
+                (e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -79,13 +80,15 @@ abstract class CourseUuid
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static CourseUuidInclude include(
-      {_i2.EnrollmentIntIncludeList? enrollments}) {
+  static CourseUuidInclude include({
+    _i2.EnrollmentIntIncludeList? enrollments,
+  }) {
     return CourseUuidInclude._(enrollments: enrollments);
   }
 
@@ -122,11 +125,7 @@ class _CourseUuidImpl extends CourseUuid {
     _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
-  }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+  }) : super._(id: id, name: name, enrollments: enrollments);
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
@@ -140,9 +139,10 @@ class _CourseUuidImpl extends CourseUuid {
     return CourseUuid(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments:
+          enrollments is List<_i2.EnrollmentInt>?
+              ? enrollments
+              : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -150,19 +150,14 @@ class _CourseUuidImpl extends CourseUuid {
 class CourseUuidUpdateTable extends _i1.UpdateTable<CourseUuidTable> {
   CourseUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
   CourseUuidTable({super.tableRelation}) : super(tableName: 'course_uuid') {
     updateTable = CourseUuidUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final CourseUuidUpdateTable updateTable;
@@ -180,8 +175,9 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: CourseUuid.t.id,
       foreignField: _i2.EnrollmentInt.t.courseId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
@@ -193,22 +189,21 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: CourseUuid.t.id,
       foreignField: _i2.EnrollmentInt.t.courseId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -372,10 +367,7 @@ class CourseUuidRepository {
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CourseUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<CourseUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [CourseUuid] and returns the inserted row.
@@ -386,10 +378,7 @@ class CourseUuidRepository {
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CourseUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<CourseUuid>(row, transaction: transaction);
   }
 
   /// Updates all [CourseUuid]s in the list and returns the updated rows. If
@@ -474,10 +463,7 @@ class CourseUuidRepository {
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CourseUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<CourseUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [CourseUuid].
@@ -486,10 +472,7 @@ class CourseUuidRepository {
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CourseUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<CourseUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -9,9 +9,7 @@ class LogSettingsManager {
   final Map<String, LogSettings> _methodOverrides = {};
 
   /// Creates a new [LogSettingsManager].
-  LogSettingsManager(
-    this._runtimeSettings,
-  ) {
+  LogSettingsManager(this._runtimeSettings) {
     for (var override in _runtimeSettings.logSettingsOverrides) {
       if (override.method != null && override.endpoint != null) {
         _methodOverrides['${override.endpoint}.${override.method}'] =

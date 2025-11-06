@@ -8,11 +8,8 @@ final Random _random = Random.secure();
 String defaultVerificationCodeGenerator() {
   const alphabet = 'abcdefghikmnpqrstuvwxyz123456789';
 
-  return List<String>.generate(
-    8,
-    (final _) {
-      final i = _random.nextInt(alphabet.length);
-      return alphabet.substring(i, i + 1);
-    },
-  ).join();
+  return List<String>.generate(8, (final _) {
+    final i = _random.nextInt(alphabet.length);
+    return alphabet.substring(i, i + 1);
+  }).join();
 }

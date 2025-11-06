@@ -34,11 +34,13 @@ abstract class ExceptionWithData
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['creationDate']),
-      errorFields: (jsonSerialization['errorFields'] as List)
-          .map((e) => e as String)
-          .toList(),
+      creationDate: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['creationDate'],
+      ),
+      errorFields:
+          (jsonSerialization['errorFields'] as List)
+              .map((e) => e as String)
+              .toList(),
       someNullableField: jsonSerialization['someNullableField'] as int?,
     );
   }
@@ -95,11 +97,11 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
     required List<String> errorFields,
     int? someNullableField,
   }) : super._(
-          message: message,
-          creationDate: creationDate,
-          errorFields: errorFields,
-          someNullableField: someNullableField,
-        );
+         message: message,
+         creationDate: creationDate,
+         errorFields: errorFields,
+         someNullableField: someNullableField,
+       );
 
   /// Returns a shallow copy of this [ExceptionWithData]
   /// with some or all fields replaced by the given arguments.
@@ -115,9 +117,10 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
       message: message ?? this.message,
       creationDate: creationDate ?? this.creationDate,
       errorFields: errorFields ?? this.errorFields.map((e0) => e0).toList(),
-      someNullableField: someNullableField is int?
-          ? someNullableField
-          : this.someNullableField,
+      someNullableField:
+          someNullableField is int?
+              ? someNullableField
+              : this.someNullableField,
     );
   }
 }

@@ -95,149 +95,159 @@ void main() {
       });
 
       test(
-          'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.finishRegistration(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: '$verificationCode-invalid',
-        );
+        'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
+          final result = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: '$verificationCode-invalid',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
-  withServerpod('Given expired account request',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
-    late UuidValue accountRequestId;
-    const email = 'expired@serverpod.dev';
-    const password = 'Password123!';
-    late String verificationCode;
-    const accountRequestVerificationCodeLifetime = Duration(hours: 1);
+  withServerpod(
+    'Given expired account request',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue accountRequestId;
+      const email = 'expired@serverpod.dev';
+      const password = 'Password123!';
+      late String verificationCode;
+      const accountRequestVerificationCodeLifetime = Duration(hours: 1);
 
-    setUp(() async {
-      session = sessionBuilder.build();
+      setUp(() async {
+        session = sessionBuilder.build();
 
-      verificationCode = const Uuid().v4().toString();
-      fixture = EmailIDPTestFixture(
-        config: EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          registrationVerificationCodeGenerator: () => verificationCode,
-          registrationVerificationCodeLifetime:
-              accountRequestVerificationCodeLifetime,
-        ),
-      );
+        verificationCode = const Uuid().v4().toString();
+        fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            registrationVerificationCodeGenerator: () => verificationCode,
+            registrationVerificationCodeLifetime:
+                accountRequestVerificationCodeLifetime,
+          ),
+        );
 
-      await withClock(
+        await withClock(
           Clock.fixed(
             DateTime.now().subtract(
               accountRequestVerificationCodeLifetime + const Duration(hours: 1),
             ),
-          ), () async {
-        accountRequestId = await fixture.emailIDP.startRegistration(
-          session,
-          email: email,
-          password: password,
+          ),
+          () async {
+            accountRequestId = await fixture.emailIDP.startRegistration(
+              session,
+              email: email,
+              password: password,
+            );
+          },
         );
       });
-    });
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
-    test(
+      test(
         'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with reason "expired"',
         () async {
-      final result = fixture.emailIDP.finishRegistration(
-        session,
-        accountRequestId: accountRequestId,
-        verificationCode: verificationCode,
+          final result = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.expired,
+              ),
+            ),
+          );
+        },
       );
 
-      await expectLater(
-        result,
-        throwsA(
-          isA<EmailAccountRequestException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountRequestExceptionReason.expired,
-          ),
-        ),
-      );
-    });
-
-    test(
+      test(
         'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-      final result = fixture.emailIDP.finishRegistration(
-        session,
-        accountRequestId: accountRequestId,
-        verificationCode: '$verificationCode-invalid',
+          final result = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: '$verificationCode-invalid',
+          );
+
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
       );
+    },
+  );
 
-      await expectLater(
-        result,
-        throwsA(
-          isA<EmailAccountRequestException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountRequestExceptionReason.invalid,
-          ),
-        ),
-      );
-    });
-  });
+  withServerpod(
+    'Given no account request created',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
 
-  withServerpod('Given no account request created',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture();
+      });
 
-    setUp(() async {
-      session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture();
-    });
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
-
-    test(
+      test(
         'when finishRegistration is called then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-      final result = fixture.emailIDP.finishRegistration(
-        session,
-        accountRequestId: const Uuid().v4obj(),
-        verificationCode: 'some-code',
-      );
+          final result = fixture.emailIDP.finishRegistration(
+            session,
+            accountRequestId: const Uuid().v4obj(),
+            verificationCode: 'some-code',
+          );
 
-      await expectLater(
-        result,
-        throwsA(
-          isA<EmailAccountRequestException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountRequestExceptionReason.invalid,
-          ),
-        ),
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
       );
-    });
-  });
+    },
+  );
 }

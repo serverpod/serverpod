@@ -11,20 +11,21 @@ void main() {
 
   group('Given a class with mixed required nullable fields', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String
             email: String?, required
             phone: String?
-          ''',
-      ).build()
+          ''').build(),
     ];
     var collector = CodeGenerationCollector();
     var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -60,17 +61,18 @@ void main() {
 
   group('Given a class with required on non-nullable field', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String, required
-          ''',
-      ).build()
+          ''').build(),
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then a validation error is collected.', () {
       expect(
@@ -90,20 +92,21 @@ void main() {
 
   group('Given an exception with mixed required nullable fields', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
           exception: Example
           fields:
             name: String
             email: String?, required
             phone: String?
-          ''',
-      ).build()
+          ''').build(),
     ];
     var collector = CodeGenerationCollector();
     var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -139,17 +142,18 @@ void main() {
 
   group('Given a exception with required on non-nullable field', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
           exception: Example
           fields:
             name: String, required
-          ''',
-      ).build()
+          ''').build(),
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then a validation error is collected.', () {
       expect(

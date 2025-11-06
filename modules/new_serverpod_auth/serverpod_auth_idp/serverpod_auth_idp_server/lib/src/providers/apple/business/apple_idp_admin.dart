@@ -21,21 +21,23 @@ final class AppleIDPAdmin {
   /// revoked.
   Future<void> checkAccountStatus(
     final Session session, {
+
     /// Callback to be invoked when an Apple authentication has been revoked.
     ///
     /// In this case all sessions associated with this sign-in method should be
     /// removed.
     required final void Function(UuidValue authUserId)
-        onExpiredUserAuthentication,
+    onExpiredUserAuthentication,
     final Transaction? transaction,
     final int databaseBatchSize = 100,
   }) async {
     while (true) {
       final appleAccounts = await AppleAccount.db.find(
         session,
-        where: (final t) =>
-            t.lastRefreshedAt <
-            DateTime.now().subtract(const Duration(days: 1)),
+        where:
+            (final t) =>
+                t.lastRefreshedAt <
+                DateTime.now().subtract(const Duration(days: 1)),
         limit: databaseBatchSize,
         transaction: transaction,
       );

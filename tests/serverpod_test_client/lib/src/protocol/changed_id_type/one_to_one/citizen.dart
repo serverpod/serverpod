@@ -39,24 +39,33 @@ abstract class CitizenInt implements _i1.SerializableModel {
     return CitizenInt(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      address: jsonSerialization['address'] == null
-          ? null
-          : _i2.AddressUuid.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
-      companyId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['companyId']),
-      company: jsonSerialization['company'] == null
-          ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
-      oldCompanyId: jsonSerialization['oldCompanyId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['oldCompanyId']),
-      oldCompany: jsonSerialization['oldCompany'] == null
-          ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+      address:
+          jsonSerialization['address'] == null
+              ? null
+              : _i2.AddressUuid.fromJson(
+                (jsonSerialization['address'] as Map<String, dynamic>),
+              ),
+      companyId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['companyId'],
+      ),
+      company:
+          jsonSerialization['company'] == null
+              ? null
+              : _i3.CompanyUuid.fromJson(
+                (jsonSerialization['company'] as Map<String, dynamic>),
+              ),
+      oldCompanyId:
+          jsonSerialization['oldCompanyId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['oldCompanyId'],
+              ),
+      oldCompany:
+          jsonSerialization['oldCompany'] == null
+              ? null
+              : _i3.CompanyUuid.fromJson(
+                (jsonSerialization['oldCompany'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -120,14 +129,14 @@ class _CitizenIntImpl extends CitizenInt {
     _i1.UuidValue? oldCompanyId,
     _i3.CompanyUuid? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [CitizenInt]
   /// with some or all fields replaced by the given arguments.
@@ -150,9 +159,10 @@ class _CitizenIntImpl extends CitizenInt {
       company: company is _i3.CompanyUuid? ? company : this.company?.copyWith(),
       oldCompanyId:
           oldCompanyId is _i1.UuidValue? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _i3.CompanyUuid?
-          ? oldCompany
-          : this.oldCompany?.copyWith(),
+      oldCompany:
+          oldCompany is _i3.CompanyUuid?
+              ? oldCompany
+              : this.oldCompany?.copyWith(),
     );
   }
 }

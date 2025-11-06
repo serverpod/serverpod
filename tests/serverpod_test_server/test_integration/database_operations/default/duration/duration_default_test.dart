@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "default" Duration fields,', () {
-    tearDownAll(() async => DurationDefault.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DurationDefault.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "default=1d 2h 10min 30s 100ms" field value should be the expected duration',
@@ -68,9 +70,7 @@ void main() async {
           seconds: 45,
           milliseconds: 500,
         );
-        var specificObject = DurationDefault(
-          durationDefault: specificDuration,
-        );
+        var specificObject = DurationDefault(durationDefault: specificDuration);
         var specificDatabaseObject = await DurationDefault.db.insertRow(
           session,
           specificObject,

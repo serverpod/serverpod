@@ -154,11 +154,7 @@ abstract class TypedEventHandler<T extends DiagnosticEvent>
     required DiagnosticEventContext context,
   }) {
     if (event is T) {
-      return handleTypedEvent(
-        event,
-        space: space,
-        context: context,
-      );
+      return handleTypedEvent(event, space: space, context: context);
     }
   }
 

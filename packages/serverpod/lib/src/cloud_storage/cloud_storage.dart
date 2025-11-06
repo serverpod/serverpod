@@ -44,23 +44,14 @@ abstract class CloudStorage {
 
   /// Returns a public link to a file in the storage. If the file isn't public
   /// or if no such file exists, null is returned.
-  Future<Uri?> getPublicUrl({
-    required Session session,
-    required String path,
-  });
+  Future<Uri?> getPublicUrl({required Session session, required String path});
 
   /// Returns true if the file exists.
-  Future<bool> fileExists({
-    required Session session,
-    required String path,
-  });
+  Future<bool> fileExists({required Session session, required String path});
 
   /// Deletes the specified file if it exists. Does nothing if the file doesn't
   /// exist.
-  Future<void> deleteFile({
-    required Session session,
-    required String path,
-  });
+  Future<void> deleteFile({required Session session, required String path});
 
   /// Creates an URL that a client can post a file to via http post, optionally
   /// within the specified duration. After the file has been sent, the

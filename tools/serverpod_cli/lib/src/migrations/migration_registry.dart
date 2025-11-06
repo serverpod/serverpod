@@ -37,10 +37,9 @@ class MigrationRegistry {
 
   /// Writes the registry to the migrations directory.
   Future<void> write() async {
-    var registryFile = File(path.join(
-      moduleMigrationDirectory.path,
-      _migrationRegistryFileName,
-    ));
+    var registryFile = File(
+      path.join(moduleMigrationDirectory.path, _migrationRegistryFileName),
+    );
 
     var out = '''
 ### AUTOMATICALLY GENERATED DO NOT MODIFY
@@ -62,10 +61,7 @@ class MigrationRegistry {
   /// Returns an empty registry if no migrations are found for the module.
   static MigrationRegistry load(Directory migrationsDirectory) {
     if (!migrationsDirectory.existsSync()) {
-      return MigrationRegistry(
-        migrationsDirectory,
-        [],
-      );
+      return MigrationRegistry(migrationsDirectory, []);
     }
 
     var migrationPaths = migrationsDirectory.listSync().whereType<Directory>();

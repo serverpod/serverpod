@@ -23,8 +23,9 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
     }
 
     if (resolvedItem is! CompilationUnit) {
-      return mismatchDescription
-          .add('"${item.runtimeType}" is not a CompilationUnit');
+      return mismatchDescription.add(
+        '"${item.runtimeType}" is not a CompilationUnit',
+      );
     }
 
     final classNames = resolvedItem.declarations
@@ -33,7 +34,8 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
         .join(', ');
 
     return mismatchDescription.add(
-        'does not contain class "$_className". Found classes: [$classNames]');
+      'does not contain class "$_className". Found classes: [$classNames]',
+    );
   }
 
   @override
@@ -66,8 +68,9 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<FieldDeclaration>(),
+        extractValue:
+            (classDeclaration) =>
+                classDeclaration.members.whereType<FieldDeclaration>(),
       ),
       fieldName,
       isNullable: isNullable,
@@ -88,8 +91,9 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<MethodDeclaration>(),
+        extractValue:
+            (classDeclaration) =>
+                classDeclaration.members.whereType<MethodDeclaration>(),
       ),
       methodName,
       isOverride: isOverride,
@@ -110,9 +114,7 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
   }
 
   @override
-  ConstructorMatcher withUnnamedConstructor({
-    bool? isFactory,
-  }) {
+  ConstructorMatcher withUnnamedConstructor({bool? isFactory}) {
     return _withConstructor('', isFactory: isFactory);
   }
 
@@ -151,8 +153,9 @@ class _ClassMatcherImpl implements Matcher, ClassMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (classDeclaration) =>
-            classDeclaration.members.whereType<ConstructorDeclaration>(),
+        extractValue:
+            (classDeclaration) =>
+                classDeclaration.members.whereType<ConstructorDeclaration>(),
       ),
       name: constructorName,
       isFactory: isFactory,

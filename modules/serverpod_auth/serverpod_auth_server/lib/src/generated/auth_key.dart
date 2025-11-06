@@ -39,9 +39,10 @@ abstract class AuthKey
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames:
+          (jsonSerialization['scopeNames'] as List)
+              .map((e) => e as String)
+              .toList(),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -148,13 +149,13 @@ class _AuthKeyImpl extends AuthKey {
     required List<String> scopeNames,
     required String method,
   }) : super._(
-          id: id,
-          userId: userId,
-          hash: hash,
-          key: key,
-          scopeNames: scopeNames,
-          method: method,
-        );
+         id: id,
+         userId: userId,
+         hash: hash,
+         key: key,
+         scopeNames: scopeNames,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
@@ -182,47 +183,26 @@ class _AuthKeyImpl extends AuthKey {
 class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
   AuthKeyUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userId(int value) =>
+      _i1.ColumnValue(table.userId, value);
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+  _i1.ColumnValue<String, String> hash(String value) =>
+      _i1.ColumnValue(table.hash, value);
 
   _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String value) =>
+      _i1.ColumnValue(table.method, value);
 }
 
 class AuthKeyTable extends _i1.Table<int?> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
     updateTable = AuthKeyUpdateTable(this);
-    userId = _i1.ColumnInt(
-      'userId',
-      this,
-    );
-    hash = _i1.ColumnString(
-      'hash',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<List<String>>(
-      'scopeNames',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
+    userId = _i1.ColumnInt('userId', this);
+    hash = _i1.ColumnString('hash', this);
+    scopeNames = _i1.ColumnSerializable<List<String>>('scopeNames', this);
+    method = _i1.ColumnString('method', this);
   }
 
   late final AuthKeyUpdateTable updateTable;
@@ -241,13 +221,7 @@ class AuthKeyTable extends _i1.Table<int?> {
   late final _i1.ColumnString method;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        userId,
-        hash,
-        scopeNames,
-        method,
-      ];
+  List<_i1.Column> get columns => [id, userId, hash, scopeNames, method];
 }
 
 class AuthKeyInclude extends _i1.IncludeObject {
@@ -368,10 +342,7 @@ class AuthKeyRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<AuthKey>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<AuthKey>(id, transaction: transaction);
   }
 
   /// Inserts all [AuthKey]s in the list and returns the inserted rows.
@@ -385,10 +356,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<AuthKey>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<AuthKey>(rows, transaction: transaction);
   }
 
   /// Inserts a single [AuthKey] and returns the inserted row.
@@ -399,10 +367,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<AuthKey>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<AuthKey>(row, transaction: transaction);
   }
 
   /// Updates all [AuthKey]s in the list and returns the updated rows. If
@@ -487,10 +452,7 @@ class AuthKeyRepository {
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<AuthKey>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<AuthKey>(rows, transaction: transaction);
   }
 
   /// Deletes a single [AuthKey].
@@ -499,10 +461,7 @@ class AuthKeyRepository {
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<AuthKey>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<AuthKey>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

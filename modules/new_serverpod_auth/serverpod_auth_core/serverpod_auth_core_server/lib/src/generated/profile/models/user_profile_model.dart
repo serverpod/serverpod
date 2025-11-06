@@ -32,14 +32,16 @@ abstract class UserProfileModel
 
   factory UserProfileModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfileModel(
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      imageUrl: jsonSerialization['imageUrl'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['imageUrl']),
+      imageUrl:
+          jsonSerialization['imageUrl'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(jsonSerialization['imageUrl']),
     );
   }
 
@@ -108,12 +110,12 @@ class _UserProfileModelImpl extends UserProfileModel {
     String? email,
     Uri? imageUrl,
   }) : super._(
-          authUserId: authUserId,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          imageUrl: imageUrl,
-        );
+         authUserId: authUserId,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         imageUrl: imageUrl,
+       );
 
   /// Returns a shallow copy of this [UserProfileModel]
   /// with some or all fields replaced by the given arguments.

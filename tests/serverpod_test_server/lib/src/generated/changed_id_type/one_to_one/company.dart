@@ -17,12 +17,7 @@ import '../../changed_id_type/one_to_one/town.dart' as _i2;
 
 abstract class CompanyUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  CompanyUuid._({
-    this.id,
-    required this.name,
-    required this.townId,
-    this.town,
-  });
+  CompanyUuid._({this.id, required this.name, required this.townId, this.town});
 
   factory CompanyUuid({
     _i1.UuidValue? id,
@@ -33,15 +28,18 @@ abstract class CompanyUuid
 
   factory CompanyUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CompanyUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       townId: jsonSerialization['townId'] as int,
-      town: jsonSerialization['town'] == null
-          ? null
-          : _i2.TownInt.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+      town:
+          jsonSerialization['town'] == null
+              ? null
+              : _i2.TownInt.fromJson(
+                (jsonSerialization['town'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -128,12 +126,7 @@ class _CompanyUuidImpl extends CompanyUuid {
     required String name,
     required int townId,
     _i2.TownInt? town,
-  }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+  }) : super._(id: id, name: name, townId: townId, town: town);
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
@@ -157,28 +150,18 @@ class _CompanyUuidImpl extends CompanyUuid {
 class CompanyUuidUpdateTable extends _i1.UpdateTable<CompanyUuidTable> {
   CompanyUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
-        table.townId,
-        value,
-      );
+  _i1.ColumnValue<int, int> townId(int value) =>
+      _i1.ColumnValue(table.townId, value);
 }
 
 class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
   CompanyUuidTable({super.tableRelation}) : super(tableName: 'company_uuid') {
     updateTable = CompanyUuidUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    townId = _i1.ColumnInt(
-      'townId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    townId = _i1.ColumnInt('townId', this);
   }
 
   late final CompanyUuidUpdateTable updateTable;
@@ -196,18 +179,15 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: CompanyUuid.t.townId,
       foreignField: _i2.TownInt.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.TownIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.TownIntTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        townId,
-      ];
+  List<_i1.Column> get columns => [id, name, townId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -365,10 +345,7 @@ class CompanyUuidRepository {
     List<CompanyUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CompanyUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<CompanyUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [CompanyUuid] and returns the inserted row.
@@ -379,10 +356,7 @@ class CompanyUuidRepository {
     CompanyUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CompanyUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<CompanyUuid>(row, transaction: transaction);
   }
 
   /// Updates all [CompanyUuid]s in the list and returns the updated rows. If
@@ -467,10 +441,7 @@ class CompanyUuidRepository {
     List<CompanyUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CompanyUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<CompanyUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [CompanyUuid].
@@ -479,10 +450,7 @@ class CompanyUuidRepository {
     CompanyUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CompanyUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<CompanyUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

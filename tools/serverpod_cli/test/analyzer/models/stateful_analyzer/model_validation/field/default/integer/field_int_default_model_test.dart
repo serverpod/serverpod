@@ -15,20 +15,21 @@ void main() {
       'when the field is of type int and the defaultModel is set to "10", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int, defaultModel=10
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -41,20 +42,21 @@ void main() {
       'when the field is of type int and the defaultModel is set to "20", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int, defaultModel=20
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -68,19 +70,20 @@ void main() {
       'when the field is of type int and the defaultModel is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int, defaultModel=
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -96,19 +99,20 @@ void main() {
       'when the field is of type int with an invalid default value "TEN", then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           intInvalid: int?, defaultModel=TEN
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -124,19 +128,20 @@ void main() {
       'when the field is of type int with an invalid default value containing decimals, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           intInvalid: int?, defaultModel=10.5
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -152,19 +157,20 @@ void main() {
       'when the field is of type int with an invalid defaultModel value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intInvalid: int?, defaultModel=test
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -181,19 +187,20 @@ void main() {
     'Given a class with a declared id field of type int with a "defaultModel" keyword, then an error is collected',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             id: int?, defaultModel=serial
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,

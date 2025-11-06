@@ -14,15 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class Chapter
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Chapter._({
-    this.id,
-    required this.title,
-  }) : _bookChaptersBookId = null;
+  Chapter._({this.id, required this.title}) : _bookChaptersBookId = null;
 
-  factory Chapter({
-    int? id,
-    required String title,
-  }) = _ChapterImpl;
+  factory Chapter({int? id, required String title}) = _ChapterImpl;
 
   factory Chapter.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChapterImplicit._(
@@ -49,10 +43,7 @@ abstract class Chapter
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Chapter copyWith({
-    int? id,
-    String? title,
-  });
+  Chapter copyWith({int? id, String? title});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -65,10 +56,7 @@ abstract class Chapter
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'title': title,
-    };
+    return {if (id != null) 'id': id, 'title': title};
   }
 
   static ChapterInclude include() {
@@ -104,22 +92,14 @@ abstract class Chapter
 class _Undefined {}
 
 class _ChapterImpl extends Chapter {
-  _ChapterImpl({
-    int? id,
-    required String title,
-  }) : super._(
-          id: id,
-          title: title,
-        );
+  _ChapterImpl({int? id, required String title})
+    : super._(id: id, title: title);
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Chapter copyWith({
-    Object? id = _Undefined,
-    String? title,
-  }) {
+  Chapter copyWith({Object? id = _Undefined, String? title}) {
     return ChapterImplicit._(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
@@ -129,20 +109,11 @@ class _ChapterImpl extends Chapter {
 }
 
 class ChapterImplicit extends _ChapterImpl {
-  ChapterImplicit._({
-    int? id,
-    required String title,
-    int? $_bookChaptersBookId,
-  })  : _bookChaptersBookId = $_bookChaptersBookId,
-        super(
-          id: id,
-          title: title,
-        );
+  ChapterImplicit._({int? id, required String title, int? $_bookChaptersBookId})
+    : _bookChaptersBookId = $_bookChaptersBookId,
+      super(id: id, title: title);
 
-  factory ChapterImplicit(
-    Chapter chapter, {
-    int? $_bookChaptersBookId,
-  }) {
+  factory ChapterImplicit(Chapter chapter, {int? $_bookChaptersBookId}) {
     return ChapterImplicit._(
       id: chapter.id,
       title: chapter.title,
@@ -157,28 +128,18 @@ class ChapterImplicit extends _ChapterImpl {
 class ChapterUpdateTable extends _i1.UpdateTable<ChapterTable> {
   ChapterUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
-        table.title,
-        value,
-      );
+  _i1.ColumnValue<String, String> title(String value) =>
+      _i1.ColumnValue(table.title, value);
 
-  _i1.ColumnValue<int, int> $_bookChaptersBookId(int? value) => _i1.ColumnValue(
-        table.$_bookChaptersBookId,
-        value,
-      );
+  _i1.ColumnValue<int, int> $_bookChaptersBookId(int? value) =>
+      _i1.ColumnValue(table.$_bookChaptersBookId, value);
 }
 
 class ChapterTable extends _i1.Table<int?> {
   ChapterTable({super.tableRelation}) : super(tableName: 'chapter') {
     updateTable = ChapterUpdateTable(this);
-    title = _i1.ColumnString(
-      'title',
-      this,
-    );
-    $_bookChaptersBookId = _i1.ColumnInt(
-      '_bookChaptersBookId',
-      this,
-    );
+    title = _i1.ColumnString('title', this);
+    $_bookChaptersBookId = _i1.ColumnInt('_bookChaptersBookId', this);
   }
 
   late final ChapterUpdateTable updateTable;
@@ -188,17 +149,10 @@ class ChapterTable extends _i1.Table<int?> {
   late final _i1.ColumnInt $_bookChaptersBookId;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        title,
-        $_bookChaptersBookId,
-      ];
+  List<_i1.Column> get columns => [id, title, $_bookChaptersBookId];
 
   @override
-  List<_i1.Column> get managedColumns => [
-        id,
-        title,
-      ];
+  List<_i1.Column> get managedColumns => [id, title];
 }
 
 class ChapterInclude extends _i1.IncludeObject {
@@ -319,10 +273,7 @@ class ChapterRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Chapter>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<Chapter>(id, transaction: transaction);
   }
 
   /// Inserts all [Chapter]s in the list and returns the inserted rows.
@@ -336,10 +287,7 @@ class ChapterRepository {
     List<Chapter> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Chapter>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Chapter>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Chapter] and returns the inserted row.
@@ -350,10 +298,7 @@ class ChapterRepository {
     Chapter row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Chapter>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Chapter>(row, transaction: transaction);
   }
 
   /// Updates all [Chapter]s in the list and returns the updated rows. If
@@ -438,10 +383,7 @@ class ChapterRepository {
     List<Chapter> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Chapter>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Chapter>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Chapter].
@@ -450,10 +392,7 @@ class ChapterRepository {
     Chapter row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Chapter>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Chapter>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -38,32 +38,48 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
 
   factory ChangedIdTypeSelf.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChangedIdTypeSelf(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      previous: jsonSerialization['previous'] == null
-          ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
-      nextId: jsonSerialization['nextId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
-      next: jsonSerialization['next'] == null
-          ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
-      parentId: jsonSerialization['parentId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
-      parent: jsonSerialization['parent'] == null
-          ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['parent'] as Map<String, dynamic>)),
-      children: (jsonSerialization['children'] as List?)
-          ?.map((e) =>
-              _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      previous:
+          jsonSerialization['previous'] == null
+              ? null
+              : _i2.ChangedIdTypeSelf.fromJson(
+                (jsonSerialization['previous'] as Map<String, dynamic>),
+              ),
+      nextId:
+          jsonSerialization['nextId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['nextId'],
+              ),
+      next:
+          jsonSerialization['next'] == null
+              ? null
+              : _i2.ChangedIdTypeSelf.fromJson(
+                (jsonSerialization['next'] as Map<String, dynamic>),
+              ),
+      parentId:
+          jsonSerialization['parentId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['parentId'],
+              ),
+      parent:
+          jsonSerialization['parent'] == null
+              ? null
+              : _i2.ChangedIdTypeSelf.fromJson(
+                (jsonSerialization['parent'] as Map<String, dynamic>),
+              ),
+      children:
+          (jsonSerialization['children'] as List?)
+              ?.map(
+                (e) =>
+                    _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -131,15 +147,15 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     _i2.ChangedIdTypeSelf? parent,
     List<_i2.ChangedIdTypeSelf>? children,
   }) : super._(
-          id: id,
-          name: name,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-          parentId: parentId,
-          parent: parent,
-          children: children,
-        );
+         id: id,
+         name: name,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+         parentId: parentId,
+         parent: parent,
+         children: children,
+       );
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
@@ -158,17 +174,19 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     return ChangedIdTypeSelf(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      previous: previous is _i2.ChangedIdTypeSelf?
-          ? previous
-          : this.previous?.copyWith(),
+      previous:
+          previous is _i2.ChangedIdTypeSelf?
+              ? previous
+              : this.previous?.copyWith(),
       nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
       next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
       parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
       parent:
           parent is _i2.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
-      children: children is List<_i2.ChangedIdTypeSelf>?
-          ? children
-          : this.children?.map((e0) => e0.copyWith()).toList(),
+      children:
+          children is List<_i2.ChangedIdTypeSelf>?
+              ? children
+              : this.children?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -7,8 +7,7 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given table with int column as source and bigint column as target',
-      () {
+  group('Given table with int column as source and bigint column as target', () {
     var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.integer);
     var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.bigint);
 
@@ -29,8 +28,7 @@ void main() {
     });
   });
 
-  group('Given table with bigint column as source and int column as target',
-      () {
+  group('Given table with bigint column as source and int column as target', () {
     var sourceDefinition = _singleColumnDatabaseDefinition(ColumnType.bigint);
     var targetDefinition = _singleColumnDatabaseDefinition(ColumnType.integer);
 

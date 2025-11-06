@@ -13,18 +13,14 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class DoubleDefaultPersist implements _i1.SerializableModel {
-  DoubleDefaultPersist._({
-    this.id,
-    this.doubleDefaultPersist,
-  });
+  DoubleDefaultPersist._({this.id, this.doubleDefaultPersist});
 
-  factory DoubleDefaultPersist({
-    int? id,
-    double? doubleDefaultPersist,
-  }) = _DoubleDefaultPersistImpl;
+  factory DoubleDefaultPersist({int? id, double? doubleDefaultPersist}) =
+      _DoubleDefaultPersistImpl;
 
   factory DoubleDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DoubleDefaultPersist(
       id: jsonSerialization['id'] as int?,
       doubleDefaultPersist:
@@ -42,10 +38,7 @@ abstract class DoubleDefaultPersist implements _i1.SerializableModel {
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DoubleDefaultPersist copyWith({
-    int? id,
-    double? doubleDefaultPersist,
-  });
+  DoubleDefaultPersist copyWith({int? id, double? doubleDefaultPersist});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -64,13 +57,8 @@ abstract class DoubleDefaultPersist implements _i1.SerializableModel {
 class _Undefined {}
 
 class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
-  _DoubleDefaultPersistImpl({
-    int? id,
-    double? doubleDefaultPersist,
-  }) : super._(
-          id: id,
-          doubleDefaultPersist: doubleDefaultPersist,
-        );
+  _DoubleDefaultPersistImpl({int? id, double? doubleDefaultPersist})
+    : super._(id: id, doubleDefaultPersist: doubleDefaultPersist);
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -82,9 +70,10 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }) {
     return DoubleDefaultPersist(
       id: id is int? ? id : this.id,
-      doubleDefaultPersist: doubleDefaultPersist is double?
-          ? doubleDefaultPersist
-          : this.doubleDefaultPersist,
+      doubleDefaultPersist:
+          doubleDefaultPersist is double?
+              ? doubleDefaultPersist
+              : this.doubleDefaultPersist,
     );
   }
 }

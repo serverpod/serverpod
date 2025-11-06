@@ -14,26 +14,20 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
 abstract class Arena implements _i1.SerializableModel {
-  Arena._({
-    this.id,
-    required this.name,
-    this.team,
-  });
+  Arena._({this.id, required this.name, this.team});
 
-  factory Arena({
-    int? id,
-    required String name,
-    _i2.Team? team,
-  }) = _ArenaImpl;
+  factory Arena({int? id, required String name, _i2.Team? team}) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
     return Arena(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.Team.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -49,11 +43,7 @@ abstract class Arena implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Arena copyWith({
-    int? id,
-    String? name,
-    _i2.Team? team,
-  });
+  Arena copyWith({int? id, String? name, _i2.Team? team});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -72,15 +62,8 @@ abstract class Arena implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ArenaImpl extends Arena {
-  _ArenaImpl({
-    int? id,
-    required String name,
-    _i2.Team? team,
-  }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+  _ArenaImpl({int? id, required String name, _i2.Team? team})
+    : super._(id: id, name: name, team: team);
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.

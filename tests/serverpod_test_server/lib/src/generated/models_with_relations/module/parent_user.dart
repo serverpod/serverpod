@@ -14,17 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ParentUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ParentUser._({
-    this.id,
-    this.name,
-    this.userInfoId,
-  });
+  ParentUser._({this.id, this.name, this.userInfoId});
 
-  factory ParentUser({
-    int? id,
-    String? name,
-    int? userInfoId,
-  }) = _ParentUserImpl;
+  factory ParentUser({int? id, String? name, int? userInfoId}) =
+      _ParentUserImpl;
 
   factory ParentUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentUser(
@@ -51,11 +44,7 @@ abstract class ParentUser
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ParentUser copyWith({
-    int? id,
-    String? name,
-    int? userInfoId,
-  });
+  ParentUser copyWith({int? id, String? name, int? userInfoId});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -107,15 +96,8 @@ abstract class ParentUser
 class _Undefined {}
 
 class _ParentUserImpl extends ParentUser {
-  _ParentUserImpl({
-    int? id,
-    String? name,
-    int? userInfoId,
-  }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-        );
+  _ParentUserImpl({int? id, String? name, int? userInfoId})
+    : super._(id: id, name: name, userInfoId: userInfoId);
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
@@ -137,28 +119,18 @@ class _ParentUserImpl extends ParentUser {
 class ParentUserUpdateTable extends _i1.UpdateTable<ParentUserTable> {
   ParentUserUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String? value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> userInfoId(int? value) => _i1.ColumnValue(
-        table.userInfoId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userInfoId(int? value) =>
+      _i1.ColumnValue(table.userInfoId, value);
 }
 
 class ParentUserTable extends _i1.Table<int?> {
   ParentUserTable({super.tableRelation}) : super(tableName: 'parent_user') {
     updateTable = ParentUserUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    userInfoId = _i1.ColumnInt(
-      'userInfoId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    userInfoId = _i1.ColumnInt('userInfoId', this);
   }
 
   late final ParentUserUpdateTable updateTable;
@@ -168,11 +140,7 @@ class ParentUserTable extends _i1.Table<int?> {
   late final _i1.ColumnInt userInfoId;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        userInfoId,
-      ];
+  List<_i1.Column> get columns => [id, name, userInfoId];
 }
 
 class ParentUserInclude extends _i1.IncludeObject {
@@ -293,10 +261,7 @@ class ParentUserRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ParentUser>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ParentUser>(id, transaction: transaction);
   }
 
   /// Inserts all [ParentUser]s in the list and returns the inserted rows.
@@ -310,10 +275,7 @@ class ParentUserRepository {
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ParentUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ParentUser>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ParentUser] and returns the inserted row.
@@ -324,10 +286,7 @@ class ParentUserRepository {
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ParentUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ParentUser>(row, transaction: transaction);
   }
 
   /// Updates all [ParentUser]s in the list and returns the updated rows. If
@@ -412,10 +371,7 @@ class ParentUserRepository {
     List<ParentUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ParentUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ParentUser>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ParentUser].
@@ -424,10 +380,7 @@ class ParentUserRepository {
     ParentUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ParentUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ParentUser>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

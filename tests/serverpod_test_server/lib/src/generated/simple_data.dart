@@ -15,15 +15,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Just some simple data.
 abstract class SimpleData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  SimpleData._({
-    this.id,
-    required this.num,
-  });
+  SimpleData._({this.id, required this.num});
 
-  factory SimpleData({
-    int? id,
-    required int num,
-  }) = _SimpleDataImpl;
+  factory SimpleData({int? id, required int num}) = _SimpleDataImpl;
 
   factory SimpleData.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleData(
@@ -50,24 +44,15 @@ abstract class SimpleData
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  SimpleData copyWith({
-    int? id,
-    int? num,
-  });
+  SimpleData copyWith({int? id, int? num});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'num': num,
-    };
+    return {if (id != null) 'id': id, 'num': num};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'num': num,
-    };
+    return {if (id != null) 'id': id, 'num': num};
   }
 
   static SimpleDataInclude include() {
@@ -103,45 +88,27 @@ abstract class SimpleData
 class _Undefined {}
 
 class _SimpleDataImpl extends SimpleData {
-  _SimpleDataImpl({
-    int? id,
-    required int num,
-  }) : super._(
-          id: id,
-          num: num,
-        );
+  _SimpleDataImpl({int? id, required int num}) : super._(id: id, num: num);
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  SimpleData copyWith({
-    Object? id = _Undefined,
-    int? num,
-  }) {
-    return SimpleData(
-      id: id is int? ? id : this.id,
-      num: num ?? this.num,
-    );
+  SimpleData copyWith({Object? id = _Undefined, int? num}) {
+    return SimpleData(id: id is int? ? id : this.id, num: num ?? this.num);
   }
 }
 
 class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
   SimpleDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
-        table.num,
-        value,
-      );
+  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(table.num, value);
 }
 
 class SimpleDataTable extends _i1.Table<int?> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     updateTable = SimpleDataUpdateTable(this);
-    num = _i1.ColumnInt(
-      'num',
-      this,
-    );
+    num = _i1.ColumnInt('num', this);
   }
 
   late final SimpleDataUpdateTable updateTable;
@@ -152,10 +119,7 @@ class SimpleDataTable extends _i1.Table<int?> {
   late final _i1.ColumnInt num;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        num,
-      ];
+  List<_i1.Column> get columns => [id, num];
 }
 
 class SimpleDataInclude extends _i1.IncludeObject {
@@ -276,10 +240,7 @@ class SimpleDataRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SimpleData>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<SimpleData>(id, transaction: transaction);
   }
 
   /// Inserts all [SimpleData]s in the list and returns the inserted rows.
@@ -293,10 +254,7 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SimpleData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<SimpleData>(rows, transaction: transaction);
   }
 
   /// Inserts a single [SimpleData] and returns the inserted row.
@@ -307,10 +265,7 @@ class SimpleDataRepository {
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SimpleData>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<SimpleData>(row, transaction: transaction);
   }
 
   /// Updates all [SimpleData]s in the list and returns the updated rows. If
@@ -395,10 +350,7 @@ class SimpleDataRepository {
     List<SimpleData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SimpleData>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<SimpleData>(rows, transaction: transaction);
   }
 
   /// Deletes a single [SimpleData].
@@ -407,10 +359,7 @@ class SimpleDataRepository {
     SimpleData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SimpleData>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<SimpleData>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

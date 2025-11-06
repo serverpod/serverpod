@@ -13,14 +13,14 @@ class TypeDefinitionBuilder {
   int? _vectorDimension;
 
   TypeDefinitionBuilder()
-      : _className = 'DefaultClassName',
-        _generics = [],
-        _nullable = false,
-        _url = null,
-        _dartType = null,
-        _customClass = false,
-        _modelDefinition = null,
-        _vectorDimension = null;
+    : _className = 'DefaultClassName',
+      _generics = [],
+      _nullable = false,
+      _url = null,
+      _dartType = null,
+      _customClass = false,
+      _modelDefinition = null,
+      _vectorDimension = null;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -37,24 +37,22 @@ class TypeDefinitionBuilder {
     bool nullable = false,
   ]) {
     _className = 'Future';
-    _generics.add(TypeDefinitionBuilder()
-        .withClassName(className)
-        .withNullable(nullable)
-        .build());
+    _generics.add(
+      TypeDefinitionBuilder()
+          .withClassName(className)
+          .withNullable(nullable)
+          .build(),
+    );
     return this;
   }
 
-  TypeDefinitionBuilder withStreamOf(
-    String className,
-  ) {
+  TypeDefinitionBuilder withStreamOf(String className) {
     _className = 'Stream';
     _generics.add(TypeDefinitionBuilder().withClassName(className).build());
     return this;
   }
 
-  TypeDefinitionBuilder withRecordOf(
-    List<TypeDefinition> fields,
-  ) {
+  TypeDefinitionBuilder withRecordOf(List<TypeDefinition> fields) {
     _className = '_Record';
     _generics.addAll(fields);
     return this;
@@ -87,10 +85,12 @@ class TypeDefinitionBuilder {
   ]) {
     _className = 'Map';
     _generics.add(TypeDefinitionBuilder().withClassName(keyClassName).build());
-    _generics.add(TypeDefinitionBuilder()
-        .withClassName(valueClassName)
-        .withNullable(nullable)
-        .build());
+    _generics.add(
+      TypeDefinitionBuilder()
+          .withClassName(valueClassName)
+          .withNullable(nullable)
+          .build(),
+    );
     return this;
   }
 

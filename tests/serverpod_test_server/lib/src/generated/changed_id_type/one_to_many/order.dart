@@ -39,13 +39,16 @@ abstract class OrderUuid
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
-      customer: jsonSerialization['customer'] == null
-          ? null
-          : _i2.CustomerInt.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      customer:
+          jsonSerialization['customer'] == null
+              ? null
+              : _i2.CustomerInt.fromJson(
+                (jsonSerialization['customer'] as Map<String, dynamic>),
+              ),
+      comments:
+          (jsonSerialization['comments'] as List?)
+              ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -105,10 +108,7 @@ abstract class OrderUuid
     _i2.CustomerIntInclude? customer,
     _i3.CommentIntIncludeList? comments,
   }) {
-    return OrderUuidInclude._(
-      customer: customer,
-      comments: comments,
-    );
+    return OrderUuidInclude._(customer: customer, comments: comments);
   }
 
   static OrderUuidIncludeList includeList({
@@ -147,12 +147,12 @@ class _OrderUuidImpl extends OrderUuid {
     _i2.CustomerInt? customer,
     List<_i3.CommentInt>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
@@ -171,9 +171,10 @@ class _OrderUuidImpl extends OrderUuid {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.CustomerInt? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      comments:
+          comments is List<_i3.CommentInt>?
+              ? comments
+              : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -181,28 +182,18 @@ class _OrderUuidImpl extends OrderUuid {
 class OrderUuidUpdateTable extends _i1.UpdateTable<OrderUuidTable> {
   OrderUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+  _i1.ColumnValue<String, String> description(String value) =>
+      _i1.ColumnValue(table.description, value);
 
-  _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
-        table.customerId,
-        value,
-      );
+  _i1.ColumnValue<int, int> customerId(int value) =>
+      _i1.ColumnValue(table.customerId, value);
 }
 
 class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
   OrderUuidTable({super.tableRelation}) : super(tableName: 'order_uuid') {
     updateTable = OrderUuidUpdateTable(this);
-    description = _i1.ColumnString(
-      'description',
-      this,
-    );
-    customerId = _i1.ColumnInt(
-      'customerId',
-      this,
-    );
+    description = _i1.ColumnString('description', this);
+    customerId = _i1.ColumnInt('customerId', this);
   }
 
   late final OrderUuidUpdateTable updateTable;
@@ -224,8 +215,9 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
       field: OrderUuid.t.customerId,
       foreignField: _i2.CustomerInt.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CustomerIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CustomerIntTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
   }
@@ -237,8 +229,9 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
       field: OrderUuid.t.id,
       foreignField: _i3.CommentInt.t.orderId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CommentIntTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
@@ -250,23 +243,21 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
       field: OrderUuid.t.id,
       foreignField: _i3.CommentInt.t.orderId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CommentIntTable(tableRelation: foreignTableRelation),
     );
     _comments = _i1.ManyRelation<_i3.CommentIntTable>(
       tableWithRelations: relationTable,
       table: _i3.CommentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _comments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        description,
-        customerId,
-      ];
+  List<_i1.Column> get columns => [id, description, customerId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -295,9 +286,9 @@ class OrderUuidInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'customer': _customer,
-        'comments': _comments,
-      };
+    'customer': _customer,
+    'comments': _comments,
+  };
 
   @override
   _i1.Table<_i1.UuidValue> get table => OrderUuid.t;
@@ -438,10 +429,7 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<OrderUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<OrderUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [OrderUuid] and returns the inserted row.
@@ -452,10 +440,7 @@ class OrderUuidRepository {
     OrderUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<OrderUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<OrderUuid>(row, transaction: transaction);
   }
 
   /// Updates all [OrderUuid]s in the list and returns the updated rows. If
@@ -540,10 +525,7 @@ class OrderUuidRepository {
     List<OrderUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<OrderUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<OrderUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [OrderUuid].
@@ -552,10 +534,7 @@ class OrderUuidRepository {
     OrderUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<OrderUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<OrderUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -14,21 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithDuration
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithDuration._({
-    this.id,
-    required this.duration,
-  });
+  ObjectWithDuration._({this.id, required this.duration});
 
-  factory ObjectWithDuration({
-    int? id,
-    required Duration duration,
-  }) = _ObjectWithDurationImpl;
+  factory ObjectWithDuration({int? id, required Duration duration}) =
+      _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -47,24 +43,15 @@ abstract class ObjectWithDuration
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithDuration copyWith({
-    int? id,
-    Duration? duration,
-  });
+  ObjectWithDuration copyWith({int? id, Duration? duration});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'duration': duration.toJson(),
-    };
+    return {if (id != null) 'id': id, 'duration': duration.toJson()};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'duration': duration.toJson(),
-    };
+    return {if (id != null) 'id': id, 'duration': duration.toJson()};
   }
 
   static ObjectWithDurationInclude include() {
@@ -100,22 +87,14 @@ abstract class ObjectWithDuration
 class _Undefined {}
 
 class _ObjectWithDurationImpl extends ObjectWithDuration {
-  _ObjectWithDurationImpl({
-    int? id,
-    required Duration duration,
-  }) : super._(
-          id: id,
-          duration: duration,
-        );
+  _ObjectWithDurationImpl({int? id, required Duration duration})
+    : super._(id: id, duration: duration);
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ObjectWithDuration copyWith({
-    Object? id = _Undefined,
-    Duration? duration,
-  }) {
+  ObjectWithDuration copyWith({Object? id = _Undefined, Duration? duration}) {
     return ObjectWithDuration(
       id: id is int? ? id : this.id,
       duration: duration ?? this.duration,
@@ -128,20 +107,14 @@ class ObjectWithDurationUpdateTable
   ObjectWithDurationUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> duration(Duration value) =>
-      _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+      _i1.ColumnValue(table.duration, value);
 }
 
 class ObjectWithDurationTable extends _i1.Table<int?> {
   ObjectWithDurationTable({super.tableRelation})
-      : super(tableName: 'object_with_duration') {
+    : super(tableName: 'object_with_duration') {
     updateTable = ObjectWithDurationUpdateTable(this);
-    duration = _i1.ColumnDuration(
-      'duration',
-      this,
-    );
+    duration = _i1.ColumnDuration('duration', this);
   }
 
   late final ObjectWithDurationUpdateTable updateTable;
@@ -149,10 +122,7 @@ class ObjectWithDurationTable extends _i1.Table<int?> {
   late final _i1.ColumnDuration duration;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        duration,
-      ];
+  List<_i1.Column> get columns => [id, duration];
 }
 
 class ObjectWithDurationInclude extends _i1.IncludeObject {
@@ -350,7 +320,7 @@ class ObjectWithDurationRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithDuration>(
@@ -365,7 +335,7 @@ class ObjectWithDurationRepository {
   Future<List<ObjectWithDuration>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     int? limit,
     int? offset,

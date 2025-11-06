@@ -62,7 +62,8 @@ abstract class ImmutableObjectWithTwentyFields
   }) = _ImmutableObjectWithTwentyFieldsImpl;
 
   factory ImmutableObjectWithTwentyFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTwentyFields(
       variable1: jsonSerialization['variable1'] as String?,
       variable2: jsonSerialization['variable2'] as String?,
@@ -154,111 +155,48 @@ abstract class ImmutableObjectWithTwentyFields
   });
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithTwentyFields &&
-            (identical(
-                  other.variable1,
-                  variable1,
-                ) ||
+            (identical(other.variable1, variable1) ||
                 other.variable1 == variable1) &&
-            (identical(
-                  other.variable2,
-                  variable2,
-                ) ||
+            (identical(other.variable2, variable2) ||
                 other.variable2 == variable2) &&
-            (identical(
-                  other.variable3,
-                  variable3,
-                ) ||
+            (identical(other.variable3, variable3) ||
                 other.variable3 == variable3) &&
-            (identical(
-                  other.variable4,
-                  variable4,
-                ) ||
+            (identical(other.variable4, variable4) ||
                 other.variable4 == variable4) &&
-            (identical(
-                  other.variable5,
-                  variable5,
-                ) ||
+            (identical(other.variable5, variable5) ||
                 other.variable5 == variable5) &&
-            (identical(
-                  other.variable6,
-                  variable6,
-                ) ||
+            (identical(other.variable6, variable6) ||
                 other.variable6 == variable6) &&
-            (identical(
-                  other.variable7,
-                  variable7,
-                ) ||
+            (identical(other.variable7, variable7) ||
                 other.variable7 == variable7) &&
-            (identical(
-                  other.variable8,
-                  variable8,
-                ) ||
+            (identical(other.variable8, variable8) ||
                 other.variable8 == variable8) &&
-            (identical(
-                  other.variable9,
-                  variable9,
-                ) ||
+            (identical(other.variable9, variable9) ||
                 other.variable9 == variable9) &&
-            (identical(
-                  other.variable10,
-                  variable10,
-                ) ||
+            (identical(other.variable10, variable10) ||
                 other.variable10 == variable10) &&
-            (identical(
-                  other.variable11,
-                  variable11,
-                ) ||
+            (identical(other.variable11, variable11) ||
                 other.variable11 == variable11) &&
-            (identical(
-                  other.variable12,
-                  variable12,
-                ) ||
+            (identical(other.variable12, variable12) ||
                 other.variable12 == variable12) &&
-            (identical(
-                  other.variable13,
-                  variable13,
-                ) ||
+            (identical(other.variable13, variable13) ||
                 other.variable13 == variable13) &&
-            (identical(
-                  other.variable14,
-                  variable14,
-                ) ||
+            (identical(other.variable14, variable14) ||
                 other.variable14 == variable14) &&
-            (identical(
-                  other.variable15,
-                  variable15,
-                ) ||
+            (identical(other.variable15, variable15) ||
                 other.variable15 == variable15) &&
-            (identical(
-                  other.variable16,
-                  variable16,
-                ) ||
+            (identical(other.variable16, variable16) ||
                 other.variable16 == variable16) &&
-            (identical(
-                  other.variable17,
-                  variable17,
-                ) ||
+            (identical(other.variable17, variable17) ||
                 other.variable17 == variable17) &&
-            (identical(
-                  other.variable18,
-                  variable18,
-                ) ||
+            (identical(other.variable18, variable18) ||
                 other.variable18 == variable18) &&
-            (identical(
-                  other.variable19,
-                  variable19,
-                ) ||
+            (identical(other.variable19, variable19) ||
                 other.variable19 == variable19) &&
-            (identical(
-                  other.variable20,
-                  variable20,
-                ) ||
+            (identical(other.variable20, variable20) ||
                 other.variable20 == variable20);
   }
 
@@ -347,27 +285,27 @@ class _ImmutableObjectWithTwentyFieldsImpl
     String? variable19,
     String? variable20,
   }) : super._(
-          variable1: variable1,
-          variable2: variable2,
-          variable3: variable3,
-          variable4: variable4,
-          variable5: variable5,
-          variable6: variable6,
-          variable7: variable7,
-          variable8: variable8,
-          variable9: variable9,
-          variable10: variable10,
-          variable11: variable11,
-          variable12: variable12,
-          variable13: variable13,
-          variable14: variable14,
-          variable15: variable15,
-          variable16: variable16,
-          variable17: variable17,
-          variable18: variable18,
-          variable19: variable19,
-          variable20: variable20,
-        );
+         variable1: variable1,
+         variable2: variable2,
+         variable3: variable3,
+         variable4: variable4,
+         variable5: variable5,
+         variable6: variable6,
+         variable7: variable7,
+         variable8: variable8,
+         variable9: variable9,
+         variable10: variable10,
+         variable11: variable11,
+         variable12: variable12,
+         variable13: variable13,
+         variable14: variable14,
+         variable15: variable15,
+         variable16: variable16,
+         variable17: variable17,
+         variable18: variable18,
+         variable19: variable19,
+         variable20: variable20,
+       );
 
   /// Returns a shallow copy of this [ImmutableObjectWithTwentyFields]
   /// with some or all fields replaced by the given arguments.

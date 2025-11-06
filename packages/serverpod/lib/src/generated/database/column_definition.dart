@@ -37,8 +37,9 @@ abstract class ColumnDefinition
   factory ColumnDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnDefinition(
       name: jsonSerialization['name'] as String,
-      columnType:
-          _i2.ColumnType.fromJson((jsonSerialization['columnType'] as int)),
+      columnType: _i2.ColumnType.fromJson(
+        (jsonSerialization['columnType'] as int),
+      ),
       isNullable: jsonSerialization['isNullable'] as bool,
       columnDefault: jsonSerialization['columnDefault'] as String?,
       dartType: jsonSerialization['dartType'] as String?,
@@ -119,13 +120,13 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
     String? dartType,
     int? vectorDimension,
   }) : super._(
-          name: name,
-          columnType: columnType,
-          isNullable: isNullable,
-          columnDefault: columnDefault,
-          dartType: dartType,
-          vectorDimension: vectorDimension,
-        );
+         name: name,
+         columnType: columnType,
+         isNullable: isNullable,
+         columnDefault: columnDefault,
+         dartType: dartType,
+         vectorDimension: vectorDimension,
+       );
 
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.

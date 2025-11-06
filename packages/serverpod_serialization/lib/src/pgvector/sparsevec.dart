@@ -106,7 +106,7 @@ class SparseVector {
   @override
   String toString() {
     var elements = [
-      for (var i = 0; i < indices.length; i++) '${indices[i] + 1}:${values[i]}'
+      for (var i = 0; i < indices.length; i++) '${indices[i] + 1}:${values[i]}',
     ].join(',');
     return '{$elements}/$dimensions';
   }
@@ -121,7 +121,7 @@ class SparseVector {
     final map = <int, double>{
       if (mapStr.isNotEmpty)
         for (var v in mapStr.split(',').map((e) => e.split(':')))
-          int.parse(v.first): double.parse(v.last)
+          int.parse(v.first): double.parse(v.last),
     };
     return SparseVector.fromMap(map, int.parse(parts.last));
   }

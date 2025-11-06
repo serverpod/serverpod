@@ -47,7 +47,11 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> logDebugAndInfoAndError(
-      Session session, String debug, String info, String error) async {
+    Session session,
+    String debug,
+    String info,
+    String error,
+  ) async {
     session.log(debug, level: LogLevel.debug);
     session.log(info);
     session.log(error, level: LogLevel.error);

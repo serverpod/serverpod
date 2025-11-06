@@ -37,11 +37,7 @@ class GoogleEndpoint extends Endpoint {
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
       clientSecret,
       authenticationCode,
-      [
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'profile',
-        'email',
-      ],
+      ['https://www.googleapis.com/auth/userinfo.profile', 'profile', 'email'],
       redirectUri,
     );
 
@@ -67,34 +63,30 @@ class GoogleEndpoint extends Endpoint {
 
     email = email.toLowerCase();
 
-    var userInfo = await _setupUserInfo(
+    var userInfo = await _setupUserInfo(session, email, name, fullName, image, (
       session,
-      email,
-      name,
-      fullName,
-      image,
-      (session, userInfo) async {
-        if (authClient.credentials.refreshToken != null) {
-          // Store refresh token, so that we can access this data at a later time.
-          var token = await GoogleRefreshToken.db.findFirstRow(
-            session,
-            where: (t) => t.userId.equals(userInfo.id!),
+      userInfo,
+    ) async {
+      if (authClient.credentials.refreshToken != null) {
+        // Store refresh token, so that we can access this data at a later time.
+        var token = await GoogleRefreshToken.db.findFirstRow(
+          session,
+          where: (t) => t.userId.equals(userInfo.id!),
+        );
+        if (token == null) {
+          token = GoogleRefreshToken(
+            userId: userInfo.id!,
+            refreshToken: jsonEncode(authClient.credentials.toJson()),
           );
-          if (token == null) {
-            token = GoogleRefreshToken(
-              userId: userInfo.id!,
-              refreshToken: jsonEncode(authClient.credentials.toJson()),
-            );
-            await GoogleRefreshToken.db.insertRow(session, token);
-          } else {
-            token.refreshToken = jsonEncode(authClient.credentials.toJson());
-            await GoogleRefreshToken.db.updateRow(session, token);
-          }
+          await GoogleRefreshToken.db.insertRow(session, token);
+        } else {
+          token.refreshToken = jsonEncode(authClient.credentials.toJson());
+          await GoogleRefreshToken.db.updateRow(session, token);
         }
+      }
 
-        await AuthConfig.current.onUserCreated?.call(session, userInfo);
-      },
-    );
+      await AuthConfig.current.onUserCreated?.call(session, userInfo);
+    });
 
     if (userInfo == null) {
       return AuthenticationResponse(
@@ -127,7 +119,9 @@ class GoogleEndpoint extends Endpoint {
 
   /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
-      Session session, String idToken) async {
+    Session session,
+    String idToken,
+  ) async {
     var clientSecret = GoogleAuth.clientSecret;
     if (clientSecret == null) {
       throw StateError('The server side Google client secret is not loaded.');
@@ -137,8 +131,11 @@ class GoogleEndpoint extends Endpoint {
 
       // Verify the token with Google's servers.
       // TODO: This should probably be done on this server.
-      var response = await http.get(Uri.parse(
-          'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
+      var response = await http.get(
+        Uri.parse(
+          'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken',
+        ),
+      );
 
       if (response.statusCode != 200) {
         session.log('Invalid token received', level: LogLevel.debug);
@@ -180,16 +177,22 @@ class GoogleEndpoint extends Endpoint {
 
       if (email == null || fullName == null || image == null || name == null) {
         session.log(
-            'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
-            level: LogLevel.debug);
+          'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
+          level: LogLevel.debug,
+        );
         return AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
       }
 
-      var userInfo =
-          await _setupUserInfo(session, email, name, fullName, image);
+      var userInfo = await _setupUserInfo(
+        session,
+        email,
+        name,
+        fullName,
+        image,
+      );
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
         return AuthenticationResponse(
@@ -258,7 +261,10 @@ class GoogleEndpoint extends Endpoint {
               '${url.substring(0, url.length - 4)}s${AuthConfig.current.userImageSize}';
         }
         await UserImages.setUserImageFromUrl(
-            session, userInfo!.id!, Uri.parse(url));
+          session,
+          userInfo!.id!,
+          Uri.parse(url),
+        );
       }
     }
     return userInfo;

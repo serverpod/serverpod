@@ -37,6 +37,7 @@ abstract class DatabaseUtil {
     final Database database,
     final Transaction? transaction,
     final TransactionFunction<R> f, {
+
     /// Settings to be applied in case a new transaction is created.
     final TransactionSettings? settings,
   }) async {

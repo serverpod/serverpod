@@ -23,9 +23,10 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _app = RelicApp()
-    ..inject(_ReportExceptionMiddleware(this))
-    ..inject(_SessionMiddleware(serverpod.server));
+  late final _app =
+      RelicApp()
+        ..inject(_ReportExceptionMiddleware(this))
+        ..inject(_SessionMiddleware(serverpod.server));
 
   RelicServer? _server;
 
@@ -33,11 +34,9 @@ class WebServer {
   final SecurityContext? _securityContext;
 
   /// Creates a new webserver.
-  WebServer({
-    required this.serverpod,
-    SecurityContext? securityContext,
-  })  : serverId = serverpod.serverId,
-        _securityContext = securityContext {
+  WebServer({required this.serverpod, SecurityContext? securityContext})
+    : serverId = serverpod.serverId,
+      _securityContext = securityContext {
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -79,7 +78,8 @@ class WebServer {
     await templates.loadAll(templatesDirectory);
     if (templates.isEmpty) {
       logDebug(
-          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+        'No webserver relic templates found, template directory path: "${templatesDirectory.path}".',
+      );
     }
 
     try {
@@ -96,9 +96,12 @@ class WebServer {
       var host = _config.publicHost;
       logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
-      await _reportException(e, stackTrace,
-          message:
-              'Failed to bind socket, port ${_config.port} may already be in use.');
+      await _reportException(
+        e,
+        stackTrace,
+        message:
+            'Failed to bind socket, port ${_config.port} may already be in use.',
+      );
     }
     return _running;
   }
@@ -111,14 +114,12 @@ class WebServer {
     Session? session,
     Request? request,
   }) async {
-    logError(
-      message != null ? '$message $e' : e,
-      stackTrace: stackTrace,
-    );
+    logError(message != null ? '$message $e' : e, stackTrace: stackTrace);
 
-    var context = session != null
-        ? contextFromSession(session, request: request)
-        : request != null
+    var context =
+        session != null
+            ? contextFromSession(session, request: request)
+            : request != null
             ? contextFromRequest(serverpod.server, request, OperationType.web)
             : contextFromServer(serverpod.server);
 
@@ -263,10 +264,7 @@ abstract class WidgetRoute extends Route {
   Future<WebWidget> build(Session session, Request request);
 
   @override
-  FutureOr<Result> handleCall(
-    Session session,
-    Request req,
-  ) async {
+  FutureOr<Result> handleCall(Session session, Request req) async {
     var widget = await build(session, req);
 
     if (widget is RedirectWidget) {
@@ -277,10 +275,11 @@ abstract class WidgetRoute extends Route {
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
 
     final headers = Headers.build(
-      (mh) => mh.cacheControl = CacheControlHeader(
-        noCache: true,
-        privateCache: true,
-      ),
+      (mh) =>
+          mh.cacheControl = CacheControlHeader(
+            noCache: true,
+            privateCache: true,
+          ),
     );
 
     return Response.ok(

@@ -157,17 +157,17 @@ class _LogSettingsImpl extends LogSettings {
     required double slowSessionDuration,
     required double slowQueryDuration,
   }) : super._(
-          logLevel: logLevel,
-          logAllSessions: logAllSessions,
-          logAllQueries: logAllQueries,
-          logSlowSessions: logSlowSessions,
-          logStreamingSessionsContinuously: logStreamingSessionsContinuously,
-          logSlowQueries: logSlowQueries,
-          logFailedSessions: logFailedSessions,
-          logFailedQueries: logFailedQueries,
-          slowSessionDuration: slowSessionDuration,
-          slowQueryDuration: slowQueryDuration,
-        );
+         logLevel: logLevel,
+         logAllSessions: logAllSessions,
+         logAllQueries: logAllQueries,
+         logSlowSessions: logSlowSessions,
+         logStreamingSessionsContinuously: logStreamingSessionsContinuously,
+         logSlowQueries: logSlowQueries,
+         logFailedSessions: logFailedSessions,
+         logFailedQueries: logFailedQueries,
+         slowSessionDuration: slowSessionDuration,
+         slowQueryDuration: slowQueryDuration,
+       );
 
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
@@ -190,7 +190,8 @@ class _LogSettingsImpl extends LogSettings {
       logAllSessions: logAllSessions ?? this.logAllSessions,
       logAllQueries: logAllQueries ?? this.logAllQueries,
       logSlowSessions: logSlowSessions ?? this.logSlowSessions,
-      logStreamingSessionsContinuously: logStreamingSessionsContinuously ??
+      logStreamingSessionsContinuously:
+          logStreamingSessionsContinuously ??
           this.logStreamingSessionsContinuously,
       logSlowQueries: logSlowQueries ?? this.logSlowQueries,
       logFailedSessions: logFailedSessions ?? this.logFailedSessions,

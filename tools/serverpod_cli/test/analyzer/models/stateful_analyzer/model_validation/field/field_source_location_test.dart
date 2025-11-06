@@ -11,18 +11,19 @@ void main() {
     'Given a class with a field with an invalid key, then collect an error that locates the invalid key in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
 class: Example
 fields:
   nameId: int, invalid
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -43,19 +44,20 @@ fields:
     'Given a class with a field with a relation, but without parent keyword value, then collect an error that locates the parent keyword in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             nameId: int, relation(parent=)
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -76,19 +78,20 @@ fields:
     'Given a class with a field with a relation, but an invalid table name for parent keyword, then collect an error that locates the value in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             nameId: int, relation(parent=InvalidName_)
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -109,19 +112,20 @@ fields:
     'Given a class with a field with database and api defined, then collect an error that locates the api keyword in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
 class: Example
 table: example
 fields:
   nameId: int, database, api
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -142,24 +146,22 @@ fields:
     'Given a class with a field with an empty string entry at the end, then no errors was generated.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
 class: Example
 table: example
 fields:
   nameId: int, !persist,
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-      expect(
-        collector.errors,
-        isEmpty,
-      );
+      expect(collector.errors, isEmpty);
     },
   );
 
@@ -167,19 +169,20 @@ fields:
     'Given a class with a field with a duplicated key value, then collect an error that locates the duplicated key in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             nameId: int, !persist, !persist
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -200,19 +203,20 @@ fields:
     'Given a class with a field with an invalid dart syntax for the type, then collect an error that locates the invalid type in the comma separated string.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             nameId: Invalid-Type, !persist
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,

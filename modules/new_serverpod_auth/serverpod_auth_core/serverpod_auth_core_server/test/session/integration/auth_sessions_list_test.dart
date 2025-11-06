@@ -11,8 +11,10 @@ void main() {
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  withServerpod('Given an auth session for a user,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session for a user,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late UuidValue authSessionId;
@@ -40,10 +42,7 @@ void main() {
           authUserId: authUserId,
         );
 
-        expect(
-          sessions.single.id,
-          authSessionId,
-        );
+        expect(sessions.single.id, authSessionId);
       },
     );
 

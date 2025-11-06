@@ -13,18 +13,14 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class EmptyModelRelationItem implements _i1.SerializableModel {
-  EmptyModelRelationItem._({
-    this.id,
-    required this.name,
-  });
+  EmptyModelRelationItem._({this.id, required this.name});
 
-  factory EmptyModelRelationItem({
-    int? id,
-    required String name,
-  }) = _EmptyModelRelationItemImpl;
+  factory EmptyModelRelationItem({int? id, required String name}) =
+      _EmptyModelRelationItemImpl;
 
   factory EmptyModelRelationItem.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmptyModelRelationItem(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -41,16 +37,10 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmptyModelRelationItem copyWith({
-    int? id,
-    String? name,
-  });
+  EmptyModelRelationItem copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   @override
@@ -62,22 +52,14 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
 class _Undefined {}
 
 class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
-  _EmptyModelRelationItemImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _EmptyModelRelationItemImpl({int? id, required String name})
+    : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmptyModelRelationItem copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  EmptyModelRelationItem copyWith({Object? id = _Undefined, String? name}) {
     return EmptyModelRelationItem(
       id: id is int? ? id : this.id,
       name: name ?? this.name,

@@ -13,21 +13,17 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ObjectWithDuration implements _i1.SerializableModel {
-  ObjectWithDuration._({
-    this.id,
-    required this.duration,
-  });
+  ObjectWithDuration._({this.id, required this.duration});
 
-  factory ObjectWithDuration({
-    int? id,
-    required Duration duration,
-  }) = _ObjectWithDurationImpl;
+  factory ObjectWithDuration({int? id, required Duration duration}) =
+      _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -41,16 +37,10 @@ abstract class ObjectWithDuration implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithDuration copyWith({
-    int? id,
-    Duration? duration,
-  });
+  ObjectWithDuration copyWith({int? id, Duration? duration});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'duration': duration.toJson(),
-    };
+    return {if (id != null) 'id': id, 'duration': duration.toJson()};
   }
 
   @override
@@ -62,22 +52,14 @@ abstract class ObjectWithDuration implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ObjectWithDurationImpl extends ObjectWithDuration {
-  _ObjectWithDurationImpl({
-    int? id,
-    required Duration duration,
-  }) : super._(
-          id: id,
-          duration: duration,
-        );
+  _ObjectWithDurationImpl({int? id, required Duration duration})
+    : super._(id: id, duration: duration);
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ObjectWithDuration copyWith({
-    Object? id = _Undefined,
-    Duration? duration,
-  }) {
+  ObjectWithDuration copyWith({Object? id = _Undefined, Duration? duration}) {
     return ObjectWithDuration(
       id: id is int? ? id : this.id,
       duration: duration ?? this.duration,

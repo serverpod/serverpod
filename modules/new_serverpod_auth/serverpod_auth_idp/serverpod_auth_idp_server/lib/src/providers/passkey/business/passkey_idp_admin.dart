@@ -13,16 +13,16 @@ final class PasskeyIDPAdmin {
   PasskeyIDPAdmin({
     required final Duration challengeLifetime,
     required final PasskeyIDPUtils utils,
-  })  : _challengeLifetime = challengeLifetime,
-        _utils = utils;
+  }) : _challengeLifetime = challengeLifetime,
+       _utils = utils;
 
   /// Removes all challenges from the database which are older than the
   /// challenge lifetime.
   Future<void> deleteExpiredChallenges(final Session session) async {
     await PasskeyChallenge.db.deleteWhere(
       session,
-      where: (final t) =>
-          t.createdAt < clock.now().subtract(_challengeLifetime),
+      where:
+          (final t) => t.createdAt < clock.now().subtract(_challengeLifetime),
     );
   }
 

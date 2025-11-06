@@ -37,15 +37,19 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Post(
       id: jsonSerialization['id'] as int?,
       content: jsonSerialization['content'] as String,
-      previous: jsonSerialization['previous'] == null
-          ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
+      previous:
+          jsonSerialization['previous'] == null
+              ? null
+              : _i2.Post.fromJson(
+                (jsonSerialization['previous'] as Map<String, dynamic>),
+              ),
       nextId: jsonSerialization['nextId'] as int?,
-      next: jsonSerialization['next'] == null
-          ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
+      next:
+          jsonSerialization['next'] == null
+              ? null
+              : _i2.Post.fromJson(
+                (jsonSerialization['next'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -103,10 +107,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.PostInclude? previous,
     _i2.PostInclude? next,
   }) {
-    return PostInclude._(
-      previous: previous,
-      next: next,
-    );
+    return PostInclude._(previous: previous, next: next);
   }
 
   static PostIncludeList includeList({
@@ -145,12 +146,12 @@ class _PostImpl extends Post {
     int? nextId,
     _i2.Post? next,
   }) : super._(
-          id: id,
-          content: content,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-        );
+         id: id,
+         content: content,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+       );
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
@@ -176,28 +177,18 @@ class _PostImpl extends Post {
 class PostUpdateTable extends _i1.UpdateTable<PostTable> {
   PostUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
-        table.content,
-        value,
-      );
+  _i1.ColumnValue<String, String> content(String value) =>
+      _i1.ColumnValue(table.content, value);
 
-  _i1.ColumnValue<int, int> nextId(int? value) => _i1.ColumnValue(
-        table.nextId,
-        value,
-      );
+  _i1.ColumnValue<int, int> nextId(int? value) =>
+      _i1.ColumnValue(table.nextId, value);
 }
 
 class PostTable extends _i1.Table<int?> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
     updateTable = PostUpdateTable(this);
-    content = _i1.ColumnString(
-      'content',
-      this,
-    );
-    nextId = _i1.ColumnInt(
-      'nextId',
-      this,
-    );
+    content = _i1.ColumnString('content', this);
+    nextId = _i1.ColumnInt('nextId', this);
   }
 
   late final PostUpdateTable updateTable;
@@ -217,8 +208,9 @@ class PostTable extends _i1.Table<int?> {
       field: Post.t.id,
       foreignField: _i2.Post.t.nextId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.PostTable(tableRelation: foreignTableRelation),
     );
     return _previous!;
   }
@@ -230,18 +222,15 @@ class PostTable extends _i1.Table<int?> {
       field: Post.t.nextId,
       foreignField: _i2.Post.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.PostTable(tableRelation: foreignTableRelation),
     );
     return _next!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        content,
-        nextId,
-      ];
+  List<_i1.Column> get columns => [id, content, nextId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -256,10 +245,7 @@ class PostTable extends _i1.Table<int?> {
 }
 
 class PostInclude extends _i1.IncludeObject {
-  PostInclude._({
-    _i2.PostInclude? previous,
-    _i2.PostInclude? next,
-  }) {
+  PostInclude._({_i2.PostInclude? previous, _i2.PostInclude? next}) {
     _previous = previous;
     _next = next;
   }
@@ -270,9 +256,9 @@ class PostInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'previous': _previous,
-        'next': _next,
-      };
+    'previous': _previous,
+    'next': _next,
+  };
 
   @override
   _i1.Table<int?> get table => Post.t;
@@ -413,10 +399,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Post>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Post>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Post] and returns the inserted row.
@@ -427,10 +410,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Post>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Post>(row, transaction: transaction);
   }
 
   /// Updates all [Post]s in the list and returns the updated rows. If
@@ -515,10 +495,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Post>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Post>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Post].
@@ -527,10 +504,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Post>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Post>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

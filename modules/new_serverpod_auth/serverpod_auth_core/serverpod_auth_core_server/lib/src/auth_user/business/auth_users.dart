@@ -70,9 +70,7 @@ abstract final class AuthUsers {
     }
 
     if (blocked != null) {
-      authUser = authUser.copyWith(
-        blocked: blocked,
-      );
+      authUser = authUser.copyWith(blocked: blocked);
     }
 
     authUser = await AuthUser.db.updateRow(
@@ -89,10 +87,7 @@ abstract final class AuthUsers {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final authUsers = await AuthUser.db.find(
-      session,
-      transaction: transaction,
-    );
+    final authUsers = await AuthUser.db.find(session, transaction: transaction);
 
     return authUsers.map((final a) => a.toModel()).toList();
   }

@@ -36,8 +36,10 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var count =
-            await Member.db.count(session, where: (t) => t.blocking.none());
+        var count = await Member.db.count(
+          session,
+          where: (t) => t.blocking.none(),
+        );
 
         expect(count, 1);
       },
@@ -69,9 +71,8 @@ void main() async {
 
         var count = await Member.db.count(
           session,
-          where: (t) => t.blocking.none(
-            (c) => c.blockedId.equals(member[0].id!),
-          ),
+          where:
+              (t) => t.blocking.none((c) => c.blockedId.equals(member[0].id!)),
         );
 
         expect(count, 2);
@@ -134,9 +135,10 @@ void main() async {
 
         var count = await Member.db.count(
           session,
-          where: (t) =>
-              t.blocking.none((o) => o.blocked.name.ilike('%3')) |
-              t.blockedBy.none((o) => o.blockedBy.name.ilike('%1')),
+          where:
+              (t) =>
+                  t.blocking.none((o) => o.blocked.name.ilike('%3')) |
+                  t.blockedBy.none((o) => o.blockedBy.name.ilike('%1')),
         );
 
         expect(count, 3);

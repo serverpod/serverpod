@@ -145,13 +145,13 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     required String serverId,
     String? identifier,
   }) : super._(
-          id: id,
-          name: name,
-          time: time,
-          serializedObject: serializedObject,
-          serverId: serverId,
-          identifier: identifier,
-        );
+         id: id,
+         name: name,
+         time: time,
+         serializedObject: serializedObject,
+         serverId: serverId,
+         identifier: identifier,
+       );
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
@@ -169,9 +169,10 @@ class _FutureCallEntryImpl extends FutureCallEntry {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       time: time ?? this.time,
-      serializedObject: serializedObject is String?
-          ? serializedObject
-          : this.serializedObject,
+      serializedObject:
+          serializedObject is String?
+              ? serializedObject
+              : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
     );
@@ -181,57 +182,31 @@ class _FutureCallEntryImpl extends FutureCallEntry {
 class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
   FutureCallEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) =>
+      _i1.ColumnValue(table.time, value);
 
   _i1.ColumnValue<String, String> serializedObject(String? value) =>
-      _i1.ColumnValue(
-        table.serializedObject,
-        value,
-      );
+      _i1.ColumnValue(table.serializedObject, value);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+  _i1.ColumnValue<String, String> serverId(String value) =>
+      _i1.ColumnValue(table.serverId, value);
 
-  _i1.ColumnValue<String, String> identifier(String? value) => _i1.ColumnValue(
-        table.identifier,
-        value,
-      );
+  _i1.ColumnValue<String, String> identifier(String? value) =>
+      _i1.ColumnValue(table.identifier, value);
 }
 
 class FutureCallEntryTable extends _i1.Table<int?> {
   FutureCallEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_future_call') {
+    : super(tableName: 'serverpod_future_call') {
     updateTable = FutureCallEntryUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    time = _i1.ColumnDateTime(
-      'time',
-      this,
-    );
-    serializedObject = _i1.ColumnString(
-      'serializedObject',
-      this,
-    );
-    serverId = _i1.ColumnString(
-      'serverId',
-      this,
-    );
-    identifier = _i1.ColumnString(
-      'identifier',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    time = _i1.ColumnDateTime('time', this);
+    serializedObject = _i1.ColumnString('serializedObject', this);
+    serverId = _i1.ColumnString('serverId', this);
+    identifier = _i1.ColumnString('identifier', this);
   }
 
   late final FutureCallEntryUpdateTable updateTable;
@@ -253,13 +228,13 @@ class FutureCallEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        time,
-        serializedObject,
-        serverId,
-        identifier,
-      ];
+    id,
+    name,
+    time,
+    serializedObject,
+    serverId,
+    identifier,
+  ];
 }
 
 class FutureCallEntryInclude extends _i1.IncludeObject {
@@ -380,10 +355,7 @@ class FutureCallEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<FutureCallEntry>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<FutureCallEntry>(id, transaction: transaction);
   }
 
   /// Inserts all [FutureCallEntry]s in the list and returns the inserted rows.
@@ -397,10 +369,7 @@ class FutureCallEntryRepository {
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<FutureCallEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<FutureCallEntry>(rows, transaction: transaction);
   }
 
   /// Inserts a single [FutureCallEntry] and returns the inserted row.
@@ -411,10 +380,7 @@ class FutureCallEntryRepository {
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<FutureCallEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<FutureCallEntry>(row, transaction: transaction);
   }
 
   /// Updates all [FutureCallEntry]s in the list and returns the updated rows. If
@@ -457,7 +423,7 @@ class FutureCallEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallEntry>(
@@ -472,7 +438,7 @@ class FutureCallEntryRepository {
   Future<List<FutureCallEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     int? limit,
     int? offset,
@@ -501,10 +467,7 @@ class FutureCallEntryRepository {
     List<FutureCallEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<FutureCallEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<FutureCallEntry>(rows, transaction: transaction);
   }
 
   /// Deletes a single [FutureCallEntry].
@@ -513,10 +476,7 @@ class FutureCallEntryRepository {
     FutureCallEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<FutureCallEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<FutureCallEntry>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

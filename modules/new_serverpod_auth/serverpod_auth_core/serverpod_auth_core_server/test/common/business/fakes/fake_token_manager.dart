@@ -15,8 +15,8 @@ class FakeTokenManager implements TokenManager {
     this._storage, {
     final String tokenIssuer = 'fake',
     final bool usesRefreshTokens = true,
-  })  : _tokenIssuer = tokenIssuer,
-        _usesRefreshTokens = usesRefreshTokens;
+  }) : _tokenIssuer = tokenIssuer,
+       _usesRefreshTokens = usesRefreshTokens;
 
   @override
   Future<AuthSuccess> issueToken(
@@ -30,12 +30,13 @@ class FakeTokenManager implements TokenManager {
     final refreshTokenId =
         _usesRefreshTokens ? _storage.generateRefreshTokenId() : null;
 
-    final scopeSet = scopes != null
-        ? scopes
-            .where((final scope) => scope.name != null)
-            .map((final scope) => scope.name!)
-            .toSet()
-        : <String>{};
+    final scopeSet =
+        scopes != null
+            ? scopes
+                .where((final scope) => scope.name != null)
+                .map((final scope) => scope.name!)
+                .toSet()
+            : <String>{};
 
     final tokenInfo = TokenInfo(
       userId: authUserId.toString(),
@@ -73,10 +74,7 @@ class FakeTokenManager implements TokenManager {
       method: method,
     );
 
-    _storage.removeTokensWhere(
-      userId: authUserId?.toString(),
-      method: method,
-    );
+    _storage.removeTokensWhere(userId: authUserId?.toString(), method: method);
 
     // Notify about revoked authentications
     for (final tokenInfo in tokensToRevoke) {

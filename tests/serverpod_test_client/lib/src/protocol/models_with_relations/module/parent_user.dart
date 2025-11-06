@@ -13,17 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ParentUser implements _i1.SerializableModel {
-  ParentUser._({
-    this.id,
-    this.name,
-    this.userInfoId,
-  });
+  ParentUser._({this.id, this.name, this.userInfoId});
 
-  factory ParentUser({
-    int? id,
-    String? name,
-    int? userInfoId,
-  }) = _ParentUserImpl;
+  factory ParentUser({int? id, String? name, int? userInfoId}) =
+      _ParentUserImpl;
 
   factory ParentUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentUser(
@@ -45,11 +38,7 @@ abstract class ParentUser implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ParentUser copyWith({
-    int? id,
-    String? name,
-    int? userInfoId,
-  });
+  ParentUser copyWith({int? id, String? name, int? userInfoId});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -68,15 +57,8 @@ abstract class ParentUser implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ParentUserImpl extends ParentUser {
-  _ParentUserImpl({
-    int? id,
-    String? name,
-    int? userInfoId,
-  }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-        );
+  _ParentUserImpl({int? id, String? name, int? userInfoId})
+    : super._(id: id, name: name, userInfoId: userInfoId);
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.

@@ -18,7 +18,8 @@ class EndpointDefinitionBuilder {
   }
 
   EndpointDefinitionBuilder withDocumentationComment(
-      String? documentationComment) {
+    String? documentationComment,
+  ) {
     _documentationComment = documentationComment;
     return this;
   }
@@ -32,9 +33,10 @@ class EndpointDefinitionBuilder {
     String filePath, {
     String? externalServerPackage,
   }) {
-    _filePath = externalServerPackage != null
-        ? 'package:$externalServerPackage/$filePath'
-        : filePath;
+    _filePath =
+        externalServerPackage != null
+            ? 'package:$externalServerPackage/$filePath'
+            : filePath;
     return this;
   }
 

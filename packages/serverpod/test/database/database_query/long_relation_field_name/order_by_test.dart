@@ -7,18 +7,21 @@ import 'package:test/test.dart';
 void main() {
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
-  var relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
-    BuilderRelation(
-      citizenTable,
-      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
-    ),
-  ]).build();
+  var relationTable =
+      TableRelationBuilder(companyTable).withRelationsFrom([
+        BuilderRelation(
+          citizenTable,
+          'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
+        ),
+      ]).build();
   var manyRelation = ManyRelationBuilder(relationTable).build();
 
   group('Given SelectQueryBuilder', () {
     group('when ordering by list relation with a long field name', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withOrderBy([Order(column: manyRelation.count())]).build();
+      var query =
+          SelectQueryBuilder(
+            table: citizenTable,
+          ).withOrderBy([Order(column: manyRelation.count())]).build();
       var expectedTruncatedName =
           'order_by_citizen_thisFieldIsExactly61CharactersLongAndIsThee498';
 

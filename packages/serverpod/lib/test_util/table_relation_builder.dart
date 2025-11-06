@@ -42,11 +42,13 @@ class TableRelationBuilder {
     Table foreignTable,
     String relationAlias,
   ) {
-    _entries.add(TableRelationEntry(
-      relationAlias: relationAlias,
-      field: table.id,
-      foreignField: foreignTable.id,
-    ));
+    _entries.add(
+      TableRelationEntry(
+        relationAlias: relationAlias,
+        field: table.id,
+        foreignField: foreignTable.id,
+      ),
+    );
   }
 }
 

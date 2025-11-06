@@ -17,10 +17,7 @@ void main() {
     final authenticationInfo = AuthenticationInfo('123', {});
 
     test('when reading the `userUuid` field, then it throws.', () {
-      expect(
-        () => authenticationInfo.authUserId,
-        throwsFormatException,
-      );
+      expect(() => authenticationInfo.authUserId, throwsFormatException);
     });
   });
 }

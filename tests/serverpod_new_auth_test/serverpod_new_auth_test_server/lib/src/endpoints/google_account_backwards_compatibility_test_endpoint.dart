@@ -18,10 +18,6 @@ class GoogleAccountBackwardsCompatibilityTestEndpoint
       accessToken: accessToken,
     );
 
-    return super.login(
-      session,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+    return super.login(session, idToken: idToken, accessToken: accessToken);
   }
 }

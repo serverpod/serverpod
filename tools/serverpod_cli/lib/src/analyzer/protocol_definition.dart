@@ -11,8 +11,5 @@ class ProtocolDefinition {
   final List<SerializableModelDefinition> models;
 
   /// Create a new [ProtocolDefinition].
-  const ProtocolDefinition({
-    required this.endpoints,
-    required this.models,
-  });
+  const ProtocolDefinition({required this.endpoints, required this.models});
 }

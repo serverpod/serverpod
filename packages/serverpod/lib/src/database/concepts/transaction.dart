@@ -82,7 +82,5 @@ class TransactionSettings {
   final IsolationLevel? isolationLevel;
 
   /// Creates a new transaction settings object.
-  const TransactionSettings({
-    this.isolationLevel,
-  });
+  const TransactionSettings({this.isolationLevel});
 }

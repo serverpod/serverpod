@@ -45,18 +45,14 @@ void main() {
         }
         var jsonBody = jsonEncode(body);
 
-        response = await http.post(
-          uri,
-          body: jsonBody,
-        );
+        response = await http.post(uri, body: jsonBody);
       });
 
       test('then response has 413 status code.', () {
         expect(response.statusCode, equals(HttpStatus.requestEntityTooLarge));
       });
 
-      test(
-          'then response contains an error message indicating the request size '
+      test('then response contains an error message indicating the request size '
           'exceeded the maximum allowed size', () {
         var expectedMessage =
             'Request size exceeds the maximum allowed size of $maxRequestSize bytes.';

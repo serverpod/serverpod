@@ -15,9 +15,7 @@ void main() {
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
-      );
+      webSocket = await WebSocket.connect(Uri.parse(serverMethodWebsocketUrl));
     });
 
     tearDown(() async {

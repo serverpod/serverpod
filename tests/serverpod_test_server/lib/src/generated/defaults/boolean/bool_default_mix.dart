@@ -19,10 +19,10 @@ abstract class BoolDefaultMix
     bool? boolDefaultAndDefaultModel,
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
-  })  : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
-        boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
-        boolDefaultModelAndDefaultPersist =
-            boolDefaultModelAndDefaultPersist ?? true;
+  }) : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
+       boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
+       boolDefaultModelAndDefaultPersist =
+           boolDefaultModelAndDefaultPersist ?? true;
 
   factory BoolDefaultMix({
     int? id,
@@ -127,11 +127,11 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
-          boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
-          boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
+         boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
+         boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,8 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
           boolDefaultAndDefaultModel ?? this.boolDefaultAndDefaultModel,
       boolDefaultAndDefaultPersist:
           boolDefaultAndDefaultPersist ?? this.boolDefaultAndDefaultPersist,
-      boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist ??
+      boolDefaultModelAndDefaultPersist:
+          boolDefaultModelAndDefaultPersist ??
           this.boolDefaultModelAndDefaultPersist,
     );
   }
@@ -159,27 +160,18 @@ class BoolDefaultMixUpdateTable extends _i1.UpdateTable<BoolDefaultMixTable> {
   BoolDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<bool, bool> boolDefaultAndDefaultModel(bool value) =>
-      _i1.ColumnValue(
-        table.boolDefaultAndDefaultModel,
-        value,
-      );
+      _i1.ColumnValue(table.boolDefaultAndDefaultModel, value);
 
   _i1.ColumnValue<bool, bool> boolDefaultAndDefaultPersist(bool value) =>
-      _i1.ColumnValue(
-        table.boolDefaultAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.boolDefaultAndDefaultPersist, value);
 
   _i1.ColumnValue<bool, bool> boolDefaultModelAndDefaultPersist(bool value) =>
-      _i1.ColumnValue(
-        table.boolDefaultModelAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.boolDefaultModelAndDefaultPersist, value);
 }
 
 class BoolDefaultMixTable extends _i1.Table<int?> {
   BoolDefaultMixTable({super.tableRelation})
-      : super(tableName: 'bool_default_mix') {
+    : super(tableName: 'bool_default_mix') {
     updateTable = BoolDefaultMixUpdateTable(this);
     boolDefaultAndDefaultModel = _i1.ColumnBool(
       'boolDefaultAndDefaultModel',
@@ -208,11 +200,11 @@ class BoolDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultAndDefaultModel,
-        boolDefaultAndDefaultPersist,
-        boolDefaultModelAndDefaultPersist,
-      ];
+    id,
+    boolDefaultAndDefaultModel,
+    boolDefaultAndDefaultPersist,
+    boolDefaultModelAndDefaultPersist,
+  ];
 }
 
 class BoolDefaultMixInclude extends _i1.IncludeObject {
@@ -333,10 +325,7 @@ class BoolDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BoolDefaultMix>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<BoolDefaultMix>(id, transaction: transaction);
   }
 
   /// Inserts all [BoolDefaultMix]s in the list and returns the inserted rows.
@@ -350,10 +339,7 @@ class BoolDefaultMixRepository {
     List<BoolDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BoolDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<BoolDefaultMix>(rows, transaction: transaction);
   }
 
   /// Inserts a single [BoolDefaultMix] and returns the inserted row.
@@ -364,10 +350,7 @@ class BoolDefaultMixRepository {
     BoolDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BoolDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<BoolDefaultMix>(row, transaction: transaction);
   }
 
   /// Updates all [BoolDefaultMix]s in the list and returns the updated rows. If
@@ -452,10 +435,7 @@ class BoolDefaultMixRepository {
     List<BoolDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BoolDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<BoolDefaultMix>(rows, transaction: transaction);
   }
 
   /// Deletes a single [BoolDefaultMix].
@@ -464,10 +444,7 @@ class BoolDefaultMixRepository {
     BoolDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BoolDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<BoolDefaultMix>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

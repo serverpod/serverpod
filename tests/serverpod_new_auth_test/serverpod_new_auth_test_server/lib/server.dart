@@ -14,35 +14,32 @@ import 'src/generated/protocol.dart';
 
 void run(final List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
-  final pod = Serverpod(
-    args,
-    Protocol(),
-    Endpoints(),
-  );
+  final pod = Serverpod(args, Protocol(), Endpoints());
 
   const universalHashPepper = 'test-pepper';
   final authConfig = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManager(
-        config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+    primaryTokenManager: AuthSessionsTokenManager(
+      config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+    ),
+    identityProviders: [
+      EmailIdentityProviderFactory(
+        EmailIDPConfig(
+          secretHashPepper:
+              pod.getPassword('serverpod_auth_idp_email_secretHashPepper')!,
+        ),
       ),
-      identityProviders: [
-        EmailIdentityProviderFactory(
-          EmailIDPConfig(
-            secretHashPepper:
-                pod.getPassword('serverpod_auth_idp_email_secretHashPepper')!,
+    ],
+    additionalTokenManagers: [
+      AuthenticationTokensTokenManager(
+        config: AuthenticationTokenConfig(
+          refreshTokenHashPepper: universalHashPepper,
+          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
           ),
         ),
-      ],
-      additionalTokenManagers: [
-        AuthenticationTokensTokenManager(
-          config: AuthenticationTokenConfig(
-            refreshTokenHashPepper: universalHashPepper,
-            algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-              SecretKey('test-private-key-for-HS512'),
-            ),
-          ),
-        ),
-      ]);
+      ),
+    ],
+  );
 
   pod.authenticationHandler = authConfig.authenticationHandler;
 

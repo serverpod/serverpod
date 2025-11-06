@@ -7,9 +7,7 @@ import 'fake_identity_provider.dart';
 class FakeIdentityProviderFactory
     extends IdentityProviderFactory<FakeIdentityProvider> {
   @override
-  FakeIdentityProvider construct({
-    required final TokenManager tokenManager,
-  }) {
+  FakeIdentityProvider construct({required final TokenManager tokenManager}) {
     return FakeIdentityProvider(tokenIssuer: tokenManager);
   }
 }

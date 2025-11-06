@@ -32,18 +32,27 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
   }) = _CityWithLongTableNameImpl;
 
   factory CityWithLongTableName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return CityWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List?)
-          ?.map((e) =>
-              _i2.PersonWithLongTableName.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i3.OrganizationWithLongTableName.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      citizens:
+          (jsonSerialization['citizens'] as List?)
+              ?.map(
+                (e) => _i2.PersonWithLongTableName.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
+      organizations:
+          (jsonSerialization['organizations'] as List?)
+              ?.map(
+                (e) => _i3.OrganizationWithLongTableName.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -94,11 +103,11 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     List<_i2.PersonWithLongTableName>? citizens,
     List<_i3.OrganizationWithLongTableName>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -113,12 +122,14 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     return CityWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is List<_i2.PersonWithLongTableName>?
-          ? citizens
-          : this.citizens?.map((e0) => e0.copyWith()).toList(),
-      organizations: organizations is List<_i3.OrganizationWithLongTableName>?
-          ? organizations
-          : this.organizations?.map((e0) => e0.copyWith()).toList(),
+      citizens:
+          citizens is List<_i2.PersonWithLongTableName>?
+              ? citizens
+              : this.citizens?.map((e0) => e0.copyWith()).toList(),
+      organizations:
+          organizations is List<_i3.OrganizationWithLongTableName>?
+              ? organizations
+              : this.organizations?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

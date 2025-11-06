@@ -15,20 +15,21 @@ void main() {
       'when the field is of type int and the defaultPersist is set to "10", then the field should have a "default persist" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int?, defaultPersist=10
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -41,29 +42,27 @@ void main() {
       'when the field is of type int and the defaultPersist is set to "20", then the field should have a "default persist" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int?, defaultPersist=20
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(
-          definition.fields.last.defaultPersistValue,
-          '20',
-        );
+        expect(definition.fields.last.defaultPersistValue, '20');
       },
     );
 
@@ -71,19 +70,20 @@ void main() {
       'when the field is of type int and the defaultPersist is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int?, defaultPersist=
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -99,19 +99,20 @@ void main() {
       'when the field is of type int with an invalid default value "TEN", then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           intInvalid: int?, defaultPersist=TEN
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -127,19 +128,20 @@ void main() {
       'when the field is of type int with an invalid default value containing decimals, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           intInvalid: int?, defaultPersist=10.5
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -155,19 +157,20 @@ void main() {
       'when the field is of type int with an invalid defaultPersist value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intInvalid: int?, defaultPersist=test
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -183,19 +186,20 @@ void main() {
       'when the field is of type int non-nullable type, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int, defaultPersist=10
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -211,19 +215,20 @@ void main() {
       'when the field has the "!persist" keyword, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             intType: int?, defaultPersist=10, !persist
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -236,27 +241,26 @@ void main() {
     );
   });
 
-  group(
-      'Given a class with a declared id field with a "defaultPersist" keyword',
-      () {
+  group('Given a class with a declared id field with a "defaultPersist" keyword', () {
     test(
       'when the field is of type int and the default is set to "serial", then the field should have a "default persist" value and not have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: int?, defaultPersist=serial
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -270,19 +274,20 @@ void main() {
       'when the field is of type int and the defaultPersist is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: int?, defaultPersist=
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -299,19 +304,20 @@ void main() {
       'when the field is of type int and the defaultPersist is set to a constant value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: int?, defaultPersist=10
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -328,19 +334,20 @@ void main() {
       'when the field is of type int and the defaultPersist is set to an invalid value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               id: int?, defaultPersist=test
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -357,19 +364,20 @@ void main() {
       'when the field is of type int non-nullable type, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             id: int, defaultPersist=serial
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

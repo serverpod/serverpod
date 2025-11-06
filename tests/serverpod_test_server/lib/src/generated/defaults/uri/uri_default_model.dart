@@ -14,14 +14,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UriDefaultModel._({
-    this.id,
-    Uri? uriDefaultModel,
-    Uri? uriDefaultModelNull,
-  })  : uriDefaultModel =
-            uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
-        uriDefaultModelNull = uriDefaultModelNull ??
-            Uri.parse('https://serverpod.dev/defaultModel');
+  UriDefaultModel._({this.id, Uri? uriDefaultModel, Uri? uriDefaultModelNull})
+    : uriDefaultModel =
+          uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
+      uriDefaultModelNull =
+          uriDefaultModelNull ??
+          Uri.parse('https://serverpod.dev/defaultModel');
 
   factory UriDefaultModel({
     int? id,
@@ -32,12 +30,15 @@ abstract class UriDefaultModel
   factory UriDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultModel(
       id: jsonSerialization['id'] as int?,
-      uriDefaultModel:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultModel']),
-      uriDefaultModelNull: jsonSerialization['uriDefaultModelNull'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultModelNull']),
+      uriDefaultModel: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefaultModel'],
+      ),
+      uriDefaultModelNull:
+          jsonSerialization['uriDefaultModelNull'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(
+                jsonSerialization['uriDefaultModelNull'],
+              ),
     );
   }
 
@@ -121,10 +122,10 @@ class _UriDefaultModelImpl extends UriDefaultModel {
     Uri? uriDefaultModel,
     Uri? uriDefaultModelNull,
   }) : super._(
-          id: id,
-          uriDefaultModel: uriDefaultModel,
-          uriDefaultModelNull: uriDefaultModelNull,
-        );
+         id: id,
+         uriDefaultModel: uriDefaultModel,
+         uriDefaultModelNull: uriDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [UriDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -138,9 +139,10 @@ class _UriDefaultModelImpl extends UriDefaultModel {
     return UriDefaultModel(
       id: id is int? ? id : this.id,
       uriDefaultModel: uriDefaultModel ?? this.uriDefaultModel,
-      uriDefaultModelNull: uriDefaultModelNull is Uri?
-          ? uriDefaultModelNull
-          : this.uriDefaultModelNull,
+      uriDefaultModelNull:
+          uriDefaultModelNull is Uri?
+              ? uriDefaultModelNull
+              : this.uriDefaultModelNull,
     );
   }
 }
@@ -148,29 +150,19 @@ class _UriDefaultModelImpl extends UriDefaultModel {
 class UriDefaultModelUpdateTable extends _i1.UpdateTable<UriDefaultModelTable> {
   UriDefaultModelUpdateTable(super.table);
 
-  _i1.ColumnValue<Uri, Uri> uriDefaultModel(Uri value) => _i1.ColumnValue(
-        table.uriDefaultModel,
-        value,
-      );
+  _i1.ColumnValue<Uri, Uri> uriDefaultModel(Uri value) =>
+      _i1.ColumnValue(table.uriDefaultModel, value);
 
-  _i1.ColumnValue<Uri, Uri> uriDefaultModelNull(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultModelNull,
-        value,
-      );
+  _i1.ColumnValue<Uri, Uri> uriDefaultModelNull(Uri? value) =>
+      _i1.ColumnValue(table.uriDefaultModelNull, value);
 }
 
 class UriDefaultModelTable extends _i1.Table<int?> {
   UriDefaultModelTable({super.tableRelation})
-      : super(tableName: 'uri_default_model') {
+    : super(tableName: 'uri_default_model') {
     updateTable = UriDefaultModelUpdateTable(this);
-    uriDefaultModel = _i1.ColumnUri(
-      'uriDefaultModel',
-      this,
-    );
-    uriDefaultModelNull = _i1.ColumnUri(
-      'uriDefaultModelNull',
-      this,
-    );
+    uriDefaultModel = _i1.ColumnUri('uriDefaultModel', this);
+    uriDefaultModelNull = _i1.ColumnUri('uriDefaultModelNull', this);
   }
 
   late final UriDefaultModelUpdateTable updateTable;
@@ -180,11 +172,7 @@ class UriDefaultModelTable extends _i1.Table<int?> {
   late final _i1.ColumnUri uriDefaultModelNull;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        uriDefaultModel,
-        uriDefaultModelNull,
-      ];
+  List<_i1.Column> get columns => [id, uriDefaultModel, uriDefaultModelNull];
 }
 
 class UriDefaultModelInclude extends _i1.IncludeObject {
@@ -305,10 +293,7 @@ class UriDefaultModelRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefaultModel>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UriDefaultModel>(id, transaction: transaction);
   }
 
   /// Inserts all [UriDefaultModel]s in the list and returns the inserted rows.
@@ -322,10 +307,7 @@ class UriDefaultModelRepository {
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefaultModel>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UriDefaultModel>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UriDefaultModel] and returns the inserted row.
@@ -336,10 +318,7 @@ class UriDefaultModelRepository {
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UriDefaultModel>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UriDefaultModel>(row, transaction: transaction);
   }
 
   /// Updates all [UriDefaultModel]s in the list and returns the updated rows. If
@@ -382,7 +361,7 @@ class UriDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultModel>(
@@ -397,7 +376,7 @@ class UriDefaultModelRepository {
   Future<List<UriDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     int? limit,
     int? offset,
@@ -426,10 +405,7 @@ class UriDefaultModelRepository {
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefaultModel>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UriDefaultModel>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UriDefaultModel].
@@ -438,10 +414,7 @@ class UriDefaultModelRepository {
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UriDefaultModel>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UriDefaultModel>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

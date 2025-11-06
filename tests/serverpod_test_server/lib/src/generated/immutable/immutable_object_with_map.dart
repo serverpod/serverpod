@@ -17,17 +17,18 @@ abstract class ImmutableObjectWithMap
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithMap._({required this.mapVariable});
 
-  const factory ImmutableObjectWithMap(
-      {required Map<String, String> mapVariable}) = _ImmutableObjectWithMapImpl;
+  const factory ImmutableObjectWithMap({
+    required Map<String, String> mapVariable,
+  }) = _ImmutableObjectWithMapImpl;
 
   factory ImmutableObjectWithMap.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithMap(
-        mapVariable:
-            (jsonSerialization['mapVariable'] as Map).map((k, v) => MapEntry(
-                  k as String,
-                  v as String,
-                )));
+      mapVariable: (jsonSerialization['mapVariable'] as Map).map(
+        (k, v) => MapEntry(k as String, v as String),
+      ),
+    );
   }
 
   final Map<String, String> mapVariable;
@@ -38,10 +39,7 @@ abstract class ImmutableObjectWithMap
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable});
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithMap &&
             const _i1.DeepCollectionEquality().equals(
@@ -76,7 +74,7 @@ abstract class ImmutableObjectWithMap
 
 class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
   const _ImmutableObjectWithMapImpl({required Map<String, String> mapVariable})
-      : super._(mapVariable: mapVariable);
+    : super._(mapVariable: mapVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
@@ -84,14 +82,9 @@ class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
   @override
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable}) {
     return ImmutableObjectWithMap(
-        mapVariable: mapVariable ??
-            this.mapVariable.map((
-                  key0,
-                  value0,
-                ) =>
-                    MapEntry(
-                      key0,
-                      value0,
-                    )));
+      mapVariable:
+          mapVariable ??
+          this.mapVariable.map((key0, value0) => MapEntry(key0, value0)),
+    );
   }
 }

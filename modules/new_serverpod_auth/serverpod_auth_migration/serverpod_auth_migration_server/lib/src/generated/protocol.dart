@@ -87,7 +87,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -100,7 +100,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'oldUserId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -113,7 +113,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'newAuthUserId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -129,10 +129,7 @@ class Protocol extends _i1.SerializationManagerServer {
   ];
 
   @override
-  T deserialize<T>(
-    dynamic data, [
-    Type? t,
-  ]) {
+  T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
     if (t == _i7.MigratedUser) {
       return _i7.MigratedUser.fromJson(data) as T;

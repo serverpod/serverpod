@@ -197,18 +197,18 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          serverId: serverId,
-          messageId: messageId,
-          endpoint: endpoint,
-          messageName: messageName,
-          duration: duration,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         serverId: serverId,
+         messageId: messageId,
+         endpoint: endpoint,
+         messageName: messageName,
+         duration: duration,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -246,101 +246,51 @@ class _MessageLogEntryImpl extends MessageLogEntry {
 class MessageLogEntryUpdateTable extends _i1.UpdateTable<MessageLogEntryTable> {
   MessageLogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+  _i1.ColumnValue<int, int> sessionLogId(int value) =>
+      _i1.ColumnValue(table.sessionLogId, value);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+  _i1.ColumnValue<String, String> serverId(String value) =>
+      _i1.ColumnValue(table.serverId, value);
 
-  _i1.ColumnValue<int, int> messageId(int value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+  _i1.ColumnValue<int, int> messageId(int value) =>
+      _i1.ColumnValue(table.messageId, value);
 
-  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+  _i1.ColumnValue<String, String> endpoint(String value) =>
+      _i1.ColumnValue(table.endpoint, value);
 
-  _i1.ColumnValue<String, String> messageName(String value) => _i1.ColumnValue(
-        table.messageName,
-        value,
-      );
+  _i1.ColumnValue<String, String> messageName(String value) =>
+      _i1.ColumnValue(table.messageName, value);
 
-  _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+  _i1.ColumnValue<double, double> duration(double value) =>
+      _i1.ColumnValue(table.duration, value);
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+  _i1.ColumnValue<String, String> error(String? value) =>
+      _i1.ColumnValue(table.error, value);
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+  _i1.ColumnValue<String, String> stackTrace(String? value) =>
+      _i1.ColumnValue(table.stackTrace, value);
 
-  _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> slow(bool value) =>
+      _i1.ColumnValue(table.slow, value);
 
-  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+  _i1.ColumnValue<int, int> order(int value) =>
+      _i1.ColumnValue(table.order, value);
 }
 
 class MessageLogEntryTable extends _i1.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_message_log') {
+    : super(tableName: 'serverpod_message_log') {
     updateTable = MessageLogEntryUpdateTable(this);
-    sessionLogId = _i1.ColumnInt(
-      'sessionLogId',
-      this,
-    );
-    serverId = _i1.ColumnString(
-      'serverId',
-      this,
-    );
-    messageId = _i1.ColumnInt(
-      'messageId',
-      this,
-    );
-    endpoint = _i1.ColumnString(
-      'endpoint',
-      this,
-    );
-    messageName = _i1.ColumnString(
-      'messageName',
-      this,
-    );
-    duration = _i1.ColumnDouble(
-      'duration',
-      this,
-    );
-    error = _i1.ColumnString(
-      'error',
-      this,
-    );
-    stackTrace = _i1.ColumnString(
-      'stackTrace',
-      this,
-    );
-    slow = _i1.ColumnBool(
-      'slow',
-      this,
-    );
-    order = _i1.ColumnInt(
-      'order',
-      this,
-    );
+    sessionLogId = _i1.ColumnInt('sessionLogId', this);
+    serverId = _i1.ColumnString('serverId', this);
+    messageId = _i1.ColumnInt('messageId', this);
+    endpoint = _i1.ColumnString('endpoint', this);
+    messageName = _i1.ColumnString('messageName', this);
+    duration = _i1.ColumnDouble('duration', this);
+    error = _i1.ColumnString('error', this);
+    stackTrace = _i1.ColumnString('stackTrace', this);
+    slow = _i1.ColumnBool('slow', this);
+    order = _i1.ColumnInt('order', this);
   }
 
   late final MessageLogEntryUpdateTable updateTable;
@@ -379,18 +329,18 @@ class MessageLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        sessionLogId,
-        serverId,
-        messageId,
-        endpoint,
-        messageName,
-        duration,
-        error,
-        stackTrace,
-        slow,
-        order,
-      ];
+    id,
+    sessionLogId,
+    serverId,
+    messageId,
+    endpoint,
+    messageName,
+    duration,
+    error,
+    stackTrace,
+    slow,
+    order,
+  ];
 }
 
 class MessageLogEntryInclude extends _i1.IncludeObject {
@@ -511,10 +461,7 @@ class MessageLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<MessageLogEntry>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<MessageLogEntry>(id, transaction: transaction);
   }
 
   /// Inserts all [MessageLogEntry]s in the list and returns the inserted rows.
@@ -528,10 +475,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MessageLogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<MessageLogEntry>(rows, transaction: transaction);
   }
 
   /// Inserts a single [MessageLogEntry] and returns the inserted row.
@@ -542,10 +486,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MessageLogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<MessageLogEntry>(row, transaction: transaction);
   }
 
   /// Updates all [MessageLogEntry]s in the list and returns the updated rows. If
@@ -588,7 +529,7 @@ class MessageLogEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<MessageLogEntry>(
@@ -603,7 +544,7 @@ class MessageLogEntryRepository {
   Future<List<MessageLogEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     int? limit,
     int? offset,
@@ -632,10 +573,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MessageLogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<MessageLogEntry>(rows, transaction: transaction);
   }
 
   /// Deletes a single [MessageLogEntry].
@@ -644,10 +582,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MessageLogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<MessageLogEntry>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -13,12 +13,14 @@ import './test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManager = new_auth_core.AuthSessionsTokenManager(
-    config:
-        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+    config: new_auth_core.AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
   );
 
-  const newEmailIDPConfig =
-      new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
+  const newEmailIDPConfig = new_auth_idp.EmailIDPConfig(
+    secretHashPepper: 'test',
+  );
   late final new_auth_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
@@ -155,10 +157,7 @@ void main() {
         expect(
           (await new_auth_idp.EmailAccount.db.find(
             session,
-          ))
-              .single
-              .passwordHash
-              .lengthInBytes,
+          )).single.passwordHash.lengthInBytes,
           greaterThan(0),
         );
       });
@@ -242,11 +241,11 @@ void main() {
           password: password,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
-          session,
-          email: email,
-        ))!
-            .authUserId;
+        authUserId =
+            (await newEmailIDP.admin.findAccount(
+              session,
+              email: email,
+            ))!.authUserId;
       });
 
       test(
@@ -293,9 +292,8 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          final profile =
-              await new_auth_profile.UserProfiles.findUserProfileByUserId(
-                  session, authUserId);
+          final profile = await new_auth_profile
+              .UserProfiles.findUserProfileByUserId(session, authUserId);
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);
@@ -327,15 +325,13 @@ void main() {
 
         await AuthMigrations.migrateUsers(session, userMigration: null);
 
-        AuthMigrations.config = AuthMigrationConfig(
-          emailIDP: newEmailIDP,
-        );
+        AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
 
-        authUserId = (await newEmailIDP.admin.findAccount(
-          session,
-          email: email,
-        ))!
-            .authUserId;
+        authUserId =
+            (await newEmailIDP.admin.findAccount(
+              session,
+              email: email,
+            ))!.authUserId;
       });
 
       test(
@@ -386,11 +382,11 @@ void main() {
           },
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
-          session,
-          email: email,
-        ))!
-            .authUserId;
+        authUserId =
+            (await newEmailIDP.admin.findAccount(
+              session,
+              email: email,
+            ))!.authUserId;
       });
 
       test(
@@ -485,8 +481,11 @@ void main() {
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -503,8 +502,11 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -512,9 +514,8 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          final profile =
-              await new_auth_profile.UserProfiles.findUserProfileByUserId(
-                  session, authUserId);
+          final profile = await new_auth_profile
+              .UserProfiles.findUserProfileByUserId(session, authUserId);
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);

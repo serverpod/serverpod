@@ -62,12 +62,7 @@ class ChainableMatcher<T> {
     Map matchState,
     bool verbose,
   ) =>
-      _matcher.describeMismatch(
-        item,
-        mismatchDescription,
-        matchState,
-        verbose,
-      );
+      _matcher.describeMismatch(item, mismatchDescription, matchState, verbose);
 
   /// Checks if the matcher matches the given [actual] value.
   ///

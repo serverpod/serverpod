@@ -6,36 +6,34 @@ import '../../../test_tools/serverpod_test_tools.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
-  withServerpod(
-    'Given email account',
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late UuidValue authUserId;
-      late EmailIDPTestFixture fixture;
-      late EmailAccount emailAccount;
-      const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
+  withServerpod('Given email account', (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+    late EmailIDPTestFixture fixture;
+    late EmailAccount emailAccount;
+    const email = 'test@serverpod.dev';
+    const password = 'Foobar123!';
 
-      setUp(() async {
-        session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
-        final authUser = await fixture.createAuthUser(session);
-        authUserId = authUser.id;
-        emailAccount = await fixture.createEmailAccount(
-          session,
-          authUserId: authUserId,
-          email: email,
-          password: EmailAccountPassword.fromString(password),
-        );
-      });
+    setUp(() async {
+      session = sessionBuilder.build();
+      fixture = EmailIDPTestFixture();
+      final authUser = await fixture.createAuthUser(session);
+      authUserId = authUser.id;
+      emailAccount = await fixture.createEmailAccount(
+        session,
+        authUserId: authUserId,
+        email: email,
+        password: EmailAccountPassword.fromString(password),
+      );
+    });
 
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
+    tearDown(() async {
+      await fixture.tearDown(session);
+    });
 
-      test(
-          'when set password is called with new password then user can authenticate with password',
-          () async {
+    test(
+      'when set password is called with new password then user can authenticate with password',
+      () async {
         const newPassword = 'new$password';
 
         await session.db.transaction(
@@ -57,11 +55,12 @@ void main() {
         );
 
         expect(authResult, equals(authUserId));
-      });
+      },
+    );
 
-      test(
-          'when set password is called with null password then user cannot authenticate with empty password',
-          () async {
+    test(
+      'when set password is called with null password then user cannot authenticate with empty password',
+      () async {
         await session.db.transaction(
           (final transaction) => fixture.passwordResetUtil.setPassword(
             session,
@@ -84,11 +83,12 @@ void main() {
           authResult,
           throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
         );
-      });
+      },
+    );
 
-      test(
-          'when set password is called with empty password then user can authenticate with empty password',
-          () async {
+    test(
+      'when set password is called with empty password then user can authenticate with empty password',
+      () async {
         await session.db.transaction(
           (final transaction) => fixture.passwordResetUtil.setPassword(
             session,
@@ -108,7 +108,7 @@ void main() {
         );
 
         expect(authResult, equals(authUserId));
-      });
-    },
-  );
+      },
+    );
+  });
 }

@@ -19,8 +19,8 @@ abstract class AuthUser
     DateTime? createdAt,
     required this.scopeNames,
     bool? blocked,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        blocked = blocked ?? false;
+  }) : createdAt = createdAt ?? DateTime.now(),
+       blocked = blocked ?? false;
 
   factory AuthUser({
     _i1.UuidValue? id,
@@ -31,14 +31,18 @@ abstract class AuthUser
 
   factory AuthUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUser(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -125,11 +129,11 @@ class _AuthUserImpl extends AuthUser {
     required Set<String> scopeNames,
     bool? blocked,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         createdAt: createdAt,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
@@ -154,39 +158,22 @@ class AuthUserUpdateTable extends _i1.UpdateTable<AuthUserTable> {
   AuthUserUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
-  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
-        table.blocked,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> blocked(bool value) =>
+      _i1.ColumnValue(table.blocked, value);
 }
 
 class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_user') {
+    : super(tableName: 'serverpod_auth_core_user') {
     updateTable = AuthUserUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
-      'scopeNames',
-      this,
-    );
-    blocked = _i1.ColumnBool(
-      'blocked',
-      this,
-    );
+    createdAt = _i1.ColumnDateTime('createdAt', this);
+    scopeNames = _i1.ColumnSerializable<Set<String>>('scopeNames', this);
+    blocked = _i1.ColumnBool('blocked', this);
   }
 
   late final AuthUserUpdateTable updateTable;
@@ -201,12 +188,7 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnBool blocked;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        scopeNames,
-        blocked,
-      ];
+  List<_i1.Column> get columns => [id, createdAt, scopeNames, blocked];
 }
 
 class AuthUserInclude extends _i1.IncludeObject {
@@ -327,10 +309,7 @@ class AuthUserRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<AuthUser>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<AuthUser>(id, transaction: transaction);
   }
 
   /// Inserts all [AuthUser]s in the list and returns the inserted rows.
@@ -344,10 +323,7 @@ class AuthUserRepository {
     List<AuthUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<AuthUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<AuthUser>(rows, transaction: transaction);
   }
 
   /// Inserts a single [AuthUser] and returns the inserted row.
@@ -358,10 +334,7 @@ class AuthUserRepository {
     AuthUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<AuthUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<AuthUser>(row, transaction: transaction);
   }
 
   /// Updates all [AuthUser]s in the list and returns the updated rows. If
@@ -446,10 +419,7 @@ class AuthUserRepository {
     List<AuthUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<AuthUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<AuthUser>(rows, transaction: transaction);
   }
 
   /// Deletes a single [AuthUser].
@@ -458,10 +428,7 @@ class AuthUserRepository {
     AuthUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<AuthUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<AuthUser>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

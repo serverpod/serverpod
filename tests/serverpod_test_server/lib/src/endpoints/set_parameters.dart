@@ -22,10 +22,7 @@ class SetParametersEndpoint extends Endpoint {
     return set;
   }
 
-  Future<Set<int>?> returnIntSetNullable(
-    Session session,
-    Set<int>? set,
-  ) async {
+  Future<Set<int>?> returnIntSetNullable(Session session, Set<int>? set) async {
     return set;
   }
 
@@ -57,10 +54,7 @@ class SetParametersEndpoint extends Endpoint {
     return set;
   }
 
-  Future<Set<double>> returnDoubleSet(
-    Session session,
-    Set<double> set,
-  ) async {
+  Future<Set<double>> returnDoubleSet(Session session, Set<double> set) async {
     return set;
   }
 
@@ -71,10 +65,7 @@ class SetParametersEndpoint extends Endpoint {
     return set;
   }
 
-  Future<Set<bool>> returnBoolSet(
-    Session session,
-    Set<bool> set,
-  ) async {
+  Future<Set<bool>> returnBoolSet(Session session, Set<bool> set) async {
     return set;
   }
 
@@ -85,10 +76,7 @@ class SetParametersEndpoint extends Endpoint {
     return set;
   }
 
-  Future<Set<String>> returnStringSet(
-    Session session,
-    Set<String> set,
-  ) async {
+  Future<Set<String>> returnStringSet(Session session, Set<String> set) async {
     return set;
   }
 

@@ -6,11 +6,7 @@ class DiagnosticEventTestEndpoint extends Endpoint {
       throw Exception('An exception is thrown');
     } catch (e, stackTrace) {
       session.serverpod.experimental.submitDiagnosticEvent(
-        ExceptionEvent(
-          e,
-          stackTrace,
-          custom: {'customKey': 'customValue'},
-        ),
+        ExceptionEvent(e, stackTrace, custom: {'customKey': 'customValue'}),
         session: session,
       );
     }

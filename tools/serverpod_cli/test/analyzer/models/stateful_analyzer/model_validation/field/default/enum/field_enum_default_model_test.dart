@@ -15,15 +15,13 @@ void main() {
   setUpAll(() {
     models = [
       ModelSourceBuilder()
-          .withYaml(
-            '''
+          .withYaml('''
       enum: ByNameEnum
       serialized: byName
       values:
         - byName1
         - byName2
-      ''',
-          )
+      ''')
           .withFileName('by_name_enum')
           .build(),
     ];
@@ -35,20 +33,21 @@ void main() {
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             enumType: ByNameEnum, defaultModel=byName1
-          ''',
-          ).build(),
+          ''').build(),
         );
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              localModels,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -62,20 +61,21 @@ void main() {
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             enumType: ByNameEnum, defaultModel=byName2
-          ''',
-          ).build(),
+          ''').build(),
         );
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              localModels,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -89,19 +89,20 @@ void main() {
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             enumType: ByNameEnum, defaultModel=
-          ''',
-          ).build(),
+          ''').build(),
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -118,19 +119,20 @@ void main() {
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           enumInvalid: ByNameEnum?, defaultModel=INVALID
-        ''',
-          ).build(),
+        ''').build(),
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -147,19 +149,20 @@ void main() {
       () {
         var localModels = List<ModelSource>.from(models);
         localModels.add(
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             enumInvalid: ByNameEnum?, defaultModel=test
-          ''',
-          ).build(),
+          ''').build(),
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

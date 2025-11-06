@@ -13,19 +13,20 @@ void main() {
     'Given a class with a field with no persist set but has a table, then the generated model should be persisted.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               name: String
-            ''',
-        ).build()
+            ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
@@ -34,61 +35,54 @@ void main() {
     },
   );
 
-  group(
-    'Given a class with a field with persist set.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class with a field with persist set.', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
             class: Example
             table: example
             fields:
               name: String, persist
-            ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+            ''').build(),
+    ];
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
 
-      var definitions = analyzer.validateAll();
+    var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ClassDefinition;
 
-      test('then the generated model should be persisted', () {
-        expect(
-          definition.fields.last.shouldPersist,
-          isTrue,
-        );
-      });
-    },
-  );
+    test('then the generated model should be persisted', () {
+      expect(definition.fields.last.shouldPersist, isTrue);
+    });
+  });
 
   test(
     'Given a class with a field with persist set to true, then the generated model should be persisted.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String, persist=true
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.last.shouldPersist,
-        isTrue,
-      );
+      expect(definition.fields.last.shouldPersist, isTrue);
     },
   );
 
@@ -96,81 +90,75 @@ void main() {
     'Given a class with a field with persist set to false, then the generated model should not be persisted.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String, persist=false
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
 
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.last.shouldPersist,
-        isFalse,
-      );
+      expect(definition.fields.last.shouldPersist, isFalse);
     },
   );
 
-  group(
-    'Given a class with a field with persist negated',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class with a field with persist negated', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String, !persist
-          ''',
-        ).build()
-      ];
+          ''').build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
 
-      var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+    var definitions = analyzer.validateAll();
+    var definition = definitions.first as ClassDefinition;
 
-      test('then no errors are collected.', () {
-        expect(collector.errors, isEmpty);
-      });
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
 
-      test('then the generated model should not be persisted.', () {
-        expect(
-          definition.fields.last.shouldPersist,
-          isFalse,
-        );
-      });
-    },
-  );
+    test('then the generated model should not be persisted.', () {
+      expect(definition.fields.last.shouldPersist, isFalse);
+    });
+  });
 
   test(
     'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             parent: Example?, !persist, relation
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -187,19 +175,20 @@ void main() {
     'Given a class with a field with a persist key set to true, then collect an info that the keyword is unnecessary.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             parent: Example?, persist
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -218,19 +207,20 @@ void main() {
     'Given a class with a field with a negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String, !persist=true
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -244,19 +234,20 @@ void main() {
     'Given a class with a field with a nested negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             parent: Example?, relation(!optional=true)
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -270,19 +261,20 @@ void main() {
     'Given a class with a field with the optional key set to an invalid value, then collect an error that value must be a boolean.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             parent: Example?, relation(optional=INVALID)
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -296,25 +288,28 @@ void main() {
     'Given a class without a table but with a field with persist set, then collect an error that the field cannot be persisted without setting table.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String, persist
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
       var error = collector.errors.first;
 
-      expect(error.message,
-          'The "persist" property requires a table to be set on the class.');
+      expect(
+        error.message,
+        'The "persist" property requires a table to be set on the class.',
+      );
     },
   );
 
@@ -322,19 +317,20 @@ void main() {
     'Given a class with a field with the persist key set to a none boolean value, then collect a warning that the value must be a bool.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           name: String, persist=INVALID
-        ''',
-        ).build()
+        ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -348,19 +344,20 @@ void main() {
     'Given a class with a declared id field with the "persist" key set, then an error is collected.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             id: int?, !persist
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,

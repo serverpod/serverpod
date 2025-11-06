@@ -11,11 +11,11 @@ class ColumnDefinitionBuilder {
   int? _vectorDimension;
 
   ColumnDefinitionBuilder()
-      : _name = 'name',
-        _columnType = ColumnType.text,
-        _isNullable = false,
-        _columnDefault = null,
-        _dartType = 'String';
+    : _name = 'name',
+      _columnType = ColumnType.text,
+      _isNullable = false,
+      _columnDefault = null,
+      _dartType = 'String';
 
   ColumnDefinition build() {
     return ColumnDefinition(

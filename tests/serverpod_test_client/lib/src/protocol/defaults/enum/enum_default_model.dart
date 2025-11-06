@@ -21,14 +21,14 @@ abstract class EnumDefaultModel implements _i1.SerializableModel {
     _i2.ByNameEnum? byNameEnumDefaultModelNull,
     _i3.ByIndexEnum? byIndexEnumDefaultModel,
     _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
-  })  : byNameEnumDefaultModel =
-            byNameEnumDefaultModel ?? _i2.ByNameEnum.byName1,
-        byNameEnumDefaultModelNull =
-            byNameEnumDefaultModelNull ?? _i2.ByNameEnum.byName2,
-        byIndexEnumDefaultModel =
-            byIndexEnumDefaultModel ?? _i3.ByIndexEnum.byIndex1,
-        byIndexEnumDefaultModelNull =
-            byIndexEnumDefaultModelNull ?? _i3.ByIndexEnum.byIndex2;
+  }) : byNameEnumDefaultModel =
+           byNameEnumDefaultModel ?? _i2.ByNameEnum.byName1,
+       byNameEnumDefaultModelNull =
+           byNameEnumDefaultModelNull ?? _i2.ByNameEnum.byName2,
+       byIndexEnumDefaultModel =
+           byIndexEnumDefaultModel ?? _i3.ByIndexEnum.byIndex1,
+       byIndexEnumDefaultModelNull =
+           byIndexEnumDefaultModelNull ?? _i3.ByIndexEnum.byIndex2;
 
   factory EnumDefaultModel({
     int? id,
@@ -42,19 +42,23 @@ abstract class EnumDefaultModel implements _i1.SerializableModel {
     return EnumDefaultModel(
       id: jsonSerialization['id'] as int?,
       byNameEnumDefaultModel: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefaultModel'] as String)),
+        (jsonSerialization['byNameEnumDefaultModel'] as String),
+      ),
       byNameEnumDefaultModelNull:
           jsonSerialization['byNameEnumDefaultModelNull'] == null
               ? null
               : _i2.ByNameEnum.fromJson(
-                  (jsonSerialization['byNameEnumDefaultModelNull'] as String)),
+                (jsonSerialization['byNameEnumDefaultModelNull'] as String),
+              ),
       byIndexEnumDefaultModel: _i3.ByIndexEnum.fromJson(
-          (jsonSerialization['byIndexEnumDefaultModel'] as int)),
+        (jsonSerialization['byIndexEnumDefaultModel'] as int),
+      ),
       byIndexEnumDefaultModelNull:
           jsonSerialization['byIndexEnumDefaultModelNull'] == null
               ? null
               : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultModelNull'] as int)),
+                (jsonSerialization['byIndexEnumDefaultModelNull'] as int),
+              ),
     );
   }
 
@@ -110,12 +114,12 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
     _i3.ByIndexEnum? byIndexEnumDefaultModel,
     _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) : super._(
-          id: id,
-          byNameEnumDefaultModel: byNameEnumDefaultModel,
-          byNameEnumDefaultModelNull: byNameEnumDefaultModelNull,
-          byIndexEnumDefaultModel: byIndexEnumDefaultModel,
-          byIndexEnumDefaultModelNull: byIndexEnumDefaultModelNull,
-        );
+         id: id,
+         byNameEnumDefaultModel: byNameEnumDefaultModel,
+         byNameEnumDefaultModelNull: byNameEnumDefaultModelNull,
+         byIndexEnumDefaultModel: byIndexEnumDefaultModel,
+         byIndexEnumDefaultModelNull: byIndexEnumDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -132,9 +136,10 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
       id: id is int? ? id : this.id,
       byNameEnumDefaultModel:
           byNameEnumDefaultModel ?? this.byNameEnumDefaultModel,
-      byNameEnumDefaultModelNull: byNameEnumDefaultModelNull is _i2.ByNameEnum?
-          ? byNameEnumDefaultModelNull
-          : this.byNameEnumDefaultModelNull,
+      byNameEnumDefaultModelNull:
+          byNameEnumDefaultModelNull is _i2.ByNameEnum?
+              ? byNameEnumDefaultModelNull
+              : this.byNameEnumDefaultModelNull,
       byIndexEnumDefaultModel:
           byIndexEnumDefaultModel ?? this.byIndexEnumDefaultModel,
       byIndexEnumDefaultModelNull:

@@ -36,12 +36,7 @@ final class EmailIDP {
 
   final TokenManager _tokenManager;
 
-  EmailIDP._(
-    this.config,
-    this._tokenManager,
-    this.utils,
-    this.admin,
-  );
+  EmailIDP._(this.config, this._tokenManager, this.utils, this.admin);
 
   /// Creates a new instance of [EmailIDP].
   factory EmailIDP(
@@ -50,12 +45,7 @@ final class EmailIDP {
   }) {
     final utils = EmailIDPUtils(config: config);
     final admin = EmailIDPAdmin(utils: utils);
-    return EmailIDP._(
-      config,
-      tokenManager,
-      utils,
-      admin,
-    );
+    return EmailIDP._(config, tokenManager, utils, admin);
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
@@ -71,21 +61,21 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final authUserId = await utils.passwordReset.completePasswordReset(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          newPassword: newPassword,
-          transaction: transaction,
-        );
+            final authUserId = await utils.passwordReset.completePasswordReset(
+              session,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: verificationCode,
+              newPassword: newPassword,
+              transaction: transaction,
+            );
 
-        await _tokenManager.revokeAllTokens(
-          session,
-          authUserId: authUserId,
-          method: method,
-          transaction: transaction,
-        );
-      }),
+            await _tokenManager.revokeAllTokens(
+              session,
+              authUserId: authUserId,
+              method: method,
+              transaction: transaction,
+            );
+          }),
     );
   }
 
@@ -101,30 +91,28 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final result = await utils.accountCreation.completeAccountCreation(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        );
+            final result = await utils.accountCreation.completeAccountCreation(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            );
 
-        await UserProfiles.createUserProfile(
-          session,
-          result.authUserId,
-          UserProfileData(
-            email: result.email,
-          ),
-          transaction: transaction,
-        );
+            await UserProfiles.createUserProfile(
+              session,
+              result.authUserId,
+              UserProfileData(email: result.email),
+              transaction: transaction,
+            );
 
-        return _tokenManager.issueToken(
-          session,
-          authUserId: result.authUserId,
-          method: method,
-          scopes: result.scopes,
-          transaction: transaction,
-        );
-      }),
+            return _tokenManager.issueToken(
+              session,
+              authUserId: result.authUserId,
+              method: method,
+              scopes: result.scopes,
+              transaction: transaction,
+            );
+          }),
     );
   }
 
@@ -140,27 +128,27 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final authUserId = await utils.authentication.authenticate(
-          session,
-          email: email,
-          password: password,
-          transaction: transaction,
-        );
+            final authUserId = await utils.authentication.authenticate(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            );
 
-        final authUser = await AuthUsers.get(
-          session,
-          authUserId: authUserId,
-          transaction: transaction,
-        );
+            final authUser = await AuthUsers.get(
+              session,
+              authUserId: authUserId,
+              transaction: transaction,
+            );
 
-        return _tokenManager.issueToken(
-          session,
-          authUserId: authUserId,
-          method: method,
-          scopes: authUser.scopes,
-          transaction: transaction,
-        );
-      }),
+            return _tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
+              method: method,
+              scopes: authUser.scopes,
+              transaction: transaction,
+            );
+          }),
     );
   }
 
@@ -173,30 +161,30 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
-        () async {
-          try {
-            return await utils.passwordReset.startPasswordReset(
-              session,
-              email: email,
-              transaction: transaction,
-            );
-          } on EmailPasswordResetEmailNotFoundException catch (_) {
-            // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
-            // Clients should always show something like "check your email to proceed with the password reset".
-            session.log(
-              'Failed to start password reset for $email, reason: email does not exist',
-              level: LogLevel.debug,
-            );
+      (
+        final transaction,
+      ) => EmailIDPUtils.withReplacedServerEmailException(() async {
+        try {
+          return await utils.passwordReset.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
+          );
+        } on EmailPasswordResetEmailNotFoundException catch (_) {
+          // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+          // Clients should always show something like "check your email to proceed with the password reset".
+          session.log(
+            'Failed to start password reset for $email, reason: email does not exist',
+            level: LogLevel.debug,
+          );
 
-            // NOTE: It is necessary to keep the version of the uuid in sync with the
-            // one used by the [EmailAccountPasswordResetRequestAttempt] model to
-            // prevent attackers from using the difference on the version bit of the
-            // uuid to determine whether an email is registered or not.
-            return const Uuid().v4obj();
-          }
-        },
-      ),
+          // NOTE: It is necessary to keep the version of the uuid in sync with the
+          // one used by the [EmailAccountPasswordResetRequestAttempt] model to
+          // prevent attackers from using the difference on the version bit of the
+          // uuid to determine whether an email is registered or not.
+          return const Uuid().v4obj();
+        }
+      }),
     );
   }
 
@@ -210,33 +198,32 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
-        () async {
-          final result = await utils.accountCreation.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
+      (
+        final transaction,
+      ) => EmailIDPUtils.withReplacedServerEmailException(() async {
+        final result = await utils.accountCreation.startAccountCreation(
+          session,
+          email: email,
+          password: password,
+          transaction: transaction,
+        );
+
+        // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+        // Clients should always show something like "check your email to proceed with the account creation".
+        // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
+        if (result.result != EmailAccountRequestResult.accountRequestCreated) {
+          session.log(
+            'Failed to start account registration for $email, reason: ${result.result}',
+            level: LogLevel.debug,
           );
+        }
 
-          // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
-          // Clients should always show something like "check your email to proceed with the account creation".
-          // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
-          if (result.result !=
-              EmailAccountRequestResult.accountRequestCreated) {
-            session.log(
-              'Failed to start account registration for $email, reason: ${result.result}',
-              level: LogLevel.debug,
-            );
-          }
-
-          // NOTE: It is necessary to keep the version of the uuid in sync with the
-          // one used by the [EmailAccountRequest] model to prevent attackers from
-          // using the difference on the version bit of the uuid to determine whether
-          // an email is registered or not.
-          return result.accountRequestId ?? const Uuid().v4obj();
-        },
-      ),
+        // NOTE: It is necessary to keep the version of the uuid in sync with the
+        // one used by the [EmailAccountRequest] model to prevent attackers from
+        // using the difference on the version bit of the uuid to determine whether
+        // an email is registered or not.
+        return result.accountRequestId ?? const Uuid().v4obj();
+      }),
     );
   }
 }

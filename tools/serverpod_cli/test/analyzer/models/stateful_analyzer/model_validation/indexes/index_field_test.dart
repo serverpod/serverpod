@@ -12,8 +12,7 @@ void main() {
     'Given a class with an index without any fields, then collect an error that at least one field has to be added.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -21,13 +20,15 @@ void main() {
           indexes:
             example_index:
               fields:
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -48,8 +49,7 @@ void main() {
     'Given a class with an index with a field that does not exist, then collect an error that the field is missing in the class.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -57,13 +57,15 @@ void main() {
           indexes:
             example_index:
               fields: missingField
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -84,8 +86,7 @@ void main() {
     'Given a class with an index with two duplicated fields, then collect an error that duplicated fields are not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -93,13 +94,15 @@ void main() {
           indexes:
             example_index:
               fields: name, name
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -120,8 +123,7 @@ void main() {
     'Given a class with an index with a field that has an !persist scope, then collect an error that the field is missing in the class.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -130,13 +132,15 @@ void main() {
           indexes:
             example_index:
               fields: apiField
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -157,8 +161,7 @@ void main() {
     'Given a class with an index with two fields where the second is null, then collect an error that the field must be defined.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -166,13 +169,15 @@ void main() {
           indexes:
             example_index:
               fields: name,
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -193,8 +198,7 @@ void main() {
     'Given a class with an index that mixes vector and non-vector fields, then collect an error that mixing is not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -204,13 +208,15 @@ void main() {
             example_index:
               fields: name, vector
               type: btree
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -234,8 +240,7 @@ void main() {
     'Given a class with an index containing more than one vector field, then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -245,13 +250,15 @@ void main() {
             example_index:
               fields: vector1, vector2
               type: hnsw
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -264,10 +271,7 @@ void main() {
         (e) => e.message.contains('Only one vector'),
       );
 
-      expect(
-        error.message,
-        'Only one vector field is allowed in an index.',
-      );
+      expect(error.message, 'Only one vector field is allowed in an index.');
     },
   );
 
@@ -275,8 +279,7 @@ void main() {
     'Given a class with an index that mixes half vector and non-vector fields, then collect an error that mixing is not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -286,13 +289,15 @@ void main() {
             example_index:
               fields: name, vector
               type: btree
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -316,8 +321,7 @@ void main() {
     'Given a class with an index containing more than one half vector field, then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -327,13 +331,15 @@ void main() {
             example_index:
               fields: vector1, vector2
               type: hnsw
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -346,10 +352,7 @@ void main() {
         (e) => e.message.contains('Only one vector'),
       );
 
-      expect(
-        error.message,
-        'Only one vector field is allowed in an index.',
-      );
+      expect(error.message, 'Only one vector field is allowed in an index.');
     },
   );
 
@@ -357,8 +360,7 @@ void main() {
     'Given a class with an index that mixes sparse vector and non-vector fields, then collect an error that mixing is not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -368,13 +370,15 @@ void main() {
             example_index:
               fields: name, vector
               type: btree
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -398,8 +402,7 @@ void main() {
     'Given a class with an index containing more than one sparse vector field, then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -409,13 +412,15 @@ void main() {
             example_index:
               fields: vector1, vector2
               type: hnsw
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -428,10 +433,7 @@ void main() {
         (e) => e.message.contains('Only one vector'),
       );
 
-      expect(
-        error.message,
-        'Only one vector field is allowed in an index.',
-      );
+      expect(error.message, 'Only one vector field is allowed in an index.');
     },
   );
 
@@ -439,8 +441,7 @@ void main() {
     'Given a class with an index that mixes bit vector and non-vector fields, then collect an error that mixing is not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -450,13 +451,15 @@ void main() {
             example_index:
               fields: name, vector
               type: btree
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -480,8 +483,7 @@ void main() {
     'Given a class with an index containing more than one bit vector field, then collect an error that multiple vector fields are not allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -491,13 +493,15 @@ void main() {
             example_index:
               fields: vector1, vector2
               type: hnsw
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -510,10 +514,7 @@ void main() {
         (e) => e.message.contains('Only one vector'),
       );
 
-      expect(
-        error.message,
-        'Only one vector field is allowed in an index.',
-      );
+      expect(error.message, 'Only one vector field is allowed in an index.');
     },
   );
 }

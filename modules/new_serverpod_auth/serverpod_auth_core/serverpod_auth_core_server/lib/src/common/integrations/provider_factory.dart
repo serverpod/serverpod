@@ -9,9 +9,7 @@ abstract class IdentityProviderFactory<T extends Object> {
   Type get type => T;
 
   /// Default constructor that allows for overriding the token manager.
-  IdentityProviderFactory({
-    this.tokenManagerOverride,
-  });
+  IdentityProviderFactory({this.tokenManagerOverride});
 
   /// Optional [TokenManager] to override for this provider.
   /// If null, the default manager will be used.

@@ -15,8 +15,8 @@ class StatefulAnalyzer {
 
   /// Returns true if any of the models have severe errors.
   bool get hasSevereErrors => _modelStates.values.any(
-        (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
-      );
+    (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
+  );
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
@@ -35,28 +35,29 @@ class StatefulAnalyzer {
   }
 
   /// Returns all valid models in the state that are part of the project.
-  List<SerializableModelDefinition> get _validProjectModels => _modelStates
-      .values
-      .where(
-          (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors))
-      .where((state) => state.source.moduleAlias == defaultModuleAlias)
-      .map((state) => state.model)
-      .whereType<SerializableModelDefinition>()
-      .toList();
+  List<SerializableModelDefinition> get _validProjectModels =>
+      _modelStates.values
+          .where(
+            (state) =>
+                !CodeAnalysisCollector.containsSevereErrors(state.errors),
+          )
+          .where((state) => state.source.moduleAlias == defaultModuleAlias)
+          .map((state) => state.model)
+          .whereType<SerializableModelDefinition>()
+          .toList();
 
   /// Returns all models in the state.
-  List<SerializableModelDefinition> get _models => _modelStates.values
-      .map((state) => state.model)
-      .whereType<SerializableModelDefinition>()
-      .toList();
+  List<SerializableModelDefinition> get _models =>
+      _modelStates.values
+          .map((state) => state.model)
+          .whereType<SerializableModelDefinition>()
+          .toList();
 
   /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to
   /// guarantee that all errors are found.
   void addYamlModel(ModelSource yamlSource) {
-    var modelState = _ModelState(
-      source: yamlSource,
-    );
+    var modelState = _ModelState(source: yamlSource);
 
     _modelStates[yamlSource.yamlSourceUri.path] = modelState;
   }
@@ -118,13 +119,19 @@ class StatefulAnalyzer {
   }
 
   void _validateAllModels() {
-    var modelsToValidate = _modelStates.values
-        .where((state) => state.source.moduleAlias == defaultModuleAlias);
-    var modelsWithDocumentPath = _modelStates.values
-        .map((state) =>
-            (documentPath: state.source.yamlSourceUri.path, model: state.model))
-        .whereType<ModelWithDocumentPath>()
-        .toList();
+    var modelsToValidate = _modelStates.values.where(
+      (state) => state.source.moduleAlias == defaultModuleAlias,
+    );
+    var modelsWithDocumentPath =
+        _modelStates.values
+            .map(
+              (state) => (
+                documentPath: state.source.yamlSourceUri.path,
+                model: state.model,
+              ),
+            )
+            .whereType<ModelWithDocumentPath>()
+            .toList();
 
     var parsedModels = ParsedModelsCollection(modelsWithDocumentPath);
 
@@ -145,10 +152,7 @@ class StatefulAnalyzer {
         state.errors = [];
       }
 
-      _onErrorsChangedNotifier?.call(
-        state.source.yamlSourceUri,
-        collector,
-      );
+      _onErrorsChangedNotifier?.call(state.source.yamlSourceUri, collector);
     }
   }
 }
@@ -158,7 +162,5 @@ class _ModelState {
   List<SourceSpanException> errors = [];
   SerializableModelDefinition? model;
 
-  _ModelState({
-    required this.source,
-  });
+  _ModelState({required this.source});
 }

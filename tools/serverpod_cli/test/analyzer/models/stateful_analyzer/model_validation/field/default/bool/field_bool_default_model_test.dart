@@ -15,20 +15,21 @@ void main() {
       'when the field is of type bool and the defaultModel is set to "true", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             boolType: bool, defaultModel=true
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -41,20 +42,21 @@ void main() {
       'when the field is of type bool and the defaultModel is set to "false", then the field should have a "default model" value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             boolType: bool, defaultModel=false
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -67,19 +69,20 @@ void main() {
       'when the field is of type bool and the defaultModel is empty, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             boolType: bool, defaultModel=
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -95,19 +98,20 @@ void main() {
       'when the field is of type bool with an invalid defaultModel value "TRUE", then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           boolInvalid: bool?, defaultModel=TRUE
-        ''',
-          ).build()
+        ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -123,19 +127,20 @@ void main() {
       'when the field is of type bool with an invalid defaultModel value, then an error is generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             boolInvalid: bool?, defaultModel=test
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

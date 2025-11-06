@@ -17,25 +17,19 @@ import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 
 abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Book._({
-    this.id,
-    required this.title,
-    this.chapters,
-  });
+  Book._({this.id, required this.title, this.chapters});
 
-  factory Book({
-    int? id,
-    required String title,
-    List<_i2.Chapter>? chapters,
-  }) = _BookImpl;
+  factory Book({int? id, required String title, List<_i2.Chapter>? chapters}) =
+      _BookImpl;
 
   factory Book.fromJson(Map<String, dynamic> jsonSerialization) {
     return Book(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
-      chapters: (jsonSerialization['chapters'] as List?)
-          ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      chapters:
+          (jsonSerialization['chapters'] as List?)
+              ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -56,11 +50,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Book copyWith({
-    int? id,
-    String? title,
-    List<_i2.Chapter>? chapters,
-  });
+  Book copyWith({int? id, String? title, List<_i2.Chapter>? chapters});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -114,15 +104,8 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 class _Undefined {}
 
 class _BookImpl extends Book {
-  _BookImpl({
-    int? id,
-    required String title,
-    List<_i2.Chapter>? chapters,
-  }) : super._(
-          id: id,
-          title: title,
-          chapters: chapters,
-        );
+  _BookImpl({int? id, required String title, List<_i2.Chapter>? chapters})
+    : super._(id: id, title: title, chapters: chapters);
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
@@ -136,9 +119,10 @@ class _BookImpl extends Book {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_i2.Chapter>?
-          ? chapters
-          : this.chapters?.map((e0) => e0.copyWith()).toList(),
+      chapters:
+          chapters is List<_i2.Chapter>?
+              ? chapters
+              : this.chapters?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -146,19 +130,14 @@ class _BookImpl extends Book {
 class BookUpdateTable extends _i1.UpdateTable<BookTable> {
   BookUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
-        table.title,
-        value,
-      );
+  _i1.ColumnValue<String, String> title(String value) =>
+      _i1.ColumnValue(table.title, value);
 }
 
 class BookTable extends _i1.Table<int?> {
   BookTable({super.tableRelation}) : super(tableName: 'book') {
     updateTable = BookUpdateTable(this);
-    title = _i1.ColumnString(
-      'title',
-      this,
-    );
+    title = _i1.ColumnString('title', this);
   }
 
   late final BookUpdateTable updateTable;
@@ -176,8 +155,9 @@ class BookTable extends _i1.Table<int?> {
       field: Book.t.id,
       foreignField: _i2.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.ChapterTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.ChapterTable(tableRelation: foreignTableRelation),
     );
     return ___chapters!;
   }
@@ -189,22 +169,21 @@ class BookTable extends _i1.Table<int?> {
       field: Book.t.id,
       foreignField: _i2.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.ChapterTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.ChapterTable(tableRelation: foreignTableRelation),
     );
     _chapters = _i1.ManyRelation<_i2.ChapterTable>(
       tableWithRelations: relationTable,
       table: _i2.ChapterTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _chapters!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        title,
-      ];
+  List<_i1.Column> get columns => [id, title];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -368,10 +347,7 @@ class BookRepository {
     List<Book> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Book>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Book>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Book] and returns the inserted row.
@@ -382,10 +358,7 @@ class BookRepository {
     Book row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Book>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Book>(row, transaction: transaction);
   }
 
   /// Updates all [Book]s in the list and returns the updated rows. If
@@ -470,10 +443,7 @@ class BookRepository {
     List<Book> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Book>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Book>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Book].
@@ -482,10 +452,7 @@ class BookRepository {
     Book row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Book>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Book>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.
@@ -534,12 +501,10 @@ class BookAttachRepository {
       throw ArgumentError.notNull('book.id');
     }
 
-    var $chapter = chapter
-        .map((e) => _i2.ChapterImplicit(
-              e,
-              $_bookChaptersBookId: book.id,
-            ))
-        .toList();
+    var $chapter =
+        chapter
+            .map((e) => _i2.ChapterImplicit(e, $_bookChaptersBookId: book.id))
+            .toList();
     await session.db.update<_i2.Chapter>(
       $chapter,
       columns: [_i2.Chapter.t.$_bookChaptersBookId],
@@ -566,10 +531,7 @@ class BookAttachRowRepository {
       throw ArgumentError.notNull('book.id');
     }
 
-    var $chapter = _i2.ChapterImplicit(
-      chapter,
-      $_bookChaptersBookId: book.id,
-    );
+    var $chapter = _i2.ChapterImplicit(chapter, $_bookChaptersBookId: book.id);
     await session.db.updateRow<_i2.Chapter>(
       $chapter,
       columns: [_i2.Chapter.t.$_bookChaptersBookId],
@@ -595,12 +557,10 @@ class BookDetachRepository {
       throw ArgumentError.notNull('chapter.id');
     }
 
-    var $chapter = chapter
-        .map((e) => _i2.ChapterImplicit(
-              e,
-              $_bookChaptersBookId: null,
-            ))
-        .toList();
+    var $chapter =
+        chapter
+            .map((e) => _i2.ChapterImplicit(e, $_bookChaptersBookId: null))
+            .toList();
     await session.db.update<_i2.Chapter>(
       $chapter,
       columns: [_i2.Chapter.t.$_bookChaptersBookId],
@@ -626,10 +586,7 @@ class BookDetachRowRepository {
       throw ArgumentError.notNull('chapter.id');
     }
 
-    var $chapter = _i2.ChapterImplicit(
-      chapter,
-      $_bookChaptersBookId: null,
-    );
+    var $chapter = _i2.ChapterImplicit(chapter, $_bookChaptersBookId: null);
     await session.db.updateRow<_i2.Chapter>(
       $chapter,
       columns: [_i2.Chapter.t.$_bookChaptersBookId],

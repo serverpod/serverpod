@@ -17,12 +17,7 @@ import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class PlayerUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  PlayerUuid._({
-    this.id,
-    required this.name,
-    this.teamId,
-    this.team,
-  });
+  PlayerUuid._({this.id, required this.name, this.teamId, this.team});
 
   factory PlayerUuid({
     _i1.UuidValue? id,
@@ -33,15 +28,18 @@ abstract class PlayerUuid
 
   factory PlayerUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return PlayerUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       teamId: jsonSerialization['teamId'] as int?,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.TeamInt.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -128,12 +126,7 @@ class _PlayerUuidImpl extends PlayerUuid {
     required String name,
     int? teamId,
     _i2.TeamInt? team,
-  }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+  }) : super._(id: id, name: name, teamId: teamId, team: team);
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
@@ -157,28 +150,18 @@ class _PlayerUuidImpl extends PlayerUuid {
 class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
   PlayerUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
-        table.teamId,
-        value,
-      );
+  _i1.ColumnValue<int, int> teamId(int? value) =>
+      _i1.ColumnValue(table.teamId, value);
 }
 
 class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
   PlayerUuidTable({super.tableRelation}) : super(tableName: 'player_uuid') {
     updateTable = PlayerUuidUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    teamId = _i1.ColumnInt(
-      'teamId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    teamId = _i1.ColumnInt('teamId', this);
   }
 
   late final PlayerUuidUpdateTable updateTable;
@@ -196,18 +179,15 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
       field: PlayerUuid.t.teamId,
       foreignField: _i2.TeamInt.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.TeamIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.TeamIntTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        teamId,
-      ];
+  List<_i1.Column> get columns => [id, name, teamId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -367,10 +347,7 @@ class PlayerUuidRepository {
     List<PlayerUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<PlayerUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<PlayerUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [PlayerUuid] and returns the inserted row.
@@ -381,10 +358,7 @@ class PlayerUuidRepository {
     PlayerUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<PlayerUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<PlayerUuid>(row, transaction: transaction);
   }
 
   /// Updates all [PlayerUuid]s in the list and returns the updated rows. If
@@ -469,10 +443,7 @@ class PlayerUuidRepository {
     List<PlayerUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<PlayerUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<PlayerUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [PlayerUuid].
@@ -481,10 +452,7 @@ class PlayerUuidRepository {
     PlayerUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<PlayerUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<PlayerUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

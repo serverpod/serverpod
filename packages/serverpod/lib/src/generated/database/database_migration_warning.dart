@@ -32,15 +32,18 @@ abstract class DatabaseMigrationWarning
   }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DatabaseMigrationWarning(
       type: _i2.DatabaseMigrationWarningType.fromJson(
-          (jsonSerialization['type'] as String)),
+        (jsonSerialization['type'] as String),
+      ),
       message: jsonSerialization['message'] as String,
       table: jsonSerialization['table'] as String,
-      columns: (jsonSerialization['columns'] as List)
-          .map((e) => e as String)
-          .toList(),
+      columns:
+          (jsonSerialization['columns'] as List)
+              .map((e) => e as String)
+              .toList(),
       destrucive: jsonSerialization['destrucive'] as bool,
     );
   }
@@ -101,12 +104,12 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
     required List<String> columns,
     required bool destrucive,
   }) : super._(
-          type: type,
-          message: message,
-          table: table,
-          columns: columns,
-          destrucive: destrucive,
-        );
+         type: type,
+         message: message,
+         table: table,
+         columns: columns,
+         destrucive: destrucive,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
   /// with some or all fields replaced by the given arguments.

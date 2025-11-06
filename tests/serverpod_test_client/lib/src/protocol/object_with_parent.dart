@@ -13,15 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ObjectWithParent implements _i1.SerializableModel {
-  ObjectWithParent._({
-    this.id,
-    required this.other,
-  });
+  ObjectWithParent._({this.id, required this.other});
 
-  factory ObjectWithParent({
-    int? id,
-    required int other,
-  }) = _ObjectWithParentImpl;
+  factory ObjectWithParent({int? id, required int other}) =
+      _ObjectWithParentImpl;
 
   factory ObjectWithParent.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithParent(
@@ -40,16 +35,10 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithParent copyWith({
-    int? id,
-    int? other,
-  });
+  ObjectWithParent copyWith({int? id, int? other});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'other': other,
-    };
+    return {if (id != null) 'id': id, 'other': other};
   }
 
   @override
@@ -61,22 +50,14 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ObjectWithParentImpl extends ObjectWithParent {
-  _ObjectWithParentImpl({
-    int? id,
-    required int other,
-  }) : super._(
-          id: id,
-          other: other,
-        );
+  _ObjectWithParentImpl({int? id, required int other})
+    : super._(id: id, other: other);
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ObjectWithParent copyWith({
-    Object? id = _Undefined,
-    int? other,
-  }) {
+  ObjectWithParent copyWith({Object? id = _Undefined, int? other}) {
     return ObjectWithParent(
       id: id is int? ? id : this.id,
       other: other ?? this.other,

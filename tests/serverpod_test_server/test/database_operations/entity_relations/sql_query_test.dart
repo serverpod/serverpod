@@ -5,18 +5,15 @@ import '../../../../../packages/serverpod/lib/src/database/sql_query_builder.dar
 void main() {
   group('Given nested relations when building shallow include sql query', () {
     test('then query only joins what is included.', () {
-      var query = SelectQueryBuilder(table: Citizen.t)
-          .withSelectFields(Citizen.t.columns)
-          .withInclude(
-            Citizen.include(
-              company: Company.include(),
-            ),
-          )
-          .build();
+      var query =
+          SelectQueryBuilder(table: Citizen.t)
+              .withSelectFields(Citizen.t.columns)
+              .withInclude(Citizen.include(company: Company.include()))
+              .build();
 
       expect(
-          query,
-          '''
+        query,
+        '''
 SELECT
  "citizen"."id" AS "citizen.id",
  "citizen"."name" AS "citizen.name",
@@ -27,8 +24,8 @@ SELECT
  "citizen_company_company"."townId" AS "citizen_company_company.townId" 
 FROM "citizen" 
 LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id"
-'''
-              .replaceAll("\n", ""));
+'''.replaceAll("\n", ""),
+      );
     });
   });
 }

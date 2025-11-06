@@ -33,17 +33,22 @@ abstract class LegacyExternalUserIdentifier
   }) = _LegacyExternalUserIdentifierImpl;
 
   factory LegacyExternalUserIdentifier.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return LegacyExternalUserIdentifier(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
     );
   }
@@ -93,8 +98,9 @@ abstract class LegacyExternalUserIdentifier
     return {};
   }
 
-  static LegacyExternalUserIdentifierInclude include(
-      {_i2.AuthUserInclude? authUser}) {
+  static LegacyExternalUserIdentifierInclude include({
+    _i2.AuthUserInclude? authUser,
+  }) {
     return LegacyExternalUserIdentifierInclude._(authUser: authUser);
   }
 
@@ -133,11 +139,11 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
     _i2.AuthUser? authUser,
     required String userIdentifier,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          userIdentifier: userIdentifier,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         userIdentifier: userIdentifier,
+       );
 
   /// Returns a shallow copy of this [LegacyExternalUserIdentifier]
   /// with some or all fields replaced by the given arguments.
@@ -164,31 +170,19 @@ class LegacyExternalUserIdentifierUpdateTable
   LegacyExternalUserIdentifierUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
-        table.userIdentifier,
-        value,
-      );
+      _i1.ColumnValue(table.userIdentifier, value);
 }
 
 class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
   LegacyExternalUserIdentifierTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_bridge_external_user_id') {
+    : super(tableName: 'serverpod_auth_bridge_external_user_id') {
     updateTable = LegacyExternalUserIdentifierUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    userIdentifier = _i1.ColumnString(
-      'userIdentifier',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    userIdentifier = _i1.ColumnString('userIdentifier', this);
   }
 
   late final LegacyExternalUserIdentifierUpdateTable updateTable;
@@ -211,18 +205,15 @@ class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
       field: LegacyExternalUserIdentifier.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        userIdentifier,
-      ];
+  List<_i1.Column> get columns => [id, authUserId, userIdentifier];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -440,7 +431,7 @@ class LegacyExternalUserIdentifierRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyExternalUserIdentifier>(
@@ -455,9 +446,9 @@ class LegacyExternalUserIdentifierRepository {
   Future<List<LegacyExternalUserIdentifier>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
@@ -507,7 +498,7 @@ class LegacyExternalUserIdentifierRepository {
   Future<List<LegacyExternalUserIdentifier>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
-        where,
+    where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<LegacyExternalUserIdentifier>(
@@ -550,8 +541,9 @@ class LegacyExternalUserIdentifierAttachRowRepository {
       throw ArgumentError.notNull('authUser.id');
     }
 
-    var $legacyExternalUserIdentifier =
-        legacyExternalUserIdentifier.copyWith(authUserId: authUser.id);
+    var $legacyExternalUserIdentifier = legacyExternalUserIdentifier.copyWith(
+      authUserId: authUser.id,
+    );
     await session.db.updateRow<LegacyExternalUserIdentifier>(
       $legacyExternalUserIdentifier,
       columns: [LegacyExternalUserIdentifier.t.authUserId],

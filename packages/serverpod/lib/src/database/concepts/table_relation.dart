@@ -18,8 +18,11 @@ class TableRelation {
   final List<TableRelationEntry> _tableRelationEntries;
 
   // Default initialized to truncate to Postgres max name length.
-  TruncateFunction _truncateFunction = (String identifier) =>
-      truncateIdentifier(identifier, DatabaseConstants.pgsqlMaxNameLimitation);
+  TruncateFunction _truncateFunction =
+      (String identifier) => truncateIdentifier(
+        identifier,
+        DatabaseConstants.pgsqlMaxNameLimitation,
+      );
 
   /// Creates a new [TableRelation].
   /// Throws [ArgumentError] if [tableRelationEntries] is empty.

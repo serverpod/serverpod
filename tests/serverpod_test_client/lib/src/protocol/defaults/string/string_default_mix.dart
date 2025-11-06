@@ -18,12 +18,12 @@ abstract class StringDefaultMix implements _i1.SerializableModel {
     String? stringDefaultAndDefaultModel,
     String? stringDefaultAndDefaultPersist,
     String? stringDefaultModelAndDefaultPersist,
-  })  : stringDefaultAndDefaultModel =
-            stringDefaultAndDefaultModel ?? 'This is a default model value',
-        stringDefaultAndDefaultPersist =
-            stringDefaultAndDefaultPersist ?? 'This is a default value',
-        stringDefaultModelAndDefaultPersist =
-            stringDefaultModelAndDefaultPersist ?? 'This is a default value';
+  }) : stringDefaultAndDefaultModel =
+           stringDefaultAndDefaultModel ?? 'This is a default model value',
+       stringDefaultAndDefaultPersist =
+           stringDefaultAndDefaultPersist ?? 'This is a default value',
+       stringDefaultModelAndDefaultPersist =
+           stringDefaultModelAndDefaultPersist ?? 'This is a default value';
 
   factory StringDefaultMix({
     int? id,
@@ -90,12 +90,12 @@ class _StringDefaultMixImpl extends StringDefaultMix {
     String? stringDefaultAndDefaultPersist,
     String? stringDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          stringDefaultAndDefaultModel: stringDefaultAndDefaultModel,
-          stringDefaultAndDefaultPersist: stringDefaultAndDefaultPersist,
-          stringDefaultModelAndDefaultPersist:
-              stringDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         stringDefaultAndDefaultModel: stringDefaultAndDefaultModel,
+         stringDefaultAndDefaultPersist: stringDefaultAndDefaultPersist,
+         stringDefaultModelAndDefaultPersist:
+             stringDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [StringDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -115,7 +115,7 @@ class _StringDefaultMixImpl extends StringDefaultMix {
           stringDefaultAndDefaultPersist ?? this.stringDefaultAndDefaultPersist,
       stringDefaultModelAndDefaultPersist:
           stringDefaultModelAndDefaultPersist ??
-              this.stringDefaultModelAndDefaultPersist,
+          this.stringDefaultModelAndDefaultPersist,
     );
   }
 }

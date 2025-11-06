@@ -10,10 +10,9 @@ extension CloneByteData on ByteData {
   /// not affect the copy.
   ByteData clone() {
     Int8List uint8ListView = buffer.asInt8List();
-    return Int8List.fromList(uint8ListView).buffer.asByteData(
-          offsetInBytes,
-          lengthInBytes,
-        );
+    return Int8List.fromList(
+      uint8ListView,
+    ).buffer.asByteData(offsetInBytes, lengthInBytes);
   }
 }
 

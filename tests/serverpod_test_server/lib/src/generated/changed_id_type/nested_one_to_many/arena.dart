@@ -17,11 +17,8 @@ import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class ArenaUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
-  ArenaUuid._({
-    _i1.UuidValue? id,
-    required this.name,
-    this.team,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  ArenaUuid._({_i1.UuidValue? id, required this.name, this.team})
+    : id = id ?? _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
@@ -33,10 +30,12 @@ abstract class ArenaUuid
     return ArenaUuid(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.TeamInt.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -57,11 +56,7 @@ abstract class ArenaUuid
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ArenaUuid copyWith({
-    _i1.UuidValue? id,
-    String? name,
-    _i2.TeamInt? team,
-  });
+  ArenaUuid copyWith({_i1.UuidValue? id, String? name, _i2.TeamInt? team});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -113,15 +108,8 @@ abstract class ArenaUuid
 class _Undefined {}
 
 class _ArenaUuidImpl extends ArenaUuid {
-  _ArenaUuidImpl({
-    _i1.UuidValue? id,
-    required String name,
-    _i2.TeamInt? team,
-  }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+  _ArenaUuidImpl({_i1.UuidValue? id, required String name, _i2.TeamInt? team})
+    : super._(id: id, name: name, team: team);
 
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.
@@ -143,19 +131,14 @@ class _ArenaUuidImpl extends ArenaUuid {
 class ArenaUuidUpdateTable extends _i1.UpdateTable<ArenaUuidTable> {
   ArenaUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
   ArenaUuidTable({super.tableRelation}) : super(tableName: 'arena_uuid') {
     updateTable = ArenaUuidUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final ArenaUuidUpdateTable updateTable;
@@ -171,17 +154,15 @@ class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
       field: ArenaUuid.t.id,
       foreignField: _i2.TeamInt.t.arenaId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.TeamIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.TeamIntTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -341,10 +322,7 @@ class ArenaUuidRepository {
     List<ArenaUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ArenaUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ArenaUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ArenaUuid] and returns the inserted row.
@@ -355,10 +333,7 @@ class ArenaUuidRepository {
     ArenaUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ArenaUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ArenaUuid>(row, transaction: transaction);
   }
 
   /// Updates all [ArenaUuid]s in the list and returns the updated rows. If
@@ -443,10 +418,7 @@ class ArenaUuidRepository {
     List<ArenaUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ArenaUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ArenaUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ArenaUuid].
@@ -455,10 +427,7 @@ class ArenaUuidRepository {
     ArenaUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ArenaUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ArenaUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

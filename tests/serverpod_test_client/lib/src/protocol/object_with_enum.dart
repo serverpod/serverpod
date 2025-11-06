@@ -36,20 +36,29 @@ abstract class ObjectWithEnum implements _i1.SerializableModel {
     return ObjectWithEnum(
       id: jsonSerialization['id'] as int?,
       testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
-      nullableEnum: jsonSerialization['nullableEnum'] == null
-          ? null
-          : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
-      enumList: (jsonSerialization['enumList'] as List)
-          .map((e) => _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      nullableEnumList: (jsonSerialization['nullableEnumList'] as List)
-          .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      enumListList: (jsonSerialization['enumListList'] as List)
-          .map((e) => (e as List)
+      nullableEnum:
+          jsonSerialization['nullableEnum'] == null
+              ? null
+              : _i2.TestEnum.fromJson(
+                (jsonSerialization['nullableEnum'] as int),
+              ),
+      enumList:
+          (jsonSerialization['enumList'] as List)
               .map((e) => _i2.TestEnum.fromJson((e as int)))
-              .toList())
-          .toList(),
+              .toList(),
+      nullableEnumList:
+          (jsonSerialization['nullableEnumList'] as List)
+              .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
+              .toList(),
+      enumListList:
+          (jsonSerialization['enumListList'] as List)
+              .map(
+                (e) =>
+                    (e as List)
+                        .map((e) => _i2.TestEnum.fromJson((e as int)))
+                        .toList(),
+              )
+              .toList(),
     );
   }
 
@@ -86,10 +95,12 @@ abstract class ObjectWithEnum implements _i1.SerializableModel {
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
       'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableEnumList': nullableEnumList.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+        valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+      ),
     };
   }
 
@@ -110,13 +121,13 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     required List<_i2.TestEnum?> nullableEnumList,
     required List<List<_i2.TestEnum>> enumListList,
   }) : super._(
-          id: id,
-          testEnum: testEnum,
-          nullableEnum: nullableEnum,
-          enumList: enumList,
-          nullableEnumList: nullableEnumList,
-          enumListList: enumListList,
-        );
+         id: id,
+         testEnum: testEnum,
+         nullableEnum: nullableEnum,
+         enumList: enumList,
+         nullableEnumList: nullableEnumList,
+         enumListList: enumListList,
+       );
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
@@ -138,7 +149,8 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
       enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
       nullableEnumList:
           nullableEnumList ?? this.nullableEnumList.map((e0) => e0).toList(),
-      enumListList: enumListList ??
+      enumListList:
+          enumListList ??
           this.enumListList.map((e0) => e0.map((e1) => e1).toList()).toList(),
     );
   }

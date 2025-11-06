@@ -13,15 +13,9 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class UserNote implements _i1.SerializableModel {
-  UserNote._({
-    this.id,
-    required this.name,
-  });
+  UserNote._({this.id, required this.name});
 
-  factory UserNote({
-    int? id,
-    required String name,
-  }) = _UserNoteImpl;
+  factory UserNote({int? id, required String name}) = _UserNoteImpl;
 
   factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserNote(
@@ -40,16 +34,10 @@ abstract class UserNote implements _i1.SerializableModel {
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserNote copyWith({
-    int? id,
-    String? name,
-  });
+  UserNote copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   @override
@@ -61,25 +49,13 @@ abstract class UserNote implements _i1.SerializableModel {
 class _Undefined {}
 
 class _UserNoteImpl extends UserNote {
-  _UserNoteImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _UserNoteImpl({int? id, required String name}) : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserNote copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
-    return UserNote(
-      id: id is int? ? id : this.id,
-      name: name ?? this.name,
-    );
+  UserNote copyWith({Object? id = _Undefined, String? name}) {
+    return UserNote(id: id is int? ? id : this.id, name: name ?? this.name);
   }
 }

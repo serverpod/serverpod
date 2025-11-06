@@ -17,15 +17,10 @@ abstract class BulkDataException
         _i1.SerializableException,
         _i1.SerializableModel,
         _i1.ProtocolSerialization {
-  BulkDataException._({
-    required this.message,
-    this.query,
-  });
+  BulkDataException._({required this.message, this.query});
 
-  factory BulkDataException({
-    required String message,
-    String? query,
-  }) = _BulkDataExceptionImpl;
+  factory BulkDataException({required String message, String? query}) =
+      _BulkDataExceptionImpl;
 
   factory BulkDataException.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkDataException(
@@ -41,24 +36,15 @@ abstract class BulkDataException
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  BulkDataException copyWith({
-    String? message,
-    String? query,
-  });
+  BulkDataException copyWith({String? message, String? query});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      if (query != null) 'query': query,
-    };
+    return {'message': message, if (query != null) 'query': query};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'message': message,
-      if (query != null) 'query': query,
-    };
+    return {'message': message, if (query != null) 'query': query};
   }
 
   @override
@@ -70,22 +56,14 @@ abstract class BulkDataException
 class _Undefined {}
 
 class _BulkDataExceptionImpl extends BulkDataException {
-  _BulkDataExceptionImpl({
-    required String message,
-    String? query,
-  }) : super._(
-          message: message,
-          query: query,
-        );
+  _BulkDataExceptionImpl({required String message, String? query})
+    : super._(message: message, query: query);
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  BulkDataException copyWith({
-    String? message,
-    Object? query = _Undefined,
-  }) {
+  BulkDataException copyWith({String? message, Object? query = _Undefined}) {
     return BulkDataException(
       message: message ?? this.message,
       query: query is String? ? query : this.query,

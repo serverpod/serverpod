@@ -6,10 +6,9 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// Check current Serverpod CLI version and prompt user to update if needed
 Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
   var latestVersion = await PackageVersion.fetchLatestPackageVersion(
-    storePackageVersionData: (PackageVersionData versionArtefact) =>
-        resourceManager.storeLatestCliVersion(
-      versionArtefact,
-    ),
+    storePackageVersionData:
+        (PackageVersionData versionArtefact) =>
+            resourceManager.storeLatestCliVersion(versionArtefact),
     loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(),
     fetchLatestPackageVersion: () async {
       var pubClient = PubApiClient();
@@ -40,8 +39,5 @@ void _printPrompt(Version version) {
 To update to the latest version, run "dart pub global activate serverpod_cli".
 Also, do not forget to update packages in your server, client, and flutter projects.''';
 
-  log.info(
-    message,
-    type: const BoxLogType(newParagraph: true),
-  );
+  log.info(message, type: const BoxLogType(newParagraph: true));
 }

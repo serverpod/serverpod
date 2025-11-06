@@ -36,10 +36,12 @@ abstract class Address
       id: jsonSerialization['id'] as int?,
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
-      inhabitant: jsonSerialization['inhabitant'] == null
-          ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+      inhabitant:
+          jsonSerialization['inhabitant'] == null
+              ? null
+              : _i2.Citizen.fromJson(
+                (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -127,11 +129,11 @@ class _AddressImpl extends Address {
     int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
@@ -156,28 +158,18 @@ class _AddressImpl extends Address {
 class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
   AddressUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
-        table.street,
-        value,
-      );
+  _i1.ColumnValue<String, String> street(String value) =>
+      _i1.ColumnValue(table.street, value);
 
-  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
-        table.inhabitantId,
-        value,
-      );
+  _i1.ColumnValue<int, int> inhabitantId(int? value) =>
+      _i1.ColumnValue(table.inhabitantId, value);
 }
 
 class AddressTable extends _i1.Table<int?> {
   AddressTable({super.tableRelation}) : super(tableName: 'address') {
     updateTable = AddressUpdateTable(this);
-    street = _i1.ColumnString(
-      'street',
-      this,
-    );
-    inhabitantId = _i1.ColumnInt(
-      'inhabitantId',
-      this,
-    );
+    street = _i1.ColumnString('street', this);
+    inhabitantId = _i1.ColumnInt('inhabitantId', this);
   }
 
   late final AddressUpdateTable updateTable;
@@ -195,18 +187,15 @@ class AddressTable extends _i1.Table<int?> {
       field: Address.t.inhabitantId,
       foreignField: _i2.Citizen.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CitizenTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _inhabitant!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        street,
-        inhabitantId,
-      ];
+  List<_i1.Column> get columns => [id, street, inhabitantId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -366,10 +355,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Address>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Address>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Address] and returns the inserted row.
@@ -380,10 +366,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Address>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Address>(row, transaction: transaction);
   }
 
   /// Updates all [Address]s in the list and returns the updated rows. If
@@ -468,10 +451,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Address>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Address>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Address].
@@ -480,10 +460,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Address>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Address>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

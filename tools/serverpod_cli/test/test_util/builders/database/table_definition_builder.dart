@@ -16,19 +16,17 @@ class TableDefinitionBuilder {
   bool? _managed;
 
   TableDefinitionBuilder()
-      : _name = 'example',
-        _dartName = 'Example',
-        _schema = 'public',
-        _module = 'test_project',
-        _columns = [
-          ColumnDefinitionBuilder().withIdColumn('example').build(),
-          ColumnDefinitionBuilder().withNameColumn().build(),
-        ],
-        _foreignKeys = [],
-        _indexes = [
-          IndexDefinitionBuilder().withIdIndex('example').build(),
-        ],
-        _managed = true;
+    : _name = 'example',
+      _dartName = 'Example',
+      _schema = 'public',
+      _module = 'test_project',
+      _columns = [
+        ColumnDefinitionBuilder().withIdColumn('example').build(),
+        ColumnDefinitionBuilder().withNameColumn().build(),
+      ],
+      _foreignKeys = [],
+      _indexes = [IndexDefinitionBuilder().withIdIndex('example').build()],
+      _managed = true;
 
   TableDefinition build() {
     return TableDefinition(
@@ -66,8 +64,11 @@ class TableDefinitionBuilder {
     _columns.insert(
       0,
       ColumnDefinitionBuilder()
-          .withIdColumn(_name,
-              type: idType, nullableModelField: nullableModelField)
+          .withIdColumn(
+            _name,
+            type: idType,
+            nullableModelField: nullableModelField,
+          )
           .build(),
     );
     return this;
@@ -94,7 +95,8 @@ class TableDefinitionBuilder {
   }
 
   TableDefinitionBuilder withForeignKeys(
-      List<ForeignKeyDefinition> foreignKeys) {
+    List<ForeignKeyDefinition> foreignKeys,
+  ) {
     _foreignKeys = foreignKeys;
     return this;
   }

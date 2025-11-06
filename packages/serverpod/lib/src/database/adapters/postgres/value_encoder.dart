@@ -50,10 +50,7 @@ class ValueEncoder extends PostgresTextEncoder {
     } else if (input is Bit) {
       return '\'${input.toString()}\'';
     } else if (input is SerializableModel && input is Enum) {
-      return super.convert(
-        input.toJson(),
-        escapeStrings: escapeStrings,
-      );
+      return super.convert(input.toJson(), escapeStrings: escapeStrings);
     } else if (input is List || input is Map || input is Set) {
       return super.convert(
         SerializationManager.encode(input),
@@ -65,8 +62,10 @@ class ValueEncoder extends PostgresTextEncoder {
       return super.convert(input, escapeStrings: escapeStrings);
     } catch (e) {
       // super.convert failed, therefore value must be a json serializable type.
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return super.convert(
+        SerializationManager.encode(input),
+        escapeStrings: escapeStrings,
+      );
     }
   }
 }

@@ -27,7 +27,8 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
   }) = _ImmutableChildObjectImpl;
 
   factory ImmutableChildObject.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableChildObject(
       variable: jsonSerialization['variable'] as String,
       childVariable: jsonSerialization['childVariable'] as String,
@@ -40,45 +41,26 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
   /// with some or all fields replaced by the given arguments.
   @override
   @_i1.useResult
-  ImmutableChildObject copyWith({
-    String? variable,
-    String? childVariable,
-  });
+  ImmutableChildObject copyWith({String? variable, String? childVariable});
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableChildObject &&
-            (identical(
-                  other.variable,
-                  variable,
-                ) ||
+            (identical(other.variable, variable) ||
                 other.variable == variable) &&
-            (identical(
-                  other.childVariable,
-                  childVariable,
-                ) ||
+            (identical(other.childVariable, childVariable) ||
                 other.childVariable == childVariable);
   }
 
   @override
   int get hashCode {
-    return Object.hash(
-      runtimeType,
-      variable,
-      childVariable,
-    );
+    return Object.hash(runtimeType, variable, childVariable);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'variable': variable,
-      'childVariable': childVariable,
-    };
+    return {'variable': variable, 'childVariable': childVariable};
   }
 
   @override
@@ -91,19 +73,13 @@ class _ImmutableChildObjectImpl extends ImmutableChildObject {
   const _ImmutableChildObjectImpl({
     required String variable,
     required String childVariable,
-  }) : super._(
-          variable: variable,
-          childVariable: childVariable,
-        );
+  }) : super._(variable: variable, childVariable: childVariable);
 
   /// Returns a shallow copy of this [ImmutableChildObject]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ImmutableChildObject copyWith({
-    String? variable,
-    String? childVariable,
-  }) {
+  ImmutableChildObject copyWith({String? variable, String? childVariable}) {
     return ImmutableChildObject(
       variable: variable ?? this.variable,
       childVariable: childVariable ?? this.childVariable,

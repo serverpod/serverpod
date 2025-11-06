@@ -40,10 +40,7 @@ class Table<T_ID> {
   final TableRelation? tableRelation;
 
   /// Creates a new [Table]. Typically, this is done only by generated code.
-  Table({
-    required this.tableName,
-    this.tableRelation,
-  }) {
+  Table({required this.tableName, this.tableRelation}) {
     if (T_ID == dynamic) {
       throw Exception(
         'Can not create a table without passing an id type. Use the format '
@@ -51,17 +48,9 @@ class Table<T_ID> {
       );
     }
     if (equalsType<T_ID, int>()) {
-      id = ColumnInt(
-        'id',
-        this,
-        hasDefault: true,
-      ) as ColumnComparable<T_ID>;
+      id = ColumnInt('id', this, hasDefault: true) as ColumnComparable<T_ID>;
     } else if (equalsType<T_ID, UuidValue>()) {
-      id = ColumnUuid(
-        'id',
-        this,
-        hasDefault: true,
-      ) as ColumnComparable<T_ID>;
+      id = ColumnUuid('id', this, hasDefault: true) as ColumnComparable<T_ID>;
     } else {
       throw Exception('Unsupported id type: $T_ID');
     }
@@ -98,9 +87,7 @@ T createRelationTable<T>({
   required Column field,
   required Column foreignField,
   TableRelation? tableRelation,
-  required T Function(
-    TableRelation foreignTableRelation,
-  ) createTable,
+  required T Function(TableRelation foreignTableRelation) createTable,
 }) {
   var relationDefinition = TableRelationEntry(
     relationAlias: relationFieldName,
@@ -112,9 +99,7 @@ T createRelationTable<T>({
     return createTable(TableRelation([relationDefinition]));
   }
 
-  return createTable(
-    tableRelation.copyAndAppend(relationDefinition),
-  );
+  return createTable(tableRelation.copyAndAppend(relationDefinition));
 }
 
 /// Checks if the type [T] is equal to type [Y] (nullable or non-nullable).

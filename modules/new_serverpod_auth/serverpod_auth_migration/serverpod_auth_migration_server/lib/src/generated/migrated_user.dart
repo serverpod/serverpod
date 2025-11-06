@@ -39,16 +39,21 @@ abstract class MigratedUser
     return MigratedUser(
       id: jsonSerialization['id'] as int?,
       oldUserId: jsonSerialization['oldUserId'] as int,
-      oldUser: jsonSerialization['oldUser'] == null
-          ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['oldUser'] as Map<String, dynamic>)),
+      oldUser:
+          jsonSerialization['oldUser'] == null
+              ? null
+              : _i2.UserInfo.fromJson(
+                (jsonSerialization['oldUser'] as Map<String, dynamic>),
+              ),
       newAuthUserId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['newAuthUserId']),
-      newAuthUser: jsonSerialization['newAuthUser'] == null
-          ? null
-          : _i3.AuthUser.fromJson(
-              (jsonSerialization['newAuthUser'] as Map<String, dynamic>)),
+        jsonSerialization['newAuthUserId'],
+      ),
+      newAuthUser:
+          jsonSerialization['newAuthUser'] == null
+              ? null
+              : _i3.AuthUser.fromJson(
+                (jsonSerialization['newAuthUser'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -102,10 +107,7 @@ abstract class MigratedUser
     _i2.UserInfoInclude? oldUser,
     _i3.AuthUserInclude? newAuthUser,
   }) {
-    return MigratedUserInclude._(
-      oldUser: oldUser,
-      newAuthUser: newAuthUser,
-    );
+    return MigratedUserInclude._(oldUser: oldUser, newAuthUser: newAuthUser);
   }
 
   static MigratedUserIncludeList includeList({
@@ -144,12 +146,12 @@ class _MigratedUserImpl extends MigratedUser {
     required _i1.UuidValue newAuthUserId,
     _i3.AuthUser? newAuthUser,
   }) : super._(
-          id: id,
-          oldUserId: oldUserId,
-          oldUser: oldUser,
-          newAuthUserId: newAuthUserId,
-          newAuthUser: newAuthUser,
-        );
+         id: id,
+         oldUserId: oldUserId,
+         oldUser: oldUser,
+         newAuthUserId: newAuthUserId,
+         newAuthUser: newAuthUser,
+       );
 
   /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
@@ -167,9 +169,10 @@ class _MigratedUserImpl extends MigratedUser {
       oldUserId: oldUserId ?? this.oldUserId,
       oldUser: oldUser is _i2.UserInfo? ? oldUser : this.oldUser?.copyWith(),
       newAuthUserId: newAuthUserId ?? this.newAuthUserId,
-      newAuthUser: newAuthUser is _i3.AuthUser?
-          ? newAuthUser
-          : this.newAuthUser?.copyWith(),
+      newAuthUser:
+          newAuthUser is _i3.AuthUser?
+              ? newAuthUser
+              : this.newAuthUser?.copyWith(),
     );
   }
 }
@@ -177,31 +180,20 @@ class _MigratedUserImpl extends MigratedUser {
 class MigratedUserUpdateTable extends _i1.UpdateTable<MigratedUserTable> {
   MigratedUserUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
-        table.oldUserId,
-        value,
-      );
+  _i1.ColumnValue<int, int> oldUserId(int value) =>
+      _i1.ColumnValue(table.oldUserId, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> newAuthUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.newAuthUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.newAuthUserId, value);
 }
 
 class MigratedUserTable extends _i1.Table<int?> {
   MigratedUserTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_migration_migrated_user') {
+    : super(tableName: 'serverpod_auth_migration_migrated_user') {
     updateTable = MigratedUserUpdateTable(this);
-    oldUserId = _i1.ColumnInt(
-      'oldUserId',
-      this,
-    );
-    newAuthUserId = _i1.ColumnUuid(
-      'newAuthUserId',
-      this,
-    );
+    oldUserId = _i1.ColumnInt('oldUserId', this);
+    newAuthUserId = _i1.ColumnUuid('newAuthUserId', this);
   }
 
   late final MigratedUserUpdateTable updateTable;
@@ -223,8 +215,9 @@ class MigratedUserTable extends _i1.Table<int?> {
       field: MigratedUser.t.oldUserId,
       foreignField: _i2.UserInfo.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.UserInfoTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.UserInfoTable(tableRelation: foreignTableRelation),
     );
     return _oldUser!;
   }
@@ -236,18 +229,15 @@ class MigratedUserTable extends _i1.Table<int?> {
       field: MigratedUser.t.newAuthUserId,
       foreignField: _i3.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _newAuthUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        oldUserId,
-        newAuthUserId,
-      ];
+  List<_i1.Column> get columns => [id, oldUserId, newAuthUserId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -276,9 +266,9 @@ class MigratedUserInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'oldUser': _oldUser,
-        'newAuthUser': _newAuthUser,
-      };
+    'oldUser': _oldUser,
+    'newAuthUser': _newAuthUser,
+  };
 
   @override
   _i1.Table<int?> get table => MigratedUser.t;
@@ -417,10 +407,7 @@ class MigratedUserRepository {
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MigratedUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<MigratedUser>(rows, transaction: transaction);
   }
 
   /// Inserts a single [MigratedUser] and returns the inserted row.
@@ -431,10 +418,7 @@ class MigratedUserRepository {
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MigratedUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<MigratedUser>(row, transaction: transaction);
   }
 
   /// Updates all [MigratedUser]s in the list and returns the updated rows. If
@@ -519,10 +503,7 @@ class MigratedUserRepository {
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MigratedUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<MigratedUser>(rows, transaction: transaction);
   }
 
   /// Deletes a single [MigratedUser].
@@ -531,10 +512,7 @@ class MigratedUserRepository {
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MigratedUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<MigratedUser>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

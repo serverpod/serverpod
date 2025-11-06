@@ -33,10 +33,12 @@ abstract class Address implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
-      inhabitant: jsonSerialization['inhabitant'] == null
-          ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+      inhabitant:
+          jsonSerialization['inhabitant'] == null
+              ? null
+              : _i2.Citizen.fromJson(
+                (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -85,11 +87,11 @@ class _AddressImpl extends Address {
     int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.

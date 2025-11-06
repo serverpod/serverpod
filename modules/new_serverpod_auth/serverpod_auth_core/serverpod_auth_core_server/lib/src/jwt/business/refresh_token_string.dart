@@ -55,8 +55,5 @@ abstract final class RefreshTokenString {
 }
 
 /// The data obtained from reading in a refresh token string.
-typedef RefreshTokenStringData = ({
-  UuidValue id,
-  Uint8List fixedSecret,
-  Uint8List rotatingSecret,
-});
+typedef RefreshTokenStringData =
+    ({UuidValue id, Uint8List fixedSecret, Uint8List rotatingSecret});

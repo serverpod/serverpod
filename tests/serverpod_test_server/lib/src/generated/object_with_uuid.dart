@@ -14,11 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithUuid
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithUuid._({
-    this.id,
-    required this.uuid,
-    this.uuidNullable,
-  });
+  ObjectWithUuid._({this.id, required this.uuid, this.uuidNullable});
 
   factory ObjectWithUuid({
     int? id,
@@ -30,10 +26,12 @@ abstract class ObjectWithUuid
     return ObjectWithUuid(
       id: jsonSerialization['id'] as int?,
       uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
-      uuidNullable: jsonSerialization['uuidNullable'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidNullable']),
+      uuidNullable:
+          jsonSerialization['uuidNullable'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['uuidNullable'],
+              ),
     );
   }
 
@@ -114,11 +112,7 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     int? id,
     required _i1.UuidValue uuid,
     _i1.UuidValue? uuidNullable,
-  }) : super._(
-          id: id,
-          uuid: uuid,
-          uuidNullable: uuidNullable,
-        );
+  }) : super._(id: id, uuid: uuid, uuidNullable: uuidNullable);
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
@@ -142,31 +136,19 @@ class ObjectWithUuidUpdateTable extends _i1.UpdateTable<ObjectWithUuidTable> {
   ObjectWithUuidUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuid(_i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.uuid,
-        value,
-      );
+      _i1.ColumnValue(table.uuid, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidNullable(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.uuidNullable,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(table.uuidNullable, value);
 }
 
 class ObjectWithUuidTable extends _i1.Table<int?> {
   ObjectWithUuidTable({super.tableRelation})
-      : super(tableName: 'object_with_uuid') {
+    : super(tableName: 'object_with_uuid') {
     updateTable = ObjectWithUuidUpdateTable(this);
-    uuid = _i1.ColumnUuid(
-      'uuid',
-      this,
-    );
-    uuidNullable = _i1.ColumnUuid(
-      'uuidNullable',
-      this,
-    );
+    uuid = _i1.ColumnUuid('uuid', this);
+    uuidNullable = _i1.ColumnUuid('uuidNullable', this);
   }
 
   late final ObjectWithUuidUpdateTable updateTable;
@@ -176,11 +158,7 @@ class ObjectWithUuidTable extends _i1.Table<int?> {
   late final _i1.ColumnUuid uuidNullable;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        uuid,
-        uuidNullable,
-      ];
+  List<_i1.Column> get columns => [id, uuid, uuidNullable];
 }
 
 class ObjectWithUuidInclude extends _i1.IncludeObject {
@@ -301,10 +279,7 @@ class ObjectWithUuidRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithUuid>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectWithUuid>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectWithUuid]s in the list and returns the inserted rows.
@@ -318,10 +293,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectWithUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectWithUuid] and returns the inserted row.
@@ -332,10 +304,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ObjectWithUuid>(row, transaction: transaction);
   }
 
   /// Updates all [ObjectWithUuid]s in the list and returns the updated rows. If
@@ -420,10 +389,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectWithUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectWithUuid].
@@ -432,10 +398,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ObjectWithUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

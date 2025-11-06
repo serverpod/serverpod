@@ -63,17 +63,16 @@ bool isValidSingleQuote(dynamic value) {
 /// - Input: `"It's a \"beautiful\" day"`
 /// - Output: `'It\'s a "beautiful" day'`
 String convertToSingleQuotedString(String value) {
-  return value.replaceAllMapped(
-    RegExp(doubleQuotedStringCapturePattern),
-    (match) {
-      /// Extracts the content inside the double quotes.
-      String content = match.group(1)!;
+  return value.replaceAllMapped(RegExp(doubleQuotedStringCapturePattern), (
+    match,
+  ) {
+    /// Extracts the content inside the double quotes.
+    String content = match.group(1)!;
 
-      /// Escapes any single quotes within the content.
-      content = content.replaceAll("'", r"\'");
+    /// Escapes any single quotes within the content.
+    content = content.replaceAll("'", r"\'");
 
-      /// Returns the content enclosed in single quotes.
-      return "'$content'";
-    },
-  );
+    /// Returns the content enclosed in single quotes.
+    return "'$content'";
+  });
 }

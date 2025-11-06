@@ -34,8 +34,9 @@ abstract class Greeting
       id: jsonSerialization['id'] as int?,
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
     );
   }
 
@@ -125,12 +126,7 @@ class _GreetingImpl extends Greeting {
     required String message,
     required String author,
     required DateTime timestamp,
-  }) : super._(
-          id: id,
-          message: message,
-          author: author,
-          timestamp: timestamp,
-        );
+  }) : super._(id: id, message: message, author: author, timestamp: timestamp);
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
@@ -154,38 +150,22 @@ class _GreetingImpl extends Greeting {
 class GreetingUpdateTable extends _i1.UpdateTable<GreetingTable> {
   GreetingUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
-        table.message,
-        value,
-      );
+  _i1.ColumnValue<String, String> message(String value) =>
+      _i1.ColumnValue(table.message, value);
 
-  _i1.ColumnValue<String, String> author(String value) => _i1.ColumnValue(
-        table.author,
-        value,
-      );
+  _i1.ColumnValue<String, String> author(String value) =>
+      _i1.ColumnValue(table.author, value);
 
   _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
-      _i1.ColumnValue(
-        table.timestamp,
-        value,
-      );
+      _i1.ColumnValue(table.timestamp, value);
 }
 
 class GreetingTable extends _i1.Table<int?> {
   GreetingTable({super.tableRelation}) : super(tableName: 'greeting') {
     updateTable = GreetingUpdateTable(this);
-    message = _i1.ColumnString(
-      'message',
-      this,
-    );
-    author = _i1.ColumnString(
-      'author',
-      this,
-    );
-    timestamp = _i1.ColumnDateTime(
-      'timestamp',
-      this,
-    );
+    message = _i1.ColumnString('message', this);
+    author = _i1.ColumnString('author', this);
+    timestamp = _i1.ColumnDateTime('timestamp', this);
   }
 
   late final GreetingUpdateTable updateTable;
@@ -200,12 +180,7 @@ class GreetingTable extends _i1.Table<int?> {
   late final _i1.ColumnDateTime timestamp;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        message,
-        author,
-        timestamp,
-      ];
+  List<_i1.Column> get columns => [id, message, author, timestamp];
 }
 
 class GreetingInclude extends _i1.IncludeObject {
@@ -326,10 +301,7 @@ class GreetingRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<Greeting>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<Greeting>(id, transaction: transaction);
   }
 
   /// Inserts all [Greeting]s in the list and returns the inserted rows.
@@ -343,10 +315,7 @@ class GreetingRepository {
     List<Greeting> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Greeting>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Greeting>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Greeting] and returns the inserted row.
@@ -357,10 +326,7 @@ class GreetingRepository {
     Greeting row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Greeting>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Greeting>(row, transaction: transaction);
   }
 
   /// Updates all [Greeting]s in the list and returns the updated rows. If
@@ -445,10 +411,7 @@ class GreetingRepository {
     List<Greeting> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Greeting>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Greeting>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Greeting].
@@ -457,10 +420,7 @@ class GreetingRepository {
     Greeting row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Greeting>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Greeting>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

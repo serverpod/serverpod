@@ -13,9 +13,7 @@ class PasswordManager {
 
   /// Creates a new [PasswordManager] for the specified runMode. Typically,
   /// this is automatically created by the [Serverpod].
-  PasswordManager({
-    required this.runMode,
-  });
+  PasswordManager({required this.runMode});
 
   /// Load all passwords for the current run mode from the supplied [Map].
   ///
@@ -31,42 +29,39 @@ class PasswordManager {
     var sharedPasswords = _extractPasswords(passwordConfig, 'shared');
     var runModePasswords = _extractPasswords(passwordConfig, runMode);
 
-    var envPasswords = ServerpodPassword.values.fold<Map<String, String>>(
-      {},
-      (collection, password) {
-        var envPassword = environment[password.envVariable];
-        if (envPassword is! String) return collection;
+    var envPasswords = ServerpodPassword.values.fold<Map<String, String>>({}, (
+      collection,
+      password,
+    ) {
+      var envPassword = environment[password.envVariable];
+      if (envPassword is! String) return collection;
 
-        return {...collection, password.configKey: envPassword};
-      },
+      return {...collection, password.configKey: envPassword};
+    });
+
+    final userDefinedEnvPasswords = _findUserDefinedPasswordsFromEnv(
+      environment,
     );
-
-    final userDefinedEnvPasswords =
-        _findUserDefinedPasswordsFromEnv(environment);
 
     envPasswords.addAll(userDefinedEnvPasswords);
 
-    return {
-      ...sharedPasswords,
-      ...runModePasswords,
-      ...envPasswords,
-    };
+    return {...sharedPasswords, ...runModePasswords, ...envPasswords};
   }
 
   Map<String, String> _findUserDefinedPasswordsFromEnv(
     Map<String, String> environment,
   ) {
-    final userDefinedEnvPasswords = environment.entries.where(
-      (entry) {
-        if (!entry.key.startsWith(_userDefinedPasswordPrefix)) return false;
-        return entry.key.length > _userDefinedPasswordPrefix.length;
-      },
-    ).map(
-      (entry) => MapEntry(
-        entry.key.substring(_userDefinedPasswordPrefix.length),
-        entry.value,
-      ),
-    );
+    final userDefinedEnvPasswords = environment.entries
+        .where((entry) {
+          if (!entry.key.startsWith(_userDefinedPasswordPrefix)) return false;
+          return entry.key.length > _userDefinedPasswordPrefix.length;
+        })
+        .map(
+          (entry) => MapEntry(
+            entry.key.substring(_userDefinedPasswordPrefix.length),
+            entry.value,
+          ),
+        );
 
     return Map.fromEntries(userDefinedEnvPasswords);
   }
@@ -76,9 +71,7 @@ class PasswordManager {
     if (extracted is! Map) return {};
 
     var invalidPasswordKeys = extracted.entries
-        .where(
-          (entry) => entry.key is! String || entry.value is! String,
-        )
+        .where((entry) => entry.key is! String || entry.value is! String)
         .map((entry) => entry.key);
 
     if (invalidPasswordKeys.isNotEmpty) {
@@ -115,8 +108,9 @@ class PasswordManager {
   }) {
     var containsReservedPasswords = ServerpodPassword.values.any(
       (password) => config.any(
-        (entry) => (entry.envName == password.envVariable ||
-            entry.alias == password.configKey),
+        (entry) =>
+            (entry.envName == password.envVariable ||
+                entry.alias == password.configKey),
       ),
     );
 
@@ -126,14 +120,11 @@ class PasswordManager {
       );
     }
 
-    return config.fold(
-      passwords,
-      (collection, entry) {
-        var envPassword = environment[entry.envName];
-        if (envPassword is! String) return collection;
+    return config.fold(passwords, (collection, entry) {
+      var envPassword = environment[entry.envName];
+      if (envPassword is! String) return collection;
 
-        return {...collection, entry.alias: envPassword};
-      },
-    );
+      return {...collection, entry.alias: envPassword};
+    });
   }
 }

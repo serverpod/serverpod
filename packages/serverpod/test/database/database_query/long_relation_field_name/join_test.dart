@@ -6,18 +6,20 @@ import 'package:test/test.dart';
 void main() {
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
-  var relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
-    BuilderRelation(
-      citizenTable,
-      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
-    ),
-  ]).build();
+  var relationTable =
+      TableRelationBuilder(companyTable).withRelationsFrom([
+        BuilderRelation(
+          citizenTable,
+          'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
+        ),
+      ]).build();
 
   group('Given SelectQueryBuilder', () {
     group('when filtering causes a long join name.', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(relationTable.id.equals(1))
-          .build();
+      var query =
+          SelectQueryBuilder(
+            table: citizenTable,
+          ).withWhere(relationTable.id.equals(1)).build();
       var expectedTruncatedName =
           'citizen_thisFieldIsExactly61CharactersLongAndIsThereforeVale9b4';
 
@@ -36,10 +38,7 @@ void main() {
       });
 
       test('then uses truncated name in where statements in for join.', () {
-        expect(
-          query,
-          contains('"$expectedTruncatedName"."id" = 1'),
-        );
+        expect(query, contains('"$expectedTruncatedName"."id" = 1'));
       });
     });
   });

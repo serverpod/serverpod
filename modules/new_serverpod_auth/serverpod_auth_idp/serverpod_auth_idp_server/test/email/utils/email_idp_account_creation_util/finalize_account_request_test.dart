@@ -34,11 +34,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -47,11 +47,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
 
         // Create auth user
@@ -65,54 +65,57 @@ void main() {
 
       group('when finalize account request is called', () {
         late Future<EmailIDPFinalizeAccountRequestResult>
-            finalizeAccountRequestFuture;
+        finalizeAccountRequestFuture;
         setUp(() async {
           finalizeAccountRequestFuture = session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.finalizeAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              authUserId: authUserId,
-              transaction: transaction,
-            ),
-          );
-        });
-
-        test('then it succeeds and returns result with account id and email',
-            () async {
-          await expectLater(
-            finalizeAccountRequestFuture,
-            completion(
-              isA<EmailIDPFinalizeAccountRequestResult>()
-                  .having(
-                    (final result) => result.accountId,
-                    'accountId',
-                    isA<UuidValue>(),
-                  )
-                  .having(
-                    (final result) => result.email,
-                    'email',
-                    equals(email),
-                  ),
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
           );
         });
 
         test(
-            'then user can authenticate with the registered credentials as auth user',
-            () async {
-          await finalizeAccountRequestFuture;
-          final authResult = session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
-              session,
-              email: email,
-              password: password,
-              transaction: transaction,
-            ),
-          );
+          'then it succeeds and returns result with account id and email',
+          () async {
+            await expectLater(
+              finalizeAccountRequestFuture,
+              completion(
+                isA<EmailIDPFinalizeAccountRequestResult>()
+                    .having(
+                      (final result) => result.accountId,
+                      'accountId',
+                      isA<UuidValue>(),
+                    )
+                    .having(
+                      (final result) => result.email,
+                      'email',
+                      equals(email),
+                    ),
+              ),
+            );
+          },
+        );
 
-          await expectLater(authResult, completion(equals(authUserId)));
-        });
+        test(
+          'then user can authenticate with the registered credentials as auth user',
+          () async {
+            await finalizeAccountRequestFuture;
+            final authResult = session.db.transaction(
+              (final transaction) => fixture.authenticationUtil.authenticate(
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
+            );
+
+            await expectLater(authResult, completion(equals(authUserId)));
+          },
+        );
       });
     },
   );
@@ -137,11 +140,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -156,23 +159,24 @@ void main() {
       });
 
       test(
-          'when finalize account request is called then it throws request not verified exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.finalizeAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
-        );
+        'when finalize account request is called then it throws request not verified exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.finalizeAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotVerifiedException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotVerifiedException>()),
+          );
+        },
+      );
     },
   );
 
@@ -203,11 +207,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -216,11 +220,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
 
         final authUser = await fixture.createAuthUser(session);
@@ -229,11 +233,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.finalizeAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                authUserId: authUserId,
+                transaction: transaction,
+              ),
         );
       });
 
@@ -242,23 +246,24 @@ void main() {
       });
 
       test(
-          'when finalize account request is called then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.finalizeAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
-        );
+        'when finalize account request is called then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.finalizeAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -286,23 +291,24 @@ void main() {
       });
 
       test(
-          'when finalize account request is called then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.finalizeAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
-        );
+        'when finalize account request is called then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.finalizeAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 }

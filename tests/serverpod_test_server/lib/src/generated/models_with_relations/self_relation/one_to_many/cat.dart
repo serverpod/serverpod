@@ -38,13 +38,16 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       motherId: jsonSerialization['motherId'] as int?,
-      mother: jsonSerialization['mother'] == null
-          ? null
-          : _i2.Cat.fromJson(
-              (jsonSerialization['mother'] as Map<String, dynamic>)),
-      kittens: (jsonSerialization['kittens'] as List?)
-          ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      mother:
+          jsonSerialization['mother'] == null
+              ? null
+              : _i2.Cat.fromJson(
+                (jsonSerialization['mother'] as Map<String, dynamic>),
+              ),
+      kittens:
+          (jsonSerialization['kittens'] as List?)
+              ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -104,10 +107,7 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.CatInclude? mother,
     _i2.CatIncludeList? kittens,
   }) {
-    return CatInclude._(
-      mother: mother,
-      kittens: kittens,
-    );
+    return CatInclude._(mother: mother, kittens: kittens);
   }
 
   static CatIncludeList includeList({
@@ -146,12 +146,12 @@ class _CatImpl extends Cat {
     _i2.Cat? mother,
     List<_i2.Cat>? kittens,
   }) : super._(
-          id: id,
-          name: name,
-          motherId: motherId,
-          mother: mother,
-          kittens: kittens,
-        );
+         id: id,
+         name: name,
+         motherId: motherId,
+         mother: mother,
+         kittens: kittens,
+       );
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
@@ -169,9 +169,10 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>?
-          ? kittens
-          : this.kittens?.map((e0) => e0.copyWith()).toList(),
+      kittens:
+          kittens is List<_i2.Cat>?
+              ? kittens
+              : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -179,28 +180,18 @@ class _CatImpl extends Cat {
 class CatUpdateTable extends _i1.UpdateTable<CatTable> {
   CatUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> motherId(int? value) => _i1.ColumnValue(
-        table.motherId,
-        value,
-      );
+  _i1.ColumnValue<int, int> motherId(int? value) =>
+      _i1.ColumnValue(table.motherId, value);
 }
 
 class CatTable extends _i1.Table<int?> {
   CatTable({super.tableRelation}) : super(tableName: 'cat') {
     updateTable = CatUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    motherId = _i1.ColumnInt(
-      'motherId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    motherId = _i1.ColumnInt('motherId', this);
   }
 
   late final CatUpdateTable updateTable;
@@ -222,8 +213,9 @@ class CatTable extends _i1.Table<int?> {
       field: Cat.t.motherId,
       foreignField: _i2.Cat.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CatTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CatTable(tableRelation: foreignTableRelation),
     );
     return _mother!;
   }
@@ -235,8 +227,9 @@ class CatTable extends _i1.Table<int?> {
       field: Cat.t.id,
       foreignField: _i2.Cat.t.motherId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CatTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CatTable(tableRelation: foreignTableRelation),
     );
     return ___kittens!;
   }
@@ -248,23 +241,21 @@ class CatTable extends _i1.Table<int?> {
       field: Cat.t.id,
       foreignField: _i2.Cat.t.motherId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CatTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CatTable(tableRelation: foreignTableRelation),
     );
     _kittens = _i1.ManyRelation<_i2.CatTable>(
       tableWithRelations: relationTable,
       table: _i2.CatTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _kittens!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        motherId,
-      ];
+  List<_i1.Column> get columns => [id, name, motherId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -279,10 +270,7 @@ class CatTable extends _i1.Table<int?> {
 }
 
 class CatInclude extends _i1.IncludeObject {
-  CatInclude._({
-    _i2.CatInclude? mother,
-    _i2.CatIncludeList? kittens,
-  }) {
+  CatInclude._({_i2.CatInclude? mother, _i2.CatIncludeList? kittens}) {
     _mother = mother;
     _kittens = kittens;
   }
@@ -293,9 +281,9 @@ class CatInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'mother': _mother,
-        'kittens': _kittens,
-      };
+    'mother': _mother,
+    'kittens': _kittens,
+  };
 
   @override
   _i1.Table<int?> get table => Cat.t;
@@ -440,10 +428,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Cat>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Cat>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Cat] and returns the inserted row.
@@ -454,10 +439,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Cat>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Cat>(row, transaction: transaction);
   }
 
   /// Updates all [Cat]s in the list and returns the updated rows. If
@@ -542,10 +524,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Cat>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Cat>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Cat].
@@ -554,10 +533,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Cat>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Cat>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

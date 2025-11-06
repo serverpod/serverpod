@@ -16,12 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 
 abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Town._({
-    this.id,
-    required this.name,
-    this.mayorId,
-    this.mayor,
-  });
+  Town._({this.id, required this.name, this.mayorId, this.mayor});
 
   factory Town({
     int? id,
@@ -35,10 +30,12 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       mayorId: jsonSerialization['mayorId'] as int?,
-      mayor: jsonSerialization['mayor'] == null
-          ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>)),
+      mayor:
+          jsonSerialization['mayor'] == null
+              ? null
+              : _i2.Citizen.fromJson(
+                (jsonSerialization['mayor'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -61,12 +58,7 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Town copyWith({
-    int? id,
-    String? name,
-    int? mayorId,
-    _i2.Citizen? mayor,
-  });
+  Town copyWith({int? id, String? name, int? mayorId, _i2.Citizen? mayor});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -120,17 +112,8 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 class _Undefined {}
 
 class _TownImpl extends Town {
-  _TownImpl({
-    int? id,
-    required String name,
-    int? mayorId,
-    _i2.Citizen? mayor,
-  }) : super._(
-          id: id,
-          name: name,
-          mayorId: mayorId,
-          mayor: mayor,
-        );
+  _TownImpl({int? id, required String name, int? mayorId, _i2.Citizen? mayor})
+    : super._(id: id, name: name, mayorId: mayorId, mayor: mayor);
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.
@@ -154,28 +137,18 @@ class _TownImpl extends Town {
 class TownUpdateTable extends _i1.UpdateTable<TownTable> {
   TownUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> mayorId(int? value) => _i1.ColumnValue(
-        table.mayorId,
-        value,
-      );
+  _i1.ColumnValue<int, int> mayorId(int? value) =>
+      _i1.ColumnValue(table.mayorId, value);
 }
 
 class TownTable extends _i1.Table<int?> {
   TownTable({super.tableRelation}) : super(tableName: 'town') {
     updateTable = TownUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    mayorId = _i1.ColumnInt(
-      'mayorId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    mayorId = _i1.ColumnInt('mayorId', this);
   }
 
   late final TownUpdateTable updateTable;
@@ -193,18 +166,15 @@ class TownTable extends _i1.Table<int?> {
       field: Town.t.mayorId,
       foreignField: _i2.Citizen.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CitizenTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _mayor!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        mayorId,
-      ];
+  List<_i1.Column> get columns => [id, name, mayorId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -364,10 +334,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Town>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Town>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Town] and returns the inserted row.
@@ -378,10 +345,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Town>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Town>(row, transaction: transaction);
   }
 
   /// Updates all [Town]s in the list and returns the updated rows. If
@@ -466,10 +430,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Town>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Town>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Town].
@@ -478,10 +439,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Town>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Town>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

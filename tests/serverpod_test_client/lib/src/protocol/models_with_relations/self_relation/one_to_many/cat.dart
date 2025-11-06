@@ -36,13 +36,16 @@ abstract class Cat implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       motherId: jsonSerialization['motherId'] as int?,
-      mother: jsonSerialization['mother'] == null
-          ? null
-          : _i2.Cat.fromJson(
-              (jsonSerialization['mother'] as Map<String, dynamic>)),
-      kittens: (jsonSerialization['kittens'] as List?)
-          ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      mother:
+          jsonSerialization['mother'] == null
+              ? null
+              : _i2.Cat.fromJson(
+                (jsonSerialization['mother'] as Map<String, dynamic>),
+              ),
+      kittens:
+          (jsonSerialization['kittens'] as List?)
+              ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -97,12 +100,12 @@ class _CatImpl extends Cat {
     _i2.Cat? mother,
     List<_i2.Cat>? kittens,
   }) : super._(
-          id: id,
-          name: name,
-          motherId: motherId,
-          mother: mother,
-          kittens: kittens,
-        );
+         id: id,
+         name: name,
+         motherId: motherId,
+         mother: mother,
+         kittens: kittens,
+       );
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
@@ -120,9 +123,10 @@ class _CatImpl extends Cat {
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
       mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>?
-          ? kittens
-          : this.kittens?.map((e0) => e0.copyWith()).toList(),
+      kittens:
+          kittens is List<_i2.Cat>?
+              ? kittens
+              : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

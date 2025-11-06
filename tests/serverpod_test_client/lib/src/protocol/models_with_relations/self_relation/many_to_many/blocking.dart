@@ -35,15 +35,19 @@ abstract class Blocking implements _i1.SerializableModel {
     return Blocking(
       id: jsonSerialization['id'] as int?,
       blockedId: jsonSerialization['blockedId'] as int,
-      blocked: jsonSerialization['blocked'] == null
-          ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+      blocked:
+          jsonSerialization['blocked'] == null
+              ? null
+              : _i2.Member.fromJson(
+                (jsonSerialization['blocked'] as Map<String, dynamic>),
+              ),
       blockedById: jsonSerialization['blockedById'] as int,
-      blockedBy: jsonSerialization['blockedBy'] == null
-          ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
+      blockedBy:
+          jsonSerialization['blockedBy'] == null
+              ? null
+              : _i2.Member.fromJson(
+                (jsonSerialization['blockedBy'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -97,12 +101,12 @@ class _BlockingImpl extends Blocking {
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
-          id: id,
-          blockedId: blockedId,
-          blocked: blocked,
-          blockedById: blockedById,
-          blockedBy: blockedBy,
-        );
+         id: id,
+         blockedId: blockedId,
+         blocked: blocked,
+         blockedById: blockedById,
+         blockedBy: blockedBy,
+       );
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.

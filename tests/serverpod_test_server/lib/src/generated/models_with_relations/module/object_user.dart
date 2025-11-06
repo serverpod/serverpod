@@ -17,12 +17,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 
 abstract class ObjectUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectUser._({
-    this.id,
-    this.name,
-    required this.userInfoId,
-    this.userInfo,
-  });
+  ObjectUser._({this.id, this.name, required this.userInfoId, this.userInfo});
 
   factory ObjectUser({
     int? id,
@@ -36,10 +31,12 @@ abstract class ObjectUser
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String?,
       userInfoId: jsonSerialization['userInfoId'] as int,
-      userInfo: jsonSerialization['userInfo'] == null
-          ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+      userInfo:
+          jsonSerialization['userInfo'] == null
+              ? null
+              : _i2.UserInfo.fromJson(
+                (jsonSerialization['userInfo'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -126,12 +123,7 @@ class _ObjectUserImpl extends ObjectUser {
     String? name,
     required int userInfoId,
     _i2.UserInfo? userInfo,
-  }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-          userInfo: userInfo,
-        );
+  }) : super._(id: id, name: name, userInfoId: userInfoId, userInfo: userInfo);
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
@@ -156,28 +148,18 @@ class _ObjectUserImpl extends ObjectUser {
 class ObjectUserUpdateTable extends _i1.UpdateTable<ObjectUserTable> {
   ObjectUserUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String? value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> userInfoId(int value) => _i1.ColumnValue(
-        table.userInfoId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userInfoId(int value) =>
+      _i1.ColumnValue(table.userInfoId, value);
 }
 
 class ObjectUserTable extends _i1.Table<int?> {
   ObjectUserTable({super.tableRelation}) : super(tableName: 'object_user') {
     updateTable = ObjectUserUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    userInfoId = _i1.ColumnInt(
-      'userInfoId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    userInfoId = _i1.ColumnInt('userInfoId', this);
   }
 
   late final ObjectUserUpdateTable updateTable;
@@ -195,18 +177,15 @@ class ObjectUserTable extends _i1.Table<int?> {
       field: ObjectUser.t.userInfoId,
       foreignField: _i2.UserInfo.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.UserInfoTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.UserInfoTable(tableRelation: foreignTableRelation),
     );
     return _userInfo!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        userInfoId,
-      ];
+  List<_i1.Column> get columns => [id, name, userInfoId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -364,10 +343,7 @@ class ObjectUserRepository {
     List<ObjectUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectUser>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectUser] and returns the inserted row.
@@ -378,10 +354,7 @@ class ObjectUserRepository {
     ObjectUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ObjectUser>(row, transaction: transaction);
   }
 
   /// Updates all [ObjectUser]s in the list and returns the updated rows. If
@@ -466,10 +439,7 @@ class ObjectUserRepository {
     List<ObjectUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectUser>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectUser>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectUser].
@@ -478,10 +448,7 @@ class ObjectUserRepository {
     ObjectUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectUser>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ObjectUser>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

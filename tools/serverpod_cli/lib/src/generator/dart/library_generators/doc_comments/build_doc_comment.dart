@@ -10,8 +10,10 @@ String buildDocComment({
 }) {
   var index = 0;
   var numberOfParameters = docByParameter.length;
-  var parameterDocComments =
-      docByParameter.entries.fold('', (String previousValue, entry) {
+  var parameterDocComments = docByParameter.entries.fold('', (
+    String previousValue,
+    entry,
+  ) {
     var formattedParameterDoc = '[${entry.key}] ${entry.value}';
 
     var isLastParameter = index == numberOfParameters - 1;

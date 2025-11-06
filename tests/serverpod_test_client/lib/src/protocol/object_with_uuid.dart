@@ -13,11 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class ObjectWithUuid implements _i1.SerializableModel {
-  ObjectWithUuid._({
-    this.id,
-    required this.uuid,
-    this.uuidNullable,
-  });
+  ObjectWithUuid._({this.id, required this.uuid, this.uuidNullable});
 
   factory ObjectWithUuid({
     int? id,
@@ -29,10 +25,12 @@ abstract class ObjectWithUuid implements _i1.SerializableModel {
     return ObjectWithUuid(
       id: jsonSerialization['id'] as int?,
       uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
-      uuidNullable: jsonSerialization['uuidNullable'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidNullable']),
+      uuidNullable:
+          jsonSerialization['uuidNullable'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['uuidNullable'],
+              ),
     );
   }
 
@@ -75,11 +73,7 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     int? id,
     required _i1.UuidValue uuid,
     _i1.UuidValue? uuidNullable,
-  }) : super._(
-          id: id,
-          uuid: uuid,
-          uuidNullable: uuidNullable,
-        );
+  }) : super._(id: id, uuid: uuid, uuidNullable: uuidNullable);
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.

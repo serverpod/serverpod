@@ -5,24 +5,16 @@ class _User implements SerializableModel, ProtocolSerialization {
   final String name;
   final String password;
 
-  _User({
-    required this.name,
-    required this.password,
-  });
+  _User({required this.name, required this.password});
 
   @override
   Map<String, String> toJson() {
-    return {
-      'name': name,
-      'password': password,
-    };
+    return {'name': name, 'password': password};
   }
 
   @override
   Map<String, String> toJsonForProtocol() {
-    return {
-      'name': name,
-    };
+    return {'name': name};
   }
 }
 

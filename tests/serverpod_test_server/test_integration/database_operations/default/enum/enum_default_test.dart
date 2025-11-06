@@ -7,23 +7,19 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "default" enum fields,', () {
-    tearDownAll(() async => EnumDefault.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => EnumDefault.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "default=byName1" field value should be byName1',
       () async {
         var object = EnumDefault();
-        var databaseObject = await EnumDefault.db.insertRow(
-          session,
-          object,
-        );
-        expect(
-          databaseObject.byNameEnumDefault,
-          equals(ByNameEnum.byName1),
-        );
+        var databaseObject = await EnumDefault.db.insertRow(session, object);
+        expect(databaseObject.byNameEnumDefault, equals(ByNameEnum.byName1));
       },
     );
 
@@ -31,10 +27,7 @@ void main() async {
       'when creating a record in the database, then the nullable "default=byName2" field value should be byName2',
       () async {
         var object = EnumDefault();
-        var databaseObject = await EnumDefault.db.insertRow(
-          session,
-          object,
-        );
+        var databaseObject = await EnumDefault.db.insertRow(session, object);
         expect(
           databaseObject.byNameEnumDefaultNull,
           equals(ByNameEnum.byName2),
@@ -46,14 +39,8 @@ void main() async {
       'when creating a record in the database, then the "default=byIndex1" field value should be byIndex1',
       () async {
         var object = EnumDefault();
-        var databaseObject = await EnumDefault.db.insertRow(
-          session,
-          object,
-        );
-        expect(
-          databaseObject.byIndexEnumDefault,
-          equals(ByIndexEnum.byIndex1),
-        );
+        var databaseObject = await EnumDefault.db.insertRow(session, object);
+        expect(databaseObject.byIndexEnumDefault, equals(ByIndexEnum.byIndex1));
       },
     );
 
@@ -61,10 +48,7 @@ void main() async {
       'when creating a record in the database, then the nullable "default=byIndex2" field value should be byIndex2',
       () async {
         var object = EnumDefault();
-        var databaseObject = await EnumDefault.db.insertRow(
-          session,
-          object,
-        );
+        var databaseObject = await EnumDefault.db.insertRow(session, object);
         expect(
           databaseObject.byIndexEnumDefaultNull,
           equals(ByIndexEnum.byIndex2),
@@ -75,9 +59,7 @@ void main() async {
     test(
       'when creating a record in the database with a specific value, then the "byNameEnumDefault" field value should match the provided value',
       () async {
-        var specificObject = EnumDefault(
-          byNameEnumDefault: ByNameEnum.byName2,
-        );
+        var specificObject = EnumDefault(byNameEnumDefault: ByNameEnum.byName2);
         var specificDatabaseObject = await EnumDefault.db.insertRow(
           session,
           specificObject,
@@ -155,10 +137,14 @@ void main() async {
         () async {
           expect(
             () => ByIndexEnum.fromJson(-1),
-            throwsA(predicate((e) =>
-                e is ArgumentError &&
-                e.message ==
-                    'Value "-1" cannot be converted to "ByIndexEnum"')),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is ArgumentError &&
+                    e.message ==
+                        'Value "-1" cannot be converted to "ByIndexEnum"',
+              ),
+            ),
           );
         },
       );
@@ -168,10 +154,14 @@ void main() async {
         () async {
           expect(
             () => ByNameEnum.fromJson('Invalid'),
-            throwsA(predicate((e) =>
-                e is ArgumentError &&
-                e.message ==
-                    'Value "Invalid" cannot be converted to "ByNameEnum"')),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is ArgumentError &&
+                    e.message ==
+                        'Value "Invalid" cannot be converted to "ByNameEnum"',
+              ),
+            ),
           );
         },
       );

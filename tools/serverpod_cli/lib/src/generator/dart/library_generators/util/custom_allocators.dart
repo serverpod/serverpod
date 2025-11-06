@@ -40,8 +40,8 @@ class PartOfAllocator implements Allocator {
     List<String>? doNotPrefix,
     required String currentPath,
     required ImportCollector importCollector,
-  })  : _currentPath = currentPath,
-        _importCollector = importCollector {
+  }) : _currentPath = currentPath,
+       _importCollector = importCollector {
     _doNotPrefix.addAll(doNotPrefix ?? []);
   }
 
@@ -65,16 +65,13 @@ class PartOfAllocator implements Allocator {
 class PartAllocator implements Allocator {
   final PartOfAllocator _partOfAllocator;
 
-  PartAllocator({
-    required PartOfAllocator partOfAllocator,
-  }) : _partOfAllocator = partOfAllocator;
+  PartAllocator({required PartOfAllocator partOfAllocator})
+    : _partOfAllocator = partOfAllocator;
 
   @override
   String allocate(Reference reference) => _partOfAllocator.allocate(reference);
 
   @override
-  Iterable<Directive> get imports =>
-      _partOfAllocator._importCollector.imports.map(
-        (u) => Directive.import(u.key, as: '_i${u.value}'),
-      );
+  Iterable<Directive> get imports => _partOfAllocator._importCollector.imports
+      .map((u) => Directive.import(u.key, as: '_i${u.value}'));
 }

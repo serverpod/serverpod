@@ -27,8 +27,9 @@ abstract final class SessionLogUtils {
 
       final entries = await SessionLogEntry.db.find(
         session,
-        where: (t) =>
-            t.userId.equals(null) & t.authenticatedUserId.notEquals(null),
+        where:
+            (t) =>
+                t.userId.equals(null) & t.authenticatedUserId.notEquals(null),
         limit: effectiveBatchSize,
         orderBy: (t) => t.id,
         transaction: transaction,

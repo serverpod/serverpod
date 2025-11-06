@@ -26,7 +26,8 @@ abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
   }) = _ServerOnlyChildClassImpl;
 
   factory ServerOnlyChildClass.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyChildClass(
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
@@ -39,16 +40,10 @@ abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
   /// with some or all fields replaced by the given arguments.
   @override
   @_i2.useResult
-  ServerOnlyChildClass copyWith({
-    String? parentField,
-    String? childField,
-  });
+  ServerOnlyChildClass copyWith({String? parentField, String? childField});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'parentField': parentField,
-      'childField': childField,
-    };
+    return {'parentField': parentField, 'childField': childField};
   }
 
   @override
@@ -66,19 +61,13 @@ class _ServerOnlyChildClassImpl extends ServerOnlyChildClass {
   _ServerOnlyChildClassImpl({
     required String parentField,
     required String childField,
-  }) : super._(
-          parentField: parentField,
-          childField: childField,
-        );
+  }) : super._(parentField: parentField, childField: childField);
 
   /// Returns a shallow copy of this [ServerOnlyChildClass]
   /// with some or all fields replaced by the given arguments.
   @_i2.useResult
   @override
-  ServerOnlyChildClass copyWith({
-    String? parentField,
-    String? childField,
-  }) {
+  ServerOnlyChildClass copyWith({String? parentField, String? childField}) {
     return ServerOnlyChildClass(
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

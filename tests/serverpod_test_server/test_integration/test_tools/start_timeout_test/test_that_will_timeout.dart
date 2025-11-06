@@ -10,10 +10,12 @@ void main() {
     runMode: ServerpodRunMode.staging,
     serverpodStartTimeout: Duration(seconds: 0),
     (sessionBuilder, endpoints) {
-      test('then dummy test should not be run and exit code should be non-zero',
-          () async {
-        expect(true, true);
-      });
+      test(
+        'then dummy test should not be run and exit code should be non-zero',
+        () async {
+          expect(true, true);
+        },
+      );
     },
   );
 }

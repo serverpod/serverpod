@@ -7,20 +7,20 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default enum fields,', () {
-    tearDownAll(() async => EnumDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => EnumDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultAndDefaultModel" field value should match the default value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${EnumDefaultMix.t.tableName}" ("byNameEnumDefaultAndDefaultModel", "byNameEnumDefaultAndDefaultPersist", "byNameEnumDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await EnumDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.byNameEnumDefaultAndDefaultModel,
@@ -32,12 +32,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${EnumDefaultMix.t.tableName}" ("byNameEnumDefaultAndDefaultModel", "byNameEnumDefaultAndDefaultPersist", "byNameEnumDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await EnumDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.byNameEnumDefaultAndDefaultPersist,
@@ -49,12 +47,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "byNameEnumDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${EnumDefaultMix.t.tableName}" ("byNameEnumDefaultAndDefaultModel", "byNameEnumDefaultAndDefaultPersist", "byNameEnumDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await EnumDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.byNameEnumDefaultModelAndDefaultPersist,

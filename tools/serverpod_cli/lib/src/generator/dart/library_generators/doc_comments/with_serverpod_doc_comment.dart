@@ -56,8 +56,6 @@ String buildWithServerpodDocComments(List<String> parameters) {
   return buildDocComment(
     generalDescription: _methodDescription,
     docByParameter: Map.from(_withServerpodDocCommentsByParameter)
-      ..removeWhere(
-        (key, _) => !parameters.contains(key),
-      ),
+      ..removeWhere((key, _) => !parameters.contains(key)),
   );
 }

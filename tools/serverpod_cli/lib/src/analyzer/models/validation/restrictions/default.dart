@@ -13,10 +13,7 @@ class DefaultValueRestriction extends ValueRestriction {
   final String key;
   final SerializableModelDefinition? documentDefinition;
 
-  DefaultValueRestriction(
-    this.key,
-    this.documentDefinition,
-  );
+  DefaultValueRestriction(this.key, this.documentDefinition);
 
   @override
   List<SourceSpanSeverityException> validate(
@@ -313,12 +310,7 @@ class DefaultValueRestriction extends ValueRestriction {
         'The "$key" value must be "random", "random_v7" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
 
     if (value is! String || value.isEmpty) {
-      errors.add(
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      );
+      errors.add(SourceSpanSeverityException(invalidValueError, span));
       return errors;
     }
 
@@ -328,12 +320,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     if (!value.startsWith("'") && !value.startsWith('"')) {
-      errors.add(
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      );
+      errors.add(SourceSpanSeverityException(invalidValueError, span));
       return errors;
     }
 
@@ -426,25 +413,16 @@ class DefaultValueRestriction extends ValueRestriction {
         'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
 
     if (value is! String || value.isEmpty) {
-      return [
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      ];
+      return [SourceSpanSeverityException(invalidValueError, span)];
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
+    bool invalidDefaultValue =
+        value != defaultUuidValueRandom &&
         !value.startsWith("'") &&
         !value.startsWith('"');
 
     if (invalidDefaultValue) {
-      return [
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      ];
+      return [SourceSpanSeverityException(invalidValueError, span)];
     }
 
     if (value == defaultUuidValueRandom) return [];

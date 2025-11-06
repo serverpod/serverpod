@@ -21,15 +21,14 @@ abstract class MaxFieldName implements _i1.SerializableModel {
   factory MaxFieldName({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   }) = _MaxFieldNameImpl;
 
   factory MaxFieldName.fromJson(Map<String, dynamic> jsonSerialization) {
     return MaxFieldName(
       id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
-          jsonSerialization[
-                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']
               as String,
     );
   }
@@ -69,12 +68,12 @@ class _MaxFieldNameImpl extends MaxFieldName {
   _MaxFieldNameImpl({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   }) : super._(
-          id: id,
-          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-        );
+         id: id,
+         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
+             thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+       );
 
   /// Returns a shallow copy of this [MaxFieldName]
   /// with some or all fields replaced by the given arguments.
@@ -88,7 +87,7 @@ class _MaxFieldNameImpl extends MaxFieldName {
       id: id is int? ? id : this.id,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo ??
-              this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+          this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
     );
   }
 }

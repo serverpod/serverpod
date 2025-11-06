@@ -12,12 +12,7 @@ void main() {
           found: null,
         );
 
-        expect(
-          warning.toString(),
-          equals(
-            '''Missing Column "age".''',
-          ),
-        );
+        expect(warning.toString(), equals('''Missing Column "age".'''));
       },
     );
 
@@ -30,15 +25,14 @@ void main() {
           found: 'text',
         );
 
-        var warning =
-            ColumnComparisonWarning(name: 'firstname').addSub(subWarning);
+        var warning = ColumnComparisonWarning(
+          name: 'firstname',
+        ).addSub(subWarning);
 
         expect(
           warning.toString(),
-          equals(
-            '''Column "firstname" mismatch: 
-   - expected firstname "integer", found "text".''',
-          ),
+          equals('''Column "firstname" mismatch: 
+   - expected firstname "integer", found "text".'''),
         );
       },
     );
@@ -58,16 +52,15 @@ void main() {
           found: 'true',
         );
 
-        var warning = ColumnComparisonWarning(name: 'firstname')
-            .addSubs([subWarning1, subWarning2]);
+        var warning = ColumnComparisonWarning(
+          name: 'firstname',
+        ).addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),
-          equals(
-            '''Column "firstname" mismatch: 
+          equals('''Column "firstname" mismatch: 
    - expected firstname "integer", found "text".
-   - expected nullability "false", found "true".''',
-          ),
+   - expected nullability "false", found "true".'''),
         );
       },
     );
@@ -83,9 +76,7 @@ void main() {
 
         expect(
           warning.toString(),
-          equals(
-            '''Missing Foreign key "fk_user".''',
-          ),
+          equals('''Missing Foreign key "fk_user".'''),
         );
       },
     );
@@ -99,15 +90,14 @@ void main() {
           found: 'cascade',
         );
 
-        var warning =
-            ForeignKeyComparisonWarning(name: 'fk_user').addSub(subWarning);
+        var warning = ForeignKeyComparisonWarning(
+          name: 'fk_user',
+        ).addSub(subWarning);
 
         expect(
           warning.toString(),
-          equals(
-            '''Foreign key "fk_user" mismatch: 
-   - expected onUpdate "noAction", found "cascade".''',
-          ),
+          equals('''Foreign key "fk_user" mismatch: 
+   - expected onUpdate "noAction", found "cascade".'''),
         );
       },
     );
@@ -127,16 +117,15 @@ void main() {
           found: 'restrict',
         );
 
-        var warning = ForeignKeyComparisonWarning(name: 'fk_user')
-            .addSubs([subWarning1, subWarning2]);
+        var warning = ForeignKeyComparisonWarning(
+          name: 'fk_user',
+        ).addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),
-          equals(
-            '''Foreign key "fk_user" mismatch: 
+          equals('''Foreign key "fk_user" mismatch: 
    - expected onUpdate "noAction", found "cascade".
-   - expected onDelete "noAction", found "restrict".''',
-          ),
+   - expected onDelete "noAction", found "restrict".'''),
         );
       },
     );

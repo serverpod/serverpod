@@ -19,13 +19,14 @@ abstract class BigIntDefaultMix
     BigInt? bigIntDefaultAndDefaultModel,
     BigInt? bigIntDefaultAndDefaultPersist,
     BigInt? bigIntDefaultModelAndDefaultPersist,
-  })  : bigIntDefaultAndDefaultModel =
-            bigIntDefaultAndDefaultModel ?? BigInt.parse('2'),
-        bigIntDefaultAndDefaultPersist = bigIntDefaultAndDefaultPersist ??
-            BigInt.parse('-12345678901234567890'),
-        bigIntDefaultModelAndDefaultPersist =
-            bigIntDefaultModelAndDefaultPersist ??
-                BigInt.parse('1234567890123456789099999999');
+  }) : bigIntDefaultAndDefaultModel =
+           bigIntDefaultAndDefaultModel ?? BigInt.parse('2'),
+       bigIntDefaultAndDefaultPersist =
+           bigIntDefaultAndDefaultPersist ??
+           BigInt.parse('-12345678901234567890'),
+       bigIntDefaultModelAndDefaultPersist =
+           bigIntDefaultModelAndDefaultPersist ??
+           BigInt.parse('1234567890123456789099999999');
 
   factory BigIntDefaultMix({
     int? id,
@@ -38,11 +39,14 @@ abstract class BigIntDefaultMix
     return BigIntDefaultMix(
       id: jsonSerialization['id'] as int?,
       bigIntDefaultAndDefaultModel: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigIntDefaultAndDefaultModel']),
+        jsonSerialization['bigIntDefaultAndDefaultModel'],
+      ),
       bigIntDefaultAndDefaultPersist: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigIntDefaultAndDefaultPersist']),
+        jsonSerialization['bigIntDefaultAndDefaultPersist'],
+      ),
       bigIntDefaultModelAndDefaultPersist: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigIntDefaultModelAndDefaultPersist']),
+        jsonSerialization['bigIntDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -132,12 +136,12 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
     BigInt? bigIntDefaultAndDefaultPersist,
     BigInt? bigIntDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          bigIntDefaultAndDefaultModel: bigIntDefaultAndDefaultModel,
-          bigIntDefaultAndDefaultPersist: bigIntDefaultAndDefaultPersist,
-          bigIntDefaultModelAndDefaultPersist:
-              bigIntDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         bigIntDefaultAndDefaultModel: bigIntDefaultAndDefaultModel,
+         bigIntDefaultAndDefaultPersist: bigIntDefaultAndDefaultPersist,
+         bigIntDefaultModelAndDefaultPersist:
+             bigIntDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [BigIntDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -157,7 +161,7 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
           bigIntDefaultAndDefaultPersist ?? this.bigIntDefaultAndDefaultPersist,
       bigIntDefaultModelAndDefaultPersist:
           bigIntDefaultModelAndDefaultPersist ??
-              this.bigIntDefaultModelAndDefaultPersist,
+          this.bigIntDefaultModelAndDefaultPersist,
     );
   }
 }
@@ -167,29 +171,20 @@ class BigIntDefaultMixUpdateTable
   BigIntDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultModel(BigInt value) =>
-      _i1.ColumnValue(
-        table.bigIntDefaultAndDefaultModel,
-        value,
-      );
+      _i1.ColumnValue(table.bigIntDefaultAndDefaultModel, value);
 
   _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultPersist(
-          BigInt value) =>
-      _i1.ColumnValue(
-        table.bigIntDefaultAndDefaultPersist,
-        value,
-      );
+    BigInt value,
+  ) => _i1.ColumnValue(table.bigIntDefaultAndDefaultPersist, value);
 
   _i1.ColumnValue<BigInt, BigInt> bigIntDefaultModelAndDefaultPersist(
-          BigInt value) =>
-      _i1.ColumnValue(
-        table.bigIntDefaultModelAndDefaultPersist,
-        value,
-      );
+    BigInt value,
+  ) => _i1.ColumnValue(table.bigIntDefaultModelAndDefaultPersist, value);
 }
 
 class BigIntDefaultMixTable extends _i1.Table<int?> {
   BigIntDefaultMixTable({super.tableRelation})
-      : super(tableName: 'bigint_default_mix') {
+    : super(tableName: 'bigint_default_mix') {
     updateTable = BigIntDefaultMixUpdateTable(this);
     bigIntDefaultAndDefaultModel = _i1.ColumnBigInt(
       'bigIntDefaultAndDefaultModel',
@@ -218,11 +213,11 @@ class BigIntDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        bigIntDefaultAndDefaultModel,
-        bigIntDefaultAndDefaultPersist,
-        bigIntDefaultModelAndDefaultPersist,
-      ];
+    id,
+    bigIntDefaultAndDefaultModel,
+    bigIntDefaultAndDefaultPersist,
+    bigIntDefaultModelAndDefaultPersist,
+  ];
 }
 
 class BigIntDefaultMixInclude extends _i1.IncludeObject {
@@ -343,10 +338,7 @@ class BigIntDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BigIntDefaultMix>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<BigIntDefaultMix>(id, transaction: transaction);
   }
 
   /// Inserts all [BigIntDefaultMix]s in the list and returns the inserted rows.
@@ -360,10 +352,7 @@ class BigIntDefaultMixRepository {
     List<BigIntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BigIntDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<BigIntDefaultMix>(rows, transaction: transaction);
   }
 
   /// Inserts a single [BigIntDefaultMix] and returns the inserted row.
@@ -420,7 +409,7 @@ class BigIntDefaultMixRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefaultMix>(
@@ -435,7 +424,7 @@ class BigIntDefaultMixRepository {
   Future<List<BigIntDefaultMix>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     int? limit,
     int? offset,
@@ -464,10 +453,7 @@ class BigIntDefaultMixRepository {
     List<BigIntDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BigIntDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<BigIntDefaultMix>(rows, transaction: transaction);
   }
 
   /// Deletes a single [BigIntDefaultMix].

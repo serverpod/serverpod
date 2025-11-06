@@ -24,18 +24,12 @@ const ignoreEndpoint = doNotGenerate;
 /// - The server will receive calls as if there is no user signed in.
 const unauthenticatedClientCall = _UnauthenticatedClientCall();
 
-@Target({
-  TargetKind.classType,
-  TargetKind.method,
-})
+@Target({TargetKind.classType, TargetKind.method})
 class _DoNotGenerate {
   const _DoNotGenerate();
 }
 
-@Target({
-  TargetKind.classType,
-  TargetKind.method,
-})
+@Target({TargetKind.classType, TargetKind.method})
 class _UnauthenticatedClientCall {
   const _UnauthenticatedClientCall();
 }

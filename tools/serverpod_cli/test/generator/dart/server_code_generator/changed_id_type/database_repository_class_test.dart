@@ -21,7 +21,7 @@ void main() {
           .withFileName('example')
           .withTableName('example_table')
           .withIdFieldType(SupportedIdType.int)
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -46,18 +46,16 @@ void main() {
     });
 
     test(
-        'then the "ExampleRepository" class has a findById method that takes an "int" as a required param',
-        () {
-      var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryClass!,
-        name: 'findById',
-      );
+      'then the "ExampleRepository" class has a findById method that takes an "int" as a required param',
+      () {
+        var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'findById',
+        );
 
-      expect(
-        findByIdMethod?.parameters?.toSource(),
-        contains('int id, '),
-      );
-    });
+        expect(findByIdMethod?.parameters?.toSource(), contains('int id, '));
+      },
+    );
   });
 
   group('Given a table class with id type "UUIDv4" when generating code', () {
@@ -66,7 +64,7 @@ void main() {
           .withFileName('example')
           .withTableName('example_table')
           .withIdFieldType(SupportedIdType.uuidV4)
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -91,17 +89,18 @@ void main() {
     });
 
     test(
-        'then the "ExampleRepository" class has a findById method that takes an "UuidValue" as a required param',
-        () {
-      var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryClass!,
-        name: 'findById',
-      );
+      'then the "ExampleRepository" class has a findById method that takes an "UuidValue" as a required param',
+      () {
+        var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'findById',
+        );
 
-      expect(
-        findByIdMethod?.parameters?.toSource(),
-        contains('UuidValue id, '),
-      );
-    });
+        expect(
+          findByIdMethod?.parameters?.toSource(),
+          contains('UuidValue id, '),
+        );
+      },
+    );
   });
 }

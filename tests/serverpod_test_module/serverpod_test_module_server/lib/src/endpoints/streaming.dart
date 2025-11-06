@@ -37,9 +37,11 @@ class StreamingEndpoint extends Endpoint {
       return;
     }
 
-    unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
-      await sendStreamMessage(session, message);
-    }));
+    unawaited(
+      Future.delayed(const Duration(seconds: 1)).then((value) async {
+        await sendStreamMessage(session, message);
+      }),
+    );
   }
 
   Stream<int> intEchoStream(Session session, Stream<int> stream) async* {

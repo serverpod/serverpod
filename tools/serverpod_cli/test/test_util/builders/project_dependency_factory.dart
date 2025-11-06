@@ -26,9 +26,9 @@ class ModuleProjectBuilder {
   bool _includeGeneratorConfig;
 
   ModuleProjectBuilder()
-      : _pubspec = PubspecBuilder().build(),
-        _name = 'example_module',
-        _includeGeneratorConfig = true;
+    : _pubspec = PubspecBuilder().build(),
+      _name = 'example_module',
+      _includeGeneratorConfig = true;
 
   ModuleProjectBuilder withName(String name) {
     _name = name;
@@ -36,15 +36,18 @@ class ModuleProjectBuilder {
   }
 
   ModuleProjectBuilder withPubspecDependencies(List<String> dependencies) {
-    var pubspec = PubspecBuilder()
-        .withName(_name)
-        .withDependencies(
-          dependencies
-              .map((dependency) =>
-                  PubspecDependencyBuilder().withName(dependency).build())
-              .toList(),
-        )
-        .build();
+    var pubspec =
+        PubspecBuilder()
+            .withName(_name)
+            .withDependencies(
+              dependencies
+                  .map(
+                    (dependency) =>
+                        PubspecDependencyBuilder().withName(dependency).build(),
+                  )
+                  .toList(),
+            )
+            .build();
 
     _pubspec = pubspec;
     return this;
@@ -110,7 +113,8 @@ class ProjectDependencyStructureFactory {
   /// This will create directories for each module project with the given
   /// configuration.
   ProjectDependencyStructureFactory withModuleProjects(
-      List<ModuleProject> modules) {
+    List<ModuleProject> modules,
+  ) {
     _moduleProjects = List.from(modules);
     return this;
   }
@@ -118,22 +122,26 @@ class ProjectDependencyStructureFactory {
   /// Adds a package to the package config (normally created when running
   /// `pub get`).
   ProjectDependencyStructureFactory addPackageToPackageConfig(
-      String packageName) {
+    String packageName,
+  ) {
     _packageConfigPackages.add(packageName);
     return this;
   }
 
   /// Constructs the project dependency structure.
   Future<ProjectDependencyContext> construct() async {
-    var projectPubspec = PubspecBuilder()
-        .withName(_projectName)
-        .withDependencies(
-          _projectDependencies
-              .map((dependency) =>
-                  PubspecDependencyBuilder().withName(dependency).build())
-              .toList(),
-        )
-        .build();
+    var projectPubspec =
+        PubspecBuilder()
+            .withName(_projectName)
+            .withDependencies(
+              _projectDependencies
+                  .map(
+                    (dependency) =>
+                        PubspecDependencyBuilder().withName(dependency).build(),
+                  )
+                  .toList(),
+            )
+            .build();
 
     List<d.DirectoryDescriptor> moduleDirectories = [];
     for (var module in _moduleProjects) {
@@ -144,8 +152,8 @@ class ProjectDependencyStructureFactory {
             d.file(
               'generator.yaml',
               GeneratorConfigFileBuilder().withType(PackageType.module).build(),
-            )
-          ])
+            ),
+          ]),
       ]);
 
       moduleDirectories.add(moduleDir);
@@ -153,15 +161,20 @@ class ProjectDependencyStructureFactory {
 
     await d.dir(_monoRepoDir, moduleDirectories).create();
 
-    var packageConfig = PackageConfigBuilder().withPackages([
-      ..._packageConfigPackages.map(
-        (packageName) => PackageBuilder()
-            .withName(packageName)
-            .withRoot(Uri.directory(
-                p.joinAll([d.sandbox, _monoRepoDir, packageName])))
-            .build(),
-      )
-    ]).build();
+    var packageConfig =
+        PackageConfigBuilder().withPackages([
+          ..._packageConfigPackages.map(
+            (packageName) =>
+                PackageBuilder()
+                    .withName(packageName)
+                    .withRoot(
+                      Uri.directory(
+                        p.joinAll([d.sandbox, _monoRepoDir, packageName]),
+                      ),
+                    )
+                    .build(),
+          ),
+        ]).build();
 
     return ProjectDependencyContext(
       packageConfig: packageConfig,

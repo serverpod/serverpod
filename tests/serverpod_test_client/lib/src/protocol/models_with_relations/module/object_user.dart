@@ -14,12 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 
 abstract class ObjectUser implements _i1.SerializableModel {
-  ObjectUser._({
-    this.id,
-    this.name,
-    required this.userInfoId,
-    this.userInfo,
-  });
+  ObjectUser._({this.id, this.name, required this.userInfoId, this.userInfo});
 
   factory ObjectUser({
     int? id,
@@ -33,10 +28,12 @@ abstract class ObjectUser implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String?,
       userInfoId: jsonSerialization['userInfoId'] as int,
-      userInfo: jsonSerialization['userInfo'] == null
-          ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+      userInfo:
+          jsonSerialization['userInfo'] == null
+              ? null
+              : _i2.UserInfo.fromJson(
+                (jsonSerialization['userInfo'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -84,12 +81,7 @@ class _ObjectUserImpl extends ObjectUser {
     String? name,
     required int userInfoId,
     _i2.UserInfo? userInfo,
-  }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-          userInfo: userInfo,
-        );
+  }) : super._(id: id, name: name, userInfoId: userInfoId, userInfo: userInfo);
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.

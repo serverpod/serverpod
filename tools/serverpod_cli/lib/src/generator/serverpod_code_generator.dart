@@ -31,7 +31,7 @@ abstract class ServerpodCodeGenerator {
         ...generator.generateSerializableModelsCode(
           models: models,
           config: config,
-        )
+        ),
     };
     for (var file in allFiles.entries) {
       try {
@@ -61,7 +61,7 @@ abstract class ServerpodCodeGenerator {
         ...generator.generateProtocolCode(
           protocolDefinition: protocolDefinition,
           config: config,
-        )
+        ),
     };
     for (var file in allFiles.entries) {
       try {
@@ -92,11 +92,7 @@ abstract class ServerpodCodeGenerator {
     );
 
     for (var dir in dirs) {
-      await _removeOldFilesInPath(
-        dir,
-        generatedFiles,
-        ['.dart'],
-      );
+      await _removeOldFilesInPath(dir, generatedFiles, ['.dart']);
     }
   }
 }

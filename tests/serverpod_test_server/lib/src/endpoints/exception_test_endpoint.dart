@@ -10,10 +10,7 @@ class ExceptionTestEndpoint extends Endpoint {
     throw ExceptionWithData(
       message: 'Throwing an exception',
       creationDate: DateTime.now(),
-      errorFields: [
-        'first line error',
-        'second line error',
-      ],
+      errorFields: ['first line error', 'second line error'],
       someNullableField: 1,
     );
   }

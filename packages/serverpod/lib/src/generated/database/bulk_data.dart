@@ -15,10 +15,7 @@ import '../database/table_definition.dart' as _i2;
 
 abstract class BulkData
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  BulkData._({
-    required this.tableDefinition,
-    required this.data,
-  });
+  BulkData._({required this.tableDefinition, required this.data});
 
   factory BulkData({
     required _i2.TableDefinition tableDefinition,
@@ -28,7 +25,8 @@ abstract class BulkData
   factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
       tableDefinition: _i2.TableDefinition.fromJson(
-          (jsonSerialization['tableDefinition'] as Map<String, dynamic>)),
+        (jsonSerialization['tableDefinition'] as Map<String, dynamic>),
+      ),
       data: jsonSerialization['data'] as String,
     );
   }
@@ -40,16 +38,10 @@ abstract class BulkData
   /// Returns a shallow copy of this [BulkData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  BulkData copyWith({
-    _i2.TableDefinition? tableDefinition,
-    String? data,
-  });
+  BulkData copyWith({_i2.TableDefinition? tableDefinition, String? data});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'tableDefinition': tableDefinition.toJson(),
-      'data': data,
-    };
+    return {'tableDefinition': tableDefinition.toJson(), 'data': data};
   }
 
   @override
@@ -70,19 +62,13 @@ class _BulkDataImpl extends BulkData {
   _BulkDataImpl({
     required _i2.TableDefinition tableDefinition,
     required String data,
-  }) : super._(
-          tableDefinition: tableDefinition,
-          data: data,
-        );
+  }) : super._(tableDefinition: tableDefinition, data: data);
 
   /// Returns a shallow copy of this [BulkData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  BulkData copyWith({
-    _i2.TableDefinition? tableDefinition,
-    String? data,
-  }) {
+  BulkData copyWith({_i2.TableDefinition? tableDefinition, String? data}) {
     return BulkData(
       tableDefinition: tableDefinition ?? this.tableDefinition.copyWith(),
       data: data ?? this.data,

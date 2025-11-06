@@ -36,10 +36,12 @@ abstract class Comment
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       orderId: jsonSerialization['orderId'] as int,
-      order: jsonSerialization['order'] == null
-          ? null
-          : _i2.Order.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+      order:
+          jsonSerialization['order'] == null
+              ? null
+              : _i2.Order.fromJson(
+                (jsonSerialization['order'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -127,11 +129,11 @@ class _CommentImpl extends Comment {
     required int orderId,
     _i2.Order? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
@@ -155,28 +157,18 @@ class _CommentImpl extends Comment {
 class CommentUpdateTable extends _i1.UpdateTable<CommentTable> {
   CommentUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+  _i1.ColumnValue<String, String> description(String value) =>
+      _i1.ColumnValue(table.description, value);
 
-  _i1.ColumnValue<int, int> orderId(int value) => _i1.ColumnValue(
-        table.orderId,
-        value,
-      );
+  _i1.ColumnValue<int, int> orderId(int value) =>
+      _i1.ColumnValue(table.orderId, value);
 }
 
 class CommentTable extends _i1.Table<int?> {
   CommentTable({super.tableRelation}) : super(tableName: 'comment') {
     updateTable = CommentUpdateTable(this);
-    description = _i1.ColumnString(
-      'description',
-      this,
-    );
-    orderId = _i1.ColumnInt(
-      'orderId',
-      this,
-    );
+    description = _i1.ColumnString('description', this);
+    orderId = _i1.ColumnInt('orderId', this);
   }
 
   late final CommentUpdateTable updateTable;
@@ -194,18 +186,15 @@ class CommentTable extends _i1.Table<int?> {
       field: Comment.t.orderId,
       foreignField: _i2.Order.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.OrderTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.OrderTable(tableRelation: foreignTableRelation),
     );
     return _order!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        description,
-        orderId,
-      ];
+  List<_i1.Column> get columns => [id, description, orderId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -363,10 +352,7 @@ class CommentRepository {
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Comment>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Comment>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Comment] and returns the inserted row.
@@ -377,10 +363,7 @@ class CommentRepository {
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Comment>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Comment>(row, transaction: transaction);
   }
 
   /// Updates all [Comment]s in the list and returns the updated rows. If
@@ -465,10 +448,7 @@ class CommentRepository {
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Comment>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Comment>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Comment].
@@ -477,10 +457,7 @@ class CommentRepository {
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Comment>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Comment>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

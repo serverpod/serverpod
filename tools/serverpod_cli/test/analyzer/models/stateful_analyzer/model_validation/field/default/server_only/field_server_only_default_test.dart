@@ -14,27 +14,25 @@ void main() {
       'when the field is serverOnly with default value, then no validation errors are generated',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             serverOnlyField: int?, scope=serverOnly, default=-1
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(
-          definition.fields.last.defaultModelValue,
-          '-1',
-        );
+        expect(definition.fields.last.defaultModelValue, '-1');
         expect(
           definition.fields.last.scope,
           ModelFieldScopeDefinition.serverOnly,
@@ -46,19 +44,20 @@ void main() {
       'when the field is serverOnly with string default value, then the field should have the correct default value',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             serverMessage: String?, scope=serverOnly, default='Server only message'
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -74,21 +73,22 @@ void main() {
       'when multiple fields have different scopes and defaults, then all are validated correctly',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             normalField: String, default='Normal message'
             serverOnlyField: int?, scope=serverOnly, default=42
             allScopeField: bool?, scope=all, default=true
-          ''',
-          ).build()
+          ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
         var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+            StatefulAnalyzer(
+              config,
+              models,
+              onErrorsCollector(collector),
+            ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -102,7 +102,9 @@ void main() {
         // Check serverOnly field
         expect(definition.fields[1].defaultModelValue, '42');
         expect(
-            definition.fields[1].scope, ModelFieldScopeDefinition.serverOnly);
+          definition.fields[1].scope,
+          ModelFieldScopeDefinition.serverOnly,
+        );
 
         // Check all scope field
         expect(definition.fields[2].defaultModelValue, 'true');

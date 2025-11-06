@@ -17,10 +17,7 @@ import '../empty_model/empty_model_relation_item.dart' as _i2;
 
 abstract class RelationEmptyModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  RelationEmptyModel._({
-    this.id,
-    this.items,
-  });
+  RelationEmptyModel._({this.id, this.items});
 
   factory RelationEmptyModel({
     int? id,
@@ -30,10 +27,14 @@ abstract class RelationEmptyModel
   factory RelationEmptyModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return RelationEmptyModel(
       id: jsonSerialization['id'] as int?,
-      items: (jsonSerialization['items'] as List?)
-          ?.map((e) =>
-              _i2.EmptyModelRelationItem.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      items:
+          (jsonSerialization['items'] as List?)
+              ?.map(
+                (e) => _i2.EmptyModelRelationItem.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -73,8 +74,9 @@ abstract class RelationEmptyModel
     };
   }
 
-  static RelationEmptyModelInclude include(
-      {_i2.EmptyModelRelationItemIncludeList? items}) {
+  static RelationEmptyModelInclude include({
+    _i2.EmptyModelRelationItemIncludeList? items,
+  }) {
     return RelationEmptyModelInclude._(items: items);
   }
 
@@ -107,13 +109,8 @@ abstract class RelationEmptyModel
 class _Undefined {}
 
 class _RelationEmptyModelImpl extends RelationEmptyModel {
-  _RelationEmptyModelImpl({
-    int? id,
-    List<_i2.EmptyModelRelationItem>? items,
-  }) : super._(
-          id: id,
-          items: items,
-        );
+  _RelationEmptyModelImpl({int? id, List<_i2.EmptyModelRelationItem>? items})
+    : super._(id: id, items: items);
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.
@@ -125,9 +122,10 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   }) {
     return RelationEmptyModel(
       id: id is int? ? id : this.id,
-      items: items is List<_i2.EmptyModelRelationItem>?
-          ? items
-          : this.items?.map((e0) => e0.copyWith()).toList(),
+      items:
+          items is List<_i2.EmptyModelRelationItem>?
+              ? items
+              : this.items?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -139,7 +137,7 @@ class RelationEmptyModelUpdateTable
 
 class RelationEmptyModelTable extends _i1.Table<int?> {
   RelationEmptyModelTable({super.tableRelation})
-      : super(tableName: 'relation_empty_model') {
+    : super(tableName: 'relation_empty_model') {
     updateTable = RelationEmptyModelUpdateTable(this);
   }
 
@@ -154,11 +152,16 @@ class RelationEmptyModelTable extends _i1.Table<int?> {
     ___items = _i1.createRelationTable(
       relationFieldName: '__items',
       field: RelationEmptyModel.t.id,
-      foreignField: _i2.EmptyModelRelationItem.t
-          .$_relationEmptyModelItemsRelationEmptyModelId,
+      foreignField:
+          _i2
+              .EmptyModelRelationItem
+              .t
+              .$_relationEmptyModelItemsRelationEmptyModelId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EmptyModelRelationItemTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) => _i2.EmptyModelRelationItemTable(
+            tableRelation: foreignTableRelation,
+          ),
     );
     return ___items!;
   }
@@ -168,16 +171,22 @@ class RelationEmptyModelTable extends _i1.Table<int?> {
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'items',
       field: RelationEmptyModel.t.id,
-      foreignField: _i2.EmptyModelRelationItem.t
-          .$_relationEmptyModelItemsRelationEmptyModelId,
+      foreignField:
+          _i2
+              .EmptyModelRelationItem
+              .t
+              .$_relationEmptyModelItemsRelationEmptyModelId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EmptyModelRelationItemTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) => _i2.EmptyModelRelationItemTable(
+            tableRelation: foreignTableRelation,
+          ),
     );
     _items = _i1.ManyRelation<_i2.EmptyModelRelationItemTable>(
       tableWithRelations: relationTable,
       table: _i2.EmptyModelRelationItemTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _items!;
   }
@@ -407,7 +416,7 @@ class RelationEmptyModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelationEmptyModel>(
@@ -422,7 +431,7 @@ class RelationEmptyModelRepository {
   Future<List<RelationEmptyModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RelationEmptyModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
     int? limit,
     int? offset,
@@ -515,18 +524,23 @@ class RelationEmptyModelAttachRepository {
       throw ArgumentError.notNull('relationEmptyModel.id');
     }
 
-    var $emptyModelRelationItem = emptyModelRelationItem
-        .map((e) => _i2.EmptyModelRelationItemImplicit(
-              e,
-              $_relationEmptyModelItemsRelationEmptyModelId:
-                  relationEmptyModel.id,
-            ))
-        .toList();
+    var $emptyModelRelationItem =
+        emptyModelRelationItem
+            .map(
+              (e) => _i2.EmptyModelRelationItemImplicit(
+                e,
+                $_relationEmptyModelItemsRelationEmptyModelId:
+                    relationEmptyModel.id,
+              ),
+            )
+            .toList();
     await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
-        _i2.EmptyModelRelationItem.t
-            .$_relationEmptyModelItemsRelationEmptyModelId
+        _i2
+            .EmptyModelRelationItem
+            .t
+            .$_relationEmptyModelItemsRelationEmptyModelId,
       ],
       transaction: transaction,
     );
@@ -558,8 +572,10 @@ class RelationEmptyModelAttachRowRepository {
     await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
-        _i2.EmptyModelRelationItem.t
-            .$_relationEmptyModelItemsRelationEmptyModelId
+        _i2
+            .EmptyModelRelationItem
+            .t
+            .$_relationEmptyModelItemsRelationEmptyModelId,
       ],
       transaction: transaction,
     );
@@ -583,17 +599,22 @@ class RelationEmptyModelDetachRepository {
       throw ArgumentError.notNull('emptyModelRelationItem.id');
     }
 
-    var $emptyModelRelationItem = emptyModelRelationItem
-        .map((e) => _i2.EmptyModelRelationItemImplicit(
-              e,
-              $_relationEmptyModelItemsRelationEmptyModelId: null,
-            ))
-        .toList();
+    var $emptyModelRelationItem =
+        emptyModelRelationItem
+            .map(
+              (e) => _i2.EmptyModelRelationItemImplicit(
+                e,
+                $_relationEmptyModelItemsRelationEmptyModelId: null,
+              ),
+            )
+            .toList();
     await session.db.update<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
-        _i2.EmptyModelRelationItem.t
-            .$_relationEmptyModelItemsRelationEmptyModelId
+        _i2
+            .EmptyModelRelationItem
+            .t
+            .$_relationEmptyModelItemsRelationEmptyModelId,
       ],
       transaction: transaction,
     );
@@ -624,8 +645,10 @@ class RelationEmptyModelDetachRowRepository {
     await session.db.updateRow<_i2.EmptyModelRelationItem>(
       $emptyModelRelationItem,
       columns: [
-        _i2.EmptyModelRelationItem.t
-            .$_relationEmptyModelItemsRelationEmptyModelId
+        _i2
+            .EmptyModelRelationItem
+            .t
+            .$_relationEmptyModelItemsRelationEmptyModelId,
       ],
       transaction: transaction,
     );

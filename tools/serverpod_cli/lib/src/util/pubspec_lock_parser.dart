@@ -136,8 +136,9 @@ class PubspecLockParser {
       }
       final flutterConstraint = sdksYaml['flutter'];
       if (flutterConstraint != null) {
-        flutterSdkConstraint =
-            VersionConstraint.parse(flutterConstraint as String);
+        flutterSdkConstraint = VersionConstraint.parse(
+          flutterConstraint as String,
+        );
       }
     }
 
@@ -186,15 +187,17 @@ class PubspecLockParser {
         }
 
       case PackageSource.path:
-        final path = descriptionYaml is YamlMap
-            ? descriptionYaml['path'] as String
-            : descriptionYaml as String;
+        final path =
+            descriptionYaml is YamlMap
+                ? descriptionYaml['path'] as String
+                : descriptionYaml as String;
         dependency = PathDependency(path);
 
       case PackageSource.git:
         if (descriptionYaml is! YamlMap) {
           throw const FormatException(
-              'Git dependency must have a map description');
+            'Git dependency must have a map description',
+          );
         }
         final url = descriptionYaml['url'] as String;
         final ref = descriptionYaml['ref'] as String?;
@@ -228,14 +231,16 @@ class PubspecLockParser {
   List<LockedPackage> get allPackages => packages.values.toList();
 
   /// Get direct dependencies (excluding dev dependencies)
-  List<LockedPackage> get directDependencies => packages.values
-      .where((p) => p.dependencyType == DependencyType.directMain)
-      .toList();
+  List<LockedPackage> get directDependencies =>
+      packages.values
+          .where((p) => p.dependencyType == DependencyType.directMain)
+          .toList();
 
   /// Get dev dependencies
-  List<LockedPackage> get devDependencies => packages.values
-      .where((p) => p.dependencyType == DependencyType.directDev)
-      .toList();
+  List<LockedPackage> get devDependencies =>
+      packages.values
+          .where((p) => p.dependencyType == DependencyType.directDev)
+          .toList();
 
   /// Get transitive dependencies
   List<LockedPackage> get transitiveDependencies =>

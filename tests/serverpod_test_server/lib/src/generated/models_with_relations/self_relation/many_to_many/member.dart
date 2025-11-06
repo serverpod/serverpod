@@ -17,12 +17,7 @@ import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
 
 abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Member._({
-    this.id,
-    required this.name,
-    this.blocking,
-    this.blockedBy,
-  });
+  Member._({this.id, required this.name, this.blocking, this.blockedBy});
 
   factory Member({
     int? id,
@@ -35,12 +30,14 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Member(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      blocking: (jsonSerialization['blocking'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      blockedBy: (jsonSerialization['blockedBy'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      blocking:
+          (jsonSerialization['blocking'] as List?)
+              ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+              .toList(),
+      blockedBy:
+          (jsonSerialization['blockedBy'] as List?)
+              ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -89,8 +86,9 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (blocking != null)
         'blocking': blocking?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (blockedBy != null)
-        'blockedBy':
-            blockedBy?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'blockedBy': blockedBy?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -98,10 +96,7 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.BlockingIncludeList? blocking,
     _i2.BlockingIncludeList? blockedBy,
   }) {
-    return MemberInclude._(
-      blocking: blocking,
-      blockedBy: blockedBy,
-    );
+    return MemberInclude._(blocking: blocking, blockedBy: blockedBy);
   }
 
   static MemberIncludeList includeList({
@@ -138,12 +133,7 @@ class _MemberImpl extends Member {
     required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
-  }) : super._(
-          id: id,
-          name: name,
-          blocking: blocking,
-          blockedBy: blockedBy,
-        );
+  }) : super._(id: id, name: name, blocking: blocking, blockedBy: blockedBy);
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
@@ -158,12 +148,14 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking: blocking is List<_i2.Blocking>?
-          ? blocking
-          : this.blocking?.map((e0) => e0.copyWith()).toList(),
-      blockedBy: blockedBy is List<_i2.Blocking>?
-          ? blockedBy
-          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
+      blocking:
+          blocking is List<_i2.Blocking>?
+              ? blocking
+              : this.blocking?.map((e0) => e0.copyWith()).toList(),
+      blockedBy:
+          blockedBy is List<_i2.Blocking>?
+              ? blockedBy
+              : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -171,19 +163,14 @@ class _MemberImpl extends Member {
 class MemberUpdateTable extends _i1.UpdateTable<MemberTable> {
   MemberUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class MemberTable extends _i1.Table<int?> {
   MemberTable({super.tableRelation}) : super(tableName: 'member') {
     updateTable = MemberUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final MemberUpdateTable updateTable;
@@ -205,8 +192,9 @@ class MemberTable extends _i1.Table<int?> {
       field: Member.t.id,
       foreignField: _i2.Blocking.t.blockedById,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.BlockingTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.BlockingTable(tableRelation: foreignTableRelation),
     );
     return ___blocking!;
   }
@@ -218,8 +206,9 @@ class MemberTable extends _i1.Table<int?> {
       field: Member.t.id,
       foreignField: _i2.Blocking.t.blockedId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.BlockingTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.BlockingTable(tableRelation: foreignTableRelation),
     );
     return ___blockedBy!;
   }
@@ -231,13 +220,15 @@ class MemberTable extends _i1.Table<int?> {
       field: Member.t.id,
       foreignField: _i2.Blocking.t.blockedById,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.BlockingTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.BlockingTable(tableRelation: foreignTableRelation),
     );
     _blocking = _i1.ManyRelation<_i2.BlockingTable>(
       tableWithRelations: relationTable,
       table: _i2.BlockingTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _blocking!;
   }
@@ -249,22 +240,21 @@ class MemberTable extends _i1.Table<int?> {
       field: Member.t.id,
       foreignField: _i2.Blocking.t.blockedId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.BlockingTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.BlockingTable(tableRelation: foreignTableRelation),
     );
     _blockedBy = _i1.ManyRelation<_i2.BlockingTable>(
       tableWithRelations: relationTable,
       table: _i2.BlockingTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _blockedBy!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -293,9 +283,9 @@ class MemberInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'blocking': _blocking,
-        'blockedBy': _blockedBy,
-      };
+    'blocking': _blocking,
+    'blockedBy': _blockedBy,
+  };
 
   @override
   _i1.Table<int?> get table => Member.t;
@@ -436,10 +426,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Member>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Member>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Member] and returns the inserted row.
@@ -450,10 +437,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Member>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Member>(row, transaction: transaction);
   }
 
   /// Updates all [Member]s in the list and returns the updated rows. If
@@ -538,10 +522,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Member>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Member>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Member].
@@ -550,10 +531,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Member>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Member>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

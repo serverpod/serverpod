@@ -1,17 +1,11 @@
 import 'package:serverpod/serverpod.dart';
 
 class MethodSignaturePermutationsEndpoint extends Endpoint {
-  Future<String> echoPositionalArg(
-    Session session,
-    String string,
-  ) async {
+  Future<String> echoPositionalArg(Session session, String string) async {
     return string;
   }
 
-  Future<String> echoNamedArg(
-    Session session, {
-    required String string,
-  }) async {
+  Future<String> echoNamedArg(Session session, {required String string}) async {
     return string;
   }
 
@@ -22,10 +16,7 @@ class MethodSignaturePermutationsEndpoint extends Endpoint {
     return string;
   }
 
-  Future<String?> echoOptionalArg(
-    Session session, [
-    String? string,
-  ]) async {
+  Future<String?> echoOptionalArg(Session session, [String? string]) async {
     return string;
   }
 
@@ -46,8 +37,10 @@ class MethodSignaturePermutationsEndpoint extends Endpoint {
   }
 
   Future<List<String?>> echoPositionalAndOptionalArgs(
-      Session session, String string1,
-      [String? string2]) async {
+    Session session,
+    String string1, [
+    String? string2,
+  ]) async {
     return [string1, string2];
   }
 
@@ -68,14 +61,18 @@ class MethodSignaturePermutationsEndpoint extends Endpoint {
   }
 
   Stream<String> echoPositionalArgStream(
-      Session session, Stream<String> strings) async* {
+    Session session,
+    Stream<String> strings,
+  ) async* {
     await for (var string in strings) {
       yield string;
     }
   }
 
   Future<String> echoPositionalArgStreamAsFuture(
-      Session session, Stream<String> strings) async {
+    Session session,
+    Stream<String> strings,
+  ) async {
     return strings.first;
   }
 }

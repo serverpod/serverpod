@@ -15,12 +15,7 @@ import 'simple_data.dart' as _i2;
 
 abstract class ObjectFieldPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectFieldPersist._({
-    this.id,
-    required this.normal,
-    this.api,
-    this.data,
-  });
+  ObjectFieldPersist._({this.id, required this.normal, this.api, this.data});
 
   factory ObjectFieldPersist({
     int? id,
@@ -34,10 +29,12 @@ abstract class ObjectFieldPersist
       id: jsonSerialization['id'] as int?,
       normal: jsonSerialization['normal'] as String,
       api: jsonSerialization['api'] as String?,
-      data: jsonSerialization['data'] == null
-          ? null
-          : _i2.SimpleData.fromJson(
-              (jsonSerialization['data'] as Map<String, dynamic>)),
+      data:
+          jsonSerialization['data'] == null
+              ? null
+              : _i2.SimpleData.fromJson(
+                (jsonSerialization['data'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -124,12 +121,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     required String normal,
     String? api,
     _i2.SimpleData? data,
-  }) : super._(
-          id: id,
-          normal: normal,
-          api: api,
-          data: data,
-        );
+  }) : super._(id: id, normal: normal, api: api, data: data);
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
@@ -154,20 +146,15 @@ class ObjectFieldPersistUpdateTable
     extends _i1.UpdateTable<ObjectFieldPersistTable> {
   ObjectFieldPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
-        table.normal,
-        value,
-      );
+  _i1.ColumnValue<String, String> normal(String value) =>
+      _i1.ColumnValue(table.normal, value);
 }
 
 class ObjectFieldPersistTable extends _i1.Table<int?> {
   ObjectFieldPersistTable({super.tableRelation})
-      : super(tableName: 'object_field_persist') {
+    : super(tableName: 'object_field_persist') {
     updateTable = ObjectFieldPersistUpdateTable(this);
-    normal = _i1.ColumnString(
-      'normal',
-      this,
-    );
+    normal = _i1.ColumnString('normal', this);
   }
 
   late final ObjectFieldPersistUpdateTable updateTable;
@@ -175,10 +162,7 @@ class ObjectFieldPersistTable extends _i1.Table<int?> {
   late final _i1.ColumnString normal;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        normal,
-      ];
+  List<_i1.Column> get columns => [id, normal];
 }
 
 class ObjectFieldPersistInclude extends _i1.IncludeObject {
@@ -376,7 +360,7 @@ class ObjectFieldPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldPersist>(
@@ -391,7 +375,7 @@ class ObjectFieldPersistRepository {
   Future<List<ObjectFieldPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     int? limit,
     int? offset,

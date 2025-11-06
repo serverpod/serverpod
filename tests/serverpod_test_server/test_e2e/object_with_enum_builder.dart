@@ -12,11 +12,11 @@ class ObjectWithEnumBuilder {
   List<List<TestEnum>> _enumListList;
 
   ObjectWithEnumBuilder()
-      : _testEnum = TestEnum.one,
-        _nullableEnum = null,
-        _enumList = [],
-        _nullableEnumList = [],
-        _enumListList = [];
+    : _testEnum = TestEnum.one,
+      _nullableEnum = null,
+      _enumList = [],
+      _nullableEnumList = [],
+      _enumListList = [];
 
   ObjectWithEnum build() {
     return ObjectWithEnum(

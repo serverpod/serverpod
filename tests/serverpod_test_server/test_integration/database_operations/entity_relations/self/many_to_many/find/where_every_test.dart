@@ -38,9 +38,8 @@ void main() async {
 
         var fetchedMembers = await Member.db.find(
           session,
-          where: (t) => t.blocking.every(
-            (c) => c.blockedId.equals(member[0].id!),
-          ),
+          where:
+              (t) => t.blocking.every((c) => c.blockedId.equals(member[0].id!)),
         );
 
         var memberNames = fetchedMembers.map((e) => e.name);
@@ -72,9 +71,10 @@ void main() async {
 
         var fetchedMembers = await Member.db.find(
           session,
-          where: (t) =>
-              t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
-              t.name.equals('Member3'),
+          where:
+              (t) =>
+                  t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
+                  t.name.equals('Member3'),
         );
 
         var memberNames = fetchedMembers.map((e) => e.name);
@@ -110,9 +110,10 @@ void main() async {
 
         var fetchedMembers = await Member.db.find(
           session,
-          where: (t) =>
-              t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
-              t.blocking.every((o) => o.blockedBy.name.equals('Member2')),
+          where:
+              (t) =>
+                  t.blocking.every((o) => o.blockedBy.name.equals('Member1')) |
+                  t.blocking.every((o) => o.blockedBy.name.equals('Member2')),
         );
 
         var memberNames = fetchedMembers.map((e) => e.name);

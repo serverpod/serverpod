@@ -33,10 +33,12 @@ abstract class AddressUuid implements _i1.SerializableModel {
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
-      inhabitant: jsonSerialization['inhabitant'] == null
-          ? null
-          : _i2.CitizenInt.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+      inhabitant:
+          jsonSerialization['inhabitant'] == null
+              ? null
+              : _i2.CitizenInt.fromJson(
+                (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -83,11 +85,11 @@ class _AddressUuidImpl extends AddressUuid {
     int? inhabitantId,
     _i2.CitizenInt? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [AddressUuid]
   /// with some or all fields replaced by the given arguments.
@@ -103,9 +105,10 @@ class _AddressUuidImpl extends AddressUuid {
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i2.CitizenInt?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant:
+          inhabitant is _i2.CitizenInt?
+              ? inhabitant
+              : this.inhabitant?.copyWith(),
     );
   }
 }

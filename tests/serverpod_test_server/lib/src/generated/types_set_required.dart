@@ -20,9 +20,12 @@ abstract class TypesSetRequired
 
   factory TypesSetRequired.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesSetRequired(
-        anInt: _i1.SetJsonExtension.fromJson(
+      anInt:
+          _i1.SetJsonExtension.fromJson(
             (jsonSerialization['anInt'] as List),
-            itemFromJson: (e) => e as int)!);
+            itemFromJson: (e) => e as int,
+          )!,
+    );
   }
 
   Set<int> anInt;

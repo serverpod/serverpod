@@ -30,9 +30,7 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
       if (type != null) '$type',
       'field "$fieldName"',
     ], ' ');
-    return parent.describe(description).add(
-          output.toString(),
-        );
+    return parent.describe(description).add(output.toString());
   }
 
   @override
@@ -60,25 +58,23 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
           .join(', ');
 
       return mismatchDescription.add(
-          'does not contain field "$fieldName". Found fields: [$fieldNames]');
+        'does not contain field "$fieldName". Found fields: [$fieldNames]',
+      );
     }
 
     var output = StringBuffer('contains field "$fieldName" but the field is ');
-    output.writeAll(
-      [
-        if (!fieldDecl._hasMatchingNullable(isNullable))
-          isNullable == true ? 'non-nullable' : 'nullable',
-        if (!fieldDecl._hasMatchingLate(isLate))
-          isLate == true ? 'non-late' : 'late',
-        if (!fieldDecl._hasMatchingFinal(isFinal))
-          isFinal == true ? 'non-final' : 'final',
-        if (!fieldDecl._hasMatchingOverride(isOverride))
-          isOverride == true ? 'non-override' : 'override',
-        if (!fieldDecl._hasMatchingType(type))
-          'of type "${fieldDecl._getType()}" instead of "$type"',
-      ],
-      ' and ',
-    );
+    output.writeAll([
+      if (!fieldDecl._hasMatchingNullable(isNullable))
+        isNullable == true ? 'non-nullable' : 'nullable',
+      if (!fieldDecl._hasMatchingLate(isLate))
+        isLate == true ? 'non-late' : 'late',
+      if (!fieldDecl._hasMatchingFinal(isFinal))
+        isFinal == true ? 'non-final' : 'final',
+      if (!fieldDecl._hasMatchingOverride(isOverride))
+        isOverride == true ? 'non-override' : 'override',
+      if (!fieldDecl._hasMatchingType(type))
+        'of type "${fieldDecl._getType()}" instead of "$type"',
+    ], ' and ');
 
     return mismatchDescription.add(output.toString());
   }

@@ -14,11 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithIndex
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithIndex._({
-    this.id,
-    required this.indexed,
-    required this.indexed2,
-  });
+  ObjectWithIndex._({this.id, required this.indexed, required this.indexed2});
 
   factory ObjectWithIndex({
     int? id,
@@ -51,27 +47,15 @@ abstract class ObjectWithIndex
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithIndex copyWith({
-    int? id,
-    int? indexed,
-    int? indexed2,
-  });
+  ObjectWithIndex copyWith({int? id, int? indexed, int? indexed2});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
+    return {if (id != null) 'id': id, 'indexed': indexed, 'indexed2': indexed2};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
-    };
+    return {if (id != null) 'id': id, 'indexed': indexed, 'indexed2': indexed2};
   }
 
   static ObjectWithIndexInclude include() {
@@ -107,15 +91,8 @@ abstract class ObjectWithIndex
 class _Undefined {}
 
 class _ObjectWithIndexImpl extends ObjectWithIndex {
-  _ObjectWithIndexImpl({
-    int? id,
-    required int indexed,
-    required int indexed2,
-  }) : super._(
-          id: id,
-          indexed: indexed,
-          indexed2: indexed2,
-        );
+  _ObjectWithIndexImpl({int? id, required int indexed, required int indexed2})
+    : super._(id: id, indexed: indexed, indexed2: indexed2);
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
@@ -137,29 +114,19 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
 class ObjectWithIndexUpdateTable extends _i1.UpdateTable<ObjectWithIndexTable> {
   ObjectWithIndexUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> indexed(int value) => _i1.ColumnValue(
-        table.indexed,
-        value,
-      );
+  _i1.ColumnValue<int, int> indexed(int value) =>
+      _i1.ColumnValue(table.indexed, value);
 
-  _i1.ColumnValue<int, int> indexed2(int value) => _i1.ColumnValue(
-        table.indexed2,
-        value,
-      );
+  _i1.ColumnValue<int, int> indexed2(int value) =>
+      _i1.ColumnValue(table.indexed2, value);
 }
 
 class ObjectWithIndexTable extends _i1.Table<int?> {
   ObjectWithIndexTable({super.tableRelation})
-      : super(tableName: 'object_with_index') {
+    : super(tableName: 'object_with_index') {
     updateTable = ObjectWithIndexUpdateTable(this);
-    indexed = _i1.ColumnInt(
-      'indexed',
-      this,
-    );
-    indexed2 = _i1.ColumnInt(
-      'indexed2',
-      this,
-    );
+    indexed = _i1.ColumnInt('indexed', this);
+    indexed2 = _i1.ColumnInt('indexed2', this);
   }
 
   late final ObjectWithIndexUpdateTable updateTable;
@@ -169,11 +136,7 @@ class ObjectWithIndexTable extends _i1.Table<int?> {
   late final _i1.ColumnInt indexed2;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        indexed,
-        indexed2,
-      ];
+  List<_i1.Column> get columns => [id, indexed, indexed2];
 }
 
 class ObjectWithIndexInclude extends _i1.IncludeObject {
@@ -294,10 +257,7 @@ class ObjectWithIndexRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithIndex>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectWithIndex>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectWithIndex]s in the list and returns the inserted rows.
@@ -311,10 +271,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithIndex>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectWithIndex>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectWithIndex] and returns the inserted row.
@@ -325,10 +282,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithIndex>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ObjectWithIndex>(row, transaction: transaction);
   }
 
   /// Updates all [ObjectWithIndex]s in the list and returns the updated rows. If
@@ -371,7 +325,7 @@ class ObjectWithIndexRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithIndex>(
@@ -386,7 +340,7 @@ class ObjectWithIndexRepository {
   Future<List<ObjectWithIndex>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     int? limit,
     int? offset,
@@ -415,10 +369,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithIndex>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectWithIndex>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectWithIndex].
@@ -427,10 +378,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithIndex>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ObjectWithIndex>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -23,18 +23,16 @@ const _excludedMethodNameSet = {
 abstract class EndpointMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid endpoint method.
-  static MethodDefinition parse(
-    MethodElement method,
-    Parameters parameters,
-  ) {
+  static MethodDefinition parse(MethodElement method, Parameters parameters) {
     var isStream =
         method.returnType.isDartAsyncStream || parameters._hasStream();
 
     if (isStream) {
       return MethodStreamDefinition(
         name: method.displayName,
-        documentationComment:
-            stripDocumentationTemplateMarkers(method.documentationComment),
+        documentationComment: stripDocumentationTemplateMarkers(
+          method.documentationComment,
+        ),
         annotations: AnnotationAnalyzer.parseAnnotations(method),
         parameters: parameters.required,
         parametersNamed: parameters.named,
@@ -45,8 +43,9 @@ abstract class EndpointMethodAnalyzer {
 
     return MethodCallDefinition(
       name: method.displayName,
-      documentationComment:
-          stripDocumentationTemplateMarkers(method.documentationComment),
+      documentationComment: stripDocumentationTemplateMarkers(
+        method.documentationComment,
+      ),
       annotations: AnnotationAnalyzer.parseAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
@@ -62,10 +61,7 @@ abstract class EndpointMethodAnalyzer {
     MethodElement methodElement,
     String filePath,
   ) {
-    return '${EndpointClassAnalyzer.elementNamespace(
-      classElement,
-      filePath,
-    )}_${methodElement.name}';
+    return '${EndpointClassAnalyzer.elementNamespace(classElement, filePath)}_${methodElement.name}';
   }
 
   /// Returns true if the [MethodElement] is an endpoint method that should
@@ -186,6 +182,9 @@ extension on List<FormalParameterElement> {
 }
 
 extension on Parameters {
-  bool _hasStream() => [...required, ...positional, ...named]
-      .any((element) => element.type.dartType?.isDartAsyncStream ?? false);
+  bool _hasStream() => [
+    ...required,
+    ...positional,
+    ...named,
+  ].any((element) => element.type.dartType?.isDartAsyncStream ?? false);
 }

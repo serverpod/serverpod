@@ -154,7 +154,8 @@ extension SetJsonExtension<T> on Set<T> {
 
     if (set != null && value!.length != set.length) {
       throw Exception(
-          'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).');
+        'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).',
+      );
     }
 
     return set;

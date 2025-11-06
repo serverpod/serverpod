@@ -10,7 +10,7 @@ void main() {
   var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
-    'database': 'dbpassword'
+    'database': 'dbpassword',
   };
 
   test(
@@ -33,10 +33,7 @@ apiServer:
 
       expect(config.sessionLogs.persistentEnabled, isFalse);
       expect(config.sessionLogs.consoleEnabled, isTrue);
-      expect(
-        config.sessionLogs.consoleLogFormat,
-        ConsoleLogFormat.text,
-      );
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
     },
   );
 
@@ -60,10 +57,7 @@ apiServer:
 
       expect(config.sessionLogs.persistentEnabled, isFalse);
       expect(config.sessionLogs.consoleEnabled, isTrue);
-      expect(
-        config.sessionLogs.consoleLogFormat,
-        ConsoleLogFormat.json,
-      );
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
     },
   );
 
@@ -92,10 +86,7 @@ database:
 
       expect(config.sessionLogs.persistentEnabled, isTrue);
       expect(config.sessionLogs.consoleEnabled, isTrue);
-      expect(
-        config.sessionLogs.consoleLogFormat,
-        ConsoleLogFormat.text,
-      );
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.text);
     },
   );
 
@@ -124,10 +115,7 @@ database:
 
       expect(config.sessionLogs.persistentEnabled, isTrue);
       expect(config.sessionLogs.consoleEnabled, isFalse);
-      expect(
-        config.sessionLogs.consoleLogFormat,
-        ConsoleLogFormat.json,
-      );
+      expect(config.sessionLogs.consoleLogFormat, ConsoleLogFormat.json);
     },
   );
 
@@ -157,7 +145,8 @@ sessionLogs:
             (e) => e.message,
             'message',
             contains(
-                'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.'),
+              'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.',
+            ),
           ),
         ),
       );
@@ -341,8 +330,13 @@ sessionLogs:
           passwords,
           loadYaml(serverpodConfig),
         ),
-        throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
-            'Invalid console log format: "invalid_value". Valid values are: json, text')),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid console log format: "invalid_value". Valid values are: json, text',
+          ),
+        ),
       );
     },
   );

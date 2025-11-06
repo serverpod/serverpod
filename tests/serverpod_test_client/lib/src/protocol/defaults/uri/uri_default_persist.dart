@@ -13,23 +13,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class UriDefaultPersist implements _i1.SerializableModel {
-  UriDefaultPersist._({
-    this.id,
-    this.uriDefaultPersist,
-  });
+  UriDefaultPersist._({this.id, this.uriDefaultPersist});
 
-  factory UriDefaultPersist({
-    int? id,
-    Uri? uriDefaultPersist,
-  }) = _UriDefaultPersistImpl;
+  factory UriDefaultPersist({int? id, Uri? uriDefaultPersist}) =
+      _UriDefaultPersistImpl;
 
   factory UriDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      uriDefaultPersist: jsonSerialization['uriDefaultPersist'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultPersist']),
+      uriDefaultPersist:
+          jsonSerialization['uriDefaultPersist'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(
+                jsonSerialization['uriDefaultPersist'],
+              ),
     );
   }
 
@@ -43,10 +40,7 @@ abstract class UriDefaultPersist implements _i1.SerializableModel {
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UriDefaultPersist copyWith({
-    int? id,
-    Uri? uriDefaultPersist,
-  });
+  UriDefaultPersist copyWith({int? id, Uri? uriDefaultPersist});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -65,13 +59,8 @@ abstract class UriDefaultPersist implements _i1.SerializableModel {
 class _Undefined {}
 
 class _UriDefaultPersistImpl extends UriDefaultPersist {
-  _UriDefaultPersistImpl({
-    int? id,
-    Uri? uriDefaultPersist,
-  }) : super._(
-          id: id,
-          uriDefaultPersist: uriDefaultPersist,
-        );
+  _UriDefaultPersistImpl({int? id, Uri? uriDefaultPersist})
+    : super._(id: id, uriDefaultPersist: uriDefaultPersist);
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -83,9 +72,10 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }) {
     return UriDefaultPersist(
       id: id is int? ? id : this.id,
-      uriDefaultPersist: uriDefaultPersist is Uri?
-          ? uriDefaultPersist
-          : this.uriDefaultPersist,
+      uriDefaultPersist:
+          uriDefaultPersist is Uri?
+              ? uriDefaultPersist
+              : this.uriDefaultPersist,
     );
   }
 }

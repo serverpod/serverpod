@@ -38,13 +38,16 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
-      customer: jsonSerialization['customer'] == null
-          ? null
-          : _i2.Customer.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      customer:
+          jsonSerialization['customer'] == null
+              ? null
+              : _i2.Customer.fromJson(
+                (jsonSerialization['customer'] as Map<String, dynamic>),
+              ),
+      comments:
+          (jsonSerialization['comments'] as List?)
+              ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -104,10 +107,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.CustomerInclude? customer,
     _i3.CommentIncludeList? comments,
   }) {
-    return OrderInclude._(
-      customer: customer,
-      comments: comments,
-    );
+    return OrderInclude._(customer: customer, comments: comments);
   }
 
   static OrderIncludeList includeList({
@@ -146,12 +146,12 @@ class _OrderImpl extends Order {
     _i2.Customer? customer,
     List<_i3.Comment>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -170,9 +170,10 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.Comment>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      comments:
+          comments is List<_i3.Comment>?
+              ? comments
+              : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -180,28 +181,18 @@ class _OrderImpl extends Order {
 class OrderUpdateTable extends _i1.UpdateTable<OrderTable> {
   OrderUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+  _i1.ColumnValue<String, String> description(String value) =>
+      _i1.ColumnValue(table.description, value);
 
-  _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
-        table.customerId,
-        value,
-      );
+  _i1.ColumnValue<int, int> customerId(int value) =>
+      _i1.ColumnValue(table.customerId, value);
 }
 
 class OrderTable extends _i1.Table<int?> {
   OrderTable({super.tableRelation}) : super(tableName: 'order') {
     updateTable = OrderUpdateTable(this);
-    description = _i1.ColumnString(
-      'description',
-      this,
-    );
-    customerId = _i1.ColumnInt(
-      'customerId',
-      this,
-    );
+    description = _i1.ColumnString('description', this);
+    customerId = _i1.ColumnInt('customerId', this);
   }
 
   late final OrderUpdateTable updateTable;
@@ -223,8 +214,9 @@ class OrderTable extends _i1.Table<int?> {
       field: Order.t.customerId,
       foreignField: _i2.Customer.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CustomerTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CustomerTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
   }
@@ -236,8 +228,9 @@ class OrderTable extends _i1.Table<int?> {
       field: Order.t.id,
       foreignField: _i3.Comment.t.orderId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CommentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CommentTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
@@ -249,23 +242,21 @@ class OrderTable extends _i1.Table<int?> {
       field: Order.t.id,
       foreignField: _i3.Comment.t.orderId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CommentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CommentTable(tableRelation: foreignTableRelation),
     );
     _comments = _i1.ManyRelation<_i3.CommentTable>(
       tableWithRelations: relationTable,
       table: _i3.CommentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _comments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        description,
-        customerId,
-      ];
+  List<_i1.Column> get columns => [id, description, customerId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -294,9 +285,9 @@ class OrderInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'customer': _customer,
-        'comments': _comments,
-      };
+    'customer': _customer,
+    'comments': _comments,
+  };
 
   @override
   _i1.Table<int?> get table => Order.t;
@@ -437,10 +428,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Order>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Order>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Order] and returns the inserted row.
@@ -451,10 +439,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Order>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Order>(row, transaction: transaction);
   }
 
   /// Updates all [Order]s in the list and returns the updated rows. If
@@ -539,10 +524,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Order>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Order>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Order].
@@ -551,10 +533,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Order>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Order>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

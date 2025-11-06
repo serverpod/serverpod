@@ -25,11 +25,9 @@ class TokenVerifier {
   Client? _openIdClient;
 
   /// Creates a new [TokenVerifier] object with a [projectId] and [Client]
-  TokenVerifier({
-    required String projectId,
-    http.Client? httpClient,
-  })  : _projectId = projectId,
-        _httpClient = httpClient;
+  TokenVerifier({required String projectId, http.Client? httpClient})
+    : _projectId = projectId,
+      _httpClient = httpClient;
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {
@@ -39,18 +37,12 @@ class TokenVerifier {
 
     try {
       await for (var e in credential.validateToken()) {
-        throw FirebaseJWTException(
-          'Validating ID token failed: $e',
-        );
+        throw FirebaseJWTException('Validating ID token failed: $e');
       }
     } on ArgumentError catch (e) {
-      throw FirebaseJWTFormatException(
-        'JWT Argument Error: $e',
-      );
+      throw FirebaseJWTFormatException('JWT Argument Error: $e');
     } on FormatException catch (e) {
-      throw FirebaseJWTFormatException(
-        'JWT Format Exception: $e',
-      );
+      throw FirebaseJWTFormatException('JWT Format Exception: $e');
     }
 
     if (!_isUid(credential.idToken.claims.subject)) {
@@ -71,11 +63,7 @@ class TokenVerifier {
       Issuer.firebase(_projectId),
       httpClient: _httpClient,
     );
-    client = Client(
-      issuer,
-      _projectId,
-      httpClient: _httpClient,
-    );
+    client = Client(issuer, _projectId, httpClient: _httpClient);
 
     _openIdClient = client;
     return client;

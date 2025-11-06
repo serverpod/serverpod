@@ -15,10 +15,8 @@ class DeserializationTypeNotFoundException implements Exception {
   final Type? type;
 
   /// Creates a new [DeserializationTypeNotFoundException].
-  DeserializationTypeNotFoundException({
-    String? message,
-    this.type,
-  }) : message = message ?? 'No deserialization found for type $type';
+  DeserializationTypeNotFoundException({String? message, this.type})
+    : message = message ?? 'No deserialization found for type $type';
 
   @override
   String toString() => message;
@@ -106,9 +104,7 @@ abstract class SerializationManager {
       return BigInt.parse(data) as T;
     }
 
-    throw DeserializationTypeNotFoundException(
-      type: t,
-    );
+    throw DeserializationTypeNotFoundException(type: t);
   }
 
   /// Get the className for the provided object.
@@ -196,10 +192,7 @@ abstract class SerializationManager {
       );
     }
 
-    return {
-      'className': className,
-      'data': data,
-    };
+    return {'className': className, 'data': data};
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
@@ -211,60 +204,54 @@ abstract class SerializationManager {
     bool encodeForProtocol = false,
   }) {
     // This is the only time [jsonEncode] should be used in the project.
-    return JsonEncoder.withIndent(
-      formatted ? '  ' : null,
-      (nonEncodable) {
-        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
-        if (nonEncodable is DateTime) {
-          return nonEncodable.toUtc().toIso8601String();
-        } else if (nonEncodable is ByteData) {
-          return nonEncodable.base64encodedString();
-        } else if (nonEncodable is Duration) {
-          return nonEncodable.inMilliseconds;
-        } else if (nonEncodable is UuidValue) {
-          return nonEncodable.uuid;
-        } else if (nonEncodable is Uri) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is BigInt) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is Vector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is HalfVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is SparseVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Bit) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Set) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
-          return nonEncodable.entries
-              .map((e) => {'k': e.key, 'v': e.value})
-              .toList();
-        } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
-          return nonEncodable.toJsonForProtocol();
-        } else {
-          if (object is Record) {
-            throw Exception(
-              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
-            );
-          }
-
-          // ignore: avoid_dynamic_calls
-          return nonEncodable?.toJson();
-          // throws NoSuchMethodError if toJson is not implemented
+    return JsonEncoder.withIndent(formatted ? '  ' : null, (nonEncodable) {
+      //TODO: Remove this in 2.0.0 as the extensions should be used instead.
+      if (nonEncodable is DateTime) {
+        return nonEncodable.toUtc().toIso8601String();
+      } else if (nonEncodable is ByteData) {
+        return nonEncodable.base64encodedString();
+      } else if (nonEncodable is Duration) {
+        return nonEncodable.inMilliseconds;
+      } else if (nonEncodable is UuidValue) {
+        return nonEncodable.uuid;
+      } else if (nonEncodable is Uri) {
+        return nonEncodable.toString();
+      } else if (nonEncodable is BigInt) {
+        return nonEncodable.toString();
+      } else if (nonEncodable is Vector) {
+        return nonEncodable.toList();
+      } else if (nonEncodable is HalfVector) {
+        return nonEncodable.toList();
+      } else if (nonEncodable is SparseVector) {
+        return nonEncodable.toList();
+      } else if (nonEncodable is Bit) {
+        return nonEncodable.toList();
+      } else if (nonEncodable is Set) {
+        return nonEncodable.toList();
+      } else if (nonEncodable is Map && nonEncodable.keyType != String) {
+        return nonEncodable.entries
+            .map((e) => {'k': e.key, 'v': e.value})
+            .toList();
+      } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
+        return nonEncodable.toJsonForProtocol();
+      } else {
+        if (object is Record) {
+          throw Exception(
+            'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
+          );
         }
-      },
-    ).convert(object);
+
+        // ignore: avoid_dynamic_calls
+        return nonEncodable?.toJson();
+        // throws NoSuchMethodError if toJson is not implemented
+      }
+    }).convert(object);
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
   /// if object implements [ProtocolSerialization] interface then
   /// [toJsonForProtocol] it will be used instead of [toJson] method
-  static String encodeForProtocol(
-    Object? object, {
-    bool formatted = false,
-  }) {
+  static String encodeForProtocol(Object? object, {bool formatted = false}) {
     /// Added this check to avoid the multiple if-else conditions inside the encode method
     /// If the object implements ProtocolSerialization, directly use toJsonForProtocol.
     if (object is ProtocolSerialization) {
@@ -275,25 +262,15 @@ abstract class SerializationManager {
       );
     }
 
-    return encode(
-      object,
-      formatted: formatted,
-      encodeForProtocol: true,
-    );
+    return encode(object, formatted: formatted, encodeForProtocol: true);
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if the class is unknown.
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
-  String encodeWithType(
-    Object? object, {
-    bool formatted = false,
-  }) {
-    return encode(
-      wrapWithClassName(object),
-      formatted: formatted,
-    );
+  String encodeWithType(Object? object, {bool formatted = false}) {
+    return encode(wrapWithClassName(object), formatted: formatted);
   }
 
   /// Encode the provided [object] to a Json-formatted [String], including the
@@ -301,10 +278,7 @@ abstract class SerializationManager {
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation. If [object] implements [ProtocolSerialization] interface, then
   /// [toJsonForProtocol] will be used instead of the [toJson] method.
-  String encodeWithTypeForProtocol(
-    Object? object, {
-    bool formatted = false,
-  }) {
+  String encodeWithTypeForProtocol(Object? object, {bool formatted = false}) {
     return encode(
       wrapWithClassName(object),
       formatted: formatted,

@@ -36,10 +36,12 @@ abstract class AddressUuid
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
-      inhabitant: jsonSerialization['inhabitant'] == null
-          ? null
-          : _i2.CitizenInt.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+      inhabitant:
+          jsonSerialization['inhabitant'] == null
+              ? null
+              : _i2.CitizenInt.fromJson(
+                (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -127,11 +129,11 @@ class _AddressUuidImpl extends AddressUuid {
     int? inhabitantId,
     _i2.CitizenInt? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [AddressUuid]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +149,10 @@ class _AddressUuidImpl extends AddressUuid {
       id: id ?? this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant: inhabitant is _i2.CitizenInt?
-          ? inhabitant
-          : this.inhabitant?.copyWith(),
+      inhabitant:
+          inhabitant is _i2.CitizenInt?
+              ? inhabitant
+              : this.inhabitant?.copyWith(),
     );
   }
 }
@@ -157,28 +160,18 @@ class _AddressUuidImpl extends AddressUuid {
 class AddressUuidUpdateTable extends _i1.UpdateTable<AddressUuidTable> {
   AddressUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
-        table.street,
-        value,
-      );
+  _i1.ColumnValue<String, String> street(String value) =>
+      _i1.ColumnValue(table.street, value);
 
-  _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
-        table.inhabitantId,
-        value,
-      );
+  _i1.ColumnValue<int, int> inhabitantId(int? value) =>
+      _i1.ColumnValue(table.inhabitantId, value);
 }
 
 class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
   AddressUuidTable({super.tableRelation}) : super(tableName: 'address_uuid') {
     updateTable = AddressUuidUpdateTable(this);
-    street = _i1.ColumnString(
-      'street',
-      this,
-    );
-    inhabitantId = _i1.ColumnInt(
-      'inhabitantId',
-      this,
-    );
+    street = _i1.ColumnString('street', this);
+    inhabitantId = _i1.ColumnInt('inhabitantId', this);
   }
 
   late final AddressUuidUpdateTable updateTable;
@@ -196,18 +189,15 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
       field: AddressUuid.t.inhabitantId,
       foreignField: _i2.CitizenInt.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.CitizenIntTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.CitizenIntTable(tableRelation: foreignTableRelation),
     );
     return _inhabitant!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        street,
-        inhabitantId,
-      ];
+  List<_i1.Column> get columns => [id, street, inhabitantId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -367,10 +357,7 @@ class AddressUuidRepository {
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<AddressUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<AddressUuid>(rows, transaction: transaction);
   }
 
   /// Inserts a single [AddressUuid] and returns the inserted row.
@@ -381,10 +368,7 @@ class AddressUuidRepository {
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<AddressUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<AddressUuid>(row, transaction: transaction);
   }
 
   /// Updates all [AddressUuid]s in the list and returns the updated rows. If
@@ -469,10 +453,7 @@ class AddressUuidRepository {
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<AddressUuid>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<AddressUuid>(rows, transaction: transaction);
   }
 
   /// Deletes a single [AddressUuid].
@@ -481,10 +462,7 @@ class AddressUuidRepository {
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<AddressUuid>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<AddressUuid>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

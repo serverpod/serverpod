@@ -14,29 +14,22 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
 abstract class Player implements _i1.SerializableModel {
-  Player._({
-    this.id,
-    required this.name,
-    this.teamId,
-    this.team,
-  });
+  Player._({this.id, required this.name, this.teamId, this.team});
 
-  factory Player({
-    int? id,
-    required String name,
-    int? teamId,
-    _i2.Team? team,
-  }) = _PlayerImpl;
+  factory Player({int? id, required String name, int? teamId, _i2.Team? team}) =
+      _PlayerImpl;
 
   factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
     return Player(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       teamId: jsonSerialization['teamId'] as int?,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.Team.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -54,12 +47,7 @@ abstract class Player implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Player copyWith({
-    int? id,
-    String? name,
-    int? teamId,
-    _i2.Team? team,
-  });
+  Player copyWith({int? id, String? name, int? teamId, _i2.Team? team});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -79,17 +67,8 @@ abstract class Player implements _i1.SerializableModel {
 class _Undefined {}
 
 class _PlayerImpl extends Player {
-  _PlayerImpl({
-    int? id,
-    required String name,
-    int? teamId,
-    _i2.Team? team,
-  }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+  _PlayerImpl({int? id, required String name, int? teamId, _i2.Team? team})
+    : super._(id: id, name: name, teamId: teamId, team: team);
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.

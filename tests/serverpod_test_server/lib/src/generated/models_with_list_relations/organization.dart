@@ -38,14 +38,17 @@ abstract class Organization
     return Organization(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      people: (jsonSerialization['people'] as List?)
-          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      people:
+          (jsonSerialization['people'] as List?)
+              ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
+              .toList(),
       cityId: jsonSerialization['cityId'] as int?,
-      city: jsonSerialization['city'] == null
-          ? null
-          : _i3.City.fromJson(
-              (jsonSerialization['city'] as Map<String, dynamic>)),
+      city:
+          jsonSerialization['city'] == null
+              ? null
+              : _i3.City.fromJson(
+                (jsonSerialization['city'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -105,10 +108,7 @@ abstract class Organization
     _i2.PersonIncludeList? people,
     _i3.CityInclude? city,
   }) {
-    return OrganizationInclude._(
-      people: people,
-      city: city,
-    );
+    return OrganizationInclude._(people: people, city: city);
   }
 
   static OrganizationIncludeList includeList({
@@ -146,13 +146,7 @@ class _OrganizationImpl extends Organization {
     List<_i2.Person>? people,
     int? cityId,
     _i3.City? city,
-  }) : super._(
-          id: id,
-          name: name,
-          people: people,
-          cityId: cityId,
-          city: city,
-        );
+  }) : super._(id: id, name: name, people: people, cityId: cityId, city: city);
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
@@ -168,9 +162,10 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>?
-          ? people
-          : this.people?.map((e0) => e0.copyWith()).toList(),
+      people:
+          people is List<_i2.Person>?
+              ? people
+              : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
       city: city is _i3.City? ? city : this.city?.copyWith(),
     );
@@ -180,28 +175,18 @@ class _OrganizationImpl extends Organization {
 class OrganizationUpdateTable extends _i1.UpdateTable<OrganizationTable> {
   OrganizationUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
-        table.cityId,
-        value,
-      );
+  _i1.ColumnValue<int, int> cityId(int? value) =>
+      _i1.ColumnValue(table.cityId, value);
 }
 
 class OrganizationTable extends _i1.Table<int?> {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     updateTable = OrganizationUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    cityId = _i1.ColumnInt(
-      'cityId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    cityId = _i1.ColumnInt('cityId', this);
   }
 
   late final OrganizationUpdateTable updateTable;
@@ -223,8 +208,9 @@ class OrganizationTable extends _i1.Table<int?> {
       field: Organization.t.id,
       foreignField: _i2.Person.t.organizationId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.PersonTable(tableRelation: foreignTableRelation),
     );
     return ___people!;
   }
@@ -236,8 +222,9 @@ class OrganizationTable extends _i1.Table<int?> {
       field: Organization.t.cityId,
       foreignField: _i3.City.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CityTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CityTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
@@ -249,23 +236,21 @@ class OrganizationTable extends _i1.Table<int?> {
       field: Organization.t.id,
       foreignField: _i2.Person.t.organizationId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.PersonTable(tableRelation: foreignTableRelation),
     );
     _people = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
       table: _i2.PersonTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _people!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        cityId,
-      ];
+  List<_i1.Column> get columns => [id, name, cityId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -293,10 +278,7 @@ class OrganizationInclude extends _i1.IncludeObject {
   _i3.CityInclude? _city;
 
   @override
-  Map<String, _i1.Include?> get includes => {
-        'people': _people,
-        'city': _city,
-      };
+  Map<String, _i1.Include?> get includes => {'people': _people, 'city': _city};
 
   @override
   _i1.Table<int?> get table => Organization.t;
@@ -441,10 +423,7 @@ class OrganizationRepository {
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Organization>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Organization>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Organization] and returns the inserted row.
@@ -455,10 +434,7 @@ class OrganizationRepository {
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Organization>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Organization>(row, transaction: transaction);
   }
 
   /// Updates all [Organization]s in the list and returns the updated rows. If
@@ -543,10 +519,7 @@ class OrganizationRepository {
     List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Organization>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Organization>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Organization].
@@ -555,10 +528,7 @@ class OrganizationRepository {
     Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Organization>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Organization>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

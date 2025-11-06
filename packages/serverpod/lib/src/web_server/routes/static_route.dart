@@ -4,10 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 /// Route for serving static assets.
 class StaticRoute extends Route {
-  static CacheControlHeader? _defaultFactory(
-    Request ctx,
-    FileInfo fileInfo,
-  ) =>
+  static CacheControlHeader? _defaultFactory(Request ctx, FileInfo fileInfo) =>
       null;
 
   /// Returns a [CacheControlHeader] with private and no-cache.
@@ -22,8 +19,12 @@ class StaticRoute extends Route {
       (_, __) => CacheControlHeader(publicCache: true, maxAge: maxAge);
 
   /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
-  CacheControlFactory publicImmutable({int? maxAge}) => (_, __) =>
-      CacheControlHeader(publicCache: true, immutable: true, maxAge: maxAge);
+  CacheControlFactory publicImmutable({int? maxAge}) =>
+      (_, __) => CacheControlHeader(
+        publicCache: true,
+        immutable: true,
+        maxAge: maxAge,
+      );
 
   final Handler _handler;
 
@@ -34,9 +35,11 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
-  factory StaticRoute.directory(Directory root,
-      {CacheBustingConfig? cacheBustingConfig,
-      CacheControlFactory cacheControlFactory = _defaultFactory}) {
+  factory StaticRoute.directory(
+    Directory root, {
+    CacheBustingConfig? cacheBustingConfig,
+    CacheControlFactory cacheControlFactory = _defaultFactory,
+  }) {
     return StaticRoute._(
       StaticHandler.directory(
         root,
@@ -51,13 +54,12 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
-  factory StaticRoute.file(File file,
-      {CacheControlFactory cacheControlFactory = _defaultFactory}) {
+  factory StaticRoute.file(
+    File file, {
+    CacheControlFactory cacheControlFactory = _defaultFactory,
+  }) {
     return StaticRoute._(
-      StaticHandler.file(
-        file,
-        cacheControl: cacheControlFactory,
-      ).asHandler,
+      StaticHandler.file(file, cacheControl: cacheControlFactory).asHandler,
     );
   }
 

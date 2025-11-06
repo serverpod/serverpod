@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 Future createTestEnvironment(
-    Directory testProjectDirectory, String pathToServerpodRoot) async {
+  Directory testProjectDirectory,
+  String pathToServerpodRoot,
+) async {
   var pubspecFile = File(path.join(testProjectDirectory.path, 'pubspec.yaml'));
   pubspecFile.createSync(recursive: true);
 
@@ -40,12 +42,11 @@ dependency_overrides:
 
   var result = await Process.run(
     'dart',
-    [
-      'pub',
-      'get',
-    ],
-    workingDirectory:
-        path.join(Directory.current.path, testProjectDirectory.path),
+    ['pub', 'get'],
+    workingDirectory: path.join(
+      Directory.current.path,
+      testProjectDirectory.path,
+    ),
   );
 
   assert(result.exitCode == 0, 'Failed to run pub get.');

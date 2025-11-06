@@ -37,12 +37,7 @@ final class AppleIDP {
 
   final TokenIssuer _tokenIssuer;
 
-  AppleIDP._(
-    this.config,
-    this._tokenIssuer,
-    this.utils,
-    this.admin,
-  );
+  AppleIDP._(this.config, this._tokenIssuer, this.utils, this.admin);
 
   /// Creates a new instance of [AppleIDP].
   factory AppleIDP(
@@ -56,12 +51,7 @@ final class AppleIDP {
     );
     final admin = AppleIDPAdmin(utils: utils);
 
-    return AppleIDP._(
-      config,
-      tokenIssuer,
-      utils,
-      admin,
-    );
+    return AppleIDP._(config, tokenIssuer, utils, admin);
   }
 
   /// {@macro apple_idp_base_endpoint.login}
@@ -79,43 +69,47 @@ final class AppleIDP {
     final Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db, transaction, (final transaction) async {
-      final account = await utils.authenticate(
-        session,
-        identityToken: identityToken,
-        authorizationCode: authorizationCode,
-        isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
-        firstName: firstName,
-        lastName: lastName,
-        transaction: transaction,
-      );
-
-      if (account.newAccount) {
-        await UserProfiles.createUserProfile(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await utils.authenticate(
           session,
-          account.authUserId,
-          UserProfileData(
-            fullName: [account.details.firstName, account.details.lastName]
-                .nonNulls
-                .map((final n) => n.trim())
-                .where((final n) => n.isNotEmpty)
-                .join(' '),
-            email: account.details.isVerifiedEmail == true
-                ? account.details.email
-                : null,
-          ),
+          identityToken: identityToken,
+          authorizationCode: authorizationCode,
+          isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+          firstName: firstName,
+          lastName: lastName,
           transaction: transaction,
         );
-      }
 
-      return _tokenIssuer.issueToken(
-        session,
-        authUserId: account.authUserId,
-        method: method,
-        transaction: transaction,
-        scopes: account.scopes,
-      );
-    });
+        if (account.newAccount) {
+          await UserProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: [account.details.firstName, account.details.lastName]
+                  .nonNulls
+                  .map((final n) => n.trim())
+                  .where((final n) => n.isNotEmpty)
+                  .join(' '),
+              email:
+                  account.details.isVerifiedEmail == true
+                      ? account.details.email
+                      : null,
+            ),
+            transaction: transaction,
+          );
+        }
+
+        return _tokenIssuer.issueToken(
+          session,
+          authUserId: account.authUserId,
+          method: method,
+          transaction: transaction,
+          scopes: account.scopes,
+        );
+      },
+    );
   }
 
   /// {@template apple_idp.revokedNotificationRoute}

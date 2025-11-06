@@ -34,23 +34,31 @@ abstract class ObjectWithHalfVector implements _i1.SerializableModel {
   }) = _ObjectWithHalfVectorImpl;
 
   factory ObjectWithHalfVector.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithHalfVector(
       id: jsonSerialization['id'] as int?,
-      halfVector:
-          _i1.HalfVectorJsonExtension.fromJson(jsonSerialization['halfVector']),
-      halfVectorNullable: jsonSerialization['halfVectorNullable'] == null
-          ? null
-          : _i1.HalfVectorJsonExtension.fromJson(
-              jsonSerialization['halfVectorNullable']),
+      halfVector: _i1.HalfVectorJsonExtension.fromJson(
+        jsonSerialization['halfVector'],
+      ),
+      halfVectorNullable:
+          jsonSerialization['halfVectorNullable'] == null
+              ? null
+              : _i1.HalfVectorJsonExtension.fromJson(
+                jsonSerialization['halfVectorNullable'],
+              ),
       halfVectorIndexedHnsw: _i1.HalfVectorJsonExtension.fromJson(
-          jsonSerialization['halfVectorIndexedHnsw']),
+        jsonSerialization['halfVectorIndexedHnsw'],
+      ),
       halfVectorIndexedHnswWithParams: _i1.HalfVectorJsonExtension.fromJson(
-          jsonSerialization['halfVectorIndexedHnswWithParams']),
+        jsonSerialization['halfVectorIndexedHnswWithParams'],
+      ),
       halfVectorIndexedIvfflat: _i1.HalfVectorJsonExtension.fromJson(
-          jsonSerialization['halfVectorIndexedIvfflat']),
+        jsonSerialization['halfVectorIndexedIvfflat'],
+      ),
       halfVectorIndexedIvfflatWithParams: _i1.HalfVectorJsonExtension.fromJson(
-          jsonSerialization['halfVectorIndexedIvfflatWithParams']),
+        jsonSerialization['halfVectorIndexedIvfflatWithParams'],
+      ),
     );
   }
 
@@ -117,15 +125,14 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
     required _i1.HalfVector halfVectorIndexedIvfflat,
     required _i1.HalfVector halfVectorIndexedIvfflatWithParams,
   }) : super._(
-          id: id,
-          halfVector: halfVector,
-          halfVectorNullable: halfVectorNullable,
-          halfVectorIndexedHnsw: halfVectorIndexedHnsw,
-          halfVectorIndexedHnswWithParams: halfVectorIndexedHnswWithParams,
-          halfVectorIndexedIvfflat: halfVectorIndexedIvfflat,
-          halfVectorIndexedIvfflatWithParams:
-              halfVectorIndexedIvfflatWithParams,
-        );
+         id: id,
+         halfVector: halfVector,
+         halfVectorNullable: halfVectorNullable,
+         halfVectorIndexedHnsw: halfVectorIndexedHnsw,
+         halfVectorIndexedHnswWithParams: halfVectorIndexedHnswWithParams,
+         halfVectorIndexedIvfflat: halfVectorIndexedIvfflat,
+         halfVectorIndexedIvfflatWithParams: halfVectorIndexedIvfflatWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithHalfVector]
   /// with some or all fields replaced by the given arguments.
@@ -143,16 +150,19 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
     return ObjectWithHalfVector(
       id: id is int? ? id : this.id,
       halfVector: halfVector ?? this.halfVector.clone(),
-      halfVectorNullable: halfVectorNullable is _i1.HalfVector?
-          ? halfVectorNullable
-          : this.halfVectorNullable?.clone(),
+      halfVectorNullable:
+          halfVectorNullable is _i1.HalfVector?
+              ? halfVectorNullable
+              : this.halfVectorNullable?.clone(),
       halfVectorIndexedHnsw:
           halfVectorIndexedHnsw ?? this.halfVectorIndexedHnsw.clone(),
-      halfVectorIndexedHnswWithParams: halfVectorIndexedHnswWithParams ??
+      halfVectorIndexedHnswWithParams:
+          halfVectorIndexedHnswWithParams ??
           this.halfVectorIndexedHnswWithParams.clone(),
       halfVectorIndexedIvfflat:
           halfVectorIndexedIvfflat ?? this.halfVectorIndexedIvfflat.clone(),
-      halfVectorIndexedIvfflatWithParams: halfVectorIndexedIvfflatWithParams ??
+      halfVectorIndexedIvfflatWithParams:
+          halfVectorIndexedIvfflatWithParams ??
           this.halfVectorIndexedIvfflatWithParams.clone(),
     );
   }

@@ -39,11 +39,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return emailIDP.login(
-      session,
-      email: email,
-      password: password,
-    );
+    return emailIDP.login(session, email: email, password: password);
   }
 
   /// {@template email_account_base_endpoint.start_registration}

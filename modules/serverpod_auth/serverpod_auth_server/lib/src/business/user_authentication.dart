@@ -40,11 +40,7 @@ class UserAuthentication {
 
     if (updateSession) {
       session.updateAuthenticated(
-        AuthenticationInfo(
-          userId.toString(),
-          scopes,
-          authId: '${result.id}',
-        ),
+        AuthenticationInfo(userId.toString(), scopes, authId: '${result.id}'),
       );
     }
     return result;
@@ -57,10 +53,7 @@ class UserAuthentication {
   ///
   /// Note: The method will fail silently if no authentication information is
   /// found for the user.
-  static Future<void> signOutUser(
-    Session session, {
-    int? userId,
-  }) async {
+  static Future<void> signOutUser(Session session, {int? userId}) async {
     userId ??= (await session.authenticated)?.userId;
     if (userId == null) return;
 

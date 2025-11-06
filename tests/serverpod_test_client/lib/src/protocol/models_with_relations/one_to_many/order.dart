@@ -36,13 +36,16 @@ abstract class Order implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
-      customer: jsonSerialization['customer'] == null
-          ? null
-          : _i2.Customer.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      customer:
+          jsonSerialization['customer'] == null
+              ? null
+              : _i2.Customer.fromJson(
+                (jsonSerialization['customer'] as Map<String, dynamic>),
+              ),
+      comments:
+          (jsonSerialization['comments'] as List?)
+              ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -97,12 +100,12 @@ class _OrderImpl extends Order {
     _i2.Customer? customer,
     List<_i3.Comment>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -121,9 +124,10 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.Comment>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      comments:
+          comments is List<_i3.Comment>?
+              ? comments
+              : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

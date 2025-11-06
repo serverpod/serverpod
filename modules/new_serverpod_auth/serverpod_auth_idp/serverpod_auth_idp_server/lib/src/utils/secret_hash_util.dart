@@ -20,8 +20,8 @@ final class SecretHashUtil {
   SecretHashUtil({
     required final String hashPepper,
     required final int hashSaltLength,
-  })  : _hashPepper = hashPepper,
-        _hashSaltLength = hashSaltLength;
+  }) : _hashPepper = hashPepper,
+       _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [value].
   ///
@@ -35,11 +35,7 @@ final class SecretHashUtil {
 
     final pepper = utf8.encode(_hashPepper);
 
-    return _createHash(
-      secret: value,
-      salt: salt,
-      pepper: pepper,
-    );
+    return _createHash(secret: value, salt: salt, pepper: pepper);
   }
 
   /// Verify whether the [hash] / [salt] pair is valid for the given [value].
@@ -94,10 +90,7 @@ class HashResult {
   final Uint8List salt;
 
   /// Creates a new [HashResult].
-  HashResult._({
-    required this.hash,
-    required this.salt,
-  });
+  HashResult._({required this.hash, required this.salt});
 
   /// Creates an empty [HashResult].
   factory HashResult.empty() {

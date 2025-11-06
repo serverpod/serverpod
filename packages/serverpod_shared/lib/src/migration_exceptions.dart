@@ -23,9 +23,7 @@ class MigrationLiveDatabaseDefinitionException implements Exception {
   final String exception;
 
   /// Creates a new [MigrationLiveDatabaseDefinitionException].
-  MigrationLiveDatabaseDefinitionException({
-    required this.exception,
-  });
+  MigrationLiveDatabaseDefinitionException({required this.exception});
 }
 
 /// Exception thrown when writing a migration fails.
@@ -34,9 +32,7 @@ class MigrationRepairWriteException implements Exception {
   final String exception;
 
   /// Creates a new [MigrationRepairWriteException].
-  MigrationRepairWriteException({
-    required this.exception,
-  });
+  MigrationRepairWriteException({required this.exception});
 }
 
 /// Exception thrown when a migration target is not found.
@@ -64,7 +60,5 @@ class MigrationVersionAlreadyExistsException implements Exception {
   final String directoryPath;
 
   /// Creates a new [MigrationVersionAlreadyExistsException].
-  MigrationVersionAlreadyExistsException({
-    required this.directoryPath,
-  });
+  MigrationVersionAlreadyExistsException({required this.directoryPath});
 }

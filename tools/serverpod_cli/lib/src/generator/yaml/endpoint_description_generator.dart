@@ -28,9 +28,8 @@ class EndpointDescriptionGenerator extends CodeGenerator {
     }
 
     return {
-      p.joinAll([
-        ...config.generatedServerEndpointDescriptionFilePathParts,
-      ]): out
+      p.joinAll([...config.generatedServerEndpointDescriptionFilePathParts]):
+          out,
     };
   }
 }

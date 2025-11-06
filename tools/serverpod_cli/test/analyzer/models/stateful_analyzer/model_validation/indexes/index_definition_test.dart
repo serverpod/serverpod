@@ -13,20 +13,21 @@ void main() {
     'Given a class with the index property defined but without any index, then collect an error that at least one index has to be added.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String
           indexes:
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -47,21 +48,22 @@ void main() {
     'Given a class with an index that does not define the fields keyword, then collect an error that fields are required.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String
           indexes:
             example_index:
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -82,8 +84,7 @@ void main() {
     'Given a class with an index with a defined field, then the definition contains the index.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -91,13 +92,15 @@ void main() {
           indexes:
             example_index:
               fields: name
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ModelClassDefinition;
 
@@ -106,12 +109,9 @@ void main() {
     },
   );
 
-  group(
-    'Given a class with an index with a defined field',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class with an index with a defined field', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -119,43 +119,46 @@ void main() {
           indexes:
             example_index:
               fields: name
-          ''',
-        ).build()
-      ];
+          ''').build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
 
-      var errors = collector.errors;
-      test('then no errors are collected.', () {
-        expect(errors, isEmpty);
-      });
+    var errors = collector.errors;
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
 
-      var definition = definitions.firstOrNull as ModelClassDefinition?;
-      test('then the index definition contains the fields of the index.', () {
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
+    test(
+      'then the index definition contains the fields of the index.',
+      () {
         var index = definition?.indexes.first;
         var field = index?.fields.first;
         expect(field, 'name');
-      }, skip: errors.isNotEmpty);
+      },
+      skip: errors.isNotEmpty,
+    );
 
-      test('then the field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'name');
-        var index = field?.indexes.firstOrNull;
+    test('then the field definition contains index.', () {
+      var field = definition?.fields.firstWhere(
+        (field) => field.name == 'name',
+      );
+      var index = field?.indexes.firstOrNull;
 
-        expect(index?.name, 'example_index');
-      }, skip: errors.isNotEmpty);
-    },
-  );
+      expect(index?.name, 'example_index');
+    }, skip: errors.isNotEmpty);
+  });
 
-  group(
-    'Given a class with an index with two defined fields',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class with an index with two defined fields', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -164,59 +167,59 @@ void main() {
           indexes:
             example_index:
               fields: name, foo
-          ''',
-        ).build()
-      ];
+          ''').build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
 
-      var errors = collector.errors;
-      test('then no errors are collected.', () {
-        expect(errors, isEmpty);
-      });
+    var errors = collector.errors;
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
 
-      var definition = definitions.firstOrNull as ModelClassDefinition?;
-      test('then index definition contains the first field.', () {
-        var index = definition?.indexes.first;
-        var indexFields = index?.fields;
+    var definition = definitions.firstOrNull as ModelClassDefinition?;
+    test('then index definition contains the first field.', () {
+      var index = definition?.indexes.first;
+      var indexFields = index?.fields;
 
-        expect(indexFields, contains('name'));
-      });
+      expect(indexFields, contains('name'));
+    });
 
-      test('then index definition contains the second field.', () {
-        var index = definition?.indexes.first;
-        var indexFields = index?.fields;
+    test('then index definition contains the second field.', () {
+      var index = definition?.indexes.first;
+      var indexFields = index?.fields;
 
-        expect(indexFields, contains('foo'));
-      });
+      expect(indexFields, contains('foo'));
+    });
 
-      test('then first field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'name');
-        var index = field?.indexes.firstOrNull;
+    test('then first field definition contains index.', () {
+      var field = definition?.fields.firstWhere(
+        (field) => field.name == 'name',
+      );
+      var index = field?.indexes.firstOrNull;
 
-        expect(index?.name, 'example_index');
-      });
+      expect(index?.name, 'example_index');
+    });
 
-      test('then second field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'foo');
-        var index = field?.indexes.firstOrNull;
+    test('then second field definition contains index.', () {
+      var field = definition?.fields.firstWhere((field) => field.name == 'foo');
+      var index = field?.indexes.firstOrNull;
 
-        expect(index?.name, 'example_index');
-      });
-    },
-  );
+      expect(index?.name, 'example_index');
+    });
+  });
 
   test(
     'Given a class with two indexes, then the definition contains both the index names.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
@@ -227,13 +230,15 @@ void main() {
               fields: name
             example_index2:
               fields: foo
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ModelClassDefinition;
 
@@ -246,11 +251,10 @@ void main() {
   );
 
   test(
-      'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
@@ -259,26 +263,29 @@ void main() {
           example_index:
             fields: name
             invalidKey: true
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "invalidKey" property is not allowed for example_index type. Valid '
-      'keys are {fields, type, unique, distanceFunction, parameters}.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "invalidKey" property is not allowed for example_index type. Valid '
+        'keys are {fields, type, unique, distanceFunction, parameters}.',
+      );
+    },
+  );
 }

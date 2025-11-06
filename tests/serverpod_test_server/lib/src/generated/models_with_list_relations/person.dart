@@ -35,10 +35,12 @@ abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
-      organization: jsonSerialization['organization'] == null
-          ? null
-          : _i2.Organization.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+      organization:
+          jsonSerialization['organization'] == null
+              ? null
+              : _i2.Organization.fromJson(
+                (jsonSerialization['organization'] as Map<String, dynamic>),
+              ),
       $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
     );
   }
@@ -132,11 +134,11 @@ class _PersonImpl extends Person {
     int? organizationId,
     _i2.Organization? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -153,9 +155,10 @@ class _PersonImpl extends Person {
       name: name ?? this.name,
       organizationId:
           organizationId is int? ? organizationId : this.organizationId,
-      organization: organization is _i2.Organization?
-          ? organization
-          : this.organization?.copyWith(),
+      organization:
+          organization is _i2.Organization?
+              ? organization
+              : this.organization?.copyWith(),
       $_cityCitizensCityId: this._cityCitizensCityId,
     );
   }
@@ -168,18 +171,15 @@ class PersonImplicit extends _PersonImpl {
     int? organizationId,
     _i2.Organization? organization,
     int? $_cityCitizensCityId,
-  })  : _cityCitizensCityId = $_cityCitizensCityId,
-        super(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+  }) : _cityCitizensCityId = $_cityCitizensCityId,
+       super(
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
-  factory PersonImplicit(
-    Person person, {
-    int? $_cityCitizensCityId,
-  }) {
+  factory PersonImplicit(Person person, {int? $_cityCitizensCityId}) {
     return PersonImplicit._(
       id: person.id,
       name: person.name,
@@ -196,37 +196,22 @@ class PersonImplicit extends _PersonImpl {
 class PersonUpdateTable extends _i1.UpdateTable<PersonTable> {
   PersonUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
-        table.organizationId,
-        value,
-      );
+  _i1.ColumnValue<int, int> organizationId(int? value) =>
+      _i1.ColumnValue(table.organizationId, value);
 
-  _i1.ColumnValue<int, int> $_cityCitizensCityId(int? value) => _i1.ColumnValue(
-        table.$_cityCitizensCityId,
-        value,
-      );
+  _i1.ColumnValue<int, int> $_cityCitizensCityId(int? value) =>
+      _i1.ColumnValue(table.$_cityCitizensCityId, value);
 }
 
 class PersonTable extends _i1.Table<int?> {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
     updateTable = PersonUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    organizationId = _i1.ColumnInt(
-      'organizationId',
-      this,
-    );
-    $_cityCitizensCityId = _i1.ColumnInt(
-      '_cityCitizensCityId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    organizationId = _i1.ColumnInt('organizationId', this);
+    $_cityCitizensCityId = _i1.ColumnInt('_cityCitizensCityId', this);
   }
 
   late final PersonUpdateTable updateTable;
@@ -246,26 +231,23 @@ class PersonTable extends _i1.Table<int?> {
       field: Person.t.organizationId,
       foreignField: _i2.Organization.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.OrganizationTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.OrganizationTable(tableRelation: foreignTableRelation),
     );
     return _organization!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        organizationId,
-        $_cityCitizensCityId,
-      ];
+    id,
+    name,
+    organizationId,
+    $_cityCitizensCityId,
+  ];
 
   @override
-  List<_i1.Column> get managedColumns => [
-        id,
-        name,
-        organizationId,
-      ];
+  List<_i1.Column> get managedColumns => [id, name, organizationId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -425,10 +407,7 @@ class PersonRepository {
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Person>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Person>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Person] and returns the inserted row.
@@ -439,10 +418,7 @@ class PersonRepository {
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Person>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Person>(row, transaction: transaction);
   }
 
   /// Updates all [Person]s in the list and returns the updated rows. If
@@ -527,10 +503,7 @@ class PersonRepository {
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Person>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Person>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Person].
@@ -539,10 +512,7 @@ class PersonRepository {
     Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Person>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Person>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

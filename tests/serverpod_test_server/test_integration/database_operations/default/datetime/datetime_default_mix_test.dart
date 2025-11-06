@@ -6,20 +6,20 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => DateTimeDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DateTimeDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultModel" field value should match the default value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultPersist", "dateTimeDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DateTimeDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.dateTimeDefaultAndDefaultModel,
@@ -31,12 +31,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultPersist", "dateTimeDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DateTimeDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.dateTimeDefaultAndDefaultPersist,
@@ -48,12 +46,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "dateTimeDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${DateTimeDefaultMix.t.tableName}" ("dateTimeDefaultAndDefaultModel", "dateTimeDefaultAndDefaultPersist", "dateTimeDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await DateTimeDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.dateTimeDefaultModelAndDefaultPersist,
@@ -73,10 +69,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.dateTimeDefaultAndDefaultModel,
-          date,
-        );
+        expect(specificDatabaseObject.dateTimeDefaultAndDefaultModel, date);
       },
     );
 
@@ -91,10 +84,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.dateTimeDefaultAndDefaultPersist,
-          date,
-        );
+        expect(specificDatabaseObject.dateTimeDefaultAndDefaultPersist, date);
       },
     );
 

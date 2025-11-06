@@ -31,10 +31,13 @@ abstract class Filter
     return Filter(
       name: jsonSerialization['name'] as String,
       table: jsonSerialization['table'] as String,
-      constraints: (jsonSerialization['constraints'] as List)
-          .map(
-              (e) => _i2.FilterConstraint.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      constraints:
+          (jsonSerialization['constraints'] as List)
+              .map(
+                (e) =>
+                    _i2.FilterConstraint.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -66,8 +69,9 @@ abstract class Filter
     return {
       'name': name,
       'table': table,
-      'constraints':
-          constraints.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'constraints': constraints.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 
@@ -82,11 +86,7 @@ class _FilterImpl extends Filter {
     required String name,
     required String table,
     required List<_i2.FilterConstraint> constraints,
-  }) : super._(
-          name: name,
-          table: table,
-          constraints: constraints,
-        );
+  }) : super._(name: name, table: table, constraints: constraints);
 
   /// Returns a shallow copy of this [Filter]
   /// with some or all fields replaced by the given arguments.

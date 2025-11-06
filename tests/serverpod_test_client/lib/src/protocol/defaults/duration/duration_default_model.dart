@@ -17,22 +17,24 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
     this.id,
     Duration? durationDefaultModel,
     Duration? durationDefaultModelNull,
-  })  : durationDefaultModel = durationDefaultModel ??
-            Duration(
-              days: 1,
-              hours: 2,
-              minutes: 10,
-              seconds: 30,
-              milliseconds: 100,
-            ),
-        durationDefaultModelNull = durationDefaultModelNull ??
-            Duration(
-              days: 2,
-              hours: 1,
-              minutes: 20,
-              seconds: 40,
-              milliseconds: 100,
-            );
+  }) : durationDefaultModel =
+           durationDefaultModel ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           ),
+       durationDefaultModelNull =
+           durationDefaultModelNull ??
+           Duration(
+             days: 2,
+             hours: 1,
+             minutes: 20,
+             seconds: 40,
+             milliseconds: 100,
+           );
 
   factory DurationDefaultModel({
     int? id,
@@ -41,16 +43,19 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
   }) = _DurationDefaultModelImpl;
 
   factory DurationDefaultModel.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DurationDefaultModel(
       id: jsonSerialization['id'] as int?,
       durationDefaultModel: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultModel']),
+        jsonSerialization['durationDefaultModel'],
+      ),
       durationDefaultModelNull:
           jsonSerialization['durationDefaultModelNull'] == null
               ? null
               : _i1.DurationJsonExtension.fromJson(
-                  jsonSerialization['durationDefaultModelNull']),
+                jsonSerialization['durationDefaultModelNull'],
+              ),
     );
   }
 
@@ -95,10 +100,10 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
     Duration? durationDefaultModel,
     Duration? durationDefaultModelNull,
   }) : super._(
-          id: id,
-          durationDefaultModel: durationDefaultModel,
-          durationDefaultModelNull: durationDefaultModelNull,
-        );
+         id: id,
+         durationDefaultModel: durationDefaultModel,
+         durationDefaultModelNull: durationDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [DurationDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -112,9 +117,10 @@ class _DurationDefaultModelImpl extends DurationDefaultModel {
     return DurationDefaultModel(
       id: id is int? ? id : this.id,
       durationDefaultModel: durationDefaultModel ?? this.durationDefaultModel,
-      durationDefaultModelNull: durationDefaultModelNull is Duration?
-          ? durationDefaultModelNull
-          : this.durationDefaultModelNull,
+      durationDefaultModelNull:
+          durationDefaultModelNull is Duration?
+              ? durationDefaultModelNull
+              : this.durationDefaultModelNull,
     );
   }
 }

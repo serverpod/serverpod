@@ -25,10 +25,7 @@ dev_dependencies:
       var depsByName = {for (var d in pubspecPlus.deps) d.name: d};
 
       test('then it succeeds', () {
-        expect(
-          () => pubspecPlus,
-          returnsNormally,
-        );
+        expect(() => pubspecPlus, returnsNormally);
       });
 
       test('then it returns PubspecPlus with correct dependencies', () {

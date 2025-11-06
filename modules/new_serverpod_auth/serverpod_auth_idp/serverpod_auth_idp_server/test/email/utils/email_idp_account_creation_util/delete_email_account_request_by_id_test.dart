@@ -32,11 +32,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -47,32 +47,33 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called then attempting to verify request throws request not found exception',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteEmailAccountRequestById(
-            session,
-            accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when delete email account request by id is called then attempting to verify request throws request not found exception',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.deleteEmailAccountRequestById(
+                  session,
+                  accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -104,22 +105,22 @@ void main() {
         final firstResult = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: firstEmail,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: firstEmail,
+                password: password,
+                transaction: transaction,
+              ),
         );
         firstAccountRequestId = firstResult.accountRequestId!;
 
         final secondResult = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: secondEmail,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: secondEmail,
+                password: password,
+                transaction: transaction,
+              ),
         );
         secondAccountRequestId = secondResult.accountRequestId!;
       });
@@ -129,29 +130,30 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called for one user then other user can still verify its request',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteEmailAccountRequestById(
-            session,
-            firstAccountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when delete email account request by id is called for one user then other user can still verify its request',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.deleteEmailAccountRequestById(
+                  session,
+                  firstAccountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        final secondVerifyAccountRequestFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: secondAccountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+          final secondVerifyAccountRequestFuture = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: secondAccountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(secondVerifyAccountRequestFuture, completes);
-      });
+          await expectLater(secondVerifyAccountRequestFuture, completes);
+        },
+      );
     },
   );
 }

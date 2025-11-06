@@ -18,10 +18,7 @@ abstract class TestWebSocketServer {
     required void Function(RelicWebSocket webSocket) webSocketHandler,
     void Function(Uri webSocketHost)? onConnected,
   }) async {
-    var server = await _startServer(
-      onConnected,
-      webSocketHandler,
-    );
+    var server = await _startServer(onConnected, webSocketHandler);
 
     return server.close;
   }
@@ -42,8 +39,9 @@ abstract class TestWebSocketServer {
     );
     await server.mountAndStart(requestHandler);
 
-    var webSocketHost =
-        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${server.port}');
+    var webSocketHost = Uri.parse(
+      'ws://${InternetAddress.loopbackIPv4.host}:${server.port}',
+    );
     onConnected?.call(webSocketHost);
 
     return server;

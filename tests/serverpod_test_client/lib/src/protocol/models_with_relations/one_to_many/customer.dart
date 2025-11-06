@@ -14,25 +14,19 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 
 abstract class Customer implements _i1.SerializableModel {
-  Customer._({
-    this.id,
-    required this.name,
-    this.orders,
-  });
+  Customer._({this.id, required this.name, this.orders});
 
-  factory Customer({
-    int? id,
-    required String name,
-    List<_i2.Order>? orders,
-  }) = _CustomerImpl;
+  factory Customer({int? id, required String name, List<_i2.Order>? orders}) =
+      _CustomerImpl;
 
   factory Customer.fromJson(Map<String, dynamic> jsonSerialization) {
     return Customer(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List?)
-          ?.map((e) => _i2.Order.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      orders:
+          (jsonSerialization['orders'] as List?)
+              ?.map((e) => _i2.Order.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -48,11 +42,7 @@ abstract class Customer implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Customer copyWith({
-    int? id,
-    String? name,
-    List<_i2.Order>? orders,
-  });
+  Customer copyWith({int? id, String? name, List<_i2.Order>? orders});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -72,15 +62,8 @@ abstract class Customer implements _i1.SerializableModel {
 class _Undefined {}
 
 class _CustomerImpl extends Customer {
-  _CustomerImpl({
-    int? id,
-    required String name,
-    List<_i2.Order>? orders,
-  }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+  _CustomerImpl({int? id, required String name, List<_i2.Order>? orders})
+    : super._(id: id, name: name, orders: orders);
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
@@ -94,9 +77,10 @@ class _CustomerImpl extends Customer {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>?
-          ? orders
-          : this.orders?.map((e0) => e0.copyWith()).toList(),
+      orders:
+          orders is List<_i2.Order>?
+              ? orders
+              : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

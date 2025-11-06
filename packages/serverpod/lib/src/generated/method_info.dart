@@ -15,11 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Information about a server method.
 abstract class MethodInfo
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  MethodInfo._({
-    this.id,
-    required this.endpoint,
-    required this.method,
-  });
+  MethodInfo._({this.id, required this.endpoint, required this.method});
 
   factory MethodInfo({
     int? id,
@@ -54,27 +50,15 @@ abstract class MethodInfo
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  MethodInfo copyWith({
-    int? id,
-    String? endpoint,
-    String? method,
-  });
+  MethodInfo copyWith({int? id, String? endpoint, String? method});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'endpoint': endpoint,
-      'method': method,
-    };
+    return {if (id != null) 'id': id, 'endpoint': endpoint, 'method': method};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'endpoint': endpoint,
-      'method': method,
-    };
+    return {if (id != null) 'id': id, 'endpoint': endpoint, 'method': method};
   }
 
   static MethodInfoInclude include() {
@@ -110,15 +94,8 @@ abstract class MethodInfo
 class _Undefined {}
 
 class _MethodInfoImpl extends MethodInfo {
-  _MethodInfoImpl({
-    int? id,
-    required String endpoint,
-    required String method,
-  }) : super._(
-          id: id,
-          endpoint: endpoint,
-          method: method,
-        );
+  _MethodInfoImpl({int? id, required String endpoint, required String method})
+    : super._(id: id, endpoint: endpoint, method: method);
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
@@ -140,29 +117,19 @@ class _MethodInfoImpl extends MethodInfo {
 class MethodInfoUpdateTable extends _i1.UpdateTable<MethodInfoTable> {
   MethodInfoUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+  _i1.ColumnValue<String, String> endpoint(String value) =>
+      _i1.ColumnValue(table.endpoint, value);
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String value) =>
+      _i1.ColumnValue(table.method, value);
 }
 
 class MethodInfoTable extends _i1.Table<int?> {
   MethodInfoTable({super.tableRelation})
-      : super(tableName: 'serverpod_method') {
+    : super(tableName: 'serverpod_method') {
     updateTable = MethodInfoUpdateTable(this);
-    endpoint = _i1.ColumnString(
-      'endpoint',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
+    endpoint = _i1.ColumnString('endpoint', this);
+    method = _i1.ColumnString('method', this);
   }
 
   late final MethodInfoUpdateTable updateTable;
@@ -174,11 +141,7 @@ class MethodInfoTable extends _i1.Table<int?> {
   late final _i1.ColumnString method;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        endpoint,
-        method,
-      ];
+  List<_i1.Column> get columns => [id, endpoint, method];
 }
 
 class MethodInfoInclude extends _i1.IncludeObject {
@@ -299,10 +262,7 @@ class MethodInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<MethodInfo>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<MethodInfo>(id, transaction: transaction);
   }
 
   /// Inserts all [MethodInfo]s in the list and returns the inserted rows.
@@ -316,10 +276,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<MethodInfo>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<MethodInfo>(rows, transaction: transaction);
   }
 
   /// Inserts a single [MethodInfo] and returns the inserted row.
@@ -330,10 +287,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<MethodInfo>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<MethodInfo>(row, transaction: transaction);
   }
 
   /// Updates all [MethodInfo]s in the list and returns the updated rows. If
@@ -418,10 +372,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<MethodInfo>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<MethodInfo>(rows, transaction: transaction);
   }
 
   /// Deletes a single [MethodInfo].
@@ -430,10 +381,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<MethodInfo>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<MethodInfo>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -48,15 +48,12 @@ void main() {
         },
       );
 
-      test(
-        'when parsing the key, then it can be read again.',
-        () {
-          final keyParts = tryParseSessionKey(session, sessionKey);
+      test('when parsing the key, then it can be read again.', () {
+        final keyParts = tryParseSessionKey(session, sessionKey);
 
-          expect(keyParts?.authSessionId, authSessionId);
-          expect(keyParts?.secret, secret);
-        },
-      );
+        expect(keyParts?.authSessionId, authSessionId);
+        expect(keyParts?.secret, secret);
+      });
     },
   );
 }

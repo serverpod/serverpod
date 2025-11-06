@@ -14,18 +14,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  IntDefault._({
-    this.id,
-    int? intDefault,
-    int? intDefaultNull,
-  })  : intDefault = intDefault ?? 10,
-        intDefaultNull = intDefaultNull ?? 20;
+  IntDefault._({this.id, int? intDefault, int? intDefaultNull})
+    : intDefault = intDefault ?? 10,
+      intDefaultNull = intDefaultNull ?? 20;
 
-  factory IntDefault({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  }) = _IntDefaultImpl;
+  factory IntDefault({int? id, int? intDefault, int? intDefaultNull}) =
+      _IntDefaultImpl;
 
   factory IntDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return IntDefault(
@@ -52,11 +46,7 @@ abstract class IntDefault
   /// Returns a shallow copy of this [IntDefault]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  IntDefault copyWith({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  });
+  IntDefault copyWith({int? id, int? intDefault, int? intDefaultNull});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -108,15 +98,8 @@ abstract class IntDefault
 class _Undefined {}
 
 class _IntDefaultImpl extends IntDefault {
-  _IntDefaultImpl({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  }) : super._(
-          id: id,
-          intDefault: intDefault,
-          intDefaultNull: intDefaultNull,
-        );
+  _IntDefaultImpl({int? id, int? intDefault, int? intDefaultNull})
+    : super._(id: id, intDefault: intDefault, intDefaultNull: intDefaultNull);
 
   /// Returns a shallow copy of this [IntDefault]
   /// with some or all fields replaced by the given arguments.
@@ -139,30 +122,18 @@ class _IntDefaultImpl extends IntDefault {
 class IntDefaultUpdateTable extends _i1.UpdateTable<IntDefaultTable> {
   IntDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> intDefault(int value) => _i1.ColumnValue(
-        table.intDefault,
-        value,
-      );
+  _i1.ColumnValue<int, int> intDefault(int value) =>
+      _i1.ColumnValue(table.intDefault, value);
 
-  _i1.ColumnValue<int, int> intDefaultNull(int? value) => _i1.ColumnValue(
-        table.intDefaultNull,
-        value,
-      );
+  _i1.ColumnValue<int, int> intDefaultNull(int? value) =>
+      _i1.ColumnValue(table.intDefaultNull, value);
 }
 
 class IntDefaultTable extends _i1.Table<int?> {
   IntDefaultTable({super.tableRelation}) : super(tableName: 'int_default') {
     updateTable = IntDefaultUpdateTable(this);
-    intDefault = _i1.ColumnInt(
-      'intDefault',
-      this,
-      hasDefault: true,
-    );
-    intDefaultNull = _i1.ColumnInt(
-      'intDefaultNull',
-      this,
-      hasDefault: true,
-    );
+    intDefault = _i1.ColumnInt('intDefault', this, hasDefault: true);
+    intDefaultNull = _i1.ColumnInt('intDefaultNull', this, hasDefault: true);
   }
 
   late final IntDefaultUpdateTable updateTable;
@@ -172,11 +143,7 @@ class IntDefaultTable extends _i1.Table<int?> {
   late final _i1.ColumnInt intDefaultNull;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        intDefault,
-        intDefaultNull,
-      ];
+  List<_i1.Column> get columns => [id, intDefault, intDefaultNull];
 }
 
 class IntDefaultInclude extends _i1.IncludeObject {
@@ -297,10 +264,7 @@ class IntDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<IntDefault>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<IntDefault>(id, transaction: transaction);
   }
 
   /// Inserts all [IntDefault]s in the list and returns the inserted rows.
@@ -314,10 +278,7 @@ class IntDefaultRepository {
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<IntDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<IntDefault>(rows, transaction: transaction);
   }
 
   /// Inserts a single [IntDefault] and returns the inserted row.
@@ -328,10 +289,7 @@ class IntDefaultRepository {
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<IntDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<IntDefault>(row, transaction: transaction);
   }
 
   /// Updates all [IntDefault]s in the list and returns the updated rows. If
@@ -416,10 +374,7 @@ class IntDefaultRepository {
     List<IntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<IntDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<IntDefault>(rows, transaction: transaction);
   }
 
   /// Deletes a single [IntDefault].
@@ -428,10 +383,7 @@ class IntDefaultRepository {
     IntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<IntDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<IntDefault>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

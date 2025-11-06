@@ -60,12 +60,7 @@ abstract class UserImage
   /// Returns a shallow copy of this [UserImage]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserImage copyWith({
-    int? id,
-    int? userId,
-    int? version,
-    String? url,
-  });
+  UserImage copyWith({int? id, int? userId, int? version, String? url});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -124,12 +119,7 @@ class _UserImageImpl extends UserImage {
     required int userId,
     required int version,
     required String url,
-  }) : super._(
-          id: id,
-          userId: userId,
-          version: version,
-          url: url,
-        );
+  }) : super._(id: id, userId: userId, version: version, url: url);
 
   /// Returns a shallow copy of this [UserImage]
   /// with some or all fields replaced by the given arguments.
@@ -153,38 +143,23 @@ class _UserImageImpl extends UserImage {
 class UserImageUpdateTable extends _i1.UpdateTable<UserImageTable> {
   UserImageUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userId(int value) =>
+      _i1.ColumnValue(table.userId, value);
 
-  _i1.ColumnValue<int, int> version(int value) => _i1.ColumnValue(
-        table.version,
-        value,
-      );
+  _i1.ColumnValue<int, int> version(int value) =>
+      _i1.ColumnValue(table.version, value);
 
-  _i1.ColumnValue<String, String> url(String value) => _i1.ColumnValue(
-        table.url,
-        value,
-      );
+  _i1.ColumnValue<String, String> url(String value) =>
+      _i1.ColumnValue(table.url, value);
 }
 
 class UserImageTable extends _i1.Table<int?> {
   UserImageTable({super.tableRelation})
-      : super(tableName: 'serverpod_user_image') {
+    : super(tableName: 'serverpod_user_image') {
     updateTable = UserImageUpdateTable(this);
-    userId = _i1.ColumnInt(
-      'userId',
-      this,
-    );
-    version = _i1.ColumnInt(
-      'version',
-      this,
-    );
-    url = _i1.ColumnString(
-      'url',
-      this,
-    );
+    userId = _i1.ColumnInt('userId', this);
+    version = _i1.ColumnInt('version', this);
+    url = _i1.ColumnString('url', this);
   }
 
   late final UserImageUpdateTable updateTable;
@@ -199,12 +174,7 @@ class UserImageTable extends _i1.Table<int?> {
   late final _i1.ColumnString url;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        userId,
-        version,
-        url,
-      ];
+  List<_i1.Column> get columns => [id, userId, version, url];
 }
 
 class UserImageInclude extends _i1.IncludeObject {
@@ -325,10 +295,7 @@ class UserImageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserImage>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UserImage>(id, transaction: transaction);
   }
 
   /// Inserts all [UserImage]s in the list and returns the inserted rows.
@@ -342,10 +309,7 @@ class UserImageRepository {
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserImage>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UserImage>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UserImage] and returns the inserted row.
@@ -356,10 +320,7 @@ class UserImageRepository {
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserImage>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UserImage>(row, transaction: transaction);
   }
 
   /// Updates all [UserImage]s in the list and returns the updated rows. If
@@ -444,10 +405,7 @@ class UserImageRepository {
     List<UserImage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserImage>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UserImage>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UserImage].
@@ -456,10 +414,7 @@ class UserImageRepository {
     UserImage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserImage>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UserImage>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

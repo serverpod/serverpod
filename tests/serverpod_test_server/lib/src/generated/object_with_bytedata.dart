@@ -15,21 +15,17 @@ import 'dart:typed_data' as _i2;
 
 abstract class ObjectWithByteData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithByteData._({
-    this.id,
-    required this.byteData,
-  });
+  ObjectWithByteData._({this.id, required this.byteData});
 
-  factory ObjectWithByteData({
-    int? id,
-    required _i2.ByteData byteData,
-  }) = _ObjectWithByteDataImpl;
+  factory ObjectWithByteData({int? id, required _i2.ByteData byteData}) =
+      _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
     );
   }
 
@@ -48,24 +44,15 @@ abstract class ObjectWithByteData
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithByteData copyWith({
-    int? id,
-    _i2.ByteData? byteData,
-  });
+  ObjectWithByteData copyWith({int? id, _i2.ByteData? byteData});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'byteData': byteData.toJson(),
-    };
+    return {if (id != null) 'id': id, 'byteData': byteData.toJson()};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'byteData': byteData.toJson(),
-    };
+    return {if (id != null) 'id': id, 'byteData': byteData.toJson()};
   }
 
   static ObjectWithByteDataInclude include() {
@@ -101,13 +88,8 @@ abstract class ObjectWithByteData
 class _Undefined {}
 
 class _ObjectWithByteDataImpl extends ObjectWithByteData {
-  _ObjectWithByteDataImpl({
-    int? id,
-    required _i2.ByteData byteData,
-  }) : super._(
-          id: id,
-          byteData: byteData,
-        );
+  _ObjectWithByteDataImpl({int? id, required _i2.ByteData byteData})
+    : super._(id: id, byteData: byteData);
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
@@ -129,20 +111,14 @@ class ObjectWithByteDataUpdateTable
   ObjectWithByteDataUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.byteData,
-        value,
-      );
+      _i1.ColumnValue(table.byteData, value);
 }
 
 class ObjectWithByteDataTable extends _i1.Table<int?> {
   ObjectWithByteDataTable({super.tableRelation})
-      : super(tableName: 'object_with_bytedata') {
+    : super(tableName: 'object_with_bytedata') {
     updateTable = ObjectWithByteDataUpdateTable(this);
-    byteData = _i1.ColumnByteData(
-      'byteData',
-      this,
-    );
+    byteData = _i1.ColumnByteData('byteData', this);
   }
 
   late final ObjectWithByteDataUpdateTable updateTable;
@@ -150,10 +126,7 @@ class ObjectWithByteDataTable extends _i1.Table<int?> {
   late final _i1.ColumnByteData byteData;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        byteData,
-      ];
+  List<_i1.Column> get columns => [id, byteData];
 }
 
 class ObjectWithByteDataInclude extends _i1.IncludeObject {
@@ -351,7 +324,7 @@ class ObjectWithByteDataRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithByteData>(
@@ -366,7 +339,7 @@ class ObjectWithByteDataRepository {
   Future<List<ObjectWithByteData>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     int? limit,
     int? offset,

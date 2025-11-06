@@ -36,16 +36,21 @@ abstract class AuthSuccess
     return AuthSuccess(
       authStrategy: jsonSerialization['authStrategy'] as String,
       token: jsonSerialization['token'] as String,
-      tokenExpiresAt: jsonSerialization['tokenExpiresAt'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['tokenExpiresAt']),
+      tokenExpiresAt:
+          jsonSerialization['tokenExpiresAt'] == null
+              ? null
+              : _i1.DateTimeJsonExtension.fromJson(
+                jsonSerialization['tokenExpiresAt'],
+              ),
       refreshToken: jsonSerialization['refreshToken'] as String?,
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
     );
   }
 
@@ -124,13 +129,13 @@ class _AuthSuccessImpl extends AuthSuccess {
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) : super._(
-          authStrategy: authStrategy,
-          token: token,
-          tokenExpiresAt: tokenExpiresAt,
-          refreshToken: refreshToken,
-          authUserId: authUserId,
-          scopeNames: scopeNames,
-        );
+         authStrategy: authStrategy,
+         token: token,
+         tokenExpiresAt: tokenExpiresAt,
+         refreshToken: refreshToken,
+         authUserId: authUserId,
+         scopeNames: scopeNames,
+       );
 
   /// Returns a shallow copy of this [AuthSuccess]
   /// with some or all fields replaced by the given arguments.

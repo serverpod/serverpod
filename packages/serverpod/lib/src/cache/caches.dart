@@ -21,10 +21,7 @@ class Caches {
   ) {
     _local = LocalCache(10000, _serializationManager);
     _localPrio = LocalCache(10000, _serializationManager);
-    _global = RedisCache(
-      _serializationManager,
-      redisController,
-    );
+    _global = RedisCache(_serializationManager, redisController);
     _query = LocalCache(10000, _serializationManager);
   }
 

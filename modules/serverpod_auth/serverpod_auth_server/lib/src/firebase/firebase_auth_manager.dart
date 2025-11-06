@@ -50,9 +50,7 @@ class FirebaseAuthManager {
         httClient: authClient,
       );
     } on ArgumentError catch (e) {
-      throw FirebaseInitException(
-        'Firebase Initialization Argument Error: $e',
-      );
+      throw FirebaseInitException('Firebase Initialization Argument Error: $e');
     }
 
     _tokenVerifier = TokenVerifier(
@@ -62,16 +60,12 @@ class FirebaseAuthManager {
   }
 
   /// Firebase JWT verifier
-  Future<IdToken> verifyIdToken(
-    String idToken,
-  ) async {
+  Future<IdToken> verifyIdToken(String idToken) async {
     var decodedIdToken = await _tokenVerifier.verifyJwt(idToken);
     return _verifyDecodedJwtNotRevoked(decodedIdToken);
   }
 
-  Future<IdToken> _verifyDecodedJwtNotRevoked(
-    IdToken decodedIdToken,
-  ) async {
+  Future<IdToken> _verifyDecodedJwtNotRevoked(IdToken decodedIdToken) async {
     // Get tokens valid after time for the corresponding user.
     var user = await _accountApi.getUserByUiid(decodedIdToken.claims.subject);
 

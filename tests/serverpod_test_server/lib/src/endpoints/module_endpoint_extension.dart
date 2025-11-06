@@ -20,10 +20,10 @@ class ModuleEndpointAdaptation extends IgnoredModuleEndpoint {
     int? multiplier,
   ]) async {
     multiplier ??= 1;
-    return super.echoRecord(
-      sesion,
-      (value.$1 * multiplier, value.$2 * BigInt.from(multiplier)),
-    );
+    return super.echoRecord(sesion, (
+      value.$1 * multiplier,
+      value.$2 * BigInt.from(multiplier),
+    ));
   }
 
   @override

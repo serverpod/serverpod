@@ -55,50 +55,49 @@ abstract final class AuthMigrations {
     @visibleForTesting final int? legacyUserId,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final results = await session.db.unsafeQuery(
-          'SELECT id FROM serverpod_user_info u '
-          'WHERE NOT EXISTS ( '
-          '  SELECT 1 FROM serverpod_auth_migration_migrated_user m WHERE u.id = m."oldUserId" '
-          ') '
-          '${legacyUserId != null ? 'AND u.id = $legacyUserId ' : ''}'
-          '${maxUsers != null ? 'LIMIT $maxUsers' : ''}',
-          transaction: transaction,
-        );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final results = await session.db.unsafeQuery(
+        'SELECT id FROM serverpod_user_info u '
+        'WHERE NOT EXISTS ( '
+        '  SELECT 1 FROM serverpod_auth_migration_migrated_user m WHERE u.id = m."oldUserId" '
+        ') '
+        '${legacyUserId != null ? 'AND u.id = $legacyUserId ' : ''}'
+        '${maxUsers != null ? 'LIMIT $maxUsers' : ''}',
+        transaction: transaction,
+      );
 
-        final userIdsToMigrate = results.map(
-          (final r) => r.toColumnMap()['id'] as int,
-        );
+      final userIdsToMigrate = results.map(
+        (final r) => r.toColumnMap()['id'] as int,
+      );
 
-        for (final userId in userIdsToMigrate) {
-          final userInfo = (await legacy_auth.UserInfo.db.findById(
-            session,
-            userId,
-            transaction: transaction,
-          ))!;
-
-          final (migratedUser, didCreate) = await migrateUserIfNeeded(
-            session,
-            userInfo,
-            transaction: transaction,
-            newEmailIDP: config.emailIDP,
-          );
-
-          if (didCreate && userMigration != null) {
-            await userMigration(
+      for (final userId in userIdsToMigrate) {
+        final userInfo =
+            (await legacy_auth.UserInfo.db.findById(
               session,
-              oldUserId: migratedUser.oldUserId,
-              newAuthUserId: migratedUser.newAuthUserId,
+              userId,
               transaction: transaction,
-            );
-          }
-        }
+            ))!;
 
-        return userIdsToMigrate.length;
-      },
-    );
+        final (migratedUser, didCreate) = await migrateUserIfNeeded(
+          session,
+          userInfo,
+          transaction: transaction,
+          newEmailIDP: config.emailIDP,
+        );
+
+        if (didCreate && userMigration != null) {
+          await userMigration(
+            session,
+            oldUserId: migratedUser.oldUserId,
+            newAuthUserId: migratedUser.newAuthUserId,
+            transaction: transaction,
+          );
+        }
+      }
+
+      return userIdsToMigrate.length;
+    });
   }
 }

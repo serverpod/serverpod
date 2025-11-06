@@ -14,17 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UserProfileData
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  UserProfileData._({
-    this.userName,
-    this.fullName,
-    this.email,
-  });
+  UserProfileData._({this.userName, this.fullName, this.email});
 
-  factory UserProfileData({
-    String? userName,
-    String? fullName,
-    String? email,
-  }) = _UserProfileDataImpl;
+  factory UserProfileData({String? userName, String? fullName, String? email}) =
+      _UserProfileDataImpl;
 
   factory UserProfileData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfileData(
@@ -48,11 +41,7 @@ abstract class UserProfileData
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserProfileData copyWith({
-    String? userName,
-    String? fullName,
-    String? email,
-  });
+  UserProfileData copyWith({String? userName, String? fullName, String? email});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -76,15 +65,8 @@ abstract class UserProfileData
 class _Undefined {}
 
 class _UserProfileDataImpl extends UserProfileData {
-  _UserProfileDataImpl({
-    String? userName,
-    String? fullName,
-    String? email,
-  }) : super._(
-          userName: userName,
-          fullName: fullName,
-          email: email,
-        );
+  _UserProfileDataImpl({String? userName, String? fullName, String? email})
+    : super._(userName: userName, fullName: fullName, email: email);
 
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.

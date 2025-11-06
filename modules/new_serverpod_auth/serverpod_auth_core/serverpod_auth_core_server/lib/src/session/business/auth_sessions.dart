@@ -21,10 +21,9 @@ final class AuthSessions {
   final AuthSessionKeyHash _sessionKeyHash;
 
   /// Creates a new [AuthSessions] instance.
-  AuthSessions({
-    required final AuthSessionsConfig config,
-  })  : _config = config,
-        _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
+  AuthSessions({required final AuthSessionsConfig config})
+    : _config = config,
+      _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
 
   /// Admin-related functions for managing session.
   final admin = AuthSessionsAdmin();
@@ -48,10 +47,7 @@ final class AuthSessions {
 
     final (:authSessionId, :secret) = sessionKeyParts;
 
-    var authSession = await AuthSession.db.findById(
-      session,
-      authSessionId,
-    );
+    var authSession = await AuthSession.db.findById(session, authSessionId);
 
     if (authSession == null) {
       session.log(
@@ -98,8 +94,9 @@ final class AuthSessions {
       return null;
     }
 
-    if (authSession.lastUsedAt
-        .isBefore(clock.now().subtract(const Duration(minutes: 1)))) {
+    if (authSession.lastUsedAt.isBefore(
+      clock.now().subtract(const Duration(minutes: 1)),
+    )) {
       authSession = await AuthSession.db.updateRow(
         session,
         authSession.copyWith(lastUsedAt: clock.now()),
@@ -172,7 +169,8 @@ final class AuthSessions {
     }
 
     // Apply default values from config
-    final effectiveExpiresAt = expiresAt ??
+    final effectiveExpiresAt =
+        expiresAt ??
         (_config.defaultSessionLifetime != null
             ? clock.now().add(_config.defaultSessionLifetime!)
             : null);
@@ -205,10 +203,7 @@ final class AuthSessions {
 
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildSessionKey(
-        secret: secret,
-        authSessionId: authSession.id!,
-      ),
+      token: buildSessionKey(secret: secret, authSessionId: authSession.id!),
       authUserId: authUserId,
       scopeNames: scopeNames,
     );
@@ -274,12 +269,12 @@ final class AuthSessions {
     final Transaction? transaction,
   }) async {
     // Delete the user session for the current device
-    final authSession = (await AuthSession.db.deleteWhere(
-      session,
-      where: (final row) => row.id.equals(authSessionId),
-      transaction: transaction,
-    ))
-        .firstOrNull;
+    final authSession =
+        (await AuthSession.db.deleteWhere(
+          session,
+          where: (final row) => row.id.equals(authSessionId),
+          transaction: transaction,
+        )).firstOrNull;
 
     if (authSession == null) {
       return false;

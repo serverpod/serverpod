@@ -18,10 +18,10 @@ abstract class StringDefaultModel
     this.id,
     String? stringDefaultModel,
     String? stringDefaultModelNull,
-  })  : stringDefaultModel =
-            stringDefaultModel ?? 'This is a default model value',
-        stringDefaultModelNull =
-            stringDefaultModelNull ?? 'This is a default model null value';
+  }) : stringDefaultModel =
+           stringDefaultModel ?? 'This is a default model value',
+       stringDefaultModelNull =
+           stringDefaultModelNull ?? 'This is a default model null value';
 
   factory StringDefaultModel({
     int? id,
@@ -116,10 +116,10 @@ class _StringDefaultModelImpl extends StringDefaultModel {
     String? stringDefaultModel,
     String? stringDefaultModelNull,
   }) : super._(
-          id: id,
-          stringDefaultModel: stringDefaultModel,
-          stringDefaultModelNull: stringDefaultModelNull,
-        );
+         id: id,
+         stringDefaultModel: stringDefaultModel,
+         stringDefaultModelNull: stringDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -144,30 +144,18 @@ class StringDefaultModelUpdateTable
   StringDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> stringDefaultModel(String value) =>
-      _i1.ColumnValue(
-        table.stringDefaultModel,
-        value,
-      );
+      _i1.ColumnValue(table.stringDefaultModel, value);
 
   _i1.ColumnValue<String, String> stringDefaultModelNull(String value) =>
-      _i1.ColumnValue(
-        table.stringDefaultModelNull,
-        value,
-      );
+      _i1.ColumnValue(table.stringDefaultModelNull, value);
 }
 
 class StringDefaultModelTable extends _i1.Table<int?> {
   StringDefaultModelTable({super.tableRelation})
-      : super(tableName: 'string_default_model') {
+    : super(tableName: 'string_default_model') {
     updateTable = StringDefaultModelUpdateTable(this);
-    stringDefaultModel = _i1.ColumnString(
-      'stringDefaultModel',
-      this,
-    );
-    stringDefaultModelNull = _i1.ColumnString(
-      'stringDefaultModelNull',
-      this,
-    );
+    stringDefaultModel = _i1.ColumnString('stringDefaultModel', this);
+    stringDefaultModelNull = _i1.ColumnString('stringDefaultModelNull', this);
   }
 
   late final StringDefaultModelUpdateTable updateTable;
@@ -178,10 +166,10 @@ class StringDefaultModelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        stringDefaultModel,
-        stringDefaultModelNull,
-      ];
+    id,
+    stringDefaultModel,
+    stringDefaultModelNull,
+  ];
 }
 
 class StringDefaultModelInclude extends _i1.IncludeObject {
@@ -379,7 +367,7 @@ class StringDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultModel>(
@@ -394,7 +382,7 @@ class StringDefaultModelRepository {
   Future<List<StringDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
     int? limit,
     int? offset,

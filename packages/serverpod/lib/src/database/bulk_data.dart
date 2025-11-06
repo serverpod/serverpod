@@ -25,8 +25,10 @@ class DatabaseBulkData {
         message: 'The "$table" table was not found in the live database.',
       );
     }
-    var targetTableDefinition =
-        await _getTargetTableDefinition(database, table);
+    var targetTableDefinition = await _getTargetTableDefinition(
+      database,
+      table,
+    );
     if (targetTableDefinition == null) {
       throw BulkDataException(
         message: 'The "$table" table was not found in the database definition.',
@@ -60,15 +62,14 @@ class DatabaseBulkData {
         filterQuery = ' AND $filterQuery';
       }
     } catch (e) {
-      throw BulkDataException(
-        message: 'Failed to create filter query ($e).',
-      );
+      throw BulkDataException(message: 'Failed to create filter query ($e).');
     }
 
     String strLastId = DatabasePoolManager.encoder.convert(lastId);
 
     List<List<dynamic>> data;
-    var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
+    var query =
+        'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $strLastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
       data = await database.unsafeQuery(query);
@@ -97,7 +98,8 @@ class DatabaseBulkData {
       );
     }
 
-    var query = 'SELECT reltuples::bigint AS estimate FROM pg_class '
+    var query =
+        'SELECT reltuples::bigint AS estimate FROM pg_class '
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
         'WHERE relname = \'$table\' AND nspname = \'public\'';
 
@@ -116,8 +118,9 @@ class DatabaseBulkData {
     required Database database,
     required List<String> queries,
   }) async {
-    var result =
-        await database.transaction<BulkQueryResult>((transaction) async {
+    var result = await database.transaction<BulkQueryResult>((
+      transaction,
+    ) async {
       var startTime = DateTime.now();
       DatabaseResult? result;
       int numAffectedRows = 0;
@@ -131,11 +134,12 @@ class DatabaseBulkData {
       var duration = DateTime.now().difference(startTime);
 
       return BulkQueryResult(
-        headers: result.schema.columns
-            .map((e) => BulkQueryColumnDescription(
-                  name: e.columnName ?? '',
-                ))
-            .toList(),
+        headers:
+            result.schema.columns
+                .map(
+                  (e) => BulkQueryColumnDescription(name: e.columnName ?? ''),
+                )
+                .toList(),
         data: SerializationManager.encode(result),
         numAffectedRows: numAffectedRows,
         duration: duration,
@@ -152,8 +156,9 @@ class DatabaseBulkData {
     var tableDefinitions =
         Serverpod.instance.serializationManager.getTargetTableDefinitions();
 
-    var tableDefinition =
-        tableDefinitions.firstWhereOrNull((e) => e.name == table);
+    var tableDefinition = tableDefinitions.firstWhereOrNull(
+      (e) => e.name == table,
+    );
 
     return tableDefinition;
   }
@@ -164,8 +169,9 @@ class DatabaseBulkData {
   ) async {
     var databaseDefinition = await _getLiveDatabaseDefinition(database);
 
-    var tableDefinition =
-        databaseDefinition.tables.firstWhereOrNull((e) => e.name == table);
+    var tableDefinition = databaseDefinition.tables.firstWhereOrNull(
+      (e) => e.name == table,
+    );
 
     return tableDefinition;
   }

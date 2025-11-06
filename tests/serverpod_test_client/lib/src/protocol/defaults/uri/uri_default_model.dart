@@ -13,14 +13,12 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class UriDefaultModel implements _i1.SerializableModel {
-  UriDefaultModel._({
-    this.id,
-    Uri? uriDefaultModel,
-    Uri? uriDefaultModelNull,
-  })  : uriDefaultModel =
-            uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
-        uriDefaultModelNull = uriDefaultModelNull ??
-            Uri.parse('https://serverpod.dev/defaultModel');
+  UriDefaultModel._({this.id, Uri? uriDefaultModel, Uri? uriDefaultModelNull})
+    : uriDefaultModel =
+          uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
+      uriDefaultModelNull =
+          uriDefaultModelNull ??
+          Uri.parse('https://serverpod.dev/defaultModel');
 
   factory UriDefaultModel({
     int? id,
@@ -31,12 +29,15 @@ abstract class UriDefaultModel implements _i1.SerializableModel {
   factory UriDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultModel(
       id: jsonSerialization['id'] as int?,
-      uriDefaultModel:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultModel']),
-      uriDefaultModelNull: jsonSerialization['uriDefaultModelNull'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultModelNull']),
+      uriDefaultModel: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefaultModel'],
+      ),
+      uriDefaultModelNull:
+          jsonSerialization['uriDefaultModelNull'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(
+                jsonSerialization['uriDefaultModelNull'],
+              ),
     );
   }
 
@@ -81,10 +82,10 @@ class _UriDefaultModelImpl extends UriDefaultModel {
     Uri? uriDefaultModel,
     Uri? uriDefaultModelNull,
   }) : super._(
-          id: id,
-          uriDefaultModel: uriDefaultModel,
-          uriDefaultModelNull: uriDefaultModelNull,
-        );
+         id: id,
+         uriDefaultModel: uriDefaultModel,
+         uriDefaultModelNull: uriDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [UriDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -98,9 +99,10 @@ class _UriDefaultModelImpl extends UriDefaultModel {
     return UriDefaultModel(
       id: id is int? ? id : this.id,
       uriDefaultModel: uriDefaultModel ?? this.uriDefaultModel,
-      uriDefaultModelNull: uriDefaultModelNull is Uri?
-          ? uriDefaultModelNull
-          : this.uriDefaultModelNull,
+      uriDefaultModelNull:
+          uriDefaultModelNull is Uri?
+              ? uriDefaultModelNull
+              : this.uriDefaultModelNull,
     );
   }
 }

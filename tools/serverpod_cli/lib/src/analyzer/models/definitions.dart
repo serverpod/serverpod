@@ -24,8 +24,8 @@ sealed class SerializableModelDefinition {
   /// Generate the file reference [String] to this file.
   String fileRef() {
     return p.posix
-        // ignore: prefer_interpolation_to_compose_strings
-        .joinAll([...subDirParts, '$fileName.dart']);
+    // ignore: prefer_interpolation_to_compose_strings
+    .joinAll([...subDirParts, '$fileName.dart']);
   }
 }
 
@@ -324,11 +324,7 @@ class SerializableModelFieldDefinition {
 }
 
 /// The scope of a field.
-enum ModelFieldScopeDefinition {
-  all,
-  serverOnly,
-  none,
-}
+enum ModelFieldScopeDefinition { all, serverOnly, none }
 
 /// The definition of an index for a file, that is also stored in the database.
 class SerializableModelIndexDefinition {
@@ -513,9 +509,7 @@ class ObjectRelationDefinition extends RelationDefinition {
   }) : super(name, isForeignKeyOrigin);
 }
 
-enum UnresolvableReason {
-  relationAlreadyDefinedForField,
-}
+enum UnresolvableReason { relationAlreadyDefinedForField }
 
 /// Stores information about a relation that could not be resolved.
 /// This is used to report errors to the user in the analyzer.
@@ -527,9 +521,9 @@ class UnresolvableObjectRelationDefinition extends RelationDefinition {
     this.objectRelationDefinition,
     this.reason,
   ) : super(
-          objectRelationDefinition.name,
-          objectRelationDefinition.isForeignKeyOrigin,
-        );
+        objectRelationDefinition.name,
+        objectRelationDefinition.isForeignKeyOrigin,
+      );
 }
 
 class UnresolvedObjectRelationDefinition extends RelationDefinition {
@@ -635,7 +629,4 @@ const String defaultUuidValueRandom = 'random';
 const String defaultUuidValueRandomV7 = 'random_v7';
 
 /// Allowed types for vector indexes.
-enum VectorIndexType {
-  hnsw,
-  ivfflat,
-}
+enum VectorIndexType { hnsw, ivfflat }

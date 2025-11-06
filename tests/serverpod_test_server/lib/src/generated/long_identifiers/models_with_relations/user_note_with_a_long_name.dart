@@ -14,24 +14,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UserNoteWithALongName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UserNoteWithALongName._({
-    this.id,
-    required this.name,
-  }) : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId = null;
+  UserNoteWithALongName._({this.id, required this.name})
+    : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId = null;
 
-  factory UserNoteWithALongName({
-    int? id,
-    required String name,
-  }) = _UserNoteWithALongNameImpl;
+  factory UserNoteWithALongName({int? id, required String name}) =
+      _UserNoteWithALongNameImpl;
 
   factory UserNoteWithALongName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return UserNoteWithALongNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
-          jsonSerialization[
-                  '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId']
+          jsonSerialization['_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId']
               as int?,
     );
   }
@@ -53,10 +49,7 @@ abstract class UserNoteWithALongName
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserNoteWithALongName copyWith({
-    int? id,
-    String? name,
-  });
+  UserNoteWithALongName copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -71,10 +64,7 @@ abstract class UserNoteWithALongName
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   static UserNoteWithALongNameInclude include() {
@@ -110,22 +100,14 @@ abstract class UserNoteWithALongName
 class _Undefined {}
 
 class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
-  _UserNoteWithALongNameImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _UserNoteWithALongNameImpl({int? id, required String name})
+    : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserNoteWithALongName copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  UserNoteWithALongName copyWith({Object? id = _Undefined, String? name}) {
     return UserNoteWithALongNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
@@ -140,12 +122,9 @@ class UserNoteWithALongNameImplicit extends _UserNoteWithALongNameImpl {
     int? id,
     required String name,
     int? $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-  })  : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId =
-            $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-        super(
-          id: id,
-          name: name,
-        );
+  }) : _userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId =
+           $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+       super(id: id, name: name);
 
   factory UserNoteWithALongNameImplicit(
     UserNoteWithALongName userNoteWithALongName, {
@@ -167,34 +146,28 @@ class UserNoteWithALongNameUpdateTable
     extends _i1.UpdateTable<UserNoteWithALongNameTable> {
   UserNoteWithALongNameUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
   _i1.ColumnValue<int, int>
-      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId(
-              int? value) =>
-          _i1.ColumnValue(
-            table
-                .$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-            value,
-          );
+  $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId(
+    int? value,
+  ) => _i1.ColumnValue(
+    table.$_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+    value,
+  );
 }
 
 class UserNoteWithALongNameTable extends _i1.Table<int?> {
   UserNoteWithALongNameTable({super.tableRelation})
-      : super(tableName: 'user_note_with_a_long_name') {
+    : super(tableName: 'user_note_with_a_long_name') {
     updateTable = UserNoteWithALongNameUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
     $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId =
         _i1.ColumnInt(
-      '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId',
-      this,
-    );
+          '_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId',
+          this,
+        );
   }
 
   late final UserNoteWithALongNameUpdateTable updateTable;
@@ -202,20 +175,17 @@ class UserNoteWithALongNameTable extends _i1.Table<int?> {
   late final _i1.ColumnString name;
 
   late final _i1.ColumnInt
-      $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
+  $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
-      ];
+    id,
+    name,
+    $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId,
+  ];
 
   @override
-  List<_i1.Column> get managedColumns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get managedColumns => [id, name];
 }
 
 class UserNoteWithALongNameInclude extends _i1.IncludeObject {
@@ -413,7 +383,7 @@ class UserNoteWithALongNameRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UserNoteWithALongNameUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteWithALongName>(
@@ -428,7 +398,7 @@ class UserNoteWithALongNameRepository {
   Future<List<UserNoteWithALongName>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserNoteWithALongNameUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     int? limit,
     int? offset,

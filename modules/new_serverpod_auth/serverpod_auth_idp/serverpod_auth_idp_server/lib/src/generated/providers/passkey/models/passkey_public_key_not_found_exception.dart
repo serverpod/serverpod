@@ -24,7 +24,8 @@ abstract class PasskeyPublicKeyNotFoundException
       _PasskeyPublicKeyNotFoundExceptionImpl;
 
   factory PasskeyPublicKeyNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyPublicKeyNotFoundException();
   }
 

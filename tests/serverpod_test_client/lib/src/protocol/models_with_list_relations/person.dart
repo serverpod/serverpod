@@ -33,10 +33,12 @@ abstract class Person implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
-      organization: jsonSerialization['organization'] == null
-          ? null
-          : _i2.Organization.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+      organization:
+          jsonSerialization['organization'] == null
+              ? null
+              : _i2.Organization.fromJson(
+                (jsonSerialization['organization'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -85,11 +87,11 @@ class _PersonImpl extends Person {
     int? organizationId,
     _i2.Organization? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -106,9 +108,10 @@ class _PersonImpl extends Person {
       name: name ?? this.name,
       organizationId:
           organizationId is int? ? organizationId : this.organizationId,
-      organization: organization is _i2.Organization?
-          ? organization
-          : this.organization?.copyWith(),
+      organization:
+          organization is _i2.Organization?
+              ? organization
+              : this.organization?.copyWith(),
     );
   }
 }

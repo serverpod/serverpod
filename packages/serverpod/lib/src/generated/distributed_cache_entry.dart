@@ -21,7 +21,8 @@ abstract class DistributedCacheEntry
       _DistributedCacheEntryImpl;
 
   factory DistributedCacheEntry.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DistributedCacheEntry(data: jsonSerialization['data'] as String);
   }
 

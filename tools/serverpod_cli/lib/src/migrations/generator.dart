@@ -16,10 +16,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class MigrationGenerator {
-  MigrationGenerator({
-    required this.directory,
-    required this.projectName,
-  });
+  MigrationGenerator({required this.directory, required this.projectName});
 
   final Directory directory;
   final String projectName;
@@ -63,16 +60,15 @@ class MigrationGenerator {
       migrationRegistry.getLatest(),
     );
 
-    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
-      config,
-    );
-    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
-      collector.printErrors();
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+    var modelDefinitions =
+        StatefulAnalyzer(config, models, (uri, collector) {
+          collector.printErrors();
 
-      if (collector.hasSevereErrors) {
-        throw GenerateMigrationDatabaseDefinitionException();
-      }
-    }).validateAll();
+          if (collector.hasSevereErrors) {
+            throw GenerateMigrationDatabaseDefinitionException();
+          }
+        }).validateAll();
 
     var databaseDefinitionProject = createDatabaseDefinitionFromModels(
       modelDefinitions,
@@ -183,9 +179,7 @@ class MigrationGenerator {
     try {
       liveDatabase = await client.insights.getLiveDatabaseDefinition();
     } catch (e) {
-      throw MigrationLiveDatabaseDefinitionException(
-        exception: e.toString(),
-      );
+      throw MigrationLiveDatabaseDefinitionException(exception: e.toString());
     } finally {
       client.close();
     }
@@ -219,7 +213,7 @@ class MigrationGenerator {
       DatabaseMigrationVersion(
         module: MigrationConstants.repairMigrationModuleName,
         version: repairMigrationName,
-      )
+      ),
     ];
 
     List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
@@ -253,13 +247,16 @@ class MigrationGenerator {
     List<DatabaseMigrationVersion> preInstalledModules,
     List<DatabaseMigrationVersion> postInstalledModules,
   ) {
-    var removedModules = preInstalledModules
-        .where(
-          (module) => !postInstalledModules.any(
-            (installedModule) => installedModule.module == module.module,
-          ),
-        )
-        .toList();
+    var removedModules =
+        preInstalledModules
+            .where(
+              (module) =>
+                  !postInstalledModules.any(
+                    (installedModule) =>
+                        installedModule.module == module.module,
+                  ),
+            )
+            .toList();
     return removedModules;
   }
 
@@ -309,9 +306,11 @@ class MigrationGenerator {
     }
 
     for (var module in installedModules) {
-      if (targetModules.any((version) =>
-          version.module == module.module &&
-          version.version != module.version)) {
+      if (targetModules.any(
+        (version) =>
+            version.module == module.module &&
+            version.version != module.version,
+      )) {
         return true;
       }
     }
@@ -379,10 +378,7 @@ class MigrationGenerator {
     if (warnings.isNotEmpty) {
       log.warning('Migration Warnings:');
       for (var warning in warnings) {
-        log.warning(
-          warning.message,
-          type: TextLogType.bullet,
-        );
+        log.warning(warning.message, type: TextLogType.bullet);
       }
     }
   }
@@ -398,13 +394,16 @@ class MigrationGenerator {
       removedModules: removedModules,
     );
 
-    var repairMigrationFile = File(path.join(
-      MigrationConstants.repairMigrationDirectory(directory).path,
-      '$repairMigrationName.sql',
-    ));
+    var repairMigrationFile = File(
+      path.join(
+        MigrationConstants.repairMigrationDirectory(directory).path,
+        '$repairMigrationName.sql',
+      ),
+    );
 
-    var targetDirectory =
-        MigrationConstants.repairMigrationDirectory(directory);
+    var targetDirectory = MigrationConstants.repairMigrationDirectory(
+      directory,
+    );
 
     if (targetDirectory.existsSync()) {
       targetDirectory.deleteSync(recursive: true);
@@ -452,21 +451,21 @@ class MigrationVersion {
       // Load the database definition
       var databaseDefinitionProjectPath =
           MigrationConstants.databaseDefinitionProjectJSONPath(
-        projectDirectory,
-        versionName,
-      );
+            projectDirectory,
+            versionName,
+          );
 
       var databaseDefinitionProject =
           await _readMigrationDataFile<DatabaseDefinition>(
-        databaseDefinitionProjectPath,
-        serializationManager,
-      );
+            databaseDefinitionProjectPath,
+            serializationManager,
+          );
 
       var databaseDefinitionPath =
           MigrationConstants.databaseDefinitionJSONPath(
-        projectDirectory,
-        versionName,
-      );
+            projectDirectory,
+            versionName,
+          );
       var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
         databaseDefinitionPath,
         serializationManager,
@@ -504,9 +503,7 @@ class MigrationVersion {
     Protocol serializationManager,
   ) async {
     var data = await definitionFile.readAsString();
-    var content = serializationManager.decode<T>(
-      data,
-    );
+    var content = serializationManager.decode<T>(data);
     return content;
   }
 
@@ -570,10 +567,7 @@ class MigrationVersion {
       projectDirectory,
       versionName,
     );
-    var migrationData = SerializationManager.encode(
-      migration,
-      formatted: true,
-    );
+    var migrationData = SerializationManager.encode(migration, formatted: true);
     await migrationFile.writeAsString(migrationData);
 
     // Write the migration definition SQL file

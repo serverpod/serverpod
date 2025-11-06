@@ -38,12 +38,14 @@ abstract class ServerHealthConnectionInfo
   }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
       active: jsonSerialization['active'] as int,
       closing: jsonSerialization['closing'] as int,
       idle: jsonSerialization['idle'] as int,
@@ -160,14 +162,14 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
     required int idle,
     required int granularity,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          timestamp: timestamp,
-          active: active,
-          closing: closing,
-          idle: idle,
-          granularity: granularity,
-        );
+         id: id,
+         serverId: serverId,
+         timestamp: timestamp,
+         active: active,
+         closing: closing,
+         idle: idle,
+         granularity: granularity,
+       );
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
@@ -198,66 +200,35 @@ class ServerHealthConnectionInfoUpdateTable
     extends _i1.UpdateTable<ServerHealthConnectionInfoTable> {
   ServerHealthConnectionInfoUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+  _i1.ColumnValue<String, String> serverId(String value) =>
+      _i1.ColumnValue(table.serverId, value);
 
   _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
-      _i1.ColumnValue(
-        table.timestamp,
-        value,
-      );
+      _i1.ColumnValue(table.timestamp, value);
 
-  _i1.ColumnValue<int, int> active(int value) => _i1.ColumnValue(
-        table.active,
-        value,
-      );
+  _i1.ColumnValue<int, int> active(int value) =>
+      _i1.ColumnValue(table.active, value);
 
-  _i1.ColumnValue<int, int> closing(int value) => _i1.ColumnValue(
-        table.closing,
-        value,
-      );
+  _i1.ColumnValue<int, int> closing(int value) =>
+      _i1.ColumnValue(table.closing, value);
 
-  _i1.ColumnValue<int, int> idle(int value) => _i1.ColumnValue(
-        table.idle,
-        value,
-      );
+  _i1.ColumnValue<int, int> idle(int value) =>
+      _i1.ColumnValue(table.idle, value);
 
-  _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
-        table.granularity,
-        value,
-      );
+  _i1.ColumnValue<int, int> granularity(int value) =>
+      _i1.ColumnValue(table.granularity, value);
 }
 
 class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
   ServerHealthConnectionInfoTable({super.tableRelation})
-      : super(tableName: 'serverpod_health_connection_info') {
+    : super(tableName: 'serverpod_health_connection_info') {
     updateTable = ServerHealthConnectionInfoUpdateTable(this);
-    serverId = _i1.ColumnString(
-      'serverId',
-      this,
-    );
-    timestamp = _i1.ColumnDateTime(
-      'timestamp',
-      this,
-    );
-    active = _i1.ColumnInt(
-      'active',
-      this,
-    );
-    closing = _i1.ColumnInt(
-      'closing',
-      this,
-    );
-    idle = _i1.ColumnInt(
-      'idle',
-      this,
-    );
-    granularity = _i1.ColumnInt(
-      'granularity',
-      this,
-    );
+    serverId = _i1.ColumnString('serverId', this);
+    timestamp = _i1.ColumnDateTime('timestamp', this);
+    active = _i1.ColumnInt('active', this);
+    closing = _i1.ColumnInt('closing', this);
+    idle = _i1.ColumnInt('idle', this);
+    granularity = _i1.ColumnInt('granularity', this);
   }
 
   late final ServerHealthConnectionInfoUpdateTable updateTable;
@@ -283,14 +254,14 @@ class ServerHealthConnectionInfoTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        serverId,
-        timestamp,
-        active,
-        closing,
-        idle,
-        granularity,
-      ];
+    id,
+    serverId,
+    timestamp,
+    active,
+    closing,
+    idle,
+    granularity,
+  ];
 }
 
 class ServerHealthConnectionInfoInclude extends _i1.IncludeObject {
@@ -488,7 +459,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerHealthConnectionInfo>(
@@ -503,7 +474,7 @@ class ServerHealthConnectionInfoRepository {
   Future<List<ServerHealthConnectionInfo>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ServerHealthConnectionInfoUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     int? limit,
     int? offset,

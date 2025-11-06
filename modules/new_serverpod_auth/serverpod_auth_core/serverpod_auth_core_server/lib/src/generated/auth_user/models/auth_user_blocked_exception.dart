@@ -22,7 +22,8 @@ abstract class AuthUserBlockedException
   factory AuthUserBlockedException() = _AuthUserBlockedExceptionImpl;
 
   factory AuthUserBlockedException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthUserBlockedException();
   }
 

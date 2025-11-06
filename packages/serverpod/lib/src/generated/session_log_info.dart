@@ -36,16 +36,25 @@ abstract class SessionLogInfo
   factory SessionLogInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogInfo(
       sessionLogEntry: _i2.SessionLogEntry.fromJson(
-          (jsonSerialization['sessionLogEntry'] as Map<String, dynamic>)),
-      queries: (jsonSerialization['queries'] as List)
-          .map((e) => _i3.QueryLogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      logs: (jsonSerialization['logs'] as List)
-          .map((e) => _i4.LogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      messages: (jsonSerialization['messages'] as List)
-          .map((e) => _i5.MessageLogEntry.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+        (jsonSerialization['sessionLogEntry'] as Map<String, dynamic>),
+      ),
+      queries:
+          (jsonSerialization['queries'] as List)
+              .map(
+                (e) => _i3.QueryLogEntry.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
+      logs:
+          (jsonSerialization['logs'] as List)
+              .map((e) => _i4.LogEntry.fromJson((e as Map<String, dynamic>)))
+              .toList(),
+      messages:
+          (jsonSerialization['messages'] as List)
+              .map(
+                (e) =>
+                    _i5.MessageLogEntry.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -103,11 +112,11 @@ class _SessionLogInfoImpl extends SessionLogInfo {
     required List<_i4.LogEntry> logs,
     required List<_i5.MessageLogEntry> messages,
   }) : super._(
-          sessionLogEntry: sessionLogEntry,
-          queries: queries,
-          logs: logs,
-          messages: messages,
-        );
+         sessionLogEntry: sessionLogEntry,
+         queries: queries,
+         logs: logs,
+         messages: messages,
+       );
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.

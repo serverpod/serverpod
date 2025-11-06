@@ -6,24 +6,23 @@ import 'package:test/test.dart';
 import 'serverpod_test_tools.dart';
 
 void main() {
-  withServerpod(
-    'Given TestToolsEndpoint',
-    (sessionBuilder, endpoints) {
-      var session = sessionBuilder.build();
+  withServerpod('Given TestToolsEndpoint', (sessionBuilder, endpoints) {
+    var session = sessionBuilder.build();
 
-      test(
-          'when calling createSimpleData then creates a SimpleData in the database',
-          () async {
+    test(
+      'when calling createSimpleData then creates a SimpleData in the database',
+      () async {
         await endpoints.testTools.createSimpleData(sessionBuilder, 123);
 
         final result = await SimpleData.db.find(session);
         expect(result.length, 1);
         expect(result.first.num, 123);
-      });
+      },
+    );
 
-      group(
-          'when two calls to createSimpleData with different session builders',
-          () {
+    group(
+      'when two calls to createSimpleData with different session builders',
+      () {
         late TestSessionBuilder firstSessionBuilder;
         late TestSessionBuilder secondSessionBuilder;
         setUp(() async {
@@ -44,52 +43,60 @@ void main() {
           await endpoints.testTools.createSimpleData(secondSessionBuilder, 222);
         });
 
-        test('then the first session builder can see the created data',
-            () async {
-          var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(firstSessionBuilder);
-          expect(fetchedSimpleDatas.length, 2);
-          expect(fetchedSimpleDatas[0].num, 111);
-          expect(fetchedSimpleDatas[1].num, 222);
-        });
-        test('then the second session builder can see the created data',
-            () async {
-          var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(secondSessionBuilder);
-          expect(fetchedSimpleDatas.length, 2);
-          expect(fetchedSimpleDatas[0].num, 111);
-          expect(fetchedSimpleDatas[1].num, 222);
-        });
-        test('then the original session builder can see the created data',
-            () async {
-          var fetchedSimpleDatas =
-              await endpoints.testTools.getAllSimpleData(sessionBuilder);
-          expect(fetchedSimpleDatas.length, 2);
-          expect(fetchedSimpleDatas[0].num, 111);
-          expect(fetchedSimpleDatas[1].num, 222);
-        });
+        test(
+          'then the first session builder can see the created data',
+          () async {
+            var fetchedSimpleDatas = await endpoints.testTools.getAllSimpleData(
+              firstSessionBuilder,
+            );
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          },
+        );
+        test(
+          'then the second session builder can see the created data',
+          () async {
+            var fetchedSimpleDatas = await endpoints.testTools.getAllSimpleData(
+              secondSessionBuilder,
+            );
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          },
+        );
+        test(
+          'then the original session builder can see the created data',
+          () async {
+            var fetchedSimpleDatas = await endpoints.testTools.getAllSimpleData(
+              sessionBuilder,
+            );
+            expect(fetchedSimpleDatas.length, 2);
+            expect(fetchedSimpleDatas[0].num, 111);
+            expect(fetchedSimpleDatas[1].num, 222);
+          },
+        );
+      },
+    );
+
+    group('when calling getAllSimpleData', () {
+      setUp(() async {
+        await SimpleData.db.insert(session, [
+          SimpleData(num: 111),
+          SimpleData(num: 222),
+        ]);
       });
 
-      group('when calling getAllSimpleData', () {
-        setUp(() async {
-          await SimpleData.db.insert(session, [
-            SimpleData(num: 111),
-            SimpleData(num: 222),
-          ]);
-        });
+      test('then returns all SimpleData in the database', () async {
+        var result = await endpoints.testTools.getAllSimpleData(sessionBuilder);
 
-        test('then returns all SimpleData in the database', () async {
-          var result =
-              await endpoints.testTools.getAllSimpleData(sessionBuilder);
+        expect(result.length, 2);
 
-          expect(result.length, 2);
-
-          var nums = result.map((e) => e.num).toList();
-          expect(nums, containsAll([111, 222]));
-        });
+        var nums = result.map((e) => e.num).toList();
+        expect(nums, containsAll([111, 222]));
       });
-    },
-  );
+    });
+  });
 
   withServerpod(
     'Given TestToolsEndpoint and rollbackDatabase afterEach',
@@ -97,8 +104,10 @@ void main() {
       var session = sessionBuilder.build();
       group('when calling createSimpleDatasInsideTransactions', () {
         setUpAll(() async {
-          await endpoints.testTools
-              .createSimpleDatasInsideTransactions(sessionBuilder, 123);
+          await endpoints.testTools.createSimpleDatasInsideTransactions(
+            sessionBuilder,
+            123,
+          );
         });
 
         test("then finds SimpleDatas", () async {
@@ -118,8 +127,10 @@ void main() {
       group('when calling createSimpleDataAndThrowInsideTransaction', () {
         setUpAll(() async {
           try {
-            await endpoints.testTools
-                .createSimpleDataAndThrowInsideTransaction(sessionBuilder, 123);
+            await endpoints.testTools.createSimpleDataAndThrowInsideTransaction(
+              sessionBuilder,
+              123,
+            );
           } catch (e) {}
         });
 
@@ -173,122 +184,116 @@ void main() {
 
   group('Given TestToolsEndpoint and rollbackDatabase afterAll', () {
     group('when calling createSimpleDatasInsideTransactions', () {
-      withServerpod(
-        '',
-        (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+      withServerpod('', (sessionBuilder, endpoints) {
+        var session = sessionBuilder.build();
 
-          setUpAll(() async {
-            await endpoints.testTools
-                .createSimpleDatasInsideTransactions(sessionBuilder, 123);
-          });
+        setUpAll(() async {
+          await endpoints.testTools.createSimpleDatasInsideTransactions(
+            sessionBuilder,
+            123,
+          );
+        });
 
-          test("then finds SimpleDatas", () async {
-            final simpleDatas = await SimpleData.db.find(session);
-            expect(simpleDatas.length, 2);
-            expect(simpleDatas[0].num, 123);
-            expect(simpleDatas[1].num, 123);
-          });
+        test("then finds SimpleDatas", () async {
+          final simpleDatas = await SimpleData.db.find(session);
+          expect(simpleDatas.length, 2);
+          expect(simpleDatas[0].num, 123);
+          expect(simpleDatas[1].num, 123);
+        });
 
-          test('then should not have been rolled back in the next test',
-              () async {
+        test(
+          'then should not have been rolled back in the next test',
+          () async {
             var simpleDatas = await SimpleData.db.find(session);
 
             expect(simpleDatas, hasLength(2));
             expect(simpleDatas[0].num, 123);
             expect(simpleDatas[1].num, 123);
-          });
-        },
-        rollbackDatabase: RollbackDatabase.afterAll,
-      );
+          },
+        );
+      }, rollbackDatabase: RollbackDatabase.afterAll);
 
-      withServerpod(
-        'when fetching SimpleData in the next withServerpod',
-        (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
-          test('then should have been rolled back', () async {
-            var simpleDatas = await SimpleData.db.find(session);
+      withServerpod('when fetching SimpleData in the next withServerpod', (
+        sessionBuilder,
+        endpoints,
+      ) {
+        var session = sessionBuilder.build();
+        test('then should have been rolled back', () async {
+          var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(0));
-          });
-        },
-      );
+          expect(simpleDatas, hasLength(0));
+        });
+      });
     });
 
     group('when calling createSimpleDataAndThrowInsideTransaction', () {
-      withServerpod(
-        '',
-        (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+      withServerpod('', (sessionBuilder, endpoints) {
+        var session = sessionBuilder.build();
 
-          setUpAll(() async {
-            try {
-              await endpoints.testTools
-                  .createSimpleDataAndThrowInsideTransaction(
-                      sessionBuilder, 123);
-            } catch (e) {}
-          });
+        setUpAll(() async {
+          try {
+            await endpoints.testTools.createSimpleDataAndThrowInsideTransaction(
+              sessionBuilder,
+              123,
+            );
+          } catch (e) {}
+        });
 
-          test('then only one transaction should have been comitted', () async {
-            var simpleDatas = await SimpleData.db.find(session);
+        test('then only one transaction should have been comitted', () async {
+          var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(1));
-            expect(simpleDatas.first.num, 123);
-          });
-        },
-        rollbackDatabase: RollbackDatabase.afterAll,
-      );
+          expect(simpleDatas, hasLength(1));
+          expect(simpleDatas.first.num, 123);
+        });
+      }, rollbackDatabase: RollbackDatabase.afterAll);
 
-      withServerpod(
-        'when fetching SimpleData in the next withServerpod',
-        (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
-          test('then should have been rolled back', () async {
-            var simpleDatas = await SimpleData.db.find(session);
+      withServerpod('when fetching SimpleData in the next withServerpod', (
+        sessionBuilder,
+        endpoints,
+      ) {
+        var session = sessionBuilder.build();
+        test('then should have been rolled back', () async {
+          var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(0));
-          });
-        },
-      );
+          expect(simpleDatas, hasLength(0));
+        });
+      });
     });
 
     group('when calling createSimpleDatasInParallelTransactionCalls', () {
-      withServerpod(
-        '',
-        (sessionBuilder, endpoints) {
-          test('then should enter invariant state and throw', () async {
-            await expectLater(
-              endpoints.testTools
-                  .createSimpleDatasInParallelTransactionCalls(sessionBuilder),
-              throwsA(
-                allOf(
-                  isA<InvalidConfigurationException>(),
-                  predicate<InvalidConfigurationException>(
-                    (e) => e.message.contains(
-                      'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
-                      'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
-                    ),
+      withServerpod('', (sessionBuilder, endpoints) {
+        test('then should enter invariant state and throw', () async {
+          await expectLater(
+            endpoints.testTools.createSimpleDatasInParallelTransactionCalls(
+              sessionBuilder,
+            ),
+            throwsA(
+              allOf(
+                isA<InvalidConfigurationException>(),
+                predicate<InvalidConfigurationException>(
+                  (e) => e.message.contains(
+                    'Concurrent calls to transaction are not supported when database rollbacks are enabled. '
+                    'Disable rolling back the database by setting `rollbackDatabase` to `RollbackDatabase.disabled`.',
                   ),
                 ),
               ),
-            );
-          });
-        },
-        rollbackDatabase: RollbackDatabase.afterAll,
-      );
+            ),
+          );
+        });
+      }, rollbackDatabase: RollbackDatabase.afterAll);
 
-      withServerpod(
-        'when fetching SimpleData in the next withServerpod',
-        (sessionBuilder, endpoints) {
-          var session = sessionBuilder.build();
+      withServerpod('when fetching SimpleData in the next withServerpod', (
+        sessionBuilder,
+        endpoints,
+      ) {
+        var session = sessionBuilder.build();
 
-          test('then should have been rolled back', () async {
-            var simpleDatas = await SimpleData.db.find(session);
+        test('then should have been rolled back', () async {
+          var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(0));
-          });
-        },
-      );
+          expect(simpleDatas, hasLength(0));
+        });
+      });
     });
   });
 
@@ -299,8 +304,10 @@ void main() {
         (sessionBuilder, endpoints) {
           var session = sessionBuilder.build();
           setUpAll(() async {
-            await endpoints.testTools
-                .createSimpleDatasInsideTransactions(sessionBuilder, 123);
+            await endpoints.testTools.createSimpleDatasInsideTransactions(
+              sessionBuilder,
+              123,
+            );
           });
 
           test("then finds SimpleDatas in the test", () async {
@@ -310,14 +317,16 @@ void main() {
             expect(simpleDatas[1].num, 123);
           });
 
-          test('then should not have been rolled back in the next test',
-              () async {
-            var simpleDatas = await SimpleData.db.find(session);
+          test(
+            'then should not have been rolled back in the next test',
+            () async {
+              var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(2));
-            expect(simpleDatas[0].num, 123);
-            expect(simpleDatas[1].num, 123);
-          });
+              expect(simpleDatas, hasLength(2));
+              expect(simpleDatas[0].num, 123);
+              expect(simpleDatas[1].num, 123);
+            },
+          );
         },
         rollbackDatabase: RollbackDatabase.disabled,
         testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
@@ -335,14 +344,15 @@ void main() {
           });
 
           test(
-              'then should not have been rolled back and has to be deleted manually',
-              () async {
-            var simpleDatas = await SimpleData.db.find(session);
+            'then should not have been rolled back and has to be deleted manually',
+            () async {
+              var simpleDatas = await SimpleData.db.find(session);
 
-            expect(simpleDatas, hasLength(2));
-            expect(simpleDatas[0].num, 123);
-            expect(simpleDatas[1].num, 123);
-          });
+              expect(simpleDatas, hasLength(2));
+              expect(simpleDatas[0].num, 123);
+              expect(simpleDatas[1].num, 123);
+            },
+          );
         },
         rollbackDatabase: RollbackDatabase.disabled,
         testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
@@ -358,7 +368,9 @@ void main() {
             try {
               await endpoints.testTools
                   .createSimpleDataAndThrowInsideTransaction(
-                      sessionBuilder, 123);
+                    sessionBuilder,
+                    123,
+                  );
             } catch (e) {}
           });
 
@@ -401,8 +413,9 @@ void main() {
       (sessionBuilder, endpoints) {
         var session = sessionBuilder.build();
         setUpAll(() async {
-          await endpoints.testTools
-              .createSimpleDatasInParallelTransactionCalls(sessionBuilder);
+          await endpoints.testTools.createSimpleDatasInParallelTransactionCalls(
+            sessionBuilder,
+          );
         });
 
         tearDownAll(() async {
@@ -447,68 +460,65 @@ void main() {
             failingInsert,
             throwsA(
               allOf(
-                isA<DatabaseQueryException>()
-                    .having((e) => e.code, 'code', PgErrorCode.uniqueViolation),
+                isA<DatabaseQueryException>().having(
+                  (e) => e.code,
+                  'code',
+                  PgErrorCode.uniqueViolation,
+                ),
               ),
             ),
           );
         });
 
         test(
-            'then catching database exception should not prevent further database operations',
-            () async {
-          SimpleData? simpleData;
-          try {
-            await failingInsert;
-          } on DatabaseException catch (_) {
-            simpleData =
-                await SimpleData.db.insertRow(session, SimpleData(num: 123));
-          }
-
-          expect(simpleData, isNotNull);
-          expect(simpleData?.num, 123);
-        });
-      });
-
-      test(
-          'when creating multiple UniqueData with the same unique value in parallel '
-          'then should throw database exception but still insert the one that was successful',
+          'then catching database exception should not prevent further database operations',
           () async {
-        try {
-          await Future.wait([
-            UniqueData.db.insertRow(
-              session,
-              UniqueData(email: 'test@test2.com', number: 2),
-            ),
-            UniqueData.db.insertRow(
-              session,
-              UniqueData(email: 'test@test2.com', number: 2),
-            ),
-          ]);
-        } on DatabaseException catch (_) {}
+            SimpleData? simpleData;
+            try {
+              await failingInsert;
+            } on DatabaseException catch (_) {
+              simpleData = await SimpleData.db.insertRow(
+                session,
+                SimpleData(num: 123),
+              );
+            }
 
-        var uniqueDatas = await UniqueData.db.find(session);
-
-        expect(uniqueDatas, hasLength(1));
-        expect(uniqueDatas.first.email, 'test@test2.com');
+            expect(simpleData, isNotNull);
+            expect(simpleData?.num, 123);
+          },
+        );
       });
 
       test(
-          'when creating multiple SimpleData in parallel '
+        'when creating multiple UniqueData with the same unique value in parallel '
+        'then should throw database exception but still insert the one that was successful',
+        () async {
+          try {
+            await Future.wait([
+              UniqueData.db.insertRow(
+                session,
+                UniqueData(email: 'test@test2.com', number: 2),
+              ),
+              UniqueData.db.insertRow(
+                session,
+                UniqueData(email: 'test@test2.com', number: 2),
+              ),
+            ]);
+          } on DatabaseException catch (_) {}
+
+          var uniqueDatas = await UniqueData.db.find(session);
+
+          expect(uniqueDatas, hasLength(1));
+          expect(uniqueDatas.first.email, 'test@test2.com');
+        },
+      );
+
+      test('when creating multiple SimpleData in parallel '
           'then should have inserted all', () async {
         await Future.wait([
-          SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 1),
-          ),
-          SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 2),
-          ),
-          SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 3),
-          ),
+          SimpleData.db.insertRow(session, SimpleData(num: 1)),
+          SimpleData.db.insertRow(session, SimpleData(num: 2)),
+          SimpleData.db.insertRow(session, SimpleData(num: 3)),
         ]);
 
         var simpleDatas = await SimpleData.db.find(session);
@@ -519,10 +529,7 @@ void main() {
 
       group('when calling database operation insertRow', () {
         setUp(() async {
-          await SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 123),
-          );
+          await SimpleData.db.insertRow(session, SimpleData(num: 123));
         });
 
         test('then should have inserted row', () async {
@@ -534,13 +541,10 @@ void main() {
 
       group('when calling database operation insert', () {
         setUp(() async {
-          await SimpleData.db.insert(
-            session,
-            [
-              SimpleData(num: 1),
-              SimpleData(num: 2),
-            ],
-          );
+          await SimpleData.db.insert(session, [
+            SimpleData(num: 1),
+            SimpleData(num: 2),
+          ]);
         });
 
         test('then should have inserted rows', () async {
@@ -555,28 +559,26 @@ void main() {
         late SimpleData insertedSimpleData1;
 
         setUp(() async {
-          insertedSimpleDatas = await SimpleData.db.insert(
-            session,
-            [
-              SimpleData(num: 1),
-              SimpleData(num: 2),
-            ],
+          insertedSimpleDatas = await SimpleData.db.insert(session, [
+            SimpleData(num: 1),
+            SimpleData(num: 2),
+          ]);
+          insertedSimpleData1 = insertedSimpleDatas.firstWhere(
+            (s) => s.num == 1,
           );
-          insertedSimpleData1 =
-              insertedSimpleDatas.firstWhere((s) => s.num == 1);
         });
 
-        test(
-            'when calling database operation updateRow '
+        test('when calling database operation updateRow '
             'then should update row', () async {
           insertedSimpleData1.num = 10;
-          var updatedSimpleData =
-              await SimpleData.db.updateRow(session, insertedSimpleData1);
+          var updatedSimpleData = await SimpleData.db.updateRow(
+            session,
+            insertedSimpleData1,
+          );
           expect(updatedSimpleData.num, 10);
         });
 
-        test(
-            'when calling database operation update '
+        test('when calling database operation update '
             'then should update rows', () async {
           var simpleDatas = await SimpleData.db.update(
             session,
@@ -585,8 +587,7 @@ void main() {
           expect(simpleDatas.map((s) => s.num), containsAll([11, 12]));
         });
 
-        test(
-            'when calling database operation findById'
+        test('when calling database operation findById'
             'then should find the saved row by id', () async {
           var simpleData = await SimpleData.db.findById(
             session,
@@ -596,8 +597,7 @@ void main() {
           expect(simpleData?.num, 1);
         });
 
-        test(
-            'when calling database operation findFirstRow'
+        test('when calling database operation findFirstRow'
             'then should be possible to find first row', () async {
           var simpleData = await SimpleData.db.findFirstRow(session);
 
@@ -605,15 +605,13 @@ void main() {
           expect(simpleData?.num, 1);
         });
 
-        test(
-            'when calling database operation find '
+        test('when calling database operation find '
             'then should be possible to find all rows', () async {
           var simpleDatas = await SimpleData.db.find(session);
           expect(simpleDatas.length, 2);
         });
 
-        test(
-            'when calling database operation deleteRow '
+        test('when calling database operation deleteRow '
             'then should delete rows', () async {
           await SimpleData.db.deleteRow(session, insertedSimpleData1);
           var simpleDatas = await SimpleData.db.find(session);
@@ -621,8 +619,7 @@ void main() {
           expect(simpleDatas.first.num, 2);
         });
 
-        test(
-            'when calling database operation deleteWhere'
+        test('when calling database operation deleteWhere'
             'then rows should be deleted', () async {
           await SimpleData.db.deleteWhere(
             session,
@@ -635,71 +632,75 @@ void main() {
           expect(simpleDatas.first.num, 2);
         });
 
-        test(
-            'when calling database operation delete '
+        test('when calling database operation delete '
             'then rows should be deleted', () async {
-          await SimpleData.db.delete(
-            session,
-            insertedSimpleDatas,
-          );
+          await SimpleData.db.delete(session, insertedSimpleDatas);
 
           var simpleDatas = await SimpleData.db.find(session);
           expect(simpleDatas.length, 0);
         });
 
-        test(
-            'when calling database operation count'
+        test('when calling database operation count'
             'then rows should be counted', () async {
           var count = await SimpleData.db.count(session);
           expect(count, 2);
         });
 
         test(
-            'when calling database operation unsafeQuery with select statement '
-            'then should find inserted row', () async {
-          var result = await session.db.unsafeQuery(
-            'SELECT num from simple_data where num = @num',
-            parameters: QueryParameters.named({'num': 2}),
-          );
-          expect(result.length, 1);
-          expect(result.first.first, 2);
-        });
+          'when calling database operation unsafeQuery with select statement '
+          'then should find inserted row',
+          () async {
+            var result = await session.db.unsafeQuery(
+              'SELECT num from simple_data where num = @num',
+              parameters: QueryParameters.named({'num': 2}),
+            );
+            expect(result.length, 1);
+            expect(result.first.first, 2);
+          },
+        );
 
         test(
-            'when calling database operation unsafeExecute with delete statement '
-            'then should delete row', () async {
-          var rowsAffected = await session.db.unsafeExecute(
-            'DELETE FROM simple_data WHERE num = @num',
-            parameters: QueryParameters.named({'num': 2}),
-          );
+          'when calling database operation unsafeExecute with delete statement '
+          'then should delete row',
+          () async {
+            var rowsAffected = await session.db.unsafeExecute(
+              'DELETE FROM simple_data WHERE num = @num',
+              parameters: QueryParameters.named({'num': 2}),
+            );
 
-          expect(rowsAffected, 1);
-        });
+            expect(rowsAffected, 1);
+          },
+        );
 
         test(
-            'when calling database operation unsafeSimpleQuery with select statement '
-            'then should find inserted row', () async {
-          var result = await session.db.unsafeSimpleQuery(
-            'SELECT num from simple_data',
-          );
-          expect(result.length, 2);
-          expect(
+          'when calling database operation unsafeSimpleQuery with select statement '
+          'then should find inserted row',
+          () async {
+            var result = await session.db.unsafeSimpleQuery(
+              'SELECT num from simple_data',
+            );
+            expect(result.length, 2);
+            expect(
               result,
               containsAll([
                 [1],
                 [2],
-              ]));
-        });
+              ]),
+            );
+          },
+        );
 
         test(
-            'when calling database operation unsafeSimpleExecute with delete statement '
-            'then should delete row', () async {
-          var rowsAffected = await session.db.unsafeSimpleExecute(
-            'DELETE FROM simple_data WHERE num = 2',
-          );
+          'when calling database operation unsafeSimpleExecute with delete statement '
+          'then should delete row',
+          () async {
+            var rowsAffected = await session.db.unsafeSimpleExecute(
+              'DELETE FROM simple_data WHERE num = 2',
+            );
 
-          expect(rowsAffected, 1);
-        });
+            expect(rowsAffected, 1);
+          },
+        );
       });
     },
   );

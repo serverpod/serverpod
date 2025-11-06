@@ -19,12 +19,15 @@ abstract class UriDefaultMix
     Uri? uriDefaultAndDefaultModel,
     Uri? uriDefaultAndDefaultPersist,
     Uri? uriDefaultModelAndDefaultPersist,
-  })  : uriDefaultAndDefaultModel = uriDefaultAndDefaultModel ??
-            Uri.parse('https://serverpod.dev/defaultModel'),
-        uriDefaultAndDefaultPersist = uriDefaultAndDefaultPersist ??
-            Uri.parse('https://serverpod.dev/default'),
-        uriDefaultModelAndDefaultPersist = uriDefaultModelAndDefaultPersist ??
-            Uri.parse('https://serverpod.dev/defaultModel');
+  }) : uriDefaultAndDefaultModel =
+           uriDefaultAndDefaultModel ??
+           Uri.parse('https://serverpod.dev/defaultModel'),
+       uriDefaultAndDefaultPersist =
+           uriDefaultAndDefaultPersist ??
+           Uri.parse('https://serverpod.dev/default'),
+       uriDefaultModelAndDefaultPersist =
+           uriDefaultModelAndDefaultPersist ??
+           Uri.parse('https://serverpod.dev/defaultModel');
 
   factory UriDefaultMix({
     int? id,
@@ -37,11 +40,14 @@ abstract class UriDefaultMix
     return UriDefaultMix(
       id: jsonSerialization['id'] as int?,
       uriDefaultAndDefaultModel: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultAndDefaultModel']),
+        jsonSerialization['uriDefaultAndDefaultModel'],
+      ),
       uriDefaultAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultAndDefaultPersist']),
+        jsonSerialization['uriDefaultAndDefaultPersist'],
+      ),
       uriDefaultModelAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultModelAndDefaultPersist']),
+        jsonSerialization['uriDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -131,11 +137,11 @@ class _UriDefaultMixImpl extends UriDefaultMix {
     Uri? uriDefaultAndDefaultPersist,
     Uri? uriDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          uriDefaultAndDefaultModel: uriDefaultAndDefaultModel,
-          uriDefaultAndDefaultPersist: uriDefaultAndDefaultPersist,
-          uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         uriDefaultAndDefaultModel: uriDefaultAndDefaultModel,
+         uriDefaultAndDefaultPersist: uriDefaultAndDefaultPersist,
+         uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -153,7 +159,8 @@ class _UriDefaultMixImpl extends UriDefaultMix {
           uriDefaultAndDefaultModel ?? this.uriDefaultAndDefaultModel,
       uriDefaultAndDefaultPersist:
           uriDefaultAndDefaultPersist ?? this.uriDefaultAndDefaultPersist,
-      uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist ??
+      uriDefaultModelAndDefaultPersist:
+          uriDefaultModelAndDefaultPersist ??
           this.uriDefaultModelAndDefaultPersist,
     );
   }
@@ -163,27 +170,18 @@ class UriDefaultMixUpdateTable extends _i1.UpdateTable<UriDefaultMixTable> {
   UriDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultAndDefaultModel(Uri value) =>
-      _i1.ColumnValue(
-        table.uriDefaultAndDefaultModel,
-        value,
-      );
+      _i1.ColumnValue(table.uriDefaultAndDefaultModel, value);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultAndDefaultPersist(Uri value) =>
-      _i1.ColumnValue(
-        table.uriDefaultAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.uriDefaultAndDefaultPersist, value);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultModelAndDefaultPersist(Uri value) =>
-      _i1.ColumnValue(
-        table.uriDefaultModelAndDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.uriDefaultModelAndDefaultPersist, value);
 }
 
 class UriDefaultMixTable extends _i1.Table<int?> {
   UriDefaultMixTable({super.tableRelation})
-      : super(tableName: 'uri_default_mix') {
+    : super(tableName: 'uri_default_mix') {
     updateTable = UriDefaultMixUpdateTable(this);
     uriDefaultAndDefaultModel = _i1.ColumnUri(
       'uriDefaultAndDefaultModel',
@@ -212,11 +210,11 @@ class UriDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uriDefaultAndDefaultModel,
-        uriDefaultAndDefaultPersist,
-        uriDefaultModelAndDefaultPersist,
-      ];
+    id,
+    uriDefaultAndDefaultModel,
+    uriDefaultAndDefaultPersist,
+    uriDefaultModelAndDefaultPersist,
+  ];
 }
 
 class UriDefaultMixInclude extends _i1.IncludeObject {
@@ -337,10 +335,7 @@ class UriDefaultMixRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefaultMix>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UriDefaultMix>(id, transaction: transaction);
   }
 
   /// Inserts all [UriDefaultMix]s in the list and returns the inserted rows.
@@ -354,10 +349,7 @@ class UriDefaultMixRepository {
     List<UriDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UriDefaultMix>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UriDefaultMix] and returns the inserted row.
@@ -368,10 +360,7 @@ class UriDefaultMixRepository {
     UriDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UriDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UriDefaultMix>(row, transaction: transaction);
   }
 
   /// Updates all [UriDefaultMix]s in the list and returns the updated rows. If
@@ -456,10 +445,7 @@ class UriDefaultMixRepository {
     List<UriDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefaultMix>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UriDefaultMix>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UriDefaultMix].
@@ -468,10 +454,7 @@ class UriDefaultMixRepository {
     UriDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UriDefaultMix>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UriDefaultMix>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

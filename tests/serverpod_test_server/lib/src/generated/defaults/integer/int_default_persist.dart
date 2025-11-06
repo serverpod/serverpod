@@ -14,15 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class IntDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  IntDefaultPersist._({
-    this.id,
-    this.intDefaultPersist,
-  });
+  IntDefaultPersist._({this.id, this.intDefaultPersist});
 
-  factory IntDefaultPersist({
-    int? id,
-    int? intDefaultPersist,
-  }) = _IntDefaultPersistImpl;
+  factory IntDefaultPersist({int? id, int? intDefaultPersist}) =
+      _IntDefaultPersistImpl;
 
   factory IntDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
     return IntDefaultPersist(
@@ -46,10 +41,7 @@ abstract class IntDefaultPersist
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  IntDefaultPersist copyWith({
-    int? id,
-    int? intDefaultPersist,
-  });
+  IntDefaultPersist copyWith({int? id, int? intDefaultPersist});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -99,13 +91,8 @@ abstract class IntDefaultPersist
 class _Undefined {}
 
 class _IntDefaultPersistImpl extends IntDefaultPersist {
-  _IntDefaultPersistImpl({
-    int? id,
-    int? intDefaultPersist,
-  }) : super._(
-          id: id,
-          intDefaultPersist: intDefaultPersist,
-        );
+  _IntDefaultPersistImpl({int? id, int? intDefaultPersist})
+    : super._(id: id, intDefaultPersist: intDefaultPersist);
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -117,9 +104,10 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
   }) {
     return IntDefaultPersist(
       id: id is int? ? id : this.id,
-      intDefaultPersist: intDefaultPersist is int?
-          ? intDefaultPersist
-          : this.intDefaultPersist,
+      intDefaultPersist:
+          intDefaultPersist is int?
+              ? intDefaultPersist
+              : this.intDefaultPersist,
     );
   }
 }
@@ -128,15 +116,13 @@ class IntDefaultPersistUpdateTable
     extends _i1.UpdateTable<IntDefaultPersistTable> {
   IntDefaultPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> intDefaultPersist(int? value) => _i1.ColumnValue(
-        table.intDefaultPersist,
-        value,
-      );
+  _i1.ColumnValue<int, int> intDefaultPersist(int? value) =>
+      _i1.ColumnValue(table.intDefaultPersist, value);
 }
 
 class IntDefaultPersistTable extends _i1.Table<int?> {
   IntDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'int_default_persist') {
+    : super(tableName: 'int_default_persist') {
     updateTable = IntDefaultPersistUpdateTable(this);
     intDefaultPersist = _i1.ColumnInt(
       'intDefaultPersist',
@@ -150,10 +136,7 @@ class IntDefaultPersistTable extends _i1.Table<int?> {
   late final _i1.ColumnInt intDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        intDefaultPersist,
-      ];
+  List<_i1.Column> get columns => [id, intDefaultPersist];
 }
 
 class IntDefaultPersistInclude extends _i1.IncludeObject {
@@ -274,10 +257,7 @@ class IntDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<IntDefaultPersist>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<IntDefaultPersist>(id, transaction: transaction);
   }
 
   /// Inserts all [IntDefaultPersist]s in the list and returns the inserted rows.
@@ -291,10 +271,7 @@ class IntDefaultPersistRepository {
     List<IntDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<IntDefaultPersist>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<IntDefaultPersist>(rows, transaction: transaction);
   }
 
   /// Inserts a single [IntDefaultPersist] and returns the inserted row.
@@ -351,7 +328,7 @@ class IntDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<IntDefaultPersist>(
@@ -366,7 +343,7 @@ class IntDefaultPersistRepository {
   Future<List<IntDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -395,10 +372,7 @@ class IntDefaultPersistRepository {
     List<IntDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<IntDefaultPersist>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<IntDefaultPersist>(rows, transaction: transaction);
   }
 
   /// Deletes a single [IntDefaultPersist].

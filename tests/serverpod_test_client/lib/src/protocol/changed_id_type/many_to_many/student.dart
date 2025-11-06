@@ -14,11 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 
 abstract class StudentUuid implements _i1.SerializableModel {
-  StudentUuid._({
-    this.id,
-    required this.name,
-    this.enrollments,
-  });
+  StudentUuid._({this.id, required this.name, this.enrollments});
 
   factory StudentUuid({
     _i1.UuidValue? id,
@@ -28,13 +24,17 @@ abstract class StudentUuid implements _i1.SerializableModel {
 
   factory StudentUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return StudentUuid(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments:
+          (jsonSerialization['enrollments'] as List?)
+              ?.map(
+                (e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -78,11 +78,7 @@ class _StudentUuidImpl extends StudentUuid {
     _i1.UuidValue? id,
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
-  }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+  }) : super._(id: id, name: name, enrollments: enrollments);
 
   /// Returns a shallow copy of this [StudentUuid]
   /// with some or all fields replaced by the given arguments.
@@ -96,9 +92,10 @@ class _StudentUuidImpl extends StudentUuid {
     return StudentUuid(
       id: id is _i1.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments:
+          enrollments is List<_i2.EnrollmentInt>?
+              ? enrollments
+              : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -34,12 +34,14 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
           jsonSerialization['byNameEnumDefaultPersist'] == null
               ? null
               : _i2.ByNameEnum.fromJson(
-                  (jsonSerialization['byNameEnumDefaultPersist'] as String)),
+                (jsonSerialization['byNameEnumDefaultPersist'] as String),
+              ),
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
               ? null
               : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultPersist'] as int)),
+                (jsonSerialization['byIndexEnumDefaultPersist'] as int),
+              ),
     );
   }
 
@@ -85,10 +87,10 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
     _i2.ByNameEnum? byNameEnumDefaultPersist,
     _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
-          id: id,
-          byNameEnumDefaultPersist: byNameEnumDefaultPersist,
-          byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
-        );
+         id: id,
+         byNameEnumDefaultPersist: byNameEnumDefaultPersist,
+         byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -101,12 +103,14 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }) {
     return EnumDefaultPersist(
       id: id is int? ? id : this.id,
-      byNameEnumDefaultPersist: byNameEnumDefaultPersist is _i2.ByNameEnum?
-          ? byNameEnumDefaultPersist
-          : this.byNameEnumDefaultPersist,
-      byIndexEnumDefaultPersist: byIndexEnumDefaultPersist is _i3.ByIndexEnum?
-          ? byIndexEnumDefaultPersist
-          : this.byIndexEnumDefaultPersist,
+      byNameEnumDefaultPersist:
+          byNameEnumDefaultPersist is _i2.ByNameEnum?
+              ? byNameEnumDefaultPersist
+              : this.byNameEnumDefaultPersist,
+      byIndexEnumDefaultPersist:
+          byIndexEnumDefaultPersist is _i3.ByIndexEnum?
+              ? byIndexEnumDefaultPersist
+              : this.byIndexEnumDefaultPersist,
     );
   }
 }

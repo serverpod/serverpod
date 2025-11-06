@@ -13,15 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class LongImplicitIdField implements _i1.SerializableModel {
-  LongImplicitIdField._({
-    this.id,
-    required this.name,
-  });
+  LongImplicitIdField._({this.id, required this.name});
 
-  factory LongImplicitIdField({
-    int? id,
-    required String name,
-  }) = _LongImplicitIdFieldImpl;
+  factory LongImplicitIdField({int? id, required String name}) =
+      _LongImplicitIdFieldImpl;
 
   factory LongImplicitIdField.fromJson(Map<String, dynamic> jsonSerialization) {
     return LongImplicitIdField(
@@ -40,16 +35,10 @@ abstract class LongImplicitIdField implements _i1.SerializableModel {
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  LongImplicitIdField copyWith({
-    int? id,
-    String? name,
-  });
+  LongImplicitIdField copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   @override
@@ -61,22 +50,14 @@ abstract class LongImplicitIdField implements _i1.SerializableModel {
 class _Undefined {}
 
 class _LongImplicitIdFieldImpl extends LongImplicitIdField {
-  _LongImplicitIdFieldImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _LongImplicitIdFieldImpl({int? id, required String name})
+    : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  LongImplicitIdField copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  LongImplicitIdField copyWith({Object? id = _Undefined, String? name}) {
     return LongImplicitIdField(
       id: id is int? ? id : this.id,
       name: name ?? this.name,

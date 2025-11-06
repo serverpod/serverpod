@@ -124,13 +124,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     }
 
     log.info(
-      'Migration created: ${path.relative(
-        MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
-          migrationName,
-        ).path,
-        from: Directory.current.path,
-      )}',
+      'Migration created: ${path.relative(MigrationConstants.migrationVersionDirectory(projectDirectory, migrationName).path, from: Directory.current.path)}',
       type: TextLogType.bullet,
     );
     log.info('Done.', type: TextLogType.success);

@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" UUID fields,', () {
-    tearDownAll(() async => UuidDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => UuidDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=random" UUID field should not be null and should generate a valid UUID',
@@ -22,8 +24,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultModelRandom, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultModelRandom.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultModelRandom.toString()),
           isTrue,
         );
       },
@@ -39,8 +42,9 @@ void main() async {
         );
         expect(databaseObject.uuidDefaultModelRandomV7, isNotNull);
         expect(
-          RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
-              .hasMatch(databaseObject.uuidDefaultModelRandomV7.toString()),
+          RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+          ).hasMatch(databaseObject.uuidDefaultModelRandomV7.toString()),
           isTrue,
         );
       },
@@ -80,17 +84,12 @@ void main() async {
       'when creating a record in the database with a specific value, then the "uuidDefaultModelRandom" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
-        var specificObject = UuidDefaultModel(
-          uuidDefaultModelRandom: uuid,
-        );
+        var specificObject = UuidDefaultModel(uuidDefaultModelRandom: uuid);
         var specificDatabaseObject = await UuidDefaultModel.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultModelRandom,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultModelRandom, uuid);
       },
     );
 
@@ -98,17 +97,12 @@ void main() async {
       'when creating a record in the database with a specific value, then the "uuidDefaultModelRandomV7" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
-        var specificObject = UuidDefaultModel(
-          uuidDefaultModelRandomV7: uuid,
-        );
+        var specificObject = UuidDefaultModel(uuidDefaultModelRandomV7: uuid);
         var specificDatabaseObject = await UuidDefaultModel.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultModelRandomV7,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultModelRandomV7, uuid);
       },
     );
 
@@ -116,17 +110,12 @@ void main() async {
       'when creating a record in the database with a specific value, then the "uuidDefaultModelStr" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
-        var specificObject = UuidDefaultModel(
-          uuidDefaultModelStr: uuid,
-        );
+        var specificObject = UuidDefaultModel(uuidDefaultModelStr: uuid);
         var specificDatabaseObject = await UuidDefaultModel.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultModelStr,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultModelStr, uuid);
       },
     );
 
@@ -134,17 +123,12 @@ void main() async {
       'when creating a record in the database with a specific value, then the "uuidDefaultModelStrNull" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
-        var specificObject = UuidDefaultModel(
-          uuidDefaultModelStrNull: uuid,
-        );
+        var specificObject = UuidDefaultModel(uuidDefaultModelStrNull: uuid);
         var specificDatabaseObject = await UuidDefaultModel.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultModelStrNull,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultModelStrNull, uuid);
       },
     );
   });

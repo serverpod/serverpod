@@ -14,18 +14,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  DoubleDefaultPersist._({
-    this.id,
-    this.doubleDefaultPersist,
-  });
+  DoubleDefaultPersist._({this.id, this.doubleDefaultPersist});
 
-  factory DoubleDefaultPersist({
-    int? id,
-    double? doubleDefaultPersist,
-  }) = _DoubleDefaultPersistImpl;
+  factory DoubleDefaultPersist({int? id, double? doubleDefaultPersist}) =
+      _DoubleDefaultPersistImpl;
 
   factory DoubleDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DoubleDefaultPersist(
       id: jsonSerialization['id'] as int?,
       doubleDefaultPersist:
@@ -48,10 +44,7 @@ abstract class DoubleDefaultPersist
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  DoubleDefaultPersist copyWith({
-    int? id,
-    double? doubleDefaultPersist,
-  });
+  DoubleDefaultPersist copyWith({int? id, double? doubleDefaultPersist});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -103,13 +96,8 @@ abstract class DoubleDefaultPersist
 class _Undefined {}
 
 class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
-  _DoubleDefaultPersistImpl({
-    int? id,
-    double? doubleDefaultPersist,
-  }) : super._(
-          id: id,
-          doubleDefaultPersist: doubleDefaultPersist,
-        );
+  _DoubleDefaultPersistImpl({int? id, double? doubleDefaultPersist})
+    : super._(id: id, doubleDefaultPersist: doubleDefaultPersist);
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -121,9 +109,10 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
   }) {
     return DoubleDefaultPersist(
       id: id is int? ? id : this.id,
-      doubleDefaultPersist: doubleDefaultPersist is double?
-          ? doubleDefaultPersist
-          : this.doubleDefaultPersist,
+      doubleDefaultPersist:
+          doubleDefaultPersist is double?
+              ? doubleDefaultPersist
+              : this.doubleDefaultPersist,
     );
   }
 }
@@ -133,15 +122,12 @@ class DoubleDefaultPersistUpdateTable
   DoubleDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefaultPersist(double? value) =>
-      _i1.ColumnValue(
-        table.doubleDefaultPersist,
-        value,
-      );
+      _i1.ColumnValue(table.doubleDefaultPersist, value);
 }
 
 class DoubleDefaultPersistTable extends _i1.Table<int?> {
   DoubleDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'double_default_persist') {
+    : super(tableName: 'double_default_persist') {
     updateTable = DoubleDefaultPersistUpdateTable(this);
     doubleDefaultPersist = _i1.ColumnDouble(
       'doubleDefaultPersist',
@@ -155,10 +141,7 @@ class DoubleDefaultPersistTable extends _i1.Table<int?> {
   late final _i1.ColumnDouble doubleDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        doubleDefaultPersist,
-      ];
+  List<_i1.Column> get columns => [id, doubleDefaultPersist];
 }
 
 class DoubleDefaultPersistInclude extends _i1.IncludeObject {
@@ -356,7 +339,7 @@ class DoubleDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultPersist>(
@@ -371,7 +354,7 @@ class DoubleDefaultPersistRepository {
   Future<List<DoubleDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
     int? limit,
     int? offset,

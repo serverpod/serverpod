@@ -40,9 +40,12 @@ extension TableComparisons on TableDefinition {
 
   /// Finds an index by its name, or returns null if no index with the given name is found.
   IndexDefinition? findIndexNamed(String indexName, {bool ignoreCase = false}) {
-    return indexes.firstWhereOrNull((index) => ignoreCase
-        ? index.indexName.toLowerCase() == indexName.toLowerCase()
-        : index.indexName == indexName);
+    return indexes.firstWhereOrNull(
+      (index) =>
+          ignoreCase
+              ? index.indexName.toLowerCase() == indexName.toLowerCase()
+              : index.indexName == indexName,
+    );
   }
 
   /// Finds a foreign key by its name, or returns null if no key with the given name is found.
@@ -50,9 +53,12 @@ extension TableComparisons on TableDefinition {
     String keyName, {
     bool ignoreCase = false,
   }) {
-    return foreignKeys.firstWhereOrNull((key) => ignoreCase
-        ? key.constraintName.toLowerCase() == keyName.toLowerCase()
-        : key.constraintName == keyName);
+    return foreignKeys.firstWhereOrNull(
+      (key) =>
+          ignoreCase
+              ? key.constraintName.toLowerCase() == keyName.toLowerCase()
+              : key.constraintName == keyName,
+    );
   }
 
   /// Compares this table definition with [other], returning a list of mismatches.
@@ -61,11 +67,7 @@ extension TableComparisons on TableDefinition {
 
     if (other.name != name) {
       mismatches.add(
-        TableComparisonWarning(
-          name: 'name',
-          expected: name,
-          found: other.name,
-        ),
+        TableComparisonWarning(name: 'name', expected: name, found: other.name),
       );
     }
 
@@ -102,9 +104,11 @@ extension TableComparisons on TableDefinition {
       } else {
         var columnMismatches = column.like(otherColumn);
         if (columnMismatches.isNotEmpty) {
-          mismatches.add(ColumnComparisonWarning(
-            name: column.name,
-          ).addSubs(columnMismatches));
+          mismatches.add(
+            ColumnComparisonWarning(
+              name: column.name,
+            ).addSubs(columnMismatches),
+          );
         }
       }
     }
@@ -122,9 +126,11 @@ extension TableComparisons on TableDefinition {
       } else {
         var indexMismatches = index.like(otherIndex, ignoreCase: true);
         if (indexMismatches.isNotEmpty) {
-          mismatches.add(IndexComparisonWarning(
-            name: index.indexName,
-          ).addSubs(indexMismatches));
+          mismatches.add(
+            IndexComparisonWarning(
+              name: index.indexName,
+            ).addSubs(indexMismatches),
+          );
         }
       }
     }
@@ -143,8 +149,10 @@ extension TableComparisons on TableDefinition {
           ),
         );
       } else {
-        var foreignKeyMismatches =
-            foreignKey.like(otherForeignKey, ignoreCase: true);
+        var foreignKeyMismatches = foreignKey.like(
+          otherForeignKey,
+          ignoreCase: true,
+        );
         if (foreignKeyMismatches.isNotEmpty) {
           mismatches.add(
             ForeignKeyComparisonWarning(
@@ -167,11 +175,7 @@ extension ColumnComparisons on ColumnDefinition {
 
     if (name != other.name) {
       mismatches.add(
-        ColumnComparisonWarning(
-          name: name,
-          expected: name,
-          found: other.name,
-        ),
+        ColumnComparisonWarning(name: name, expected: name, found: other.name),
       );
     }
 
@@ -242,11 +246,7 @@ extension IndexComparisons on IndexDefinition {
 
     if (type != other.type) {
       mismatches.add(
-        IndexComparisonWarning(
-          name: 'type',
-          expected: type,
-          found: other.type,
-        ),
+        IndexComparisonWarning(name: 'type', expected: type, found: other.type),
       );
     }
 
@@ -429,8 +429,10 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
       );
     }
 
-    if (!const ListEquality()
-        .equals(referenceColumns, other.referenceColumns)) {
+    if (!const ListEquality().equals(
+      referenceColumns,
+      other.referenceColumns,
+    )) {
       mismatches.add(
         ForeignKeyComparisonWarning(
           name: 'reference columns',
@@ -485,7 +487,8 @@ extension FilterGenerator on Filter {
       var columnDefinition = tableDefinition.findColumnNamed(constraint.column);
       if (columnDefinition == null) {
         throw Exception(
-            'Column "${constraint.column}" not found in table "${tableDefinition.name}".');
+          'Column "${constraint.column}" not found in table "${tableDefinition.name}".',
+        );
       }
 
       var expression = constraint.toQuery(columnDefinition);
@@ -524,7 +527,8 @@ extension FilterConstraintGenerator on FilterConstraint {
       }
     } else {
       throw Exception(
-          'Unsupported column type ${columnDefinition.columnType} for column "${columnDefinition.name}".');
+        'Unsupported column type ${columnDefinition.columnType} for column "${columnDefinition.name}".',
+      );
     }
 
     switch (type) {
@@ -567,10 +571,7 @@ String _microsecondsToInterval(int microseconds) {
 
 extension _ColumnTypeComparison on ColumnType {
   bool like(ColumnType other) {
-    const integerEquivalentTypes = {
-      ColumnType.integer,
-      ColumnType.bigint,
-    };
+    const integerEquivalentTypes = {ColumnType.integer, ColumnType.bigint};
 
     // If this type is in the integerEquivalentTypes set,
     // check if the other type is also in it.

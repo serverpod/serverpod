@@ -27,10 +27,7 @@ class MultiTokenManager implements TokenManager {
     required this.primaryTokenManager,
     required final List<TokenManager> additionalTokenManagers,
   }) {
-    _allTokenManagers = [
-      primaryTokenManager,
-      ...additionalTokenManagers,
-    ];
+    _allTokenManagers = [primaryTokenManager, ...additionalTokenManagers];
   }
 
   @override
@@ -119,10 +116,7 @@ class MultiTokenManager implements TokenManager {
     final String token,
   ) async {
     for (final manager in _allTokenManagers) {
-      final authInfo = await manager.validateToken(
-        session,
-        token,
-      );
+      final authInfo = await manager.validateToken(session, token);
       if (authInfo != null) {
         return authInfo;
       }

@@ -14,18 +14,14 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 @_i1.immutable
 abstract class ImmutableObjectWithTable implements _i1.SerializableModel {
-  const ImmutableObjectWithTable._({
-    this.id,
-    required this.variable,
-  });
+  const ImmutableObjectWithTable._({this.id, required this.variable});
 
-  const factory ImmutableObjectWithTable({
-    int? id,
-    required String variable,
-  }) = _ImmutableObjectWithTableImpl;
+  const factory ImmutableObjectWithTable({int? id, required String variable}) =
+      _ImmutableObjectWithTableImpl;
 
   factory ImmutableObjectWithTable.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTable(
       id: jsonSerialization['id'] as int?,
       variable: jsonSerialization['variable'] as String,
@@ -42,45 +38,24 @@ abstract class ImmutableObjectWithTable implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ImmutableObjectWithTable copyWith({
-    int? id,
-    String? variable,
-  });
+  ImmutableObjectWithTable copyWith({int? id, String? variable});
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithTable &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.variable,
-                  variable,
-                ) ||
-                other.variable == variable);
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.variable, variable) || other.variable == variable);
   }
 
   @override
   int get hashCode {
-    return Object.hash(
-      runtimeType,
-      id,
-      variable,
-    );
+    return Object.hash(runtimeType, id, variable);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'variable': variable,
-    };
+    return {if (id != null) 'id': id, 'variable': variable};
   }
 
   @override
@@ -92,13 +67,8 @@ abstract class ImmutableObjectWithTable implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ImmutableObjectWithTableImpl extends ImmutableObjectWithTable {
-  const _ImmutableObjectWithTableImpl({
-    int? id,
-    required String variable,
-  }) : super._(
-          id: id,
-          variable: variable,
-        );
+  const _ImmutableObjectWithTableImpl({int? id, required String variable})
+    : super._(id: id, variable: variable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.

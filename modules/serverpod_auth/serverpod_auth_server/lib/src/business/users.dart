@@ -15,13 +15,18 @@ class Users {
     UserInfoUpdateCallback? onUserCreatedOverride,
   ]) async {
     bool approved = switch (onUserWillBeCreatedOverride) {
-      null => await AuthConfig.current.onUserWillBeCreated?.call(
-            session,
-            userInfo,
-            authMethod,
-          ) ??
-          true,
-      _ => await onUserWillBeCreatedOverride.call(session, userInfo, authMethod)
+      null =>
+        await AuthConfig.current.onUserWillBeCreated?.call(
+              session,
+              userInfo,
+              authMethod,
+            ) ??
+            true,
+      _ => await onUserWillBeCreatedOverride.call(
+        session,
+        userInfo,
+        authMethod,
+      ),
     };
     if (!approved) return null;
 
@@ -64,8 +69,11 @@ class Users {
   /// result is cached locally on the server. You can configure the cache
   /// lifetime in [AuthConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
-  static Future<UserInfo?> findUserByUserId(Session session, int userId,
-      {bool useCache = true}) async {
+  static Future<UserInfo?> findUserByUserId(
+    Session session,
+    int userId, {
+    bool useCache = true,
+  }) async {
     var cacheKey = 'serverpod_auth_userinfo_$userId';
     UserInfo? userInfo;
 
@@ -144,7 +152,8 @@ class Users {
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
     await session.db.unsafeQuery(
-        'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
+      'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId',
+    );
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
@@ -156,9 +165,7 @@ class Users {
           removedScopes.map((s) => s.name).whereType<String>().toList();
       await session.messages.authenticationRevoked(
         userId.toString(),
-        RevokedAuthenticationScope(
-          scopes: removedScopesList,
-        ),
+        RevokedAuthenticationScope(scopes: removedScopesList),
       );
     }
 
@@ -168,10 +175,7 @@ class Users {
 
   /// Marks a user as blocked so that they can't log in, and invalidates the
   /// cache for the user, and signs the user out.
-  static Future<void> blockUser(
-    Session session,
-    int userId,
-  ) async {
+  static Future<void> blockUser(Session session, int userId) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -184,18 +188,12 @@ class Users {
     await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
-    await UserAuthentication.signOutUser(
-      session,
-      userId: userId,
-    );
+    await UserAuthentication.signOutUser(session, userId: userId);
   }
 
   /// Unblocks a user so that they can log in again, and invalidates the cache
   /// for the user so that they can be blocked again
-  static Future<void> unblockUser(
-    Session session,
-    int userId,
-  ) async {
+  static Future<void> unblockUser(Session session, int userId) async {
     var userInfo = await findUserByUserId(session, userId);
     if (userInfo == null) {
       throw 'userId $userId not found';
@@ -230,10 +228,7 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the name of this user, returns true if successful.
-  Future<bool> changeUserName(
-    Session session,
-    String newUserName,
-  ) async {
+  Future<bool> changeUserName(Session session, String newUserName) async {
     var userId = id;
     if (userId == null) return false;
 
@@ -245,10 +240,7 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the full name of this user, returns true if successful.
-  Future<bool> changeFullName(
-    Session session,
-    String newUserName,
-  ) async {
+  Future<bool> changeFullName(Session session, String newUserName) async {
     var userId = id;
     if (userId == null) return false;
 
@@ -269,10 +261,7 @@ extension UserInfoMethods on UserInfo {
   }
 
   /// Updates the scopes for a user, returns true if successful.
-  Future<bool> updateScopes(
-    Session session,
-    Set<Scope> newScopes,
-  ) async {
+  Future<bool> updateScopes(Session session, Set<Scope> newScopes) async {
     if (id == null) return false;
 
     var updatedUser = await Users.updateUserScopes(session, id!, newScopes);

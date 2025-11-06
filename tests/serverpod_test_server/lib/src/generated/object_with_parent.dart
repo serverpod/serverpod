@@ -14,15 +14,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithParent
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithParent._({
-    this.id,
-    required this.other,
-  });
+  ObjectWithParent._({this.id, required this.other});
 
-  factory ObjectWithParent({
-    int? id,
-    required int other,
-  }) = _ObjectWithParentImpl;
+  factory ObjectWithParent({int? id, required int other}) =
+      _ObjectWithParentImpl;
 
   factory ObjectWithParent.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithParent(
@@ -46,24 +41,15 @@ abstract class ObjectWithParent
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithParent copyWith({
-    int? id,
-    int? other,
-  });
+  ObjectWithParent copyWith({int? id, int? other});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'other': other,
-    };
+    return {if (id != null) 'id': id, 'other': other};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'other': other,
-    };
+    return {if (id != null) 'id': id, 'other': other};
   }
 
   static ObjectWithParentInclude include() {
@@ -99,22 +85,14 @@ abstract class ObjectWithParent
 class _Undefined {}
 
 class _ObjectWithParentImpl extends ObjectWithParent {
-  _ObjectWithParentImpl({
-    int? id,
-    required int other,
-  }) : super._(
-          id: id,
-          other: other,
-        );
+  _ObjectWithParentImpl({int? id, required int other})
+    : super._(id: id, other: other);
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ObjectWithParent copyWith({
-    Object? id = _Undefined,
-    int? other,
-  }) {
+  ObjectWithParent copyWith({Object? id = _Undefined, int? other}) {
     return ObjectWithParent(
       id: id is int? ? id : this.id,
       other: other ?? this.other,
@@ -126,20 +104,15 @@ class ObjectWithParentUpdateTable
     extends _i1.UpdateTable<ObjectWithParentTable> {
   ObjectWithParentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> other(int value) => _i1.ColumnValue(
-        table.other,
-        value,
-      );
+  _i1.ColumnValue<int, int> other(int value) =>
+      _i1.ColumnValue(table.other, value);
 }
 
 class ObjectWithParentTable extends _i1.Table<int?> {
   ObjectWithParentTable({super.tableRelation})
-      : super(tableName: 'object_with_parent') {
+    : super(tableName: 'object_with_parent') {
     updateTable = ObjectWithParentUpdateTable(this);
-    other = _i1.ColumnInt(
-      'other',
-      this,
-    );
+    other = _i1.ColumnInt('other', this);
   }
 
   late final ObjectWithParentUpdateTable updateTable;
@@ -147,10 +120,7 @@ class ObjectWithParentTable extends _i1.Table<int?> {
   late final _i1.ColumnInt other;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        other,
-      ];
+  List<_i1.Column> get columns => [id, other];
 }
 
 class ObjectWithParentInclude extends _i1.IncludeObject {
@@ -271,10 +241,7 @@ class ObjectWithParentRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithParent>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectWithParent>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectWithParent]s in the list and returns the inserted rows.
@@ -288,10 +255,7 @@ class ObjectWithParentRepository {
     List<ObjectWithParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithParent>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectWithParent>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectWithParent] and returns the inserted row.
@@ -348,7 +312,7 @@ class ObjectWithParentRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithParent>(
@@ -363,7 +327,7 @@ class ObjectWithParentRepository {
   Future<List<ObjectWithParent>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     int? limit,
     int? offset,
@@ -392,10 +356,7 @@ class ObjectWithParentRepository {
     List<ObjectWithParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithParent>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectWithParent>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectWithParent].

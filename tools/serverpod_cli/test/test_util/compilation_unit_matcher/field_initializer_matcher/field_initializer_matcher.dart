@@ -8,9 +8,9 @@ class _InitializerMatcherImpl implements Matcher, InitializerMatcher {
 
   @override
   Description describe(Description description) {
-    return parent.describe(description).add(
-          ' with field initializer for "$fieldName"',
-        );
+    return parent
+        .describe(description)
+        .add(' with field initializer for "$fieldName"');
   }
 
   @override

@@ -15,9 +15,9 @@ class AuthRequestApi {
     required String projectId,
     required ServiceAccountCredentials credentials,
     http.Client? httClient,
-  })  : _projectId = projectId,
-        _credentials = credentials,
-        _httpClient = httClient;
+  }) : _projectId = projectId,
+       _credentials = credentials,
+       _httpClient = httClient;
 
   /// Get UserRecord by user [uiid/localId]
   Future<GoogleCloudIdentitytoolkitV1UserInfo> getUserByUiid(
@@ -25,9 +25,7 @@ class AuthRequestApi {
   ) async {
     var identityToolKitApi = await _getIdentityToolkitApi();
     var response = await identityToolKitApi.projects.accounts_1.lookup(
-      GoogleCloudIdentitytoolkitV1GetAccountInfoRequest(
-        localId: [uiid],
-      ),
+      GoogleCloudIdentitytoolkitV1GetAccountInfoRequest(localId: [uiid]),
       _projectId,
     );
 
@@ -45,15 +43,11 @@ class AuthRequestApi {
     var identityToolKitApi = _identityToolkitApi;
     if (identityToolKitApi != null) return identityToolKitApi;
 
-    var client = await clientViaServiceAccount(
-      _credentials,
-      [
-        'https://www.googleapis.com/auth/cloud-platform',
-        'https://www.googleapis.com/auth/identitytoolkit',
-        'https://www.googleapis.com/auth/userinfo.email',
-      ],
-      baseClient: _httpClient,
-    );
+    var client = await clientViaServiceAccount(_credentials, [
+      'https://www.googleapis.com/auth/cloud-platform',
+      'https://www.googleapis.com/auth/identitytoolkit',
+      'https://www.googleapis.com/auth/userinfo.email',
+    ], baseClient: _httpClient);
 
     identityToolKitApi = IdentityToolkitApi(client);
     _identityToolkitApi = identityToolKitApi;

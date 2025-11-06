@@ -35,11 +35,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -50,117 +50,122 @@ void main() {
       });
 
       group(
-          'when complete account creation is called with generated verification code',
-          () {
-        late Future<EmailIDPCompleteAccountCreationResult>
-            completeAccountCreationFuture;
-        setUp(() async {
-          completeAccountCreationFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
-          );
-        });
-        test('then it succeeds and returns result with auth user id and email',
-            () async {
-          await expectLater(
-            completeAccountCreationFuture,
-            completion(
-              isA<EmailIDPCompleteAccountCreationResult>()
-                  .having(
-                    (final result) => result.authUserId,
-                    'authUserId',
-                    isA<UuidValue>(),
-                  )
-                  .having(
-                    (final result) => result.email,
-                    'email',
-                    equals(email),
-                  ),
-            ),
-          );
-        });
-
-        test('then a new auth user is created', () async {
-          final result = await completeAccountCreationFuture;
-
-          // Verify auth user exists
-          final authUsers = await AuthUsers.list(
-            session,
-          );
-          expect(authUsers, hasLength(1));
-          expect(authUsers.first.id, equals(result.authUserId));
-        });
-
-        test('then the user can authenticate with the registered credentials',
-            () async {
-          final result = await completeAccountCreationFuture;
-
-          final authResult = await session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
-              session,
-              email: email,
-              password: password,
-              transaction: transaction,
-            ),
-          );
-
-          expect(authResult, equals(result.authUserId));
-        });
-      });
-
-      test(
-          'when complete account creation is called with invalid verification code then it throws invalid verification code exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: '$verificationCode-invalid',
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
-        );
-      });
-
-      test(
-          'when complete account creation is called with valid code after expiration then it throws verification expired exception',
-          () async {
-        const registrationVerificationCodeLifetime = Duration(hours: 1);
-
-        await withClock(
-          Clock.fixed(
-            DateTime.now().add(
-              registrationVerificationCodeLifetime + const Duration(hours: 1),
-            ),
-          ),
-          () async {
-            final result = session.db.transaction(
+        'when complete account creation is called with generated verification code',
+        () {
+          late Future<EmailIDPCompleteAccountCreationResult>
+          completeAccountCreationFuture;
+          setUp(() async {
+            completeAccountCreationFuture = session.db.transaction(
               (final transaction) =>
                   fixture.accountCreationUtil.completeAccountCreation(
-                session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
-              ),
+                    session,
+                    accountRequestId: accountRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
             );
+          });
+          test(
+            'then it succeeds and returns result with auth user id and email',
+            () async {
+              await expectLater(
+                completeAccountCreationFuture,
+                completion(
+                  isA<EmailIDPCompleteAccountCreationResult>()
+                      .having(
+                        (final result) => result.authUserId,
+                        'authUserId',
+                        isA<UuidValue>(),
+                      )
+                      .having(
+                        (final result) => result.email,
+                        'email',
+                        equals(email),
+                      ),
+                ),
+              );
+            },
+          );
 
-            await expectLater(
-              result,
-              throwsA(isA<EmailAccountRequestVerificationExpiredException>()),
-            );
-          },
-        );
-      });
+          test('then a new auth user is created', () async {
+            final result = await completeAccountCreationFuture;
+
+            // Verify auth user exists
+            final authUsers = await AuthUsers.list(session);
+            expect(authUsers, hasLength(1));
+            expect(authUsers.first.id, equals(result.authUserId));
+          });
+
+          test(
+            'then the user can authenticate with the registered credentials',
+            () async {
+              final result = await completeAccountCreationFuture;
+
+              final authResult = await session.db.transaction(
+                (final transaction) => fixture.authenticationUtil.authenticate(
+                  session,
+                  email: email,
+                  password: password,
+                  transaction: transaction,
+                ),
+              );
+
+              expect(authResult, equals(result.authUserId));
+            },
+          );
+        },
+      );
+
+      test(
+        'when complete account creation is called with invalid verification code then it throws invalid verification code exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.completeAccountCreation(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: '$verificationCode-invalid',
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
+          );
+        },
+      );
+
+      test(
+        'when complete account creation is called with valid code after expiration then it throws verification expired exception',
+        () async {
+          const registrationVerificationCodeLifetime = Duration(hours: 1);
+
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                registrationVerificationCodeLifetime + const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = session.db.transaction(
+                (final transaction) =>
+                    fixture.accountCreationUtil.completeAccountCreation(
+                      session,
+                      accountRequestId: accountRequestId,
+                      verificationCode: verificationCode,
+                      transaction: transaction,
+                    ),
+              );
+
+              await expectLater(
+                result,
+                throwsA(isA<EmailAccountRequestVerificationExpiredException>()),
+              );
+            },
+          );
+        },
+      );
     },
   );
 
@@ -184,23 +189,24 @@ void main() {
       });
 
       test(
-          'when complete account creation is called then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when complete account creation is called then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.completeAccountCreation(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -231,11 +237,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -245,11 +251,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -261,22 +267,23 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with valid verification code then it succeeds and returns result',
-          () async {
-        final result = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when complete account creation is called with valid verification code then it succeeds and returns result',
+        () async {
+          final result = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.completeAccountCreation(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(result, isNotNull);
-        expect(result.authUserId, isA<UuidValue>());
-        expect(result.email, equals(email));
-      });
+          expect(result, isNotNull);
+          expect(result.authUserId, isA<UuidValue>());
+          expect(result.email, equals(email));
+        },
+      );
     },
   );
 
@@ -307,11 +314,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -321,11 +328,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -337,24 +344,26 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with valid verification code then it throws too many attempts exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when complete account creation is called with valid verification code then it throws too many attempts exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.completeAccountCreation(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-              isA<EmailAccountRequestVerificationTooManyAttemptsException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>(),
+            ),
+          );
+        },
+      );
     },
   );
 }

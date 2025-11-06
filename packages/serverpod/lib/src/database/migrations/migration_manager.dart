@@ -38,9 +38,13 @@ class MigrationManager {
     String? appliedVersionName = repairMigration.versionName;
     await _withMigrationLock(session, () async {
       var appliedRepairMigration = await DatabaseMigrationVersion.db
-          .findFirstRow(session,
-              where: (t) => t.module
-                  .equals(MigrationConstants.repairMigrationModuleName));
+          .findFirstRow(
+            session,
+            where:
+                (t) => t.module.equals(
+                  MigrationConstants.repairMigrationModuleName,
+                ),
+          );
 
       if (appliedRepairMigration != null &&
           appliedRepairMigration.version == repairMigration.versionName) {
@@ -48,9 +52,7 @@ class MigrationManager {
         return;
       }
 
-      await session.db.unsafeSimpleExecute(
-        repairMigration.sqlMigration,
-      );
+      await session.db.unsafeSimpleExecute(repairMigration.sqlMigration);
 
       await _updateState(session);
     });
@@ -200,18 +202,20 @@ class MigrationManager {
     availableVersions.clear();
     var warnings = <String>[];
     try {
-      availableVersions.addAll(MigrationVersions.listVersions(
-        projectDirectory: _projectDirectory,
-      ));
+      availableVersions.addAll(
+        MigrationVersions.listVersions(projectDirectory: _projectDirectory),
+      );
     } catch (e) {
       warnings.add(
-          'Failed to determine migration versions for project: ${e.toString()}');
+        'Failed to determine migration versions for project: ${e.toString()}',
+      );
     }
 
     if (warnings.isNotEmpty) {
       stderr.writeln(
-          'WARNING: The following module migration registries could not be '
-          'loaded:');
+        'WARNING: The following module migration registries could not be '
+        'loaded:',
+      );
       for (var warning in warnings) {
         stderr.writeln(' - $warning');
       }
@@ -270,7 +274,8 @@ class MigrationManager {
 
       if (mismatches.isNotEmpty) {
         warnings.add(
-            'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}');
+          'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}',
+        );
         continue;
       }
     }
@@ -282,7 +287,8 @@ class MigrationManager {
         stderr.writeln(' - $warning');
       }
       stderr.writeln(
-          'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?');
+        'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?',
+      );
     }
 
     return warnings.isEmpty;

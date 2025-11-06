@@ -4,9 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_shared/src/protocol_custom_classes.dart';
 
 class CustomClassProtocolEndpoint extends Endpoint {
-  Future<ProtocolCustomClass> getProtocolField(
-    Session session,
-  ) async {
+  Future<ProtocolCustomClass> getProtocolField(Session session) async {
     return ProtocolCustomClass(
       value: "Value",
       serverOnlyValue: "ServerOnlyValue",
@@ -16,17 +14,15 @@ class CustomClassProtocolEndpoint extends Endpoint {
   @override
   Future<void> streamOpened(StreamingSession session) async {
     unawaited(
-      Future.delayed(const Duration(seconds: 1)).then(
-        (value) async {
-          await sendStreamMessage(
-            session,
-            ProtocolCustomClass(
-              value: "Value",
-              serverOnlyValue: "ServerOnlyValue",
-            ),
-          );
-        },
-      ),
+      Future.delayed(const Duration(seconds: 1)).then((value) async {
+        await sendStreamMessage(
+          session,
+          ProtocolCustomClass(
+            value: "Value",
+            serverOnlyValue: "ServerOnlyValue",
+          ),
+        );
+      }),
     );
   }
 }

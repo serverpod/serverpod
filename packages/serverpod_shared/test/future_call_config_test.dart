@@ -9,7 +9,7 @@ void main() {
   var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
-    'database': 'dbpassword'
+    'database': 'dbpassword',
   };
 
   test(
@@ -63,8 +63,10 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(5));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 2000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
     },
   );
 
@@ -82,10 +84,7 @@ futureCall:
             'publicPort': 8080,
             'publicScheme': 'http',
           },
-          'futureCall': {
-            'concurrencyLimit': 5,
-            'scanInterval': 2000,
-          },
+          'futureCall': {'concurrencyLimit': 5, 'scanInterval': 2000},
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
@@ -94,8 +93,10 @@ futureCall:
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 3000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 3000)),
+      );
     },
   );
 
@@ -115,16 +116,15 @@ futureCall:
               'publicScheme': 'http',
             },
           },
-          environment: {
-            'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': 'invalid',
-          },
+          environment: {'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': 'invalid'},
         ),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
             'message',
             contains(
-                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT.'),
+              'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT.',
+            ),
           ),
         ),
       );
@@ -145,19 +145,16 @@ futureCall:
             'publicPort': 8080,
             'publicScheme': 'http',
           },
-          'futureCall': {
-            'concurrencyLimit': 5,
-            'scanInterval': 2000,
-          },
+          'futureCall': {'concurrencyLimit': 5, 'scanInterval': 2000},
         },
-        environment: {
-          'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
-        },
+        environment: {'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10'},
       );
 
       expect(config.futureCall.concurrencyLimit, equals(10));
-      expect(config.futureCall.scanInterval,
-          equals(const Duration(milliseconds: 2000)));
+      expect(
+        config.futureCall.scanInterval,
+        equals(const Duration(milliseconds: 2000)),
+      );
     },
   );
 
@@ -289,16 +286,15 @@ futureCall:
               'publicScheme': 'http',
             },
           },
-          environment: {
-            'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': 'invalid',
-          },
+          environment: {'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': 'invalid'},
         ),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
             'message',
             contains(
-                'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_SCAN_INTERVAL'),
+              'Invalid value (invalid) for SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
+            ),
           ),
         ),
       );

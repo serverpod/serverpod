@@ -15,21 +15,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Just some simple data.
 abstract class SimpleDateTime
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  SimpleDateTime._({
-    this.id,
-    required this.dateTime,
-  });
+  SimpleDateTime._({this.id, required this.dateTime});
 
-  factory SimpleDateTime({
-    int? id,
-    required DateTime dateTime,
-  }) = _SimpleDateTimeImpl;
+  factory SimpleDateTime({int? id, required DateTime dateTime}) =
+      _SimpleDateTimeImpl;
 
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['dateTime']),
+      dateTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['dateTime'],
+      ),
     );
   }
 
@@ -49,24 +45,15 @@ abstract class SimpleDateTime
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  SimpleDateTime copyWith({
-    int? id,
-    DateTime? dateTime,
-  });
+  SimpleDateTime copyWith({int? id, DateTime? dateTime});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'dateTime': dateTime.toJson(),
-    };
+    return {if (id != null) 'id': id, 'dateTime': dateTime.toJson()};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'dateTime': dateTime.toJson(),
-    };
+    return {if (id != null) 'id': id, 'dateTime': dateTime.toJson()};
   }
 
   static SimpleDateTimeInclude include() {
@@ -102,22 +89,14 @@ abstract class SimpleDateTime
 class _Undefined {}
 
 class _SimpleDateTimeImpl extends SimpleDateTime {
-  _SimpleDateTimeImpl({
-    int? id,
-    required DateTime dateTime,
-  }) : super._(
-          id: id,
-          dateTime: dateTime,
-        );
+  _SimpleDateTimeImpl({int? id, required DateTime dateTime})
+    : super._(id: id, dateTime: dateTime);
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  SimpleDateTime copyWith({
-    Object? id = _Undefined,
-    DateTime? dateTime,
-  }) {
+  SimpleDateTime copyWith({Object? id = _Undefined, DateTime? dateTime}) {
     return SimpleDateTime(
       id: id is int? ? id : this.id,
       dateTime: dateTime ?? this.dateTime,
@@ -129,20 +108,14 @@ class SimpleDateTimeUpdateTable extends _i1.UpdateTable<SimpleDateTimeTable> {
   SimpleDateTimeUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTime(DateTime value) =>
-      _i1.ColumnValue(
-        table.dateTime,
-        value,
-      );
+      _i1.ColumnValue(table.dateTime, value);
 }
 
 class SimpleDateTimeTable extends _i1.Table<int?> {
   SimpleDateTimeTable({super.tableRelation})
-      : super(tableName: 'simple_date_time') {
+    : super(tableName: 'simple_date_time') {
     updateTable = SimpleDateTimeUpdateTable(this);
-    dateTime = _i1.ColumnDateTime(
-      'dateTime',
-      this,
-    );
+    dateTime = _i1.ColumnDateTime('dateTime', this);
   }
 
   late final SimpleDateTimeUpdateTable updateTable;
@@ -151,10 +124,7 @@ class SimpleDateTimeTable extends _i1.Table<int?> {
   late final _i1.ColumnDateTime dateTime;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        dateTime,
-      ];
+  List<_i1.Column> get columns => [id, dateTime];
 }
 
 class SimpleDateTimeInclude extends _i1.IncludeObject {
@@ -275,10 +245,7 @@ class SimpleDateTimeRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SimpleDateTime>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<SimpleDateTime>(id, transaction: transaction);
   }
 
   /// Inserts all [SimpleDateTime]s in the list and returns the inserted rows.
@@ -292,10 +259,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SimpleDateTime>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<SimpleDateTime>(rows, transaction: transaction);
   }
 
   /// Inserts a single [SimpleDateTime] and returns the inserted row.
@@ -306,10 +270,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SimpleDateTime>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<SimpleDateTime>(row, transaction: transaction);
   }
 
   /// Updates all [SimpleDateTime]s in the list and returns the updated rows. If
@@ -394,10 +355,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SimpleDateTime>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<SimpleDateTime>(rows, transaction: transaction);
   }
 
   /// Deletes a single [SimpleDateTime].
@@ -406,10 +364,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SimpleDateTime>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<SimpleDateTime>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -15,10 +15,10 @@ class JwtUtil {
     required final String? issuer,
     required final AuthenticationTokenAlgorithm algorithm,
     required final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm,
-  })  : _accessTokenLifetime = accessTokenLifetime,
-        _issuer = issuer,
-        _algorithm = algorithm,
-        _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
+  }) : _accessTokenLifetime = accessTokenLifetime,
+       _issuer = issuer,
+       _algorithm = algorithm,
+       _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
 
   final AuthenticationTokenAlgorithm _algorithm;
   final AuthenticationTokenAlgorithm? _fallbackVerificationAlgorithm;
@@ -34,9 +34,11 @@ class JwtUtil {
   /// "dev.serverpod.scopeNames". Any extra claims configured with the refresh
   /// token will be added as top-level claims.
   String createJwt(final RefreshToken refreshToken) {
-    final extraClaims = refreshToken.extraClaims != null
-        ? (jsonDecode(refreshToken.extraClaims!) as Map).cast<String, dynamic>()
-        : null;
+    final extraClaims =
+        refreshToken.extraClaims != null
+            ? (jsonDecode(refreshToken.extraClaims!) as Map)
+                .cast<String, dynamic>()
+            : null;
 
     if (extraClaims != null) {
       for (final key in extraClaims.keys) {
@@ -69,18 +71,14 @@ class JwtUtil {
 
     final (JWTKey key, JWTAlgorithm algorithm) = switch (_algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
-          key,
-          JWTAlgorithm.HS512
-        ),
+        key,
+        JWTAlgorithm.HS512,
+      ),
       EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
-        (privateKey, JWTAlgorithm.ES512)
+        (privateKey, JWTAlgorithm.ES512),
     };
 
-    return jwt.sign(
-      key,
-      expiresIn: _accessTokenLifetime,
-      algorithm: algorithm,
-    );
+    return jwt.sign(key, expiresIn: _accessTokenLifetime, algorithm: algorithm);
   }
 
   /// Verifies and decodes the JWT access token.
@@ -115,13 +113,12 @@ class JwtUtil {
     final Set<Scope> scopes;
     try {
       final scopeNamesClaim = allClaims[_serverpodScopeNamesClaimKey];
-      final scopeNames = scopeNamesClaim != null
-          ? (scopeNamesClaim as List).cast<String>()
-          : const <String>[];
+      final scopeNames =
+          scopeNamesClaim != null
+              ? (scopeNamesClaim as List).cast<String>()
+              : const <String>[];
 
-      scopes = {
-        for (final scopeName in scopeNames) Scope(scopeName),
-      };
+      scopes = {for (final scopeName in scopeNames) Scope(scopeName)};
     } catch (e) {
       throw ArgumentError(
         "The scopes could not be read from the JWT's `$_serverpodScopeNamesClaimKey` claim.",
@@ -130,10 +127,12 @@ class JwtUtil {
     }
 
     final extraClaims = Map.fromEntries(
-      allClaims.entries.where((final e) =>
-          !_registeredClaims.contains(e.key) &&
-          e.key != _serverpodScopeNamesClaimKey &&
-          e.key != _serverpodRefreshTokenIdClaimKey),
+      allClaims.entries.where(
+        (final e) =>
+            !_registeredClaims.contains(e.key) &&
+            e.key != _serverpodScopeNamesClaimKey &&
+            e.key != _serverpodRefreshTokenIdClaimKey,
+      ),
     );
 
     return (
@@ -208,10 +207,11 @@ class JwtUtil {
 }
 
 /// The data successfully verified and extracted from a JWT token.
-typedef VerifiedJwtData = ({
-  UuidValue refreshTokenId,
-  DateTime tokenExpiresAt,
-  UuidValue authUserId,
-  Set<Scope> scopes,
-  Map<String, dynamic> extraClaims,
-});
+typedef VerifiedJwtData =
+    ({
+      UuidValue refreshTokenId,
+      DateTime tokenExpiresAt,
+      UuidValue authUserId,
+      Set<Scope> scopes,
+      Map<String, dynamic> extraClaims,
+    });

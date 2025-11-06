@@ -54,11 +54,7 @@ abstract class GoogleRefreshToken
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  GoogleRefreshToken copyWith({
-    int? id,
-    int? userId,
-    String? refreshToken,
-  });
+  GoogleRefreshToken copyWith({int? id, int? userId, String? refreshToken});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -114,11 +110,7 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
     int? id,
     required int userId,
     required String refreshToken,
-  }) : super._(
-          id: id,
-          userId: userId,
-          refreshToken: refreshToken,
-        );
+  }) : super._(id: id, userId: userId, refreshToken: refreshToken);
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
@@ -141,29 +133,19 @@ class GoogleRefreshTokenUpdateTable
     extends _i1.UpdateTable<GoogleRefreshTokenTable> {
   GoogleRefreshTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<int, int> userId(int value) =>
+      _i1.ColumnValue(table.userId, value);
 
-  _i1.ColumnValue<String, String> refreshToken(String value) => _i1.ColumnValue(
-        table.refreshToken,
-        value,
-      );
+  _i1.ColumnValue<String, String> refreshToken(String value) =>
+      _i1.ColumnValue(table.refreshToken, value);
 }
 
 class GoogleRefreshTokenTable extends _i1.Table<int?> {
   GoogleRefreshTokenTable({super.tableRelation})
-      : super(tableName: 'serverpod_google_refresh_token') {
+    : super(tableName: 'serverpod_google_refresh_token') {
     updateTable = GoogleRefreshTokenUpdateTable(this);
-    userId = _i1.ColumnInt(
-      'userId',
-      this,
-    );
-    refreshToken = _i1.ColumnString(
-      'refreshToken',
-      this,
-    );
+    userId = _i1.ColumnInt('userId', this);
+    refreshToken = _i1.ColumnString('refreshToken', this);
   }
 
   late final GoogleRefreshTokenUpdateTable updateTable;
@@ -175,11 +157,7 @@ class GoogleRefreshTokenTable extends _i1.Table<int?> {
   late final _i1.ColumnString refreshToken;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        userId,
-        refreshToken,
-      ];
+  List<_i1.Column> get columns => [id, userId, refreshToken];
 }
 
 class GoogleRefreshTokenInclude extends _i1.IncludeObject {
@@ -377,7 +355,7 @@ class GoogleRefreshTokenRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<GoogleRefreshToken>(
@@ -392,7 +370,7 @@ class GoogleRefreshTokenRepository {
   Future<List<GoogleRefreshToken>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     int? limit,
     int? offset,

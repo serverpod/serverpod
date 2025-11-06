@@ -43,15 +43,15 @@ class SessionLogManager {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
     bool disableLoggingSlowSessions = false,
-  })  : _logOrderId = 0,
-        _numberOfQueries = 0,
-        _logWriter = logWriter,
-        _settingsForSession = settingsForSession,
-        _serverId = serverId,
-        _isLoggingOpened = false,
-        _disableSlowSessionLogging = disableLoggingSlowSessions,
-        _session = session,
-        _logTasks = _FutureTaskManager() {
+  }) : _logOrderId = 0,
+       _numberOfQueries = 0,
+       _logWriter = logWriter,
+       _settingsForSession = settingsForSession,
+       _serverId = serverId,
+       _isLoggingOpened = false,
+       _disableSlowSessionLogging = disableLoggingSlowSessions,
+       _session = session,
+       _logTasks = _FutureTaskManager() {
     var settings = _settingsForSession(session);
     if (!settings.logAllSessions) return;
 
@@ -76,10 +76,7 @@ class SessionLogManager {
     return false;
   }
 
-  bool _shouldLogEntry({
-    required Session session,
-    required LogEntry entry,
-  }) {
+  bool _shouldLogEntry({required Session session, required LogEntry entry}) {
     var logSettings = _settingsForSession(session);
     var serverLogLevel = (logSettings.logLevel);
 
@@ -131,12 +128,7 @@ class SessionLogManager {
       return;
     }
 
-    await _internalLogger(
-      'ENTRY',
-      _session,
-      entry,
-      _logWriter.logEntry,
-    );
+    await _internalLogger('ENTRY', _session, entry, _logWriter.logEntry);
   }
 
   /// Logs a query, depending on the session type it will be logged directly
@@ -177,12 +169,7 @@ class SessionLogManager {
       order: _nextLogOrderId,
     );
 
-    await _internalLogger(
-      'QUERY',
-      _session,
-      entry,
-      _logWriter.logQuery,
-    );
+    await _internalLogger('QUERY', _session, entry, _logWriter.logQuery);
   }
 
   /// Logs a message from a stream, depending on the session type it will be
@@ -224,12 +211,7 @@ class SessionLogManager {
       slow: slow,
     );
 
-    await _internalLogger(
-      'MESSAGE',
-      _session,
-      entry,
-      _logWriter.logMessage,
-    );
+    await _internalLogger('MESSAGE', _session, entry, _logWriter.logMessage);
   }
 
   Future<void> _internalLogger<T extends TableRow>(
@@ -292,7 +274,8 @@ class SessionLogManager {
 
     var slowMicros =
         (logSettings.slowSessionDuration * _microNormalizer).toInt();
-    var isSlow = duration > Duration(microseconds: slowMicros) &&
+    var isSlow =
+        duration > Duration(microseconds: slowMicros) &&
         !_disableSlowSessionLogging;
 
     if (logSettings.logAllSessions ||
@@ -321,7 +304,8 @@ class SessionLogManager {
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         stderr.writeln(
-            'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
+          'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
+        );
         if (exception != null) {
           stderr.writeln('CALL error: $exception');
           stderr.writeln('$stackTrace');
@@ -343,10 +327,7 @@ class LogManager {
   final RuntimeSettings runtimeSettings;
 
   /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(
-    this.runtimeSettings, {
-    required String serverId,
-  });
+  LogManager(this.runtimeSettings, {required String serverId});
 }
 
 extension on Session {
@@ -370,14 +351,16 @@ class _FutureTaskManager {
     _tasksCompleter ??= Completer<void>();
     _pendingTasks.add(task);
 
-    task().then((value) {
-      _completeTask(task);
-    }).onError((error, stackTrace) {
-      _completeTask(task);
-      var e = error;
-      if (e is Exception) throw e;
-      if (e is Error) throw e;
-    });
+    task()
+        .then((value) {
+          _completeTask(task);
+        })
+        .onError((error, stackTrace) {
+          _completeTask(task);
+          var e = error;
+          if (e is Exception) throw e;
+          if (e is Error) throw e;
+        });
   }
 
   void _completeTask(_TaskCallback task) {

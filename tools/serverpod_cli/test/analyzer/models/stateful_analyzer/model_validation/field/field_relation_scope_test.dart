@@ -9,52 +9,48 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  var parentClassModel = ModelSourceBuilder()
-      .withYaml(
-        '''
+  var parentClassModel =
+      ModelSourceBuilder()
+          .withYaml('''
         class: Post
         table: post
         fields:
           title: String
-        ''',
-      )
-      .withFileName('post_class')
-      .build();
+        ''')
+          .withFileName('post_class')
+          .build();
 
-  group('Given a class with a non-optional relation and "serverOnly" scope',
-      () {
-    test(
-      'when analyzed then an error is generated for an object relation',
-      () {
-        var models = [
-          parentClassModel,
-          ModelSourceBuilder()
-              .withYaml(
-                '''
+  group('Given a class with a non-optional relation and "serverOnly" scope', () {
+    test('when analyzed then an error is generated for an object relation', () {
+      var models = [
+        parentClassModel,
+        ModelSourceBuilder()
+            .withYaml('''
                 class: Comment
                 table: comment
                 fields:
                   post: Post?, relation, scope=serverOnly
-                ''',
-              )
-              .withFileName('comment_class')
-              .build(),
-        ];
+                ''')
+            .withFileName('comment_class')
+            .build(),
+      ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-        expect(collector.errors, isNotEmpty);
+      expect(collector.errors, isNotEmpty);
 
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(error.severity, SourceSpanSeverity.error);
-        expect(
-          error.message,
-          'The relation with scope "serverOnly" requires the relation to be optional.',
-        );
-      },
-    );
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.error);
+      expect(
+        error.message,
+        'The relation with scope "serverOnly" requires the relation to be optional.',
+      );
+    });
 
     test(
       'when analyzed then no errors are generated for a manual field relation',
@@ -62,52 +58,51 @@ void main() {
         var models = [
           parentClassModel,
           ModelSourceBuilder()
-              .withYaml(
-                '''
+              .withYaml('''
                 class: Comment
                 table: comment
                 fields:
                   postId: int,
                   post: Post?, relation(field=postId), scope=serverOnly
-                ''',
-              )
+                ''')
               .withFileName('comment_class')
               .build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
       },
     );
   });
 
-  test(
-    'Given a class with an optional relation and "serverOnly" scope '
-    'when analyzed then no errors are generated for an object relation',
-    () {
-      var models = [
-        parentClassModel,
-        ModelSourceBuilder()
-            .withYaml(
-              '''
+  test('Given a class with an optional relation and "serverOnly" scope '
+      'when analyzed then no errors are generated for an object relation', () {
+    var models = [
+      parentClassModel,
+      ModelSourceBuilder()
+          .withYaml('''
                 class: Comment
                 table: comment
                 fields:
                   post: Post?, relation(optional), scope=serverOnly
-                ''',
-            )
-            .withFileName('comment_class')
-            .build(),
-      ];
+                ''')
+          .withFileName('comment_class')
+          .build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
-      expect(collector.errors, isEmpty);
-    },
-  );
+    expect(collector.errors, isEmpty);
+  });
 }

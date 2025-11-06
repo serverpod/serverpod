@@ -11,19 +11,20 @@ void main() {
 
   group('Given a class with a table defined and no id field', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           name: String
-        ''',
-      ).build()
+        ''').build(),
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
     late final definitions = analyzer.validateAll();
 
     late final definition = definitions.first as ClassDefinition;
@@ -50,100 +51,107 @@ void main() {
   });
 
   test(
-      'Given a class with the int id type set as non-nullable then an error is collected',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with the int id type set as non-nullable then an error is collected',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           id: int
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors.first.message,
-      'The type "int" must be nullable for the field "id". Use the "?" '
-      'operator to make it nullable (e.g. id: int?).',
-    );
-  });
+      expect(
+        collector.errors.first.message,
+        'The type "int" must be nullable for the field "id". Use the "?" '
+        'operator to make it nullable (e.g. id: int?).',
+      );
+    },
+  );
 
   group(
-      'Given a class with the int id type set as nullable with no default value',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with the int id type set as nullable with no default value',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           id: int?
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    late final definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-    late final definition = definitions.first as ModelClassDefinition;
+      var collector = CodeGenerationCollector();
+      late final definitions =
+          StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          ).validateAll();
+      late final definition = definitions.first as ModelClassDefinition;
 
-    test('then the id of the table is "int".', () {
-      expect(definition.idField.type.className, 'int');
-    });
+      test('then the id of the table is "int".', () {
+        expect(definition.idField.type.className, 'int');
+      });
 
-    test('then the id type is nullable.', () {
-      expect(definition.idField.type.nullable, true);
-    });
-  });
+      test('then the id type is nullable.', () {
+        expect(definition.idField.type.nullable, true);
+      });
+    },
+  );
 
   test(
-      'Given a class with the UUID id type and no default value, then an error is collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with the UUID id type and no default value, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           id: UuidValue
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors.first.message,
-      'The type "UuidValue" must have a default value. Use either the '
-      '"defaultModel" key or the "defaultPersist" key to set it.',
-    );
-  });
+      expect(
+        collector.errors.first.message,
+        'The type "UuidValue" must have a default value. Use either the '
+        '"defaultModel" key or the "defaultPersist" key to set it.',
+      );
+    },
+  );
 
   group('Given a class with the UUID id type correctly set', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
         class: Example
         table: example
         fields:
           id: UuidValue?, defaultModel=random
-        ''',
-      ).build()
+        ''').build(),
     ];
 
     var collector = CodeGenerationCollector();
     late final definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
     late final definition = definitions.first as ModelClassDefinition;
 
     test('then the id of the table is "UuidValue".', () {
@@ -155,28 +163,26 @@ void main() {
     });
   });
 
-  test(
-    'Given a class without a table defined, then no id field is added.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  test('Given a class without a table defined, then no id field is added.', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String
-          ''',
-        ).build()
-      ];
+          ''').build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
+    var definition = definitions.first as ClassDefinition;
 
-      expect(definition.fields.first.name, isNot('id'));
-      expect(definition.fields, hasLength(1));
-    },
-  );
+    expect(definition.fields.first.name, isNot('id'));
+    expect(definition.fields, hasLength(1));
+  });
 }

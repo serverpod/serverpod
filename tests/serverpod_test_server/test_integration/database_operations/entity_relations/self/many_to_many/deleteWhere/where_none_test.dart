@@ -72,9 +72,8 @@ void main() async {
 
         var deleted = await Member.db.deleteWhere(
           session,
-          where: (t) => t.blocking.none(
-            (c) => c.blockedId.equals(member[0].id!),
-          ),
+          where:
+              (t) => t.blocking.none((c) => c.blockedId.equals(member[0].id!)),
         );
 
         expect(deleted, hasLength(2));
@@ -141,9 +140,10 @@ void main() async {
 
         var deleted = await Member.db.deleteWhere(
           session,
-          where: (t) =>
-              t.blocking.none((o) => o.blocked.name.ilike('%3')) |
-              t.blockedBy.none((o) => o.blockedBy.name.ilike('%1')),
+          where:
+              (t) =>
+                  t.blocking.none((o) => o.blocked.name.ilike('%3')) |
+                  t.blockedBy.none((o) => o.blockedBy.name.ilike('%1')),
         );
 
         expect(deleted, hasLength(3));

@@ -41,13 +41,18 @@ abstract class CloudStorageEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
-      expiration: jsonSerialization['expiration'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      addedTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['addedTime'],
+      ),
+      expiration:
+          jsonSerialization['expiration'] == null
+              ? null
+              : _i1.DateTimeJsonExtension.fromJson(
+                jsonSerialization['expiration'],
+              ),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
       verified: jsonSerialization['verified'] as bool,
     );
   }
@@ -160,14 +165,14 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required _i2.ByteData byteData,
     required bool verified,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          addedTime: addedTime,
-          expiration: expiration,
-          byteData: byteData,
-          verified: verified,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         addedTime: addedTime,
+         expiration: expiration,
+         byteData: byteData,
+         verified: verified,
+       );
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
@@ -198,68 +203,35 @@ class CloudStorageEntryUpdateTable
     extends _i1.UpdateTable<CloudStorageEntryTable> {
   CloudStorageEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
-        table.storageId,
-        value,
-      );
+  _i1.ColumnValue<String, String> storageId(String value) =>
+      _i1.ColumnValue(table.storageId, value);
 
-  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
-        table.path,
-        value,
-      );
+  _i1.ColumnValue<String, String> path(String value) =>
+      _i1.ColumnValue(table.path, value);
 
   _i1.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
-      _i1.ColumnValue(
-        table.addedTime,
-        value,
-      );
+      _i1.ColumnValue(table.addedTime, value);
 
   _i1.ColumnValue<DateTime, DateTime> expiration(DateTime? value) =>
-      _i1.ColumnValue(
-        table.expiration,
-        value,
-      );
+      _i1.ColumnValue(table.expiration, value);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.byteData,
-        value,
-      );
+      _i1.ColumnValue(table.byteData, value);
 
-  _i1.ColumnValue<bool, bool> verified(bool value) => _i1.ColumnValue(
-        table.verified,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> verified(bool value) =>
+      _i1.ColumnValue(table.verified, value);
 }
 
 class CloudStorageEntryTable extends _i1.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_cloud_storage') {
+    : super(tableName: 'serverpod_cloud_storage') {
     updateTable = CloudStorageEntryUpdateTable(this);
-    storageId = _i1.ColumnString(
-      'storageId',
-      this,
-    );
-    path = _i1.ColumnString(
-      'path',
-      this,
-    );
-    addedTime = _i1.ColumnDateTime(
-      'addedTime',
-      this,
-    );
-    expiration = _i1.ColumnDateTime(
-      'expiration',
-      this,
-    );
-    byteData = _i1.ColumnByteData(
-      'byteData',
-      this,
-    );
-    verified = _i1.ColumnBool(
-      'verified',
-      this,
-    );
+    storageId = _i1.ColumnString('storageId', this);
+    path = _i1.ColumnString('path', this);
+    addedTime = _i1.ColumnDateTime('addedTime', this);
+    expiration = _i1.ColumnDateTime('expiration', this);
+    byteData = _i1.ColumnByteData('byteData', this);
+    verified = _i1.ColumnBool('verified', this);
   }
 
   late final CloudStorageEntryUpdateTable updateTable;
@@ -284,14 +256,14 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        storageId,
-        path,
-        addedTime,
-        expiration,
-        byteData,
-        verified,
-      ];
+    id,
+    storageId,
+    path,
+    addedTime,
+    expiration,
+    byteData,
+    verified,
+  ];
 }
 
 class CloudStorageEntryInclude extends _i1.IncludeObject {
@@ -412,10 +384,7 @@ class CloudStorageEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<CloudStorageEntry>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<CloudStorageEntry>(id, transaction: transaction);
   }
 
   /// Inserts all [CloudStorageEntry]s in the list and returns the inserted rows.
@@ -429,10 +398,7 @@ class CloudStorageEntryRepository {
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CloudStorageEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<CloudStorageEntry>(rows, transaction: transaction);
   }
 
   /// Inserts a single [CloudStorageEntry] and returns the inserted row.
@@ -489,7 +455,7 @@ class CloudStorageEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageEntry>(
@@ -504,7 +470,7 @@ class CloudStorageEntryRepository {
   Future<List<CloudStorageEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     int? limit,
     int? offset,
@@ -533,10 +499,7 @@ class CloudStorageEntryRepository {
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CloudStorageEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<CloudStorageEntry>(rows, transaction: transaction);
   }
 
   /// Deletes a single [CloudStorageEntry].

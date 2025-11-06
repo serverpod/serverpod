@@ -16,11 +16,8 @@ import 'dart:typed_data' as _i2;
 /// A challenge handed out for a subsequent Passkey registration or login.
 abstract class PasskeyChallenge
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
-  PasskeyChallenge._({
-    this.id,
-    DateTime? createdAt,
-    required this.challenge,
-  }) : createdAt = createdAt ?? DateTime.now();
+  PasskeyChallenge._({this.id, DateTime? createdAt, required this.challenge})
+    : createdAt = createdAt ?? DateTime.now();
 
   factory PasskeyChallenge({
     _i1.UuidValue? id,
@@ -30,13 +27,16 @@ abstract class PasskeyChallenge
 
   factory PasskeyChallenge.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyChallenge(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      challenge:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['challenge']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      challenge: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['challenge'],
+      ),
     );
   }
 
@@ -115,11 +115,7 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
     _i1.UuidValue? id,
     DateTime? createdAt,
     required _i2.ByteData challenge,
-  }) : super._(
-          id: id,
-          createdAt: createdAt,
-          challenge: challenge,
-        );
+  }) : super._(id: id, createdAt: createdAt, challenge: challenge);
 
   /// Returns a shallow copy of this [PasskeyChallenge]
   /// with some or all fields replaced by the given arguments.
@@ -143,30 +139,18 @@ class PasskeyChallengeUpdateTable
   PasskeyChallengeUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challenge(_i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challenge,
-        value,
-      );
+      _i1.ColumnValue(table.challenge, value);
 }
 
 class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyChallengeTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
+    : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
     updateTable = PasskeyChallengeUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-    );
-    challenge = _i1.ColumnByteData(
-      'challenge',
-      this,
-    );
+    createdAt = _i1.ColumnDateTime('createdAt', this);
+    challenge = _i1.ColumnByteData('challenge', this);
   }
 
   late final PasskeyChallengeUpdateTable updateTable;
@@ -178,11 +162,7 @@ class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnByteData challenge;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        challenge,
-      ];
+  List<_i1.Column> get columns => [id, createdAt, challenge];
 }
 
 class PasskeyChallengeInclude extends _i1.IncludeObject {
@@ -303,10 +283,7 @@ class PasskeyChallengeRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<PasskeyChallenge>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<PasskeyChallenge>(id, transaction: transaction);
   }
 
   /// Inserts all [PasskeyChallenge]s in the list and returns the inserted rows.
@@ -320,10 +297,7 @@ class PasskeyChallengeRepository {
     List<PasskeyChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<PasskeyChallenge>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<PasskeyChallenge>(rows, transaction: transaction);
   }
 
   /// Inserts a single [PasskeyChallenge] and returns the inserted row.
@@ -380,7 +354,7 @@ class PasskeyChallengeRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<PasskeyChallenge>(
@@ -395,7 +369,7 @@ class PasskeyChallengeRepository {
   Future<List<PasskeyChallenge>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
     int? limit,
     int? offset,
@@ -424,10 +398,7 @@ class PasskeyChallengeRepository {
     List<PasskeyChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<PasskeyChallenge>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<PasskeyChallenge>(rows, transaction: transaction);
   }
 
   /// Deletes a single [PasskeyChallenge].

@@ -38,18 +38,24 @@ abstract class ObjectWithVector
     return ObjectWithVector(
       id: jsonSerialization['id'] as int?,
       vector: _i1.VectorJsonExtension.fromJson(jsonSerialization['vector']),
-      vectorNullable: jsonSerialization['vectorNullable'] == null
-          ? null
-          : _i1.VectorJsonExtension.fromJson(
-              jsonSerialization['vectorNullable']),
+      vectorNullable:
+          jsonSerialization['vectorNullable'] == null
+              ? null
+              : _i1.VectorJsonExtension.fromJson(
+                jsonSerialization['vectorNullable'],
+              ),
       vectorIndexedHnsw: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedHnsw']),
+        jsonSerialization['vectorIndexedHnsw'],
+      ),
       vectorIndexedHnswWithParams: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedHnswWithParams']),
+        jsonSerialization['vectorIndexedHnswWithParams'],
+      ),
       vectorIndexedIvfflat: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedIvfflat']),
+        jsonSerialization['vectorIndexedIvfflat'],
+      ),
       vectorIndexedIvfflatWithParams: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedIvfflatWithParams']),
+        jsonSerialization['vectorIndexedIvfflatWithParams'],
+      ),
     );
   }
 
@@ -155,14 +161,14 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     required _i1.Vector vectorIndexedIvfflat,
     required _i1.Vector vectorIndexedIvfflatWithParams,
   }) : super._(
-          id: id,
-          vector: vector,
-          vectorNullable: vectorNullable,
-          vectorIndexedHnsw: vectorIndexedHnsw,
-          vectorIndexedHnswWithParams: vectorIndexedHnswWithParams,
-          vectorIndexedIvfflat: vectorIndexedIvfflat,
-          vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams,
-        );
+         id: id,
+         vector: vector,
+         vectorNullable: vectorNullable,
+         vectorIndexedHnsw: vectorIndexedHnsw,
+         vectorIndexedHnswWithParams: vectorIndexedHnswWithParams,
+         vectorIndexedIvfflat: vectorIndexedIvfflat,
+         vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
@@ -180,15 +186,18 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
       vector: vector ?? this.vector.clone(),
-      vectorNullable: vectorNullable is _i1.Vector?
-          ? vectorNullable
-          : this.vectorNullable?.clone(),
+      vectorNullable:
+          vectorNullable is _i1.Vector?
+              ? vectorNullable
+              : this.vectorNullable?.clone(),
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
-      vectorIndexedHnswWithParams: vectorIndexedHnswWithParams ??
+      vectorIndexedHnswWithParams:
+          vectorIndexedHnswWithParams ??
           this.vectorIndexedHnswWithParams.clone(),
       vectorIndexedIvfflat:
           vectorIndexedIvfflat ?? this.vectorIndexedIvfflat.clone(),
-      vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams ??
+      vectorIndexedIvfflatWithParams:
+          vectorIndexedIvfflatWithParams ??
           this.vectorIndexedIvfflatWithParams.clone(),
     );
   }
@@ -199,59 +208,33 @@ class ObjectWithVectorUpdateTable
   ObjectWithVectorUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vector(_i1.Vector value) =>
-      _i1.ColumnValue(
-        table.vector,
-        value,
-      );
+      _i1.ColumnValue(table.vector, value);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorNullable(_i1.Vector? value) =>
-      _i1.ColumnValue(
-        table.vectorNullable,
-        value,
-      );
+      _i1.ColumnValue(table.vectorNullable, value);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnsw(_i1.Vector value) =>
-      _i1.ColumnValue(
-        table.vectorIndexedHnsw,
-        value,
-      );
+      _i1.ColumnValue(table.vectorIndexedHnsw, value);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnswWithParams(
-          _i1.Vector value) =>
-      _i1.ColumnValue(
-        table.vectorIndexedHnswWithParams,
-        value,
-      );
+    _i1.Vector value,
+  ) => _i1.ColumnValue(table.vectorIndexedHnswWithParams, value);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflat(
-          _i1.Vector value) =>
-      _i1.ColumnValue(
-        table.vectorIndexedIvfflat,
-        value,
-      );
+    _i1.Vector value,
+  ) => _i1.ColumnValue(table.vectorIndexedIvfflat, value);
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflatWithParams(
-          _i1.Vector value) =>
-      _i1.ColumnValue(
-        table.vectorIndexedIvfflatWithParams,
-        value,
-      );
+    _i1.Vector value,
+  ) => _i1.ColumnValue(table.vectorIndexedIvfflatWithParams, value);
 }
 
 class ObjectWithVectorTable extends _i1.Table<int?> {
   ObjectWithVectorTable({super.tableRelation})
-      : super(tableName: 'object_with_vector') {
+    : super(tableName: 'object_with_vector') {
     updateTable = ObjectWithVectorUpdateTable(this);
-    vector = _i1.ColumnVector(
-      'vector',
-      this,
-      dimension: 512,
-    );
-    vectorNullable = _i1.ColumnVector(
-      'vectorNullable',
-      this,
-      dimension: 512,
-    );
+    vector = _i1.ColumnVector('vector', this, dimension: 512);
+    vectorNullable = _i1.ColumnVector('vectorNullable', this, dimension: 512);
     vectorIndexedHnsw = _i1.ColumnVector(
       'vectorIndexedHnsw',
       this,
@@ -290,14 +273,14 @@ class ObjectWithVectorTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        vector,
-        vectorNullable,
-        vectorIndexedHnsw,
-        vectorIndexedHnswWithParams,
-        vectorIndexedIvfflat,
-        vectorIndexedIvfflatWithParams,
-      ];
+    id,
+    vector,
+    vectorNullable,
+    vectorIndexedHnsw,
+    vectorIndexedHnswWithParams,
+    vectorIndexedIvfflat,
+    vectorIndexedIvfflatWithParams,
+  ];
 }
 
 class ObjectWithVectorInclude extends _i1.IncludeObject {
@@ -418,10 +401,7 @@ class ObjectWithVectorRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithVector>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectWithVector>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectWithVector]s in the list and returns the inserted rows.
@@ -435,10 +415,7 @@ class ObjectWithVectorRepository {
     List<ObjectWithVector> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithVector>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectWithVector>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectWithVector] and returns the inserted row.
@@ -495,7 +472,7 @@ class ObjectWithVectorRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithVector>(
@@ -510,7 +487,7 @@ class ObjectWithVectorRepository {
   Future<List<ObjectWithVector>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
     int? limit,
     int? offset,
@@ -539,10 +516,7 @@ class ObjectWithVectorRepository {
     List<ObjectWithVector> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithVector>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectWithVector>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectWithVector].

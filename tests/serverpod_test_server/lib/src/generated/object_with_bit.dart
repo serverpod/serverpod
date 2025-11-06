@@ -38,17 +38,22 @@ abstract class ObjectWithBit
     return ObjectWithBit(
       id: jsonSerialization['id'] as int?,
       bit: _i1.BitJsonExtension.fromJson(jsonSerialization['bit']),
-      bitNullable: jsonSerialization['bitNullable'] == null
-          ? null
-          : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
-      bitIndexedHnsw:
-          _i1.BitJsonExtension.fromJson(jsonSerialization['bitIndexedHnsw']),
+      bitNullable:
+          jsonSerialization['bitNullable'] == null
+              ? null
+              : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
+      bitIndexedHnsw: _i1.BitJsonExtension.fromJson(
+        jsonSerialization['bitIndexedHnsw'],
+      ),
       bitIndexedHnswWithParams: _i1.BitJsonExtension.fromJson(
-          jsonSerialization['bitIndexedHnswWithParams']),
-      bitIndexedIvfflat:
-          _i1.BitJsonExtension.fromJson(jsonSerialization['bitIndexedIvfflat']),
+        jsonSerialization['bitIndexedHnswWithParams'],
+      ),
+      bitIndexedIvfflat: _i1.BitJsonExtension.fromJson(
+        jsonSerialization['bitIndexedIvfflat'],
+      ),
       bitIndexedIvfflatWithParams: _i1.BitJsonExtension.fromJson(
-          jsonSerialization['bitIndexedIvfflatWithParams']),
+        jsonSerialization['bitIndexedIvfflatWithParams'],
+      ),
     );
   }
 
@@ -154,14 +159,14 @@ class _ObjectWithBitImpl extends ObjectWithBit {
     required _i1.Bit bitIndexedIvfflat,
     required _i1.Bit bitIndexedIvfflatWithParams,
   }) : super._(
-          id: id,
-          bit: bit,
-          bitNullable: bitNullable,
-          bitIndexedHnsw: bitIndexedHnsw,
-          bitIndexedHnswWithParams: bitIndexedHnswWithParams,
-          bitIndexedIvfflat: bitIndexedIvfflat,
-          bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams,
-        );
+         id: id,
+         bit: bit,
+         bitNullable: bitNullable,
+         bitIndexedHnsw: bitIndexedHnsw,
+         bitIndexedHnswWithParams: bitIndexedHnswWithParams,
+         bitIndexedIvfflat: bitIndexedIvfflat,
+         bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
@@ -185,7 +190,8 @@ class _ObjectWithBitImpl extends ObjectWithBit {
       bitIndexedHnswWithParams:
           bitIndexedHnswWithParams ?? this.bitIndexedHnswWithParams.clone(),
       bitIndexedIvfflat: bitIndexedIvfflat ?? this.bitIndexedIvfflat.clone(),
-      bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams ??
+      bitIndexedIvfflatWithParams:
+          bitIndexedIvfflatWithParams ??
           this.bitIndexedIvfflatWithParams.clone(),
     );
   }
@@ -194,62 +200,33 @@ class _ObjectWithBitImpl extends ObjectWithBit {
 class ObjectWithBitUpdateTable extends _i1.UpdateTable<ObjectWithBitTable> {
   ObjectWithBitUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.Bit, _i1.Bit> bit(_i1.Bit value) => _i1.ColumnValue(
-        table.bit,
-        value,
-      );
+  _i1.ColumnValue<_i1.Bit, _i1.Bit> bit(_i1.Bit value) =>
+      _i1.ColumnValue(table.bit, value);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bitNullable(_i1.Bit? value) =>
-      _i1.ColumnValue(
-        table.bitNullable,
-        value,
-      );
+      _i1.ColumnValue(table.bitNullable, value);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnsw(_i1.Bit value) =>
-      _i1.ColumnValue(
-        table.bitIndexedHnsw,
-        value,
-      );
+      _i1.ColumnValue(table.bitIndexedHnsw, value);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedHnswWithParams(_i1.Bit value) =>
-      _i1.ColumnValue(
-        table.bitIndexedHnswWithParams,
-        value,
-      );
+      _i1.ColumnValue(table.bitIndexedHnswWithParams, value);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflat(_i1.Bit value) =>
-      _i1.ColumnValue(
-        table.bitIndexedIvfflat,
-        value,
-      );
+      _i1.ColumnValue(table.bitIndexedIvfflat, value);
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> bitIndexedIvfflatWithParams(
-          _i1.Bit value) =>
-      _i1.ColumnValue(
-        table.bitIndexedIvfflatWithParams,
-        value,
-      );
+    _i1.Bit value,
+  ) => _i1.ColumnValue(table.bitIndexedIvfflatWithParams, value);
 }
 
 class ObjectWithBitTable extends _i1.Table<int?> {
   ObjectWithBitTable({super.tableRelation})
-      : super(tableName: 'object_with_bit') {
+    : super(tableName: 'object_with_bit') {
     updateTable = ObjectWithBitUpdateTable(this);
-    bit = _i1.ColumnBit(
-      'bit',
-      this,
-      dimension: 512,
-    );
-    bitNullable = _i1.ColumnBit(
-      'bitNullable',
-      this,
-      dimension: 512,
-    );
-    bitIndexedHnsw = _i1.ColumnBit(
-      'bitIndexedHnsw',
-      this,
-      dimension: 512,
-    );
+    bit = _i1.ColumnBit('bit', this, dimension: 512);
+    bitNullable = _i1.ColumnBit('bitNullable', this, dimension: 512);
+    bitIndexedHnsw = _i1.ColumnBit('bitIndexedHnsw', this, dimension: 512);
     bitIndexedHnswWithParams = _i1.ColumnBit(
       'bitIndexedHnswWithParams',
       this,
@@ -283,14 +260,14 @@ class ObjectWithBitTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        bit,
-        bitNullable,
-        bitIndexedHnsw,
-        bitIndexedHnswWithParams,
-        bitIndexedIvfflat,
-        bitIndexedIvfflatWithParams,
-      ];
+    id,
+    bit,
+    bitNullable,
+    bitIndexedHnsw,
+    bitIndexedHnswWithParams,
+    bitIndexedIvfflat,
+    bitIndexedIvfflatWithParams,
+  ];
 }
 
 class ObjectWithBitInclude extends _i1.IncludeObject {
@@ -411,10 +388,7 @@ class ObjectWithBitRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectWithBit>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectWithBit>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectWithBit]s in the list and returns the inserted rows.
@@ -428,10 +402,7 @@ class ObjectWithBitRepository {
     List<ObjectWithBit> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectWithBit>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectWithBit>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectWithBit] and returns the inserted row.
@@ -442,10 +413,7 @@ class ObjectWithBitRepository {
     ObjectWithBit row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ObjectWithBit>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ObjectWithBit>(row, transaction: transaction);
   }
 
   /// Updates all [ObjectWithBit]s in the list and returns the updated rows. If
@@ -530,10 +498,7 @@ class ObjectWithBitRepository {
     List<ObjectWithBit> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithBit>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectWithBit>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectWithBit].
@@ -542,10 +507,7 @@ class ObjectWithBitRepository {
     ObjectWithBit row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ObjectWithBit>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ObjectWithBit>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -39,15 +39,20 @@ abstract class LegacySession
   factory LegacySession.fromJson(Map<String, dynamic> jsonSerialization) {
     return LegacySession(
       id: jsonSerialization['id'] as int?,
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
       hash: jsonSerialization['hash'] as String,
       method: jsonSerialization['method'] as String,
     );
@@ -148,13 +153,13 @@ class _LegacySessionImpl extends LegacySession {
     required String hash,
     required String method,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          scopeNames: scopeNames,
-          hash: hash,
-          method: method,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         scopeNames: scopeNames,
+         hash: hash,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [LegacySession]
   /// with some or all fields replaced by the given arguments.
@@ -184,49 +189,27 @@ class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
   LegacySessionUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+  _i1.ColumnValue<String, String> hash(String value) =>
+      _i1.ColumnValue(table.hash, value);
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String value) =>
+      _i1.ColumnValue(table.method, value);
 }
 
 class LegacySessionTable extends _i1.Table<int?> {
   LegacySessionTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_bridge_session') {
+    : super(tableName: 'serverpod_auth_bridge_session') {
     updateTable = LegacySessionUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
-      'scopeNames',
-      this,
-    );
-    hash = _i1.ColumnString(
-      'hash',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    scopeNames = _i1.ColumnSerializable<Set<String>>('scopeNames', this);
+    hash = _i1.ColumnString('hash', this);
+    method = _i1.ColumnString('method', this);
   }
 
   late final LegacySessionUpdateTable updateTable;
@@ -254,20 +237,15 @@ class LegacySessionTable extends _i1.Table<int?> {
       field: LegacySession.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        scopeNames,
-        hash,
-        method,
-      ];
+  List<_i1.Column> get columns => [id, authUserId, scopeNames, hash, method];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -425,10 +403,7 @@ class LegacySessionRepository {
     List<LegacySession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<LegacySession>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<LegacySession>(rows, transaction: transaction);
   }
 
   /// Inserts a single [LegacySession] and returns the inserted row.
@@ -439,10 +414,7 @@ class LegacySessionRepository {
     LegacySession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<LegacySession>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<LegacySession>(row, transaction: transaction);
   }
 
   /// Updates all [LegacySession]s in the list and returns the updated rows. If
@@ -527,10 +499,7 @@ class LegacySessionRepository {
     List<LegacySession> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<LegacySession>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<LegacySession>(rows, transaction: transaction);
   }
 
   /// Deletes a single [LegacySession].
@@ -539,10 +508,7 @@ class LegacySessionRepository {
     LegacySession row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<LegacySession>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<LegacySession>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

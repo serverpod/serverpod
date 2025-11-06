@@ -35,16 +35,22 @@ abstract class TeamInt implements _i1.SerializableModel {
     return TeamInt(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      arenaId: jsonSerialization['arenaId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
-      arena: jsonSerialization['arena'] == null
-          ? null
-          : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      arenaId:
+          jsonSerialization['arenaId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['arenaId'],
+              ),
+      arena:
+          jsonSerialization['arena'] == null
+              ? null
+              : _i2.ArenaUuid.fromJson(
+                (jsonSerialization['arena'] as Map<String, dynamic>),
+              ),
+      players:
+          (jsonSerialization['players'] as List?)
+              ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -99,12 +105,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
@@ -122,9 +128,10 @@ class _TeamIntImpl extends TeamInt {
       name: name ?? this.name,
       arenaId: arenaId is _i1.UuidValue? ? arenaId : this.arenaId,
       arena: arena is _i2.ArenaUuid? ? arena : this.arena?.copyWith(),
-      players: players is List<_i3.PlayerUuid>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      players:
+          players is List<_i3.PlayerUuid>?
+              ? players
+              : this.players?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

@@ -47,25 +47,35 @@ abstract class EmailAccountRequest
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccountRequest(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       email: jsonSerialization['email'] as String,
-      passwordHash:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
-      passwordSalt:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
-      challengeId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
-      challenge: jsonSerialization['challenge'] == null
-          ? null
-          : _i3.SecretChallenge.fromJson(
-              (jsonSerialization['challenge'] as Map<String, dynamic>)),
-      verifiedAt: jsonSerialization['verifiedAt'] == null
-          ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['verifiedAt']),
+      passwordHash: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordHash'],
+      ),
+      passwordSalt: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordSalt'],
+      ),
+      challengeId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['challengeId'],
+      ),
+      challenge:
+          jsonSerialization['challenge'] == null
+              ? null
+              : _i3.SecretChallenge.fromJson(
+                (jsonSerialization['challenge'] as Map<String, dynamic>),
+              ),
+      verifiedAt:
+          jsonSerialization['verifiedAt'] == null
+              ? null
+              : _i1.DateTimeJsonExtension.fromJson(
+                jsonSerialization['verifiedAt'],
+              ),
     );
   }
 
@@ -137,8 +147,9 @@ abstract class EmailAccountRequest
     return {};
   }
 
-  static EmailAccountRequestInclude include(
-      {_i3.SecretChallengeInclude? challenge}) {
+  static EmailAccountRequestInclude include({
+    _i3.SecretChallengeInclude? challenge,
+  }) {
     return EmailAccountRequestInclude._(challenge: challenge);
   }
 
@@ -181,15 +192,15 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     _i3.SecretChallenge? challenge,
     DateTime? verifiedAt,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          email: email,
-          passwordHash: passwordHash,
-          passwordSalt: passwordSalt,
-          challengeId: challengeId,
-          challenge: challenge,
-          verifiedAt: verifiedAt,
-        );
+         id: id,
+         createdAt: createdAt,
+         email: email,
+         passwordHash: passwordHash,
+         passwordSalt: passwordSalt,
+         challengeId: challengeId,
+         challenge: challenge,
+         verifiedAt: verifiedAt,
+       );
 
   /// Returns a shallow copy of this [EmailAccountRequest]
   /// with some or all fields replaced by the given arguments.
@@ -212,9 +223,10 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
       passwordHash: passwordHash ?? this.passwordHash.clone(),
       passwordSalt: passwordSalt ?? this.passwordSalt.clone(),
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i3.SecretChallenge?
-          ? challenge
-          : this.challenge?.copyWith(),
+      challenge:
+          challenge is _i3.SecretChallenge?
+              ? challenge
+              : this.challenge?.copyWith(),
       verifiedAt: verifiedAt is DateTime? ? verifiedAt : this.verifiedAt,
     );
   }
@@ -225,73 +237,37 @@ class EmailAccountRequestUpdateTable
   EmailAccountRequestUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> passwordHash(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordHash,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(table.passwordHash, value);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> passwordSalt(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordSalt,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(table.passwordSalt, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> challengeId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.challengeId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.challengeId, value);
 
   _i1.ColumnValue<DateTime, DateTime> verifiedAt(DateTime? value) =>
-      _i1.ColumnValue(
-        table.verifiedAt,
-        value,
-      );
+      _i1.ColumnValue(table.verifiedAt, value);
 }
 
 class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountRequestTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_email_account_request') {
+    : super(tableName: 'serverpod_auth_idp_email_account_request') {
     updateTable = EmailAccountRequestUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-      hasDefault: true,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    passwordHash = _i1.ColumnByteData(
-      'passwordHash',
-      this,
-    );
-    passwordSalt = _i1.ColumnByteData(
-      'passwordSalt',
-      this,
-    );
-    challengeId = _i1.ColumnUuid(
-      'challengeId',
-      this,
-    );
-    verifiedAt = _i1.ColumnDateTime(
-      'verifiedAt',
-      this,
-    );
+    createdAt = _i1.ColumnDateTime('createdAt', this, hasDefault: true);
+    email = _i1.ColumnString('email', this);
+    passwordHash = _i1.ColumnByteData('passwordHash', this);
+    passwordSalt = _i1.ColumnByteData('passwordSalt', this);
+    challengeId = _i1.ColumnUuid('challengeId', this);
+    verifiedAt = _i1.ColumnDateTime('verifiedAt', this);
   }
 
   late final EmailAccountRequestUpdateTable updateTable;
@@ -329,22 +305,23 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
       field: EmailAccountRequest.t.challengeId,
       foreignField: _i3.SecretChallenge.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _challenge!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        email,
-        passwordHash,
-        passwordSalt,
-        challengeId,
-        verifiedAt,
-      ];
+    id,
+    createdAt,
+    email,
+    passwordHash,
+    passwordSalt,
+    challengeId,
+    verifiedAt,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -562,7 +539,7 @@ class EmailAccountRequestRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountRequest>(
@@ -577,7 +554,7 @@ class EmailAccountRequestRepository {
   Future<List<EmailAccountRequest>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
     int? limit,
     int? offset,
@@ -670,8 +647,9 @@ class EmailAccountRequestAttachRowRepository {
       throw ArgumentError.notNull('challenge.id');
     }
 
-    var $emailAccountRequest =
-        emailAccountRequest.copyWith(challengeId: challenge.id);
+    var $emailAccountRequest = emailAccountRequest.copyWith(
+      challengeId: challenge.id,
+    );
     await session.db.updateRow<EmailAccountRequest>(
       $emailAccountRequest,
       columns: [EmailAccountRequest.t.challengeId],

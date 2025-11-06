@@ -65,9 +65,10 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) =>
-              t.kittens.none((o) => o.name.ilike('kitt%')) &
-              t.kittens.none((o) => o.name.ilike('smul%')),
+          where:
+              (t) =>
+                  t.kittens.none((o) => o.name.ilike('kitt%')) &
+                  t.kittens.none((o) => o.name.ilike('smul%')),
         );
 
         expect(catCount, 2);
@@ -121,9 +122,10 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) => t.kittens.none(
-            (o) => o.kittens.none((o) => o.name.ilike('kitt%')),
-          ),
+          where:
+              (t) => t.kittens.none(
+                (o) => o.kittens.none((o) => o.name.ilike('kitt%')),
+              ),
         );
 
         expect(catCount, 3);

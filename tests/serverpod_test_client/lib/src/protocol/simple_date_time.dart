@@ -14,21 +14,17 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
 abstract class SimpleDateTime implements _i1.SerializableModel {
-  SimpleDateTime._({
-    this.id,
-    required this.dateTime,
-  });
+  SimpleDateTime._({this.id, required this.dateTime});
 
-  factory SimpleDateTime({
-    int? id,
-    required DateTime dateTime,
-  }) = _SimpleDateTimeImpl;
+  factory SimpleDateTime({int? id, required DateTime dateTime}) =
+      _SimpleDateTimeImpl;
 
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['dateTime']),
+      dateTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['dateTime'],
+      ),
     );
   }
 
@@ -43,16 +39,10 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  SimpleDateTime copyWith({
-    int? id,
-    DateTime? dateTime,
-  });
+  SimpleDateTime copyWith({int? id, DateTime? dateTime});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'dateTime': dateTime.toJson(),
-    };
+    return {if (id != null) 'id': id, 'dateTime': dateTime.toJson()};
   }
 
   @override
@@ -64,22 +54,14 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
 class _Undefined {}
 
 class _SimpleDateTimeImpl extends SimpleDateTime {
-  _SimpleDateTimeImpl({
-    int? id,
-    required DateTime dateTime,
-  }) : super._(
-          id: id,
-          dateTime: dateTime,
-        );
+  _SimpleDateTimeImpl({int? id, required DateTime dateTime})
+    : super._(id: id, dateTime: dateTime);
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  SimpleDateTime copyWith({
-    Object? id = _Undefined,
-    DateTime? dateTime,
-  }) {
+  SimpleDateTime copyWith({Object? id = _Undefined, DateTime? dateTime}) {
     return SimpleDateTime(
       id: id is int? ? id : this.id,
       dateTime: dateTime ?? this.dateTime,

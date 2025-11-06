@@ -16,8 +16,8 @@ abstract class MessageCentralServerpodChannels {
 // TODO: Support for server clusters.
 
 /// The callback used by listeners of the [MessageCentral].
-typedef MessageCentralListenerCallback = void Function(
-    SerializableModel message);
+typedef MessageCentralListenerCallback =
+    void Function(SerializableModel message);
 
 /// The [MessageCentral] handles communication within the server, and between
 /// servers in a cluster. It is especially useful when working with streaming
@@ -45,8 +45,9 @@ class MessageCentral {
   }) async {
     if (global) {
       // Send to Redis
-      var data =
-          Serverpod.instance.serializationManager.encodeWithType(message);
+      var data = Serverpod.instance.serializationManager.encodeWithType(
+        message,
+      );
       var redisController = Serverpod.instance.redisController;
       if (redisController == null) {
         throw StateError('Redis needs to be enabled to use this method');
@@ -110,8 +111,9 @@ class MessageCentral {
 
   void _receivedRedisMessage(String channelName, String message) {
     // var serialization = jsonDecode(message);
-    var messageObj =
-        Serverpod.instance.serializationManager.decodeWithType(message);
+    var messageObj = Serverpod.instance.serializationManager.decodeWithType(
+      message,
+    );
     if (messageObj == null) {
       return;
     }
@@ -119,8 +121,11 @@ class MessageCentral {
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(Session session, String channelName,
-      MessageCentralListenerCallback listener) {
+  void removeListener(
+    Session session,
+    String channelName,
+    MessageCentralListenerCallback listener,
+  ) {
     var channel = _channels[channelName];
     if (channel != null) {
       channel.remove(listener);
@@ -192,10 +197,7 @@ class MessageCentral {
   ///
   /// If messages on the channel does not match the type [T], the stream will
   /// emit an error.
-  Stream<T> createStream<T>(
-    Session session,
-    String channelName,
-  ) {
+  Stream<T> createStream<T>(Session session, String channelName) {
     var controller = StreamController<T>();
     void addToStream(dynamic message) {
       try {

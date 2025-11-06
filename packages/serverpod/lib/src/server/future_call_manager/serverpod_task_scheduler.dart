@@ -43,9 +43,8 @@ class ServerpodTaskScheduler {
   ///
   /// The [concurrencyLimit] parameter specifies the maximum number of tasks
   /// that can run concurrently. If `null`, there is no concurrency limit.
-  ServerpodTaskScheduler({
-    required int? concurrencyLimit,
-  }) : _concurrencyLimit = concurrencyLimit;
+  ServerpodTaskScheduler({required int? concurrencyLimit})
+    : _concurrencyLimit = concurrencyLimit;
 
   /// Adds a list of [TaskCallback] to the queue.
   ///
@@ -54,9 +53,7 @@ class ServerpodTaskScheduler {
   ///
   /// If this method is called when the [drain] method has been called, this
   /// method will throw a [StateError].
-  Future<void> addTaskCallbacks(
-    List<TaskCallback> taskCallbacks,
-  ) async {
+  Future<void> addTaskCallbacks(List<TaskCallback> taskCallbacks) async {
     // If stop has been called, we cannot add any more task callbacks.
     if (_stoppingCompleter != null) {
       throw StateError('Cannot add task callbacks after stop has been called.');
@@ -110,13 +107,11 @@ class ServerpodTaskScheduler {
       _runningTaskCallbacks++;
 
       unawaited(
-        taskCallback().whenComplete(
-          () {
-            _runningTaskCallbacks--;
+        taskCallback().whenComplete(() {
+          _runningTaskCallbacks--;
 
-            _handleQueue();
-          },
-        ),
+          _handleQueue();
+        }),
       );
     }
 

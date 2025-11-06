@@ -31,11 +31,14 @@ abstract class AuthUserModel
   factory AuthUserModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUserModel(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      scopeNames:
+          _i1.SetJsonExtension.fromJson(
+            (jsonSerialization['scopeNames'] as List),
+            itemFromJson: (e) => e as String,
+          )!,
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -93,11 +96,11 @@ class _AuthUserModelImpl extends AuthUserModel {
     required Set<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         createdAt: createdAt,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [AuthUserModel]
   /// with some or all fields replaced by the given arguments.

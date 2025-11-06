@@ -36,13 +36,16 @@ abstract class OrderUuid implements _i1.SerializableModel {
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
-      customer: jsonSerialization['customer'] == null
-          ? null
-          : _i2.CustomerInt.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      customer:
+          jsonSerialization['customer'] == null
+              ? null
+              : _i2.CustomerInt.fromJson(
+                (jsonSerialization['customer'] as Map<String, dynamic>),
+              ),
+      comments:
+          (jsonSerialization['comments'] as List?)
+              ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -95,12 +98,12 @@ class _OrderUuidImpl extends OrderUuid {
     _i2.CustomerInt? customer,
     List<_i3.CommentInt>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
@@ -119,9 +122,10 @@ class _OrderUuidImpl extends OrderUuid {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.CustomerInt? ? customer : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
-          ? comments
-          : this.comments?.map((e0) => e0.copyWith()).toList(),
+      comments:
+          comments is List<_i3.CommentInt>?
+              ? comments
+              : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

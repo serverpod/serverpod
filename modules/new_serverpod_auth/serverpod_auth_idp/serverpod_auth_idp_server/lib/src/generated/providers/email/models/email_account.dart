@@ -42,22 +42,29 @@ abstract class EmailAccount
 
   factory EmailAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccount(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       email: jsonSerialization['email'] as String,
-      passwordHash:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
-      passwordSalt:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
+      passwordHash: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordHash'],
+      ),
+      passwordSalt: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordSalt'],
+      ),
     );
   }
 
@@ -164,14 +171,14 @@ class _EmailAccountImpl extends EmailAccount {
     required _i3.ByteData passwordHash,
     required _i3.ByteData passwordSalt,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          createdAt: createdAt,
-          email: email,
-          passwordHash: passwordHash,
-          passwordSalt: passwordSalt,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         createdAt: createdAt,
+         email: email,
+         passwordHash: passwordHash,
+         passwordSalt: passwordSalt,
+       );
 
   /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
@@ -203,62 +210,33 @@ class EmailAccountUpdateTable extends _i1.UpdateTable<EmailAccountTable> {
   EmailAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordHash(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordHash,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.passwordHash, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordSalt(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordSalt,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.passwordSalt, value);
 }
 
 class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_email_account') {
+    : super(tableName: 'serverpod_auth_idp_email_account') {
     updateTable = EmailAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    passwordHash = _i1.ColumnByteData(
-      'passwordHash',
-      this,
-    );
-    passwordSalt = _i1.ColumnByteData(
-      'passwordSalt',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    createdAt = _i1.ColumnDateTime('createdAt', this);
+    email = _i1.ColumnString('email', this);
+    passwordHash = _i1.ColumnByteData('passwordHash', this);
+    passwordSalt = _i1.ColumnByteData('passwordSalt', this);
   }
 
   late final EmailAccountUpdateTable updateTable;
@@ -291,21 +269,22 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
       field: EmailAccount.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        createdAt,
-        email,
-        passwordHash,
-        passwordSalt,
-      ];
+    id,
+    authUserId,
+    createdAt,
+    email,
+    passwordHash,
+    passwordSalt,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -463,10 +442,7 @@ class EmailAccountRepository {
     List<EmailAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<EmailAccount>(rows, transaction: transaction);
   }
 
   /// Inserts a single [EmailAccount] and returns the inserted row.
@@ -477,10 +453,7 @@ class EmailAccountRepository {
     EmailAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<EmailAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<EmailAccount>(row, transaction: transaction);
   }
 
   /// Updates all [EmailAccount]s in the list and returns the updated rows. If
@@ -565,10 +538,7 @@ class EmailAccountRepository {
     List<EmailAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<EmailAccount>(rows, transaction: transaction);
   }
 
   /// Deletes a single [EmailAccount].
@@ -577,10 +547,7 @@ class EmailAccountRepository {
     EmailAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<EmailAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<EmailAccount>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

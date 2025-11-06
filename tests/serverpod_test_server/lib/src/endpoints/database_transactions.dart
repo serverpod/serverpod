@@ -14,7 +14,11 @@ class TransactionsDatabaseEndpoint extends Endpoint {
   }
 
   Future<bool> updateInsertDelete(
-      Session session, int numUpdate, int numInsert, int numDelete) async {
+    Session session,
+    int numUpdate,
+    int numInsert,
+    int numDelete,
+  ) async {
     var data = await SimpleData.db.findFirstRow(
       session,
       where: (t) => t.num.equals(numUpdate),
@@ -24,9 +28,7 @@ class TransactionsDatabaseEndpoint extends Endpoint {
       data!.num = 1000;
       await SimpleData.db.updateRow(session, data, transaction: transaction);
 
-      var newData = SimpleData(
-        num: numInsert,
-      );
+      var newData = SimpleData(num: numInsert);
       await SimpleData.db.insertRow(session, newData, transaction: transaction);
 
       await SimpleData.db.deleteWhere(

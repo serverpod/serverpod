@@ -24,18 +24,17 @@ void main() async {
       );
     });
 
-    test('when authentication succeeds then authId is set to authKey id',
-        () async {
-      var result = await authenticationHandler(
-        session,
-        '${authKey.id}:${authKey.key}',
-      );
+    test(
+      'when authentication succeeds then authId is set to authKey id',
+      () async {
+        var result = await authenticationHandler(
+          session,
+          '${authKey.id}:${authKey.key}',
+        );
 
-      expect(
-        result?.authId,
-        equals('${authKey.id}'),
-      );
-    });
+        expect(result?.authId, equals('${authKey.id}'));
+      },
+    );
 
     test('when authentication fails then authId is null', () async {
       var result = await authenticationHandler(
@@ -43,10 +42,7 @@ void main() async {
         '${authKey.id}:invalid-key',
       );
 
-      expect(
-        result?.authId,
-        isNull,
-      );
+      expect(result?.authId, isNull);
     });
 
     test('when authKey is not found then authentication fails', () async {
@@ -55,10 +51,7 @@ void main() async {
         '9999:${authKey.key}', // Non-existing keyId
       );
 
-      expect(
-        result?.authId,
-        isNull,
-      );
+      expect(result?.authId, isNull);
     });
 
     test('when key format is invalid then authentication fails', () async {
@@ -67,10 +60,7 @@ void main() async {
         'invalid-format-key', // Invalid format
       );
 
-      expect(
-        result?.authId,
-        isNull,
-      );
+      expect(result?.authId, isNull);
     });
   });
 }

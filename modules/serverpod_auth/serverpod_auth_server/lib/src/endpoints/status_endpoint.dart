@@ -19,10 +19,7 @@ class StatusEndpoint extends Endpoint {
     var authKeyId = authInfo?.authId;
     if (authKeyId == null) return;
 
-    return UserAuthentication.revokeAuthKey(
-      session,
-      authKeyId: authKeyId,
-    );
+    return UserAuthentication.revokeAuthKey(session, authKeyId: authKeyId);
   }
 
   /// Signs out a user from all active devices.
@@ -31,10 +28,7 @@ class StatusEndpoint extends Endpoint {
     var userId = authInfo?.userId;
     if (userId == null) return;
 
-    return UserAuthentication.signOutUser(
-      session,
-      userId: userId,
-    );
+    return UserAuthentication.signOutUser(session, userId: userId);
   }
 
   /// Gets the [UserInfo] for a signed in user, or null if the user is currently

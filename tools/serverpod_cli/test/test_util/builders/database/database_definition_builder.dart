@@ -7,10 +7,10 @@ class DatabaseDefinitionBuilder {
   int _migrationApiVersion;
 
   DatabaseDefinitionBuilder()
-      : _moduleName = 'test_project',
-        _tables = [],
-        _installedModules = [],
-        _migrationApiVersion = 1;
+    : _moduleName = 'test_project',
+      _tables = [],
+      _installedModules = [],
+      _migrationApiVersion = 1;
 
   DatabaseDefinition build() {
     return DatabaseDefinition(
@@ -38,26 +38,22 @@ class DatabaseDefinitionBuilder {
 
   DatabaseDefinitionBuilder withDefaultModules() {
     _installedModules = [
-      DatabaseMigrationVersion(
-        module: 'serverpod',
-        version: '00000000000000',
-      ),
-      DatabaseMigrationVersion(
-        module: _moduleName,
-        version: '00000000000000',
-      ),
+      DatabaseMigrationVersion(module: 'serverpod', version: '00000000000000'),
+      DatabaseMigrationVersion(module: _moduleName, version: '00000000000000'),
     ];
     return this;
   }
 
   DatabaseDefinitionBuilder withInstalledModule(
-      DatabaseMigrationVersion installedModule) {
+    DatabaseMigrationVersion installedModule,
+  ) {
     _installedModules.add(installedModule);
     return this;
   }
 
   DatabaseDefinitionBuilder withInstalledModules(
-      List<DatabaseMigrationVersion> installedModules) {
+    List<DatabaseMigrationVersion> installedModules,
+  ) {
     _installedModules = installedModules;
     return this;
   }

@@ -14,21 +14,17 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 abstract class ObjectWithByteData implements _i1.SerializableModel {
-  ObjectWithByteData._({
-    this.id,
-    required this.byteData,
-  });
+  ObjectWithByteData._({this.id, required this.byteData});
 
-  factory ObjectWithByteData({
-    int? id,
-    required _i2.ByteData byteData,
-  }) = _ObjectWithByteDataImpl;
+  factory ObjectWithByteData({int? id, required _i2.ByteData byteData}) =
+      _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
     );
   }
 
@@ -42,16 +38,10 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithByteData copyWith({
-    int? id,
-    _i2.ByteData? byteData,
-  });
+  ObjectWithByteData copyWith({int? id, _i2.ByteData? byteData});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'byteData': byteData.toJson(),
-    };
+    return {if (id != null) 'id': id, 'byteData': byteData.toJson()};
   }
 
   @override
@@ -63,13 +53,8 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ObjectWithByteDataImpl extends ObjectWithByteData {
-  _ObjectWithByteDataImpl({
-    int? id,
-    required _i2.ByteData byteData,
-  }) : super._(
-          id: id,
-          byteData: byteData,
-        );
+  _ObjectWithByteDataImpl({int? id, required _i2.ByteData byteData})
+    : super._(id: id, byteData: byteData);
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.

@@ -14,12 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
 
 abstract class Company implements _i1.SerializableModel {
-  Company._({
-    this.id,
-    required this.name,
-    required this.townId,
-    this.town,
-  });
+  Company._({this.id, required this.name, required this.townId, this.town});
 
   factory Company({
     int? id,
@@ -33,10 +28,12 @@ abstract class Company implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       townId: jsonSerialization['townId'] as int,
-      town: jsonSerialization['town'] == null
-          ? null
-          : _i2.Town.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+      town:
+          jsonSerialization['town'] == null
+              ? null
+              : _i2.Town.fromJson(
+                (jsonSerialization['town'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -54,12 +51,7 @@ abstract class Company implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Company copyWith({
-    int? id,
-    String? name,
-    int? townId,
-    _i2.Town? town,
-  });
+  Company copyWith({int? id, String? name, int? townId, _i2.Town? town});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -84,12 +76,7 @@ class _CompanyImpl extends Company {
     required String name,
     required int townId,
     _i2.Town? town,
-  }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+  }) : super._(id: id, name: name, townId: townId, town: town);
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.

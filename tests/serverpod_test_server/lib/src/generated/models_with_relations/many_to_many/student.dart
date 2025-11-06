@@ -17,11 +17,7 @@ import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
 abstract class Student
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Student._({
-    this.id,
-    required this.name,
-    this.enrollments,
-  });
+  Student._({this.id, required this.name, this.enrollments});
 
   factory Student({
     int? id,
@@ -33,9 +29,10 @@ abstract class Student
     return Student(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments:
+          (jsonSerialization['enrollments'] as List?)
+              ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -56,11 +53,7 @@ abstract class Student
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Student copyWith({
-    int? id,
-    String? name,
-    List<_i2.Enrollment>? enrollments,
-  });
+  Student copyWith({int? id, String? name, List<_i2.Enrollment>? enrollments});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -77,8 +70,9 @@ abstract class Student
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -119,11 +113,7 @@ class _StudentImpl extends Student {
     int? id,
     required String name,
     List<_i2.Enrollment>? enrollments,
-  }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+  }) : super._(id: id, name: name, enrollments: enrollments);
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
@@ -137,9 +127,10 @@ class _StudentImpl extends Student {
     return Student(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.Enrollment>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments:
+          enrollments is List<_i2.Enrollment>?
+              ? enrollments
+              : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -147,19 +138,14 @@ class _StudentImpl extends Student {
 class StudentUpdateTable extends _i1.UpdateTable<StudentTable> {
   StudentUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class StudentTable extends _i1.Table<int?> {
   StudentTable({super.tableRelation}) : super(tableName: 'student') {
     updateTable = StudentUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final StudentUpdateTable updateTable;
@@ -177,8 +163,9 @@ class StudentTable extends _i1.Table<int?> {
       field: Student.t.id,
       foreignField: _i2.Enrollment.t.studentId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
@@ -190,22 +177,21 @@ class StudentTable extends _i1.Table<int?> {
       field: Student.t.id,
       foreignField: _i2.Enrollment.t.studentId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentTable(tableRelation: foreignTableRelation),
     );
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -365,10 +351,7 @@ class StudentRepository {
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Student>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Student>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Student] and returns the inserted row.
@@ -379,10 +362,7 @@ class StudentRepository {
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Student>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Student>(row, transaction: transaction);
   }
 
   /// Updates all [Student]s in the list and returns the updated rows. If
@@ -467,10 +447,7 @@ class StudentRepository {
     List<Student> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Student>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Student>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Student].
@@ -479,10 +456,7 @@ class StudentRepository {
     Student row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Student>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Student>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

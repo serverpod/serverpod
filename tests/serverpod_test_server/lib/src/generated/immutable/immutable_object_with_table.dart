@@ -15,18 +15,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 @_i1.immutable
 abstract class ImmutableObjectWithTable
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  const ImmutableObjectWithTable._({
-    this.id,
-    required this.variable,
-  });
+  const ImmutableObjectWithTable._({this.id, required this.variable});
 
-  const factory ImmutableObjectWithTable({
-    int? id,
-    required String variable,
-  }) = _ImmutableObjectWithTableImpl;
+  const factory ImmutableObjectWithTable({int? id, required String variable}) =
+      _ImmutableObjectWithTableImpl;
 
   factory ImmutableObjectWithTable.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTable(
       id: jsonSerialization['id'] as int?,
       variable: jsonSerialization['variable'] as String,
@@ -48,53 +44,29 @@ abstract class ImmutableObjectWithTable
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ImmutableObjectWithTable copyWith({
-    int? id,
-    String? variable,
-  });
+  ImmutableObjectWithTable copyWith({int? id, String? variable});
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithTable &&
-            (identical(
-                  other.id,
-                  id,
-                ) ||
-                other.id == id) &&
-            (identical(
-                  other.variable,
-                  variable,
-                ) ||
-                other.variable == variable);
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.variable, variable) || other.variable == variable);
   }
 
   @override
   int get hashCode {
-    return Object.hash(
-      runtimeType,
-      id,
-      variable,
-    );
+    return Object.hash(runtimeType, id, variable);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'variable': variable,
-    };
+    return {if (id != null) 'id': id, 'variable': variable};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'variable': variable,
-    };
+    return {if (id != null) 'id': id, 'variable': variable};
   }
 
   static ImmutableObjectWithTableInclude include() {
@@ -130,13 +102,8 @@ abstract class ImmutableObjectWithTable
 class _Undefined {}
 
 class _ImmutableObjectWithTableImpl extends ImmutableObjectWithTable {
-  const _ImmutableObjectWithTableImpl({
-    int? id,
-    required String variable,
-  }) : super._(
-          id: id,
-          variable: variable,
-        );
+  const _ImmutableObjectWithTableImpl({int? id, required String variable})
+    : super._(id: id, variable: variable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
@@ -157,20 +124,15 @@ class ImmutableObjectWithTableUpdateTable
     extends _i1.UpdateTable<ImmutableObjectWithTableTable> {
   ImmutableObjectWithTableUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> variable(String value) => _i1.ColumnValue(
-        table.variable,
-        value,
-      );
+  _i1.ColumnValue<String, String> variable(String value) =>
+      _i1.ColumnValue(table.variable, value);
 }
 
 class ImmutableObjectWithTableTable extends _i1.Table<int?> {
   ImmutableObjectWithTableTable({super.tableRelation})
-      : super(tableName: 'immutable_object_with_table') {
+    : super(tableName: 'immutable_object_with_table') {
     updateTable = ImmutableObjectWithTableUpdateTable(this);
-    variable = _i1.ColumnString(
-      'variable',
-      this,
-    );
+    variable = _i1.ColumnString('variable', this);
   }
 
   late final ImmutableObjectWithTableUpdateTable updateTable;
@@ -178,10 +140,7 @@ class ImmutableObjectWithTableTable extends _i1.Table<int?> {
   late final _i1.ColumnString variable;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        variable,
-      ];
+  List<_i1.Column> get columns => [id, variable];
 }
 
 class ImmutableObjectWithTableInclude extends _i1.IncludeObject {
@@ -379,7 +338,7 @@ class ImmutableObjectWithTableRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ImmutableObjectWithTable>(
@@ -394,7 +353,7 @@ class ImmutableObjectWithTableRepository {
   Future<List<ImmutableObjectWithTable>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
     int? limit,
     int? offset,

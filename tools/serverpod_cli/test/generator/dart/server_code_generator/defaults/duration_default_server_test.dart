@@ -23,8 +23,12 @@ void main() {
       setUpAll(() {
         var testClassName = 'DurationDefault';
         var testClassFileName = 'duration_default';
-        var expectedFilePath =
-            path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
         var fields = [
           FieldDefinitionBuilder()
@@ -44,7 +48,7 @@ void main() {
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)
-              .build()
+              .build(),
         ];
 
         var codeMap = generator.generateSerializableModelsCode(
@@ -62,9 +66,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the DurationDefault has a private constructor', () {
@@ -72,137 +76,145 @@ void main() {
           expect(privateConstructor, isNotNull);
         });
 
+        test('with the class vars as params', () {
+          expect(
+            privateConstructor?.parameters.toSource(),
+            '({Duration? durationDefault, Duration? durationDefaultNull})',
+          );
+        });
+
+        test('with durationDefault default value set correctly', () {
+          var initializer = privateConstructor?.initializers.firstWhere(
+            (e) => e.toSource().contains('durationDefault'),
+          );
+          expect(
+            initializer?.toSource(),
+            'durationDefault = durationDefault ?? Duration(days: 1, hours: 2, minutes: 10, seconds: 30, milliseconds: 100)',
+          );
+        });
+
+        test('with durationDefaultNull default value set correctly', () {
+          var initializer = privateConstructor?.initializers.firstWhere(
+            (e) => e.toSource().contains('durationDefaultNull'),
+          );
+          expect(
+            initializer?.toSource(),
+            'durationDefaultNull = durationDefaultNull ?? Duration(days: 2, hours: 1, minutes: 20, seconds: 40, milliseconds: 100)',
+          );
+        });
+      });
+
+      group('when the Duration is normalized', () {
         test(
-          'with the class vars as params',
+          'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)"',
           () {
+            var normalizedField =
+                FieldDefinitionBuilder()
+                    .withName('normalizedDuration')
+                    .withTypeDefinition('Duration', false)
+                    .withDefaults(defaultModelValue: '1d 24h')
+                    .build();
+
+            var normalizedModel =
+                ModelClassDefinitionBuilder()
+                    .withClassName('NormalizedDuration')
+                    .withFileName('normalized_duration')
+                    .withField(normalizedField)
+                    .build();
+
+            var normalizedCodeMap = generator.generateSerializableModelsCode(
+              models: [normalizedModel],
+              config: config,
+            );
+
+            var normalizedCompilationUnit =
+                parseString(
+                  content:
+                      normalizedCodeMap[path.join(
+                        'lib',
+                        'src',
+                        'generated',
+                        'normalized_duration.dart',
+                      )]!,
+                ).unit;
+
+            var normalizedBaseClass =
+                CompilationUnitHelpers.tryFindClassDeclaration(
+                  normalizedCompilationUnit,
+                  name: 'NormalizedDuration',
+                );
+
+            var normalizedConstructor =
+                CompilationUnitHelpers.tryFindConstructorDeclaration(
+                  normalizedBaseClass!,
+                  name: '_',
+                );
+
+            var initializer = normalizedConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('normalizedDuration'),
+            );
             expect(
-              privateConstructor?.parameters.toSource(),
-              '({Duration? durationDefault, Duration? durationDefaultNull})',
+              initializer?.toSource(),
+              'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)',
             );
           },
         );
 
         test(
-          'with durationDefault default value set correctly',
+          'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)"',
           () {
-            var initializer = privateConstructor?.initializers
-                .firstWhere((e) => e.toSource().contains('durationDefault'));
-            expect(
-              initializer?.toSource(),
-              'durationDefault = durationDefault ?? Duration(days: 1, hours: 2, minutes: 10, seconds: 30, milliseconds: 100)',
-            );
-          },
-        );
+            var normalizedField =
+                FieldDefinitionBuilder()
+                    .withName('normalizedDuration')
+                    .withTypeDefinition('Duration', false)
+                    .withDefaults(defaultModelValue: '0d 48h 60min')
+                    .build();
 
-        test(
-          'with durationDefaultNull default value set correctly',
-          () {
-            var initializer = privateConstructor?.initializers.firstWhere(
-                (e) => e.toSource().contains('durationDefaultNull'));
+            var normalizedModel =
+                ModelClassDefinitionBuilder()
+                    .withClassName('NormalizedDuration')
+                    .withFileName('normalized_duration')
+                    .withField(normalizedField)
+                    .build();
+
+            var normalizedCodeMap = generator.generateSerializableModelsCode(
+              models: [normalizedModel],
+              config: config,
+            );
+
+            var normalizedCompilationUnit =
+                parseString(
+                  content:
+                      normalizedCodeMap[path.join(
+                        'lib',
+                        'src',
+                        'generated',
+                        'normalized_duration.dart',
+                      )]!,
+                ).unit;
+
+            var normalizedBaseClass =
+                CompilationUnitHelpers.tryFindClassDeclaration(
+                  normalizedCompilationUnit,
+                  name: 'NormalizedDuration',
+                );
+
+            var normalizedConstructor =
+                CompilationUnitHelpers.tryFindConstructorDeclaration(
+                  normalizedBaseClass!,
+                  name: '_',
+                );
+
+            var initializer = normalizedConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('normalizedDuration'),
+            );
             expect(
               initializer?.toSource(),
-              'durationDefaultNull = durationDefaultNull ?? Duration(days: 2, hours: 1, minutes: 20, seconds: 40, milliseconds: 100)',
+              'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)',
             );
           },
         );
       });
-
-      group(
-        'when the Duration is normalized',
-        () {
-          test(
-            'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)"',
-            () {
-              var normalizedField = FieldDefinitionBuilder()
-                  .withName('normalizedDuration')
-                  .withTypeDefinition('Duration', false)
-                  .withDefaults(defaultModelValue: '1d 24h')
-                  .build();
-
-              var normalizedModel = ModelClassDefinitionBuilder()
-                  .withClassName('NormalizedDuration')
-                  .withFileName('normalized_duration')
-                  .withField(normalizedField)
-                  .build();
-
-              var normalizedCodeMap = generator.generateSerializableModelsCode(
-                models: [normalizedModel],
-                config: config,
-              );
-
-              var normalizedCompilationUnit = parseString(
-                      content: normalizedCodeMap[path.join('lib', 'src',
-                          'generated', 'normalized_duration.dart')]!)
-                  .unit;
-
-              var normalizedBaseClass =
-                  CompilationUnitHelpers.tryFindClassDeclaration(
-                normalizedCompilationUnit,
-                name: 'NormalizedDuration',
-              );
-
-              var normalizedConstructor =
-                  CompilationUnitHelpers.tryFindConstructorDeclaration(
-                normalizedBaseClass!,
-                name: '_',
-              );
-
-              var initializer = normalizedConstructor?.initializers.firstWhere(
-                  (e) => e.toSource().contains('normalizedDuration'));
-              expect(
-                initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)',
-              );
-            },
-          );
-
-          test(
-            'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)"',
-            () {
-              var normalizedField = FieldDefinitionBuilder()
-                  .withName('normalizedDuration')
-                  .withTypeDefinition('Duration', false)
-                  .withDefaults(defaultModelValue: '0d 48h 60min')
-                  .build();
-
-              var normalizedModel = ModelClassDefinitionBuilder()
-                  .withClassName('NormalizedDuration')
-                  .withFileName('normalized_duration')
-                  .withField(normalizedField)
-                  .build();
-
-              var normalizedCodeMap = generator.generateSerializableModelsCode(
-                models: [normalizedModel],
-                config: config,
-              );
-
-              var normalizedCompilationUnit = parseString(
-                      content: normalizedCodeMap[path.join('lib', 'src',
-                          'generated', 'normalized_duration.dart')]!)
-                  .unit;
-
-              var normalizedBaseClass =
-                  CompilationUnitHelpers.tryFindClassDeclaration(
-                normalizedCompilationUnit,
-                name: 'NormalizedDuration',
-              );
-
-              var normalizedConstructor =
-                  CompilationUnitHelpers.tryFindConstructorDeclaration(
-                normalizedBaseClass!,
-                name: '_',
-              );
-
-              var initializer = normalizedConstructor?.initializers.firstWhere(
-                  (e) => e.toSource().contains('normalizedDuration'));
-              expect(
-                initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)',
-              );
-            },
-          );
-        },
-      );
     },
   );
 
@@ -215,8 +227,12 @@ void main() {
       setUpAll(() {
         var testClassName = 'DurationDefaultPersist';
         var testClassFileName = 'duration_default_persist';
-        var expectedFilePath =
-            path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
         var fields = [
           FieldDefinitionBuilder()
@@ -231,7 +247,7 @@ void main() {
               .withClassName(testClassName)
               .withFileName(testClassFileName)
               .withFields(fields)
-              .build()
+              .build(),
         ];
 
         var codeMap = generator.generateSerializableModelsCode(
@@ -249,9 +265,9 @@ void main() {
 
         privateConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          baseClass!,
-          name: '_',
-        );
+              baseClass!,
+              name: '_',
+            );
       });
 
       group('then the DurationDefaultPersist has a private constructor', () {
@@ -259,15 +275,12 @@ void main() {
           expect(privateConstructor, isNotNull);
         });
 
-        test(
-          'with the class vars as params',
-          () {
-            expect(
-              privateConstructor?.parameters.toSource(),
-              '({this.durationDefaultPersist})',
-            );
-          },
-        );
+        test('with the class vars as params', () {
+          expect(
+            privateConstructor?.parameters.toSource(),
+            '({this.durationDefaultPersist})',
+          );
+        });
       });
     },
   );

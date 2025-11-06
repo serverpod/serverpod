@@ -48,9 +48,10 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) =>
-              t.kittens.every((t) => t.name.ilike('kitt%')) |
-              t.kittens.every((t) => t.name.ilike('smul%')),
+          where:
+              (t) =>
+                  t.kittens.every((t) => t.name.ilike('kitt%')) |
+                  t.kittens.every((t) => t.name.ilike('smul%')),
         );
 
         expect(catCount, 2);
@@ -84,9 +85,11 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) => t.kittens.every(
-              // All cats where all kittens has kittens with name starting with 'Nest'
-              (o) => o.kittens.every((c) => c.name.ilike('nest%'))),
+          where:
+              (t) => t.kittens.every(
+                // All cats where all kittens has kittens with name starting with 'Nest'
+                (o) => o.kittens.every((c) => c.name.ilike('nest%')),
+              ),
         );
 
         expect(catCount, 1);
@@ -113,9 +116,10 @@ void main() async {
 
         var catCount = await Cat.db.count(
           session,
-          where: (t) => t.kittens.every(
-            (o) => o.kittens.every((o) => o.name.ilike('%kitten%')),
-          ),
+          where:
+              (t) => t.kittens.every(
+                (o) => o.kittens.every((o) => o.name.ilike('%kitten%')),
+              ),
         );
 
         expect(catCount, 1);

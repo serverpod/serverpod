@@ -18,9 +18,9 @@ abstract class BoolDefault implements _i1.SerializableModel {
     bool? boolDefaultTrue,
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
-  })  : boolDefaultTrue = boolDefaultTrue ?? true,
-        boolDefaultFalse = boolDefaultFalse ?? false,
-        boolDefaultNullFalse = boolDefaultNullFalse ?? false;
+  }) : boolDefaultTrue = boolDefaultTrue ?? true,
+       boolDefaultFalse = boolDefaultFalse ?? false,
+       boolDefaultNullFalse = boolDefaultNullFalse ?? false;
 
   factory BoolDefault({
     int? id,
@@ -84,11 +84,11 @@ class _BoolDefaultImpl extends BoolDefault {
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
   }) : super._(
-          id: id,
-          boolDefaultTrue: boolDefaultTrue,
-          boolDefaultFalse: boolDefaultFalse,
-          boolDefaultNullFalse: boolDefaultNullFalse,
-        );
+         id: id,
+         boolDefaultTrue: boolDefaultTrue,
+         boolDefaultFalse: boolDefaultFalse,
+         boolDefaultNullFalse: boolDefaultNullFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefault]
   /// with some or all fields replaced by the given arguments.
@@ -104,9 +104,10 @@ class _BoolDefaultImpl extends BoolDefault {
       id: id is int? ? id : this.id,
       boolDefaultTrue: boolDefaultTrue ?? this.boolDefaultTrue,
       boolDefaultFalse: boolDefaultFalse ?? this.boolDefaultFalse,
-      boolDefaultNullFalse: boolDefaultNullFalse is bool?
-          ? boolDefaultNullFalse
-          : this.boolDefaultNullFalse,
+      boolDefaultNullFalse:
+          boolDefaultNullFalse is bool?
+              ? boolDefaultNullFalse
+              : this.boolDefaultNullFalse,
     );
   }
 }

@@ -95,7 +95,7 @@ class DatabaseLogWriter extends LogWriter {
   int? _sessionLogId;
 
   DatabaseLogWriter({required Session logWriterSession})
-      : _logWriterSession = logWriterSession;
+    : _logWriterSession = logWriterSession;
 
   @override
   Future<void> logEntry(LogEntry entry) async {
@@ -144,9 +144,7 @@ class DatabaseLogWriter extends LogWriter {
     return id;
   }
 
-  Future<void> _databaseLogUpdate<T extends TableRow>(
-    T entry,
-  ) async {
+  Future<void> _databaseLogUpdate<T extends TableRow>(T entry) async {
     await _logWriterSession.db.updateRow<T>(entry);
   }
 
@@ -285,9 +283,7 @@ class TextStdOutLogWriter extends LogWriter {
       'LOG',
       context: entry.logLevel.name.toUpperCase(),
       id: _logId,
-      fields: {
-        'message': entry.message,
-      },
+      fields: {'message': entry.message},
       error: entry.error,
       stackTrace: entry.stackTrace,
       toStdErr: _isError(entry),
@@ -300,10 +296,7 @@ class TextStdOutLogWriter extends LogWriter {
       'STREAM MESSAGE',
       context: entry.endpoint,
       id: _logId,
-      fields: {
-        'id': entry.messageId,
-        'name': entry.messageName,
-      },
+      fields: {'id': entry.messageId, 'name': entry.messageName},
       error: entry.error,
       stackTrace: entry.stackTrace,
     );
@@ -336,9 +329,7 @@ class TextStdOutLogWriter extends LogWriter {
       context:
           '${entry.endpoint}${entry.method != null ? '.${entry.method}' : ''}',
       id: _logId,
-      fields: {
-        'user': entry.userId,
-      },
+      fields: {'user': entry.userId},
       error: entry.error,
       stackTrace: entry.stackTrace,
     );
@@ -467,9 +458,10 @@ class TextStdOutLogWriter extends LogWriter {
       type,
       context: context,
       id: id,
-      message: fields.isNotEmpty
-          ? fields.entries.map((e) => '${e.key}=${e.value}').join(', ')
-          : '',
+      message:
+          fields.isNotEmpty
+              ? fields.entries.map((e) => '${e.key}=${e.value}').join(', ')
+              : '',
       now: now,
       toStdErr: toStdErr,
     );
@@ -535,45 +527,39 @@ class MultipleLogWriter extends LogWriter {
   Future<int> closeLog(SessionLogEntry entry) async {
     int? databaseLogId;
 
-    var responses = await Future.wait(_logWriters.map((writer) async {
-      var logId = await writer.closeLog(entry);
+    var responses = await Future.wait(
+      _logWriters.map((writer) async {
+        var logId = await writer.closeLog(entry);
 
-      if (writer is DatabaseLogWriter) {
-        databaseLogId = logId;
-      }
+        if (writer is DatabaseLogWriter) {
+          databaseLogId = logId;
+        }
 
-      return logId;
-    }));
+        return logId;
+      }),
+    );
 
     return databaseLogId ?? responses.firstOrNull ?? 0;
   }
 
   @override
   Future<void> logEntry(LogEntry entry) async {
-    await Future.wait(
-      _logWriters.map((writer) => writer.logEntry(entry)),
-    );
+    await Future.wait(_logWriters.map((writer) => writer.logEntry(entry)));
   }
 
   @override
   Future<void> logMessage(MessageLogEntry entry) async {
-    await Future.wait(
-      _logWriters.map((writer) => writer.logMessage(entry)),
-    );
+    await Future.wait(_logWriters.map((writer) => writer.logMessage(entry)));
   }
 
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
-    await Future.wait(
-      _logWriters.map((writer) => writer.logQuery(entry)),
-    );
+    await Future.wait(_logWriters.map((writer) => writer.logQuery(entry)));
   }
 
   @override
   Future<void> openLog(SessionLogEntry entry) async {
-    await Future.wait(
-      _logWriters.map((writer) => writer.openLog(entry)),
-    );
+    await Future.wait(_logWriters.map((writer) => writer.openLog(entry)));
   }
 }
 

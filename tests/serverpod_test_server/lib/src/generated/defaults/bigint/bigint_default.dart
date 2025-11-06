@@ -18,10 +18,10 @@ abstract class BigIntDefault
     this.id,
     BigInt? bigintDefaultStr,
     BigInt? bigintDefaultStrNull,
-  })  : bigintDefaultStr =
-            bigintDefaultStr ?? BigInt.parse('-1234567890123456789099999999'),
-        bigintDefaultStrNull = bigintDefaultStrNull ??
-            BigInt.parse('1234567890123456789099999999');
+  }) : bigintDefaultStr =
+           bigintDefaultStr ?? BigInt.parse('-1234567890123456789099999999'),
+       bigintDefaultStrNull =
+           bigintDefaultStrNull ?? BigInt.parse('1234567890123456789099999999');
 
   factory BigIntDefault({
     int? id,
@@ -33,11 +33,14 @@ abstract class BigIntDefault
     return BigIntDefault(
       id: jsonSerialization['id'] as int?,
       bigintDefaultStr: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigintDefaultStr']),
-      bigintDefaultStrNull: jsonSerialization['bigintDefaultStrNull'] == null
-          ? null
-          : _i1.BigIntJsonExtension.fromJson(
-              jsonSerialization['bigintDefaultStrNull']),
+        jsonSerialization['bigintDefaultStr'],
+      ),
+      bigintDefaultStrNull:
+          jsonSerialization['bigintDefaultStrNull'] == null
+              ? null
+              : _i1.BigIntJsonExtension.fromJson(
+                jsonSerialization['bigintDefaultStrNull'],
+              ),
     );
   }
 
@@ -121,10 +124,10 @@ class _BigIntDefaultImpl extends BigIntDefault {
     BigInt? bigintDefaultStr,
     BigInt? bigintDefaultStrNull,
   }) : super._(
-          id: id,
-          bigintDefaultStr: bigintDefaultStr,
-          bigintDefaultStrNull: bigintDefaultStrNull,
-        );
+         id: id,
+         bigintDefaultStr: bigintDefaultStr,
+         bigintDefaultStrNull: bigintDefaultStrNull,
+       );
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
@@ -138,9 +141,10 @@ class _BigIntDefaultImpl extends BigIntDefault {
     return BigIntDefault(
       id: id is int? ? id : this.id,
       bigintDefaultStr: bigintDefaultStr ?? this.bigintDefaultStr,
-      bigintDefaultStrNull: bigintDefaultStrNull is BigInt?
-          ? bigintDefaultStrNull
-          : this.bigintDefaultStrNull,
+      bigintDefaultStrNull:
+          bigintDefaultStrNull is BigInt?
+              ? bigintDefaultStrNull
+              : this.bigintDefaultStrNull,
     );
   }
 }
@@ -149,21 +153,15 @@ class BigIntDefaultUpdateTable extends _i1.UpdateTable<BigIntDefaultTable> {
   BigIntDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<BigInt, BigInt> bigintDefaultStr(BigInt value) =>
-      _i1.ColumnValue(
-        table.bigintDefaultStr,
-        value,
-      );
+      _i1.ColumnValue(table.bigintDefaultStr, value);
 
   _i1.ColumnValue<BigInt, BigInt> bigintDefaultStrNull(BigInt? value) =>
-      _i1.ColumnValue(
-        table.bigintDefaultStrNull,
-        value,
-      );
+      _i1.ColumnValue(table.bigintDefaultStrNull, value);
 }
 
 class BigIntDefaultTable extends _i1.Table<int?> {
   BigIntDefaultTable({super.tableRelation})
-      : super(tableName: 'bigint_default') {
+    : super(tableName: 'bigint_default') {
     updateTable = BigIntDefaultUpdateTable(this);
     bigintDefaultStr = _i1.ColumnBigInt(
       'bigintDefaultStr',
@@ -184,11 +182,7 @@ class BigIntDefaultTable extends _i1.Table<int?> {
   late final _i1.ColumnBigInt bigintDefaultStrNull;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        bigintDefaultStr,
-        bigintDefaultStrNull,
-      ];
+  List<_i1.Column> get columns => [id, bigintDefaultStr, bigintDefaultStrNull];
 }
 
 class BigIntDefaultInclude extends _i1.IncludeObject {
@@ -309,10 +303,7 @@ class BigIntDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BigIntDefault>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<BigIntDefault>(id, transaction: transaction);
   }
 
   /// Inserts all [BigIntDefault]s in the list and returns the inserted rows.
@@ -326,10 +317,7 @@ class BigIntDefaultRepository {
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BigIntDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<BigIntDefault>(rows, transaction: transaction);
   }
 
   /// Inserts a single [BigIntDefault] and returns the inserted row.
@@ -340,10 +328,7 @@ class BigIntDefaultRepository {
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BigIntDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<BigIntDefault>(row, transaction: transaction);
   }
 
   /// Updates all [BigIntDefault]s in the list and returns the updated rows. If
@@ -428,10 +413,7 @@ class BigIntDefaultRepository {
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BigIntDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<BigIntDefault>(rows, transaction: transaction);
   }
 
   /// Deletes a single [BigIntDefault].
@@ -440,10 +422,7 @@ class BigIntDefaultRepository {
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BigIntDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<BigIntDefault>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

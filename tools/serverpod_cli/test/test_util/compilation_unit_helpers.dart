@@ -9,9 +9,9 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String name,
   }) {
-    var aliasDeclaration = unit.declarations
-        .whereType<TypeAlias>()
-        .where((declaration) => declaration.name.toString() == name);
+    var aliasDeclaration = unit.declarations.whereType<TypeAlias>().where(
+      (declaration) => declaration.name.toString() == name,
+    );
 
     return aliasDeclaration.isNotEmpty ? aliasDeclaration.first : null;
   }
@@ -28,9 +28,9 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String name,
   }) {
-    var declaration = unit.declarations
-        .whereType<ClassDeclaration>()
-        .where((declaration) => declaration.name.toString() == name);
+    var declaration = unit.declarations.whereType<ClassDeclaration>().where(
+      (declaration) => declaration.name.toString() == name,
+    );
 
     return declaration.isNotEmpty ? declaration.first : null;
   }
@@ -57,7 +57,8 @@ abstract class CompilationUnitHelpers {
         .whereType<TopLevelVariableDeclaration>()
         .where((declaration) => declaration._hasMatchingVariable(name))
         .where(
-            (declaration) => declaration._hasMatchingAnnotations(annotations));
+          (declaration) => declaration._hasMatchingAnnotations(annotations),
+        );
 
     return topLevelDeclarations.isNotEmpty ? topLevelDeclarations.first : null;
   }
@@ -87,19 +88,16 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    var directives = unit.directives
-        .whereType<ImportDirective>()
-        .where((directive) => directive.uri.stringValue == uri);
+    var directives = unit.directives.whereType<ImportDirective>().where(
+      (directive) => directive.uri.stringValue == uri,
+    );
 
     return directives.isNotEmpty ? directives.first : null;
   }
 
   /// Returns `true` if the [unit] contains an import directive with the given
   /// [uri].
-  static bool hasImportDirective(
-    CompilationUnit unit, {
-    required String uri,
-  }) {
+  static bool hasImportDirective(CompilationUnit unit, {required String uri}) {
     return tryFindImportDirective(unit, uri: uri) != null;
   }
 
@@ -109,19 +107,16 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    var directives = unit.directives
-        .whereType<ExportDirective>()
-        .where((directive) => directive.uri.stringValue == uri);
+    var directives = unit.directives.whereType<ExportDirective>().where(
+      (directive) => directive.uri.stringValue == uri,
+    );
 
     return directives.isNotEmpty ? directives.first : null;
   }
 
   /// Returns `true` if the [unit] contains an export directive with the given
   /// [uri].
-  static bool hasExportDirective(
-    CompilationUnit unit, {
-    required String uri,
-  }) {
+  static bool hasExportDirective(CompilationUnit unit, {required String uri}) {
     return tryFindExportDirective(unit, uri: uri) != null;
   }
 
@@ -154,10 +149,7 @@ abstract class CompilationUnitHelpers {
 
   /// Returns `true` if the [unit] contains a part directive with the given
   /// [uri].
-  static bool hasPartDirective(
-    CompilationUnit unit, {
-    required String uri,
-  }) {
+  static bool hasPartDirective(CompilationUnit unit, {required String uri}) {
     return tryFindPartDirective(unit, uri: uri) != null;
   }
 
@@ -178,10 +170,7 @@ abstract class CompilationUnitHelpers {
 
   /// Returns `true` if the [unit] contains a part of directive with the given
   /// [uri].
-  static bool hasPartOfDirective(
-    CompilationUnit unit, {
-    required String uri,
-  }) {
+  static bool hasPartOfDirective(CompilationUnit unit, {required String uri}) {
     return tryFindPartOfDirective(unit, uri: uri) != null;
   }
 
@@ -210,8 +199,9 @@ abstract class CompilationUnitHelpers {
       return false;
     }
 
-    var matchingImplementsClauses = implementsClause.interfaces
-        .where((type) => type.name.toString() == name);
+    var matchingImplementsClauses = implementsClause.interfaces.where(
+      (type) => type.name.toString() == name,
+    );
 
     return matchingImplementsClauses.isNotEmpty;
   }
@@ -279,8 +269,9 @@ abstract class CompilationUnitHelpers {
         .whereType<MethodDeclaration>()
         .where((member) => member.name.toString() == name)
         .where((member) => member._hasMatchingStatic(isStatic))
-        .where((member) =>
-            member._hasMatchingFunctionExpression(functionExpression));
+        .where(
+          (member) => member._hasMatchingFunctionExpression(functionExpression),
+        );
 
     return member.isNotEmpty ? member.first : null;
   }
@@ -312,8 +303,9 @@ abstract class CompilationUnitHelpers {
     MethodDeclaration methodDeclaration, {
     required String name,
   }) {
-    var annotations = methodDeclaration.metadata
-        .where((annotation) => annotation.name.name == name);
+    var annotations = methodDeclaration.metadata.where(
+      (annotation) => annotation.name.name == name,
+    );
 
     return annotations.isNotEmpty ? annotations.first : null;
   }
@@ -323,10 +315,7 @@ abstract class CompilationUnitHelpers {
     MethodDeclaration classDeclaration, {
     required String name,
   }) {
-    var maybeAnnotation = tryFindAnnotation(
-      classDeclaration,
-      name: name,
-    );
+    var maybeAnnotation = tryFindAnnotation(classDeclaration, name: name);
 
     return maybeAnnotation != null;
   }
@@ -355,8 +344,9 @@ abstract class CompilationUnitHelpers {
         .where((member) => member._hasMatchingStatic(isStatic))
         .where((member) => member._hasMatchingFinal(isFinal))
         .where((member) => member._hasMatchingLate(isLate))
-        .where((member) =>
-            member._hasMatchingInitializerMethod(initializerMethod));
+        .where(
+          (member) => member._hasMatchingInitializerMethod(initializerMethod),
+        );
 
     return member.isNotEmpty ? member.first : null;
   }
@@ -394,8 +384,9 @@ abstract class CompilationUnitHelpers {
 extension _TopLevelVariableDeclarationExtensions
     on TopLevelVariableDeclaration {
   bool _hasMatchingVariable(String name) {
-    return variables.variables
-        .any((variable) => variable.name.toString() == name);
+    return variables.variables.any(
+      (variable) => variable.name.toString() == name,
+    );
   }
 
   bool _hasMatchingAnnotations(List<String>? annotations) {
@@ -403,8 +394,9 @@ extension _TopLevelVariableDeclarationExtensions
       return true;
     }
 
-    var matchingAnnotations = metadata
-        .where((annotation) => annotations.contains(annotation.name.name));
+    var matchingAnnotations = metadata.where(
+      (annotation) => annotations.contains(annotation.name.name),
+    );
 
     return matchingAnnotations.length == annotations.length;
   }
@@ -417,8 +409,9 @@ extension _ConstructorDeclarationExtensions on ConstructorDeclaration {
     }
 
     var memberParameters = this.parameters.parameters;
-    var matchingParameters =
-        memberParameters.where((p) => parameters.contains(p.toString()));
+    var matchingParameters = memberParameters.where(
+      (p) => parameters.contains(p.toString()),
+    );
 
     return matchingParameters.length == parameters.length;
   }
@@ -428,13 +421,15 @@ extension _ConstructorDeclarationExtensions on ConstructorDeclaration {
       return true;
     }
 
-    var memberSuperArguments = initializers
-        .whereType<SuperConstructorInvocation>()
-        .map((e) => e.argumentList.arguments)
-        .first;
+    var memberSuperArguments =
+        initializers
+            .whereType<SuperConstructorInvocation>()
+            .map((e) => e.argumentList.arguments)
+            .first;
 
-    var matchingSuperArguments = memberSuperArguments
-        .where((e) => superArguments.contains(e.toString()));
+    var matchingSuperArguments = memberSuperArguments.where(
+      (e) => superArguments.contains(e.toString()),
+    );
 
     return matchingSuperArguments.length == superArguments.length;
   }
@@ -505,7 +500,9 @@ extension _FieldDeclarationExtensions on FieldDeclaration {
     return fields.variables
         .map((variable) => variable.initializer)
         .whereType<MethodInvocation>()
-        .any((initializer) =>
-            initializer.methodName.toString() == initializerMethod);
+        .any(
+          (initializer) =>
+              initializer.methodName.toString() == initializerMethod,
+        );
   }
 }

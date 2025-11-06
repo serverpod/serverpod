@@ -21,10 +21,13 @@ abstract class SimpleDataMap implements _i1.SerializableModel {
 
   factory SimpleDataMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataMap(
-        data: (jsonSerialization['data'] as Map).map((k, v) => MapEntry(
-              k as String,
-              _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-            )));
+      data: (jsonSerialization['data'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
+        ),
+      ),
+    );
   }
 
   Map<String, _i2.SimpleData> data;
@@ -46,7 +49,7 @@ abstract class SimpleDataMap implements _i1.SerializableModel {
 
 class _SimpleDataMapImpl extends SimpleDataMap {
   _SimpleDataMapImpl({required Map<String, _i2.SimpleData> data})
-      : super._(data: data);
+    : super._(data: data);
 
   /// Returns a shallow copy of this [SimpleDataMap]
   /// with some or all fields replaced by the given arguments.
@@ -54,14 +57,9 @@ class _SimpleDataMapImpl extends SimpleDataMap {
   @override
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data}) {
     return SimpleDataMap(
-        data: data ??
-            this.data.map((
-                  key0,
-                  value0,
-                ) =>
-                    MapEntry(
-                      key0,
-                      value0.copyWith(),
-                    )));
+      data:
+          data ??
+          this.data.map((key0, value0) => MapEntry(key0, value0.copyWith())),
+    );
   }
 }

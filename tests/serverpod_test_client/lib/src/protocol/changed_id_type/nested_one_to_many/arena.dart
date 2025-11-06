@@ -14,11 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 
 abstract class ArenaUuid implements _i1.SerializableModel {
-  ArenaUuid._({
-    _i1.UuidValue? id,
-    required this.name,
-    this.team,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  ArenaUuid._({_i1.UuidValue? id, required this.name, this.team})
+    : id = id ?? _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
@@ -30,10 +27,12 @@ abstract class ArenaUuid implements _i1.SerializableModel {
     return ArenaUuid(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.TeamInt.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -47,11 +46,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ArenaUuid copyWith({
-    _i1.UuidValue? id,
-    String? name,
-    _i2.TeamInt? team,
-  });
+  ArenaUuid copyWith({_i1.UuidValue? id, String? name, _i2.TeamInt? team});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -70,15 +65,8 @@ abstract class ArenaUuid implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ArenaUuidImpl extends ArenaUuid {
-  _ArenaUuidImpl({
-    _i1.UuidValue? id,
-    required String name,
-    _i2.TeamInt? team,
-  }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+  _ArenaUuidImpl({_i1.UuidValue? id, required String name, _i2.TeamInt? team})
+    : super._(id: id, name: name, team: team);
 
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.

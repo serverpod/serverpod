@@ -7,20 +7,20 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default UUID fields,', () {
-    tearDownAll(() async => UuidDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => UuidDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "uuidDefaultAndDefaultPersist" field value should match the defaultModel value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${UuidDefaultMix.t.tableName}" ("uuidDefaultAndDefaultModel", "uuidDefaultAndDefaultPersist", "uuidDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await UuidDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.uuidDefaultAndDefaultModel,
@@ -32,12 +32,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "uuidDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${UuidDefaultMix.t.tableName}" ("uuidDefaultAndDefaultModel", "uuidDefaultAndDefaultPersist", "uuidDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await UuidDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.uuidDefaultAndDefaultPersist,
@@ -49,12 +47,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "uuidDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${UuidDefaultMix.t.tableName}" ("uuidDefaultAndDefaultModel", "uuidDefaultAndDefaultPersist", "uuidDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await UuidDefaultMix.db.findFirstRow(session);
         expect(
           databaseObject?.uuidDefaultModelAndDefaultPersist,
@@ -67,17 +63,12 @@ void main() async {
       'when creating a record in the database with specific values, then the "uuidDefaultAndDefaultModel" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
-        var specificObject = UuidDefaultMix(
-          uuidDefaultAndDefaultModel: uuid,
-        );
+        var specificObject = UuidDefaultMix(uuidDefaultAndDefaultModel: uuid);
         var specificDatabaseObject = await UuidDefaultMix.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultAndDefaultModel,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultAndDefaultModel, uuid);
       },
     );
 
@@ -85,17 +76,12 @@ void main() async {
       'when creating a record in the database with specific values, then the "uuidDefaultAndDefaultPersist" field value should match the provided value',
       () async {
         var uuid = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
-        var specificObject = UuidDefaultMix(
-          uuidDefaultAndDefaultPersist: uuid,
-        );
+        var specificObject = UuidDefaultMix(uuidDefaultAndDefaultPersist: uuid);
         var specificDatabaseObject = await UuidDefaultMix.db.insertRow(
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultAndDefaultPersist,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultAndDefaultPersist, uuid);
       },
     );
 
@@ -110,10 +96,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.uuidDefaultModelAndDefaultPersist,
-          uuid,
-        );
+        expect(specificDatabaseObject.uuidDefaultModelAndDefaultPersist, uuid);
       },
     );
   });

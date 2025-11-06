@@ -48,10 +48,14 @@ abstract class IndexDefinition
     return IndexDefinition(
       indexName: jsonSerialization['indexName'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      elements: (jsonSerialization['elements'] as List)
-          .map((e) =>
-              _i2.IndexElementDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      elements:
+          (jsonSerialization['elements'] as List)
+              .map(
+                (e) => _i2.IndexElementDefinition.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
+              .toList(),
       type: jsonSerialization['type'] as String,
       isUnique: jsonSerialization['isUnique'] as bool,
       isPrimary: jsonSerialization['isPrimary'] as bool,
@@ -60,16 +64,17 @@ abstract class IndexDefinition
           jsonSerialization['vectorDistanceFunction'] == null
               ? null
               : _i3.VectorDistanceFunction.fromJson(
-                  (jsonSerialization['vectorDistanceFunction'] as String)),
-      vectorColumnType: jsonSerialization['vectorColumnType'] == null
-          ? null
-          : _i4.ColumnType.fromJson(
-              (jsonSerialization['vectorColumnType'] as int)),
-      parameters:
-          (jsonSerialization['parameters'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                v as String,
-              )),
+                (jsonSerialization['vectorDistanceFunction'] as String),
+              ),
+      vectorColumnType:
+          jsonSerialization['vectorColumnType'] == null
+              ? null
+              : _i4.ColumnType.fromJson(
+                (jsonSerialization['vectorColumnType'] as int),
+              ),
+      parameters: (jsonSerialization['parameters'] as Map?)?.map(
+        (k, v) => MapEntry(k as String, v as String),
+      ),
     );
   }
 
@@ -176,17 +181,17 @@ class _IndexDefinitionImpl extends IndexDefinition {
     _i4.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) : super._(
-          indexName: indexName,
-          tableSpace: tableSpace,
-          elements: elements,
-          type: type,
-          isUnique: isUnique,
-          isPrimary: isPrimary,
-          predicate: predicate,
-          vectorDistanceFunction: vectorDistanceFunction,
-          vectorColumnType: vectorColumnType,
-          parameters: parameters,
-        );
+         indexName: indexName,
+         tableSpace: tableSpace,
+         elements: elements,
+         type: type,
+         isUnique: isUnique,
+         isPrimary: isPrimary,
+         predicate: predicate,
+         vectorDistanceFunction: vectorDistanceFunction,
+         vectorColumnType: vectorColumnType,
+         parameters: parameters,
+       );
 
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
@@ -216,19 +221,14 @@ class _IndexDefinitionImpl extends IndexDefinition {
           vectorDistanceFunction is _i3.VectorDistanceFunction?
               ? vectorDistanceFunction
               : this.vectorDistanceFunction,
-      vectorColumnType: vectorColumnType is _i4.ColumnType?
-          ? vectorColumnType
-          : this.vectorColumnType,
-      parameters: parameters is Map<String, String>?
-          ? parameters
-          : this.parameters?.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+      vectorColumnType:
+          vectorColumnType is _i4.ColumnType?
+              ? vectorColumnType
+              : this.vectorColumnType,
+      parameters:
+          parameters is Map<String, String>?
+              ? parameters
+              : this.parameters?.map((key0, value0) => MapEntry(key0, value0)),
     );
   }
 }

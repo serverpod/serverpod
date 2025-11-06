@@ -26,19 +26,22 @@ abstract class DateTimeDefaultPersist implements _i1.SerializableModel {
   }) = _DateTimeDefaultPersistImpl;
 
   factory DateTimeDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DateTimeDefaultPersist(
       id: jsonSerialization['id'] as int?,
       dateTimeDefaultPersistNow:
           jsonSerialization['dateTimeDefaultPersistNow'] == null
               ? null
               : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultPersistNow']),
+                jsonSerialization['dateTimeDefaultPersistNow'],
+              ),
       dateTimeDefaultPersistStr:
           jsonSerialization['dateTimeDefaultPersistStr'] == null
               ? null
               : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultPersistStr']),
+                jsonSerialization['dateTimeDefaultPersistStr'],
+              ),
     );
   }
 
@@ -84,10 +87,10 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
     DateTime? dateTimeDefaultPersistNow,
     DateTime? dateTimeDefaultPersistStr,
   }) : super._(
-          id: id,
-          dateTimeDefaultPersistNow: dateTimeDefaultPersistNow,
-          dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
-        );
+         id: id,
+         dateTimeDefaultPersistNow: dateTimeDefaultPersistNow,
+         dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [DateTimeDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -100,12 +103,14 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
   }) {
     return DateTimeDefaultPersist(
       id: id is int? ? id : this.id,
-      dateTimeDefaultPersistNow: dateTimeDefaultPersistNow is DateTime?
-          ? dateTimeDefaultPersistNow
-          : this.dateTimeDefaultPersistNow,
-      dateTimeDefaultPersistStr: dateTimeDefaultPersistStr is DateTime?
-          ? dateTimeDefaultPersistStr
-          : this.dateTimeDefaultPersistStr,
+      dateTimeDefaultPersistNow:
+          dateTimeDefaultPersistNow is DateTime?
+              ? dateTimeDefaultPersistNow
+              : this.dateTimeDefaultPersistNow,
+      dateTimeDefaultPersistStr:
+          dateTimeDefaultPersistStr is DateTime?
+              ? dateTimeDefaultPersistStr
+              : this.dateTimeDefaultPersistStr,
     );
   }
 }

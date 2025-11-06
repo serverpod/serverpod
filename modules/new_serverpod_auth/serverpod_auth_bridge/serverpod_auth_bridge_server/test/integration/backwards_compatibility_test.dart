@@ -8,9 +8,7 @@ import './test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
-      sessionKeyHashPepper: 'test-pepper',
-    ),
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   const newEmailIDPConfig = EmailIDPConfig(secretHashPepper: 'test');
@@ -24,9 +22,7 @@ void main() {
     setUp(() {
       session = sessionBuilder.build();
       AuthServices.set(
-        identityProviders: [
-          EmailIdentityProviderFactory(newEmailIDPConfig),
-        ],
+        identityProviders: [EmailIdentityProviderFactory(newEmailIDPConfig)],
         primaryTokenManager: tokenManager,
       );
     });

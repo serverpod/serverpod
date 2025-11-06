@@ -12,11 +12,11 @@ const int _defaultMaxRequestSize = 524288;
 const String _developmentRunMode = 'development';
 
 ServerConfig _createDefaultApiServer() => ServerConfig(
-      port: 8080,
-      publicHost: 'localhost',
-      publicPort: 8080,
-      publicScheme: 'http',
-    );
+  port: 8080,
+  publicHost: 'localhost',
+  publicPort: 8080,
+  publicScheme: 'http',
+);
 
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
@@ -91,24 +91,21 @@ class ServerpodConfig {
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
-  }) : sessionLogs = sessionLogs ??
-            SessionLogConfig.buildDefault(
-              databaseEnabled: database != null,
-              runMode: runMode,
-            ) {
+  }) : sessionLogs =
+           sessionLogs ??
+           SessionLogConfig.buildDefault(
+             databaseEnabled: database != null,
+             runMode: runMode,
+           ) {
     apiServer._name = 'api';
     insightsServer?._name = 'insights';
     webServer?._name = 'web';
-    sessionLogs?._validate(
-      databaseEnabled: database != null,
-    );
+    sessionLogs?._validate(databaseEnabled: database != null);
   }
 
   /// Creates a default bare bone configuration.
   factory ServerpodConfig.defaultConfig() {
-    return ServerpodConfig(
-      apiServer: _createDefaultApiServer(),
-    );
+    return ServerpodConfig(apiServer: _createDefaultApiServer());
   }
 
   /// Creates a new [ServerpodConfig] from a configuration Map.
@@ -125,8 +122,11 @@ class ServerpodConfig {
   }) {
     serverId = _readServerId(configMap, environment, serverId);
     final role = _readRole(configMap, environment, commandLineArgs);
-    final loggingMode =
-        _readLoggingMode(configMap, environment, commandLineArgs);
+    final loggingMode = _readLoggingMode(
+      configMap,
+      environment,
+      commandLineArgs,
+    );
     final applyMigrations = _readApplyMigrations(
       configMap,
       environment,
@@ -140,74 +140,82 @@ class ServerpodConfig {
 
     var apiConfig = _apiConfigMap(configMap, environment);
 
-    var apiServer = apiConfig != null
-        ? ServerConfig._fromJson(
-            apiConfig,
-            ServerpodConfigMap.apiServer,
-          )
-        : _createDefaultApiServer();
+    var apiServer =
+        apiConfig != null
+            ? ServerConfig._fromJson(apiConfig, ServerpodConfigMap.apiServer)
+            : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
-    var insightsServer = insightsConfig != null
-        ? ServerConfig._fromJson(
-            insightsConfig,
-            ServerpodConfigMap.insightsServer,
-          )
-        : null;
+    var insightsServer =
+        insightsConfig != null
+            ? ServerConfig._fromJson(
+              insightsConfig,
+              ServerpodConfigMap.insightsServer,
+            )
+            : null;
 
     var webConfig = _webConfigMap(configMap, environment);
-    var webServer = webConfig != null
-        ? ServerConfig._fromJson(
-            webConfig,
-            ServerpodConfigMap.webServer,
-          )
-        : null;
+    var webServer =
+        webConfig != null
+            ? ServerConfig._fromJson(webConfig, ServerpodConfigMap.webServer)
+            : null;
 
     var maxRequestSize = _readMaxRequestSize(configMap, environment);
 
     var serviceSecret = passwords[ServerpodPassword.serviceSecret.configKey];
 
     var databaseConfig = _databaseConfigMap(configMap, environment);
-    var database = databaseConfig != null
-        ? DatabaseConfig._fromJson(
-            databaseConfig,
-            passwords,
-            ServerpodConfigMap.database,
-          )
-        : null;
+    var database =
+        databaseConfig != null
+            ? DatabaseConfig._fromJson(
+              databaseConfig,
+              passwords,
+              ServerpodConfigMap.database,
+            )
+            : null;
 
     var redisConfig = _redisConfigMap(configMap, environment);
-    var redisEnabled = redisConfig != null &&
+    var redisEnabled =
+        redisConfig != null &&
         (redisConfig[ServerpodEnv.redisEnabled.configKey] ?? true);
-    var redis = redisEnabled
-        ? RedisConfig._fromJson(
-            redisConfig,
-            passwords,
-            ServerpodConfigMap.redis,
-          )
-        : null;
+    var redis =
+        redisEnabled
+            ? RedisConfig._fromJson(
+              redisConfig,
+              passwords,
+              ServerpodConfigMap.redis,
+            )
+            : null;
 
-    var sessionLogsConfigJson =
-        _buildSessionLogsConfigMap(configMap, environment);
-    var sessionLogsConfig = sessionLogsConfigJson != null
-        ? SessionLogConfig._fromJson(
-            sessionLogsConfigJson,
-            ServerpodConfigMap.sessionLogs,
-            databaseEnabled: database != null,
-          )
-        : null;
+    var sessionLogsConfigJson = _buildSessionLogsConfigMap(
+      configMap,
+      environment,
+    );
+    var sessionLogsConfig =
+        sessionLogsConfigJson != null
+            ? SessionLogConfig._fromJson(
+              sessionLogsConfigJson,
+              ServerpodConfigMap.sessionLogs,
+              databaseEnabled: database != null,
+            )
+            : null;
 
-    var futureCallConfigJson =
-        _buildFutureCallConfigMap(configMap, environment);
-    var futureCallConfig = futureCallConfigJson != null
-        ? FutureCallConfig._fromJson(
-            futureCallConfigJson,
-            ServerpodConfigMap.futureCall,
-          )
-        : const FutureCallConfig();
+    var futureCallConfigJson = _buildFutureCallConfigMap(
+      configMap,
+      environment,
+    );
+    var futureCallConfig =
+        futureCallConfigJson != null
+            ? FutureCallConfig._fromJson(
+              futureCallConfigJson,
+              ServerpodConfigMap.futureCall,
+            )
+            : const FutureCallConfig();
 
-    var futureCallExecutionEnabled =
-        _readIsFutureCallExecutionEnabled(configMap, environment);
+    var futureCallExecutionEnabled = _readIsFutureCallExecutionEnabled(
+      configMap,
+      environment,
+    );
 
     return ServerpodConfig(
       runMode: runMode,
@@ -296,7 +304,7 @@ class ServerpodConfig {
       sessionLogs: sessionLogs ?? this.sessionLogs,
       experimentalDiagnosticHandlerTimeout:
           experimentalDiagnosticHandlerTimeout ??
-              this.experimentalDiagnosticHandlerTimeout,
+          this.experimentalDiagnosticHandlerTimeout,
       futureCall: futureCall ?? this.futureCall,
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
@@ -452,8 +460,9 @@ class DatabaseConfig {
       isUnixSocket:
           dbSetup[ServerpodEnv.databaseIsUnixSocket.configKey] ?? false,
       password: password,
-      searchPaths:
-          _parseList(dbSetup[ServerpodEnv.databaseSearchPaths.configKey]),
+      searchPaths: _parseList(
+        dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
+      ),
     );
   }
 
@@ -516,9 +525,7 @@ class RedisConfig {
 
     var password = passwords[ServerpodPassword.redisPassword.configKey];
     if (password == null) {
-      throw PasswordMissingException(
-        ServerpodPassword.redisPassword.configKey,
-      );
+      throw PasswordMissingException(ServerpodPassword.redisPassword.configKey);
     }
 
     return RedisConfig(
@@ -562,8 +569,9 @@ class FutureCallConfig {
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
-    this.scanInterval =
-        const Duration(milliseconds: defaultFutureCallScanIntervalMs),
+    this.scanInterval = const Duration(
+      milliseconds: defaultFutureCallScanIntervalMs,
+    ),
   });
 
   /// The default concurrency limit for future calls.
@@ -580,10 +588,12 @@ class FutureCallConfig {
       ServerpodEnv.futureCallConcurrencyLimit.configKey,
     );
 
-    int? concurrencyLimit = hasConcurrencyLimitKey
-        ? futureCallConfigJson[
-            ServerpodEnv.futureCallConcurrencyLimit.configKey]
-        : null;
+    int? concurrencyLimit =
+        hasConcurrencyLimitKey
+            ? futureCallConfigJson[ServerpodEnv
+                .futureCallConcurrencyLimit
+                .configKey]
+            : null;
 
     // If the user sets the concurrency limit to 0 or a negative number, this
     // means to want to enable unlimited concurrency
@@ -593,9 +603,10 @@ class FutureCallConfig {
 
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
-      concurrencyLimit: hasConcurrencyLimitKey
-          ? concurrencyLimit
-          : defaultFutureCallConcurrencyLimit,
+      concurrencyLimit:
+          hasConcurrencyLimitKey
+              ? concurrencyLimit
+              : defaultFutureCallConcurrencyLimit,
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
@@ -606,8 +617,9 @@ class FutureCallConfig {
   String toString() {
     var output = StringBuffer();
     output.writeln('future call concurrency limit: $concurrencyLimit');
-    output
-        .writeln('future call scan interval: ${scanInterval.inMilliseconds}ms');
+    output.writeln(
+      'future call scan interval: ${scanInterval.inMilliseconds}ms',
+    );
     return output.toString();
   }
 }
@@ -631,9 +643,11 @@ enum ConsoleLogFormat {
   static ConsoleLogFormat parse(String value) {
     return ConsoleLogFormat.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => throw ArgumentError(
-        'Invalid console log format: "$value". Valid values are: ${allEnumNames.join(', ')}',
-      ),
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Invalid console log format: "$value". Valid values are: ${allEnumNames.join(', ')}',
+              ),
     );
   }
 }
@@ -665,9 +679,10 @@ class SessionLogConfig {
     return SessionLogConfig(
       persistentEnabled: databaseEnabled,
       consoleEnabled: !databaseEnabled || runMode == _developmentRunMode,
-      consoleLogFormat: runMode == _developmentRunMode
-          ? ConsoleLogFormat.text
-          : ConsoleLogFormat.defaultFormat,
+      consoleLogFormat:
+          runMode == _developmentRunMode
+              ? ConsoleLogFormat.text
+              : ConsoleLogFormat.defaultFormat,
     );
   }
 
@@ -685,19 +700,21 @@ class SessionLogConfig {
     }
 
     return SessionLogConfig(
-      persistentEnabled: sessionLogConfigJson[
-              ServerpodEnv.sessionPersistentLogEnabled.configKey] ??
+      persistentEnabled:
+          sessionLogConfigJson[ServerpodEnv
+              .sessionPersistentLogEnabled
+              .configKey] ??
           false,
-      consoleEnabled: sessionLogConfigJson[
-              ServerpodEnv.sessionConsoleLogEnabled.configKey] ??
+      consoleEnabled:
+          sessionLogConfigJson[ServerpodEnv
+              .sessionConsoleLogEnabled
+              .configKey] ??
           false,
       consoleLogFormat: logFormat,
     );
   }
 
-  void _validate({
-    required bool databaseEnabled,
-  }) {
+  void _validate({required bool databaseEnabled}) {
     if (persistentEnabled && !databaseEnabled) {
       throw StateError(
         'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support. '
@@ -779,7 +796,9 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
 }
 
 Map? _buildSessionLogsConfigMap(
-    Map configMap, Map<String, String> environment) {
+  Map configMap,
+  Map<String, String> environment,
+) {
   var logsConfig = configMap[ServerpodConfigMap.sessionLogs] ?? {};
 
   return _buildConfigMap(logsConfig, environment, [
@@ -858,7 +877,8 @@ String _readServerId(
     return serverIdFromCommandLineArg;
   }
 
-  final serverId = environment[ServerpodEnv.serverId.envVariable] ??
+  final serverId =
+      environment[ServerpodEnv.serverId.envVariable] ??
       configMap[ServerpodEnv.serverId.configKey] ??
       'default';
   return serverId;
@@ -885,10 +905,12 @@ ServerpodRole _readRole(
   if (roleFromEnv != null) {
     return ServerpodRole.values.firstWhere(
       (e) => e.name == roleFromEnv,
-      orElse: () => throw ArgumentError(
-        'Invalid $envVariable from environment variable: $roleFromEnv. '
-        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
-      ),
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Invalid $envVariable from environment variable: $roleFromEnv. '
+                'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+              ),
     );
   }
 
@@ -897,10 +919,12 @@ ServerpodRole _readRole(
   if (roleFromConfig != null) {
     return ServerpodRole.values.firstWhere(
       (e) => e.name == roleFromConfig,
-      orElse: () => throw ArgumentError(
-        'Invalid $configKey from configuration: $roleFromConfig. '
-        'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
-      ),
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Invalid $configKey from configuration: $roleFromConfig. '
+                'Valid values are: ${ServerpodRole.values.map((e) => e.name).join(', ')}',
+              ),
     );
   }
 
@@ -929,10 +953,12 @@ ServerpodLoggingMode _readLoggingMode(
   if (loggingModeFromEnv != null) {
     return ServerpodLoggingMode.values.firstWhere(
       (e) => e.name == loggingModeFromEnv,
-      orElse: () => throw ArgumentError(
-        'Invalid $envVariable from environment variable: $loggingModeFromEnv. '
-        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
-      ),
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Invalid $envVariable from environment variable: $loggingModeFromEnv. '
+                'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+              ),
     );
   }
 
@@ -941,10 +967,12 @@ ServerpodLoggingMode _readLoggingMode(
   if (loggingModeFromConfig != null) {
     return ServerpodLoggingMode.values.firstWhere(
       (e) => e.name == loggingModeFromConfig,
-      orElse: () => throw ArgumentError(
-        'Invalid $configKey from configuration: $loggingModeFromConfig. '
-        'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
-      ),
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Invalid $configKey from configuration: $loggingModeFromConfig. '
+                'Valid values are: ${ServerpodLoggingMode.values.map((e) => e.name).join(', ')}',
+              ),
     );
   }
 
@@ -973,7 +1001,8 @@ bool _readApplyMigrations(
   if (applyMigrationsFromEnv != null) {
     return switch (applyMigrationsFromEnv) {
       'true' || 'false' => bool.parse(applyMigrationsFromEnv),
-      _ => throw ArgumentError(
+      _ =>
+        throw ArgumentError(
           'Invalid $envVariable from environment variable: $applyMigrationsFromEnv. '
           'Valid values are: true, false',
         ),
@@ -988,7 +1017,8 @@ bool _readApplyMigrations(
     }
     return switch (applyMigrationsFromConfig.toString()) {
       'true' || 'false' => bool.parse(applyMigrationsFromConfig.toString()),
-      _ => throw ArgumentError(
+      _ =>
+        throw ArgumentError(
           'Invalid $configKey from configuration: $applyMigrationsFromConfig. '
           'Valid values are: true, false',
         ),
@@ -1021,7 +1051,8 @@ bool _readApplyRepairMigration(
   if (applyRepairMigrationFromEnv != null) {
     return switch (applyRepairMigrationFromEnv) {
       'true' || 'false' => bool.parse(applyRepairMigrationFromEnv),
-      _ => throw ArgumentError(
+      _ =>
+        throw ArgumentError(
           'Invalid $envVariable from environment variable: $applyRepairMigrationFromEnv. '
           'Valid values are: true, false',
         ),
@@ -1036,9 +1067,9 @@ bool _readApplyRepairMigration(
     }
     return switch (applyRepairMigrationFromConfig.toString()) {
       'true' ||
-      'false' =>
-        bool.parse(applyRepairMigrationFromConfig.toString()),
-      _ => throw ArgumentError(
+      'false' => bool.parse(applyRepairMigrationFromConfig.toString()),
+      _ =>
+        throw ArgumentError(
           'Invalid $configKey from configuration: $applyRepairMigrationFromConfig. '
           'Valid values are: true, false',
         ),
@@ -1056,7 +1087,7 @@ bool _readIsFutureCallExecutionEnabled(
       configMap[ServerpodEnv.futureCallExecutionEnabled.configKey];
   futureCallsExecutionEnabled =
       environment[ServerpodEnv.futureCallExecutionEnabled.envVariable] ??
-          futureCallsExecutionEnabled;
+      futureCallsExecutionEnabled;
 
   if (futureCallsExecutionEnabled is String) {
     futureCallsExecutionEnabled = bool.tryParse(futureCallsExecutionEnabled);

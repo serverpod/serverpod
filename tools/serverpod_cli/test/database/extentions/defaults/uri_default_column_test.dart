@@ -13,13 +13,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNoDefault" text NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNoDefault" text NOT NULL',
+          );
+        },
+      );
     });
 
     group('with "This is a default value" as default value', () {
@@ -32,13 +33,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriDefault" text NOT NULL DEFAULT \'https://serverpod.dev\'',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -50,13 +52,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNullableNoDefault" text',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNullableNoDefault" text',
+          );
+        },
+      );
     });
 
     group('with nullable column and a default value', () {
@@ -69,13 +72,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uriNullableDefault" text DEFAULT \'https://serverpod.dev\'',
+          );
+        },
+      );
     });
   });
 }

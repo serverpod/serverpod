@@ -15,16 +15,13 @@ class FieldDefinitionBuilder {
   bool _isRequired;
 
   FieldDefinitionBuilder()
-      : _name = 'name',
-        _type = TypeDefinition(
-          className: 'String',
-          nullable: true,
-        ),
-        _scope = ModelFieldScopeDefinition.all,
-        _shouldPersist = true,
-        _defaultModelValue = null,
-        _defaultPersistValue = null,
-        _isRequired = false;
+    : _name = 'name',
+      _type = TypeDefinition(className: 'String', nullable: true),
+      _scope = ModelFieldScopeDefinition.all,
+      _shouldPersist = true,
+      _defaultModelValue = null,
+      _defaultPersistValue = null,
+      _isRequired = false;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -38,9 +35,7 @@ class FieldDefinitionBuilder {
     type ??= SupportedIdType.int;
     return withName('id')
       ..withIdType(type: type.type, isNullable: isNullable)
-      ..withDefaults(
-        defaultPersistValue: type.defaultValue,
-      );
+      ..withDefaults(defaultPersistValue: type.defaultValue);
   }
 
   FieldDefinitionBuilder withEnumDefinition(
@@ -85,23 +80,17 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withScope(
-    ModelFieldScopeDefinition scope,
-  ) {
+  FieldDefinitionBuilder withScope(ModelFieldScopeDefinition scope) {
     _scope = scope;
     return this;
   }
 
-  FieldDefinitionBuilder withShouldPersist(
-    bool shouldPersist,
-  ) {
+  FieldDefinitionBuilder withShouldPersist(bool shouldPersist) {
     _shouldPersist = shouldPersist;
     return this;
   }
 
-  FieldDefinitionBuilder withRelation(
-    RelationDefinition relation,
-  ) {
+  FieldDefinitionBuilder withRelation(RelationDefinition relation) {
     _relation = relation;
     return this;
   }
@@ -110,16 +99,15 @@ class FieldDefinitionBuilder {
     String parentTable,
     String referenceFieldName,
   ) {
-    _relation = ForeignRelationDefinitionBuilder()
-        .withParentTable(parentTable)
-        .withReferenceFieldName(referenceFieldName)
-        .build();
+    _relation =
+        ForeignRelationDefinitionBuilder()
+            .withParentTable(parentTable)
+            .withReferenceFieldName(referenceFieldName)
+            .build();
     return this;
   }
 
-  FieldDefinitionBuilder withDocumentation(
-    List<String>? documentation,
-  ) {
+  FieldDefinitionBuilder withDocumentation(List<String>? documentation) {
     _documentation = documentation;
     return this;
   }

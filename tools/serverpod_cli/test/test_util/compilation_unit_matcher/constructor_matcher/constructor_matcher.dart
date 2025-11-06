@@ -8,8 +8,8 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     this.parent, {
     required String name,
     required bool? isFactory,
-  })  : _name = name,
-        _isFactory = isFactory;
+  }) : _name = name,
+       _isFactory = isFactory;
 
   @override
   Description describe(Description description) {
@@ -54,7 +54,8 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     if (constructorDecl is! ConstructorDeclaration) {
       var output = StringBuffer();
       output.write(
-          'does not contain "$_name" named constructor. Found named constructors: [');
+        'does not contain "$_name" named constructor. Found named constructors: [',
+      );
       output.writeAll(
         match.value.where((e) => e.name != null).map((c) => c.name?.lexeme),
         ', ',
@@ -81,9 +82,10 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (constructorDeclaration) => constructorDeclaration
-            .initializers
-            .whereType<ConstructorFieldInitializer>(),
+        extractValue:
+            (constructorDeclaration) =>
+                constructorDeclaration.initializers
+                    .whereType<ConstructorFieldInitializer>(),
       ),
       fieldName,
     );
@@ -103,14 +105,8 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
   }
 
   @override
-  ParameterMatcher withParameter(
-    String parameterName, {
-    bool? isRequired,
-  }) {
-    return _withParameter(
-      parameterName,
-      isRequired: isRequired,
-    );
+  ParameterMatcher withParameter(String parameterName, {bool? isRequired}) {
+    return _withParameter(parameterName, isRequired: isRequired);
   }
 
   @override
@@ -119,10 +115,11 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (constructorDeclaration) => constructorDeclaration
-            .initializers
-            .whereType<SuperConstructorInvocation>()
-            .firstOrNull,
+        extractValue:
+            (constructorDeclaration) =>
+                constructorDeclaration.initializers
+                    .whereType<SuperConstructorInvocation>()
+                    .firstOrNull,
       ),
     );
   }
@@ -133,11 +130,7 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
     String type, {
     bool? isRequired,
   }) {
-    return _withParameter(
-      parameterName,
-      type: type,
-      isRequired: isRequired,
-    );
+    return _withParameter(parameterName, type: type, isRequired: isRequired);
   }
 
   ConstructorDeclaration? _featureValueOf(dynamic actual) {
@@ -174,8 +167,9 @@ class _ConstructorMatcherImpl implements Matcher, ConstructorMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (constructorDeclaration) =>
-            constructorDeclaration.parameters.parameters,
+        extractValue:
+            (constructorDeclaration) =>
+                constructorDeclaration.parameters.parameters,
       ),
       parameterName,
       type: type,

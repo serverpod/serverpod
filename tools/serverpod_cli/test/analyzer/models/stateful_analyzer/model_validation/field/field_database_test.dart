@@ -12,18 +12,19 @@ void main() {
     'Given a class with a field with a database keyword, then a error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             parentId: int, database
-          ''',
-        ).build()
+          ''').build(),
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 

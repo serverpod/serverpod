@@ -34,16 +34,20 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
           jsonSerialization['uuidDefaultPersistRandom'] == null
               ? null
               : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandom']),
+                jsonSerialization['uuidDefaultPersistRandom'],
+              ),
       uuidDefaultPersistRandomV7:
           jsonSerialization['uuidDefaultPersistRandomV7'] == null
               ? null
               : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandomV7']),
-      uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidDefaultPersistStr']),
+                jsonSerialization['uuidDefaultPersistRandomV7'],
+              ),
+      uuidDefaultPersistStr:
+          jsonSerialization['uuidDefaultPersistStr'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['uuidDefaultPersistStr'],
+              ),
     );
   }
 
@@ -95,11 +99,11 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
     _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) : super._(
-          id: id,
-          uuidDefaultPersistRandom: uuidDefaultPersistRandom,
-          uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
-          uuidDefaultPersistStr: uuidDefaultPersistStr,
-        );
+         id: id,
+         uuidDefaultPersistRandom: uuidDefaultPersistRandom,
+         uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
+         uuidDefaultPersistStr: uuidDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -113,15 +117,18 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }) {
     return UuidDefaultPersist(
       id: id is int? ? id : this.id,
-      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _i1.UuidValue?
-          ? uuidDefaultPersistRandom
-          : this.uuidDefaultPersistRandom,
-      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _i1.UuidValue?
-          ? uuidDefaultPersistRandomV7
-          : this.uuidDefaultPersistRandomV7,
-      uuidDefaultPersistStr: uuidDefaultPersistStr is _i1.UuidValue?
-          ? uuidDefaultPersistStr
-          : this.uuidDefaultPersistStr,
+      uuidDefaultPersistRandom:
+          uuidDefaultPersistRandom is _i1.UuidValue?
+              ? uuidDefaultPersistRandom
+              : this.uuidDefaultPersistRandom,
+      uuidDefaultPersistRandomV7:
+          uuidDefaultPersistRandomV7 is _i1.UuidValue?
+              ? uuidDefaultPersistRandomV7
+              : this.uuidDefaultPersistRandomV7,
+      uuidDefaultPersistStr:
+          uuidDefaultPersistStr is _i1.UuidValue?
+              ? uuidDefaultPersistStr
+              : this.uuidDefaultPersistStr,
     );
   }
 }

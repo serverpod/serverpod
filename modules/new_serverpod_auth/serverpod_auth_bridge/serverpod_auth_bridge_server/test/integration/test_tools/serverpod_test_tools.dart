@@ -121,10 +121,7 @@ class _InternalTestEndpoints extends TestEndpoints
 }
 
 class _SessionMigrationEndpoint {
-  _SessionMigrationEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
+  _SessionMigrationEndpoint(this._endpointDispatch, this._serializationManager);
 
   final _i2.EndpointDispatch _endpointDispatch;
 
@@ -137,9 +134,9 @@ class _SessionMigrationEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'sessionMigration',
-        method: 'convertSession',
-      );
+            endpoint: 'sessionMigration',
+            method: 'convertSession',
+          );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
@@ -148,10 +145,12 @@ class _SessionMigrationEndpoint {
           parameters: _i1.testObjectToJson({'sessionKey': sessionKey}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<_i4.AuthSuccess?>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.AuthSuccess?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

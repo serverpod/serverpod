@@ -34,7 +34,8 @@ class HealthCheckManager {
 
     if (Platform.isWindows) {
       stderr.writeln(
-          'WARNING: CPU and memory usage metrics are not supported on Windows.');
+        'WARNING: CPU and memory usage metrics are not supported on Windows.',
+      );
       return;
     }
 
@@ -42,7 +43,8 @@ class HealthCheckManager {
       await SystemResources.init();
     } catch (e) {
       stderr.writeln(
-          'WARNING: CPU and memory usage metrics are not supported on this platform.');
+        'WARNING: CPU and memory usage metrics are not supported on this platform.',
+      );
     }
 
     _scheduleNextCheck();
@@ -64,11 +66,7 @@ class HealthCheckManager {
       completer.complete();
     } catch (e, stackTrace) {
       if (!(e is ExitException && e.exitCode == 0)) {
-        _reportException(
-          e,
-          stackTrace,
-          message: 'Error in health check',
-        );
+        _reportException(e, stackTrace, message: 'Error in health check');
       }
       completer.completeError(e, stackTrace);
     }
@@ -211,10 +209,11 @@ class HealthCheckManager {
     // Select entries from a past hour or day.
     var entries = await ServerHealthConnectionInfo.db.find(
       session,
-      where: (t) =>
-          (t.timestamp < startTime) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where:
+          (t) =>
+              (t.timestamp < startTime) &
+              t.granularity.equals(srcGranularity) &
+              t.serverId.equals(_pod.serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: srcGranularity == 1 ? 61 : 25,
@@ -224,9 +223,10 @@ class HealthCheckManager {
       // There is nothing here to optimize.
       return false;
     }
-    var firstEntryTime = srcGranularity == 1
-        ? entries.first.timestamp.asHour
-        : entries.first.timestamp.asDay;
+    var firstEntryTime =
+        srcGranularity == 1
+            ? entries.first.timestamp.asHour
+            : entries.first.timestamp.asDay;
 
     // There is stuff to optimize.
     int maxActive = 0;
@@ -260,16 +260,17 @@ class HealthCheckManager {
     // Remove old entries.
     await ServerHealthConnectionInfo.db.deleteWhere(
       session,
-      where: (t) =>
-          (t.timestamp >= firstEntryTime) &
-          (t.timestamp <
-              firstEntryTime.add(
-                srcGranularity == 1
-                    ? const Duration(hours: 1)
-                    : const Duration(days: 1),
-              )) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where:
+          (t) =>
+              (t.timestamp >= firstEntryTime) &
+              (t.timestamp <
+                  firstEntryTime.add(
+                    srcGranularity == 1
+                        ? const Duration(hours: 1)
+                        : const Duration(days: 1),
+                  )) &
+              t.granularity.equals(srcGranularity) &
+              t.serverId.equals(_pod.serverId),
     );
 
     // All done.
@@ -297,10 +298,11 @@ class HealthCheckManager {
     // Select entries from a past hour or day.
     var entries = await ServerHealthMetric.db.find(
       session,
-      where: (t) =>
-          (t.timestamp < startTime) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where:
+          (t) =>
+              (t.timestamp < startTime) &
+              t.granularity.equals(srcGranularity) &
+              t.serverId.equals(_pod.serverId),
       orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: (srcGranularity == 1 ? 61 : 25) * numHealthChecks,
@@ -312,9 +314,10 @@ class HealthCheckManager {
     }
 
     // There is stuff to optimize.
-    var firstEntryTime = srcGranularity == 1
-        ? entries.first.timestamp.asHour
-        : entries.first.timestamp.asDay;
+    var firstEntryTime =
+        srcGranularity == 1
+            ? entries.first.timestamp.asHour
+            : entries.first.timestamp.asDay;
 
     // Sort entries by their name/type.
     var entryMap = <String, List<ServerHealthMetric>>{};
@@ -361,26 +364,23 @@ class HealthCheckManager {
     // Remove old entries.
     await ServerHealthMetric.db.deleteWhere(
       session,
-      where: (t) =>
-          (t.timestamp >= firstEntryTime) &
-          (t.timestamp <
-              firstEntryTime.add(
-                srcGranularity == 1
-                    ? const Duration(hours: 1)
-                    : const Duration(days: 1),
-              )) &
-          t.granularity.equals(srcGranularity) &
-          t.serverId.equals(_pod.serverId),
+      where:
+          (t) =>
+              (t.timestamp >= firstEntryTime) &
+              (t.timestamp <
+                  firstEntryTime.add(
+                    srcGranularity == 1
+                        ? const Duration(hours: 1)
+                        : const Duration(days: 1),
+                  )) &
+              t.granularity.equals(srcGranularity) &
+              t.serverId.equals(_pod.serverId),
     );
 
     return true;
   }
 
-  void _reportException(
-    Object e,
-    StackTrace stackTrace, {
-    String? message,
-  }) {
+  void _reportException(Object e, StackTrace stackTrace, {String? message}) {
     var now = DateTime.now().toUtc();
     if (message != null) {
       stderr.writeln('$now ERROR: $message');
@@ -403,10 +403,13 @@ class HealthCheckManager {
 Duration _timeUntilNextMinute() {
   // Add a second to make sure we don't end up on the same minute.
   var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next =
-      DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
-    const Duration(minutes: 1),
-  );
+  var next = DateTime.utc(
+    now.year,
+    now.month,
+    now.day,
+    now.hour,
+    now.minute,
+  ).add(const Duration(minutes: 1));
 
   return next.difference(now);
 }

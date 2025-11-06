@@ -16,27 +16,30 @@ import '../scopes/scope_server_only_field.dart' as _i3;
 
 class ScopeServerOnlyField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ScopeServerOnlyField({
-    this.allScope,
-    this.serverOnlyScope,
-    this.nested,
-  });
+  ScopeServerOnlyField({this.allScope, this.serverOnlyScope, this.nested});
 
   factory ScopeServerOnlyField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ScopeServerOnlyField(
-      allScope: jsonSerialization['allScope'] == null
-          ? null
-          : _i2.Types.fromJson(
-              (jsonSerialization['allScope'] as Map<String, dynamic>)),
-      serverOnlyScope: jsonSerialization['serverOnlyScope'] == null
-          ? null
-          : _i2.Types.fromJson(
-              (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>)),
-      nested: jsonSerialization['nested'] == null
-          ? null
-          : _i3.ScopeServerOnlyField.fromJson(
-              (jsonSerialization['nested'] as Map<String, dynamic>)),
+      allScope:
+          jsonSerialization['allScope'] == null
+              ? null
+              : _i2.Types.fromJson(
+                (jsonSerialization['allScope'] as Map<String, dynamic>),
+              ),
+      serverOnlyScope:
+          jsonSerialization['serverOnlyScope'] == null
+              ? null
+              : _i2.Types.fromJson(
+                (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>),
+              ),
+      nested:
+          jsonSerialization['nested'] == null
+              ? null
+              : _i3.ScopeServerOnlyField.fromJson(
+                (jsonSerialization['nested'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -56,12 +59,14 @@ class ScopeServerOnlyField
   }) {
     return ScopeServerOnlyField(
       allScope: allScope is _i2.Types? ? allScope : this.allScope?.copyWith(),
-      serverOnlyScope: serverOnlyScope is _i2.Types?
-          ? serverOnlyScope
-          : this.serverOnlyScope?.copyWith(),
-      nested: nested is _i3.ScopeServerOnlyField?
-          ? nested
-          : this.nested?.copyWith(),
+      serverOnlyScope:
+          serverOnlyScope is _i2.Types?
+              ? serverOnlyScope
+              : this.serverOnlyScope?.copyWith(),
+      nested:
+          nested is _i3.ScopeServerOnlyField?
+              ? nested
+              : this.nested?.copyWith(),
     );
   }
 

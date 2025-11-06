@@ -30,22 +30,21 @@ final class AuthenticationTokens {
   final RefreshTokenSecretHash refreshTokenSecretHash;
 
   /// Creates a new instance of [AuthenticationTokens].
-  AuthenticationTokens({
-    required this.config,
-  })  : admin = AuthenticationTokensAdmin(
-          refreshTokenLifetime: config.refreshTokenLifetime,
-        ),
-        jwtUtil = JwtUtil(
-          accessTokenLifetime: config.accessTokenLifetime,
-          issuer: config.issuer,
-          algorithm: config.algorithm,
-          fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
-        ),
-        refreshTokenSecretHash = RefreshTokenSecretHash(
-          refreshTokenRotatingSecretSaltLength:
-              config.refreshTokenRotatingSecretSaltLength,
-          refreshTokenHashPepper: config.refreshTokenHashPepper,
-        );
+  AuthenticationTokens({required this.config})
+    : admin = AuthenticationTokensAdmin(
+        refreshTokenLifetime: config.refreshTokenLifetime,
+      ),
+      jwtUtil = JwtUtil(
+        accessTokenLifetime: config.accessTokenLifetime,
+        issuer: config.issuer,
+        algorithm: config.algorithm,
+        fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
+      ),
+      refreshTokenSecretHash = RefreshTokenSecretHash(
+        refreshTokenRotatingSecretSaltLength:
+            config.refreshTokenRotatingSecretSaltLength,
+        refreshTokenHashPepper: config.refreshTokenHashPepper,
+      );
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
@@ -309,12 +308,12 @@ final class AuthenticationTokens {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
   }) async {
-    final refreshToken = (await admin.deleteRefreshTokens(
-      session,
-      refreshTokenId: refreshTokenId,
-      transaction: transaction,
-    ))
-        .firstOrNull;
+    final refreshToken =
+        (await admin.deleteRefreshTokens(
+          session,
+          refreshTokenId: refreshTokenId,
+          transaction: transaction,
+        )).firstOrNull;
 
     if (refreshToken == null) {
       return false;
@@ -344,29 +343,26 @@ final class AuthenticationTokens {
   }
 
   Uint8List _generateRefreshTokenFixedSecret() {
-    return generateRandomBytes(
-      config.refreshTokenFixedSecretLength,
-    );
+    return generateRandomBytes(config.refreshTokenFixedSecretLength);
   }
 
   Uint8List _generateRefreshTokenRotatingSecret() {
-    return generateRandomBytes(
-      config.refreshTokenRotatingSecretLength,
-    );
+    return generateRandomBytes(config.refreshTokenRotatingSecretLength);
   }
 }
 
 extension on Set<Scope> {
   Set<String> get names => ({
-        for (final scope in this)
-          if (scope.name != null) scope.name!,
-      });
+    for (final scope in this)
+      if (scope.name != null) scope.name!,
+  });
 }
 
 extension on RefreshToken {
   bool isExpired(final Duration refreshTokenLifetime) {
-    final oldestAcceptedRefreshTokenDate =
-        clock.now().subtract(refreshTokenLifetime);
+    final oldestAcceptedRefreshTokenDate = clock.now().subtract(
+      refreshTokenLifetime,
+    );
 
     return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }

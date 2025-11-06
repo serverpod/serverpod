@@ -23,8 +23,11 @@ DatabaseMigration generateDatabaseMigration({
       deleteTables.addAll([
         srcTable.name,
         // For any table we delete, we also need to delete any other existing table that has and retains a foreign key pointing into this table
-        ..._findDependentTables(srcTable.name,
-            sourceTables: sourceTables, targetTables: targetTables),
+        ..._findDependentTables(
+          srcTable.name,
+          sourceTables: sourceTables,
+          targetTables: targetTables,
+        ),
       ]);
     }
   }
@@ -50,8 +53,9 @@ DatabaseMigration generateDatabaseMigration({
   // Find added or modified tables
   for (var dstTable in targetTables) {
     var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
-        (table) => table?.name == dstTable.name,
-        orElse: () => null);
+      (table) => table?.name == dstTable.name,
+      orElse: () => null,
+    );
 
     if (srcTable == null ||
         srcTable.managed == false ||
@@ -59,9 +63,10 @@ DatabaseMigration generateDatabaseMigration({
       // Added table
       actions.add(
         DatabaseMigrationAction(
-          type: srcTable == null || deleteTables.contains(srcTable.name)
-              ? DatabaseMigrationActionType.createTable
-              : DatabaseMigrationActionType.createTableIfNotExists,
+          type:
+              srcTable == null || deleteTables.contains(srcTable.name)
+                  ? DatabaseMigrationActionType.createTable
+                  : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
         ),
       );
@@ -114,14 +119,21 @@ Set<String> _findDependentTables(
 
   /// Returns whether the [sourceTable] has a current and future relation to [tableName]
   bool hasCurrentAndFutureRelationToTable(TableDefinition sourceTable) {
-    return sourceTable.foreignKeys.any((foreignKey) =>
-        foreignKey.referenceTable == tableName &&
-        // Check whether the reference will also be upheld in the target table.
-        // otherwise the target table will already be modified and does not need to have be fully dropped
-        targetTables.any((targetTable) =>
-            targetTable.name == sourceTable.name &&
-            targetTable.foreignKeys.any((targetForeignKey) =>
-                targetForeignKey.constraintName == foreignKey.constraintName)));
+    return sourceTable.foreignKeys.any(
+      (foreignKey) =>
+          foreignKey.referenceTable == tableName &&
+          // Check whether the reference will also be upheld in the target table.
+          // otherwise the target table will already be modified and does not need to have be fully dropped
+          targetTables.any(
+            (targetTable) =>
+                targetTable.name == sourceTable.name &&
+                targetTable.foreignKeys.any(
+                  (targetForeignKey) =>
+                      targetForeignKey.constraintName ==
+                      foreignKey.constraintName,
+                ),
+          ),
+    );
   }
 
   for (var sourceTable in sourceTables) {
@@ -167,7 +179,8 @@ TableMigration? generateTableMigration(
           type: DatabaseMigrationWarningType.columnDropped,
           table: srcTable.name,
           columns: [srcColumn.name],
-          message: 'Column "${srcColumn.name}" of table "${srcTable.name}" '
+          message:
+              'Column "${srcColumn.name}" of table "${srcTable.name}" '
               'will be dropped.',
           destrucive: true,
         ),
@@ -216,7 +229,8 @@ TableMigration? generateTableMigration(
               type: DatabaseMigrationWarningType.notNullAdded,
               table: srcTable.name,
               columns: [srcColumn.name],
-              message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
+              message:
+                  'Column ${srcColumn.name} of table ${srcTable.name} is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
               destrucive: false,
@@ -232,7 +246,8 @@ TableMigration? generateTableMigration(
             type: DatabaseMigrationWarningType.columnDropped,
             table: srcTable.name,
             columns: [srcColumn.name],
-            message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
+            message:
+                'Column ${srcColumn.name} of table ${srcTable.name} is '
                 'modified in a way that it must be deleted and recreated.',
             destrucive: true,
           ),
@@ -276,7 +291,8 @@ TableMigration? generateTableMigration(
           type: DatabaseMigrationWarningType.uniqueIndexCreated,
           table: srcTable.name,
           columns: index.elements.map((e) => e.definition).toList(),
-          message: 'Unique index "${index.indexName}" is added to table '
+          message:
+              'Unique index "${index.indexName}" is added to table '
               '"${srcTable.name}". If there are existing rows with duplicate '
               'values, this migration will fail.',
           destrucive: false,

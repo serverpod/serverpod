@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultPersist" enum fields,', () {
-    tearDownAll(() async => EnumDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => EnumDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=byName1" field should be byName1',
@@ -30,12 +32,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "defaultPersist=byName1" field should be byName1',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO ${EnumDefaultPersist.t.tableName}
         VALUES (DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await EnumDefaultPersist.db.findFirstRow(session);
         expect(
           databaseObject?.byNameEnumDefaultPersist,
@@ -62,12 +62,10 @@ void main() async {
     test(
       'when creating a record in the database with an unsafe query, then the "defaultPersist=byIndex1" field should be byIndex1',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO ${EnumDefaultPersist.t.tableName}
         VALUES (DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await EnumDefaultPersist.db.findFirstRow(session);
         expect(
           databaseObject?.byIndexEnumDefaultPersist,

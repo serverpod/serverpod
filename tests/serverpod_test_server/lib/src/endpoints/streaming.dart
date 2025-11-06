@@ -11,11 +11,15 @@ class StreamingEndpoint extends Endpoint {
 
   @override
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableModel message) async {
+    StreamingSession session,
+    SerializableModel message,
+  ) async {
     if (message is SimpleData) {
-      unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
-        await sendStreamMessage(session, message);
-      }));
+      unawaited(
+        Future.delayed(const Duration(seconds: 1)).then((value) async {
+          await sendStreamMessage(session, message);
+        }),
+      );
     }
   }
 }

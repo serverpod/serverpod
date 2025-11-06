@@ -52,9 +52,10 @@ abstract class UserInfo
       email: jsonSerialization['email'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames:
+          (jsonSerialization['scopeNames'] as List)
+              .map((e) => e as String)
+              .toList(),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -182,16 +183,16 @@ class _UserInfoImpl extends UserInfo {
     required List<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          userIdentifier: userIdentifier,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          created: created,
-          imageUrl: imageUrl,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         userIdentifier: userIdentifier,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         created: created,
+         imageUrl: imageUrl,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
@@ -226,85 +227,42 @@ class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
   UserInfoUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
-        table.userIdentifier,
-        value,
-      );
+      _i1.ColumnValue(table.userIdentifier, value);
 
-  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
-        table.userName,
-        value,
-      );
+  _i1.ColumnValue<String, String> userName(String? value) =>
+      _i1.ColumnValue(table.userName, value);
 
-  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
-        table.fullName,
-        value,
-      );
+  _i1.ColumnValue<String, String> fullName(String? value) =>
+      _i1.ColumnValue(table.fullName, value);
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String? value) =>
+      _i1.ColumnValue(table.email, value);
 
   _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
-        table.created,
-        value,
-      );
+      _i1.ColumnValue(table.created, value);
 
-  _i1.ColumnValue<String, String> imageUrl(String? value) => _i1.ColumnValue(
-        table.imageUrl,
-        value,
-      );
+  _i1.ColumnValue<String, String> imageUrl(String? value) =>
+      _i1.ColumnValue(table.imageUrl, value);
 
   _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
-      _i1.ColumnValue(
-        table.scopeNames,
-        value,
-      );
+      _i1.ColumnValue(table.scopeNames, value);
 
-  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
-        table.blocked,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> blocked(bool value) =>
+      _i1.ColumnValue(table.blocked, value);
 }
 
 class UserInfoTable extends _i1.Table<int?> {
   UserInfoTable({super.tableRelation})
-      : super(tableName: 'serverpod_user_info') {
+    : super(tableName: 'serverpod_user_info') {
     updateTable = UserInfoUpdateTable(this);
-    userIdentifier = _i1.ColumnString(
-      'userIdentifier',
-      this,
-    );
-    userName = _i1.ColumnString(
-      'userName',
-      this,
-    );
-    fullName = _i1.ColumnString(
-      'fullName',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    created = _i1.ColumnDateTime(
-      'created',
-      this,
-    );
-    imageUrl = _i1.ColumnString(
-      'imageUrl',
-      this,
-    );
-    scopeNames = _i1.ColumnSerializable<List<String>>(
-      'scopeNames',
-      this,
-    );
-    blocked = _i1.ColumnBool(
-      'blocked',
-      this,
-    );
+    userIdentifier = _i1.ColumnString('userIdentifier', this);
+    userName = _i1.ColumnString('userName', this);
+    fullName = _i1.ColumnString('fullName', this);
+    email = _i1.ColumnString('email', this);
+    created = _i1.ColumnDateTime('created', this);
+    imageUrl = _i1.ColumnString('imageUrl', this);
+    scopeNames = _i1.ColumnSerializable<List<String>>('scopeNames', this);
+    blocked = _i1.ColumnBool('blocked', this);
   }
 
   late final UserInfoUpdateTable updateTable;
@@ -336,16 +294,16 @@ class UserInfoTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userIdentifier,
-        userName,
-        fullName,
-        email,
-        created,
-        imageUrl,
-        scopeNames,
-        blocked,
-      ];
+    id,
+    userIdentifier,
+    userName,
+    fullName,
+    email,
+    created,
+    imageUrl,
+    scopeNames,
+    blocked,
+  ];
 }
 
 class UserInfoInclude extends _i1.IncludeObject {
@@ -466,10 +424,7 @@ class UserInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserInfo>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UserInfo>(id, transaction: transaction);
   }
 
   /// Inserts all [UserInfo]s in the list and returns the inserted rows.
@@ -483,10 +438,7 @@ class UserInfoRepository {
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserInfo>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UserInfo>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UserInfo] and returns the inserted row.
@@ -497,10 +449,7 @@ class UserInfoRepository {
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserInfo>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UserInfo>(row, transaction: transaction);
   }
 
   /// Updates all [UserInfo]s in the list and returns the updated rows. If
@@ -585,10 +534,7 @@ class UserInfoRepository {
     List<UserInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserInfo>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UserInfo>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UserInfo].
@@ -597,10 +543,7 @@ class UserInfoRepository {
     UserInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserInfo>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UserInfo>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

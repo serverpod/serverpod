@@ -25,10 +25,7 @@ abstract class TestHttpServer {
     required HttpRequestHandler httpRequestHandler,
     void Function(Uri httpHost)? onConnected,
   }) async {
-    var server = await _startServer(
-      onConnected,
-      httpRequestHandler,
-    );
+    var server = await _startServer(onConnected, httpRequestHandler);
 
     return server.close;
   }
@@ -49,8 +46,9 @@ abstract class TestHttpServer {
     );
     await server.mountAndStart(requestHandler);
 
-    final httpHost =
-        Uri.http('${InternetAddress.loopbackIPv4.host}:${server.port}');
+    final httpHost = Uri.http(
+      '${InternetAddress.loopbackIPv4.host}:${server.port}',
+    );
     onConnected?.call(httpHost);
 
     return server;

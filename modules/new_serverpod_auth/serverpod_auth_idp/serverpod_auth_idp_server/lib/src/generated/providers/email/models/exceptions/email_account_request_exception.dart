@@ -25,15 +25,18 @@ abstract class EmailAccountRequestException
         _i1.ProtocolSerialization {
   EmailAccountRequestException._({required this.reason});
 
-  factory EmailAccountRequestException(
-          {required _i2.EmailAccountRequestExceptionReason reason}) =
-      _EmailAccountRequestExceptionImpl;
+  factory EmailAccountRequestException({
+    required _i2.EmailAccountRequestExceptionReason reason,
+  }) = _EmailAccountRequestExceptionImpl;
 
   factory EmailAccountRequestException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailAccountRequestException(
-        reason: _i2.EmailAccountRequestExceptionReason.fromJson(
-            (jsonSerialization['reason'] as String)));
+      reason: _i2.EmailAccountRequestExceptionReason.fromJson(
+        (jsonSerialization['reason'] as String),
+      ),
+    );
   }
 
   _i2.EmailAccountRequestExceptionReason reason;
@@ -41,8 +44,9 @@ abstract class EmailAccountRequestException
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAccountRequestException copyWith(
-      {_i2.EmailAccountRequestExceptionReason? reason});
+  EmailAccountRequestException copyWith({
+    _i2.EmailAccountRequestExceptionReason? reason,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {'reason': reason.toJson()};
@@ -60,16 +64,17 @@ abstract class EmailAccountRequestException
 }
 
 class _EmailAccountRequestExceptionImpl extends EmailAccountRequestException {
-  _EmailAccountRequestExceptionImpl(
-      {required _i2.EmailAccountRequestExceptionReason reason})
-      : super._(reason: reason);
+  _EmailAccountRequestExceptionImpl({
+    required _i2.EmailAccountRequestExceptionReason reason,
+  }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailAccountRequestException copyWith(
-      {_i2.EmailAccountRequestExceptionReason? reason}) {
+  EmailAccountRequestException copyWith({
+    _i2.EmailAccountRequestExceptionReason? reason,
+  }) {
     return EmailAccountRequestException(reason: reason ?? this.reason);
   }
 }

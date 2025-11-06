@@ -28,17 +28,19 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.isSealed,
         valueRestriction: BooleanValueRestriction().validate,
-        mutuallyExclusiveKeys: {
-          Keyword.table,
-        },
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        mutuallyExclusiveKeys: {Keyword.table},
+        isHidden:
+            !restrictions.config.isExperimentalFeatureEnabled(
+              ExperimentalFeature.inheritance,
+            ),
       ),
       ValidateNode(
         Keyword.extendsClass,
         valueRestriction: restrictions.validateExtendingClassName,
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        isHidden:
+            !restrictions.config.isExperimentalFeatureEnabled(
+              ExperimentalFeature.inheritance,
+            ),
       ),
       ValidateNode(
         Keyword.isImmutable,
@@ -48,9 +50,7 @@ class ClassYamlDefinition {
         Keyword.table,
         keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTable,
-        mutuallyExclusiveKeys: {
-          Keyword.isSealed,
-        },
+        mutuallyExclusiveKeys: {Keyword.isSealed},
       ),
       ValidateNode(
         Keyword.managedMigration,
@@ -110,24 +110,24 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.onUpdate,
                     keyRestriction: restrictions.validateDatabaseActionKey,
-                    valueRestriction: EnumValueRestriction(
-                      enums: ForeignKeyAction.values,
-                    ).validate,
+                    valueRestriction:
+                        EnumValueRestriction(
+                          enums: ForeignKeyAction.values,
+                        ).validate,
                   ),
                   ValidateNode(
                     Keyword.onDelete,
                     keyRestriction: restrictions.validateDatabaseActionKey,
-                    valueRestriction: EnumValueRestriction(
-                      enums: ForeignKeyAction.values,
-                    ).validate,
+                    valueRestriction:
+                        EnumValueRestriction(
+                          enums: ForeignKeyAction.values,
+                        ).validate,
                   ),
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
                     valueRestriction: BooleanValueRestriction().validate,
-                    mutuallyExclusiveKeys: {
-                      Keyword.field,
-                    },
+                    mutuallyExclusiveKeys: {Keyword.field},
                   ),
                   ValidateNode(
                     Keyword.name,
@@ -138,20 +138,19 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.scope,
                 keyRestriction: restrictions.validateScopeKey,
-                valueRestriction: EnumValueRestriction(
-                  enums: ModelFieldScopeDefinition.values,
-                  additionalRestriction: ScopeValueRestriction(
-                    restrictions: restrictions,
-                  ),
-                ).validate,
+                valueRestriction:
+                    EnumValueRestriction(
+                      enums: ModelFieldScopeDefinition.values,
+                      additionalRestriction: ScopeValueRestriction(
+                        restrictions: restrictions,
+                      ),
+                    ).validate,
               ),
               ValidateNode(
                 Keyword.persist,
                 keyRestriction: restrictions.validatePersistKey,
                 valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
+                mutuallyExclusiveKeys: {Keyword.relation},
               ),
               ValidateNode(
                 Keyword.requiredKey,
@@ -173,35 +172,32 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.defaultKey,
                 keyRestriction: restrictions.validateDefaultKey,
-                valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultKey,
-                  restrictions.documentDefinition,
-                ).validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
+                valueRestriction:
+                    DefaultValueRestriction(
+                      Keyword.defaultKey,
+                      restrictions.documentDefinition,
+                    ).validate,
+                mutuallyExclusiveKeys: {Keyword.relation},
               ),
               ValidateNode(
                 Keyword.defaultModelKey,
                 keyRestriction: restrictions.validateDefaultModelKey,
-                valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultModelKey,
-                  restrictions.documentDefinition,
-                ).validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
+                valueRestriction:
+                    DefaultValueRestriction(
+                      Keyword.defaultModelKey,
+                      restrictions.documentDefinition,
+                    ).validate,
+                mutuallyExclusiveKeys: {Keyword.relation},
               ),
               ValidateNode(
                 Keyword.defaultPersistKey,
                 keyRestriction: restrictions.validateDefaultPersistKey,
-                valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultPersistKey,
-                  restrictions.documentDefinition,
-                ).validate,
-                mutuallyExclusiveKeys: {
-                  Keyword.relation,
-                },
+                valueRestriction:
+                    DefaultValueRestriction(
+                      Keyword.defaultPersistKey,
+                      restrictions.documentDefinition,
+                    ).validate,
+                mutuallyExclusiveKeys: {Keyword.relation},
               ),
             },
           ),
@@ -240,7 +236,7 @@ class ClassYamlDefinition {
                 valueRestriction: restrictions.validateIndexParametersValue,
               ),
             },
-          )
+          ),
         },
       ),
     };

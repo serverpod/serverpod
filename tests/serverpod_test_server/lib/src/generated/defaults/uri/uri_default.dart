@@ -14,28 +14,26 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UriDefault._({
-    this.id,
-    Uri? uriDefault,
-    Uri? uriDefaultNull,
-  })  : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
-        uriDefaultNull =
-            uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
+  UriDefault._({this.id, Uri? uriDefault, Uri? uriDefaultNull})
+    : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
+      uriDefaultNull =
+          uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
 
-  factory UriDefault({
-    int? id,
-    Uri? uriDefault,
-    Uri? uriDefaultNull,
-  }) = _UriDefaultImpl;
+  factory UriDefault({int? id, Uri? uriDefault, Uri? uriDefaultNull}) =
+      _UriDefaultImpl;
 
   factory UriDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefault(
       id: jsonSerialization['id'] as int?,
-      uriDefault:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefault']),
-      uriDefaultNull: jsonSerialization['uriDefaultNull'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultNull']),
+      uriDefault: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefault'],
+      ),
+      uriDefaultNull:
+          jsonSerialization['uriDefaultNull'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(
+                jsonSerialization['uriDefaultNull'],
+              ),
     );
   }
 
@@ -56,11 +54,7 @@ abstract class UriDefault
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UriDefault copyWith({
-    int? id,
-    Uri? uriDefault,
-    Uri? uriDefaultNull,
-  });
+  UriDefault copyWith({int? id, Uri? uriDefault, Uri? uriDefaultNull});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -112,15 +106,8 @@ abstract class UriDefault
 class _Undefined {}
 
 class _UriDefaultImpl extends UriDefault {
-  _UriDefaultImpl({
-    int? id,
-    Uri? uriDefault,
-    Uri? uriDefaultNull,
-  }) : super._(
-          id: id,
-          uriDefault: uriDefault,
-          uriDefaultNull: uriDefaultNull,
-        );
+  _UriDefaultImpl({int? id, Uri? uriDefault, Uri? uriDefaultNull})
+    : super._(id: id, uriDefault: uriDefault, uriDefaultNull: uriDefaultNull);
 
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
@@ -143,30 +130,18 @@ class _UriDefaultImpl extends UriDefault {
 class UriDefaultUpdateTable extends _i1.UpdateTable<UriDefaultTable> {
   UriDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<Uri, Uri> uriDefault(Uri value) => _i1.ColumnValue(
-        table.uriDefault,
-        value,
-      );
+  _i1.ColumnValue<Uri, Uri> uriDefault(Uri value) =>
+      _i1.ColumnValue(table.uriDefault, value);
 
-  _i1.ColumnValue<Uri, Uri> uriDefaultNull(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultNull,
-        value,
-      );
+  _i1.ColumnValue<Uri, Uri> uriDefaultNull(Uri? value) =>
+      _i1.ColumnValue(table.uriDefaultNull, value);
 }
 
 class UriDefaultTable extends _i1.Table<int?> {
   UriDefaultTable({super.tableRelation}) : super(tableName: 'uri_default') {
     updateTable = UriDefaultUpdateTable(this);
-    uriDefault = _i1.ColumnUri(
-      'uriDefault',
-      this,
-      hasDefault: true,
-    );
-    uriDefaultNull = _i1.ColumnUri(
-      'uriDefaultNull',
-      this,
-      hasDefault: true,
-    );
+    uriDefault = _i1.ColumnUri('uriDefault', this, hasDefault: true);
+    uriDefaultNull = _i1.ColumnUri('uriDefaultNull', this, hasDefault: true);
   }
 
   late final UriDefaultUpdateTable updateTable;
@@ -176,11 +151,7 @@ class UriDefaultTable extends _i1.Table<int?> {
   late final _i1.ColumnUri uriDefaultNull;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        uriDefault,
-        uriDefaultNull,
-      ];
+  List<_i1.Column> get columns => [id, uriDefault, uriDefaultNull];
 }
 
 class UriDefaultInclude extends _i1.IncludeObject {
@@ -301,10 +272,7 @@ class UriDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefault>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UriDefault>(id, transaction: transaction);
   }
 
   /// Inserts all [UriDefault]s in the list and returns the inserted rows.
@@ -318,10 +286,7 @@ class UriDefaultRepository {
     List<UriDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UriDefault>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UriDefault] and returns the inserted row.
@@ -332,10 +297,7 @@ class UriDefaultRepository {
     UriDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UriDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UriDefault>(row, transaction: transaction);
   }
 
   /// Updates all [UriDefault]s in the list and returns the updated rows. If
@@ -420,10 +382,7 @@ class UriDefaultRepository {
     List<UriDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UriDefault>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UriDefault].
@@ -432,10 +391,7 @@ class UriDefaultRepository {
     UriDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UriDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UriDefault>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

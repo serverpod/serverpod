@@ -38,16 +38,22 @@ abstract class TeamInt
     return TeamInt(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      arenaId: jsonSerialization['arenaId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
-      arena: jsonSerialization['arena'] == null
-          ? null
-          : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      arenaId:
+          jsonSerialization['arenaId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['arenaId'],
+              ),
+      arena:
+          jsonSerialization['arena'] == null
+              ? null
+              : _i2.ArenaUuid.fromJson(
+                (jsonSerialization['arena'] as Map<String, dynamic>),
+              ),
+      players:
+          (jsonSerialization['players'] as List?)
+              ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -107,10 +113,7 @@ abstract class TeamInt
     _i2.ArenaUuidInclude? arena,
     _i3.PlayerUuidIncludeList? players,
   }) {
-    return TeamIntInclude._(
-      arena: arena,
-      players: players,
-    );
+    return TeamIntInclude._(arena: arena, players: players);
   }
 
   static TeamIntIncludeList includeList({
@@ -149,12 +152,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
@@ -172,9 +175,10 @@ class _TeamIntImpl extends TeamInt {
       name: name ?? this.name,
       arenaId: arenaId is _i1.UuidValue? ? arenaId : this.arenaId,
       arena: arena is _i2.ArenaUuid? ? arena : this.arena?.copyWith(),
-      players: players is List<_i3.PlayerUuid>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      players:
+          players is List<_i3.PlayerUuid>?
+              ? players
+              : this.players?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -182,29 +186,18 @@ class _TeamIntImpl extends TeamInt {
 class TeamIntUpdateTable extends _i1.UpdateTable<TeamIntTable> {
   TeamIntUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> arenaId(_i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.arenaId,
-        value,
-      );
+      _i1.ColumnValue(table.arenaId, value);
 }
 
 class TeamIntTable extends _i1.Table<int?> {
   TeamIntTable({super.tableRelation}) : super(tableName: 'team_int') {
     updateTable = TeamIntUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    arenaId = _i1.ColumnUuid(
-      'arenaId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    arenaId = _i1.ColumnUuid('arenaId', this);
   }
 
   late final TeamIntUpdateTable updateTable;
@@ -226,8 +219,9 @@ class TeamIntTable extends _i1.Table<int?> {
       field: TeamInt.t.arenaId,
       foreignField: _i2.ArenaUuid.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.ArenaUuidTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.ArenaUuidTable(tableRelation: foreignTableRelation),
     );
     return _arena!;
   }
@@ -239,8 +233,9 @@ class TeamIntTable extends _i1.Table<int?> {
       field: TeamInt.t.id,
       foreignField: _i3.PlayerUuid.t.teamId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.PlayerUuidTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.PlayerUuidTable(tableRelation: foreignTableRelation),
     );
     return ___players!;
   }
@@ -252,23 +247,21 @@ class TeamIntTable extends _i1.Table<int?> {
       field: TeamInt.t.id,
       foreignField: _i3.PlayerUuid.t.teamId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.PlayerUuidTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.PlayerUuidTable(tableRelation: foreignTableRelation),
     );
     _players = _i1.ManyRelation<_i3.PlayerUuidTable>(
       tableWithRelations: relationTable,
       table: _i3.PlayerUuidTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _players!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        arenaId,
-      ];
+  List<_i1.Column> get columns => [id, name, arenaId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -297,9 +290,9 @@ class TeamIntInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'arena': _arena,
-        'players': _players,
-      };
+    'arena': _arena,
+    'players': _players,
+  };
 
   @override
   _i1.Table<int?> get table => TeamInt.t;
@@ -444,10 +437,7 @@ class TeamIntRepository {
     List<TeamInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<TeamInt>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<TeamInt>(rows, transaction: transaction);
   }
 
   /// Inserts a single [TeamInt] and returns the inserted row.
@@ -458,10 +448,7 @@ class TeamIntRepository {
     TeamInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<TeamInt>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<TeamInt>(row, transaction: transaction);
   }
 
   /// Updates all [TeamInt]s in the list and returns the updated rows. If
@@ -546,10 +533,7 @@ class TeamIntRepository {
     List<TeamInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<TeamInt>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<TeamInt>(rows, transaction: transaction);
   }
 
   /// Deletes a single [TeamInt].
@@ -558,10 +542,7 @@ class TeamIntRepository {
     TeamInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<TeamInt>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<TeamInt>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

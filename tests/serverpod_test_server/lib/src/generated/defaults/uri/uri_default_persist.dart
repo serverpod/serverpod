@@ -14,23 +14,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UriDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UriDefaultPersist._({
-    this.id,
-    this.uriDefaultPersist,
-  });
+  UriDefaultPersist._({this.id, this.uriDefaultPersist});
 
-  factory UriDefaultPersist({
-    int? id,
-    Uri? uriDefaultPersist,
-  }) = _UriDefaultPersistImpl;
+  factory UriDefaultPersist({int? id, Uri? uriDefaultPersist}) =
+      _UriDefaultPersistImpl;
 
   factory UriDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      uriDefaultPersist: jsonSerialization['uriDefaultPersist'] == null
-          ? null
-          : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultPersist']),
+      uriDefaultPersist:
+          jsonSerialization['uriDefaultPersist'] == null
+              ? null
+              : _i1.UriJsonExtension.fromJson(
+                jsonSerialization['uriDefaultPersist'],
+              ),
     );
   }
 
@@ -49,10 +46,7 @@ abstract class UriDefaultPersist
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UriDefaultPersist copyWith({
-    int? id,
-    Uri? uriDefaultPersist,
-  });
+  UriDefaultPersist copyWith({int? id, Uri? uriDefaultPersist});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -104,13 +98,8 @@ abstract class UriDefaultPersist
 class _Undefined {}
 
 class _UriDefaultPersistImpl extends UriDefaultPersist {
-  _UriDefaultPersistImpl({
-    int? id,
-    Uri? uriDefaultPersist,
-  }) : super._(
-          id: id,
-          uriDefaultPersist: uriDefaultPersist,
-        );
+  _UriDefaultPersistImpl({int? id, Uri? uriDefaultPersist})
+    : super._(id: id, uriDefaultPersist: uriDefaultPersist);
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -122,9 +111,10 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
   }) {
     return UriDefaultPersist(
       id: id is int? ? id : this.id,
-      uriDefaultPersist: uriDefaultPersist is Uri?
-          ? uriDefaultPersist
-          : this.uriDefaultPersist,
+      uriDefaultPersist:
+          uriDefaultPersist is Uri?
+              ? uriDefaultPersist
+              : this.uriDefaultPersist,
     );
   }
 }
@@ -133,15 +123,13 @@ class UriDefaultPersistUpdateTable
     extends _i1.UpdateTable<UriDefaultPersistTable> {
   UriDefaultPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<Uri, Uri> uriDefaultPersist(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultPersist,
-        value,
-      );
+  _i1.ColumnValue<Uri, Uri> uriDefaultPersist(Uri? value) =>
+      _i1.ColumnValue(table.uriDefaultPersist, value);
 }
 
 class UriDefaultPersistTable extends _i1.Table<int?> {
   UriDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'uri_default_persist') {
+    : super(tableName: 'uri_default_persist') {
     updateTable = UriDefaultPersistUpdateTable(this);
     uriDefaultPersist = _i1.ColumnUri(
       'uriDefaultPersist',
@@ -155,10 +143,7 @@ class UriDefaultPersistTable extends _i1.Table<int?> {
   late final _i1.ColumnUri uriDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        uriDefaultPersist,
-      ];
+  List<_i1.Column> get columns => [id, uriDefaultPersist];
 }
 
 class UriDefaultPersistInclude extends _i1.IncludeObject {
@@ -279,10 +264,7 @@ class UriDefaultPersistRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UriDefaultPersist>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UriDefaultPersist>(id, transaction: transaction);
   }
 
   /// Inserts all [UriDefaultPersist]s in the list and returns the inserted rows.
@@ -296,10 +278,7 @@ class UriDefaultPersistRepository {
     List<UriDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UriDefaultPersist>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UriDefaultPersist>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UriDefaultPersist] and returns the inserted row.
@@ -356,7 +335,7 @@ class UriDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultPersist>(
@@ -371,7 +350,7 @@ class UriDefaultPersistRepository {
   Future<List<UriDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
     int? limit,
     int? offset,
@@ -400,10 +379,7 @@ class UriDefaultPersistRepository {
     List<UriDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UriDefaultPersist>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UriDefaultPersist>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UriDefaultPersist].

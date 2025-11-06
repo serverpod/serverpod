@@ -14,23 +14,17 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class UserNote
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  UserNote._({
-    this.id,
-    required this.name,
-  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = null;
+  UserNote._({this.id, required this.name})
+    : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = null;
 
-  factory UserNote({
-    int? id,
-    required String name,
-  }) = _UserNoteImpl;
+  factory UserNote({int? id, required String name}) = _UserNoteImpl;
 
   factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserNoteImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
-          jsonSerialization[
-                  '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
+          jsonSerialization['_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
               as int?,
     );
   }
@@ -52,10 +46,7 @@ abstract class UserNote
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  UserNote copyWith({
-    int? id,
-    String? name,
-  });
+  UserNote copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -70,10 +61,7 @@ abstract class UserNote
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   static UserNoteInclude include() {
@@ -109,22 +97,13 @@ abstract class UserNote
 class _Undefined {}
 
 class _UserNoteImpl extends UserNote {
-  _UserNoteImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _UserNoteImpl({int? id, required String name}) : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  UserNote copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  UserNote copyWith({Object? id = _Undefined, String? name}) {
     return UserNoteImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
@@ -139,12 +118,9 @@ class UserNoteImplicit extends _UserNoteImpl {
     int? id,
     required String name,
     int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-  })  : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
-            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-        super(
-          id: id,
-          name: name,
-        );
+  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
+           $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+       super(id: id, name: name);
 
   factory UserNoteImplicit(
     UserNote userNote, {
@@ -165,33 +141,26 @@ class UserNoteImplicit extends _UserNoteImpl {
 class UserNoteUpdateTable extends _i1.UpdateTable<UserNoteTable> {
   UserNoteUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
   _i1.ColumnValue<int, int>
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId(
-              int? value) =>
-          _i1.ColumnValue(
-            table
-                .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-            value,
-          );
+  $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId(int? value) =>
+      _i1.ColumnValue(
+        table.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        value,
+      );
 }
 
 class UserNoteTable extends _i1.Table<int?> {
   UserNoteTable({super.tableRelation}) : super(tableName: 'user_note') {
     updateTable = UserNoteUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
     $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
         _i1.ColumnInt(
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
-      this,
-    );
+          '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
+          this,
+        );
   }
 
   late final UserNoteUpdateTable updateTable;
@@ -199,20 +168,17 @@ class UserNoteTable extends _i1.Table<int?> {
   late final _i1.ColumnString name;
 
   late final _i1.ColumnInt
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-      ];
+    id,
+    name,
+    $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  ];
 
   @override
-  List<_i1.Column> get managedColumns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get managedColumns => [id, name];
 }
 
 class UserNoteInclude extends _i1.IncludeObject {
@@ -333,10 +299,7 @@ class UserNoteRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<UserNote>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<UserNote>(id, transaction: transaction);
   }
 
   /// Inserts all [UserNote]s in the list and returns the inserted rows.
@@ -350,10 +313,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserNote>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UserNote>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UserNote] and returns the inserted row.
@@ -364,10 +324,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserNote>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UserNote>(row, transaction: transaction);
   }
 
   /// Updates all [UserNote]s in the list and returns the updated rows. If
@@ -452,10 +409,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserNote>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UserNote>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UserNote].
@@ -464,10 +418,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserNote>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UserNote>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

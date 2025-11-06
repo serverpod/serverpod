@@ -7,9 +7,7 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
 
   @override
   Description describe(Description description) {
-    return parent.describe(description).add(
-          ' with a super initializer',
-        );
+    return parent.describe(description).add(' with a super initializer');
   }
 
   @override
@@ -29,9 +27,7 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
       );
     }
 
-    return mismatchDescription.add(
-      'does not have a super initializer',
-    );
+    return mismatchDescription.add('does not have a super initializer');
   }
 
   @override
@@ -76,13 +72,14 @@ class _SuperInitializerMatcherImpl implements Matcher, SuperInitializerMatcher {
 
   ArgumentMatcher _withArgument(String name, {_ParameterType? parameterType}) {
     return _ArgumentMatcherImpl._(
-        ChainableMatcher.createMatcher(
-          this,
-          resolveMatch: _matchedFeatureValueOf,
-          extractValue: (superInitializer) =>
-              superInitializer.argumentList.arguments,
-        ),
-        name,
-        parameterType);
+      ChainableMatcher.createMatcher(
+        this,
+        resolveMatch: _matchedFeatureValueOf,
+        extractValue:
+            (superInitializer) => superInitializer.argumentList.arguments,
+      ),
+      name,
+      parameterType,
+    );
   }
 }

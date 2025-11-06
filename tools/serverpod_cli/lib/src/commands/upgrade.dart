@@ -16,13 +16,15 @@ class UpgradeCommand extends ServerpodCommand {
   final description = 'Upgrade Serverpod to the latest version.';
 
   @override
-  Future<void> runWithConfig(
-    final Configuration commandConfig,
-  ) async {
+  Future<void> runWithConfig(final Configuration commandConfig) async {
     var success = await log.progress('Updating Serverpod Cli...', () async {
       log.debug('Running `dart pub global activate serverpod_cli`...');
-      var startProcess = await Process.start(
-          'dart', ['pub', 'global', 'activate', 'serverpod_cli']);
+      var startProcess = await Process.start('dart', [
+        'pub',
+        'global',
+        'activate',
+        'serverpod_cli',
+      ]);
       startProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
       startProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
       return await startProcess.exitCode == 0;

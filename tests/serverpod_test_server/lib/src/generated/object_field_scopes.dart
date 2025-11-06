@@ -14,12 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectFieldScopes
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectFieldScopes._({
-    this.id,
-    required this.normal,
-    this.api,
-    this.database,
-  });
+  ObjectFieldScopes._({this.id, required this.normal, this.api, this.database});
 
   factory ObjectFieldScopes({
     int? id,
@@ -119,12 +114,7 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
     required String normal,
     String? api,
     String? database,
-  }) : super._(
-          id: id,
-          normal: normal,
-          api: api,
-          database: database,
-        );
+  }) : super._(id: id, normal: normal, api: api, database: database);
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.
@@ -149,29 +139,19 @@ class ObjectFieldScopesUpdateTable
     extends _i1.UpdateTable<ObjectFieldScopesTable> {
   ObjectFieldScopesUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
-        table.normal,
-        value,
-      );
+  _i1.ColumnValue<String, String> normal(String value) =>
+      _i1.ColumnValue(table.normal, value);
 
-  _i1.ColumnValue<String, String> database(String? value) => _i1.ColumnValue(
-        table.database,
-        value,
-      );
+  _i1.ColumnValue<String, String> database(String? value) =>
+      _i1.ColumnValue(table.database, value);
 }
 
 class ObjectFieldScopesTable extends _i1.Table<int?> {
   ObjectFieldScopesTable({super.tableRelation})
-      : super(tableName: 'object_field_scopes') {
+    : super(tableName: 'object_field_scopes') {
     updateTable = ObjectFieldScopesUpdateTable(this);
-    normal = _i1.ColumnString(
-      'normal',
-      this,
-    );
-    database = _i1.ColumnString(
-      'database',
-      this,
-    );
+    normal = _i1.ColumnString('normal', this);
+    database = _i1.ColumnString('database', this);
   }
 
   late final ObjectFieldScopesUpdateTable updateTable;
@@ -181,11 +161,7 @@ class ObjectFieldScopesTable extends _i1.Table<int?> {
   late final _i1.ColumnString database;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        normal,
-        database,
-      ];
+  List<_i1.Column> get columns => [id, normal, database];
 }
 
 class ObjectFieldScopesInclude extends _i1.IncludeObject {
@@ -306,10 +282,7 @@ class ObjectFieldScopesRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<ObjectFieldScopes>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ObjectFieldScopes>(id, transaction: transaction);
   }
 
   /// Inserts all [ObjectFieldScopes]s in the list and returns the inserted rows.
@@ -323,10 +296,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<ObjectFieldScopes>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ObjectFieldScopes>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ObjectFieldScopes] and returns the inserted row.
@@ -383,7 +353,7 @@ class ObjectFieldScopesRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
@@ -398,7 +368,7 @@ class ObjectFieldScopesRepository {
   Future<List<ObjectFieldScopes>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     int? limit,
     int? offset,
@@ -427,10 +397,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectFieldScopes>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ObjectFieldScopes>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ObjectFieldScopes].

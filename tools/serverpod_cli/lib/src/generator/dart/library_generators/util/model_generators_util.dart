@@ -13,10 +13,7 @@ class ModelAllocatorEntry {
   final SerializableModelDefinition model;
   final Allocator? allocator;
 
-  ModelAllocatorEntry({
-    required this.model,
-    required this.allocator,
-  });
+  ModelAllocatorEntry({required this.model, required this.allocator});
 }
 
 /// Manages the relationship between models and their allocators.
@@ -58,9 +55,10 @@ class ModelAllocatorContext {
           entries.add(
             ModelAllocatorEntry(
               model: model,
-              allocator: model.isSealedTopNode
-                  ? PartAllocator(partOfAllocator: partOfAllocator)
-                  : partOfAllocator,
+              allocator:
+                  model.isSealedTopNode
+                      ? PartAllocator(partOfAllocator: partOfAllocator)
+                      : partOfAllocator,
             ),
           );
         }
@@ -70,9 +68,7 @@ class ModelAllocatorContext {
     var modelsWithoutSealedHierarchies = _getNonSealedClasses(models);
 
     for (var model in modelsWithoutSealedHierarchies) {
-      entries.add(
-        ModelAllocatorEntry(model: model, allocator: null),
-      );
+      entries.add(ModelAllocatorEntry(model: model, allocator: null));
     }
 
     return ModelAllocatorContext(entries);
@@ -91,9 +87,9 @@ class ModelAllocatorContext {
   static Iterable<ModelClassDefinition> _getSealedTopNodeClasses(
     List<SerializableModelDefinition> models,
   ) {
-    return models
-        .whereType<ModelClassDefinition>()
-        .where((element) => element.isSealedTopNode);
+    return models.whereType<ModelClassDefinition>().where(
+      (element) => element.isSealedTopNode,
+    );
   }
 
   /// Returns a list of sealed hierarchies.
@@ -103,11 +99,9 @@ class ModelAllocatorContext {
   ) {
     var sealedClasses = _getSealedTopNodeClasses(models);
 
-    return sealedClasses.map(
-      (element) {
-        return [...element.descendantClasses, element];
-      },
-    );
+    return sealedClasses.map((element) {
+      return [...element.descendantClasses, element];
+    });
   }
 }
 
@@ -116,10 +110,7 @@ class ModelAllocatorContext {
 extension SerializableModelPath on SerializableModelDefinition {
   /// Returns a String with the file path.
   /// Consisting of `subDirParts` + `filename.dart`
-  String get filePath => p.joinAll([
-        ...subDirParts,
-        '$fileName.dart',
-      ]);
+  String get filePath => p.joinAll([...subDirParts, '$fileName.dart']);
 
   /// Returns a String with the full server or client path followed by
   /// `filename.dart`.

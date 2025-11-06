@@ -38,15 +38,19 @@ abstract class Blocking
     return Blocking(
       id: jsonSerialization['id'] as int?,
       blockedId: jsonSerialization['blockedId'] as int,
-      blocked: jsonSerialization['blocked'] == null
-          ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+      blocked:
+          jsonSerialization['blocked'] == null
+              ? null
+              : _i2.Member.fromJson(
+                (jsonSerialization['blocked'] as Map<String, dynamic>),
+              ),
       blockedById: jsonSerialization['blockedById'] as int,
-      blockedBy: jsonSerialization['blockedBy'] == null
-          ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
+      blockedBy:
+          jsonSerialization['blockedBy'] == null
+              ? null
+              : _i2.Member.fromJson(
+                (jsonSerialization['blockedBy'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -104,10 +108,7 @@ abstract class Blocking
     _i2.MemberInclude? blocked,
     _i2.MemberInclude? blockedBy,
   }) {
-    return BlockingInclude._(
-      blocked: blocked,
-      blockedBy: blockedBy,
-    );
+    return BlockingInclude._(blocked: blocked, blockedBy: blockedBy);
   }
 
   static BlockingIncludeList includeList({
@@ -146,12 +147,12 @@ class _BlockingImpl extends Blocking {
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
-          id: id,
-          blockedId: blockedId,
-          blocked: blocked,
-          blockedById: blockedById,
-          blockedBy: blockedBy,
-        );
+         id: id,
+         blockedId: blockedId,
+         blocked: blocked,
+         blockedById: blockedById,
+         blockedBy: blockedBy,
+       );
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
@@ -178,28 +179,18 @@ class _BlockingImpl extends Blocking {
 class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
   BlockingUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
-        table.blockedId,
-        value,
-      );
+  _i1.ColumnValue<int, int> blockedId(int value) =>
+      _i1.ColumnValue(table.blockedId, value);
 
-  _i1.ColumnValue<int, int> blockedById(int value) => _i1.ColumnValue(
-        table.blockedById,
-        value,
-      );
+  _i1.ColumnValue<int, int> blockedById(int value) =>
+      _i1.ColumnValue(table.blockedById, value);
 }
 
 class BlockingTable extends _i1.Table<int?> {
   BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
     updateTable = BlockingUpdateTable(this);
-    blockedId = _i1.ColumnInt(
-      'blockedId',
-      this,
-    );
-    blockedById = _i1.ColumnInt(
-      'blockedById',
-      this,
-    );
+    blockedId = _i1.ColumnInt('blockedId', this);
+    blockedById = _i1.ColumnInt('blockedById', this);
   }
 
   late final BlockingUpdateTable updateTable;
@@ -219,8 +210,9 @@ class BlockingTable extends _i1.Table<int?> {
       field: Blocking.t.blockedId,
       foreignField: _i2.Member.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blocked!;
   }
@@ -232,18 +224,15 @@ class BlockingTable extends _i1.Table<int?> {
       field: Blocking.t.blockedById,
       foreignField: _i2.Member.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blockedBy!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        blockedId,
-        blockedById,
-      ];
+  List<_i1.Column> get columns => [id, blockedId, blockedById];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -272,9 +261,9 @@ class BlockingInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'blocked': _blocked,
-        'blockedBy': _blockedBy,
-      };
+    'blocked': _blocked,
+    'blockedBy': _blockedBy,
+  };
 
   @override
   _i1.Table<int?> get table => Blocking.t;
@@ -413,10 +402,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Blocking>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Blocking>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Blocking] and returns the inserted row.
@@ -427,10 +413,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Blocking>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Blocking>(row, transaction: transaction);
   }
 
   /// Updates all [Blocking]s in the list and returns the updated rows. If
@@ -515,10 +498,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Blocking>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Blocking>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Blocking].
@@ -527,10 +507,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Blocking>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Blocking>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

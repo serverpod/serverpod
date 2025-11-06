@@ -34,11 +34,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -49,105 +49,108 @@ void main() {
       });
 
       group(
-          'when verify account request is called with valid verification code',
-          () {
-        late Future<EmailAccountRequest> verifyAccountRequestFuture;
-        setUp(() async {
-          verifyAccountRequestFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
-          );
-        });
-        test('then it succeeds and returns the account request', () async {
-          await expectLater(
-            verifyAccountRequestFuture,
-            completion(
-              isA<EmailAccountRequest>()
-                  .having(
-                    (final request) => request.id,
-                    'id',
-                    equals(accountRequestId),
-                  )
-                  .having(
-                    (final request) => request.email,
-                    'email',
-                    equals(email),
-                  ),
-            ),
-          );
-        });
-
-        test('then the account request can be finalized', () async {
-          await verifyAccountRequestFuture;
-
-          final authUser = await fixture.createAuthUser(session);
-
-          final finalizeAccountRequestFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.finalizeAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              authUserId: authUser.id,
-              transaction: transaction,
-            ),
-          );
-          await expectLater(finalizeAccountRequestFuture, completes);
-        });
-      });
-
-      test(
-          'when verify account request is called with invalid verification code then it throws invalid verification code exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: '$verificationCode-invalid',
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
-        );
-      });
-
-      test(
-          'when verify account request is called with valid code after expiration then it throws verification expired exception',
-          () async {
-        const registrationVerificationCodeLifetime = Duration(hours: 1);
-
-        await withClock(
-          Clock.fixed(
-            DateTime.now().add(
-              registrationVerificationCodeLifetime + const Duration(hours: 1),
-            ),
-          ),
-          () async {
-            final result = session.db.transaction(
+        'when verify account request is called with valid verification code',
+        () {
+          late Future<EmailAccountRequest> verifyAccountRequestFuture;
+          setUp(() async {
+            verifyAccountRequestFuture = session.db.transaction(
               (final transaction) =>
                   fixture.accountCreationUtil.verifyAccountRequest(
-                session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
-                transaction: transaction,
+                    session,
+                    accountRequestId: accountRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            );
+          });
+          test('then it succeeds and returns the account request', () async {
+            await expectLater(
+              verifyAccountRequestFuture,
+              completion(
+                isA<EmailAccountRequest>()
+                    .having(
+                      (final request) => request.id,
+                      'id',
+                      equals(accountRequestId),
+                    )
+                    .having(
+                      (final request) => request.email,
+                      'email',
+                      equals(email),
+                    ),
               ),
             );
+          });
 
-            await expectLater(
-              result,
-              throwsA(isA<EmailAccountRequestVerificationExpiredException>()),
+          test('then the account request can be finalized', () async {
+            await verifyAccountRequestFuture;
+
+            final authUser = await fixture.createAuthUser(session);
+
+            final finalizeAccountRequestFuture = session.db.transaction(
+              (final transaction) =>
+                  fixture.accountCreationUtil.finalizeAccountRequest(
+                    session,
+                    accountRequestId: accountRequestId,
+                    authUserId: authUser.id,
+                    transaction: transaction,
+                  ),
             );
-          },
-        );
-      });
+            await expectLater(finalizeAccountRequestFuture, completes);
+          });
+        },
+      );
+
+      test(
+        'when verify account request is called with invalid verification code then it throws invalid verification code exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: '$verificationCode-invalid',
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
+          );
+        },
+      );
+
+      test(
+        'when verify account request is called with valid code after expiration then it throws verification expired exception',
+        () async {
+          const registrationVerificationCodeLifetime = Duration(hours: 1);
+
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                registrationVerificationCodeLifetime + const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = session.db.transaction(
+                (final transaction) =>
+                    fixture.accountCreationUtil.verifyAccountRequest(
+                      session,
+                      accountRequestId: accountRequestId,
+                      verificationCode: verificationCode,
+                      transaction: transaction,
+                    ),
+              );
+
+              await expectLater(
+                result,
+                throwsA(isA<EmailAccountRequestVerificationExpiredException>()),
+              );
+            },
+          );
+        },
+      );
     },
   );
 
@@ -177,11 +180,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -190,11 +193,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
       });
 
@@ -203,21 +206,22 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it succeeds and returns the account request',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with valid verification code then it succeeds and returns the account request',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNotNull);
-        expect(request.id, equals(accountRequestId));
-      });
+          expect(request, isNotNull);
+          expect(request.id, equals(accountRequestId));
+        },
+      );
     },
   );
 
@@ -247,11 +251,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -260,11 +264,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
 
         final authUser = await fixture.createAuthUser(session);
@@ -272,11 +276,11 @@ void main() {
         await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.finalizeAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            authUserId: authUser.id,
-            transaction: transaction,
-          ),
+                session,
+                accountRequestId: accountRequestId,
+                authUserId: authUser.id,
+                transaction: transaction,
+              ),
         );
       });
 
@@ -285,23 +289,24 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with valid verification code then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -332,11 +337,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -346,11 +351,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.verifyAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -362,21 +367,22 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it succeeds and returns account request',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with valid verification code then it succeeds and returns account request',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNotNull);
-        expect(request.id, equals(accountRequestId));
-      });
+          expect(request, isNotNull);
+          expect(request.id, equals(accountRequestId));
+        },
+      );
     },
   );
 
@@ -407,11 +413,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -421,11 +427,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.verifyAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -437,24 +443,26 @@ void main() {
       });
 
       test(
-          'when verify account request is called with invalid verification code then it throws too many attempts exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: 'wrong-code',
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with invalid verification code then it throws too many attempts exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-              isA<EmailAccountRequestVerificationTooManyAttemptsException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>(),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -485,11 +493,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -499,11 +507,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.verifyAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestInvalidVerificationCodeException {
           // Expected
@@ -514,11 +522,11 @@ void main() {
           await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.verifyAccountRequest(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: 'wrong-code',
+                  transaction: transaction,
+                ),
           );
         } on EmailAccountRequestVerificationTooManyAttemptsException {
           // Expected - this should delete the request
@@ -530,23 +538,24 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with valid verification code then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -578,11 +587,11 @@ void main() {
         final result = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
+                session,
+                email: email,
+                password: password,
+                transaction: transaction,
+              ),
         );
 
         accountRequestId = result.accountRequestId!;
@@ -599,11 +608,11 @@ void main() {
               await session.db.transaction(
                 (final transaction) =>
                     fixture.accountCreationUtil.verifyAccountRequest(
-                  session,
-                  accountRequestId: accountRequestId,
-                  verificationCode: verificationCode,
-                  transaction: transaction,
-                ),
+                      session,
+                      accountRequestId: accountRequestId,
+                      verificationCode: verificationCode,
+                      transaction: transaction,
+                    ),
               );
             } on EmailAccountRequestVerificationExpiredException {
               // Expected - this should delete the request
@@ -617,23 +626,24 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+        'when verify account request is called with valid verification code then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 }

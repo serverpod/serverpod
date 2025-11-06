@@ -16,11 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
 
 abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Course._({
-    this.id,
-    required this.name,
-    this.enrollments,
-  });
+  Course._({this.id, required this.name, this.enrollments});
 
   factory Course({
     int? id,
@@ -32,9 +28,10 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Course(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments:
+          (jsonSerialization['enrollments'] as List?)
+              ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -55,11 +52,7 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Course copyWith({
-    int? id,
-    String? name,
-    List<_i2.Enrollment>? enrollments,
-  });
+  Course copyWith({int? id, String? name, List<_i2.Enrollment>? enrollments});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -76,8 +69,9 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -118,11 +112,7 @@ class _CourseImpl extends Course {
     int? id,
     required String name,
     List<_i2.Enrollment>? enrollments,
-  }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+  }) : super._(id: id, name: name, enrollments: enrollments);
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
@@ -136,9 +126,10 @@ class _CourseImpl extends Course {
     return Course(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.Enrollment>?
-          ? enrollments
-          : this.enrollments?.map((e0) => e0.copyWith()).toList(),
+      enrollments:
+          enrollments is List<_i2.Enrollment>?
+              ? enrollments
+              : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -146,19 +137,14 @@ class _CourseImpl extends Course {
 class CourseUpdateTable extends _i1.UpdateTable<CourseTable> {
   CourseUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class CourseTable extends _i1.Table<int?> {
   CourseTable({super.tableRelation}) : super(tableName: 'course') {
     updateTable = CourseUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final CourseUpdateTable updateTable;
@@ -176,8 +162,9 @@ class CourseTable extends _i1.Table<int?> {
       field: Course.t.id,
       foreignField: _i2.Enrollment.t.courseId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
@@ -189,22 +176,21 @@ class CourseTable extends _i1.Table<int?> {
       field: Course.t.id,
       foreignField: _i2.Enrollment.t.courseId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EnrollmentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.EnrollmentTable(tableRelation: foreignTableRelation),
     );
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -368,10 +354,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Course>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Course>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Course] and returns the inserted row.
@@ -382,10 +365,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Course>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Course>(row, transaction: transaction);
   }
 
   /// Updates all [Course]s in the list and returns the updated rows. If
@@ -470,10 +450,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Course>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Course>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Course].
@@ -482,10 +459,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Course>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Course>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

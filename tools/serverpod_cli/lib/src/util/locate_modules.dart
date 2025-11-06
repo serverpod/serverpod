@@ -61,9 +61,10 @@ Set<Package> _listModuleDependencies({
 
     visitedModules.add(moduleName);
 
-    var packageInfo = packageConfig.packages
-        .where((pkg) => pkg.name == moduleName)
-        .firstOrNull;
+    var packageInfo =
+        packageConfig.packages
+            .where((pkg) => pkg.name == moduleName)
+            .firstOrNull;
 
     if (packageInfo == null) {
       throw ServerpodModulesNotFoundException(
@@ -102,8 +103,9 @@ List<ModuleConfig> _loadModuleConfigs({
 
       var packageSrcRoot = packageInfo.root;
 
-      var generatorConfigUri =
-          packageSrcRoot.resolve(path.joinAll(['config', 'generator.yaml']));
+      var generatorConfigUri = packageSrcRoot.resolve(
+        path.joinAll(['config', 'generator.yaml']),
+      );
 
       var generatorConfigFile = File.fromUri(generatorConfigUri);
       if (!generatorConfigFile.existsSync()) {
@@ -142,9 +144,7 @@ Map<dynamic, dynamic> loadConfigFile(File file) {
   return loadYaml(yaml) as Map;
 }
 
-List<String> findAllMigrationVersionsSync({
-  required Directory directory,
-}) {
+List<String> findAllMigrationVersionsSync({required Directory directory}) {
   try {
     var migrationRoot = MigrationConstants.migrationsBaseDirectory(directory);
 
@@ -186,7 +186,5 @@ class LocateModuleNameFromServerPackageNameException implements Exception {
   final String packageName;
 
   /// Creates a new [LocateModuleNameFromServerPackageNameException].
-  LocateModuleNameFromServerPackageNameException({
-    required this.packageName,
-  });
+  LocateModuleNameFromServerPackageNameException({required this.packageName});
 }

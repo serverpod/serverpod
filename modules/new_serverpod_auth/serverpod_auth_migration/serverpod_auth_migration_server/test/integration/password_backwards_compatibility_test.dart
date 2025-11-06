@@ -13,12 +13,14 @@ import './test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManager = new_auth_core.AuthSessionsTokenManager(
-    config:
-        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+    config: new_auth_core.AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
   );
 
-  const newEmailIDPConfig =
-      new_email_idp.EmailIDPConfig(secretHashPepper: 'test');
+  const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
+    secretHashPepper: 'test',
+  );
   late final new_email_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
@@ -33,10 +35,7 @@ void main() {
   });
 
   tearDownAll(() async {
-    AuthServices.set(
-      identityProviders: [],
-      primaryTokenManager: tokenManager,
-    );
+    AuthServices.set(identityProviders: [], primaryTokenManager: tokenManager);
   });
   withServerpod(
     'Given a legacy `serverpod_auth` email-based user account migrated with `migrateUsers`,',
@@ -88,9 +87,11 @@ void main() {
               password: password,
               transaction: null,
             ),
-            throwsA(isA<
-                new_email_idp
-                .EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_email_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );

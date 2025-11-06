@@ -17,8 +17,8 @@ abstract class DoubleDefaultModel implements _i1.SerializableModel {
     this.id,
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
-  })  : doubleDefaultModel = doubleDefaultModel ?? 10.5,
-        doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
+  }) : doubleDefaultModel = doubleDefaultModel ?? 10.5,
+       doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
 
   factory DoubleDefaultModel({
     int? id,
@@ -76,10 +76,10 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
   }) : super._(
-          id: id,
-          doubleDefaultModel: doubleDefaultModel,
-          doubleDefaultModelNull: doubleDefaultModelNull,
-        );
+         id: id,
+         doubleDefaultModel: doubleDefaultModel,
+         doubleDefaultModelNull: doubleDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultModel]
   /// with some or all fields replaced by the given arguments.

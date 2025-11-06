@@ -16,26 +16,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 
 abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Arena._({
-    this.id,
-    required this.name,
-    this.team,
-  });
+  Arena._({this.id, required this.name, this.team});
 
-  factory Arena({
-    int? id,
-    required String name,
-    _i2.Team? team,
-  }) = _ArenaImpl;
+  factory Arena({int? id, required String name, _i2.Team? team}) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
     return Arena(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      team: jsonSerialization['team'] == null
-          ? null
-          : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+      team:
+          jsonSerialization['team'] == null
+              ? null
+              : _i2.Team.fromJson(
+                (jsonSerialization['team'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -56,11 +50,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Arena copyWith({
-    int? id,
-    String? name,
-    _i2.Team? team,
-  });
+  Arena copyWith({int? id, String? name, _i2.Team? team});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -112,15 +102,8 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 class _Undefined {}
 
 class _ArenaImpl extends Arena {
-  _ArenaImpl({
-    int? id,
-    required String name,
-    _i2.Team? team,
-  }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+  _ArenaImpl({int? id, required String name, _i2.Team? team})
+    : super._(id: id, name: name, team: team);
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
@@ -142,19 +125,14 @@ class _ArenaImpl extends Arena {
 class ArenaUpdateTable extends _i1.UpdateTable<ArenaTable> {
   ArenaUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class ArenaTable extends _i1.Table<int?> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
     updateTable = ArenaUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final ArenaUpdateTable updateTable;
@@ -170,17 +148,15 @@ class ArenaTable extends _i1.Table<int?> {
       field: Arena.t.id,
       foreignField: _i2.Team.t.arenaId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.TeamTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -340,10 +316,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Arena>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Arena>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Arena] and returns the inserted row.
@@ -354,10 +327,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Arena>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Arena>(row, transaction: transaction);
   }
 
   /// Updates all [Arena]s in the list and returns the updated rows. If
@@ -442,10 +412,7 @@ class ArenaRepository {
     List<Arena> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Arena>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Arena>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Arena].
@@ -454,10 +421,7 @@ class ArenaRepository {
     Arena row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Arena>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Arena>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

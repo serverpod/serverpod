@@ -26,13 +26,8 @@ void main() {
             serverSideValue: 'serverSideValue',
           );
           final result = await client.customTypes
-              .returnCustomClassWithoutProtocolSerialization(
-            customClass,
-          );
-          expect(
-            result.serverSideValue,
-            customClass.serverSideValue,
-          );
+              .returnCustomClassWithoutProtocolSerialization(customClass);
+          expect(result.serverSideValue, customClass.serverSideValue);
         },
       );
 
@@ -43,13 +38,8 @@ void main() {
             value: 'value',
           );
           final result = await client.customTypes
-              .returnCustomClassWithoutProtocolSerialization(
-            customClass,
-          );
-          expect(
-            result.value,
-            customClass.value,
-          );
+              .returnCustomClassWithoutProtocolSerialization(customClass);
+          expect(result.value, customClass.value);
         },
       );
     });
@@ -63,13 +53,8 @@ void main() {
             value: 'value',
           );
           final result = await client.customTypes
-              .returnCustomClassWithProtocolSerialization(
-            customClass,
-          );
-          expect(
-            result.serverSideValue,
-            isNull,
-          );
+              .returnCustomClassWithProtocolSerialization(customClass);
+          expect(result.serverSideValue, isNull);
         },
       );
 
@@ -80,52 +65,39 @@ void main() {
             value: 'value',
           );
           final result = await client.customTypes
-              .returnCustomClassWithProtocolSerialization(
-            customClass,
-          );
-          expect(
-            result.value,
-            customClass.value,
-          );
+              .returnCustomClassWithProtocolSerialization(customClass);
+          expect(result.value, customClass.value);
         },
       );
     });
 
     group(
-        'that does not implement ProtocolSerialization but has the "toJsonForProtocol" method',
-        () {
-      test(
-        'with the "serverSideValue" field set when the method is called then the server returns the "serverSideValue"',
-        () async {
-          final customClass = CustomClassWithProtocolSerializationMethod(
-            serverSideValue: 'serverSideValue',
-          );
-          final result = await client.customTypes
-              .returnCustomClassWithProtocolSerializationMethod(
-            customClass,
-          );
-          expect(
-            result.serverSideValue,
-            customClass.serverSideValue,
-          );
-        },
-      );
+      'that does not implement ProtocolSerialization but has the "toJsonForProtocol" method',
+      () {
+        test(
+          'with the "serverSideValue" field set when the method is called then the server returns the "serverSideValue"',
+          () async {
+            final customClass = CustomClassWithProtocolSerializationMethod(
+              serverSideValue: 'serverSideValue',
+            );
+            final result = await client.customTypes
+                .returnCustomClassWithProtocolSerializationMethod(customClass);
+            expect(result.serverSideValue, customClass.serverSideValue);
+          },
+        );
 
-      test(
+        test(
           'with the "value" field set when the method is called then the server returns the "value"',
           () async {
-        final customClass = CustomClassWithProtocolSerializationMethod(
-          value: 'value',
+            final customClass = CustomClassWithProtocolSerializationMethod(
+              value: 'value',
+            );
+            final result = await client.customTypes
+                .returnCustomClassWithProtocolSerializationMethod(customClass);
+            expect(result.value, customClass.value);
+          },
         );
-        final result = await client.customTypes
-            .returnCustomClassWithProtocolSerializationMethod(
-          customClass,
-        );
-        expect(
-          result.value,
-          customClass.value,
-        );
-      });
-    });
+      },
+    );
   });
 }

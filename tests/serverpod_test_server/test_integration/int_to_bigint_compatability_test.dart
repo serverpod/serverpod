@@ -36,10 +36,7 @@ UPDATE "$tableName" SET anInt = $newValue WHERE id = $id::bigint RETURNING *;
 ''');
 
       expect(result, [
-        [
-          id,
-          newValue,
-        ]
+        [id, newValue],
       ]);
     });
 
@@ -51,10 +48,7 @@ INSERT INTO "$tableName" (anInt) VALUES ($newValue::bigint) RETURNING *;
 ''');
 
       expect(result, [
-        [
-          expectedId,
-          newValue,
-        ]
+        [expectedId, newValue],
       ]);
     });
 
@@ -64,10 +58,7 @@ SELECT * FROM "$tableName" WHERE anInt = $initialValue::bigint;
 ''');
 
       expect(result, [
-        [
-          1,
-          initialValue,
-        ]
+        [1, initialValue],
       ]);
     });
   });

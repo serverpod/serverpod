@@ -25,10 +25,6 @@ class ParameterDefinitionBuilder {
   }
 
   ParameterDefinition build() {
-    return ParameterDefinition(
-      name: _name,
-      type: _type,
-      required: _required,
-    );
+    return ParameterDefinition(name: _name, type: _type, required: _required);
   }
 }

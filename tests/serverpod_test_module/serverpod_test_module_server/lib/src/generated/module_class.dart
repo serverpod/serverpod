@@ -16,11 +16,7 @@ import 'package:serverpod_test_module_server/src/generated/protocol.dart'
 
 abstract class ModuleClass
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ModuleClass._({
-    required this.name,
-    required this.data,
-    this.record,
-  });
+  ModuleClass._({required this.name, required this.data, this.record});
 
   factory ModuleClass({
     required String name,
@@ -32,10 +28,12 @@ abstract class ModuleClass
     return ModuleClass(
       name: jsonSerialization['name'] as String,
       data: jsonSerialization['data'] as int,
-      record: jsonSerialization['record'] == null
-          ? null
-          : _i2.Protocol().deserialize<(bool,)?>(
-              (jsonSerialization['record'] as Map<String, dynamic>)),
+      record:
+          jsonSerialization['record'] == null
+              ? null
+              : _i2.Protocol().deserialize<(bool,)?>(
+                (jsonSerialization['record'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -48,11 +46,7 @@ abstract class ModuleClass
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ModuleClass copyWith({
-    String? name,
-    int? data,
-    (bool,)? record,
-  });
+  ModuleClass copyWith({String? name, int? data, (bool,)? record});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -80,31 +74,21 @@ abstract class ModuleClass
 class _Undefined {}
 
 class _ModuleClassImpl extends ModuleClass {
-  _ModuleClassImpl({
-    required String name,
-    required int data,
-    (bool,)? record,
-  }) : super._(
-          name: name,
-          data: data,
-          record: record,
-        );
+  _ModuleClassImpl({required String name, required int data, (bool,)? record})
+    : super._(name: name, data: data, record: record);
 
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ModuleClass copyWith({
-    String? name,
-    int? data,
-    Object? record = _Undefined,
-  }) {
+  ModuleClass copyWith({String? name, int? data, Object? record = _Undefined}) {
     return ModuleClass(
       name: name ?? this.name,
       data: data ?? this.data,
-      record: record is (bool,)?
-          ? record
-          : this.record == null
+      record:
+          record is (bool,)?
+              ? record
+              : this.record == null
               ? null
               : (this.record!.$1,),
     );

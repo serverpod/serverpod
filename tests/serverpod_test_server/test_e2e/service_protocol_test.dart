@@ -109,7 +109,8 @@ void main() {
 
     test('Long log message', () async {
       await client.logging.logInfo(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.');
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      );
     });
 
     test('Error log level', () async {
@@ -179,7 +180,9 @@ void main() {
       var logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
-          logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+        logResult.sessionLog[0].sessionLogEntry.endpoint,
+        equals('logging'),
+      );
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
 
       await client.logging.logInfo('test');
@@ -190,7 +193,9 @@ void main() {
       logResult = await serviceClient.insights.getSessionLog(1, null);
       expect(logResult.sessionLog.length, equals(1));
       expect(
-          logResult.sessionLog[0].sessionLogEntry.endpoint, equals('logging'));
+        logResult.sessionLog[0].sessionLogEntry.endpoint,
+        equals('logging'),
+      );
       expect(logResult.sessionLog[0].sessionLogEntry.method, equals('logInfo'));
     });
 
@@ -228,7 +233,9 @@ void main() {
       expect(logResult.sessionLog[0].logs.length, equals(1));
       expect(logResult.sessionLog[0].logs[0].message, equals('42'));
       expect(
-          logResult.sessionLog[0].sessionLogEntry.method, equals('testCall'));
+        logResult.sessionLog[0].sessionLogEntry.method,
+        equals('testCall'),
+      );
     });
 
     test('Slow call logging', () async {
@@ -317,10 +324,13 @@ void main() {
         var tableDefinitions =
             await serviceClient.insights.getTargetTableDefinition();
 
-        expect(tableDefinitions.map((e) => e.name),
-            contains('object_field_scopes'));
-        var table =
-            tableDefinitions.firstWhere((e) => e.name == 'object_field_scopes');
+        expect(
+          tableDefinitions.map((e) => e.name),
+          contains('object_field_scopes'),
+        );
+        var table = tableDefinitions.firstWhere(
+          (e) => e.name == 'object_field_scopes',
+        );
         expect(table.schema, 'public');
         expect(table.tableSpace, null);
         expect(table.columns, hasLength(3));
@@ -347,19 +357,22 @@ void main() {
         ];
 
         for (var expectedTable in expectedTables) {
-          expect(tableDefinitions.where((table) => table.name == expectedTable),
-              hasLength(1));
+          expect(
+            tableDefinitions.where((table) => table.name == expectedTable),
+            hasLength(1),
+          );
         }
       });
       test('columns only contains database fields', () async {
         var tableDefinitions =
             await serviceClient.insights.getTargetTableDefinition();
 
-        var columns = tableDefinitions
-            .firstWhere((table) => table.name == 'object_field_scopes')
-            .columns
-            .map((c) => c.name)
-            .toList();
+        var columns =
+            tableDefinitions
+                .firstWhere((table) => table.name == 'object_field_scopes')
+                .columns
+                .map((c) => c.name)
+                .toList();
         expect(columns, hasLength(3));
         expect(columns, containsAll(['id', 'normal', 'database']));
       });
@@ -368,17 +381,24 @@ void main() {
         var tableDefinitions =
             await serviceClient.insights.getTargetTableDefinition();
 
-        var table = tableDefinitions
-            .firstWhere((table) => table.name == 'object_with_parent');
+        var table = tableDefinitions.firstWhere(
+          (table) => table.name == 'object_with_parent',
+        );
 
         expect(table.foreignKeys, hasLength(1));
         expect(
-            table.foreignKeys.first.constraintName, 'object_with_parent_fk_0');
+          table.foreignKeys.first.constraintName,
+          'object_with_parent_fk_0',
+        );
         expect(table.foreignKeys.first.referenceTable, 'object_field_scopes');
-        expect(table.foreignKeys.first.onUpdate,
-            service.ForeignKeyAction.noAction);
-        expect(table.foreignKeys.first.onDelete,
-            service.ForeignKeyAction.noAction);
+        expect(
+          table.foreignKeys.first.onUpdate,
+          service.ForeignKeyAction.noAction,
+        );
+        expect(
+          table.foreignKeys.first.onDelete,
+          service.ForeignKeyAction.noAction,
+        );
         expect(table.foreignKeys.first.matchType, isNull);
         expect(table.foreignKeys.first.columns, hasLength(1));
         expect(table.foreignKeys.first.columns.first, 'other');
@@ -390,8 +410,9 @@ void main() {
         var tableDefinitions =
             await serviceClient.insights.getTargetTableDefinition();
 
-        var table = tableDefinitions
-            .firstWhere((table) => table.name == 'object_with_index');
+        var table = tableDefinitions.firstWhere(
+          (table) => table.name == 'object_with_index',
+        );
 
         expect(table.indexes, hasLength(2));
         expect(table.indexes[0].indexName, 'object_with_index_pkey');
@@ -401,8 +422,10 @@ void main() {
         expect(table.indexes[0].tableSpace, isNull);
         expect(table.indexes[0].type, 'btree');
         expect(table.indexes[0].elements, hasLength(1));
-        expect(table.indexes[0].elements.first.type,
-            service.IndexElementDefinitionType.column);
+        expect(
+          table.indexes[0].elements.first.type,
+          service.IndexElementDefinitionType.column,
+        );
         expect(table.indexes[0].elements.first.definition, 'id');
 
         expect(table.indexes[1].indexName, 'object_with_index_test_index');
@@ -412,11 +435,15 @@ void main() {
         expect(table.indexes[1].tableSpace, isNull);
         expect(table.indexes[1].type, 'brin');
         expect(table.indexes[1].elements, hasLength(2));
-        expect(table.indexes[1].elements[0].type,
-            service.IndexElementDefinitionType.column);
+        expect(
+          table.indexes[1].elements[0].type,
+          service.IndexElementDefinitionType.column,
+        );
         expect(table.indexes[1].elements[0].definition, 'indexed');
-        expect(table.indexes[1].elements[1].type,
-            service.IndexElementDefinitionType.column);
+        expect(
+          table.indexes[1].elements[1].type,
+          service.IndexElementDefinitionType.column,
+        );
         expect(table.indexes[1].elements[1].definition, 'indexed2');
       });
 
@@ -424,33 +451,36 @@ void main() {
         var tableDefinitions =
             await serviceClient.insights.getTargetTableDefinition();
 
-        var columns = tableDefinitions
-            .firstWhere((table) => table.name == 'object_with_object')
-            .columns
-            .map((c) => c.dartType)
-            .toList();
+        var columns =
+            tableDefinitions
+                .firstWhere((table) => table.name == 'object_with_object')
+                .columns
+                .map((c) => c.dartType)
+                .toList();
 
         expect(columns, hasLength(10));
         expect(
-            columns,
-            containsAll([
-              'int?',
-              'protocol:SimpleData',
-              'protocol:SimpleData?',
-              'List<protocol:SimpleData>',
-              'List<protocol:SimpleData>?',
-              'List<protocol:SimpleData?>',
-              'List<protocol:SimpleData?>?',
-              'List<List<protocol:SimpleData>>?',
-              'Map<String,List<List<Map<int,protocol:SimpleData>>?>>?',
-              'Map<String,Map<int,protocol:SimpleData>>?',
-            ]));
+          columns,
+          containsAll([
+            'int?',
+            'protocol:SimpleData',
+            'protocol:SimpleData?',
+            'List<protocol:SimpleData>',
+            'List<protocol:SimpleData>?',
+            'List<protocol:SimpleData?>',
+            'List<protocol:SimpleData?>?',
+            'List<List<protocol:SimpleData>>?',
+            'Map<String,List<List<Map<int,protocol:SimpleData>>?>>?',
+            'Map<String,Map<int,protocol:SimpleData>>?',
+          ]),
+        );
 
-        var columnsWithScopes = tableDefinitions
-            .firstWhere((table) => table.name == 'object_field_scopes')
-            .columns
-            .map((c) => c.dartType)
-            .toList();
+        var columnsWithScopes =
+            tableDefinitions
+                .firstWhere((table) => table.name == 'object_field_scopes')
+                .columns
+                .map((c) => c.dartType)
+                .toList();
 
         expect(columnsWithScopes, hasLength(3));
         expect(columnsWithScopes, containsAll(['int?', 'String', 'String?']));
@@ -469,18 +499,16 @@ void main() {
 
   group('File retrieval', () {
     test('Fetch lib/src/generated/protocol.yaml file', () async {
-      var file = await serviceClient.insights
-          .fetchFile('lib/src/generated/protocol.yaml');
+      var file = await serviceClient.insights.fetchFile(
+        'lib/src/generated/protocol.yaml',
+      );
       expect(file, isNotNull);
       expect(file.length, greaterThan(0));
     });
     test('Fetch file outside whitelist', () async {
-      expect(
-        () async {
-          await serviceClient.insights.fetchFile('config/passwords.yaml');
-        },
-        throwsA(isA<service.AccessDeniedException>()),
-      );
+      expect(() async {
+        await serviceClient.insights.fetchFile('config/passwords.yaml');
+      }, throwsA(isA<service.AccessDeniedException>()));
     });
   });
 }
@@ -488,12 +516,15 @@ void main() {
 extension on service.DatabaseDefinition {
   void matchesTarget(List<service.TableDefinition> targetTables) {
     expect(tables, hasLength(targetTables.length));
-    expect(tables.map((e) => e.name),
-        containsAll(targetTables.map((e) => e.name)));
+    expect(
+      tables.map((e) => e.name),
+      containsAll(targetTables.map((e) => e.name)),
+    );
 
     for (var table in tables) {
       table.matchesDefinition(
-          targetTables.firstWhere((e) => e.name == table.name));
+        targetTables.firstWhere((e) => e.name == table.name),
+      );
     }
   }
 }
@@ -507,27 +538,38 @@ extension on service.TableDefinition {
       expect(tableSpace, definition.tableSpace);
 
       expect(columns, hasLength(definition.columns.length));
-      expect(columns.map((e) => e.name),
-          containsAll(definition.columns.map((e) => e.name)));
+      expect(
+        columns.map((e) => e.name),
+        containsAll(definition.columns.map((e) => e.name)),
+      );
       for (var column in columns) {
         column.matchesDefinition(
-            definition.columns.firstWhere((e) => e.name == column.name));
+          definition.columns.firstWhere((e) => e.name == column.name),
+        );
       }
 
       expect(columns, hasLength(definition.columns.length));
-      expect(columns.map((e) => e.name),
-          containsAll(definition.columns.map((e) => e.name)));
+      expect(
+        columns.map((e) => e.name),
+        containsAll(definition.columns.map((e) => e.name)),
+      );
       for (var column in columns) {
         column.matchesDefinition(
-            definition.columns.firstWhere((e) => e.name == column.name));
+          definition.columns.firstWhere((e) => e.name == column.name),
+        );
       }
 
       expect(foreignKeys, hasLength(definition.foreignKeys.length));
-      expect(foreignKeys.map((e) => e.constraintName),
-          containsAll(definition.foreignKeys.map((e) => e.constraintName)));
+      expect(
+        foreignKeys.map((e) => e.constraintName),
+        containsAll(definition.foreignKeys.map((e) => e.constraintName)),
+      );
       for (var foreignKey in foreignKeys) {
-        foreignKey.matchesDefinition(definition.foreignKeys
-            .firstWhere((e) => e.constraintName == foreignKey.constraintName));
+        foreignKey.matchesDefinition(
+          definition.foreignKeys.firstWhere(
+            (e) => e.constraintName == foreignKey.constraintName,
+          ),
+        );
       }
 
       expect(indexes, hasLength(definition.indexes.length));
@@ -538,8 +580,11 @@ extension on service.TableDefinition {
       );
       for (var index in indexes) {
         // Converting to lower case, since Serverpod does not quote index names in the generated SQL.
-        index.matchesDefinition(definition.indexes.firstWhere(
-            (e) => e.indexName.toLowerCase() == index.indexName.toLowerCase()));
+        index.matchesDefinition(
+          definition.indexes.firstWhere(
+            (e) => e.indexName.toLowerCase() == index.indexName.toLowerCase(),
+          ),
+        );
       }
     }
   }
@@ -558,7 +603,9 @@ extension on service.ForeignKeyDefinition {
   void matchesDefinition(service.ForeignKeyDefinition definition) {
     expect(constraintName, definition.constraintName);
     expect(
-        matchType, definition.matchType ?? service.ForeignKeyMatchType.simple);
+      matchType,
+      definition.matchType ?? service.ForeignKeyMatchType.simple,
+    );
     expect(onUpdate, definition.onUpdate ?? service.ForeignKeyAction.noAction);
     expect(onDelete, definition.onDelete ?? service.ForeignKeyAction.noAction);
     expect(referenceTable, definition.referenceTable);

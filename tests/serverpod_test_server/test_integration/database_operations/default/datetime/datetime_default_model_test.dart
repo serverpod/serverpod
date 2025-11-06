@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultModel" fields,', () {
-    tearDownAll(() async => DateTimeDefaultModel.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DateTimeDefaultModel.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultModel=now" field should be in UTC',
@@ -106,10 +108,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.dateTimeDefaultModelNow,
-          date,
-        );
+        expect(specificDatabaseObject.dateTimeDefaultModelNow, date);
       },
     );
 
@@ -124,10 +123,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.dateTimeDefaultModelStr,
-          date,
-        );
+        expect(specificDatabaseObject.dateTimeDefaultModelStr, date);
       },
     );
 
@@ -142,10 +138,7 @@ void main() async {
           session,
           specificObject,
         );
-        expect(
-          specificDatabaseObject.dateTimeDefaultModelStrNull,
-          date,
-        );
+        expect(specificDatabaseObject.dateTimeDefaultModelStrNull, date);
       },
     );
   });

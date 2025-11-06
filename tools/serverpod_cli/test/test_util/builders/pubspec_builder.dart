@@ -23,10 +23,7 @@ class PubspecDependencyBuilder {
   }
 
   PubspecDependency build() {
-    return PubspecDependency(
-      name: _name,
-      version: _version,
-    );
+    return PubspecDependency(name: _name, version: _version);
   }
 }
 
@@ -84,9 +81,7 @@ class PubspecBuilder {
       _name,
       version: _version,
       description: _description,
-      environment: {
-        'sdk': _sdk,
-      },
+      environment: {'sdk': _sdk},
       dependencies: {
         for (var dep in _dependencies)
           dep.name: HostedDependency(version: dep.version),

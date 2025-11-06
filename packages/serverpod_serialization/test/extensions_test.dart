@@ -12,10 +12,7 @@ void main() {
       String time = '2024-01-01T00:00:00.000Z';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
 
-      expect(
-        dateTime.toJson(),
-        time,
-      );
+      expect(dateTime.toJson(), time);
     },
   );
 
@@ -25,10 +22,7 @@ void main() {
       DateTime time = DateTime.parse('2024-01-01T00:00:00.000Z');
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
 
-      expect(
-        dateTime,
-        time,
-      );
+      expect(dateTime, time);
     },
   );
 
@@ -38,10 +32,7 @@ void main() {
       String time = '2024-01-01T00:00:00.000';
       DateTime dateTime = DateTimeJsonExtension.fromJson(time);
 
-      expect(
-        dateTime.toJson(),
-        isNot(time),
-      );
+      expect(dateTime.toJson(), isNot(time));
     },
   );
 
@@ -51,10 +42,7 @@ void main() {
       int milliseconds = 100000;
       Duration duration = DurationJsonExtension.fromJson(milliseconds);
 
-      expect(
-        duration.toJson(),
-        milliseconds,
-      );
+      expect(duration.toJson(), milliseconds);
     },
   );
 
@@ -64,10 +52,7 @@ void main() {
       Duration value = const Duration(milliseconds: 100000);
       Duration duration = DurationJsonExtension.fromJson(value);
 
-      expect(
-        duration,
-        value,
-      );
+      expect(duration, value);
     },
   );
 
@@ -77,44 +62,39 @@ void main() {
       String value = '00000000-0000-0000-0000-000000000000';
       UuidValue uuidValue = UuidValueJsonExtension.fromJson(value);
 
-      expect(
-        uuidValue.toJson(),
-        value,
-      );
+      expect(uuidValue.toJson(), value);
     },
   );
 
   test(
     'Given a UuidValue object, when passed to UuidValueJsonExtension.fromJson, then it remains unchanged',
     () {
-      UuidValue value =
-          UuidValue.fromString('00000000-0000-0000-0000-000000000000');
+      UuidValue value = UuidValue.fromString(
+        '00000000-0000-0000-0000-000000000000',
+      );
       UuidValue uuidValue = UuidValueJsonExtension.fromJson(value);
 
-      expect(
-        uuidValue,
-        value,
-      );
+      expect(uuidValue, value);
     },
   );
 
   test(
-      'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
-      () {
-    String value = 'hello world';
-    expect(() => UuidValueJsonExtension.fromJson(value),
-        throwsA(isA<FormatException>()));
-  });
+    'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
+    () {
+      String value = 'hello world';
+      expect(
+        () => UuidValueJsonExtension.fromJson(value),
+        throwsA(isA<FormatException>()),
+      );
+    },
+  );
   test(
     'Given a base64-encoded string, when deserialized to ByteData and then serialized back to a string, then it matches the original string',
     () {
       String value = 'decode(\'AAECAwQFBgc=\', \'base64\')';
       ByteData byteData = ByteDataJsonExtension.fromJson(value);
 
-      expect(
-        byteData.toJson(),
-        value,
-      );
+      expect(byteData.toJson(), value);
     },
   );
 
@@ -123,13 +103,11 @@ void main() {
     () {
       String strValue = 'decode(\'AAECAwQFBgc=\', \'base64\')';
       ByteData value = ByteData.view(
-          base64Decode(strValue.substring(8, strValue.length - 12)).buffer);
+        base64Decode(strValue.substring(8, strValue.length - 12)).buffer,
+      );
       ByteData byteData = ByteDataJsonExtension.fromJson(value);
 
-      expect(
-        byteData,
-        value,
-      );
+      expect(byteData, value);
     },
   );
 
@@ -140,10 +118,7 @@ void main() {
       Uint8List value = base64Decode(strValue);
       ByteData byteData = ByteDataJsonExtension.fromJson(value);
 
-      expect(
-        byteData.lengthInBytes,
-        value.length,
-      );
+      expect(byteData.lengthInBytes, value.length);
     },
   );
 

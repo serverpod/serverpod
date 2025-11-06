@@ -33,12 +33,18 @@ abstract class EndpointWebsocketRequestHandler {
       var endpointDispatch = server.endpoints;
       for (var endpointConnector in endpointDispatch.connectors.values) {
         await _callStreamOpened(
-            session, endpointConnector.endpoint.name, endpointDispatch);
+          session,
+          endpointConnector.endpoint.name,
+          endpointDispatch,
+        );
       }
       for (var module in endpointDispatch.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamOpened(
-              session, endpointConnector.endpoint.name, module);
+            session,
+            endpointConnector.endpoint.name,
+            module,
+          );
         }
       }
 
@@ -62,9 +68,7 @@ abstract class EndpointWebsocketRequestHandler {
 
             if (command == 'ping') {
               webSocket.trySendText(
-                SerializationManager.encodeForProtocol(
-                  {'command': 'pong'},
-                ),
+                SerializationManager.encodeForProtocol({'command': 'pong'}),
               );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
@@ -80,7 +84,9 @@ abstract class EndpointWebsocketRequestHandler {
           EndpointConnector endpointConnector;
           try {
             endpointConnector = await server.endpoints.getEndpointConnector(
-                session: session, endpointPath: endpointName);
+              session: session,
+              endpointPath: endpointName,
+            );
           } on NotAuthorizedException catch (_) {
             // User is not authorized to communicate with this endpoint.
             continue;
@@ -97,32 +103,41 @@ abstract class EndpointWebsocketRequestHandler {
           try {
             session.endpoint = endpointName;
 
-            message = server.serializationManager
-                .deserializeByClassName(serialization);
+            message = server.serializationManager.deserializeByClassName(
+              serialization,
+            );
 
             if (message == null) throw Exception('Streamed message was null');
 
-            await endpointConnector.endpoint
-                .handleStreamMessage(session, message);
+            await endpointConnector.endpoint.handleStreamMessage(
+              session,
+              message,
+            );
           } catch (e, s) {
             messageError = e;
             messageStackTrace = s;
 
-            _reportException(server, e, s,
-                message:
-                    'Internal server error. Uncaught exception in handleStreamMessage.',
-                session: session);
+            _reportException(
+              server,
+              e,
+              s,
+              message:
+                  'Internal server error. Uncaught exception in handleStreamMessage.',
+              session: session,
+            );
           }
 
           var duration = DateTime.now().difference(startTime);
-          unawaited(session.logManager?.logMessage(
-            messageId: session.nextMessageId(),
-            endpointName: endpointName,
-            messageName: serialization['className'],
-            duration: duration,
-            error: messageError?.toString(),
-            stackTrace: messageStackTrace,
-          ));
+          unawaited(
+            session.logManager?.logMessage(
+              messageId: session.nextMessageId(),
+              endpointName: endpointName,
+              messageName: serialization['className'],
+              duration: duration,
+              error: messageError?.toString(),
+              stackTrace: messageStackTrace,
+            ),
+          );
         }
       } catch (e, s) {
         error = e;
@@ -134,12 +149,18 @@ abstract class EndpointWebsocketRequestHandler {
       // TODO: Possibly keep a list of open streams instead
       for (var endpointConnector in server.endpoints.connectors.values) {
         await _callStreamClosed(
-            session, endpointConnector.endpoint.name, endpointDispatch);
+          session,
+          endpointConnector.endpoint.name,
+          endpointDispatch,
+        );
       }
       for (var module in server.endpoints.modules.values) {
         for (var endpointConnector in module.connectors.values) {
           await _callStreamClosed(
-              session, endpointConnector.endpoint.name, module);
+            session,
+            endpointConnector.endpoint.name,
+            module,
+          );
         }
       }
       await session.close(error: error, stackTrace: stackTrace);
@@ -209,9 +230,10 @@ abstract class EndpointWebsocketRequestHandler {
     stderr.writeln('$now ERROR: $e');
     stderr.writeln('$stackTrace');
 
-    var context = session != null
-        ? contextFromSession(session, request: request)
-        : request != null
+    var context =
+        session != null
+            ? contextFromSession(session, request: request)
+            : request != null
             ? contextFromRequest(server, request, OperationType.stream)
             : contextFromServer(server);
 

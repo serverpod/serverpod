@@ -27,9 +27,7 @@ class TemplateWidget extends WebWidget {
   Map<String, dynamic> values = {};
 
   /// Creates a new [TemplateWidget].
-  TemplateWidget({
-    required this.name,
-  }) {
+  TemplateWidget({required this.name}) {
     var cachedTemplate = templates[name];
     if (cachedTemplate == null) {
       throw StateError('Template $name.html missing for $runtimeType');

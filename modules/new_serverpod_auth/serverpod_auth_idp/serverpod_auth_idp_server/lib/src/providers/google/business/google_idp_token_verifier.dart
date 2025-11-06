@@ -50,10 +50,7 @@ class GoogleIdTokenVerifier {
     final String idToken, {
     final String? audience,
   }) async {
-    final idInfo = await _verifyToken(
-      idToken,
-      audience: audience,
-    );
+    final idInfo = await _verifyToken(idToken, audience: audience);
 
     final issuer = idInfo['iss'] as String?;
     if (issuer == null || !_googleIssuers.contains(issuer)) {
@@ -124,7 +121,8 @@ class GoogleIdTokenVerifier {
     if (response.statusCode != 200) {
       if (_cachedKeySet.postponeExpiration()) return;
       throw GoogleIdTokenValidationServerException(
-          'Failed to fetch certificates');
+        'Failed to fetch certificates',
+      );
     }
 
     final jwksJson = jsonDecode(response.body) as Map<String, dynamic>;
@@ -170,17 +168,20 @@ class GoogleIdTokenVerifier {
     if (iat == null) {
       throw GoogleIdTokenValidationServerException('Missing issued at claim');
     }
-    final issuedAt =
-        DateTime.fromMillisecondsSinceEpoch(iat * 1000, isUtc: true);
+    final issuedAt = DateTime.fromMillisecondsSinceEpoch(
+      iat * 1000,
+      isUtc: true,
+    );
     if (issuedAt.isAfter(now)) {
       throw GoogleIdTokenValidationServerException('Invalid issued at time');
     }
 
     if (audience != null) {
       final aud = claims['aud'];
-      final audienceMatches = aud is String
-          ? aud == audience
-          : aud is List && aud.contains(audience);
+      final audienceMatches =
+          aud is String
+              ? aud == audience
+              : aud is List && aud.contains(audience);
       if (!audienceMatches) {
         throw GoogleIdTokenValidationServerException('Audience does not match');
       }
@@ -205,9 +206,10 @@ class _CachedKeySet {
   _CachedKeySet(this._keys) : expiry = _newExpiry();
 
   static DateTime _newExpiry({final bool postpone = false}) {
-    final interval = postpone
-        ? GoogleIdTokenVerifier._cacheUpdateFailedInterval
-        : GoogleIdTokenVerifier._cacheExpirationInterval;
+    final interval =
+        postpone
+            ? GoogleIdTokenVerifier._cacheUpdateFailedInterval
+            : GoogleIdTokenVerifier._cacheExpirationInterval;
     return DateTime.now().add(interval);
   }
 

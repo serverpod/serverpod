@@ -64,10 +64,10 @@ class _SealedOtherChildImpl extends SealedOtherChild {
     required String sealedString,
     required int sealedOtherChildField,
   }) : super._(
-          sealedInt: sealedInt,
-          sealedString: sealedString,
-          sealedOtherChildField: sealedOtherChildField,
-        );
+         sealedInt: sealedInt,
+         sealedString: sealedString,
+         sealedOtherChildField: sealedOtherChildField,
+       );
 
   /// Returns a shallow copy of this [SealedOtherChild]
   /// with some or all fields replaced by the given arguments.

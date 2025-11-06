@@ -143,9 +143,9 @@ abstract class Session implements DatabaseAccessor {
     int? messageId,
     this.method,
     this.remoteInfo,
-  })  : _authenticationKey = authenticationKey,
-        _messageId = messageId,
-        sessionId = sessionId ?? const Uuid().v4obj() {
+  }) : _authenticationKey = authenticationKey,
+       _messageId = messageId,
+       sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
@@ -163,9 +163,9 @@ abstract class Session implements DatabaseAccessor {
       _logManager = SessionLogManager(
         logWriter,
         session: this,
-        settingsForSession: (Session session) => server
-            .serverpod.logSettingsManager
-            .getLogSettingsForSession(session),
+        settingsForSession:
+            (Session session) => server.serverpod.logSettingsManager
+                .getLogSettingsForSession(session),
         disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
       );
@@ -181,9 +181,7 @@ abstract class Session implements DatabaseAccessor {
 
     if (Features.enablePersistentLogging) {
       logWriters.add(
-        DatabaseLogWriter(
-          logWriterSession: session.serverpod.internalSession,
-        ),
+        DatabaseLogWriter(logWriterSession: session.serverpod.internalSession),
       );
     }
 
@@ -228,10 +226,7 @@ abstract class Session implements DatabaseAccessor {
   /// [stackTrace] if the session ended with an error and it should be written
   /// to the logs. Returns the session id, if the session has been logged to the
   /// database.
-  Future<int?> close({
-    dynamic error,
-    StackTrace? stackTrace,
-  }) async {
+  Future<int?> close({dynamic error, StackTrace? stackTrace}) async {
     if (_closed) return null;
     _closed = true;
 
@@ -293,10 +288,8 @@ abstract class Session implements DatabaseAccessor {
 class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
-  InternalSession({
-    required super.server,
-    super.enableLogging = true,
-  }) : super(endpoint: 'InternalSession');
+  InternalSession({required super.server, super.enableLogging = true})
+    : super(endpoint: 'InternalSession');
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -342,8 +335,8 @@ class MethodCallSession extends Session {
     required super.authenticationKey,
     super.enableLogging = true,
     super.remoteInfo,
-  })  : _method = method,
-        super(method: method);
+  }) : _method = method,
+       super(method: method);
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -381,8 +374,8 @@ class MethodStreamSession extends Session {
     required super.endpoint,
     required String method,
     required this.connectionId,
-  })  : _method = method,
-        super(method: method);
+  }) : _method = method,
+       super(method: method);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -424,8 +417,8 @@ class StreamingSession extends Session {
     required this.webSocket,
     super.endpoint = 'StreamingSession',
     super.enableLogging = true,
-  })  : _endpoint = endpoint,
-        super(messageId: 0) {
+  }) : _endpoint = endpoint,
+       super(messageId: 0) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -541,9 +534,9 @@ class StorageAccess {
   Future<List<Uri?>> getPublicUrls({
     required String storageId,
     required List<String> paths,
-  }) =>
-      Future.wait(
-          paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
+  }) => Future.wait(
+    paths.map((path) => getPublicUrl(storageId: storageId, path: path)),
+  );
 
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
@@ -559,7 +552,9 @@ class StorageAccess {
     }
 
     return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+      session: _session,
+      path: path,
+    );
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -589,18 +584,19 @@ class MessageCentralAccess {
     String channelName,
     MessageCentralListenerCallback listener,
   ) {
-    _session.server.messageCentral.addListener(
-      _session,
-      channelName,
-      listener,
-    );
+    _session.server.messageCentral.addListener(_session, channelName, listener);
   }
 
   /// Removes a listener from a named channel.
   void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
+    String channelName,
+    MessageCentralListenerCallback listener,
+  ) {
+    _session.server.messageCentral.removeListener(
+      _session,
+      channelName,
+      listener,
+    );
   }
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
@@ -615,12 +611,11 @@ class MessageCentralAccess {
     String channelName,
     SerializableModel message, {
     bool global = false,
-  }) =>
-      _session.server.messageCentral.postMessage(
-        channelName,
-        message,
-        global: global,
-      );
+  }) => _session.server.messageCentral.postMessage(
+    channelName,
+    message,
+    global: global,
+  );
 
   /// Creates a stream that listens to a specified channel.
   ///

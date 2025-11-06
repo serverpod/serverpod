@@ -44,27 +44,37 @@ abstract class UserProfile
 
   factory UserProfile.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfile(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      imageId: jsonSerialization['imageId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
-      image: jsonSerialization['image'] == null
-          ? null
-          : _i3.UserProfileImage.fromJson(
-              (jsonSerialization['image'] as Map<String, dynamic>)),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      imageId:
+          jsonSerialization['imageId'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(
+                jsonSerialization['imageId'],
+              ),
+      image:
+          jsonSerialization['image'] == null
+              ? null
+              : _i3.UserProfileImage.fromJson(
+                (jsonSerialization['image'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -143,10 +153,7 @@ abstract class UserProfile
     _i2.AuthUserInclude? authUser,
     _i3.UserProfileImageInclude? image,
   }) {
-    return UserProfileInclude._(
-      authUser: authUser,
-      image: image,
-    );
+    return UserProfileInclude._(authUser: authUser, image: image);
   }
 
   static UserProfileIncludeList includeList({
@@ -189,16 +196,16 @@ class _UserProfileImpl extends UserProfile {
     _i1.UuidValue? imageId,
     _i3.UserProfileImage? image,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          createdAt: createdAt,
-          imageId: imageId,
-          image: image,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         createdAt: createdAt,
+         imageId: imageId,
+         image: image,
+       );
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
@@ -234,69 +241,35 @@ class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
   UserProfileUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
-  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
-        table.userName,
-        value,
-      );
+  _i1.ColumnValue<String, String> userName(String? value) =>
+      _i1.ColumnValue(table.userName, value);
 
-  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
-        table.fullName,
-        value,
-      );
+  _i1.ColumnValue<String, String> fullName(String? value) =>
+      _i1.ColumnValue(table.fullName, value);
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String? value) =>
+      _i1.ColumnValue(table.email, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> imageId(_i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.imageId,
-        value,
-      );
+      _i1.ColumnValue(table.imageId, value);
 }
 
 class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_profile') {
+    : super(tableName: 'serverpod_auth_core_profile') {
     updateTable = UserProfileUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    userName = _i1.ColumnString(
-      'userName',
-      this,
-    );
-    fullName = _i1.ColumnString(
-      'fullName',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-      hasDefault: true,
-    );
-    imageId = _i1.ColumnUuid(
-      'imageId',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    userName = _i1.ColumnString('userName', this);
+    fullName = _i1.ColumnString('fullName', this);
+    email = _i1.ColumnString('email', this);
+    createdAt = _i1.ColumnDateTime('createdAt', this, hasDefault: true);
+    imageId = _i1.ColumnUuid('imageId', this);
   }
 
   late final UserProfileUpdateTable updateTable;
@@ -335,8 +308,9 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
       field: UserProfile.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
@@ -348,22 +322,23 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
       field: UserProfile.t.imageId,
       foreignField: _i3.UserProfileImage.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.UserProfileImageTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.UserProfileImageTable(tableRelation: foreignTableRelation),
     );
     return _image!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        userName,
-        fullName,
-        email,
-        createdAt,
-        imageId,
-      ];
+    id,
+    authUserId,
+    userName,
+    fullName,
+    email,
+    createdAt,
+    imageId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -392,9 +367,9 @@ class UserProfileInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'authUser': _authUser,
-        'image': _image,
-      };
+    'authUser': _authUser,
+    'image': _image,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => UserProfile.t;
@@ -535,10 +510,7 @@ class UserProfileRepository {
     List<UserProfile> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<UserProfile>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<UserProfile>(rows, transaction: transaction);
   }
 
   /// Inserts a single [UserProfile] and returns the inserted row.
@@ -549,10 +521,7 @@ class UserProfileRepository {
     UserProfile row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<UserProfile>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<UserProfile>(row, transaction: transaction);
   }
 
   /// Updates all [UserProfile]s in the list and returns the updated rows. If
@@ -637,10 +606,7 @@ class UserProfileRepository {
     List<UserProfile> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserProfile>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<UserProfile>(rows, transaction: transaction);
   }
 
   /// Deletes a single [UserProfile].
@@ -649,10 +615,7 @@ class UserProfileRepository {
     UserProfile row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<UserProfile>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<UserProfile>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

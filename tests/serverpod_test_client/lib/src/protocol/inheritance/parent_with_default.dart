@@ -13,10 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class ParentWithDefault implements _i1.SerializableModel {
-  ParentWithDefault({
-    required this.name,
-    int? parentDefault,
-  }) : parentDefault = parentDefault ?? 0;
+  ParentWithDefault({required this.name, int? parentDefault})
+    : parentDefault = parentDefault ?? 0;
 
   factory ParentWithDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithDefault(
@@ -32,10 +30,7 @@ class ParentWithDefault implements _i1.SerializableModel {
   /// Returns a shallow copy of this [ParentWithDefault]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ParentWithDefault copyWith({
-    String? name,
-    int? parentDefault,
-  }) {
+  ParentWithDefault copyWith({String? name, int? parentDefault}) {
     return ParentWithDefault(
       name: name ?? this.name,
       parentDefault: parentDefault ?? this.parentDefault,
@@ -44,10 +39,7 @@ class ParentWithDefault implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'parentDefault': parentDefault,
-    };
+    return {'name': name, 'parentDefault': parentDefault};
   }
 
   @override

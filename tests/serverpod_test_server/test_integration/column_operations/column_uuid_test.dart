@@ -35,133 +35,152 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.equals(firstUuid),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.equals(firstUuid),
+        );
 
-      expect(result.first.aUuid, firstUuid);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.equals(null),
-      );
-
-      expect(result.first.aUuid, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.notEquals(firstUuid),
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aUuid, firstUuid);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.equals(null),
+        );
 
-      expect(result.length, 2);
-    });
-
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.inSet({firstUuid, secondUuid}),
-      );
-
-      expect(result.length, 2);
-    });
-
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.inSet({}),
-      );
-
-      expect(result, isEmpty);
-    });
-
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.notInSet({firstUuid}),
-      );
-
-      expect(result.length, 2);
-    });
-
-    test('when filtering using empty notInSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.notInSet({}),
-      );
-
-      expect(result.length, 3);
-    });
+        expect(result.first.aUuid, isNull);
+      },
+    );
 
     test(
-        'when filtering using "greater than" then lexicographically posterior rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid > secondUuid,
-      );
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.notEquals(firstUuid),
+        );
 
-      expect(result.length, 1);
-      expect(result.first.aUuid, firstUuid);
-    });
-
-    test(
-        'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid >= secondUuid,
-      );
-
-      expect(result.length, 2);
-      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
-    });
+        expect(result.length, 2);
+      },
+    );
 
     test(
-        'when filtering using "less than" then lexicographically preceding rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid < firstUuid,
-      );
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.notEquals(null),
+        );
 
-      expect(result.length, 1);
-      expect(result.first.aUuid, secondUuid);
-    });
+        expect(result.length, 2);
+      },
+    );
 
     test(
-        'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid <= firstUuid,
-      );
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.inSet({firstUuid, secondUuid}),
+        );
 
-      expect(result.length, 2);
-      expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
-    });
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.inSet({}),
+        );
+
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.notInSet({firstUuid}),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid.notInSet({}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using "greater than" then lexicographically posterior rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid > secondUuid,
+        );
+
+        expect(result.length, 1);
+        expect(result.first.aUuid, firstUuid);
+      },
+    );
+
+    test(
+      'when filtering using "greater or equal than" then equal and lexicographically posterior rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid >= secondUuid,
+        );
+
+        expect(result.length, 2);
+        expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
+      },
+    );
+
+    test(
+      'when filtering using "less than" then lexicographically preceding rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid < firstUuid,
+        );
+
+        expect(result.length, 1);
+        expect(result.first.aUuid, secondUuid);
+      },
+    );
+
+    test(
+      'when filtering using "less or equal than" then equal and lexicographically preceding rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aUuid <= firstUuid,
+        );
+
+        expect(result.length, 2);
+        expect(result.map((e) => e.aUuid).toSet(), {firstUuid, secondUuid});
+      },
+    );
   });
 }

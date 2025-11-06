@@ -15,12 +15,7 @@ import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
 
 abstract class Member implements _i1.SerializableModel {
-  Member._({
-    this.id,
-    required this.name,
-    this.blocking,
-    this.blockedBy,
-  });
+  Member._({this.id, required this.name, this.blocking, this.blockedBy});
 
   factory Member({
     int? id,
@@ -33,12 +28,14 @@ abstract class Member implements _i1.SerializableModel {
     return Member(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      blocking: (jsonSerialization['blocking'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      blockedBy: (jsonSerialization['blockedBy'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      blocking:
+          (jsonSerialization['blocking'] as List?)
+              ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+              .toList(),
+      blockedBy:
+          (jsonSerialization['blockedBy'] as List?)
+              ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -88,12 +85,7 @@ class _MemberImpl extends Member {
     required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
-  }) : super._(
-          id: id,
-          name: name,
-          blocking: blocking,
-          blockedBy: blockedBy,
-        );
+  }) : super._(id: id, name: name, blocking: blocking, blockedBy: blockedBy);
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
@@ -108,12 +100,14 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking: blocking is List<_i2.Blocking>?
-          ? blocking
-          : this.blocking?.map((e0) => e0.copyWith()).toList(),
-      blockedBy: blockedBy is List<_i2.Blocking>?
-          ? blockedBy
-          : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
+      blocking:
+          blocking is List<_i2.Blocking>?
+              ? blocking
+              : this.blocking?.map((e0) => e0.copyWith()).toList(),
+      blockedBy:
+          blockedBy is List<_i2.Blocking>?
+              ? blockedBy
+              : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

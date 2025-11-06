@@ -98,13 +98,12 @@ TypeReference _typeWithTableCallback(
   nullable = true,
 }) {
   return TypeReference(
-    (t) => t
-      ..symbol = typeName
-      ..types.addAll([
-        refer('${className}Table'),
-      ])
-      ..url = serverpodUrl(serverCode)
-      ..isNullable = nullable,
+    (t) =>
+        t
+          ..symbol = typeName
+          ..types.addAll([refer('${className}Table')])
+          ..url = serverpodUrl(serverCode)
+          ..isNullable = nullable,
   );
 }
 
@@ -125,15 +124,9 @@ Expression _buildFromJson(
     case ValueType.string:
     case ValueType.bool:
     case ValueType.int:
-      return _buildPrimitiveTypeFromJson(
-        type,
-        valueExpression,
-      );
+      return _buildPrimitiveTypeFromJson(type, valueExpression);
     case ValueType.double:
-      return _buildDoubleTypeFromJson(
-        type,
-        valueExpression,
-      );
+      return _buildDoubleTypeFromJson(type, valueExpression);
     case ValueType.dateTime:
     case ValueType.duration:
     case ValueType.byteData:
@@ -143,17 +136,9 @@ Expression _buildFromJson(
     case ValueType.halfVector:
     case ValueType.sparseVector:
     case ValueType.bit:
-      return _buildComplexTypeFromJson(
-        type,
-        valueExpression,
-        serverCode,
-      );
+      return _buildComplexTypeFromJson(type, valueExpression, serverCode);
     case ValueType.bigInt:
-      return _buildComplexTypeFromJson(
-        type,
-        valueExpression,
-        serverCode,
-      );
+      return _buildComplexTypeFromJson(type, valueExpression, serverCode);
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
       if (enumSerialization == null) {
@@ -288,39 +273,41 @@ Expression _buildListOrSetTypeFromJson(
   List<String> subDirParts,
 ) {
   if (type.isSetType) {
-    return CodeExpression(Block.of([
-      if (type.nullable) ...[
-        valueExpression.code,
-        const Code(' == null ? null :'),
-      ],
-      refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
-      const Code('.fromJson('),
-      valueExpression
-          .asA(const CodeExpression(
-            // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
-            Code('List'),
-          ))
-          .code,
-      const Code(', itemFromJson: (e) =>'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e'),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(')'),
-      if (type.isSetType && !type.nullable) const Code('!'),
-    ]));
+    return CodeExpression(
+      Block.of([
+        if (type.nullable) ...[
+          valueExpression.code,
+          const Code(' == null ? null :'),
+        ],
+        refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
+        const Code('.fromJson('),
+        valueExpression
+            .asA(
+              const CodeExpression(
+                // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
+                Code('List'),
+              ),
+            )
+            .code,
+        const Code(', itemFromJson: (e) =>'),
+        _buildFromJson(
+          jsonReference,
+          type.generics.first,
+          serverCode,
+          config,
+          mapExpression: refer('e'),
+          subDirParts: subDirParts,
+        ).code,
+        const Code(')'),
+        if (type.isSetType && !type.nullable) const Code('!'),
+      ]),
+    );
   }
 
   return CodeExpression(
     Block.of([
       valueExpression
-          .asA(CodeExpression(
-            Code('List${type.nullable ? '?' : ''}'),
-          ))
+          .asA(CodeExpression(Code('List${type.nullable ? '?' : ''}')))
           .code,
       Code('${type.nullable ? '?' : ''}.map((e) => '),
       _buildFromJson(
@@ -349,9 +336,7 @@ Expression _buildMapTypeFromJson(
       Block.of([
         const Code('('),
         valueExpression.code,
-        Code(
-          'as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>',
-        ),
+        Code('as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>'),
         refer('MapEntry').call([
           _buildFromJson(
             jsonReference,
@@ -382,19 +367,11 @@ Expression _buildMapTypeFromJson(
           .code,
       Code('${type.nullable ? '?' : ''}.fold<Map<'),
       type.generics.first
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
+          .reference(serverCode, subDirParts: subDirParts, config: config)
           .code,
       const Code(','),
       type.generics.last
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
+          .reference(serverCode, subDirParts: subDirParts, config: config)
           .code,
       const Code('>>({}, (t, e) => {...t, '),
       _buildFromJson(
@@ -428,11 +405,7 @@ Expression _buildClassTypeFromJson(
 ) {
   return CodeExpression(
     type.asNonNullable
-        .reference(
-          serverCode,
-          subDirParts: subDirParts,
-          config: config,
-        )
+        .reference(serverCode, subDirParts: subDirParts, config: config)
         .property('fromJson')
         .call([
           if (type.customClass)
@@ -459,23 +432,29 @@ Expression _buildRecordTypeFromJson(
         : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
   );
 
-  return CodeExpression(Block.of([
-    if (type.nullable) ...[
-      valueExpression.code,
-      const Code('== null ? null : '),
-    ],
-    protocolRef
-        .newInstance([])
-        .property('deserialize')
-        .call(
-          [valueExpression.asA(refer('Map<String, dynamic>'))],
-          {},
-          [
-            type.reference(serverCode, config: config, subDirParts: subDirParts)
-          ],
-        )
-        .code,
-  ]));
+  return CodeExpression(
+    Block.of([
+      if (type.nullable) ...[
+        valueExpression.code,
+        const Code('== null ? null : '),
+      ],
+      protocolRef
+          .newInstance([])
+          .property('deserialize')
+          .call(
+            [valueExpression.asA(refer('Map<String, dynamic>'))],
+            {},
+            [
+              type.reference(
+                serverCode,
+                config: config,
+                subDirParts: subDirParts,
+              ),
+            ],
+          )
+          .code,
+    ]),
+  );
 }
 
 extension ExpressionExtension on Expression {
@@ -485,13 +464,7 @@ extension ExpressionExtension on Expression {
   }) {
     if (!type.nullable) return this;
     return CodeExpression(
-      Block.of(
-        [
-          valueExpression.code,
-          const Code('== null ? null : '),
-          code,
-        ],
-      ),
+      Block.of([valueExpression.code, const Code('== null ? null : '), code]),
     );
   }
 }

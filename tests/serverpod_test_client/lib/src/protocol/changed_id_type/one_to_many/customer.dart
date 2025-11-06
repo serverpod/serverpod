@@ -14,11 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 
 abstract class CustomerInt implements _i1.SerializableModel {
-  CustomerInt._({
-    this.id,
-    required this.name,
-    this.orders,
-  });
+  CustomerInt._({this.id, required this.name, this.orders});
 
   factory CustomerInt({
     int? id,
@@ -30,9 +26,10 @@ abstract class CustomerInt implements _i1.SerializableModel {
     return CustomerInt(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List?)
-          ?.map((e) => _i2.OrderUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      orders:
+          (jsonSerialization['orders'] as List?)
+              ?.map((e) => _i2.OrderUuid.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -48,11 +45,7 @@ abstract class CustomerInt implements _i1.SerializableModel {
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CustomerInt copyWith({
-    int? id,
-    String? name,
-    List<_i2.OrderUuid>? orders,
-  });
+  CustomerInt copyWith({int? id, String? name, List<_i2.OrderUuid>? orders});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -72,15 +65,8 @@ abstract class CustomerInt implements _i1.SerializableModel {
 class _Undefined {}
 
 class _CustomerIntImpl extends CustomerInt {
-  _CustomerIntImpl({
-    int? id,
-    required String name,
-    List<_i2.OrderUuid>? orders,
-  }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+  _CustomerIntImpl({int? id, required String name, List<_i2.OrderUuid>? orders})
+    : super._(id: id, name: name, orders: orders);
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
@@ -94,9 +80,10 @@ class _CustomerIntImpl extends CustomerInt {
     return CustomerInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.OrderUuid>?
-          ? orders
-          : this.orders?.map((e0) => e0.copyWith()).toList(),
+      orders:
+          orders is List<_i2.OrderUuid>?
+              ? orders
+              : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

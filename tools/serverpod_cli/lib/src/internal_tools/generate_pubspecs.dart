@@ -27,18 +27,9 @@ void performGeneratePubspecs({
   log.info('Doing some fancy generation');
 
   var sharedReplacements = [
-    Replacement(
-      slotName: 'SERVERPOD_VERSION',
-      replacement: version,
-    ),
-    Replacement(
-      slotName: 'DART_VERSION',
-      replacement: dartVersion,
-    ),
-    Replacement(
-      slotName: 'FLUTTER_VERSION',
-      replacement: flutterVersion,
-    ),
+    Replacement(slotName: 'SERVERPOD_VERSION', replacement: version),
+    Replacement(slotName: 'DART_VERSION', replacement: dartVersion),
+    Replacement(slotName: 'FLUTTER_VERSION', replacement: flutterVersion),
     Replacement(
       slotName: '# TEMPLATE',
       replacement:
@@ -54,14 +45,11 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
-          slotName: 'PRODUCTION_MODE',
-          replacement: 'false',
-        ),
+        Replacement(slotName: 'PRODUCTION_MODE', replacement: 'false'),
         Replacement(
           slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
           replacement: '',
-        )
+        ),
       ],
       fileNameReplacements: [],
     );
@@ -73,14 +61,9 @@ void performGeneratePubspecs({
       dstDir: dirRoot,
       replacements: [
         ...sharedReplacements,
-        Replacement(
-          slotName: 'PRODUCTION_MODE',
-          replacement: 'true',
-        ),
+        Replacement(slotName: 'PRODUCTION_MODE', replacement: 'true'),
       ],
-      removePatterns: [
-        '#--CONDITIONALLY_REMOVE_LINE--#',
-      ],
+      removePatterns: ['#--CONDITIONALLY_REMOVE_LINE--#'],
       fileNameReplacements: [],
     );
     copier.copyFiles();

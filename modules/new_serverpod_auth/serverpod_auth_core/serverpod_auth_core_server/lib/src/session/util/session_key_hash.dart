@@ -14,8 +14,8 @@ final class AuthSessionKeyHash {
   AuthSessionKeyHash({
     required final int sessionKeyHashSaltLength,
     required final String sessionKeyHashPepper,
-  })  : _sessionKeyHashSaltLength = sessionKeyHashSaltLength,
-        _sessionKeyHashPepper = sessionKeyHashPepper;
+  }) : _sessionKeyHashSaltLength = sessionKeyHashSaltLength,
+       _sessionKeyHashPepper = sessionKeyHashPepper;
 
   /// Uses SHA512 to create a hash for a string using the specified pepper.
   ({Uint8List hash, Uint8List salt}) createSessionKeyHash({

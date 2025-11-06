@@ -125,12 +125,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
     required String email,
     required DateTime time,
     required String ipAddress,
-  }) : super._(
-          id: id,
-          email: email,
-          time: time,
-          ipAddress: ipAddress,
-        );
+  }) : super._(id: id, email: email, time: time, ipAddress: ipAddress);
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
@@ -155,38 +150,23 @@ class EmailFailedSignInUpdateTable
     extends _i1.UpdateTable<EmailFailedSignInTable> {
   EmailFailedSignInUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) =>
+      _i1.ColumnValue(table.time, value);
 
-  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
-        table.ipAddress,
-        value,
-      );
+  _i1.ColumnValue<String, String> ipAddress(String value) =>
+      _i1.ColumnValue(table.ipAddress, value);
 }
 
 class EmailFailedSignInTable extends _i1.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_failed_sign_in') {
+    : super(tableName: 'serverpod_email_failed_sign_in') {
     updateTable = EmailFailedSignInUpdateTable(this);
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    time = _i1.ColumnDateTime(
-      'time',
-      this,
-    );
-    ipAddress = _i1.ColumnString(
-      'ipAddress',
-      this,
-    );
+    email = _i1.ColumnString('email', this);
+    time = _i1.ColumnDateTime('time', this);
+    ipAddress = _i1.ColumnString('ipAddress', this);
   }
 
   late final EmailFailedSignInUpdateTable updateTable;
@@ -201,12 +181,7 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
   late final _i1.ColumnString ipAddress;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        email,
-        time,
-        ipAddress,
-      ];
+  List<_i1.Column> get columns => [id, email, time, ipAddress];
 }
 
 class EmailFailedSignInInclude extends _i1.IncludeObject {
@@ -327,10 +302,7 @@ class EmailFailedSignInRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<EmailFailedSignIn>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<EmailFailedSignIn>(id, transaction: transaction);
   }
 
   /// Inserts all [EmailFailedSignIn]s in the list and returns the inserted rows.
@@ -344,10 +316,7 @@ class EmailFailedSignInRepository {
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<EmailFailedSignIn>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<EmailFailedSignIn>(rows, transaction: transaction);
   }
 
   /// Inserts a single [EmailFailedSignIn] and returns the inserted row.
@@ -404,7 +373,7 @@ class EmailFailedSignInRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailFailedSignIn>(
@@ -419,7 +388,7 @@ class EmailFailedSignInRepository {
   Future<List<EmailFailedSignIn>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     int? limit,
     int? offset,
@@ -448,10 +417,7 @@ class EmailFailedSignInRepository {
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<EmailFailedSignIn>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<EmailFailedSignIn>(rows, transaction: transaction);
   }
 
   /// Deletes a single [EmailFailedSignIn].

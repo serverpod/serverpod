@@ -20,11 +20,14 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
       _ImmutableObjectWithListImpl;
 
   factory ImmutableObjectWithList.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithList(
-        listVariable: (jsonSerialization['listVariable'] as List)
-            .map((e) => e as String)
-            .toList());
+      listVariable:
+          (jsonSerialization['listVariable'] as List)
+              .map((e) => e as String)
+              .toList(),
+    );
   }
 
   final List<String> listVariable;
@@ -35,10 +38,7 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
   ImmutableObjectWithList copyWith({List<String>? listVariable});
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithList &&
             const _i1.DeepCollectionEquality().equals(
@@ -68,7 +68,7 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
 
 class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
   const _ImmutableObjectWithListImpl({required List<String> listVariable})
-      : super._(listVariable: listVariable);
+    : super._(listVariable: listVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
@@ -76,7 +76,7 @@ class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
   @override
   ImmutableObjectWithList copyWith({List<String>? listVariable}) {
     return ImmutableObjectWithList(
-        listVariable:
-            listVariable ?? this.listVariable.map((e0) => e0).toList());
+      listVariable: listVariable ?? this.listVariable.map((e0) => e0).toList(),
+    );
   }
 }

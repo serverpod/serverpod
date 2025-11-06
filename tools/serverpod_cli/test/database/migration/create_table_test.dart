@@ -13,10 +13,11 @@ void main() {
     var sourceDefinition =
         DatabaseDefinitionBuilder().withDefaultModules().build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(TableDefinitionBuilder().withName(tableName).build())
-        .build();
+    var targetDefinition =
+        DatabaseDefinitionBuilder()
+            .withDefaultModules()
+            .withTable(TableDefinitionBuilder().withName(tableName).build())
+            .build();
 
     var migration = generateDatabaseMigration(
       databaseSource: sourceDefinition,

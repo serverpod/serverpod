@@ -13,13 +13,11 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"bigint" text NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(defaultColumn.toPgSqlFragment(), '"bigint" text NOT NULL');
+        },
+      );
     });
 
     group('with a specific BigInt string as default value', () {
@@ -32,13 +30,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"bigint" text NOT NULL DEFAULT \'-13837646363612912343\'::text',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"bigint" text NOT NULL DEFAULT \'-13837646363612912343\'::text',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -50,13 +49,11 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"bigint" text',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(defaultColumn.toPgSqlFragment(), '"bigint" text');
+        },
+      );
     });
   });
 }

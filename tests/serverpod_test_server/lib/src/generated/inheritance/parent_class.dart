@@ -110,29 +110,18 @@ class ParentClassUpdateTable extends _i2.UpdateTable<ParentClassTable> {
   ParentClassUpdateTable(super.table);
 
   _i2.ColumnValue<String, String> grandParentField(String value) =>
-      _i2.ColumnValue(
-        table.grandParentField,
-        value,
-      );
+      _i2.ColumnValue(table.grandParentField, value);
 
-  _i2.ColumnValue<String, String> parentField(String value) => _i2.ColumnValue(
-        table.parentField,
-        value,
-      );
+  _i2.ColumnValue<String, String> parentField(String value) =>
+      _i2.ColumnValue(table.parentField, value);
 }
 
 class ParentClassTable extends _i2.Table<int?> {
   ParentClassTable({super.tableRelation})
-      : super(tableName: 'parent_class_table') {
+    : super(tableName: 'parent_class_table') {
     updateTable = ParentClassUpdateTable(this);
-    grandParentField = _i2.ColumnString(
-      'grandParentField',
-      this,
-    );
-    parentField = _i2.ColumnString(
-      'parentField',
-      this,
-    );
+    grandParentField = _i2.ColumnString('grandParentField', this);
+    parentField = _i2.ColumnString('parentField', this);
   }
 
   late final ParentClassUpdateTable updateTable;
@@ -142,11 +131,7 @@ class ParentClassTable extends _i2.Table<int?> {
   late final _i2.ColumnString parentField;
 
   @override
-  List<_i2.Column> get columns => [
-        id,
-        grandParentField,
-        parentField,
-      ];
+  List<_i2.Column> get columns => [id, grandParentField, parentField];
 }
 
 class ParentClassInclude extends _i2.IncludeObject {
@@ -267,10 +252,7 @@ class ParentClassRepository {
     int id, {
     _i2.Transaction? transaction,
   }) async {
-    return session.db.findById<ParentClass>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<ParentClass>(id, transaction: transaction);
   }
 
   /// Inserts all [ParentClass]s in the list and returns the inserted rows.
@@ -284,10 +266,7 @@ class ParentClassRepository {
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
-    return session.db.insert<ParentClass>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<ParentClass>(rows, transaction: transaction);
   }
 
   /// Inserts a single [ParentClass] and returns the inserted row.
@@ -298,10 +277,7 @@ class ParentClassRepository {
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
-    return session.db.insertRow<ParentClass>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<ParentClass>(row, transaction: transaction);
   }
 
   /// Updates all [ParentClass]s in the list and returns the updated rows. If
@@ -386,10 +362,7 @@ class ParentClassRepository {
     List<ParentClass> rows, {
     _i2.Transaction? transaction,
   }) async {
-    return session.db.delete<ParentClass>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<ParentClass>(rows, transaction: transaction);
   }
 
   /// Deletes a single [ParentClass].
@@ -398,10 +371,7 @@ class ParentClassRepository {
     ParentClass row, {
     _i2.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<ParentClass>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<ParentClass>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

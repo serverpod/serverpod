@@ -7,9 +7,5 @@ abstract class ServerpodCommand<O extends OptionDefinition>
   /// Exit code for when a command is invoked but cannot execute.
   static const int commandInvokedCannotExecute = 126;
 
-  ServerpodCommand({
-    super.options,
-  }) : super(
-          wrapTextColumn: log.wrapTextColumn,
-        );
+  ServerpodCommand({super.options}) : super(wrapTextColumn: log.wrapTextColumn);
 }

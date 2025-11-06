@@ -7,53 +7,55 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => StringDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => StringDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "stringDefaultAndDefaultModel" field value should match the default value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${StringDefaultMix.t.tableName}" ("stringDefaultAndDefaultModel", "stringDefaultAndDefaultPersist", "stringDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await StringDefaultMix.db.findFirstRow(session);
-        expect(databaseObject?.stringDefaultAndDefaultModel,
-            'This is a default value');
+        expect(
+          databaseObject?.stringDefaultAndDefaultModel,
+          'This is a default value',
+        );
       },
     );
 
     test(
       'when creating a record in the database with an unsafe query, then the "stringDefaultAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${StringDefaultMix.t.tableName}" ("stringDefaultAndDefaultModel", "stringDefaultAndDefaultPersist", "stringDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await StringDefaultMix.db.findFirstRow(session);
-        expect(databaseObject?.stringDefaultAndDefaultPersist,
-            'This is a default persist value');
+        expect(
+          databaseObject?.stringDefaultAndDefaultPersist,
+          'This is a default persist value',
+        );
       },
     );
 
     test(
       'when creating a record in the database with an unsafe query, then the "stringDefaultModelAndDefaultPersist" field value should match the defaultPersist value',
       () async {
-        await session.db.unsafeQuery(
-          '''
+        await session.db.unsafeQuery('''
         INSERT INTO "${StringDefaultMix.t.tableName}" ("stringDefaultAndDefaultModel", "stringDefaultAndDefaultPersist", "stringDefaultModelAndDefaultPersist")
         VALUES (DEFAULT, DEFAULT, DEFAULT);
-        ''',
-        );
+        ''');
         var databaseObject = await StringDefaultMix.db.findFirstRow(session);
-        expect(databaseObject?.stringDefaultModelAndDefaultPersist,
-            'This is a default persist value');
+        expect(
+          databaseObject?.stringDefaultModelAndDefaultPersist,
+          'This is a default persist value',
+        );
       },
     );
 
@@ -67,8 +69,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultAndDefaultModel,
-            'A specific default model value');
+        expect(
+          specificDatabaseObject.stringDefaultAndDefaultModel,
+          'A specific default model value',
+        );
       },
     );
 
@@ -82,8 +86,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultAndDefaultPersist,
-            'A specific default persist value');
+        expect(
+          specificDatabaseObject.stringDefaultAndDefaultPersist,
+          'A specific default persist value',
+        );
       },
     );
 
@@ -98,8 +104,10 @@ void main() async {
           session,
           specificObject,
         );
-        expect(specificDatabaseObject.stringDefaultModelAndDefaultPersist,
-            'A specific default model and persist value');
+        expect(
+          specificDatabaseObject.stringDefaultModelAndDefaultPersist,
+          'A specific default model and persist value',
+        );
       },
     );
   });

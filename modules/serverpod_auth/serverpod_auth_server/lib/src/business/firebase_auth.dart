@@ -28,8 +28,9 @@ class FirebaseAuth {
         firebaseServiceAccountJson = jsonDecode(password);
       } else {
         firebaseServiceAccountJson = jsonDecode(
-          await File(AuthConfig.current.firebaseServiceAccountKeyJson)
-              .readAsString(),
+          await File(
+            AuthConfig.current.firebaseServiceAccountKeyJson,
+          ).readAsString(),
         );
       }
     } catch (e) {
@@ -39,9 +40,7 @@ class FirebaseAuth {
       );
     }
 
-    authManager = FirebaseAuthManager(
-      firebaseServiceAccountJson,
-    );
+    authManager = FirebaseAuthManager(firebaseServiceAccountJson);
 
     _authManager = authManager;
     return authManager;

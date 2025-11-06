@@ -50,18 +50,20 @@ class ExceptionYamlDefinition {
               ValidateNode(
                 Keyword.defaultKey,
                 keyRestriction: restrictions.validateDefaultKey,
-                valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultKey,
-                  restrictions.documentDefinition,
-                ).validate,
+                valueRestriction:
+                    DefaultValueRestriction(
+                      Keyword.defaultKey,
+                      restrictions.documentDefinition,
+                    ).validate,
               ),
               ValidateNode(
                 Keyword.defaultModelKey,
                 keyRestriction: restrictions.validateDefaultModelKey,
-                valueRestriction: DefaultValueRestriction(
-                  Keyword.defaultModelKey,
-                  restrictions.documentDefinition,
-                ).validate,
+                valueRestriction:
+                    DefaultValueRestriction(
+                      Keyword.defaultModelKey,
+                      restrictions.documentDefinition,
+                    ).validate,
               ),
             },
           ),

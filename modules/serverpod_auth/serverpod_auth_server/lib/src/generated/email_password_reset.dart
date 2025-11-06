@@ -15,15 +15,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Information about an email password reset.
 abstract class EmailPasswordReset
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  EmailPasswordReset._({
-    this.userName,
-    required this.email,
-  });
+  EmailPasswordReset._({this.userName, required this.email});
 
-  factory EmailPasswordReset({
-    String? userName,
-    required String email,
-  }) = _EmailPasswordResetImpl;
+  factory EmailPasswordReset({String? userName, required String email}) =
+      _EmailPasswordResetImpl;
 
   factory EmailPasswordReset.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailPasswordReset(
@@ -41,24 +36,15 @@ abstract class EmailPasswordReset
   /// Returns a shallow copy of this [EmailPasswordReset]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailPasswordReset copyWith({
-    String? userName,
-    String? email,
-  });
+  EmailPasswordReset copyWith({String? userName, String? email});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (userName != null) 'userName': userName,
-      'email': email,
-    };
+    return {if (userName != null) 'userName': userName, 'email': email};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (userName != null) 'userName': userName,
-      'email': email,
-    };
+    return {if (userName != null) 'userName': userName, 'email': email};
   }
 
   @override
@@ -70,22 +56,14 @@ abstract class EmailPasswordReset
 class _Undefined {}
 
 class _EmailPasswordResetImpl extends EmailPasswordReset {
-  _EmailPasswordResetImpl({
-    String? userName,
-    required String email,
-  }) : super._(
-          userName: userName,
-          email: email,
-        );
+  _EmailPasswordResetImpl({String? userName, required String email})
+    : super._(userName: userName, email: email);
 
   /// Returns a shallow copy of this [EmailPasswordReset]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailPasswordReset copyWith({
-    Object? userName = _Undefined,
-    String? email,
-  }) {
+  EmailPasswordReset copyWith({Object? userName = _Undefined, String? email}) {
     return EmailPasswordReset(
       userName: userName is String? ? userName : this.userName,
       email: email ?? this.email,

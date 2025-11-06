@@ -15,10 +15,7 @@ import '../scopes/serverOnly/server_only_class.dart' as _i2;
 
 abstract class ServerOnlyClassField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ServerOnlyClassField._({
-    this.serverOnlyClassList,
-    this.serverOnlyClassMap,
-  });
+  ServerOnlyClassField._({this.serverOnlyClassList, this.serverOnlyClassMap});
 
   factory ServerOnlyClassField({
     List<_i2.ServerOnlyClass>? serverOnlyClassList,
@@ -26,17 +23,23 @@ abstract class ServerOnlyClassField
   }) = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyClassField(
-      serverOnlyClassList: (jsonSerialization['serverOnlyClassList'] as List?)
-          ?.map(
-              (e) => _i2.ServerOnlyClass.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      serverOnlyClassList:
+          (jsonSerialization['serverOnlyClassList'] as List?)
+              ?.map(
+                (e) =>
+                    _i2.ServerOnlyClass.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
       serverOnlyClassMap: (jsonSerialization['serverOnlyClassMap'] as Map?)
-          ?.map((k, v) => MapEntry(
-                k as String,
-                _i2.ServerOnlyClass.fromJson((v as Map<String, dynamic>)),
-              )),
+          ?.map(
+            (k, v) => MapEntry(
+              k as String,
+              _i2.ServerOnlyClass.fromJson((v as Map<String, dynamic>)),
+            ),
+          ),
     );
   }
 
@@ -55,11 +58,13 @@ abstract class ServerOnlyClassField
   Map<String, dynamic> toJson() {
     return {
       if (serverOnlyClassList != null)
-        'serverOnlyClassList':
-            serverOnlyClassList?.toJson(valueToJson: (v) => v.toJson()),
+        'serverOnlyClassList': serverOnlyClassList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (serverOnlyClassMap != null)
-        'serverOnlyClassMap':
-            serverOnlyClassMap?.toJson(valueToJson: (v) => v.toJson()),
+        'serverOnlyClassMap': serverOnlyClassMap?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
     };
   }
 
@@ -81,9 +86,9 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
     List<_i2.ServerOnlyClass>? serverOnlyClassList,
     Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
   }) : super._(
-          serverOnlyClassList: serverOnlyClassList,
-          serverOnlyClassMap: serverOnlyClassMap,
-        );
+         serverOnlyClassList: serverOnlyClassList,
+         serverOnlyClassMap: serverOnlyClassMap,
+       );
 
   /// Returns a shallow copy of this [ServerOnlyClassField]
   /// with some or all fields replaced by the given arguments.
@@ -94,20 +99,16 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
     Object? serverOnlyClassMap = _Undefined,
   }) {
     return ServerOnlyClassField(
-      serverOnlyClassList: serverOnlyClassList is List<_i2.ServerOnlyClass>?
-          ? serverOnlyClassList
-          : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
+      serverOnlyClassList:
+          serverOnlyClassList is List<_i2.ServerOnlyClass>?
+              ? serverOnlyClassList
+              : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
       serverOnlyClassMap:
           serverOnlyClassMap is Map<String, _i2.ServerOnlyClass>?
               ? serverOnlyClassMap
-              : this.serverOnlyClassMap?.map((
-                    key0,
-                    value0,
-                  ) =>
-                      MapEntry(
-                        key0,
-                        value0.copyWith(),
-                      )),
+              : this.serverOnlyClassMap?.map(
+                (key0, value0) => MapEntry(key0, value0.copyWith()),
+              ),
     );
   }
 }

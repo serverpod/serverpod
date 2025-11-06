@@ -25,28 +25,21 @@ abstract final class UserProfiles {
     required final String? email,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final newUser = await AuthUsers.create(
-          session,
-          transaction: transaction,
-        );
-        final authUserId = newUser.id;
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final newUser = await AuthUsers.create(session, transaction: transaction);
+      final authUserId = newUser.id;
 
-        final createdProfile = await UserProfiles.createUserProfile(
-          session,
-          authUserId,
-          UserProfileData(
-            email: email,
-          ),
-          transaction: transaction,
-        );
+      final createdProfile = await UserProfiles.createUserProfile(
+        session,
+        authUserId,
+        UserProfileData(email: email),
+        transaction: transaction,
+      );
 
-        return createdProfile;
-      },
-    );
+      return createdProfile;
+    });
   }
 
   /// Creates a new user profile and stores it in the database.
@@ -57,55 +50,53 @@ abstract final class UserProfiles {
     final Transaction? transaction,
     final UserImageSource? imageSource,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final onBeforeUserProfileCreated =
-            UserProfileConfig.current.onBeforeUserProfileCreated;
-        if (onBeforeUserProfileCreated != null) {
-          userProfile = await onBeforeUserProfileCreated(
-            session,
-            authUserId,
-            userProfile,
-            transaction: transaction,
-          );
-        }
-
-        userProfile = userProfile.copyWith(
-          email: userProfile.email?.toLowerCase().trim(),
-        );
-
-        final createdProfile = await UserProfile.db.insertRow(
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final onBeforeUserProfileCreated =
+          UserProfileConfig.current.onBeforeUserProfileCreated;
+      if (onBeforeUserProfileCreated != null) {
+        userProfile = await onBeforeUserProfileCreated(
           session,
-          UserProfile(
-            authUserId: authUserId,
-            userName: userProfile.userName,
-            fullName: userProfile.fullName,
-            email: userProfile.email,
-          ),
+          authUserId,
+          userProfile,
           transaction: transaction,
         );
+      }
 
-        final createdProfileModel = switch (imageSource) {
-          null => createdProfile.toModel(),
-          _ => await _setUserImage(
-              session,
-              authUserId,
-              imageSource,
-              transaction: transaction,
-            ),
-        };
+      userProfile = userProfile.copyWith(
+        email: userProfile.email?.toLowerCase().trim(),
+      );
 
-        await UserProfileConfig.current.onAfterUserProfileCreated?.call(
+      final createdProfile = await UserProfile.db.insertRow(
+        session,
+        UserProfile(
+          authUserId: authUserId,
+          userName: userProfile.userName,
+          fullName: userProfile.fullName,
+          email: userProfile.email,
+        ),
+        transaction: transaction,
+      );
+
+      final createdProfileModel = switch (imageSource) {
+        null => createdProfile.toModel(),
+        _ => await _setUserImage(
           session,
-          createdProfileModel,
+          authUserId,
+          imageSource,
           transaction: transaction,
-        );
+        ),
+      };
 
-        return createdProfileModel;
-      },
-    );
+      await UserProfileConfig.current.onAfterUserProfileCreated?.call(
+        session,
+        createdProfileModel,
+        transaction: transaction,
+      );
+
+      return createdProfileModel;
+    });
   }
 
   /// Find a user profile by the `AuthUser`'s ID.
@@ -151,27 +142,25 @@ abstract final class UserProfiles {
     final String? newUserName, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await _findUserProfile(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final userProfile = await _findUserProfile(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
 
-        userProfile.userName = newUserName;
+      userProfile.userName = newUserName;
 
-        final updatedProfile = await _updateProfile(
-          session,
-          userProfile,
-          transaction: transaction,
-        );
+      final updatedProfile = await _updateProfile(
+        session,
+        userProfile,
+        transaction: transaction,
+      );
 
-        return updatedProfile.toModel();
-      },
-    );
+      return updatedProfile.toModel();
+    });
   }
 
   /// Updates a profile's full name.
@@ -181,27 +170,25 @@ abstract final class UserProfiles {
     final String? newFullName, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await _findUserProfile(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final userProfile = await _findUserProfile(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
 
-        userProfile.fullName = newFullName;
+      userProfile.fullName = newFullName;
 
-        final updatedProfile = await _updateProfile(
-          session,
-          userProfile,
-          transaction: transaction,
-        );
+      final updatedProfile = await _updateProfile(
+        session,
+        userProfile,
+        transaction: transaction,
+      );
 
-        return updatedProfile.toModel();
-      },
-    );
+      return updatedProfile.toModel();
+    });
   }
 
   /// Remove the user profile, incl. images, for the given [authUserId].
@@ -218,53 +205,51 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final profile = await UserProfile.db.findFirstRow(
-          session,
-          where: (final t) => t.authUserId.equals(authUserId),
-          transaction: transaction,
-        );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final profile = await UserProfile.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(authUserId),
+        transaction: transaction,
+      );
 
-        if (profile == null) {
-          return;
+      if (profile == null) {
+        return;
+      }
+
+      final images = await UserProfileImage.db.find(
+        session,
+        where: (final t) => t.userProfileId.equals(profile.id!),
+        transaction: transaction,
+      );
+
+      // This also deletes the user profile image entries from the database
+      await UserProfile.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(authUserId),
+        transaction: transaction,
+      );
+
+      for (final image in images) {
+        try {
+          await session.storage.deleteFile(
+            storageId: image.storageId,
+            path: image.path,
+          );
+        } catch (e, stackTrace) {
+          session.log(
+            'Failed to delete user image from storage',
+            level: LogLevel.error,
+            exception: e,
+            stackTrace: stackTrace,
+          );
         }
-
-        final images = await UserProfileImage.db.find(
-          session,
-          where: (final t) => t.userProfileId.equals(profile.id!),
-          transaction: transaction,
-        );
-
-        // This also deletes the user profile image entries from the database
-        await UserProfile.db.deleteWhere(
-          session,
-          where: (final t) => t.authUserId.equals(authUserId),
-          transaction: transaction,
-        );
-
-        for (final image in images) {
-          try {
-            await session.storage.deleteFile(
-              storageId: image.storageId,
-              path: image.path,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to delete user image from storage',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
-        }
-      },
-    );
+      }
+    });
   }
 
-// #region Profile images
+  // #region Profile images
 
   static Future<UserProfileImage> _createImageFromUrl(
     final Session session,
@@ -322,10 +307,8 @@ abstract final class UserProfiles {
       path: path,
       byteData: ByteData.view(reEncodedImageBytes.buffer),
     );
-    final publicUrl = (await session.storage.getPublicUrl(
-      storageId: storageId,
-      path: path,
-    ))!;
+    final publicUrl =
+        (await session.storage.getPublicUrl(storageId: storageId, path: path))!;
 
     final profileImage = UserProfileImage(
       userProfileId: userProfile.id!,
@@ -349,13 +332,12 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     final Transaction? transaction,
-  }) async =>
-      _setUserImage(
-        session,
-        authUserId,
-        UserImageFromUrl(url),
-        transaction: transaction,
-      );
+  }) async => _setUserImage(
+    session,
+    authUserId,
+    UserImageFromUrl(url),
+    transaction: transaction,
+  );
 
   /// Sets a user's image from image data.
   ///
@@ -365,13 +347,12 @@ abstract final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     final Transaction? transaction,
-  }) async =>
-      _setUserImage(
-        session,
-        authUserId,
-        UserImageFromBytes(imageBytes),
-        transaction: transaction,
-      );
+  }) async => _setUserImage(
+    session,
+    authUserId,
+    UserImageFromBytes(imageBytes),
+    transaction: transaction,
+  );
 
   /// Sets a user's image to the default image for that user.
   static Future<UserProfileModel> setDefaultUserImage(
@@ -379,28 +360,26 @@ abstract final class UserProfiles {
     final UuidValue authUserId, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await UserProfiles.findUserProfileByUserId(
-          session,
-          authUserId,
-          transaction: transaction,
-        );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final userProfile = await UserProfiles.findUserProfileByUserId(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
 
-        final image = await defaultUserImageGenerator(userProfile);
+      final image = await defaultUserImageGenerator(userProfile);
 
-        final imageBytes = await _encodeImage(image);
+      final imageBytes = await _encodeImage(image);
 
-        return setUserImageFromBytes(
-          session,
-          authUserId,
-          imageBytes,
-          transaction: transaction,
-        );
-      },
-    );
+      return setUserImageFromBytes(
+        session,
+        authUserId,
+        imageBytes,
+        transaction: transaction,
+      );
+    });
   }
 
   static Future<UserProfileModel> _setUserImage(
@@ -409,48 +388,46 @@ abstract final class UserProfiles {
     final UserImageSource imageSource, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final userProfile = await _findUserProfile(
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final userProfile = await _findUserProfile(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
+
+      final image = switch (imageSource) {
+        UserImageFromUrl() => await _createImageFromUrl(
           session,
           authUserId,
+          imageSource.url,
           transaction: transaction,
-        );
-
-        final image = switch (imageSource) {
-          UserImageFromUrl() => await _createImageFromUrl(
-              session,
-              authUserId,
-              imageSource.url,
-              transaction: transaction,
-              userProfile: userProfile,
-            ),
-          UserImageFromBytes() => await _createImageFromBytes(
-              session,
-              authUserId,
-              imageSource.bytes,
-              transaction: transaction,
-              userProfile: userProfile,
-            ),
-        };
-
-        userProfile.imageId = image.id!;
-        userProfile.image = image;
-
-        final updatedProfile = await _updateProfile(
+          userProfile: userProfile,
+        ),
+        UserImageFromBytes() => await _createImageFromBytes(
           session,
-          userProfile,
+          authUserId,
+          imageSource.bytes,
           transaction: transaction,
-        );
+          userProfile: userProfile,
+        ),
+      };
 
-        return updatedProfile.toModel();
-      },
-    );
+      userProfile.imageId = image.id!;
+      userProfile.image = image;
+
+      final updatedProfile = await _updateProfile(
+        session,
+        userProfile,
+        transaction: transaction,
+      );
+
+      return updatedProfile.toModel();
+    });
   }
 
-// #endregion
+  // #endregion
 
   static Future<UserProfile> _updateProfile(
     final Session session,
@@ -473,13 +450,15 @@ abstract final class UserProfiles {
       );
     }
 
-    final modifiedProfile =
-        await UserProfileConfig.current.onBeforeUserProfileUpdated?.call(
-      session,
-      userProfile.authUserId,
-      userProfile.toProfileData(),
-      transaction: transaction,
-    );
+    final modifiedProfile = await UserProfileConfig
+        .current
+        .onBeforeUserProfileUpdated
+        ?.call(
+          session,
+          userProfile.authUserId,
+          userProfile.toProfileData(),
+          transaction: transaction,
+        );
 
     if (modifiedProfile != null) {
       userProfile = userProfile.copyWith(
@@ -512,9 +491,7 @@ abstract final class UserProfiles {
     final userProfile = await UserProfile.db.findFirstRow(
       session,
       where: (final t) => t.authUserId.equals(authUserId),
-      include: UserProfile.include(
-        image: UserProfileImage.include(),
-      ),
+      include: UserProfile.include(image: UserProfileImage.include()),
       transaction: transaction,
     );
 
@@ -543,9 +520,9 @@ abstract final class UserProfiles {
     return Isolate.run(
       () => switch (UserProfileConfig.current.userImageFormat) {
         UserProfileImageType.jpg => encodeJpg(
-            image,
-            quality: UserProfileConfig.current.userImageQuality,
-          ),
+          image,
+          quality: UserProfileConfig.current.userImageQuality,
+        ),
         UserProfileImageType.png => encodePng(image),
       },
     );

@@ -17,11 +17,7 @@ import '../../changed_id_type/one_to_many/order.dart' as _i2;
 
 abstract class CustomerInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  CustomerInt._({
-    this.id,
-    required this.name,
-    this.orders,
-  });
+  CustomerInt._({this.id, required this.name, this.orders});
 
   factory CustomerInt({
     int? id,
@@ -33,9 +29,10 @@ abstract class CustomerInt
     return CustomerInt(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List?)
-          ?.map((e) => _i2.OrderUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      orders:
+          (jsonSerialization['orders'] as List?)
+              ?.map((e) => _i2.OrderUuid.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -56,11 +53,7 @@ abstract class CustomerInt
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  CustomerInt copyWith({
-    int? id,
-    String? name,
-    List<_i2.OrderUuid>? orders,
-  });
+  CustomerInt copyWith({int? id, String? name, List<_i2.OrderUuid>? orders});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -114,15 +107,8 @@ abstract class CustomerInt
 class _Undefined {}
 
 class _CustomerIntImpl extends CustomerInt {
-  _CustomerIntImpl({
-    int? id,
-    required String name,
-    List<_i2.OrderUuid>? orders,
-  }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+  _CustomerIntImpl({int? id, required String name, List<_i2.OrderUuid>? orders})
+    : super._(id: id, name: name, orders: orders);
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
@@ -136,9 +122,10 @@ class _CustomerIntImpl extends CustomerInt {
     return CustomerInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.OrderUuid>?
-          ? orders
-          : this.orders?.map((e0) => e0.copyWith()).toList(),
+      orders:
+          orders is List<_i2.OrderUuid>?
+              ? orders
+              : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -146,19 +133,14 @@ class _CustomerIntImpl extends CustomerInt {
 class CustomerIntUpdateTable extends _i1.UpdateTable<CustomerIntTable> {
   CustomerIntUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 }
 
 class CustomerIntTable extends _i1.Table<int?> {
   CustomerIntTable({super.tableRelation}) : super(tableName: 'customer_int') {
     updateTable = CustomerIntUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
   }
 
   late final CustomerIntUpdateTable updateTable;
@@ -176,8 +158,9 @@ class CustomerIntTable extends _i1.Table<int?> {
       field: CustomerInt.t.id,
       foreignField: _i2.OrderUuid.t.customerId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.OrderUuidTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.OrderUuidTable(tableRelation: foreignTableRelation),
     );
     return ___orders!;
   }
@@ -189,22 +172,21 @@ class CustomerIntTable extends _i1.Table<int?> {
       field: CustomerInt.t.id,
       foreignField: _i2.OrderUuid.t.customerId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.OrderUuidTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.OrderUuidTable(tableRelation: foreignTableRelation),
     );
     _orders = _i1.ManyRelation<_i2.OrderUuidTable>(
       tableWithRelations: relationTable,
       table: _i2.OrderUuidTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _orders!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get columns => [id, name];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -368,10 +350,7 @@ class CustomerIntRepository {
     List<CustomerInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<CustomerInt>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<CustomerInt>(rows, transaction: transaction);
   }
 
   /// Inserts a single [CustomerInt] and returns the inserted row.
@@ -382,10 +361,7 @@ class CustomerIntRepository {
     CustomerInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<CustomerInt>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<CustomerInt>(row, transaction: transaction);
   }
 
   /// Updates all [CustomerInt]s in the list and returns the updated rows. If
@@ -470,10 +446,7 @@ class CustomerIntRepository {
     List<CustomerInt> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<CustomerInt>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<CustomerInt>(rows, transaction: transaction);
   }
 
   /// Deletes a single [CustomerInt].
@@ -482,10 +455,7 @@ class CustomerIntRepository {
     CustomerInt row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<CustomerInt>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<CustomerInt>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

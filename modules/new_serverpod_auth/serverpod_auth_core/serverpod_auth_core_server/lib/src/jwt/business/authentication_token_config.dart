@@ -18,7 +18,8 @@ sealed class AuthenticationTokenAlgorithm {
 
   /// Create a new HMAC SHA-512 authentication token algorithm configuration.
   static HmacSha512AuthenticationTokenAlgorithmConfiguration hmacSha512(
-      final SecretKey key) {
+    final SecretKey key,
+  ) {
     return HmacSha512AuthenticationTokenAlgorithmConfiguration(key: key);
   }
 }

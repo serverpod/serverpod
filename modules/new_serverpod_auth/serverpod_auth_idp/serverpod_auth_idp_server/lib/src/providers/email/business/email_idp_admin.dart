@@ -10,9 +10,7 @@ final class EmailIDPAdmin {
   final EmailIDPUtils _utils;
 
   /// Creates a new instance of [EmailIDPAdmin].
-  EmailIDPAdmin({
-    required final EmailIDPUtils utils,
-  }) : _utils = utils;
+  EmailIDPAdmin({required final EmailIDPUtils utils}) : _utils = utils;
 
   /// {@macro email_idp_account_creation_util.create_email_authentication}
   Future<UuidValue> createEmailAuthentication(
@@ -46,10 +44,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.deleteEmailAccountRequestById(
-        session,
-        accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -61,11 +59,8 @@ final class EmailIDPAdmin {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          _utils.accountCreation.deleteExpiredAccountRequests(
-        session,
-        transaction: transaction,
-      ),
+      (final transaction) => _utils.accountCreation
+          .deleteExpiredAccountRequests(session, transaction: transaction),
     );
   }
 
@@ -83,11 +78,11 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.passwordReset.deletePasswordResetRequestAttempts(
-        session,
-        olderThan: Duration.zero,
-        email: email,
-        transaction: transaction,
-      ),
+            session,
+            olderThan: Duration.zero,
+            email: email,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -131,8 +126,9 @@ final class EmailIDPAdmin {
     required String email,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       email = email.normalizedEmail;
 
       final account = await EmailAccount.db.findFirstRow(
@@ -156,10 +152,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.findActiveEmailAccountRequest(
-        session,
-        accountRequestId: accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId: accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -176,31 +172,29 @@ final class EmailIDPAdmin {
     required final String password,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        email = email.normalizedEmail;
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      email = email.normalizedEmail;
 
-        final account = (await EmailAccount.db.find(
-          session,
-          where: (final t) => t.email.equals(email),
-          transaction: transaction,
-        ))
-            .singleOrNull;
+      final account =
+          (await EmailAccount.db.find(
+            session,
+            where: (final t) => t.email.equals(email),
+            transaction: transaction,
+          )).singleOrNull;
 
-        if (account == null) {
-          throw EmailAccountNotFoundException();
-        }
+      if (account == null) {
+        throw EmailAccountNotFoundException();
+      }
 
-        return _utils.passwordReset.setPassword(
-          session,
-          emailAccount: account,
-          password: password,
-          transaction: transaction,
-        );
-      },
-    );
+      return _utils.passwordReset.setPassword(
+        session,
+        emailAccount: account,
+        password: password,
+        transaction: transaction,
+      );
+    });
   }
 }
 

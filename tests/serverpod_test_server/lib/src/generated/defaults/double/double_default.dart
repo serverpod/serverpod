@@ -14,12 +14,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class DoubleDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  DoubleDefault._({
-    this.id,
-    double? doubleDefault,
-    double? doubleDefaultNull,
-  })  : doubleDefault = doubleDefault ?? 10.5,
-        doubleDefaultNull = doubleDefaultNull ?? 20.5;
+  DoubleDefault._({this.id, double? doubleDefault, double? doubleDefaultNull})
+    : doubleDefault = doubleDefault ?? 10.5,
+      doubleDefaultNull = doubleDefaultNull ?? 20.5;
 
   factory DoubleDefault({
     int? id,
@@ -114,10 +111,10 @@ class _DoubleDefaultImpl extends DoubleDefault {
     double? doubleDefault,
     double? doubleDefaultNull,
   }) : super._(
-          id: id,
-          doubleDefault: doubleDefault,
-          doubleDefaultNull: doubleDefaultNull,
-        );
+         id: id,
+         doubleDefault: doubleDefault,
+         doubleDefaultNull: doubleDefaultNull,
+       );
 
   /// Returns a shallow copy of this [DoubleDefault]
   /// with some or all fields replaced by the given arguments.
@@ -131,9 +128,10 @@ class _DoubleDefaultImpl extends DoubleDefault {
     return DoubleDefault(
       id: id is int? ? id : this.id,
       doubleDefault: doubleDefault ?? this.doubleDefault,
-      doubleDefaultNull: doubleDefaultNull is double?
-          ? doubleDefaultNull
-          : this.doubleDefaultNull,
+      doubleDefaultNull:
+          doubleDefaultNull is double?
+              ? doubleDefaultNull
+              : this.doubleDefaultNull,
     );
   }
 }
@@ -142,27 +140,17 @@ class DoubleDefaultUpdateTable extends _i1.UpdateTable<DoubleDefaultTable> {
   DoubleDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<double, double> doubleDefault(double value) =>
-      _i1.ColumnValue(
-        table.doubleDefault,
-        value,
-      );
+      _i1.ColumnValue(table.doubleDefault, value);
 
   _i1.ColumnValue<double, double> doubleDefaultNull(double? value) =>
-      _i1.ColumnValue(
-        table.doubleDefaultNull,
-        value,
-      );
+      _i1.ColumnValue(table.doubleDefaultNull, value);
 }
 
 class DoubleDefaultTable extends _i1.Table<int?> {
   DoubleDefaultTable({super.tableRelation})
-      : super(tableName: 'double_default') {
+    : super(tableName: 'double_default') {
     updateTable = DoubleDefaultUpdateTable(this);
-    doubleDefault = _i1.ColumnDouble(
-      'doubleDefault',
-      this,
-      hasDefault: true,
-    );
+    doubleDefault = _i1.ColumnDouble('doubleDefault', this, hasDefault: true);
     doubleDefaultNull = _i1.ColumnDouble(
       'doubleDefaultNull',
       this,
@@ -177,11 +165,7 @@ class DoubleDefaultTable extends _i1.Table<int?> {
   late final _i1.ColumnDouble doubleDefaultNull;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        doubleDefault,
-        doubleDefaultNull,
-      ];
+  List<_i1.Column> get columns => [id, doubleDefault, doubleDefaultNull];
 }
 
 class DoubleDefaultInclude extends _i1.IncludeObject {
@@ -302,10 +286,7 @@ class DoubleDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<DoubleDefault>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<DoubleDefault>(id, transaction: transaction);
   }
 
   /// Inserts all [DoubleDefault]s in the list and returns the inserted rows.
@@ -319,10 +300,7 @@ class DoubleDefaultRepository {
     List<DoubleDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<DoubleDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<DoubleDefault>(rows, transaction: transaction);
   }
 
   /// Inserts a single [DoubleDefault] and returns the inserted row.
@@ -333,10 +311,7 @@ class DoubleDefaultRepository {
     DoubleDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<DoubleDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<DoubleDefault>(row, transaction: transaction);
   }
 
   /// Updates all [DoubleDefault]s in the list and returns the updated rows. If
@@ -421,10 +396,7 @@ class DoubleDefaultRepository {
     List<DoubleDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<DoubleDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<DoubleDefault>(rows, transaction: transaction);
   }
 
   /// Deletes a single [DoubleDefault].
@@ -433,10 +405,7 @@ class DoubleDefaultRepository {
     DoubleDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<DoubleDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<DoubleDefault>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

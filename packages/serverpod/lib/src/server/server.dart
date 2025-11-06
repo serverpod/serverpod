@@ -119,28 +119,34 @@ class Server {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
-  })  : name = name ?? 'Server $serverId',
-        _databasePoolManager = databasePoolManager,
-        _securityContext = securityContext,
-        _port = port;
+  }) : name = name ?? 'Server $serverId',
+       _databasePoolManager = databasePoolManager,
+       _securityContext = securityContext,
+       _port = port;
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
-  Future<bool> start(
-      {required AuthenticationHandler authenticationHandler}) async {
+  Future<bool> start({
+    required AuthenticationHandler authenticationHandler,
+  }) async {
     _authenticationHandler = authenticationHandler;
     try {
-      final server = RelicServer(() => IOAdapter.bind(
-            io.InternetAddress.anyIPv6,
-            port: _port,
-            context: _securityContext,
-          ));
+      final server = RelicServer(
+        () => IOAdapter.bind(
+          io.InternetAddress.anyIPv6,
+          port: _port,
+          context: _securityContext,
+        ),
+      );
       await server.mountAndStart(_relicRequestHandler);
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
-      await _reportFrameworkException(e, stackTrace,
-          message: 'Failed to bind socket, port $_port may already be in use.');
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Failed to bind socket, port $_port may already be in use.',
+      );
       return false;
     }
 
@@ -149,9 +155,7 @@ class Server {
     // Determine the scheme based on security context
     var scheme = _securityContext != null ? 'https' : 'http';
 
-    serverpod.logVerbose(
-      'Server started on $scheme://localhost:$port',
-    );
+    serverpod.logVerbose('Server started on $scheme://localhost:$port');
     return _running;
   }
 
@@ -257,9 +261,12 @@ class Server {
           headers: headers,
         );
       } catch (e, stackTrace) {
-        await _reportFrameworkException(e, stackTrace,
-            message: 'Internal server error. Failed to read body of request.',
-            request: req);
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message: 'Internal server error. Failed to read body of request.',
+          request: req,
+        );
         return Response.badRequest(
           body: Body.fromString('Failed to read request body.'),
           headers: headers,
@@ -282,7 +289,7 @@ class Server {
       ResultNoSuchEndpoint() => 'Malformed call',
       ResultAuthenticationFailed() => 'Access denied',
       // ResultInternalServerError // TODO: historically not included
-      _ => null
+      _ => null,
     };
     if (error != null) {
       // TODO: Log to database?
@@ -309,27 +316,27 @@ class Server {
           AuthenticationFailureReason.insufficientAccess =>
             io.HttpStatus.forbidden,
         };
-        return Response(
-          authFailedStatusCode,
-          headers: headers,
-        );
+        return Response(authFailedStatusCode, headers: headers);
       case ResultInternalServerError():
         return Response.internalServerError(
           body: Body.fromString(
-              'Internal server error. Call log id: ${result.sessionLogId}'),
+            'Internal server error. Call log id: ${result.sessionLogId}',
+          ),
           headers: headers,
         );
       case ResultStatusCode():
         return Response(
           result.statusCode,
-          body: result.message != null
-              ? Body.fromString(result.message!)
-              : Body.empty(),
+          body:
+              result.message != null
+                  ? Body.fromString(result.message!)
+                  : Body.empty(),
           headers: headers,
         );
       case ExceptionResult():
-        var serializedModel =
-            serializationManager.encodeWithTypeForProtocol(result.model);
+        var serializedModel = serializationManager.encodeWithTypeForProtocol(
+          result.model,
+        );
         return Response.badRequest(
           body: Body.fromString(serializedModel, mimeType: MimeType.json),
           headers: headers,
@@ -372,12 +379,8 @@ class Server {
 
   FutureOr<Result> _dispatchWebSocketUpgradeRequest(
     Request req,
-    Future<void> Function(
-      Server,
-      RelicWebSocket,
-      Request,
-      void Function(),
-    ) requestHandler,
+    Future<void> Function(Server, RelicWebSocket, Request, void Function())
+    requestHandler,
   ) async {
     return WebSocketUpgrade((webSocket) async {
       try {
@@ -468,9 +471,7 @@ class Server {
       if (method is String) {
         methodName = method;
       } else {
-        return ResultInvalidParams(
-          'No method name specified',
-        );
+        return ResultInvalidParams('No method name specified');
       }
     }
 
@@ -531,7 +532,10 @@ class Server {
         );
 
         return ResultInternalServerError(
-            'Session was not created', StackTrace.current, 0);
+          'Session was not created',
+          StackTrace.current,
+          0,
+        );
       }
 
       try {
@@ -568,16 +572,26 @@ class Server {
     } on SerializableException catch (exception) {
       return ExceptionResult(model: exception);
     } on Exception catch (e, stackTrace) {
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      var sessionLogId = await maybeSession?.close(
+        error: e,
+        stackTrace: stackTrace,
+      );
       return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+        e.toString(),
+        stackTrace,
+        sessionLogId ?? 0,
+      );
     } catch (e, stackTrace) {
       // Something did not work out
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
+      var sessionLogId = await maybeSession?.close(
+        error: e,
+        stackTrace: stackTrace,
+      );
       return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
+        e.toString(),
+        stackTrace,
+        sessionLogId ?? 0,
+      );
     } finally {
       await maybeSession?.close();
     }
@@ -613,9 +627,10 @@ class Server {
     io.stderr.writeln('$now ERROR: $e');
     io.stderr.writeln('$stackTrace');
 
-    var context = request != null
-        ? contextFromRequest(this, request, operationType)
-        : contextFromServer(this);
+    var context =
+        request != null
+            ? contextFromRequest(this, request, operationType)
+            : contextFromServer(this);
 
     serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
@@ -648,8 +663,8 @@ class _RequestTooLargeException implements Exception {
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
   _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+    : errorDescription =
+          'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   @override
   String toString() {

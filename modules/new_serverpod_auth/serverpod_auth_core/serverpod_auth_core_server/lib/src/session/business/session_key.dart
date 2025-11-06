@@ -24,20 +24,14 @@ String buildSessionKey({
 ///
 /// Returns `null` if it does not match the spec or parsing fails for any reason.
 @internal
-SessionKeyData? tryParseSessionKey(
-  final Session session,
-  final String key,
-) {
+SessionKeyData? tryParseSessionKey(final Session session, final String key) {
   if (!key.startsWith('$_sessionKeyPrefix:')) {
     return null;
   }
 
   final parts = key.split(':');
   if (parts.length != 3) {
-    session.log(
-      'Unexpected key format',
-      level: LogLevel.debug,
-    );
+    session.log('Unexpected key format', level: LogLevel.debug);
 
     return null;
   }

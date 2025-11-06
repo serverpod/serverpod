@@ -141,9 +141,7 @@ Future<ServerProject?> _loadServerProject(
 
   var config = await GeneratorConfig.load(serverRootDir.path);
 
-  var yamlSources = await ModelHelper.loadProjectYamlModelsFromDisk(
-    config,
-  );
+  var yamlSources = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
   var analyzer = StatefulAnalyzer(
     config,
@@ -165,16 +163,11 @@ void _reportDiagnosticErrors(
 ) {
   var diagnostics = _convertErrorsToDiagnostic(errors);
   connection.sendDiagnostics(
-    PublishDiagnosticsParams(
-      diagnostics: diagnostics,
-      uri: filePath,
-    ),
+    PublishDiagnosticsParams(diagnostics: diagnostics, uri: filePath),
   );
 }
 
-List<Diagnostic> _convertErrorsToDiagnostic(
-  CodeGenerationCollector errors,
-) {
+List<Diagnostic> _convertErrorsToDiagnostic(CodeGenerationCollector errors) {
   return errors.errors.where((e) => e.span != null).map((error) {
     var span = error.span;
     if (span == null) throw Error();
@@ -191,23 +184,15 @@ List<Diagnostic> _convertErrorsToDiagnostic(
       source: DiagnosticsSource.serverpod,
       message: error.message,
       range: Range(
-        start: Position(
-          line: span.start.line,
-          character: span.start.column,
-        ),
-        end: Position(
-          line: span.end.line,
-          character: span.end.column,
-        ),
+        start: Position(line: span.start.line, character: span.start.column),
+        end: Position(line: span.end.line, character: span.end.column),
       ),
       tags: tags,
     );
   }).toList();
 }
 
-DiagnosticSeverity _convertToDiagnosticSeverity(
-  SourceSpanSeverity severity,
-) {
+DiagnosticSeverity _convertToDiagnosticSeverity(SourceSpanSeverity severity) {
   switch (severity) {
     case SourceSpanSeverity.error:
       return DiagnosticSeverity.Error;

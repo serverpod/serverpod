@@ -239,22 +239,22 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     bool? isOpen,
     required DateTime touched,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          time: time,
-          module: module,
-          endpoint: endpoint,
-          method: method,
-          duration: duration,
-          numQueries: numQueries,
-          slow: slow,
-          error: error,
-          stackTrace: stackTrace,
-          authenticatedUserId: authenticatedUserId,
-          userId: userId,
-          isOpen: isOpen,
-          touched: touched,
-        );
+         id: id,
+         serverId: serverId,
+         time: time,
+         module: module,
+         endpoint: endpoint,
+         method: method,
+         duration: duration,
+         numQueries: numQueries,
+         slow: slow,
+         error: error,
+         stackTrace: stackTrace,
+         authenticatedUserId: authenticatedUserId,
+         userId: userId,
+         isOpen: isOpen,
+         touched: touched,
+       );
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -289,9 +289,10 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       slow: slow is bool? ? slow : this.slow,
       error: error is String? ? error : this.error,
       stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
-      authenticatedUserId: authenticatedUserId is int?
-          ? authenticatedUserId
-          : this.authenticatedUserId,
+      authenticatedUserId:
+          authenticatedUserId is int?
+              ? authenticatedUserId
+              : this.authenticatedUserId,
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
@@ -302,138 +303,67 @@ class _SessionLogEntryImpl extends SessionLogEntry {
 class SessionLogEntryUpdateTable extends _i1.UpdateTable<SessionLogEntryTable> {
   SessionLogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+  _i1.ColumnValue<String, String> serverId(String value) =>
+      _i1.ColumnValue(table.serverId, value);
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) =>
+      _i1.ColumnValue(table.time, value);
 
-  _i1.ColumnValue<String, String> module(String? value) => _i1.ColumnValue(
-        table.module,
-        value,
-      );
+  _i1.ColumnValue<String, String> module(String? value) =>
+      _i1.ColumnValue(table.module, value);
 
-  _i1.ColumnValue<String, String> endpoint(String? value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+  _i1.ColumnValue<String, String> endpoint(String? value) =>
+      _i1.ColumnValue(table.endpoint, value);
 
-  _i1.ColumnValue<String, String> method(String? value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+  _i1.ColumnValue<String, String> method(String? value) =>
+      _i1.ColumnValue(table.method, value);
 
-  _i1.ColumnValue<double, double> duration(double? value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+  _i1.ColumnValue<double, double> duration(double? value) =>
+      _i1.ColumnValue(table.duration, value);
 
-  _i1.ColumnValue<int, int> numQueries(int? value) => _i1.ColumnValue(
-        table.numQueries,
-        value,
-      );
+  _i1.ColumnValue<int, int> numQueries(int? value) =>
+      _i1.ColumnValue(table.numQueries, value);
 
-  _i1.ColumnValue<bool, bool> slow(bool? value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> slow(bool? value) =>
+      _i1.ColumnValue(table.slow, value);
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+  _i1.ColumnValue<String, String> error(String? value) =>
+      _i1.ColumnValue(table.error, value);
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+  _i1.ColumnValue<String, String> stackTrace(String? value) =>
+      _i1.ColumnValue(table.stackTrace, value);
 
-  _i1.ColumnValue<int, int> authenticatedUserId(int? value) => _i1.ColumnValue(
-        table.authenticatedUserId,
-        value,
-      );
+  _i1.ColumnValue<int, int> authenticatedUserId(int? value) =>
+      _i1.ColumnValue(table.authenticatedUserId, value);
 
-  _i1.ColumnValue<String, String> userId(String? value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+  _i1.ColumnValue<String, String> userId(String? value) =>
+      _i1.ColumnValue(table.userId, value);
 
-  _i1.ColumnValue<bool, bool> isOpen(bool? value) => _i1.ColumnValue(
-        table.isOpen,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> isOpen(bool? value) =>
+      _i1.ColumnValue(table.isOpen, value);
 
   _i1.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
-      _i1.ColumnValue(
-        table.touched,
-        value,
-      );
+      _i1.ColumnValue(table.touched, value);
 }
 
 class SessionLogEntryTable extends _i1.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_session_log') {
+    : super(tableName: 'serverpod_session_log') {
     updateTable = SessionLogEntryUpdateTable(this);
-    serverId = _i1.ColumnString(
-      'serverId',
-      this,
-    );
-    time = _i1.ColumnDateTime(
-      'time',
-      this,
-    );
-    module = _i1.ColumnString(
-      'module',
-      this,
-    );
-    endpoint = _i1.ColumnString(
-      'endpoint',
-      this,
-    );
-    method = _i1.ColumnString(
-      'method',
-      this,
-    );
-    duration = _i1.ColumnDouble(
-      'duration',
-      this,
-    );
-    numQueries = _i1.ColumnInt(
-      'numQueries',
-      this,
-    );
-    slow = _i1.ColumnBool(
-      'slow',
-      this,
-    );
-    error = _i1.ColumnString(
-      'error',
-      this,
-    );
-    stackTrace = _i1.ColumnString(
-      'stackTrace',
-      this,
-    );
-    authenticatedUserId = _i1.ColumnInt(
-      'authenticatedUserId',
-      this,
-    );
-    userId = _i1.ColumnString(
-      'userId',
-      this,
-    );
-    isOpen = _i1.ColumnBool(
-      'isOpen',
-      this,
-    );
-    touched = _i1.ColumnDateTime(
-      'touched',
-      this,
-    );
+    serverId = _i1.ColumnString('serverId', this);
+    time = _i1.ColumnDateTime('time', this);
+    module = _i1.ColumnString('module', this);
+    endpoint = _i1.ColumnString('endpoint', this);
+    method = _i1.ColumnString('method', this);
+    duration = _i1.ColumnDouble('duration', this);
+    numQueries = _i1.ColumnInt('numQueries', this);
+    slow = _i1.ColumnBool('slow', this);
+    error = _i1.ColumnString('error', this);
+    stackTrace = _i1.ColumnString('stackTrace', this);
+    authenticatedUserId = _i1.ColumnInt('authenticatedUserId', this);
+    userId = _i1.ColumnString('userId', this);
+    isOpen = _i1.ColumnBool('isOpen', this);
+    touched = _i1.ColumnDateTime('touched', this);
   }
 
   late final SessionLogEntryUpdateTable updateTable;
@@ -486,22 +416,22 @@ class SessionLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        serverId,
-        time,
-        module,
-        endpoint,
-        method,
-        duration,
-        numQueries,
-        slow,
-        error,
-        stackTrace,
-        authenticatedUserId,
-        userId,
-        isOpen,
-        touched,
-      ];
+    id,
+    serverId,
+    time,
+    module,
+    endpoint,
+    method,
+    duration,
+    numQueries,
+    slow,
+    error,
+    stackTrace,
+    authenticatedUserId,
+    userId,
+    isOpen,
+    touched,
+  ];
 }
 
 class SessionLogEntryInclude extends _i1.IncludeObject {
@@ -622,10 +552,7 @@ class SessionLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SessionLogEntry>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<SessionLogEntry>(id, transaction: transaction);
   }
 
   /// Inserts all [SessionLogEntry]s in the list and returns the inserted rows.
@@ -639,10 +566,7 @@ class SessionLogEntryRepository {
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SessionLogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<SessionLogEntry>(rows, transaction: transaction);
   }
 
   /// Inserts a single [SessionLogEntry] and returns the inserted row.
@@ -653,10 +577,7 @@ class SessionLogEntryRepository {
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SessionLogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<SessionLogEntry>(row, transaction: transaction);
   }
 
   /// Updates all [SessionLogEntry]s in the list and returns the updated rows. If
@@ -699,7 +620,7 @@ class SessionLogEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SessionLogEntry>(
@@ -714,7 +635,7 @@ class SessionLogEntryRepository {
   Future<List<SessionLogEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     int? limit,
     int? offset,
@@ -743,10 +664,7 @@ class SessionLogEntryRepository {
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SessionLogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<SessionLogEntry>(rows, transaction: transaction);
   }
 
   /// Deletes a single [SessionLogEntry].
@@ -755,10 +673,7 @@ class SessionLogEntryRepository {
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SessionLogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<SessionLogEntry>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

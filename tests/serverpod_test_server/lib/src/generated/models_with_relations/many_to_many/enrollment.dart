@@ -38,15 +38,19 @@ abstract class Enrollment
     return Enrollment(
       id: jsonSerialization['id'] as int?,
       studentId: jsonSerialization['studentId'] as int,
-      student: jsonSerialization['student'] == null
-          ? null
-          : _i2.Student.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
+      student:
+          jsonSerialization['student'] == null
+              ? null
+              : _i2.Student.fromJson(
+                (jsonSerialization['student'] as Map<String, dynamic>),
+              ),
       courseId: jsonSerialization['courseId'] as int,
-      course: jsonSerialization['course'] == null
-          ? null
-          : _i3.Course.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+      course:
+          jsonSerialization['course'] == null
+              ? null
+              : _i3.Course.fromJson(
+                (jsonSerialization['course'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -104,10 +108,7 @@ abstract class Enrollment
     _i2.StudentInclude? student,
     _i3.CourseInclude? course,
   }) {
-    return EnrollmentInclude._(
-      student: student,
-      course: course,
-    );
+    return EnrollmentInclude._(student: student, course: course);
   }
 
   static EnrollmentIncludeList includeList({
@@ -146,12 +147,12 @@ class _EnrollmentImpl extends Enrollment {
     required int courseId,
     _i3.Course? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
@@ -177,28 +178,18 @@ class _EnrollmentImpl extends Enrollment {
 class EnrollmentUpdateTable extends _i1.UpdateTable<EnrollmentTable> {
   EnrollmentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
-        table.studentId,
-        value,
-      );
+  _i1.ColumnValue<int, int> studentId(int value) =>
+      _i1.ColumnValue(table.studentId, value);
 
-  _i1.ColumnValue<int, int> courseId(int value) => _i1.ColumnValue(
-        table.courseId,
-        value,
-      );
+  _i1.ColumnValue<int, int> courseId(int value) =>
+      _i1.ColumnValue(table.courseId, value);
 }
 
 class EnrollmentTable extends _i1.Table<int?> {
   EnrollmentTable({super.tableRelation}) : super(tableName: 'enrollment') {
     updateTable = EnrollmentUpdateTable(this);
-    studentId = _i1.ColumnInt(
-      'studentId',
-      this,
-    );
-    courseId = _i1.ColumnInt(
-      'courseId',
-      this,
-    );
+    studentId = _i1.ColumnInt('studentId', this);
+    courseId = _i1.ColumnInt('courseId', this);
   }
 
   late final EnrollmentUpdateTable updateTable;
@@ -218,8 +209,9 @@ class EnrollmentTable extends _i1.Table<int?> {
       field: Enrollment.t.studentId,
       foreignField: _i2.Student.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.StudentTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.StudentTable(tableRelation: foreignTableRelation),
     );
     return _student!;
   }
@@ -231,18 +223,15 @@ class EnrollmentTable extends _i1.Table<int?> {
       field: Enrollment.t.courseId,
       foreignField: _i3.Course.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.CourseTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.CourseTable(tableRelation: foreignTableRelation),
     );
     return _course!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        studentId,
-        courseId,
-      ];
+  List<_i1.Column> get columns => [id, studentId, courseId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -271,9 +260,9 @@ class EnrollmentInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'student': _student,
-        'course': _course,
-      };
+    'student': _student,
+    'course': _course,
+  };
 
   @override
   _i1.Table<int?> get table => Enrollment.t;
@@ -412,10 +401,7 @@ class EnrollmentRepository {
     List<Enrollment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Enrollment>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Enrollment>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Enrollment] and returns the inserted row.
@@ -426,10 +412,7 @@ class EnrollmentRepository {
     Enrollment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Enrollment>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Enrollment>(row, transaction: transaction);
   }
 
   /// Updates all [Enrollment]s in the list and returns the updated rows. If
@@ -514,10 +497,7 @@ class EnrollmentRepository {
     List<Enrollment> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Enrollment>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Enrollment>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Enrollment].
@@ -526,10 +506,7 @@ class EnrollmentRepository {
     Enrollment row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Enrollment>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Enrollment>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

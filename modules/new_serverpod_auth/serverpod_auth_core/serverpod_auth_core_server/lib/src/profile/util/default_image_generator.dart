@@ -37,8 +37,9 @@ Future<Image> defaultUserImageGenerator(final UserProfileModel userInfo) {
 
     // Get first letter of the user name (or * if not found in bitmap font).
     final name = userInfo.userName ?? '';
-    var charCode = (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*')
-        .codeUnits[0];
+    var charCode =
+        (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*')
+            .codeUnits[0];
     if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
 
     // Draw the image.
@@ -50,11 +51,18 @@ Future<Image> defaultUserImageGenerator(final UserProfileModel userInfo) {
     final yPos = 128 - chHeight ~/ 2;
 
     // Pick color based on user id from the default colors (from material design).
-    final color = _defaultUserImageColors[
-        userInfo.authUserId.hashCode % _defaultUserImageColors.length];
-    fill(image,
-        color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
-            color & 0xff, (color >> 24) & 0xff));
+    final color =
+        _defaultUserImageColors[userInfo.authUserId.hashCode %
+            _defaultUserImageColors.length];
+    fill(
+      image,
+      color: ColorUint8.rgba(
+        (color >> 16) & 0xff,
+        (color >> 16) & 0xff,
+        color & 0xff,
+        (color >> 24) & 0xff,
+      ),
+    );
 
     // Draw the character on top of the solid filled image.
     drawString(

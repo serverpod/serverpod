@@ -11,12 +11,12 @@ class ModelSourceBuilder {
   String fileExtension;
 
   ModelSourceBuilder()
-      : fileExtension = '.yaml',
-        subDirPathParts = [],
-        fileName = 'example',
-        yamlSourcePathParts = ['lib', 'src', 'model'],
-        moduleAlias = defaultModuleAlias,
-        yaml = '''
+    : fileExtension = '.yaml',
+      subDirPathParts = [],
+      fileName = 'example',
+      yamlSourcePathParts = ['lib', 'src', 'model'],
+      moduleAlias = defaultModuleAlias,
+      yaml = '''
     class: Example
     fields:
       name: String
@@ -59,14 +59,12 @@ class ModelSourceBuilder {
 
   ModelSource build() {
     var yamlSourceUri = Uri(
-      path: joinAll(
-        [
-          'module',
-          moduleAlias,
-          ...yamlSourcePathParts,
-          '$fileName$fileExtension'
-        ],
-      ),
+      path: joinAll([
+        'module',
+        moduleAlias,
+        ...yamlSourcePathParts,
+        '$fileName$fileExtension',
+      ]),
     );
     return ModelSource(
       moduleAlias,

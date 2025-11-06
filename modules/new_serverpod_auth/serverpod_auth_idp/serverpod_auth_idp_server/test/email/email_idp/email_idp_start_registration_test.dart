@@ -47,65 +47,68 @@ void main() {
         });
 
         test(
-            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
-            () async {
-          const nonRegisteredEmail = 'non-registered-$email';
-          final capturedAccountRequestId =
-              await fixture.emailIDP.startRegistration(
-            session,
-            email: nonRegisteredEmail,
-            password: password,
-          );
+          'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+          () async {
+            const nonRegisteredEmail = 'non-registered-$email';
+            final capturedAccountRequestId = await fixture.emailIDP
+                .startRegistration(
+                  session,
+                  email: nonRegisteredEmail,
+                  password: password,
+                );
 
-          await expectLater(
-            accountRequestIdFuture,
-            completion(
-              isA<UuidValue>().having(
-                (final uuid) => uuid.version,
-                'version',
-                equals(capturedAccountRequestId.version),
+            await expectLater(
+              accountRequestIdFuture,
+              completion(
+                isA<UuidValue>().having(
+                  (final uuid) => uuid.version,
+                  'version',
+                  equals(capturedAccountRequestId.version),
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       });
 
       group(
-          'when start registration is called for the same email address in uppercase',
-          () {
-        late Future<UuidValue> accountRequestIdFuture;
+        'when start registration is called for the same email address in uppercase',
+        () {
+          late Future<UuidValue> accountRequestIdFuture;
 
-        setUp(() async {
-          accountRequestIdFuture = fixture.emailIDP.startRegistration(
-            session,
-            email: email.toUpperCase(),
-            password: password,
-          );
-        });
+          setUp(() async {
+            accountRequestIdFuture = fixture.emailIDP.startRegistration(
+              session,
+              email: email.toUpperCase(),
+              password: password,
+            );
+          });
 
-        test(
+          test(
             'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
             () async {
-          const nonRegisteredEmail = 'non-registered-$email';
-          final capturedAccountRequestId =
-              await fixture.emailIDP.startRegistration(
-            session,
-            email: nonRegisteredEmail,
-            password: password,
-          );
+              const nonRegisteredEmail = 'non-registered-$email';
+              final capturedAccountRequestId = await fixture.emailIDP
+                  .startRegistration(
+                    session,
+                    email: nonRegisteredEmail,
+                    password: password,
+                  );
 
-          await expectLater(
-            accountRequestIdFuture,
-            completion(
-              isA<UuidValue>().having(
-                (final uuid) => uuid.version,
-                'version',
-                equals(capturedAccountRequestId.version),
-              ),
-            ),
+              await expectLater(
+                accountRequestIdFuture,
+                completion(
+                  isA<UuidValue>().having(
+                    (final uuid) => uuid.version,
+                    'version',
+                    equals(capturedAccountRequestId.version),
+                  ),
+                ),
+              );
+            },
           );
-        });
-      });
+        },
+      );
     },
   );
 
@@ -148,21 +151,27 @@ void main() {
 
         test('then it returns account registration request id', () async {
           await expectLater(
-              accountRequestIdFuture, completion(isA<UuidValue>()));
+            accountRequestIdFuture,
+            completion(isA<UuidValue>()),
+          );
         });
 
         test(
-            'then account registration request can be used to complete registration',
-            () async {
-          final accountRequestId = await accountRequestIdFuture;
-          final authSuccessFuture = fixture.emailIDP.finishRegistration(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-          );
+          'then account registration request can be used to complete registration',
+          () async {
+            final accountRequestId = await accountRequestIdFuture;
+            final authSuccessFuture = fixture.emailIDP.finishRegistration(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+            );
 
-          await expectLater(authSuccessFuture, completion(isA<AuthSuccess>()));
-        });
+            await expectLater(
+              authSuccessFuture,
+              completion(isA<AuthSuccess>()),
+            );
+          },
+        );
       });
     },
   );

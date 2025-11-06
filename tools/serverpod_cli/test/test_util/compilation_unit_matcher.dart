@@ -114,9 +114,7 @@ abstract interface class ClassMatcher {
   ///
   /// Use [isFactory] to match factory constructors. If the value is not set, the
   /// matcher will ignore the factory status of the constructor.
-  ConstructorMatcher withUnnamedConstructor({
-    bool? isFactory,
-  });
+  ConstructorMatcher withUnnamedConstructor({bool? isFactory});
 }
 
 /// A chainable matcher that matches a constructor in a compilation unit.
@@ -144,10 +142,7 @@ abstract interface class ConstructorMatcher {
   ///
   /// Use [withTypedParameter] or has [withInitializerParameter] to match typed or
   /// initializer parameters.
-  ParameterMatcher withParameter(
-    String parameterName, {
-    bool? isRequired,
-  });
+  ParameterMatcher withParameter(String parameterName, {bool? isRequired});
 
   /// Chains an [SuperInitializerMatcher] that checks if the constructor has an
   /// initializer.
@@ -179,8 +174,9 @@ class FormattedCompilationUnit {
 
   @override
   String toString() {
-    return DartFormatter(languageVersion: Version(3, 6, 0))
-        .format(compilationUnit.toSource());
+    return DartFormatter(
+      languageVersion: Version(3, 6, 0),
+    ).format(compilationUnit.toSource());
   }
 }
 

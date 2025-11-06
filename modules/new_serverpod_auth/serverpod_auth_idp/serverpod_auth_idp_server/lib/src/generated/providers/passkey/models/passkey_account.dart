@@ -46,25 +46,33 @@ abstract class PasskeyAccount
 
   factory PasskeyAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyAccount(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
       keyIdBase64: jsonSerialization['keyIdBase64'] as String,
       clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['clientDataJSON']),
+        jsonSerialization['clientDataJSON'],
+      ),
       attestationObject: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['attestationObject']),
+        jsonSerialization['attestationObject'],
+      ),
       originalChallenge: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['originalChallenge']),
+        jsonSerialization['originalChallenge'],
+      ),
     );
   }
 
@@ -179,16 +187,16 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     required _i3.ByteData attestationObject,
     required _i3.ByteData originalChallenge,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          createdAt: createdAt,
-          keyId: keyId,
-          keyIdBase64: keyIdBase64,
-          clientDataJSON: clientDataJSON,
-          attestationObject: attestationObject,
-          originalChallenge: originalChallenge,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         createdAt: createdAt,
+         keyId: keyId,
+         keyIdBase64: keyIdBase64,
+         clientDataJSON: clientDataJSON,
+         attestationObject: attestationObject,
+         originalChallenge: originalChallenge,
+       );
 
   /// Returns a shallow copy of this [PasskeyAccount]
   /// with some or all fields replaced by the given arguments.
@@ -224,83 +232,42 @@ class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
   PasskeyAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
-        table.createdAt,
-        value,
-      );
+      _i1.ColumnValue(table.createdAt, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> keyId(_i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.keyId,
-        value,
-      );
+      _i1.ColumnValue(table.keyId, value);
 
-  _i1.ColumnValue<String, String> keyIdBase64(String value) => _i1.ColumnValue(
-        table.keyIdBase64,
-        value,
-      );
+  _i1.ColumnValue<String, String> keyIdBase64(String value) =>
+      _i1.ColumnValue(table.keyIdBase64, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> clientDataJSON(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.clientDataJSON,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.clientDataJSON, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> attestationObject(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.attestationObject,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.attestationObject, value);
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> originalChallenge(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.originalChallenge,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(table.originalChallenge, value);
 }
 
 class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_passkey_account') {
+    : super(tableName: 'serverpod_auth_idp_passkey_account') {
     updateTable = PasskeyAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    createdAt = _i1.ColumnDateTime(
-      'createdAt',
-      this,
-    );
-    keyId = _i1.ColumnByteData(
-      'keyId',
-      this,
-    );
-    keyIdBase64 = _i1.ColumnString(
-      'keyIdBase64',
-      this,
-    );
-    clientDataJSON = _i1.ColumnByteData(
-      'clientDataJSON',
-      this,
-    );
-    attestationObject = _i1.ColumnByteData(
-      'attestationObject',
-      this,
-    );
-    originalChallenge = _i1.ColumnByteData(
-      'originalChallenge',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    createdAt = _i1.ColumnDateTime('createdAt', this);
+    keyId = _i1.ColumnByteData('keyId', this);
+    keyIdBase64 = _i1.ColumnString('keyIdBase64', this);
+    clientDataJSON = _i1.ColumnByteData('clientDataJSON', this);
+    attestationObject = _i1.ColumnByteData('attestationObject', this);
+    originalChallenge = _i1.ColumnByteData('originalChallenge', this);
   }
 
   late final PasskeyAccountUpdateTable updateTable;
@@ -335,23 +302,24 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
       field: PasskeyAccount.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        createdAt,
-        keyId,
-        keyIdBase64,
-        clientDataJSON,
-        attestationObject,
-        originalChallenge,
-      ];
+    id,
+    authUserId,
+    createdAt,
+    keyId,
+    keyIdBase64,
+    clientDataJSON,
+    attestationObject,
+    originalChallenge,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -509,10 +477,7 @@ class PasskeyAccountRepository {
     List<PasskeyAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<PasskeyAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<PasskeyAccount>(rows, transaction: transaction);
   }
 
   /// Inserts a single [PasskeyAccount] and returns the inserted row.
@@ -523,10 +488,7 @@ class PasskeyAccountRepository {
     PasskeyAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<PasskeyAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<PasskeyAccount>(row, transaction: transaction);
   }
 
   /// Updates all [PasskeyAccount]s in the list and returns the updated rows. If
@@ -611,10 +573,7 @@ class PasskeyAccountRepository {
     List<PasskeyAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<PasskeyAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<PasskeyAccount>(rows, transaction: transaction);
   }
 
   /// Deletes a single [PasskeyAccount].
@@ -623,10 +582,7 @@ class PasskeyAccountRepository {
     PasskeyAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<PasskeyAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<PasskeyAccount>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

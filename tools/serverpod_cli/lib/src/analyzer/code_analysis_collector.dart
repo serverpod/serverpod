@@ -5,13 +5,11 @@ abstract class CodeAnalysisCollector {
   List<SourceSpanException> get errors;
 
   static bool containsSevereErrors(List<SourceSpanException> errors) {
-    return errors.where(
-      (error) {
-        return error is! SourceSpanSeverityException ||
-            error.severity == SourceSpanSeverity.error ||
-            error.severity == SourceSpanSeverity.warning;
-      },
-    ).isNotEmpty;
+    return errors.where((error) {
+      return error is! SourceSpanSeverityException ||
+          error.severity == SourceSpanSeverity.error ||
+          error.severity == SourceSpanSeverity.warning;
+    }).isNotEmpty;
   }
 
   bool get hasSevereErrors => containsSevereErrors(errors);
@@ -25,17 +23,9 @@ abstract class CodeAnalysisCollector {
   void clearErrors();
 }
 
-enum SourceSpanSeverity {
-  error,
-  warning,
-  info,
-  hint,
-}
+enum SourceSpanSeverity { error, warning, info, hint }
 
-enum SourceSpanTag {
-  unnecessary,
-  deprecated,
-}
+enum SourceSpanTag { unnecessary, deprecated }
 
 class SourceSpanSeverityException extends SourceSpanException {
   final SourceSpanSeverity severity;

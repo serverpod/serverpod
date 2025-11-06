@@ -17,19 +17,17 @@ class FakeTokenStorage {
     _tokens.remove(tokenId);
   }
 
-  void removeTokensWhere({
-    final String? userId,
-    final String? method,
-  }) {
-    final tokensToRemove = _tokens.values.where((final token) {
-      if (userId != null && token.userId != userId) {
-        return false;
-      }
-      if (method != null && token.method != method) {
-        return false;
-      }
-      return true;
-    }).toList();
+  void removeTokensWhere({final String? userId, final String? method}) {
+    final tokensToRemove =
+        _tokens.values.where((final token) {
+          if (userId != null && token.userId != userId) {
+            return false;
+          }
+          if (method != null && token.method != method) {
+            return false;
+          }
+          return true;
+        }).toList();
 
     for (final token in tokensToRemove) {
       _tokens.remove(token.tokenId);
@@ -40,10 +38,7 @@ class FakeTokenStorage {
     return _tokens[tokenId];
   }
 
-  List<TokenInfo> getTokensWhere({
-    final String? userId,
-    final String? method,
-  }) {
+  List<TokenInfo> getTokensWhere({final String? userId, final String? method}) {
     return _tokens.values.where((final token) {
       if (userId != null && token.userId != userId) {
         return false;

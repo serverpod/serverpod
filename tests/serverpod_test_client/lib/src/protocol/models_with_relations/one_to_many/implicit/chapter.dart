@@ -13,15 +13,9 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class Chapter implements _i1.SerializableModel {
-  Chapter._({
-    this.id,
-    required this.title,
-  });
+  Chapter._({this.id, required this.title});
 
-  factory Chapter({
-    int? id,
-    required String title,
-  }) = _ChapterImpl;
+  factory Chapter({int? id, required String title}) = _ChapterImpl;
 
   factory Chapter.fromJson(Map<String, dynamic> jsonSerialization) {
     return Chapter(
@@ -40,16 +34,10 @@ abstract class Chapter implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Chapter copyWith({
-    int? id,
-    String? title,
-  });
+  Chapter copyWith({int? id, String? title});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'title': title,
-    };
+    return {if (id != null) 'id': id, 'title': title};
   }
 
   @override
@@ -61,25 +49,14 @@ abstract class Chapter implements _i1.SerializableModel {
 class _Undefined {}
 
 class _ChapterImpl extends Chapter {
-  _ChapterImpl({
-    int? id,
-    required String title,
-  }) : super._(
-          id: id,
-          title: title,
-        );
+  _ChapterImpl({int? id, required String title})
+    : super._(id: id, title: title);
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  Chapter copyWith({
-    Object? id = _Undefined,
-    String? title,
-  }) {
-    return Chapter(
-      id: id is int? ? id : this.id,
-      title: title ?? this.title,
-    );
+  Chapter copyWith({Object? id = _Undefined, String? title}) {
+    return Chapter(id: id is int? ? id : this.id, title: title ?? this.title);
   }
 }

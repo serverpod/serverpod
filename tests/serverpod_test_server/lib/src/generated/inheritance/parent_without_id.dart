@@ -22,11 +22,13 @@ class ParentClassWithoutId extends _i1.GrandparentClassWithId
   });
 
   factory ParentClassWithoutId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ParentClassWithoutId(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
     );

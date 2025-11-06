@@ -48,39 +48,27 @@ class CommandLineArgs {
   /// [CommandLineArgs] object.
   CommandLineArgs(List<String> args) {
     try {
-      var argParser = ArgParser()
-        ..addOption(
-          'mode',
-          abbr: 'm',
-          allowed: [
-            ServerpodRunMode.development,
-            ServerpodRunMode.test,
-            ServerpodRunMode.staging,
-            ServerpodRunMode.production,
-          ],
-        )
-        ..addOption(
-          'server-id',
-          abbr: 'i',
-        )
-        ..addOption(
-          'logging',
-          abbr: 'l',
-          allowed: ['normal', 'verbose'],
-        )
-        ..addOption(
-          'role',
-          abbr: 'r',
-          allowed: ['monolith', 'serverless', 'maintenance'],
-        )
-        ..addFlag(
-          'apply-migrations',
-          abbr: 'a',
-        )
-        ..addFlag(
-          'apply-repair-migration',
-          abbr: 'A',
-        );
+      var argParser =
+          ArgParser()
+            ..addOption(
+              'mode',
+              abbr: 'm',
+              allowed: [
+                ServerpodRunMode.development,
+                ServerpodRunMode.test,
+                ServerpodRunMode.staging,
+                ServerpodRunMode.production,
+              ],
+            )
+            ..addOption('server-id', abbr: 'i')
+            ..addOption('logging', abbr: 'l', allowed: ['normal', 'verbose'])
+            ..addOption(
+              'role',
+              abbr: 'r',
+              allowed: ['monolith', 'serverless', 'maintenance'],
+            )
+            ..addFlag('apply-migrations', abbr: 'a')
+            ..addFlag('apply-repair-migration', abbr: 'A');
       var results = argParser.parse(args);
 
       _runMode = results['mode'];
@@ -99,12 +87,14 @@ class CommandLineArgs {
         _ => null,
       };
 
-      _applyMigrations = results.wasParsed('apply-migrations')
-          ? results['apply-migrations']
-          : null;
-      _applyRepairMigration = results.wasParsed('apply-repair-migration')
-          ? results['apply-repair-migration']
-          : null;
+      _applyMigrations =
+          results.wasParsed('apply-migrations')
+              ? results['apply-migrations']
+              : null;
+      _applyRepairMigration =
+          results.wasParsed('apply-repair-migration')
+              ? results['apply-repair-migration']
+              : null;
     } catch (e) {
       stdout.writeln(
         'Failed to parse command line arguments. Using default values. $e',

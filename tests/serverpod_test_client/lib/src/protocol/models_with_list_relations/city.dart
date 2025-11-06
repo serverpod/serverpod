@@ -15,12 +15,7 @@ import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
 
 abstract class City implements _i1.SerializableModel {
-  City._({
-    this.id,
-    required this.name,
-    this.citizens,
-    this.organizations,
-  });
+  City._({this.id, required this.name, this.citizens, this.organizations});
 
   factory City({
     int? id,
@@ -33,12 +28,16 @@ abstract class City implements _i1.SerializableModel {
     return City(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List?)
-          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i3.Organization.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      citizens:
+          (jsonSerialization['citizens'] as List?)
+              ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
+              .toList(),
+      organizations:
+          (jsonSerialization['organizations'] as List?)
+              ?.map(
+                (e) => _i3.Organization.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
     );
   }
 
@@ -89,11 +88,11 @@ class _CityImpl extends City {
     List<_i2.Person>? citizens,
     List<_i3.Organization>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
@@ -108,12 +107,14 @@ class _CityImpl extends City {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      citizens: citizens is List<_i2.Person>?
-          ? citizens
-          : this.citizens?.map((e0) => e0.copyWith()).toList(),
-      organizations: organizations is List<_i3.Organization>?
-          ? organizations
-          : this.organizations?.map((e0) => e0.copyWith()).toList(),
+      citizens:
+          citizens is List<_i2.Person>?
+              ? citizens
+              : this.citizens?.map((e0) => e0.copyWith()).toList(),
+      organizations:
+          organizations is List<_i3.Organization>?
+              ? organizations
+              : this.organizations?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

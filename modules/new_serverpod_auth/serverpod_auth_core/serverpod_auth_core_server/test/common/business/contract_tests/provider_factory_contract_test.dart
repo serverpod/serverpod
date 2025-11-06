@@ -7,37 +7,34 @@ import '../fakes/fakes.dart';
 void testSuite<T extends Object>(
   final IdentityProviderFactory<T> Function() factoryBuilder,
 ) {
-  group(
-    'Given a identity provider factory',
-    () {
-      late IdentityProviderFactory<T> idpFactory;
-      late TokenManager tokenManager;
+  group('Given a identity provider factory', () {
+    late IdentityProviderFactory<T> idpFactory;
+    late TokenManager tokenManager;
 
-      setUp(() {
-        idpFactory = factoryBuilder();
-        tokenManager = FakeTokenManager(FakeTokenStorage());
-      });
+    setUp(() {
+      idpFactory = factoryBuilder();
+      tokenManager = FakeTokenManager(FakeTokenStorage());
+    });
 
-      test('when getting type, then the correct type should be returned', () {
-        expect(idpFactory.type, equals(T));
-      });
+    test('when getting type, then the correct type should be returned', () {
+      expect(idpFactory.type, equals(T));
+    });
 
-      test('when constructing a provider the provider should be constructed',
-          () {
-        final provider = idpFactory.construct(tokenManager: tokenManager);
-        expect(provider, isNotNull);
-        expect(provider, isA<T>());
-      });
+    test('when constructing a provider the provider should be constructed', () {
+      final provider = idpFactory.construct(tokenManager: tokenManager);
+      expect(provider, isNotNull);
+      expect(provider, isA<T>());
+    });
 
-      test(
-          'when constructing multiple providers the providers should be unique',
-          () {
+    test(
+      'when constructing multiple providers the providers should be unique',
+      () {
         final provider1 = idpFactory.construct(tokenManager: tokenManager);
         final provider2 = idpFactory.construct(tokenManager: tokenManager);
         expect(provider1, isNot(same(provider2)));
-      });
-    },
-  );
+      },
+    );
+  });
 }
 
 void main() {

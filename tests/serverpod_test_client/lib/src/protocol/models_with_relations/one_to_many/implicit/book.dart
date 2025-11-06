@@ -15,25 +15,19 @@ import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 
 abstract class Book implements _i1.SerializableModel {
-  Book._({
-    this.id,
-    required this.title,
-    this.chapters,
-  });
+  Book._({this.id, required this.title, this.chapters});
 
-  factory Book({
-    int? id,
-    required String title,
-    List<_i2.Chapter>? chapters,
-  }) = _BookImpl;
+  factory Book({int? id, required String title, List<_i2.Chapter>? chapters}) =
+      _BookImpl;
 
   factory Book.fromJson(Map<String, dynamic> jsonSerialization) {
     return Book(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
-      chapters: (jsonSerialization['chapters'] as List?)
-          ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      chapters:
+          (jsonSerialization['chapters'] as List?)
+              ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -49,11 +43,7 @@ abstract class Book implements _i1.SerializableModel {
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Book copyWith({
-    int? id,
-    String? title,
-    List<_i2.Chapter>? chapters,
-  });
+  Book copyWith({int? id, String? title, List<_i2.Chapter>? chapters});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -73,15 +63,8 @@ abstract class Book implements _i1.SerializableModel {
 class _Undefined {}
 
 class _BookImpl extends Book {
-  _BookImpl({
-    int? id,
-    required String title,
-    List<_i2.Chapter>? chapters,
-  }) : super._(
-          id: id,
-          title: title,
-          chapters: chapters,
-        );
+  _BookImpl({int? id, required String title, List<_i2.Chapter>? chapters})
+    : super._(id: id, title: title, chapters: chapters);
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
@@ -95,9 +78,10 @@ class _BookImpl extends Book {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_i2.Chapter>?
-          ? chapters
-          : this.chapters?.map((e0) => e0.copyWith()).toList(),
+      chapters:
+          chapters is List<_i2.Chapter>?
+              ? chapters
+              : this.chapters?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

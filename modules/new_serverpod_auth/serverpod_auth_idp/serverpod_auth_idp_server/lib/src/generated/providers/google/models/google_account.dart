@@ -39,15 +39,19 @@ abstract class GoogleAccount
 
   factory GoogleAccount.fromJson(Map<String, dynamic> jsonSerialization) {
     return GoogleAccount(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      authUser: jsonSerialization['authUser'] == null
-          ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      authUser:
+          jsonSerialization['authUser'] == null
+              ? null
+              : _i2.AuthUser.fromJson(
+                (jsonSerialization['authUser'] as Map<String, dynamic>),
+              ),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
@@ -152,13 +156,13 @@ class _GoogleAccountImpl extends GoogleAccount {
     required String email,
     required String userIdentifier,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          created: created,
-          email: email,
-          userIdentifier: userIdentifier,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         created: created,
+         email: email,
+         userIdentifier: userIdentifier,
+       );
 
   /// Returns a shallow copy of this [GoogleAccount]
   /// with some or all fields replaced by the given arguments.
@@ -188,50 +192,27 @@ class GoogleAccountUpdateTable extends _i1.UpdateTable<GoogleAccountTable> {
   GoogleAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(table.authUserId, value);
 
   _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
-        table.created,
-        value,
-      );
+      _i1.ColumnValue(table.created, value);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+  _i1.ColumnValue<String, String> email(String value) =>
+      _i1.ColumnValue(table.email, value);
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
-        table.userIdentifier,
-        value,
-      );
+      _i1.ColumnValue(table.userIdentifier, value);
 }
 
 class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   GoogleAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_google_account') {
+    : super(tableName: 'serverpod_auth_idp_google_account') {
     updateTable = GoogleAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
-      'authUserId',
-      this,
-    );
-    created = _i1.ColumnDateTime(
-      'created',
-      this,
-    );
-    email = _i1.ColumnString(
-      'email',
-      this,
-    );
-    userIdentifier = _i1.ColumnString(
-      'userIdentifier',
-      this,
-    );
+    authUserId = _i1.ColumnUuid('authUserId', this);
+    created = _i1.ColumnDateTime('created', this);
+    email = _i1.ColumnString('email', this);
+    userIdentifier = _i1.ColumnString('userIdentifier', this);
   }
 
   late final GoogleAccountUpdateTable updateTable;
@@ -262,20 +243,21 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
       field: GoogleAccount.t.authUserId,
       foreignField: _i2.AuthUser.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        created,
-        email,
-        userIdentifier,
-      ];
+    id,
+    authUserId,
+    created,
+    email,
+    userIdentifier,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -433,10 +415,7 @@ class GoogleAccountRepository {
     List<GoogleAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<GoogleAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<GoogleAccount>(rows, transaction: transaction);
   }
 
   /// Inserts a single [GoogleAccount] and returns the inserted row.
@@ -447,10 +426,7 @@ class GoogleAccountRepository {
     GoogleAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<GoogleAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<GoogleAccount>(row, transaction: transaction);
   }
 
   /// Updates all [GoogleAccount]s in the list and returns the updated rows. If
@@ -535,10 +511,7 @@ class GoogleAccountRepository {
     List<GoogleAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<GoogleAccount>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<GoogleAccount>(rows, transaction: transaction);
   }
 
   /// Deletes a single [GoogleAccount].
@@ -547,10 +520,7 @@ class GoogleAccountRepository {
     GoogleAccount row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<GoogleAccount>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<GoogleAccount>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

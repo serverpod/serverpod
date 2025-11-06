@@ -196,18 +196,18 @@ class _LogEntryImpl extends LogEntry {
     String? stackTrace,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          reference: reference,
-          serverId: serverId,
-          time: time,
-          logLevel: logLevel,
-          message: message,
-          error: error,
-          stackTrace: stackTrace,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         reference: reference,
+         serverId: serverId,
+         time: time,
+         logLevel: logLevel,
+         message: message,
+         error: error,
+         stackTrace: stackTrace,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -245,102 +245,50 @@ class _LogEntryImpl extends LogEntry {
 class LogEntryUpdateTable extends _i1.UpdateTable<LogEntryTable> {
   LogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+  _i1.ColumnValue<int, int> sessionLogId(int value) =>
+      _i1.ColumnValue(table.sessionLogId, value);
 
-  _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+  _i1.ColumnValue<int, int> messageId(int? value) =>
+      _i1.ColumnValue(table.messageId, value);
 
-  _i1.ColumnValue<String, String> reference(String? value) => _i1.ColumnValue(
-        table.reference,
-        value,
-      );
+  _i1.ColumnValue<String, String> reference(String? value) =>
+      _i1.ColumnValue(table.reference, value);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+  _i1.ColumnValue<String, String> serverId(String value) =>
+      _i1.ColumnValue(table.serverId, value);
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) =>
+      _i1.ColumnValue(table.time, value);
 
   _i1.ColumnValue<_i2.LogLevel, _i2.LogLevel> logLevel(_i2.LogLevel value) =>
-      _i1.ColumnValue(
-        table.logLevel,
-        value,
-      );
+      _i1.ColumnValue(table.logLevel, value);
 
-  _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
-        table.message,
-        value,
-      );
+  _i1.ColumnValue<String, String> message(String value) =>
+      _i1.ColumnValue(table.message, value);
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+  _i1.ColumnValue<String, String> error(String? value) =>
+      _i1.ColumnValue(table.error, value);
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+  _i1.ColumnValue<String, String> stackTrace(String? value) =>
+      _i1.ColumnValue(table.stackTrace, value);
 
-  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+  _i1.ColumnValue<int, int> order(int value) =>
+      _i1.ColumnValue(table.order, value);
 }
 
 class LogEntryTable extends _i1.Table<int?> {
   LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
     updateTable = LogEntryUpdateTable(this);
-    sessionLogId = _i1.ColumnInt(
-      'sessionLogId',
-      this,
-    );
-    messageId = _i1.ColumnInt(
-      'messageId',
-      this,
-    );
-    reference = _i1.ColumnString(
-      'reference',
-      this,
-    );
-    serverId = _i1.ColumnString(
-      'serverId',
-      this,
-    );
-    time = _i1.ColumnDateTime(
-      'time',
-      this,
-    );
-    logLevel = _i1.ColumnEnum(
-      'logLevel',
-      this,
-      _i1.EnumSerialization.byIndex,
-    );
-    message = _i1.ColumnString(
-      'message',
-      this,
-    );
-    error = _i1.ColumnString(
-      'error',
-      this,
-    );
-    stackTrace = _i1.ColumnString(
-      'stackTrace',
-      this,
-    );
-    order = _i1.ColumnInt(
-      'order',
-      this,
-    );
+    sessionLogId = _i1.ColumnInt('sessionLogId', this);
+    messageId = _i1.ColumnInt('messageId', this);
+    reference = _i1.ColumnString('reference', this);
+    serverId = _i1.ColumnString('serverId', this);
+    time = _i1.ColumnDateTime('time', this);
+    logLevel = _i1.ColumnEnum('logLevel', this, _i1.EnumSerialization.byIndex);
+    message = _i1.ColumnString('message', this);
+    error = _i1.ColumnString('error', this);
+    stackTrace = _i1.ColumnString('stackTrace', this);
+    order = _i1.ColumnInt('order', this);
   }
 
   late final LogEntryUpdateTable updateTable;
@@ -377,18 +325,18 @@ class LogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        sessionLogId,
-        messageId,
-        reference,
-        serverId,
-        time,
-        logLevel,
-        message,
-        error,
-        stackTrace,
-        order,
-      ];
+    id,
+    sessionLogId,
+    messageId,
+    reference,
+    serverId,
+    time,
+    logLevel,
+    message,
+    error,
+    stackTrace,
+    order,
+  ];
 }
 
 class LogEntryInclude extends _i1.IncludeObject {
@@ -509,10 +457,7 @@ class LogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<LogEntry>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<LogEntry>(id, transaction: transaction);
   }
 
   /// Inserts all [LogEntry]s in the list and returns the inserted rows.
@@ -526,10 +471,7 @@ class LogEntryRepository {
     List<LogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<LogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<LogEntry>(rows, transaction: transaction);
   }
 
   /// Inserts a single [LogEntry] and returns the inserted row.
@@ -540,10 +482,7 @@ class LogEntryRepository {
     LogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<LogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<LogEntry>(row, transaction: transaction);
   }
 
   /// Updates all [LogEntry]s in the list and returns the updated rows. If
@@ -628,10 +567,7 @@ class LogEntryRepository {
     List<LogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<LogEntry>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<LogEntry>(rows, transaction: transaction);
   }
 
   /// Deletes a single [LogEntry].
@@ -640,10 +576,7 @@ class LogEntryRepository {
     LogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<LogEntry>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<LogEntry>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

@@ -110,8 +110,8 @@ class EmailIDPAccountCreationUtil {
   EmailIDPAccountCreationUtil({
     required final EmailIDPAccountCreationUtilsConfig config,
     required final SecretHashUtil passwordHashUtils,
-  })  : _config = config,
-        _hashUtils = passwordHashUtils;
+  }) : _config = config,
+       _hashUtils = passwordHashUtils;
 
   /// Completes the account creation process by creating a new authentication
   /// user and linking the account request to it.
@@ -148,10 +148,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    final newUser = await AuthUsers.create(
-      session,
-      transaction: transaction,
-    );
+    final newUser = await AuthUsers.create(session, transaction: transaction);
     final authUserId = newUser.id;
 
     await finalizeAccountRequest(
@@ -189,11 +186,10 @@ class EmailIDPAccountCreationUtil {
     required final String? password,
     required final Transaction transaction,
   }) async {
-    final passwordHash = password != null
-        ? await _hashUtils.createHash(
-            value: password,
-          )
-        : HashResult.empty();
+    final passwordHash =
+        password != null
+            ? await _hashUtils.createHash(value: password)
+            : HashResult.empty();
 
     final account = await EmailAccount.db.insertRow(
       session,
@@ -232,8 +228,8 @@ class EmailIDPAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final lastValidDateTime = clock.now().subtract(
-          _config.registrationVerificationCodeLifetime,
-        );
+      _config.registrationVerificationCodeLifetime,
+    );
 
     await EmailAccountRequest.db.deleteWhere(
       session,
@@ -385,9 +381,9 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
     if (pendingAccountRequest != null) {
-      if (pendingAccountRequest.createdAt.isBefore(clock.now().subtract(
-            _config.registrationVerificationCodeLifetime,
-          ))) {
+      if (pendingAccountRequest.createdAt.isBefore(
+        clock.now().subtract(_config.registrationVerificationCodeLifetime),
+      )) {
         await EmailAccountRequest.db.deleteRow(
           session,
           pendingAccountRequest,
@@ -398,9 +394,7 @@ class EmailIDPAccountCreationUtil {
       }
     }
 
-    final passwordHash = await _hashUtils.createHash(
-      value: password,
-    );
+    final passwordHash = await _hashUtils.createHash(value: password);
     final verificationCodeHash = await _hashUtils.createHash(
       value: verificationCode,
     );
@@ -535,13 +529,14 @@ class EmailIDPAccountCreationUtil {
         transaction: transaction,
       );
 
-      final recentRequests =
-          await EmailAccountRequestCompletionAttempt.db.count(
-        session,
-        where: (final t) =>
-            t.emailAccountRequestId.equals(emailAccountRequestId),
-        transaction: transaction,
-      );
+      final recentRequests = await EmailAccountRequestCompletionAttempt.db
+          .count(
+            session,
+            where:
+                (final t) =>
+                    t.emailAccountRequestId.equals(emailAccountRequestId),
+            transaction: transaction,
+          );
 
       return recentRequests >
           _config.registrationVerificationCodeAllowedAttempts;
@@ -593,7 +588,7 @@ class EmailIDPAccountCreationUtilsConfig {
 
   /// Function for sending the registration verification code.
   final SendRegistrationVerificationCodeFunction?
-      sendRegistrationVerificationCode;
+  sendRegistrationVerificationCode;
 
   /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance.
   EmailIDPAccountCreationUtilsConfig({
@@ -607,7 +602,8 @@ class EmailIDPAccountCreationUtilsConfig {
   /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance from an
   /// [EmailIDPConfig] instance.
   factory EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(
-      final EmailIDPConfig config) {
+    final EmailIDPConfig config,
+  ) {
     return EmailIDPAccountCreationUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,
       registrationVerificationCodeGenerator:

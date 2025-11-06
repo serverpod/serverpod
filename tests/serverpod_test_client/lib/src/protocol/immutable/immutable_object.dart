@@ -31,25 +31,15 @@ class ImmutableObject implements _i1.SerializableModel {
 
   @override
   bool operator ==(Object other) {
-    return identical(
-          other,
-          this,
-        ) ||
+    return identical(other, this) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObject &&
-            (identical(
-                  other.variable,
-                  variable,
-                ) ||
-                other.variable == variable);
+            (identical(other.variable, variable) || other.variable == variable);
   }
 
   @override
   int get hashCode {
-    return Object.hash(
-      runtimeType,
-      variable,
-    );
+    return Object.hash(runtimeType, variable);
   }
 
   @override

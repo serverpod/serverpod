@@ -30,11 +30,13 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
   }) = _ServerOnlyChildClassWithoutIdImpl;
 
   factory ServerOnlyChildClassWithoutId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyChildClassWithoutId(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
@@ -83,11 +85,11 @@ class _ServerOnlyChildClassWithoutIdImpl extends ServerOnlyChildClassWithoutId {
     required String parentField,
     required String childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ServerOnlyChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.

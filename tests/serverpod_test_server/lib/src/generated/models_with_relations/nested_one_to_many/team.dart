@@ -17,13 +17,7 @@ import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 
 abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Team._({
-    this.id,
-    required this.name,
-    this.arenaId,
-    this.arena,
-    this.players,
-  });
+  Team._({this.id, required this.name, this.arenaId, this.arena, this.players});
 
   factory Team({
     int? id,
@@ -38,13 +32,16 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       arenaId: jsonSerialization['arenaId'] as int?,
-      arena: jsonSerialization['arena'] == null
-          ? null
-          : _i2.Arena.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.Player.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      arena:
+          jsonSerialization['arena'] == null
+              ? null
+              : _i2.Arena.fromJson(
+                (jsonSerialization['arena'] as Map<String, dynamic>),
+              ),
+      players:
+          (jsonSerialization['players'] as List?)
+              ?.map((e) => _i3.Player.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 
@@ -104,10 +101,7 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.ArenaInclude? arena,
     _i3.PlayerIncludeList? players,
   }) {
-    return TeamInclude._(
-      arena: arena,
-      players: players,
-    );
+    return TeamInclude._(arena: arena, players: players);
   }
 
   static TeamIncludeList includeList({
@@ -146,12 +140,12 @@ class _TeamImpl extends Team {
     _i2.Arena? arena,
     List<_i3.Player>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
@@ -169,9 +163,10 @@ class _TeamImpl extends Team {
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
       arena: arena is _i2.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i3.Player>?
-          ? players
-          : this.players?.map((e0) => e0.copyWith()).toList(),
+      players:
+          players is List<_i3.Player>?
+              ? players
+              : this.players?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -179,28 +174,18 @@ class _TeamImpl extends Team {
 class TeamUpdateTable extends _i1.UpdateTable<TeamTable> {
   TeamUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> arenaId(int? value) => _i1.ColumnValue(
-        table.arenaId,
-        value,
-      );
+  _i1.ColumnValue<int, int> arenaId(int? value) =>
+      _i1.ColumnValue(table.arenaId, value);
 }
 
 class TeamTable extends _i1.Table<int?> {
   TeamTable({super.tableRelation}) : super(tableName: 'team') {
     updateTable = TeamUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    arenaId = _i1.ColumnInt(
-      'arenaId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    arenaId = _i1.ColumnInt('arenaId', this);
   }
 
   late final TeamUpdateTable updateTable;
@@ -222,8 +207,9 @@ class TeamTable extends _i1.Table<int?> {
       field: Team.t.arenaId,
       foreignField: _i2.Arena.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.ArenaTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.ArenaTable(tableRelation: foreignTableRelation),
     );
     return _arena!;
   }
@@ -235,8 +221,9 @@ class TeamTable extends _i1.Table<int?> {
       field: Team.t.id,
       foreignField: _i3.Player.t.teamId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.PlayerTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.PlayerTable(tableRelation: foreignTableRelation),
     );
     return ___players!;
   }
@@ -248,23 +235,21 @@ class TeamTable extends _i1.Table<int?> {
       field: Team.t.id,
       foreignField: _i3.Player.t.teamId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i3.PlayerTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i3.PlayerTable(tableRelation: foreignTableRelation),
     );
     _players = _i1.ManyRelation<_i3.PlayerTable>(
       tableWithRelations: relationTable,
       table: _i3.PlayerTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _players!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        arenaId,
-      ];
+  List<_i1.Column> get columns => [id, name, arenaId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -279,10 +264,7 @@ class TeamTable extends _i1.Table<int?> {
 }
 
 class TeamInclude extends _i1.IncludeObject {
-  TeamInclude._({
-    _i2.ArenaInclude? arena,
-    _i3.PlayerIncludeList? players,
-  }) {
+  TeamInclude._({_i2.ArenaInclude? arena, _i3.PlayerIncludeList? players}) {
     _arena = arena;
     _players = players;
   }
@@ -293,9 +275,9 @@ class TeamInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'arena': _arena,
-        'players': _players,
-      };
+    'arena': _arena,
+    'players': _players,
+  };
 
   @override
   _i1.Table<int?> get table => Team.t;
@@ -440,10 +422,7 @@ class TeamRepository {
     List<Team> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Team>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Team>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Team] and returns the inserted row.
@@ -454,10 +433,7 @@ class TeamRepository {
     Team row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Team>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Team>(row, transaction: transaction);
   }
 
   /// Updates all [Team]s in the list and returns the updated rows. If
@@ -542,10 +518,7 @@ class TeamRepository {
     List<Team> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Team>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Team>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Team].
@@ -554,10 +527,7 @@ class TeamRepository {
     Team row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Team>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Team>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

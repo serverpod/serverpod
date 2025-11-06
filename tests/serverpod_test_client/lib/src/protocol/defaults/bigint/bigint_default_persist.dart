@@ -13,25 +13,22 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class BigIntDefaultPersist implements _i1.SerializableModel {
-  BigIntDefaultPersist._({
-    this.id,
-    this.bigIntDefaultPersistStr,
-  });
+  BigIntDefaultPersist._({this.id, this.bigIntDefaultPersistStr});
 
-  factory BigIntDefaultPersist({
-    int? id,
-    BigInt? bigIntDefaultPersistStr,
-  }) = _BigIntDefaultPersistImpl;
+  factory BigIntDefaultPersist({int? id, BigInt? bigIntDefaultPersistStr}) =
+      _BigIntDefaultPersistImpl;
 
   factory BigIntDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return BigIntDefaultPersist(
       id: jsonSerialization['id'] as int?,
       bigIntDefaultPersistStr:
           jsonSerialization['bigIntDefaultPersistStr'] == null
               ? null
               : _i1.BigIntJsonExtension.fromJson(
-                  jsonSerialization['bigIntDefaultPersistStr']),
+                jsonSerialization['bigIntDefaultPersistStr'],
+              ),
     );
   }
 
@@ -45,10 +42,7 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   /// Returns a shallow copy of this [BigIntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  BigIntDefaultPersist copyWith({
-    int? id,
-    BigInt? bigIntDefaultPersistStr,
-  });
+  BigIntDefaultPersist copyWith({int? id, BigInt? bigIntDefaultPersistStr});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -67,13 +61,8 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
 class _Undefined {}
 
 class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
-  _BigIntDefaultPersistImpl({
-    int? id,
-    BigInt? bigIntDefaultPersistStr,
-  }) : super._(
-          id: id,
-          bigIntDefaultPersistStr: bigIntDefaultPersistStr,
-        );
+  _BigIntDefaultPersistImpl({int? id, BigInt? bigIntDefaultPersistStr})
+    : super._(id: id, bigIntDefaultPersistStr: bigIntDefaultPersistStr);
 
   /// Returns a shallow copy of this [BigIntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -85,9 +74,10 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
   }) {
     return BigIntDefaultPersist(
       id: id is int? ? id : this.id,
-      bigIntDefaultPersistStr: bigIntDefaultPersistStr is BigInt?
-          ? bigIntDefaultPersistStr
-          : this.bigIntDefaultPersistStr,
+      bigIntDefaultPersistStr:
+          bigIntDefaultPersistStr is BigInt?
+              ? bigIntDefaultPersistStr
+              : this.bigIntDefaultPersistStr,
     );
   }
 }

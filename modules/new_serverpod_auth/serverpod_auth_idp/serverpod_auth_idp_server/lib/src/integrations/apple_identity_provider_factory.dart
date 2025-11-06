@@ -7,10 +7,7 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
   final AppleIDPConfig config;
 
   /// Creates a new [AppleIdentityProviderFactory].
-  AppleIdentityProviderFactory(
-    this.config, {
-    super.tokenManagerOverride,
-  });
+  AppleIdentityProviderFactory(this.config, {super.tokenManagerOverride});
 
   @override
   AppleIDP construct({required final TokenManager tokenManager}) {

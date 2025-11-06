@@ -49,9 +49,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) =>
-              t.kittens.every((o) => o.name.ilike('kitt%')) |
-              t.name.equals('Smulan'),
+          where:
+              (t) =>
+                  t.kittens.every((o) => o.name.ilike('kitt%')) |
+                  t.name.equals('Smulan'),
         );
 
         expect(deletedCats, hasLength(2));
@@ -75,8 +76,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens
-              .every((t) => t.name.ilike('kitt%') | t.name.equals('Smulan II')),
+          where:
+              (t) => t.kittens.every(
+                (t) => t.name.ilike('kitt%') | t.name.equals('Smulan II'),
+              ),
         );
 
         expect(deletedCats, hasLength(2));
@@ -100,9 +103,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) =>
-              t.kittens.every((t) => t.name.ilike('kitt%')) |
-              t.kittens.every((t) => t.name.ilike('smul%')),
+          where:
+              (t) =>
+                  t.kittens.every((t) => t.name.ilike('kitt%')) |
+                  t.kittens.every((t) => t.name.ilike('smul%')),
         );
 
         expect(deletedCats, hasLength(2));
@@ -138,9 +142,11 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens.every(
-              // All cats where all kittens has kittens with name starting with 'Nest'
-              (o) => o.kittens.every((c) => c.name.ilike('nest%'))),
+          where:
+              (t) => t.kittens.every(
+                // All cats where all kittens has kittens with name starting with 'Nest'
+                (o) => o.kittens.every((c) => c.name.ilike('nest%')),
+              ),
         );
 
         expect(deletedCats, hasLength(1));
@@ -168,9 +174,10 @@ void main() async {
 
         var deletedCats = await Cat.db.deleteWhere(
           session,
-          where: (t) => t.kittens.every(
-            (o) => o.kittens.every((o) => o.name.ilike('%kitten%')),
-          ),
+          where:
+              (t) => t.kittens.every(
+                (o) => o.kittens.every((o) => o.name.ilike('%kitten%')),
+              ),
         );
 
         expect(deletedCats, hasLength(1));

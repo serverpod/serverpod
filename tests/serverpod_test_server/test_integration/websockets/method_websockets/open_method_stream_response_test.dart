@@ -15,9 +15,7 @@ void main() {
     setUp(() async {
       server = IntegrationTestServer.create();
       await server.start();
-      webSocket = await WebSocket.connect(
-        Uri.parse(serverMethodWebsocketUrl),
-      );
+      webSocket = await WebSocket.connect(Uri.parse(serverMethodWebsocketUrl));
     });
 
     tearDown(() async {
@@ -26,41 +24,44 @@ void main() {
     });
 
     test(
-        'when an OpenMethodStreamResponse message and a ping message is sent to the server then OpenMethodStreamResponse is ignored and the server only responds with a pong message.',
-        () {
-      var pongReceived = Completer<void>();
-      var otherMessageReceived = Completer<void>();
-      webSocket.textEvents.listen((event) {
-        var message = WebSocketMessage.fromJsonString(
-          event,
-          server.serializationManager,
+      'when an OpenMethodStreamResponse message and a ping message is sent to the server then OpenMethodStreamResponse is ignored and the server only responds with a pong message.',
+      () {
+        var pongReceived = Completer<void>();
+        var otherMessageReceived = Completer<void>();
+        webSocket.textEvents.listen((event) {
+          var message = WebSocketMessage.fromJsonString(
+            event,
+            server.serializationManager,
+          );
+          ;
+          if (message is PongCommand) {
+            pongReceived.complete();
+          } else {
+            otherMessageReceived.complete();
+          }
+        });
+
+        webSocket.sendText(
+          OpenMethodStreamResponse.buildMessage(
+            endpoint: 'endpoint',
+            method: 'method',
+            responseType: OpenMethodStreamResponseType.success,
+            connectionId: const Uuid().v4obj(),
+          ),
         );
-        ;
-        if (message is PongCommand) {
-          pongReceived.complete();
-        } else {
-          otherMessageReceived.complete();
-        }
-      });
+        webSocket.sendText(PingCommand.buildMessage());
 
-      webSocket.sendText(OpenMethodStreamResponse.buildMessage(
-        endpoint: 'endpoint',
-        method: 'method',
-        responseType: OpenMethodStreamResponseType.success,
-        connectionId: const Uuid().v4obj(),
-      ));
-      webSocket.sendText(PingCommand.buildMessage());
-
-      expect(
-        otherMessageReceived.future,
-        doesNotComplete,
-        reason: 'OpenMethodStreamResponse not generate any messages.',
-      );
-      expect(
-        pongReceived.future.timeout(Duration(seconds: 5)),
-        completes,
-        reason: 'Failed to receive pong message from server.',
-      );
-    });
+        expect(
+          otherMessageReceived.future,
+          doesNotComplete,
+          reason: 'OpenMethodStreamResponse not generate any messages.',
+        );
+        expect(
+          pongReceived.future.timeout(Duration(seconds: 5)),
+          completes,
+          reason: 'Failed to receive pong message from server.',
+        );
+      },
+    );
   });
 }

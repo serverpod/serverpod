@@ -17,12 +17,7 @@ import '../../models_with_relations/one_to_one/town.dart' as _i2;
 
 abstract class Company
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  Company._({
-    this.id,
-    required this.name,
-    required this.townId,
-    this.town,
-  });
+  Company._({this.id, required this.name, required this.townId, this.town});
 
   factory Company({
     int? id,
@@ -36,10 +31,12 @@ abstract class Company
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       townId: jsonSerialization['townId'] as int,
-      town: jsonSerialization['town'] == null
-          ? null
-          : _i2.Town.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+      town:
+          jsonSerialization['town'] == null
+              ? null
+              : _i2.Town.fromJson(
+                (jsonSerialization['town'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -62,12 +59,7 @@ abstract class Company
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  Company copyWith({
-    int? id,
-    String? name,
-    int? townId,
-    _i2.Town? town,
-  });
+  Company copyWith({int? id, String? name, int? townId, _i2.Town? town});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -126,12 +118,7 @@ class _CompanyImpl extends Company {
     required String name,
     required int townId,
     _i2.Town? town,
-  }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+  }) : super._(id: id, name: name, townId: townId, town: town);
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
@@ -155,28 +142,18 @@ class _CompanyImpl extends Company {
 class CompanyUpdateTable extends _i1.UpdateTable<CompanyTable> {
   CompanyUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
-  _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
-        table.townId,
-        value,
-      );
+  _i1.ColumnValue<int, int> townId(int value) =>
+      _i1.ColumnValue(table.townId, value);
 }
 
 class CompanyTable extends _i1.Table<int?> {
   CompanyTable({super.tableRelation}) : super(tableName: 'company') {
     updateTable = CompanyUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
-    townId = _i1.ColumnInt(
-      'townId',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
+    townId = _i1.ColumnInt('townId', this);
   }
 
   late final CompanyUpdateTable updateTable;
@@ -194,18 +171,15 @@ class CompanyTable extends _i1.Table<int?> {
       field: Company.t.townId,
       foreignField: _i2.Town.t.id,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.TownTable(tableRelation: foreignTableRelation),
+      createTable:
+          (foreignTableRelation) =>
+              _i2.TownTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        name,
-        townId,
-      ];
+  List<_i1.Column> get columns => [id, name, townId];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -363,10 +337,7 @@ class CompanyRepository {
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<Company>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<Company>(rows, transaction: transaction);
   }
 
   /// Inserts a single [Company] and returns the inserted row.
@@ -377,10 +348,7 @@ class CompanyRepository {
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<Company>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<Company>(row, transaction: transaction);
   }
 
   /// Updates all [Company]s in the list and returns the updated rows. If
@@ -465,10 +433,7 @@ class CompanyRepository {
     List<Company> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Company>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<Company>(rows, transaction: transaction);
   }
 
   /// Deletes a single [Company].
@@ -477,10 +442,7 @@ class CompanyRepository {
     Company row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<Company>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<Company>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

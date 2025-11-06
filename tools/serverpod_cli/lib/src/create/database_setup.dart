@@ -5,10 +5,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class DatabaseSetup {
-  static Future<bool> createDefaultMigration(
-    Directory dir,
-    String name,
-  ) async {
+  static Future<bool> createDefaultMigration(Directory dir, String name) async {
     log.debug('Creating initial migration.');
 
     GeneratorConfig? config;
@@ -20,17 +17,11 @@ class DatabaseSetup {
       return false;
     }
 
-    var generator = MigrationGenerator(
-      directory: dir,
-      projectName: name,
-    );
+    var generator = MigrationGenerator(directory: dir, projectName: name);
 
     MigrationVersion? migration;
     try {
-      migration = await generator.createMigration(
-        force: false,
-        config: config,
-      );
+      migration = await generator.createMigration(force: false, config: config);
     } on MigrationVersionLoadException {
       // Ignore known error since the user can create the migration manually
       // and get better error messages then.

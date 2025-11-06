@@ -19,9 +19,9 @@ abstract class BoolDefault
     bool? boolDefaultTrue,
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
-  })  : boolDefaultTrue = boolDefaultTrue ?? true,
-        boolDefaultFalse = boolDefaultFalse ?? false,
-        boolDefaultNullFalse = boolDefaultNullFalse ?? false;
+  }) : boolDefaultTrue = boolDefaultTrue ?? true,
+       boolDefaultFalse = boolDefaultFalse ?? false,
+       boolDefaultNullFalse = boolDefaultNullFalse ?? false;
 
   factory BoolDefault({
     int? id,
@@ -125,11 +125,11 @@ class _BoolDefaultImpl extends BoolDefault {
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
   }) : super._(
-          id: id,
-          boolDefaultTrue: boolDefaultTrue,
-          boolDefaultFalse: boolDefaultFalse,
-          boolDefaultNullFalse: boolDefaultNullFalse,
-        );
+         id: id,
+         boolDefaultTrue: boolDefaultTrue,
+         boolDefaultFalse: boolDefaultFalse,
+         boolDefaultNullFalse: boolDefaultNullFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefault]
   /// with some or all fields replaced by the given arguments.
@@ -145,9 +145,10 @@ class _BoolDefaultImpl extends BoolDefault {
       id: id is int? ? id : this.id,
       boolDefaultTrue: boolDefaultTrue ?? this.boolDefaultTrue,
       boolDefaultFalse: boolDefaultFalse ?? this.boolDefaultFalse,
-      boolDefaultNullFalse: boolDefaultNullFalse is bool?
-          ? boolDefaultNullFalse
-          : this.boolDefaultNullFalse,
+      boolDefaultNullFalse:
+          boolDefaultNullFalse is bool?
+              ? boolDefaultNullFalse
+              : this.boolDefaultNullFalse,
     );
   }
 }
@@ -155,31 +156,20 @@ class _BoolDefaultImpl extends BoolDefault {
 class BoolDefaultUpdateTable extends _i1.UpdateTable<BoolDefaultTable> {
   BoolDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<bool, bool> boolDefaultTrue(bool value) => _i1.ColumnValue(
-        table.boolDefaultTrue,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> boolDefaultTrue(bool value) =>
+      _i1.ColumnValue(table.boolDefaultTrue, value);
 
-  _i1.ColumnValue<bool, bool> boolDefaultFalse(bool value) => _i1.ColumnValue(
-        table.boolDefaultFalse,
-        value,
-      );
+  _i1.ColumnValue<bool, bool> boolDefaultFalse(bool value) =>
+      _i1.ColumnValue(table.boolDefaultFalse, value);
 
   _i1.ColumnValue<bool, bool> boolDefaultNullFalse(bool? value) =>
-      _i1.ColumnValue(
-        table.boolDefaultNullFalse,
-        value,
-      );
+      _i1.ColumnValue(table.boolDefaultNullFalse, value);
 }
 
 class BoolDefaultTable extends _i1.Table<int?> {
   BoolDefaultTable({super.tableRelation}) : super(tableName: 'bool_default') {
     updateTable = BoolDefaultUpdateTable(this);
-    boolDefaultTrue = _i1.ColumnBool(
-      'boolDefaultTrue',
-      this,
-      hasDefault: true,
-    );
+    boolDefaultTrue = _i1.ColumnBool('boolDefaultTrue', this, hasDefault: true);
     boolDefaultFalse = _i1.ColumnBool(
       'boolDefaultFalse',
       this,
@@ -202,11 +192,11 @@ class BoolDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultTrue,
-        boolDefaultFalse,
-        boolDefaultNullFalse,
-      ];
+    id,
+    boolDefaultTrue,
+    boolDefaultFalse,
+    boolDefaultNullFalse,
+  ];
 }
 
 class BoolDefaultInclude extends _i1.IncludeObject {
@@ -327,10 +317,7 @@ class BoolDefaultRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<BoolDefault>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<BoolDefault>(id, transaction: transaction);
   }
 
   /// Inserts all [BoolDefault]s in the list and returns the inserted rows.
@@ -344,10 +331,7 @@ class BoolDefaultRepository {
     List<BoolDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<BoolDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<BoolDefault>(rows, transaction: transaction);
   }
 
   /// Inserts a single [BoolDefault] and returns the inserted row.
@@ -358,10 +342,7 @@ class BoolDefaultRepository {
     BoolDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<BoolDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<BoolDefault>(row, transaction: transaction);
   }
 
   /// Updates all [BoolDefault]s in the list and returns the updated rows. If
@@ -446,10 +427,7 @@ class BoolDefaultRepository {
     List<BoolDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<BoolDefault>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<BoolDefault>(rows, transaction: transaction);
   }
 
   /// Deletes a single [BoolDefault].
@@ -458,10 +436,7 @@ class BoolDefaultRepository {
     BoolDefault row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<BoolDefault>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<BoolDefault>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

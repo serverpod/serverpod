@@ -37,14 +37,15 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.db.deleteWhere<SessionLogEntry>(
-      where: Constant.bool(true),
-    );
+    await session.db.deleteWhere<SessionLogEntry>(where: Constant.bool(true));
   }
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
@@ -53,7 +54,8 @@ class InsightsEndpoint extends Endpoint {
       where = SessionLogEntry.t.isOpen.equals(true);
     } else {
       if (filter.slow && filter.error) {
-        where = SessionLogEntry.t.slow.equals(true) |
+        where =
+            SessionLogEntry.t.slow.equals(true) |
             SessionLogEntry.t.error.notEquals(null);
       } else if (filter.slow) {
         where = SessionLogEntry.t.slow.equals(true);
@@ -119,7 +121,10 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
     return SessionLogResult(sessionLog: []);
   }
 
@@ -196,7 +201,8 @@ class InsightsEndpoint extends Endpoint {
   /// See also:
   /// - [getLiveDatabaseDefinition]
   Future<List<TableDefinition>> getTargetTableDefinition(
-      Session session) async {
+    Session session,
+  ) async {
     return session.serverpod.serializationManager.getTargetTableDefinitions();
   }
 
@@ -266,9 +272,7 @@ class InsightsEndpoint extends Endpoint {
         filter: filter,
       );
     } catch (e) {
-      throw BulkDataException(
-        message: 'Failed to fetch bulk data. ($e)',
-      );
+      throw BulkDataException(message: 'Failed to fetch bulk data. ($e)');
     }
   }
 
@@ -290,9 +294,7 @@ class InsightsEndpoint extends Endpoint {
           message: 'Failed to execute query: ${e.message}',
         );
       } else {
-        throw BulkDataException(
-          message: 'Failed to execute query: $e',
-        );
+        throw BulkDataException(message: 'Failed to execute query: $e');
       }
     }
   }
@@ -313,10 +315,7 @@ class InsightsEndpoint extends Endpoint {
     try {
       return await session.db.unsafeExecute(sql);
     } catch (e) {
-      throw ServerpodSqlException(
-        message: '$e',
-        sql: sql,
-      );
+      throw ServerpodSqlException(message: '$e', sql: sql);
     }
   }
 
@@ -327,18 +326,16 @@ class InsightsEndpoint extends Endpoint {
   Future<String> fetchFile(Session session, String path) async {
     // Test the file in unix format.
     if (!PathUtil.isFileWhitelisted(
-        path, session.serverpod.filesWhitelistedForInsights)) {
-      throw AccessDeniedException(
-        message: 'File is not in whitelist: $path',
-      );
+      path,
+      session.serverpod.filesWhitelistedForInsights,
+    )) {
+      throw AccessDeniedException(message: 'File is not in whitelist: $path');
     }
 
     // Convert the path to platform specific format and fetch the file.
     var file = File(PathUtil.relativePathToPlatformPath(path));
     if (!await file.exists()) {
-      throw FileNotFoundException(
-        message: 'File not found: $path',
-      );
+      throw FileNotFoundException(message: 'File not found: $path');
     }
 
     return await file.readAsString();

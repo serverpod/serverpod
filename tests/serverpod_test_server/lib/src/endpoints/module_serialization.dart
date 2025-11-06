@@ -8,10 +8,7 @@ import '../generated/module_datatype.dart';
 
 class ModuleSerializationEndpoint extends Endpoint {
   Future<bool> serializeModuleObject(Session session) async {
-    var moduleClass = module.ModuleClass(
-      data: 42,
-      name: 'foo',
-    );
+    var moduleClass = module.ModuleClass(data: 42, name: 'foo');
 
     try {
       var s = SerializationManager.encode(moduleClass);
@@ -19,7 +16,8 @@ class ModuleSerializationEndpoint extends Endpoint {
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
       stdout.writeln(
-          'ModuleSerializationEndpoint.serializeModuleObject failed: $e');
+        'ModuleSerializationEndpoint.serializeModuleObject failed: $e',
+      );
       stdout.writeln('$stackTrace');
 
       return false;
@@ -27,16 +25,15 @@ class ModuleSerializationEndpoint extends Endpoint {
   }
 
   Future<module.ModuleClass> modifyModuleObject(
-      Session session, module.ModuleClass object) async {
+    Session session,
+    module.ModuleClass object,
+  ) async {
     object.data = 42;
     return object;
   }
 
   Future<ModuleDatatype> serializeNestedModuleObject(Session session) async {
-    var internalModuleClass = module.ModuleClass(
-      data: 42,
-      name: 'foo',
-    );
+    var internalModuleClass = module.ModuleClass(data: 42, name: 'foo');
 
     return ModuleDatatype(
       model: internalModuleClass,

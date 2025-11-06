@@ -72,8 +72,9 @@ class _ExtendsMatcherImpl implements Matcher, ExtendsMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (extendsClause) =>
-            extendsClause.superclass.typeArguments?.arguments ?? [],
+        extractValue:
+            (extendsClause) =>
+                extendsClause.superclass.typeArguments?.arguments ?? [],
       ),
       genericType,
     );

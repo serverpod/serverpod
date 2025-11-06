@@ -37,17 +37,22 @@ abstract class ObjectWithBit implements _i1.SerializableModel {
     return ObjectWithBit(
       id: jsonSerialization['id'] as int?,
       bit: _i1.BitJsonExtension.fromJson(jsonSerialization['bit']),
-      bitNullable: jsonSerialization['bitNullable'] == null
-          ? null
-          : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
-      bitIndexedHnsw:
-          _i1.BitJsonExtension.fromJson(jsonSerialization['bitIndexedHnsw']),
+      bitNullable:
+          jsonSerialization['bitNullable'] == null
+              ? null
+              : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
+      bitIndexedHnsw: _i1.BitJsonExtension.fromJson(
+        jsonSerialization['bitIndexedHnsw'],
+      ),
       bitIndexedHnswWithParams: _i1.BitJsonExtension.fromJson(
-          jsonSerialization['bitIndexedHnswWithParams']),
-      bitIndexedIvfflat:
-          _i1.BitJsonExtension.fromJson(jsonSerialization['bitIndexedIvfflat']),
+        jsonSerialization['bitIndexedHnswWithParams'],
+      ),
+      bitIndexedIvfflat: _i1.BitJsonExtension.fromJson(
+        jsonSerialization['bitIndexedIvfflat'],
+      ),
       bitIndexedIvfflatWithParams: _i1.BitJsonExtension.fromJson(
-          jsonSerialization['bitIndexedIvfflatWithParams']),
+        jsonSerialization['bitIndexedIvfflatWithParams'],
+      ),
     );
   }
 
@@ -111,14 +116,14 @@ class _ObjectWithBitImpl extends ObjectWithBit {
     required _i1.Bit bitIndexedIvfflat,
     required _i1.Bit bitIndexedIvfflatWithParams,
   }) : super._(
-          id: id,
-          bit: bit,
-          bitNullable: bitNullable,
-          bitIndexedHnsw: bitIndexedHnsw,
-          bitIndexedHnswWithParams: bitIndexedHnswWithParams,
-          bitIndexedIvfflat: bitIndexedIvfflat,
-          bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams,
-        );
+         id: id,
+         bit: bit,
+         bitNullable: bitNullable,
+         bitIndexedHnsw: bitIndexedHnsw,
+         bitIndexedHnswWithParams: bitIndexedHnswWithParams,
+         bitIndexedIvfflat: bitIndexedIvfflat,
+         bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
@@ -142,7 +147,8 @@ class _ObjectWithBitImpl extends ObjectWithBit {
       bitIndexedHnswWithParams:
           bitIndexedHnswWithParams ?? this.bitIndexedHnswWithParams.clone(),
       bitIndexedIvfflat: bitIndexedIvfflat ?? this.bitIndexedIvfflat.clone(),
-      bitIndexedIvfflatWithParams: bitIndexedIvfflatWithParams ??
+      bitIndexedIvfflatWithParams:
+          bitIndexedIvfflatWithParams ??
           this.bitIndexedIvfflatWithParams.clone(),
     );
   }

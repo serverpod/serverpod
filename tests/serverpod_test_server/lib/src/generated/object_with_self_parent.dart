@@ -14,18 +14,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class ObjectWithSelfParent
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ObjectWithSelfParent._({
-    this.id,
-    this.other,
-  });
+  ObjectWithSelfParent._({this.id, this.other});
 
-  factory ObjectWithSelfParent({
-    int? id,
-    int? other,
-  }) = _ObjectWithSelfParentImpl;
+  factory ObjectWithSelfParent({int? id, int? other}) =
+      _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSelfParent(
       id: jsonSerialization['id'] as int?,
       other: jsonSerialization['other'] as int?,
@@ -47,24 +43,15 @@ abstract class ObjectWithSelfParent
   /// Returns a shallow copy of this [ObjectWithSelfParent]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ObjectWithSelfParent copyWith({
-    int? id,
-    int? other,
-  });
+  ObjectWithSelfParent copyWith({int? id, int? other});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      if (other != null) 'other': other,
-    };
+    return {if (id != null) 'id': id, if (other != null) 'other': other};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      if (other != null) 'other': other,
-    };
+    return {if (id != null) 'id': id, if (other != null) 'other': other};
   }
 
   static ObjectWithSelfParentInclude include() {
@@ -100,13 +87,8 @@ abstract class ObjectWithSelfParent
 class _Undefined {}
 
 class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
-  _ObjectWithSelfParentImpl({
-    int? id,
-    int? other,
-  }) : super._(
-          id: id,
-          other: other,
-        );
+  _ObjectWithSelfParentImpl({int? id, int? other})
+    : super._(id: id, other: other);
 
   /// Returns a shallow copy of this [ObjectWithSelfParent]
   /// with some or all fields replaced by the given arguments.
@@ -127,20 +109,15 @@ class ObjectWithSelfParentUpdateTable
     extends _i1.UpdateTable<ObjectWithSelfParentTable> {
   ObjectWithSelfParentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> other(int? value) => _i1.ColumnValue(
-        table.other,
-        value,
-      );
+  _i1.ColumnValue<int, int> other(int? value) =>
+      _i1.ColumnValue(table.other, value);
 }
 
 class ObjectWithSelfParentTable extends _i1.Table<int?> {
   ObjectWithSelfParentTable({super.tableRelation})
-      : super(tableName: 'object_with_self_parent') {
+    : super(tableName: 'object_with_self_parent') {
     updateTable = ObjectWithSelfParentUpdateTable(this);
-    other = _i1.ColumnInt(
-      'other',
-      this,
-    );
+    other = _i1.ColumnInt('other', this);
   }
 
   late final ObjectWithSelfParentUpdateTable updateTable;
@@ -148,10 +125,7 @@ class ObjectWithSelfParentTable extends _i1.Table<int?> {
   late final _i1.ColumnInt other;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        other,
-      ];
+  List<_i1.Column> get columns => [id, other];
 }
 
 class ObjectWithSelfParentInclude extends _i1.IncludeObject {
@@ -349,7 +323,7 @@ class ObjectWithSelfParentRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithSelfParent>(
@@ -364,7 +338,7 @@ class ObjectWithSelfParentRepository {
   Future<List<ObjectWithSelfParent>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     int? limit,
     int? offset,

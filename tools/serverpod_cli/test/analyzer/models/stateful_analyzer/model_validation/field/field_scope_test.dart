@@ -14,19 +14,20 @@ void main() {
     'Given a class with a field with no scope set, then the generated model has the all scope.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             name: String
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -35,127 +36,124 @@ void main() {
   );
 
   test(
-      'Given server only class with a field with no scope set, then the generated model has the server only scope.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given server only class with a field with no scope set, then the generated model has the server only scope.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
-    var definition = definitions.first as ClassDefinition;
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ClassDefinition;
 
-    expect(definition.fields.last.scope, ModelFieldScopeDefinition.serverOnly);
-  });
+      expect(
+        definition.fields.last.scope,
+        ModelFieldScopeDefinition.serverOnly,
+      );
+    },
+  );
 
-  group(
-    'Given a class with a field with the scope set',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given a class with a field with the scope set', () {
+    var models = [
+      ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String?, scope=serverOnly
             example: String, scope=all
             town: String?, scope=none
-          ''',
-        ).build(),
-      ];
+          ''').build(),
+    ];
 
-      late var collector = CodeGenerationCollector();
-      late var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    late var collector = CodeGenerationCollector();
+    late var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
 
-      late List<SerializableModelDefinition> definitions;
-      setUpAll(() {
-        definitions = analyzer.validateAll();
-      });
+    late List<SerializableModelDefinition> definitions;
+    setUpAll(() {
+      definitions = analyzer.validateAll();
+    });
 
-      test('then no errors are collected.', () {
-        expect(collector.errors, isEmpty);
-      });
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
 
-      late var definition = definitions.first as ClassDefinition;
+    late var definition = definitions.first as ClassDefinition;
 
-      test('then the generated model has the scope.', () {
-        expect(
-          definition.fields[0].scope,
-          ModelFieldScopeDefinition.serverOnly,
-        );
-      });
+    test('then the generated model has the scope.', () {
+      expect(definition.fields[0].scope, ModelFieldScopeDefinition.serverOnly);
+    });
 
-      test('then the generated model has the scope.', () {
-        expect(
-          definition.fields[1].scope,
-          ModelFieldScopeDefinition.all,
-        );
-      });
+    test('then the generated model has the scope.', () {
+      expect(definition.fields[1].scope, ModelFieldScopeDefinition.all);
+    });
 
-      test('then the generated model has the scope.', () {
-        expect(definition.fields[2].scope, ModelFieldScopeDefinition.none);
-      });
-    },
-  );
+    test('then the generated model has the scope.', () {
+      expect(definition.fields[2].scope, ModelFieldScopeDefinition.none);
+    });
+  });
 
   test(
-      'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           name: String?, scope=
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error for invalid scope name, none was found.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error for invalid scope name, none was found.',
+      );
 
-    expect(
-      collector.errors.first.message,
-      '"" is not a valid property. Valid properties are (all, serverOnly, none).',
-    );
-  });
+      expect(
+        collector.errors.first.message,
+        '"" is not a valid property. Valid properties are (all, serverOnly, none).',
+      );
+    },
+  );
 
   test(
     'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           name: String?, scope=InvalidScope
-        ''',
-        ).build(),
+        ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -175,13 +173,11 @@ void main() {
     'Given a class with a none nullable field with the scope serverOnly then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String, scope=serverOnly
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -207,14 +203,12 @@ void main() {
     'Given a server only class with a none nullable field with the scope serverOnly',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           serverOnly: true
           fields:
             name: String, scope=serverOnly
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       late var collector = CodeGenerationCollector();
@@ -244,14 +238,15 @@ void main() {
       });
 
       test(
-          'then error message informs user that scope declaration is redundant.',
-          () {
-        var error = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          error.message,
-          'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
-        );
-      });
+        'then error message informs user that scope declaration is redundant.',
+        () {
+          var error = collector.errors.first as SourceSpanSeverityException;
+          expect(
+            error.message,
+            'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
+          );
+        },
+      );
 
       test('then the field is declared with the server only scope.', () {
         var definition = definitions.first as ClassDefinition;
@@ -267,13 +262,11 @@ void main() {
     'Given a class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           fields:
             name: String, scope=none
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -299,14 +292,12 @@ void main() {
     'Given a server only class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           serverOnly: true
           fields:
             name: String, scope=none
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -332,14 +323,12 @@ void main() {
     'Given a server only class with a nullable field with the scope none then field has scope none.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           serverOnly: true
           fields:
             name: String?, scope=none
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -353,23 +342,18 @@ void main() {
       expect(collector.errors, isEmpty);
 
       var definition = definitions.first as ClassDefinition;
-      expect(
-        definition.fields.first.scope,
-        ModelFieldScopeDefinition.none,
-      );
+      expect(definition.fields.first.scope, ModelFieldScopeDefinition.none);
     },
   );
 
   group('Given class with server only property and field with scope all', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
         class: Example
         serverOnly: true
         fields:
           name: String, scope=all
-        ''',
-      ).build(),
+        ''').build(),
     ];
 
     late var collector = CodeGenerationCollector();
@@ -397,21 +381,17 @@ void main() {
 
   group('Given server only class referenced from all scoped class', () {
     var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+      ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+      ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           fieldOfServerOnlyClass: ServerOnlyClass
-        ''',
-      ).build(),
+        ''').build(),
     ];
 
     late var collector = CodeGenerationCollector();
@@ -429,69 +409,63 @@ void main() {
     });
 
     test(
-        'then error informs that scope must be compatible with server only scoped classes.',
-        () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
-      );
-    });
+      'then error informs that scope must be compatible with server only scoped classes.',
+      () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
+        );
+      },
+    );
   });
 
   test(
-      'Given server only class referenced from server only scoped class then field is defined.',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+    'Given server only class referenced from server only scoped class then field is defined.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+        ModelSourceBuilder().withYaml('''
         class: Example
         serverOnly: true
         fields:
           fieldOfServerOnlyClass: ServerOnlyClass
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(collector.errors, isEmpty);
+      expect(collector.errors, isEmpty);
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
-    expect(definition, isNotNull);
-  });
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition, isNotNull);
+    },
+  );
 
   group('Given server only class referenced from all scoped field', () {
     var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+      ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+      ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           fieldOfServerOnlyClass: ServerOnlyClass, scope=all
-        ''',
-      ).build(),
+        ''').build(),
     ];
 
     late var collector = CodeGenerationCollector();
@@ -509,34 +483,30 @@ void main() {
     });
 
     test(
-        'then error informs that scope must be compatible with server only scoped classes.',
-        () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
-      );
-    });
+      'then error informs that scope must be compatible with server only scoped classes.',
+      () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
+        );
+      },
+    );
   });
 
-  group('Given server only class referenced from Map in an all scoped field',
-      () {
+  group('Given server only class referenced from Map in an all scoped field', () {
     var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+      ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+      ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           fieldOfServerOnlyClass: Map<String, ServerOnlyClass>, scope=all
-        ''',
-      ).build(),
+        ''').build(),
     ];
 
     late var collector = CodeGenerationCollector();
@@ -554,103 +524,99 @@ void main() {
     });
 
     test(
-        'then error informs that scope must be compatible with server only scoped classes.',
-        () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
-      );
-    });
+      'then error informs that scope must be compatible with server only scoped classes.',
+      () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The type "ServerOnlyClass" is a server only class and can only be used fields with scope (serverOnly, none) (e.g fieldOfServerOnlyClass: ServerOnlyClass, scope=serverOnly).',
+        );
+      },
+    );
   });
 
   test(
-      'Given server only class referenced from server only scoped field then field is defined.',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+    'Given server only class referenced from server only scoped field then field is defined.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+        ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           fieldOfServerOnlyClass: ServerOnlyClass?, scope=serverOnly
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(collector.errors, isEmpty);
+      expect(collector.errors, isEmpty);
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
-    expect(definition, isNotNull);
-  });
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition, isNotNull);
+    },
+  );
 
   test(
-      'Given server only class referenced from none scoped field then field is defined.',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('server_only_class').withYaml(
-        '''
+    'Given server only class referenced from none scoped field then field is defined.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('server_only_class').withYaml('''
         class: ServerOnlyClass
         serverOnly: true
         fields:
           name: String
-        ''',
-      ).build(),
-      ModelSourceBuilder().withYaml(
-        '''
+        ''').build(),
+        ModelSourceBuilder().withYaml('''
         class: Example
         fields:
           fieldOfServerOnlyClass: ServerOnlyClass?, scope=none
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(collector.errors, isEmpty);
+      expect(collector.errors, isEmpty);
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
-    expect(definition, isNotNull);
-  });
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      expect(definition, isNotNull);
+    },
+  );
 
   test(
     'Given a class with a declared id field with the "scope" key set, then an error is collected.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Example
           table: example
           fields:
             id: int?, scope=none
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors.first.message,
@@ -660,34 +626,36 @@ void main() {
   );
 
   group(
-      'Given a serverOnly table class with a declared id field and no scope set',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a serverOnly table class with a declared id field and no scope set',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: Example
         serverOnly: true
         table: example
         fields:
           id: UuidValue?, defaultPersist=random
-        ''',
-      ).build(),
-    ];
+        ''').build(),
+      ];
 
-    late var collector = CodeGenerationCollector();
-    late var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    late final definitions = analyzer.validateAll();
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      late final definitions = analyzer.validateAll();
 
-    test('then no errors are collected', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    late final exampleClass = definitions.first as ModelClassDefinition;
+      late final exampleClass = definitions.first as ModelClassDefinition;
 
-    test('then the scope of the id field is serverOnly.', () {
-      var idField = exampleClass.findField('id');
-      expect(idField?.scope, ModelFieldScopeDefinition.serverOnly);
-    });
-  });
+      test('then the scope of the id field is serverOnly.', () {
+        var idField = exampleClass.findField('id');
+        expect(idField?.scope, ModelFieldScopeDefinition.serverOnly);
+      });
+    },
+  );
 }

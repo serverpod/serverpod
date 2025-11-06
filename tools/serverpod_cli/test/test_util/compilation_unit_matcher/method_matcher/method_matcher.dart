@@ -11,8 +11,8 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     this._name, {
     required bool? isOverride,
     required String? returnType,
-  })  : _isOverride = isOverride,
-        _returnType = returnType;
+  }) : _isOverride = isOverride,
+       _returnType = returnType;
 
   @override
   Description describe(Description description) {
@@ -52,10 +52,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     var output = StringBuffer();
     if (methodDecl == null) {
       output.write('does not contain method "$_name". Found methods: [');
-      output.writeAll(
-        match.value.map((m) => m.name.lexeme),
-        ', ',
-      );
+      output.writeAll(match.value.map((m) => m.name.lexeme), ', ');
       output.write(']');
       return mismatchDescription.add(output.toString());
     }
@@ -65,7 +62,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
       if (!methodDecl._hasMatchingOverride(_isOverride))
         'is ${_isOverride == true ? 'not overridden' : 'overridden'}',
       if (!methodDecl._hasMatchingReturnType(_returnType))
-        'returns "${methodDecl.returnType?.toSource()}"'
+        'returns "${methodDecl.returnType?.toSource()}"',
     ], ' and ');
 
     return mismatchDescription.add(output.toString());
@@ -87,8 +84,9 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
       ChainableMatcher.createMatcher(
         this,
         resolveMatch: _matchedFeatureValueOf,
-        extractValue: (methodDeclaration) =>
-            methodDeclaration.parameters?.parameters ?? [],
+        extractValue:
+            (methodDeclaration) =>
+                methodDeclaration.parameters?.parameters ?? [],
       ),
       parameterName,
       type: type,

@@ -20,16 +20,9 @@ class ModelSource {
   );
 }
 
-const spyModelFileExtensions = [
-  '.spy',
-  '.spy.yaml',
-  '.spy.yml',
-];
+const spyModelFileExtensions = ['.spy', '.spy.yaml', '.spy.yml'];
 
-const yamlModelFileExtensions = [
-  '.yaml',
-  '.yml',
-];
+const yamlModelFileExtensions = ['.yaml', '.yml'];
 
 const modelFileExtensions = [
   ...spyModelFileExtensions,
@@ -60,8 +53,9 @@ class ModelHelper {
 
     // TODO This sort is needed to make sure all generated methods
     // are in the same order. Move this logic to the code generator instead.
-    modelSources
-        .sort((a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path));
+    modelSources.sort(
+      (a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path),
+    );
 
     return modelSources;
   }
@@ -84,24 +78,20 @@ class ModelHelper {
     for (var model in files) {
       var yaml = await model.readAsString();
 
-      sources.add(ModelSource(
-        moduleAlias,
-        yaml,
-        model.uri,
-        extractPathFromConfig(
-          loadConfig,
+      sources.add(
+        ModelSource(
+          moduleAlias,
+          yaml,
           model.uri,
+          extractPathFromConfig(loadConfig, model.uri),
         ),
-      ));
+      );
     }
 
     return sources;
   }
 
-  static bool isModelFile(
-    String path, {
-    required ModelLoadConfig loadConfig,
-  }) {
+  static bool isModelFile(String path, {required ModelLoadConfig loadConfig}) {
     if (spyModelFileExtensions.any((ext) => path.endsWith(ext))) {
       return true;
     }
@@ -141,16 +131,12 @@ class ModelHelper {
       modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
     }
 
-    return modelSourceFileList.whereType<File>().where((file) => isModelFile(
-          file.path,
-          loadConfig: loadConfig,
-        ));
+    return modelSourceFileList.whereType<File>().where(
+      (file) => isModelFile(file.path, loadConfig: loadConfig),
+    );
   }
 
-  static List<String> extractPathFromConfig(
-    ModelLoadConfig config,
-    Uri uri,
-  ) {
+  static List<String> extractPathFromConfig(ModelLoadConfig config, Uri uri) {
     List<List<String>> modelRootPathParts = [
       config.protocolSourcePathParts,
       config.modelSourcePathParts,

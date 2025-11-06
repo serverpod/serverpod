@@ -10,18 +10,19 @@ void main() {
 
   test('Given a class with a null value as name, then collect an error', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
         class:
         fields:
           name: String
-        ''',
-      ).build()
+        ''').build(),
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     expect(
       collector.errors,
@@ -34,94 +35,98 @@ void main() {
   });
 
   test(
-      'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         exception: PascalCASEString
         fields:
           name: String
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors but some were generated.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
+    },
+  );
 
   test(
-      'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         exception: PascalCASEString
         fields:
           name: String
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
 
-    var definitions = analyzer.validateAll();
-    expect(definitions.first.className, 'PascalCASEString');
-  });
+      var definitions = analyzer.validateAll();
+      expect(definitions.first.className, 'PascalCASEString');
+    },
+  );
 
   test(
-      'Given a camelCase class name, then give an error indicating that PascalCase is required.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a camelCase class name, then give an error indicating that PascalCase is required.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml('''
         class: exampleClass
         fields:
           name: String
-        ''',
-      ).build()
-    ];
+        ''').build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, models, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "class" type must be a valid class name (e.g. PascalCaseString).',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "class" type must be a valid class name (e.g. PascalCaseString).',
+      );
+    },
+  );
 
   test(
     'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           exception: example_class
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -141,19 +146,20 @@ void main() {
     'Given an enum name with a leading number, then give an error indicating that PascalCase is required.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           enum: 1ExampleType
           values:
             - yes
             - no
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -173,18 +179,19 @@ void main() {
     'Given a class name with reserved value List, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: List
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -204,18 +211,19 @@ void main() {
     'Given a class name with reserved value Map, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Map
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -235,18 +243,19 @@ void main() {
     'Given a class name with reserved value String, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: String
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -266,18 +275,19 @@ void main() {
     'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: DateTime
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -297,18 +307,19 @@ void main() {
     'Given a class name with reserved value Endpoints, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Endpoints
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -328,18 +339,19 @@ void main() {
     'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: DateTime
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -359,18 +371,19 @@ void main() {
     'Given a class name with reserved value Protocol, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Protocol
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -390,18 +403,19 @@ void main() {
     'Given a class name with reserved value Client, then give an error that the class name is reserved.',
     () {
       var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+        ModelSourceBuilder().withYaml('''
           class: Client
           fields:
             name: String
-          ''',
-        ).build()
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -422,18 +436,19 @@ void main() {
       'Then return a human readable error message informing the user that the model type is missing.',
       () {
         var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+          ModelSourceBuilder().withYaml('''
             invalid: Type
             fields:
               name: String
-            ''',
-          ).build()
+            ''').build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -442,30 +457,28 @@ void main() {
         );
 
         var error = collector.errors.first;
-        expect(
-          error.message,
-          'No {class, exception, enum} type is defined.',
-        );
+        expect(error.message, 'No {class, exception, enum} type is defined.');
       },
     );
   });
 
   group('Given a model with class and exception type defined.', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
 class: Example
 exception: ExampleException
 fields:
   name: String
-''',
-      ).build()
+''').build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('Then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -481,8 +494,11 @@ fields:
     });
 
     test('Then the second type is highlighted.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -502,20 +518,21 @@ fields:
 
   group('Given a model with exception and enum type defined', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
         exception: ExampleException
         enum: ExampleType
         fields:
           name: String
-        ''',
-      ).build()
+        ''').build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -533,21 +550,22 @@ fields:
 
   group('Given a model with three different types defined.', () {
     var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
 class: Example
 exception: ExampleException
 enum: ExampleType
 fields:
   name: String
-''',
-      ).build()
+''').build(),
     ];
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -563,8 +581,11 @@ fields:
     });
 
     test('then the second and third type is highlighted.', () {
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,

@@ -10,9 +10,7 @@ class LoggingUtil {
     );
   }
 
-  static Future<List<SessionLogInfo>> findAllLogs(
-    Session session,
-  ) async {
+  static Future<List<SessionLogInfo>> findAllLogs(Session session) async {
     var rows = (await SessionLogEntry.db.find(
       session,
       orderBy: (t) => t.id,

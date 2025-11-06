@@ -29,13 +29,16 @@ abstract class SecretChallenge
 
   factory SecretChallenge.fromJson(Map<String, dynamic> jsonSerialization) {
     return SecretChallenge(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       challengeCodeHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['challengeCodeHash']),
+        jsonSerialization['challengeCodeHash'],
+      ),
       challengeCodeSalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['challengeCodeSalt']),
+        jsonSerialization['challengeCodeSalt'],
+      ),
     );
   }
 
@@ -115,10 +118,10 @@ class _SecretChallengeImpl extends SecretChallenge {
     required _i2.ByteData challengeCodeHash,
     required _i2.ByteData challengeCodeSalt,
   }) : super._(
-          id: id,
-          challengeCodeHash: challengeCodeHash,
-          challengeCodeSalt: challengeCodeSalt,
-        );
+         id: id,
+         challengeCodeHash: challengeCodeHash,
+         challengeCodeSalt: challengeCodeSalt,
+       );
 
   /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
@@ -141,32 +144,20 @@ class SecretChallengeUpdateTable extends _i1.UpdateTable<SecretChallengeTable> {
   SecretChallengeUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeHash(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challengeCodeHash,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(table.challengeCodeHash, value);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeSalt(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challengeCodeSalt,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(table.challengeCodeSalt, value);
 }
 
 class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   SecretChallengeTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_secret_challenge') {
+    : super(tableName: 'serverpod_auth_idp_secret_challenge') {
     updateTable = SecretChallengeUpdateTable(this);
-    challengeCodeHash = _i1.ColumnByteData(
-      'challengeCodeHash',
-      this,
-    );
-    challengeCodeSalt = _i1.ColumnByteData(
-      'challengeCodeSalt',
-      this,
-    );
+    challengeCodeHash = _i1.ColumnByteData('challengeCodeHash', this);
+    challengeCodeSalt = _i1.ColumnByteData('challengeCodeSalt', this);
   }
 
   late final SecretChallengeUpdateTable updateTable;
@@ -178,11 +169,7 @@ class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   late final _i1.ColumnByteData challengeCodeSalt;
 
   @override
-  List<_i1.Column> get columns => [
-        id,
-        challengeCodeHash,
-        challengeCodeSalt,
-      ];
+  List<_i1.Column> get columns => [id, challengeCodeHash, challengeCodeSalt];
 }
 
 class SecretChallengeInclude extends _i1.IncludeObject {
@@ -303,10 +290,7 @@ class SecretChallengeRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findById<SecretChallenge>(
-      id,
-      transaction: transaction,
-    );
+    return session.db.findById<SecretChallenge>(id, transaction: transaction);
   }
 
   /// Inserts all [SecretChallenge]s in the list and returns the inserted rows.
@@ -320,10 +304,7 @@ class SecretChallengeRepository {
     List<SecretChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insert<SecretChallenge>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.insert<SecretChallenge>(rows, transaction: transaction);
   }
 
   /// Inserts a single [SecretChallenge] and returns the inserted row.
@@ -334,10 +315,7 @@ class SecretChallengeRepository {
     SecretChallenge row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.insertRow<SecretChallenge>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.insertRow<SecretChallenge>(row, transaction: transaction);
   }
 
   /// Updates all [SecretChallenge]s in the list and returns the updated rows. If
@@ -380,7 +358,7 @@ class SecretChallengeRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SecretChallenge>(
@@ -395,7 +373,7 @@ class SecretChallengeRepository {
   Future<List<SecretChallenge>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
     int? limit,
     int? offset,
@@ -424,10 +402,7 @@ class SecretChallengeRepository {
     List<SecretChallenge> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<SecretChallenge>(
-      rows,
-      transaction: transaction,
-    );
+    return session.db.delete<SecretChallenge>(rows, transaction: transaction);
   }
 
   /// Deletes a single [SecretChallenge].
@@ -436,10 +411,7 @@ class SecretChallengeRepository {
     SecretChallenge row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.db.deleteRow<SecretChallenge>(
-      row,
-      transaction: transaction,
-    );
+    return session.db.deleteRow<SecretChallenge>(row, transaction: transaction);
   }
 
   /// Deletes all rows matching the [where] expression.

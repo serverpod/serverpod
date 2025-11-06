@@ -116,26 +116,28 @@ void main() {
       });
     });
 
-    test('when successfully calling endpoint then callback is not called.',
-        () async {
-      var failedContexts = <MethodCallContext>[];
-      var client = Client(
-        serverUrl,
-        onFailedCall: (
-          MethodCallContext context,
-          Object error,
-          StackTrace stackTrace,
-        ) {
-          failedContexts.add(context);
-        },
-      );
+    test(
+      'when successfully calling endpoint then callback is not called.',
+      () async {
+        var failedContexts = <MethodCallContext>[];
+        var client = Client(
+          serverUrl,
+          onFailedCall: (
+            MethodCallContext context,
+            Object error,
+            StackTrace stackTrace,
+          ) {
+            failedContexts.add(context);
+          },
+        );
 
-      await client.simple.hello('test');
-      expect(
-        failedContexts,
-        hasLength(0),
-        reason: 'Callback was called even if call failed.',
-      );
-    });
+        await client.simple.hello('test');
+        expect(
+          failedContexts,
+          hasLength(0),
+          reason: 'Callback was called even if call failed.',
+        );
+      },
+    );
   });
 }

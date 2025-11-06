@@ -28,10 +28,6 @@ abstract class GoogleIDPBaseEndpoint extends Endpoint {
     required final String idToken,
     required final String? accessToken,
   }) async {
-    return googleIDP.login(
-      session,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+    return googleIDP.login(session, idToken: idToken, accessToken: accessToken);
   }
 }

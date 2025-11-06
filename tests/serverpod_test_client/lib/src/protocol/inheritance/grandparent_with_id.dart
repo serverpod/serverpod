@@ -13,17 +13,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 class GrandparentClassWithId implements _i1.SerializableModel {
-  GrandparentClassWithId({
-    this.id,
-    required this.grandParentField,
-  });
+  GrandparentClassWithId({this.id, required this.grandParentField});
 
   factory GrandparentClassWithId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return GrandparentClassWithId(
-      id: jsonSerialization['id'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id:
+          jsonSerialization['id'] == null
+              ? null
+              : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
     );
   }

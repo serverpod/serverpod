@@ -14,10 +14,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ParentWithDefault
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ParentWithDefault({
-    required this.name,
-    int? parentDefault,
-  }) : parentDefault = parentDefault ?? 0;
+  ParentWithDefault({required this.name, int? parentDefault})
+    : parentDefault = parentDefault ?? 0;
 
   factory ParentWithDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithDefault(
@@ -33,10 +31,7 @@ class ParentWithDefault
   /// Returns a shallow copy of this [ParentWithDefault]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ParentWithDefault copyWith({
-    String? name,
-    int? parentDefault,
-  }) {
+  ParentWithDefault copyWith({String? name, int? parentDefault}) {
     return ParentWithDefault(
       name: name ?? this.name,
       parentDefault: parentDefault ?? this.parentDefault,
@@ -45,18 +40,12 @@ class ParentWithDefault
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'parentDefault': parentDefault,
-    };
+    return {'name': name, 'parentDefault': parentDefault};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      'name': name,
-      'parentDefault': parentDefault,
-    };
+    return {'name': name, 'parentDefault': parentDefault};
   }
 
   @override

@@ -30,10 +30,9 @@ void main() {
       });
 
       test('then server can be accessed over https', () async {
-        HttpClientRequest request =
-            await HttpClient(context: securityContext).getUrl(
-          Uri.https('localhost:${serverpod.server.port}'),
-        );
+        HttpClientRequest request = await HttpClient(
+          context: securityContext,
+        ).getUrl(Uri.https('localhost:${serverpod.server.port}'));
         var response = await request.close();
 
         expect(response.statusCode, 200);
@@ -110,10 +109,9 @@ void main() {
       });
 
       test('then server can be accessed over https', () async {
-        HttpClientRequest request =
-            await HttpClient(context: securityContext).getUrl(
-          Uri.https('localhost:${serverpod.serviceServer.port}'),
-        );
+        HttpClientRequest request = await HttpClient(
+          context: securityContext,
+        ).getUrl(Uri.https('localhost:${serverpod.serviceServer.port}'));
         var response = await request.close();
 
         expect(response.statusCode, 200);
@@ -188,10 +186,9 @@ void main() {
       });
 
       test('then server can be accessed over https', () async {
-        HttpClientRequest request =
-            await HttpClient(context: securityContext).getUrl(
-          Uri.https('localhost:${serverpod.webServer.port}'),
-        );
+        HttpClientRequest request = await HttpClient(
+          context: securityContext,
+        ).getUrl(Uri.https('localhost:${serverpod.webServer.port}'));
         var response = await request.close();
 
         expect(response.statusCode, 200);
@@ -239,9 +236,9 @@ void main() {
 
       test('then server cannot be accessed over https', () async {
         expect(
-          () async => await HttpClient(context: securityContext).getUrl(
-            Uri.https('localhost:${serverpod.webServer.port}'),
-          ),
+          () async => await HttpClient(
+            context: securityContext,
+          ).getUrl(Uri.https('localhost:${serverpod.webServer.port}')),
           throwsA(isA<HandshakeException>()),
         );
       });

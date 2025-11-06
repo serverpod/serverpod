@@ -85,10 +85,7 @@ final class FutureCallOpContext extends OperationEventContext {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'futureCallName': futureCallName,
-    };
+    return {...super.toJson(), 'futureCallName': futureCallName};
   }
 }
 
@@ -115,11 +112,7 @@ base class ClientCallOpContext extends OperationEventContext {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'remoteInfo': remoteInfo,
-      'uri': '$uri',
-    };
+    return {...super.toJson(), 'remoteInfo': remoteInfo, 'uri': '$uri'};
   }
 }
 
@@ -161,11 +154,7 @@ final class MethodCallOpContext extends ClientCallOpContext {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'endpoint': endpoint,
-      'methodName': methodName,
-    };
+    return {...super.toJson(), 'endpoint': endpoint, 'methodName': methodName};
   }
 }
 

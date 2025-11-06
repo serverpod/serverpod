@@ -1,6 +1,4 @@
-@OnPlatform({
-  'browser': Skip('HTTP server tests are not supported in browser'),
-})
+@OnPlatform({'browser': Skip('HTTP server tests are not supported in browser')})
 library;
 
 import 'package:serverpod_client/serverpod_client.dart';
@@ -17,37 +15,43 @@ void main() {
   late Future<void> Function() closeServer;
   late int requestCount;
 
-  group('Given a Client with an authKeyProvider that does not support refresh',
-      () {
-    setUp(() async {
-      requestCount = 0;
+  group(
+    'Given a Client with an authKeyProvider that does not support refresh',
+    () {
+      setUp(() async {
+        requestCount = 0;
 
-      closeServer = await TestHttpServer.startServer(
-        httpRequestHandler: (request) async {
-          requestCount++;
-          return Response.unauthorized();
-        },
-        onConnected: (host) => httpHost = host,
-      );
+        closeServer = await TestHttpServer.startServer(
+          httpRequestHandler: (request) async {
+            requestCount++;
+            return Response.unauthorized();
+          },
+          onConnected: (host) => httpHost = host,
+        );
 
-      client = TestServerpodClient(
-        host: httpHost,
-        authKeyProvider: TestNonRefresherAuthKeyProvider('token'),
-      );
-    });
+        client = TestServerpodClient(
+          host: httpHost,
+          authKeyProvider: TestNonRefresherAuthKeyProvider('token'),
+        );
+      });
 
-    tearDown(() async => await closeServer());
+      tearDown(() async => await closeServer());
 
-    test('when first call fails with 401 then no retry is attempted.',
+      test(
+        'when first call fails with 401 then no retry is attempted.',
         () async {
-      await expectLater(
-        client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
+          await expectLater(
+            client.callServerEndpoint<String>('test', 'method', {
+              'arg': 'value',
+            }),
+            throwsA(isA<ServerpodClientUnauthorized>()),
+          );
 
-      expect(requestCount, 1);
-    });
-  });
+          expect(requestCount, 1);
+        },
+      );
+    },
+  );
 
   group('Given a Client with an authKeyProvider that supports refresh', () {
     late TestRefresherAuthKeyProvider authKeyProvider;
@@ -85,25 +89,18 @@ void main() {
     tearDown(() async => await closeServer());
 
     test('when first call succeeds then no retry is attempted.', () async {
-      serverResponses = [
-        Response.ok(
-          body: Body.fromString('"success"'),
-        ),
-      ];
+      serverResponses = [Response.ok(body: Body.fromString('"success"'))];
 
-      final result = await client.callServerEndpoint<String>(
-        'test',
-        'method',
-        {'arg': 'value'},
-      );
+      final result = await client.callServerEndpoint<String>('test', 'method', {
+        'arg': 'value',
+      });
 
       expect(result, 'success');
       expect(requestCount, 1);
       expect(authKeyProvider.refreshCallCount, 0);
     });
 
-    test(
-        'when first call fails with 401 but refresh succeeds '
+    test('when first call fails with 401 but refresh succeeds '
         'then request is retried.', () async {
       serverResponses = [
         Response.unauthorized(),
@@ -115,11 +112,9 @@ void main() {
         return RefreshAuthKeyResult.success;
       });
 
-      final result = await client.callServerEndpoint<String>(
-        'test',
-        'method',
-        {'arg': 'value'},
-      );
+      final result = await client.callServerEndpoint<String>('test', 'method', {
+        'arg': 'value',
+      });
 
       expect(result, 'success');
       expect(requestCount, 2);
@@ -128,12 +123,9 @@ void main() {
       expect(receivedAuthHeaders[1], contains('refreshed-token'));
     });
 
-    test(
-        'when first call fails with 401 and refresh fails '
+    test('when first call fails with 401 and refresh fails '
         'then original exception is rethrown.', () async {
-      serverResponses = [
-        Response.unauthorized(),
-      ];
+      serverResponses = [Response.unauthorized()];
 
       authKeyProvider.setRefresh(() => RefreshAuthKeyResult.failedOther);
 
@@ -147,36 +139,31 @@ void main() {
     });
 
     test(
-        'when first call fails with 401, refresh succeeds and second call also fails with 401 '
-        'then no second retry is attempted and original exception is rethrown.',
-        () async {
-      serverResponses = [
-        Response.unauthorized(),
-        Response.unauthorized(),
-      ];
+      'when first call fails with 401, refresh succeeds and second call also fails with 401 '
+      'then no second retry is attempted and original exception is rethrown.',
+      () async {
+        serverResponses = [Response.unauthorized(), Response.unauthorized()];
 
-      authKeyProvider.setRefresh(() {
-        authKeyProvider.setAuthKey('refreshed-token');
-        return RefreshAuthKeyResult.success;
-      });
+        authKeyProvider.setRefresh(() {
+          authKeyProvider.setAuthKey('refreshed-token');
+          return RefreshAuthKeyResult.success;
+        });
 
-      await expectLater(
-        client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
-        throwsA(isA<ServerpodClientUnauthorized>()),
-      );
+        await expectLater(
+          client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),
+          throwsA(isA<ServerpodClientUnauthorized>()),
+        );
 
-      expect(requestCount, 2);
-      expect(authKeyProvider.refreshCallCount, 1);
-      expect(receivedAuthHeaders[0], contains('initial-token'));
-      expect(receivedAuthHeaders[1], contains('refreshed-token'));
-    });
+        expect(requestCount, 2);
+        expect(authKeyProvider.refreshCallCount, 1);
+        expect(receivedAuthHeaders[0], contains('initial-token'));
+        expect(receivedAuthHeaders[1], contains('refreshed-token'));
+      },
+    );
 
-    test(
-        'when first call fails with non-401 error '
+    test('when first call fails with non-401 error '
         'then no retry is attempted.', () async {
-      serverResponses = [
-        Response.internalServerError(),
-      ];
+      serverResponses = [Response.internalServerError()];
 
       await expectLater(
         client.callServerEndpoint<String>('test', 'method', {'arg': 'value'}),

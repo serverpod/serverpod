@@ -30,19 +30,25 @@ abstract class ObjectWithSparseVector implements _i1.SerializableModel {
   }) = _ObjectWithSparseVectorImpl;
 
   factory ObjectWithSparseVector.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSparseVector(
       id: jsonSerialization['id'] as int?,
       sparseVector: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVector']),
-      sparseVectorNullable: jsonSerialization['sparseVectorNullable'] == null
-          ? null
-          : _i1.SparseVectorJsonExtension.fromJson(
-              jsonSerialization['sparseVectorNullable']),
+        jsonSerialization['sparseVector'],
+      ),
+      sparseVectorNullable:
+          jsonSerialization['sparseVectorNullable'] == null
+              ? null
+              : _i1.SparseVectorJsonExtension.fromJson(
+                jsonSerialization['sparseVectorNullable'],
+              ),
       sparseVectorIndexedHnsw: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnsw']),
+        jsonSerialization['sparseVectorIndexedHnsw'],
+      ),
       sparseVectorIndexedHnswWithParams: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnswWithParams']),
+        jsonSerialization['sparseVectorIndexedHnswWithParams'],
+      ),
     );
   }
 
@@ -98,12 +104,12 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
     required _i1.SparseVector sparseVectorIndexedHnsw,
     required _i1.SparseVector sparseVectorIndexedHnswWithParams,
   }) : super._(
-          id: id,
-          sparseVector: sparseVector,
-          sparseVectorNullable: sparseVectorNullable,
-          sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
-          sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
-        );
+         id: id,
+         sparseVector: sparseVector,
+         sparseVectorNullable: sparseVectorNullable,
+         sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
+         sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithSparseVector]
   /// with some or all fields replaced by the given arguments.
@@ -119,12 +125,14 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
     return ObjectWithSparseVector(
       id: id is int? ? id : this.id,
       sparseVector: sparseVector ?? this.sparseVector.clone(),
-      sparseVectorNullable: sparseVectorNullable is _i1.SparseVector?
-          ? sparseVectorNullable
-          : this.sparseVectorNullable?.clone(),
+      sparseVectorNullable:
+          sparseVectorNullable is _i1.SparseVector?
+              ? sparseVectorNullable
+              : this.sparseVectorNullable?.clone(),
       sparseVectorIndexedHnsw:
           sparseVectorIndexedHnsw ?? this.sparseVectorIndexedHnsw.clone(),
-      sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams ??
+      sparseVectorIndexedHnswWithParams:
+          sparseVectorIndexedHnswWithParams ??
           this.sparseVectorIndexedHnswWithParams.clone(),
     );
   }

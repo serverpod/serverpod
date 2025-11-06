@@ -13,18 +13,12 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class IntDefault implements _i1.SerializableModel {
-  IntDefault._({
-    this.id,
-    int? intDefault,
-    int? intDefaultNull,
-  })  : intDefault = intDefault ?? 10,
-        intDefaultNull = intDefaultNull ?? 20;
+  IntDefault._({this.id, int? intDefault, int? intDefaultNull})
+    : intDefault = intDefault ?? 10,
+      intDefaultNull = intDefaultNull ?? 20;
 
-  factory IntDefault({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  }) = _IntDefaultImpl;
+  factory IntDefault({int? id, int? intDefault, int? intDefaultNull}) =
+      _IntDefaultImpl;
 
   factory IntDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return IntDefault(
@@ -46,11 +40,7 @@ abstract class IntDefault implements _i1.SerializableModel {
   /// Returns a shallow copy of this [IntDefault]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  IntDefault copyWith({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  });
+  IntDefault copyWith({int? id, int? intDefault, int? intDefaultNull});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -69,15 +59,8 @@ abstract class IntDefault implements _i1.SerializableModel {
 class _Undefined {}
 
 class _IntDefaultImpl extends IntDefault {
-  _IntDefaultImpl({
-    int? id,
-    int? intDefault,
-    int? intDefaultNull,
-  }) : super._(
-          id: id,
-          intDefault: intDefault,
-          intDefaultNull: intDefaultNull,
-        );
+  _IntDefaultImpl({int? id, int? intDefault, int? intDefaultNull})
+    : super._(id: id, intDefault: intDefault, intDefaultNull: intDefaultNull);
 
   /// Returns a shallow copy of this [IntDefault]
   /// with some or all fields replaced by the given arguments.

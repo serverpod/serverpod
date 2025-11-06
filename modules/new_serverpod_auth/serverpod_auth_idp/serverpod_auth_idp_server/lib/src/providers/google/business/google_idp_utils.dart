@@ -14,43 +14,45 @@ import 'google_idp_token_verifier.dart';
 /// docs, since the user may have not granted the app access to their profile or
 /// if the user is part of an organization that has restricted access to profile
 /// information.
-typedef GoogleAccountDetails = ({
-  /// Google's user identifier for this account.
-  String userIdentifier,
+typedef GoogleAccountDetails =
+    ({
+      /// Google's user identifier for this account.
+      String userIdentifier,
 
-  /// The verified email received from Google.
-  String email,
+      /// The verified email received from Google.
+      String email,
 
-  /// The user's given name.
-  String? name,
+      /// The user's given name.
+      String? name,
 
-  /// The user's full name.
-  String? fullName,
+      /// The user's full name.
+      String? fullName,
 
-  /// The user's profile image URL.
-  Uri? image,
+      /// The user's profile image URL.
+      Uri? image,
 
-  /// Whether the email is verified.
-  bool? verifiedEmail,
-});
+      /// Whether the email is verified.
+      bool? verifiedEmail,
+    });
 
 /// Result of a successful authentication using Google as identity provider.
-typedef GoogleAuthSuccess = ({
-  /// The ID of the `GoogleAccount` database entity.
-  UuidValue googleAccountId,
+typedef GoogleAuthSuccess =
+    ({
+      /// The ID of the `GoogleAccount` database entity.
+      UuidValue googleAccountId,
 
-  /// The ID of the associated `AuthUser`.
-  UuidValue authUserId,
+      /// The ID of the associated `AuthUser`.
+      UuidValue authUserId,
 
-  /// Details of the Google account.
-  GoogleAccountDetails details,
+      /// Details of the Google account.
+      GoogleAccountDetails details,
 
-  /// Whether the associated `AuthUser` was newly created during the
-  bool newAccount,
+      /// Whether the associated `AuthUser` was newly created during the
+      bool newAccount,
 
-  /// The scopes granted to the associated `AuthUser`.
-  Set<Scope> scopes,
-});
+      /// The scopes granted to the associated `AuthUser`.
+      Set<Scope> scopes,
+    });
 
 /// Utility functions for the Google identity provider.
 ///
@@ -64,9 +66,7 @@ class GoogleIDPUtils {
   final GoogleIDPConfig config;
 
   /// Creates a new instance of [GoogleIDPUtils].
-  GoogleIDPUtils({
-    required this.config,
-  });
+  GoogleIDPUtils({required this.config});
 
   /// Authenticates a user using an access token.
   ///
@@ -86,24 +86,20 @@ class GoogleIDPUtils {
 
     var googleAccount = await GoogleAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
-        accountDetails.userIdentifier,
-      ),
+      where:
+          (final t) => t.userIdentifier.equals(accountDetails.userIdentifier),
       transaction: transaction,
     );
 
     final createNewUser = googleAccount == null;
 
     final AuthUserModel authUser = switch (createNewUser) {
-      true => await AuthUsers.create(
-          session,
-          transaction: transaction,
-        ),
+      true => await AuthUsers.create(session, transaction: transaction),
       false => await AuthUsers.get(
-          session,
-          authUserId: googleAccount!.authUserId,
-          transaction: transaction,
-        ),
+        session,
+        authUserId: googleAccount!.authUserId,
+        transaction: transaction,
+      ),
     };
 
     if (createNewUser) {

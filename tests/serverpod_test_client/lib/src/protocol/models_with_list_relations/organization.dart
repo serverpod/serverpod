@@ -35,14 +35,17 @@ abstract class Organization implements _i1.SerializableModel {
     return Organization(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      people: (jsonSerialization['people'] as List?)
-          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      people:
+          (jsonSerialization['people'] as List?)
+              ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
+              .toList(),
       cityId: jsonSerialization['cityId'] as int?,
-      city: jsonSerialization['city'] == null
-          ? null
-          : _i3.City.fromJson(
-              (jsonSerialization['city'] as Map<String, dynamic>)),
+      city:
+          jsonSerialization['city'] == null
+              ? null
+              : _i3.City.fromJson(
+                (jsonSerialization['city'] as Map<String, dynamic>),
+              ),
     );
   }
 
@@ -96,13 +99,7 @@ class _OrganizationImpl extends Organization {
     List<_i2.Person>? people,
     int? cityId,
     _i3.City? city,
-  }) : super._(
-          id: id,
-          name: name,
-          people: people,
-          cityId: cityId,
-          city: city,
-        );
+  }) : super._(id: id, name: name, people: people, cityId: cityId, city: city);
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
@@ -118,9 +115,10 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>?
-          ? people
-          : this.people?.map((e0) => e0.copyWith()).toList(),
+      people:
+          people is List<_i2.Person>?
+              ? people
+              : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
       city: city is _i3.City? ? city : this.city?.copyWith(),
     );

@@ -14,18 +14,15 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 abstract class EmptyModelRelationItem
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  EmptyModelRelationItem._({
-    this.id,
-    required this.name,
-  }) : _relationEmptyModelItemsRelationEmptyModelId = null;
+  EmptyModelRelationItem._({this.id, required this.name})
+    : _relationEmptyModelItemsRelationEmptyModelId = null;
 
-  factory EmptyModelRelationItem({
-    int? id,
-    required String name,
-  }) = _EmptyModelRelationItemImpl;
+  factory EmptyModelRelationItem({int? id, required String name}) =
+      _EmptyModelRelationItemImpl;
 
   factory EmptyModelRelationItem.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmptyModelRelationItemImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -52,10 +49,7 @@ abstract class EmptyModelRelationItem
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmptyModelRelationItem copyWith({
-    int? id,
-    String? name,
-  });
+  EmptyModelRelationItem copyWith({int? id, String? name});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -69,10 +63,7 @@ abstract class EmptyModelRelationItem
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      if (id != null) 'id': id,
-      'name': name,
-    };
+    return {if (id != null) 'id': id, 'name': name};
   }
 
   static EmptyModelRelationItemInclude include() {
@@ -108,22 +99,14 @@ abstract class EmptyModelRelationItem
 class _Undefined {}
 
 class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
-  _EmptyModelRelationItemImpl({
-    int? id,
-    required String name,
-  }) : super._(
-          id: id,
-          name: name,
-        );
+  _EmptyModelRelationItemImpl({int? id, required String name})
+    : super._(id: id, name: name);
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmptyModelRelationItem copyWith({
-    Object? id = _Undefined,
-    String? name,
-  }) {
+  EmptyModelRelationItem copyWith({Object? id = _Undefined, String? name}) {
     return EmptyModelRelationItemImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
@@ -138,12 +121,9 @@ class EmptyModelRelationItemImplicit extends _EmptyModelRelationItemImpl {
     int? id,
     required String name,
     int? $_relationEmptyModelItemsRelationEmptyModelId,
-  })  : _relationEmptyModelItemsRelationEmptyModelId =
-            $_relationEmptyModelItemsRelationEmptyModelId,
-        super(
-          id: id,
-          name: name,
-        );
+  }) : _relationEmptyModelItemsRelationEmptyModelId =
+           $_relationEmptyModelItemsRelationEmptyModelId,
+       super(id: id, name: name);
 
   factory EmptyModelRelationItemImplicit(
     EmptyModelRelationItem emptyModelRelationItem, {
@@ -165,27 +145,22 @@ class EmptyModelRelationItemUpdateTable
     extends _i1.UpdateTable<EmptyModelRelationItemTable> {
   EmptyModelRelationItemUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+  _i1.ColumnValue<String, String> name(String value) =>
+      _i1.ColumnValue(table.name, value);
 
   _i1.ColumnValue<int, int> $_relationEmptyModelItemsRelationEmptyModelId(
-          int? value) =>
-      _i1.ColumnValue(
-        table.$_relationEmptyModelItemsRelationEmptyModelId,
-        value,
-      );
+    int? value,
+  ) => _i1.ColumnValue(
+    table.$_relationEmptyModelItemsRelationEmptyModelId,
+    value,
+  );
 }
 
 class EmptyModelRelationItemTable extends _i1.Table<int?> {
   EmptyModelRelationItemTable({super.tableRelation})
-      : super(tableName: 'empty_model_relation_item') {
+    : super(tableName: 'empty_model_relation_item') {
     updateTable = EmptyModelRelationItemUpdateTable(this);
-    name = _i1.ColumnString(
-      'name',
-      this,
-    );
+    name = _i1.ColumnString('name', this);
     $_relationEmptyModelItemsRelationEmptyModelId = _i1.ColumnInt(
       '_relationEmptyModelItemsRelationEmptyModelId',
       this,
@@ -200,16 +175,13 @@ class EmptyModelRelationItemTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        $_relationEmptyModelItemsRelationEmptyModelId,
-      ];
+    id,
+    name,
+    $_relationEmptyModelItemsRelationEmptyModelId,
+  ];
 
   @override
-  List<_i1.Column> get managedColumns => [
-        id,
-        name,
-      ];
+  List<_i1.Column> get managedColumns => [id, name];
 }
 
 class EmptyModelRelationItemInclude extends _i1.IncludeObject {
@@ -407,7 +379,7 @@ class EmptyModelRelationItemRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelRelationItem>(
@@ -422,7 +394,7 @@ class EmptyModelRelationItemRepository {
   Future<List<EmptyModelRelationItem>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmptyModelRelationItemUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
     int? limit,
     int? offset,
