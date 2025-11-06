@@ -471,8 +471,7 @@ class Server implements RouterInjectable {
             Stream<Uint8List>() => Body.fromDataStream(value),
             ByteData() => Body.fromData(Uint8List.sublistView(value)),
             Uint8List() => Body.fromData(value),
-            _ => throw ArgumentError.value(
-                value, 'value', 'Cannot be converted to Response'),
+            _ => Body.fromString('$value'), // use toString as fallback
           };
     return Response.ok(body: body);
   }
