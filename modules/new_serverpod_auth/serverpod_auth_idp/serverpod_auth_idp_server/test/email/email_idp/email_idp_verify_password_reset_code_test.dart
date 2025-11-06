@@ -184,7 +184,7 @@ void main() {
       });
 
       test(
-          'when verifyPasswordResetCode is called with invalid credentials after expiration then it throws EmailAccountPasswordResetException with reason "expired"',
+          'when verifyPasswordResetCode is called with invalid credentials after expiration then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
           () async {
         await withClock(
             Clock.fixed(DateTime.now().add(
@@ -202,7 +202,7 @@ void main() {
               isA<EmailAccountPasswordResetException>().having(
                 (final e) => e.reason,
                 'reason',
-                EmailAccountPasswordResetExceptionReason.expired,
+                EmailAccountPasswordResetExceptionReason.invalid,
               ),
             ),
           );
@@ -284,7 +284,7 @@ void main() {
     });
 
     test(
-        'when verifyPasswordResetCode is called with expired request that has been verified then it throws EmailAccountPasswordResetException with reason "expired"',
+        'when verifyPasswordResetCode is called with expired request that has been verified then it throws EmailAccountPasswordResetException with reason "invalid" to not leak that the request exists',
         () async {
       await withClock(
           Clock.fixed(DateTime.now().add(
@@ -302,7 +302,7 @@ void main() {
             isA<EmailAccountPasswordResetException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountPasswordResetExceptionReason.expired,
+              EmailAccountPasswordResetExceptionReason.invalid,
             ),
           ),
         );

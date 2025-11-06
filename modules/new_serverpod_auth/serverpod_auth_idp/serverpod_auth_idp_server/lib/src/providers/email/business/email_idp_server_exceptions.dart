@@ -87,7 +87,7 @@ final class EmailPasswordResetVerificationCodeAlreadyUsedException
 
 /// Exception thrown when trying to validate a password reset request with a
 /// set password token that has not been set.
-final class EmailPasswordResetSetPasswordTokenNotFoundException
+final class EmailPasswordResetNotVerifiedException
     extends EmailPasswordResetServerException {}
 
 /// Base exception for all email related errors.

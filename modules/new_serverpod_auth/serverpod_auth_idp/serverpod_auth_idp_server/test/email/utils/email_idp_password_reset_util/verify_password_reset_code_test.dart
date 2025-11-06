@@ -127,7 +127,7 @@ void main() {
       });
 
       test(
-          'when verify password reset code is called with invalid credentials after expiration then throws request expired exception',
+          'when verify password reset code is called with invalid credentials after expiration then throws invalid verification code exception',
           () async {
         await withClock(
             Clock.fixed(DateTime.now().add(
@@ -145,7 +145,7 @@ void main() {
 
           await expectLater(
             result,
-            throwsA(isA<EmailPasswordResetRequestExpiredException>()),
+            throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
           );
         });
       });
@@ -288,7 +288,7 @@ void main() {
     });
 
     test(
-        'when verify password reset code is called with expired request that has been verified then it throws request expired exception',
+        'when verify password reset code is called with expired request that has been verified then it throws verification code already used exception',
         () async {
       await withClock(
           Clock.fixed(DateTime.now().add(
@@ -306,7 +306,8 @@ void main() {
 
         await expectLater(
           result,
-          throwsA(isA<EmailPasswordResetRequestExpiredException>()),
+          throwsA(
+              isA<EmailPasswordResetVerificationCodeAlreadyUsedException>()),
         );
       });
     });

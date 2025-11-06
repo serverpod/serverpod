@@ -43,7 +43,7 @@ class EmailIDPPasswordResetUtil {
   /// Can throw the following [EmailPasswordResetServerException] subclasses:
   /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
   ///   be found for [passwordResetRequestId].
-  /// - [EmailPasswordResetSetPasswordTokenNotFoundException] if the set
+  /// - [EmailPasswordResetNotVerifiedException] if the set
   ///   password token has not been set.
   /// - [EmailPasswordResetRequestExpiredException] if the reset request has
   ///   expired and has not been cleaned up yet.
@@ -82,19 +82,9 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetRequestNotFoundException();
     }
 
-    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        // passing no transaction, so this will not be rolled back
-      );
-
-      throw EmailPasswordResetRequestExpiredException();
-    }
-
     final setPasswordChallenge = resetRequest.setPasswordChallenge;
     if (setPasswordChallenge == null) {
-      throw EmailPasswordResetSetPasswordTokenNotFoundException();
+      throw EmailPasswordResetNotVerifiedException();
     }
 
     if (!await _passwordHashUtil.validateHash(
@@ -103,6 +93,16 @@ class EmailIDPPasswordResetUtil {
       salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
+    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetRequestExpiredException();
     }
 
     await EmailAccountPasswordResetRequest.db.deleteRow(
@@ -190,16 +190,6 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetTooManyVerificationAttemptsException();
     }
 
-    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        // passing no transaction, so this will not be rolled back
-      );
-
-      throw EmailPasswordResetRequestExpiredException();
-    }
-
     if (resetRequest.isVerificationCodeUsed) {
       throw EmailPasswordResetVerificationCodeAlreadyUsedException();
     }
@@ -212,6 +202,16 @@ class EmailIDPPasswordResetUtil {
       salt: challenge.challengeCodeSalt.asUint8List,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
+    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetRequestExpiredException();
     }
 
     final setPasswordToken = const Uuid().v4();

@@ -602,7 +602,8 @@ void main() {
 
       test(
           'when calling `verifyPasswordResetCode` with the wrong verification code after the password reset request has expired, '
-          'then it fails with reason `expired`.', () async {
+          'then it fails with reason `invalid` to not leak that the request exists.',
+          () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
@@ -615,7 +616,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final exception) => exception.reason,
             'Reason',
-            EmailAccountPasswordResetExceptionReason.expired,
+            EmailAccountPasswordResetExceptionReason.invalid,
           )),
         );
       });
