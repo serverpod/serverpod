@@ -383,11 +383,11 @@ void main() {
         'when attempting to complete validate the first password reset request then it throws request not found exception',
         () async {
       final result = session.db.transaction(
-        (final transaction) => fixture.passwordResetUtil.completePasswordReset(
+        (final transaction) =>
+            fixture.passwordResetUtil.verifyPasswordResetCode(
           session,
           passwordResetRequestId: firstPasswordResetRequestId,
           verificationCode: fixedVerificationCode,
-          newPassword: 'NewPassword123!',
           transaction: transaction,
         ),
       );
@@ -399,7 +399,7 @@ void main() {
     });
 
     test(
-        'when attempting to verify the second password reset request then it succeeds and returns set password credentials',
+        'when attempting to verify the second password reset request then it succeeds and returns finish password reset token',
         () async {
       final result = session.db.transaction(
         (final transaction) =>
@@ -413,7 +413,7 @@ void main() {
 
       await expectLater(
         result,
-        completion(isA<SetPasswordCredentials>()),
+        completion(isA<String>()),
       );
     });
   });
@@ -500,7 +500,7 @@ void main() {
         ),
       );
 
-      await expectLater(result, completion(isA<SetPasswordCredentials>()));
+      await expectLater(result, completion(isA<String>()));
     });
   });
 }

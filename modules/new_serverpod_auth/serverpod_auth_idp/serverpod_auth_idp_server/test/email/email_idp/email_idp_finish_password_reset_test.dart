@@ -21,7 +21,7 @@ void main() {
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const allowedNewPassword = 'NewPassword123!';
-      late String setPasswordVerificationCode;
+      late String finishPasswordResetToken;
       const passwordResetVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
@@ -55,12 +55,12 @@ void main() {
         );
 
         // Verify the password reset code to get the set password token
-        final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+        finishPasswordResetToken =
+            await fixture.emailIDP.verifyPasswordResetCode(
           session,
           passwordResetRequestId: passwordResetRequestId,
           verificationCode: verificationCode,
         );
-        setPasswordVerificationCode = verifyResult.verificationCode;
       });
 
       tearDown(() async {
@@ -68,12 +68,11 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with valid parameters then it succeeds',
+          'when finishPasswordReset is called with valid password reset token and password then it succeeds',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: setPasswordVerificationCode,
+          finishPasswordResetToken: finishPasswordResetToken,
           newPassword: allowedNewPassword,
         );
 
@@ -81,12 +80,11 @@ void main() {
       });
 
       test(
-          'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "invalid"',
+          'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: '$setPasswordVerificationCode-invalid',
+          finishPasswordResetToken: '$finishPasswordResetToken-invalid',
           newPassword: allowedNewPassword,
         );
 
@@ -107,8 +105,7 @@ void main() {
           () async {
         final result = fixture.emailIDP.finishPasswordReset(
           session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: setPasswordVerificationCode,
+          finishPasswordResetToken: finishPasswordResetToken,
           newPassword: '$allowedNewPassword-invalid',
         );
 
@@ -135,7 +132,7 @@ void main() {
     late UuidValue passwordResetRequestId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String setPasswordVerificationCode;
+    late String finishPasswordResetToken;
     const passwordResetVerificationCodeLifetime = Duration(hours: 1);
 
     setUp(() async {
@@ -173,12 +170,12 @@ void main() {
 
         // Verify the password reset code to get the set password token
         // This happens before expiration check in completePasswordReset
-        final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+        finishPasswordResetToken =
+            await fixture.emailIDP.verifyPasswordResetCode(
           session,
           passwordResetRequestId: passwordResetRequestId,
           verificationCode: verificationCode,
         );
-        setPasswordVerificationCode = verifyResult.verificationCode;
       });
     });
 
@@ -191,8 +188,7 @@ void main() {
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: setPasswordVerificationCode,
+        finishPasswordResetToken: finishPasswordResetToken,
         newPassword: 'NewPassword123!',
       );
 
@@ -209,12 +205,11 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called with invalid verification code then it throws EmailAccountPasswordResetException with reason "expired"',
+        'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: '$setPasswordVerificationCode-invalid',
+        finishPasswordResetToken: '$finishPasswordResetToken-invalid',
         newPassword: 'NewPassword123!',
       );
 
@@ -224,7 +219,7 @@ void main() {
           isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.expired,
+            EmailAccountPasswordResetExceptionReason.invalid,
           ),
         ),
       );
@@ -248,12 +243,11 @@ void main() {
     });
 
     test(
-        'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: const Uuid().v4obj(),
-        verificationCode: 'some-code',
+        finishPasswordResetToken: const Uuid().v4(),
         newPassword: 'NewPassword123!',
       );
 
@@ -279,7 +273,7 @@ void main() {
     late UuidValue passwordResetRequestId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String setPasswordVerificationCode;
+    late String finishPasswordResetToken;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -307,12 +301,11 @@ void main() {
       );
 
       // Verify the password reset code to get the set password token
-      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+      finishPasswordResetToken = await fixture.emailIDP.verifyPasswordResetCode(
         session,
         passwordResetRequestId: passwordResetRequestId,
         verificationCode: verificationCode,
       );
-      setPasswordVerificationCode = verifyResult.verificationCode;
 
       // Block the auth user after creating the password reset request
       await AuthUsers.update(
@@ -329,8 +322,7 @@ void main() {
     test('when finishPasswordReset is called then completes', () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: setPasswordVerificationCode,
+        finishPasswordResetToken: finishPasswordResetToken,
         newPassword: 'NewPassword123!',
       );
 
@@ -348,7 +340,7 @@ void main() {
     late UuidValue authUserId;
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
-    late String setPasswordVerificationCode;
+    late String finishPasswordResetToken;
     const newPassword = 'NewPassword123!';
 
     setUp(() async {
@@ -384,12 +376,11 @@ void main() {
       );
 
       // Verify the password reset code to get the set password token
-      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+      finishPasswordResetToken = await fixture.emailIDP.verifyPasswordResetCode(
         session,
         passwordResetRequestId: passwordResetRequestId,
         verificationCode: verificationCode,
       );
-      setPasswordVerificationCode = verifyResult.verificationCode;
     });
 
     tearDown(() async {
@@ -402,8 +393,7 @@ void main() {
       // Complete password reset
       await fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: setPasswordVerificationCode,
+        finishPasswordResetToken: finishPasswordResetToken,
         newPassword: newPassword,
       );
 
@@ -427,7 +417,8 @@ void main() {
     const email = 'test@serverpod.dev';
     const password = 'Password123!';
     late String verificationCode;
-    late String setPasswordVerificationCode;
+    late String finishPasswordResetToken;
+
     setUp(() async {
       session = sessionBuilder.build();
       verificationCode = const Uuid().v4().toString();
@@ -450,17 +441,15 @@ void main() {
       );
 
       // Verify the password reset code to get the set password token
-      final verifyResult = await fixture.emailIDP.verifyPasswordResetCode(
+      finishPasswordResetToken = await fixture.emailIDP.verifyPasswordResetCode(
         session,
         passwordResetRequestId: passwordResetRequestId,
         verificationCode: verificationCode,
       );
-      setPasswordVerificationCode = verifyResult.verificationCode;
 
       await fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: setPasswordVerificationCode,
+        finishPasswordResetToken: finishPasswordResetToken,
         newPassword: 'NewPassword123!',
       );
     });
@@ -474,8 +463,7 @@ void main() {
         () async {
       final result = fixture.emailIDP.finishPasswordReset(
         session,
-        passwordResetRequestId: passwordResetRequestId,
-        verificationCode: setPasswordVerificationCode,
+        finishPasswordResetToken: finishPasswordResetToken,
         newPassword: 'NewPassword123!',
       );
 

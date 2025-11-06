@@ -120,7 +120,8 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   }
 
   /// {@template email_account_base_endpoint.verify_password_reset_code}
-  /// Verifies a password reset code and returns the credentials for setting the password.
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
@@ -132,7 +133,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
   /// {@endtemplate}
-  Future<SetPasswordCredentials> verifyPasswordResetCode(
+  Future<String> verifyPasswordResetCode(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -164,14 +165,12 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// {@endtemplate}
   Future<void> finishPasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String finishPasswordResetToken,
     required final String newPassword,
   }) async {
     return emailIDP.finishPasswordReset(
       session,
-      passwordResetRequestId: passwordResetRequestId,
-      verificationCode: verificationCode,
+      finishPasswordResetToken: finishPasswordResetToken,
       newPassword: newPassword,
     );
   }

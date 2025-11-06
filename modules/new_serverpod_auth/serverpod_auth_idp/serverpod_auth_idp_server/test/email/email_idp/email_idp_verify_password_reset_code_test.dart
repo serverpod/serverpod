@@ -58,21 +58,20 @@ void main() {
       group(
           'when verifyPasswordResetCode is called with generated verification code',
           () {
-        late Future<SetPasswordCredentials> verifyPasswordResetCodeResult;
+        late Future<String> completePasswordResetToken;
 
         setUp(() async {
-          verifyPasswordResetCodeResult =
-              fixture.emailIDP.verifyPasswordResetCode(
+          completePasswordResetToken = fixture.emailIDP.verifyPasswordResetCode(
             session,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
           );
         });
 
-        test('then it succeeds and returns set password credentials', () async {
-          final result = await verifyPasswordResetCodeResult;
-          expect(result.passwordResetRequestId, equals(passwordResetRequestId));
-          expect(result.verificationCode, isNotEmpty);
+        test('then it succeeds and returns complete password reset token',
+            () async {
+          final result = await completePasswordResetToken;
+          expect(result, isA<String>());
         });
       });
 
@@ -100,7 +99,7 @@ void main() {
       group(
           'when verifyPasswordResetCode is called multiple times in quick succession',
           () {
-        late Future<List<SetPasswordCredentials>> attempts;
+        late Future<List<String>> attempts;
         const numberOfAttempts = 3;
 
         setUp(() async {
@@ -149,8 +148,7 @@ void main() {
             attempts,
             throwsA(
               isA<ParallelWaitError>().having(
-                (final e) =>
-                    (e.values as List<SetPasswordCredentials?>).nonNulls,
+                (final e) => (e.values as List<String?>).nonNulls,
                 'values',
                 hasLength(1),
               ),
@@ -366,7 +364,7 @@ void main() {
       });
 
       test(
-          'when verifyPasswordResetCode is called with valid verification code then it succeeds and returns set password credentials',
+          'when verifyPasswordResetCode is called with valid verification code then it succeeds and returns complete password reset token',
           () async {
         final result = await fixture.emailIDP.verifyPasswordResetCode(
           session,
@@ -374,8 +372,7 @@ void main() {
           verificationCode: verificationCode,
         );
 
-        expect(result.passwordResetRequestId, equals(passwordResetRequestId));
-        expect(result.verificationCode, isNotEmpty);
+        expect(result, isA<String>());
       });
     },
   );

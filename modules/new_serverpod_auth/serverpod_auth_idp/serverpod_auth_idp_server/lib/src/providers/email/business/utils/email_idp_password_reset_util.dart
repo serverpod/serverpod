@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
@@ -35,8 +37,8 @@ class EmailIDPPasswordResetUtil {
   /// This method should only be called after the [verifyPasswordResetCode]
   /// method has been called successfully.
   ///
-  /// The [verificationCode] returned from [verifyPasswordResetCode] is
-  /// used to validate the password reset request.
+  /// The method takes the [completePasswordResetToken] returned from
+  /// [verifyPasswordResetCode] and uses it to complete the password reset.
   ///
   /// Can throw the following [EmailPasswordResetServerException] subclasses:
   /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
@@ -53,8 +55,7 @@ class EmailIDPPasswordResetUtil {
   ///   [verificationCode] is not valid.
   Future<UuidValue> completePasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String completePasswordResetToken,
     required final String newPassword,
     required final Transaction transaction,
   }) async {
@@ -62,9 +63,15 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetPasswordPolicyViolationException();
     }
 
+    final credentials =
+        _tryDecodeCompletePasswordResetToken(completePasswordResetToken);
+    if (credentials == null) {
+      throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
     final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
       session,
-      passwordResetRequestId,
+      credentials.passwordResetRequestId,
       include: EmailAccountPasswordResetRequest.include(
         setPasswordChallenge: SecretChallenge.include(),
       ),
@@ -91,7 +98,7 @@ class EmailIDPPasswordResetUtil {
     }
 
     if (!await _passwordHashUtil.validateHash(
-      value: verificationCode,
+      value: credentials.verificationCode,
       hash: setPasswordChallenge.challengeCodeHash.asUint8List,
       salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
     )) {
@@ -132,8 +139,8 @@ class EmailIDPPasswordResetUtil {
   /// This method should only be called after the [startPasswordReset] method
   /// has been called successfully.
   ///
-  /// The [verificationCode] returned from [startPasswordReset] is used to
-  /// validate the password reset request.
+  /// The method returns a [completePasswordResetToken] that can be used to
+  /// complete the password reset.
   ///
   /// Can throw the following [EmailPasswordResetServerException] subclasses:
   /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
@@ -150,7 +157,7 @@ class EmailIDPPasswordResetUtil {
   /// In case of an invalid [verificationCode] or [passwordResetRequestId], the
   /// failed password reset completion will be logged to the database outside
   /// of the [transaction] and can not be rolled back.
-  Future<SetPasswordCredentials> verifyPasswordResetCode(
+  Future<String> verifyPasswordResetCode(
     final Session session, {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
@@ -207,7 +214,7 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
 
-    final setPasswordToken = _config.setPasswordTokenGenerator();
+    final setPasswordToken = const Uuid().v4();
     final setPasswordTokenHash = await _passwordHashUtil.createHash(
       value: setPasswordToken,
     );
@@ -219,9 +226,9 @@ class EmailIDPPasswordResetUtil {
       setPasswordTokenHash: setPasswordTokenHash,
     );
 
-    return (
-      passwordResetRequestId: resetRequest.id!,
-      verificationCode: setPasswordToken,
+    return _encodeCompletePasswordResetToken(
+      resetRequest.id!,
+      setPasswordToken,
     );
   }
 
@@ -498,6 +505,43 @@ class EmailIDPPasswordResetUtil {
       return recentRequests > _config.maxPasswordResetAttempts.maxAttempts;
     });
   }
+
+  String _encodeCompletePasswordResetToken(
+    final UuidValue passwordResetRequestId,
+    final String setPasswordToken,
+  ) {
+    return base64Encode(
+      utf8.encode('$passwordResetRequestId:$setPasswordToken'),
+    );
+  }
+
+  CompletePasswordResetCredentials? _tryDecodeCompletePasswordResetToken(
+    final String token,
+  ) {
+    final String decoded;
+    try {
+      decoded = utf8.decode(base64Decode(token));
+    } catch (e) {
+      return null;
+    }
+
+    final parts = decoded.split(':');
+    if (parts.length != 2) {
+      return null;
+    }
+
+    final UuidValue passwordResetRequestId;
+    try {
+      passwordResetRequestId = UuidValue.withValidation(parts[0]);
+    } catch (e) {
+      return null;
+    }
+
+    return (
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: parts[1],
+    );
+  }
 }
 
 /// Configuration options for the [EmailIDPPasswordResetUtil] class.
@@ -520,9 +564,6 @@ class EmailIDPPasswordResetUtilsConfig {
   /// Function for generating the password reset verification code.
   final String Function() passwordResetVerificationCodeGenerator;
 
-  /// Function for generating the set password token.
-  final String Function() setPasswordTokenGenerator;
-
   /// Callback to be invoked for sending out the password reset verification code.
   final SendPasswordResetVerificationCodeFunction?
       sendPasswordResetVerificationCode;
@@ -536,7 +577,6 @@ class EmailIDPPasswordResetUtilsConfig {
     required this.maxPasswordResetAttempts,
     required this.passwordResetVerificationCodeGenerator,
     required this.sendPasswordResetVerificationCode,
-    required this.setPasswordTokenGenerator,
   });
 
   /// Creates a new [EmailIDPPasswordResetUtilsConfig] instance from an
@@ -555,7 +595,6 @@ class EmailIDPPasswordResetUtilsConfig {
           config.passwordResetVerificationCodeGenerator,
       sendPasswordResetVerificationCode:
           config.sendPasswordResetVerificationCode,
-      setPasswordTokenGenerator: config.setPasswordTokenGenerator,
     );
   }
 }
@@ -583,7 +622,7 @@ extension on EmailAccountPasswordResetRequest {
 }
 
 /// The credentials for setting the password for the password reset request.
-typedef SetPasswordCredentials = ({
+typedef CompletePasswordResetCredentials = ({
   UuidValue passwordResetRequestId,
   String verificationCode,
 });

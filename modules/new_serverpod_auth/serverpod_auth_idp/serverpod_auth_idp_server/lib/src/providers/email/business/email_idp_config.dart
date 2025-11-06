@@ -74,11 +74,6 @@ class EmailIDPConfig {
   /// By default this is a 8 digits alpha-numeric lower-case code.
   final String Function() passwordResetVerificationCodeGenerator;
 
-  /// Function returning the password reset set password token.
-  ///
-  /// By default this is a UuidValue.
-  final String Function() setPasswordTokenGenerator;
-
   /// The maximum number of failed logins for the same email.
   ///
   /// Successful logins are not counted or limited.
@@ -146,7 +141,6 @@ class EmailIDPConfig {
       maxAttempts: 3,
     ),
     this.secretHashSaltLength = 16,
-    this.setPasswordTokenGenerator = defaultSetPasswordTokenGenerator,
   });
 }
 

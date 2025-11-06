@@ -67,8 +67,7 @@ void main() {
             verificationCode: verificationCode,
           );
 
-          await expectLater(
-              passwordResetResult, completion(isA<SetPasswordCredentials>()));
+          await expectLater(passwordResetResult, completion(isA<String>()));
         });
       });
     },

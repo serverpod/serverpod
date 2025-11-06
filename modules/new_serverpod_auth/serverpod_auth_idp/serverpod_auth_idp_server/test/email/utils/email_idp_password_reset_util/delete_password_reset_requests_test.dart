@@ -76,7 +76,7 @@ void main() {
           ),
         );
 
-        await expectLater(result, completion(isA<SetPasswordCredentials>()));
+        await expectLater(result, completion(isA<String>()));
       });
 
       test(
@@ -119,7 +119,7 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue passwordResetRequestId;
       const passwordResetVerificationCodeLifetime = Duration(hours: 1);
-      late String setPasswordVerificationCode;
+      late String completePasswordResetToken;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -151,7 +151,7 @@ void main() {
           ),
         );
 
-        final setPasswordCredentials = await session.db.transaction(
+        completePasswordResetToken = await session.db.transaction(
           (final transaction) =>
               fixture.passwordResetUtil.verifyPasswordResetCode(
             session,
@@ -160,7 +160,6 @@ void main() {
             transaction: transaction,
           ),
         );
-        setPasswordVerificationCode = setPasswordCredentials.verificationCode;
       });
 
       tearDown(() async {
@@ -184,8 +183,7 @@ void main() {
           (final transaction) =>
               fixture.passwordResetUtil.completePasswordReset(
             session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: setPasswordVerificationCode,
+            completePasswordResetToken: completePasswordResetToken,
             newPassword: 'NewPassword123!',
             transaction: transaction,
           ),
@@ -211,8 +209,7 @@ void main() {
           (final transaction) =>
               fixture.passwordResetUtil.completePasswordReset(
             session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: setPasswordVerificationCode,
+            completePasswordResetToken: completePasswordResetToken,
             newPassword: 'NewPassword123!',
             transaction: transaction,
           ),

@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:serverpod/serverpod.dart';
-
 final Random _random = Random.secure();
 
 /// Returns a secure random string to be used for short-lived verification codes.
@@ -17,9 +15,4 @@ String defaultVerificationCodeGenerator() {
       return alphabet.substring(i, i + 1);
     },
   ).join();
-}
-
-/// Returns a secure random UuidValue to be used for set password tokens.
-String defaultSetPasswordTokenGenerator() {
-  return const Uuid().v4();
 }
