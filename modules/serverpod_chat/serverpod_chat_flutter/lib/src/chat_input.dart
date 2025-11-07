@@ -87,9 +87,8 @@ class ChatInputState extends State<ChatInput> {
             onDelete: () {
               setState(() {
                 _attachments.remove(attachment);
-                // TODO(kasper): Investigate what:
-                // "Remove from server"
-                // means. Is there an issue already?
+                // Does not remove the actual attached file from server.
+                // Only disassociates it with the chat message.
               });
             },
           ),
