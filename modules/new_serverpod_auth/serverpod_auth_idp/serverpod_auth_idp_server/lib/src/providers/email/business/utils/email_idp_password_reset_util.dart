@@ -169,7 +169,12 @@ class EmailIDPPasswordResetUtil {
     )) {
       await EmailAccountPasswordResetRequest.db.deleteWhere(
         session,
-        where: (final t) => t.id.equals(passwordResetRequestId),
+        // Only delete requests that have not been verified yet.
+        // This ensures we don't delete requests if verifyPasswordResetCode is
+        // accidentally called again.
+        where: (final t) =>
+            t.id.equals(passwordResetRequestId) &
+            t.setPasswordChallengeId.equals(null),
         // passing no transaction, so this will not be rolled back
       );
 

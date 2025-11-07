@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
@@ -219,6 +220,8 @@ void main() {
     late UuidValue passwordResetRequestId;
     late String verificationCode;
     const Duration passwordResetVerificationCodeLifetime = Duration(days: 1);
+    late String completePasswordResetToken;
+    const passwordResetVerificationCodeAllowedAttempts = 2;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -230,6 +233,8 @@ void main() {
           passwordResetVerificationCodeGenerator: () => verificationCode,
           passwordResetVerificationCodeLifetime:
               passwordResetVerificationCodeLifetime,
+          passwordResetVerificationCodeAllowedAttempts:
+              passwordResetVerificationCodeAllowedAttempts,
         ),
       );
 
@@ -253,7 +258,7 @@ void main() {
       );
 
       // Verify the password reset code (this marks it as used)
-      await session.db.transaction(
+      completePasswordResetToken = await session.db.transaction(
         (final transaction) =>
             fixture.passwordResetUtil.verifyPasswordResetCode(
           session,
@@ -309,6 +314,73 @@ void main() {
           throwsA(
               isA<EmailPasswordResetVerificationCodeAlreadyUsedException>()),
         );
+      });
+    });
+
+    group(
+        'when exceeding the allowed number of attempts then it throws too many attempts exception',
+        () {
+      late Future<String> verifyPasswordResetCodeFuture;
+
+      setUp(() async {
+        assert(
+          fixture.config.passwordResetVerificationCodeAllowedAttempts == 2,
+          'Assuming only two attempts are allowed allowed so that the third attempt will exceed the threshold',
+        );
+        final firstAttempt = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+
+        try {
+          await firstAttempt;
+        } on EmailPasswordResetVerificationCodeAlreadyUsedException {
+          // Expected
+        }
+
+        verifyPasswordResetCodeFuture = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      test('then it throws too many attempts exception', () async {
+        await expectLater(
+          verifyPasswordResetCodeFuture,
+          throwsA(
+            isA<EmailPasswordResetTooManyVerificationAttemptsException>(),
+          ),
+        );
+      });
+
+      test('then password reset can still be completed', () async {
+        try {
+          await verifyPasswordResetCodeFuture;
+        } catch (_) {
+          // Expecting an exception
+        }
+
+        final result = await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.completePasswordReset(
+            session,
+            completePasswordResetToken: completePasswordResetToken,
+            newPassword: 'NewPassword123!',
+            transaction: transaction,
+          ),
+        );
+
+        expect(result, isA<UuidValue>());
       });
     });
   });
@@ -664,6 +736,34 @@ void main() {
           result,
           throwsA(
               isA<EmailPasswordResetTooManyVerificationAttemptsException>()),
+        );
+      });
+
+      test(
+          'when complete password reset is called then it throws request not found exception',
+          () async {
+        // This test depends in implementation details but ensures we remove the
+        // request and behave as expected when attempting to complete a removed
+        // password reset request.
+
+        // This needs to be updated if the implementation details for the token change.
+        final mockedToken = base64Encode(
+          utf8.encode('$passwordResetRequestId:mocked-tokend'),
+        );
+
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.completePasswordReset(
+            session,
+            completePasswordResetToken: mockedToken,
+            newPassword: 'NewPassword123!',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
         );
       });
     },
