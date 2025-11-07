@@ -38,7 +38,6 @@ import 'google/sign_in_with_google.dart';
 /// https://example.com/googlesignin
 Future<UserInfo?> signInWithGoogle(
   Caller caller, {
-  bool debug = false, //TODO: Remove this parameter on next breaking change.
   String? clientId,
   String? serverClientId,
   List<String> additionalScopes = const [],

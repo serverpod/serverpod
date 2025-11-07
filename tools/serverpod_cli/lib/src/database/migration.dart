@@ -83,9 +83,6 @@ DatabaseMigration generateDatabaseMigration({
           ),
         );
       } else if (!diff.isEmpty) {
-        // Table was modified
-        // TODO: Check if table can be modified
-
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.alterTable,

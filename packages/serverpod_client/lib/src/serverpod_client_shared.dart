@@ -138,7 +138,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  // TODO: Deprecate after the new authentication system is in place.
+  // TODO(https://github.com/serverpod/serverpod/issues/4105):
+  // Deprecate after the new authentication system is in place.
   /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
@@ -240,7 +241,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // TODO: Remove this backwards compatibility assignment.
+    // TODO(https://github.com/serverpod/serverpod/issues/4105):
+    // Remove this backwards compatibility assignment.
     authKeyProvider ??= authenticationKeyManager;
   }
 
