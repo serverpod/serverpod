@@ -26,7 +26,7 @@ enum EmailAccountPasswordResetExceptionReason implements _i1.SerializableModel {
   /// match the configured policy.
   policyViolation,
 
-  /// Exception to be thrown when attempting to complete a password reset
+  /// Exception to be thrown when attempting to verify a password reset
   /// request too many times.
   tooManyAttempts,
 
