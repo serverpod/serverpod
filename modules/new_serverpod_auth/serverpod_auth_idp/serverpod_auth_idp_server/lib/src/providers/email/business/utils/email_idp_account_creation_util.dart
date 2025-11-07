@@ -295,7 +295,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
     if (existingAccountCount > 0) {
-      throw EmailAccountRequestEmailAlreadyRegisteredException();
+      throw EmailAccountAlreadyRegisteredException();
     }
 
     final verificationCode = _config.registrationVerificationCodeGenerator();
@@ -315,7 +315,7 @@ class EmailIDPAccountCreationUtil {
           transaction: transaction,
         );
       } else {
-        throw EmailAccountRequestEmailAlreadyRequestedException();
+        throw EmailAccountRequestAlreadyExistsException();
       }
     }
 

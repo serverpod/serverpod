@@ -258,7 +258,7 @@ void main() {
 
         await expectLater(
           startAccountCreationFuture,
-          throwsA(isA<EmailAccountRequestEmailAlreadyRegisteredException>()),
+          throwsA(isA<EmailAccountAlreadyRegisteredException>()),
         );
       });
     },
@@ -296,7 +296,7 @@ void main() {
       });
 
       test(
-          'when starting account creation with same email then it throws email already requested exception',
+          'when starting account creation with same email then it throws email account request already exists exception',
           () async {
         final startAccountCreationFuture = session.db.transaction(
           (final transaction) =>
@@ -310,7 +310,7 @@ void main() {
 
         await expectLater(
           startAccountCreationFuture,
-          throwsA(isA<EmailAccountRequestEmailAlreadyRequestedException>()),
+          throwsA(isA<EmailAccountRequestAlreadyExistsException>()),
         );
       });
     },

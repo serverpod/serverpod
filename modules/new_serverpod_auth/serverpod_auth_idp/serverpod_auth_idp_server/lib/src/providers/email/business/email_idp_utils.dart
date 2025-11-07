@@ -92,10 +92,12 @@ extension on EmailAccountRequestServerException {
   EmailAccountRequestExceptionReason get reason {
     switch (this) {
       case EmailAccountRequestInvalidVerificationCodeException():
+      // It is important that NotVerified and NotFound are grouped together
+      // so that we don't leak information about the existence of the request.
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
-      case EmailAccountRequestEmailAlreadyRegisteredException():
-      case EmailAccountRequestEmailAlreadyRequestedException():
+      case EmailAccountAlreadyRegisteredException():
+      case EmailAccountRequestAlreadyExistsException():
         return EmailAccountRequestExceptionReason.invalid;
       case EmailAccountRequestVerificationTooManyAttemptsException():
         return EmailAccountRequestExceptionReason.tooManyAttempts;

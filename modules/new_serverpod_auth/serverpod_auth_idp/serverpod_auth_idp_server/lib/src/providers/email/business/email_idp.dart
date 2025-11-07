@@ -221,15 +221,15 @@ final class EmailIDP {
             // Clients should always show something like "check your email to proceed with the account creation".
             // One might want to send a "password reset" in case of a "email already exists" exception, to help the user log in.
             switch (e) {
-              case EmailAccountRequestEmailAlreadyRegisteredException():
+              case EmailAccountAlreadyRegisteredException():
                 session.log(
                   'Failed to start account registration for $email, reason: email already registered',
                   level: LogLevel.debug,
                 );
                 break;
-              case EmailAccountRequestEmailAlreadyRequestedException():
+              case EmailAccountRequestAlreadyExistsException():
                 session.log(
-                  'Failed to start account registration for $email, reason: email already requested',
+                  'Failed to start account registration for $email, reason: email account request already exists',
                   level: LogLevel.debug,
                 );
                 break;

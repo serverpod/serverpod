@@ -44,15 +44,15 @@ final class EmailPasswordPolicyViolationException
     extends EmailAccountRequestServerException {}
 
 /// Exception thrown when an email address is already registered.
-final class EmailAccountRequestEmailAlreadyRegisteredException
+final class EmailAccountAlreadyRegisteredException
     extends EmailAccountRequestServerException {}
 
 /// Exception thrown when email address fails email validation.
 final class EmailAccountRequestInvalidEmailException
     extends EmailAccountRequestServerException {}
 
-/// Exception thrown when an email address is already requested.
-final class EmailAccountRequestEmailAlreadyRequestedException
+/// Exception thrown when an email account request already exists.
+final class EmailAccountRequestAlreadyExistsException
     extends EmailAccountRequestServerException {}
 
 /// Exception thrown when requesting password reset for an inexistent account.
