@@ -1,4 +1,34 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:serverpod/serverpod.dart';
+
+/// Context provided to the [AuthenticationTokenConfig.extraClaimsProvider].
+///
+/// This class contains the contextual information available when a refresh
+/// token is being created, allowing the provider to make informed decisions
+/// about which claims to include.
+class AuthenticationContext {
+  /// The authenticated user ID.
+  final UuidValue authUserId;
+
+  /// The authentication method used (e.g., "email", "google", "apple").
+  final String method;
+
+  /// The scopes granted to this authentication session.
+  final Set<Scope> scopes;
+
+  /// Extra claims provided programmatically via the `createTokens` method.
+  ///
+  /// The provider can use this to merge or override these claims as needed.
+  final Map<String, dynamic>? extraClaims;
+
+  /// Creates a new authentication context.
+  const AuthenticationContext({
+    required this.authUserId,
+    required this.method,
+    required this.scopes,
+    this.extraClaims,
+  });
+}
 
 /// Configuration for an authentication token algorithm.
 sealed class AuthenticationTokenAlgorithm {
@@ -87,6 +117,25 @@ class AuthenticationTokenConfig {
   /// Defaults to 16.
   final int refreshTokenRotatingSecretSaltLength;
 
+  /// Optional provider for extra claims to add to refresh tokens.
+  ///
+  /// This function is called during refresh token creation and allows developers
+  /// to dynamically add custom claims to the token. The function receives the
+  /// session and an [AuthenticationContext] containing contextual information
+  /// about the authentication, enabling it to fetch any additional information
+  /// needed and decide how to merge with existing claims.
+  ///
+  /// The returned map contains extra claims to be included in the refresh
+  /// token payload. These claims will be embedded in every access token
+  /// (including across rotations) and sent along with any request.
+  ///
+  /// Claims must not conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// or Serverpod's internal claims (those starting with "dev.serverpod.").
+  final Future<Map<String, dynamic>?> Function(
+    Session session,
+    AuthenticationContext context,
+  )? extraClaimsProvider;
+
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
     required this.algorithm,
@@ -98,6 +147,7 @@ class AuthenticationTokenConfig {
     this.refreshTokenFixedSecretLength = 16,
     this.refreshTokenRotatingSecretLength = 64,
     this.refreshTokenRotatingSecretSaltLength = 16,
+    this.extraClaimsProvider,
   }) {
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
   }

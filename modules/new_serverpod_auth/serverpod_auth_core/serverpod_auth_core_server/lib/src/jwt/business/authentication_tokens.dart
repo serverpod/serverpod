@@ -121,6 +121,23 @@ final class AuthenticationTokens {
       scopes ??= authUser.scopes;
     }
 
+    // Invoke the extra claims provider if configured
+    final mergedExtraClaims = config.extraClaimsProvider != null
+        ? await config.extraClaimsProvider!(
+            session,
+            AuthenticationContext(
+              authUserId: authUserId,
+              method: method,
+              scopes: scopes,
+              extraClaims: extraClaims,
+            ),
+          )
+        : extraClaims;
+    final encodedExtraClaims =
+        mergedExtraClaims != null && mergedExtraClaims.isNotEmpty
+            ? jsonEncode(mergedExtraClaims)
+            : null;
+
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);
 
@@ -134,7 +151,7 @@ final class AuthenticationTokens {
         rotatingSecretHash: ByteData.sublistView(newHash.hash),
         rotatingSecretSalt: ByteData.sublistView(newHash.salt),
         scopeNames: scopes.names,
-        extraClaims: extraClaims != null ? jsonEncode(extraClaims) : null,
+        extraClaims: encodedExtraClaims,
         createdAt: currentTime,
         lastUpdatedAt: currentTime,
         method: method,

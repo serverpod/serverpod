@@ -574,6 +574,220 @@ void main() {
       expect(authSuccess, isNotNull);
     });
   });
+
+  withServerpod('Given an AuthenticationTokenConfig with extraClaimsProvider,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await AuthUsers.create(session);
+      authUserId = authUser.id;
+    });
+
+    test(
+        'when requesting a new token pair with the provider configured, then provider claims are included in the access token.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return {'hookClaim': 'hookValue', 'userRole': 'admin'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'hookValue');
+      expect(payload['userRole'], 'admin');
+    });
+
+    test(
+        'when requesting a new token pair with both provider and extraClaims, then provider can control how claims are merged.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can decide how to merge extraClaims
+            return {
+              ...?context.extraClaims,
+              'providerClaim': 'fromProvider',
+              'conflictKey': 'providerWins'
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        extraClaims: {'paramClaim': 'fromParam', 'conflictKey': 'paramLoses'},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['providerClaim'], 'fromProvider');
+      expect(payload['paramClaim'], 'fromParam');
+      expect(payload['conflictKey'], 'providerWins');
+    });
+
+    test(
+        'when rotating tokens created with a provider, then provider claims are preserved.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return {'hookClaim': 'persistsAcrossRotation'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final rotatedTokenPair =
+          await authenticationTokensWithHook.rotateRefreshToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'persistsAcrossRotation');
+    });
+
+    test(
+        'when provider returns null, then no extra claims are added from the provider.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return null;
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      // Should only contain standard claims, no custom ones
+      expect(payload.containsKey('hookClaim'), isFalse);
+    });
+
+    test(
+        'when provider accesses session context, then it can fetch additional data.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can fetch additional data from database using session
+            final authUser = await AuthUsers.get(
+              session,
+              authUserId: context.authUserId,
+            );
+            return {
+              'userId': authUser.id.toString(),
+              'userExists': true,
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['userId'], authUserId.toString());
+      expect(payload['userExists'], isTrue);
+    });
+
+    test(
+        'when provider uses method and scopes parameters, then it can customize claims based on them.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can use method and scopes to customize claims
+            return {
+              'authMethod': context.method,
+              'scopeCount': context.scopes.length,
+              'hasAdminScope':
+                  context.scopes.any((final s) => s.name == 'admin'),
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {const Scope('admin'), const Scope('user')},
+        method: 'email',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['authMethod'], 'email');
+      expect(payload['scopeCount'], 2);
+      expect(payload['hasAdminScope'], isTrue);
+    });
+  });
 }
 
 UuidValue _extractRefreshTokenId(final String accessToken) {
