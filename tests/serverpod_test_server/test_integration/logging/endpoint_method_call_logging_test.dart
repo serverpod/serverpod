@@ -10,7 +10,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 List<int> toLogLevelInts(List<LogLevel> levels) {
-  return levels.map((e) => e.toJson()).toList();
+  return levels.map((e) => e.index).toList();
 }
 
 void main() async {
@@ -249,7 +249,7 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [LogLevel.debug.toJson()]);
+      await client.logging.log('message', [LogLevel.debug.index]);
 
       var logs = await LoggingUtil.findAllLogs(session);
 
@@ -268,7 +268,7 @@ void main() async {
 
       await server.updateRuntimeSettings(settings);
 
-      await client.logging.log('message', [LogLevel.debug.toJson()]);
+      await client.logging.log('message', [LogLevel.debug.index]);
 
       var logs = await LoggingUtil.findAllLogs(session);
 
