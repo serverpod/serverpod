@@ -17,7 +17,7 @@ enum EmailAccountLoginExceptionReason implements _i1.SerializableModel {
   /// The credentials are either wrong or the email address is not known.
   invalidCredentials,
 
-  /// Too many attempts made by the same client/IP or towards the same account.
+  /// Too many attempts made to login with the same email address.
   tooManyAttempts,
 
   /// Unknown error occurred.

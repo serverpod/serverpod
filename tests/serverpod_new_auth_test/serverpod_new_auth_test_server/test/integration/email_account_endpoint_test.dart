@@ -807,7 +807,13 @@ void main() {
 
   withServerpod(
     'Given an invalid password reset request id,',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
       test(
           'when calling `verifyPasswordResetCode`, '
           'then it throws generic invalid error that does not leak that the email is not registered.',

@@ -6,7 +6,12 @@ import 'package:serverpod/serverpod.dart';
 
 /// Prefix for sessions keys
 /// "sas" being abbreviated of "serverpod_auth_session"
-const _sessionKeyPrefix = 'sas';
+final _sessionKeyPrefix = utf8.encode('sas');
+
+/// The URL-safe base64 Prefix of the session key.
+/// This only works for the prefix length of 3, as that result in exactly 4
+/// characters and thus does not change with the later data.
+final _sessionKeyPrefixBase64 = base64Url.encode(_sessionKeyPrefix);
 
 /// Creates the String representation to map to an `AuthSession`.
 @internal
@@ -14,9 +19,11 @@ String buildSessionKey({
   required final UuidValue authSessionId,
   required final Uint8List secret,
 }) {
-  // Since the session key is sent as a `Basic` HTTP `Authorization` header by the Serverpod client,
-  // it's important that it contains at least one `:` so the `user:pass` schema is obeyed.
-  return '$_sessionKeyPrefix:${base64Url.encode(authSessionId.toBytes())}:${base64Url.encode(secret)}';
+  return base64Url.encode([
+    ..._sessionKeyPrefix,
+    ...authSessionId.toBytes(),
+    ...secret,
+  ]);
 }
 
 /// Tries parsing a session key String created by [buildSessionKey] into its
@@ -28,50 +35,31 @@ SessionKeyData? tryParseSessionKey(
   final Session session,
   final String key,
 ) {
-  if (!key.startsWith('$_sessionKeyPrefix:')) {
-    return null;
-  }
-
-  final parts = key.split(':');
-  if (parts.length != 3) {
-    session.log(
-      'Unexpected key format',
-      level: LogLevel.debug,
-    );
-
-    return null;
-  }
-
-  final UuidValue authSessionId;
   try {
-    authSessionId = UuidValue.fromByteList(base64Url.decode(parts[1]))
+    if (!key.startsWith(_sessionKeyPrefixBase64)) {
+      return null;
+    }
+
+    final decoded = base64Url.decode(key);
+
+    final authSessionId = UuidValue.fromByteList(Uint8List.sublistView(decoded,
+        _sessionKeyPrefix.lengthInBytes, _sessionKeyPrefix.lengthInBytes + 16))
       ..validate();
+
+    final secret =
+        Uint8List.sublistView(decoded, _sessionKeyPrefix.lengthInBytes + 16);
+
+    return (authSessionId: authSessionId, secret: secret);
   } catch (e, stackTrace) {
     session.log(
-      'Failed to parse auth session ID',
-      level: LogLevel.debug,
+      'Failed to parse session key: "$key"',
+      level: LogLevel.error,
       exception: e,
       stackTrace: stackTrace,
     );
 
     return null;
   }
-
-  final Uint8List secret;
-  try {
-    secret = base64Url.decode(parts[2]);
-  } catch (e, stackTrace) {
-    session.log(
-      'Failed to parse secret ID',
-      level: LogLevel.debug,
-      exception: e,
-      stackTrace: stackTrace,
-    );
-
-    return null;
-  }
-
-  return (authSessionId: authSessionId, secret: secret);
 }
 
 /// The data retrieved from a session key string.

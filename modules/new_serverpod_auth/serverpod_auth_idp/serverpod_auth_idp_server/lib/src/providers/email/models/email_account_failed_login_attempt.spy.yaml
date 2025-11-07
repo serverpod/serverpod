@@ -4,7 +4,7 @@ class: EmailAccountFailedLoginAttempt
 serverOnly: true
 table: serverpod_auth_idp_email_account_failed_login_attempt
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### Email attempting to sign in with.
   ###

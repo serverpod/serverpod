@@ -2,7 +2,7 @@ class: AuthUser
 serverOnly: true
 table: serverpod_auth_core_user
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The time when this user was created.
   createdAt: DateTime, defaultModel=now

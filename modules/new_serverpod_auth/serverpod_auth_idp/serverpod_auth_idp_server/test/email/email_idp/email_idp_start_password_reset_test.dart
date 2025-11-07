@@ -116,7 +116,7 @@ void main() {
     });
 
     test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
       final result = fixture.emailIDP.startPasswordReset(
         session,
@@ -128,7 +128,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )));
     });
   });
@@ -227,7 +227,7 @@ void main() {
     });
 
     test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
       final result = fixture.emailIDP.startPasswordReset(
         session,
@@ -239,7 +239,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )));
     });
   });

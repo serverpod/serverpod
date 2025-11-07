@@ -3,7 +3,7 @@ class: GoogleAccount
 serverOnly: true
 table: serverpod_auth_idp_google_account
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this profile belongs to
   authUser: module:auth:AuthUser?, relation(onDelete=Cascade)

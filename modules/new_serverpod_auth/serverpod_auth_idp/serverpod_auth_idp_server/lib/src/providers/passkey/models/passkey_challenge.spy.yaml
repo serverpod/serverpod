@@ -3,7 +3,7 @@ class: PasskeyChallenge
 serverOnly: true
 table: serverpod_auth_idp_passkey_challenge
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The time when this challenge was created.
   createdAt: DateTime, defaultModel=now

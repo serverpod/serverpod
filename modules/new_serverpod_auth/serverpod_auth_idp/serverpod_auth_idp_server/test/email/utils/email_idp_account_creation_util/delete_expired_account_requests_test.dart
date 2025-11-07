@@ -31,7 +31,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -40,8 +40,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {
@@ -106,7 +104,7 @@ void main() {
             registrationVerificationCodeLifetime + const Duration(minutes: 1),
           ),
         );
-        final result = await withClock(
+        accountRequestId = await withClock(
           clockBeforeTimeframe,
           () => session.db.transaction(
             (final transaction) =>
@@ -118,8 +116,6 @@ void main() {
             ),
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {
