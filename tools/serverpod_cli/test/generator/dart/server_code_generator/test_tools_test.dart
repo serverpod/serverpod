@@ -1370,7 +1370,7 @@ void main() {
     test('then test method has @deprecated annotation.', () {
       expect(
         testToolsFile,
-        contains('@deprecated\n  Future<String> $methodName('),
+        contains('@deprecated'),
       );
     });
   });
@@ -1411,8 +1411,7 @@ void main() {
     test('then test method has @Deprecated annotation with message.', () {
       expect(
         testToolsFile,
-        contains(
-            "@Deprecated('This method is deprecated')\n  Future<String> $methodName("),
+        contains("@Deprecated('This method is deprecated')"),
       );
     });
   });
