@@ -5,7 +5,6 @@ import 'package:image/image.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../../../auth_user.dart';
 import '../../generated/protocol.dart';
 import '../util/default_image_generator.dart';
 import '../util/user_profile_extension.dart';
@@ -18,36 +17,6 @@ part 'user_profiles_admin.dart';
 abstract final class UserProfiles {
   /// Collection of admin-related functions.
   static final UserProfilesAdmin admin = UserProfilesAdmin._();
-
-  /// Creates a new auth user and profile using the given optional [email].
-  static Future<UserProfileModel> createUser(
-    final Session session, {
-    required final String? email,
-    final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final newUser = await AuthUsers.create(
-          session,
-          transaction: transaction,
-        );
-        final authUserId = newUser.id;
-
-        final createdProfile = await UserProfiles.createUserProfile(
-          session,
-          authUserId,
-          UserProfileData(
-            email: email,
-          ),
-          transaction: transaction,
-        );
-
-        return createdProfile;
-      },
-    );
-  }
 
   /// Creates a new user profile and stores it in the database.
   static Future<UserProfileModel> createUserProfile(
