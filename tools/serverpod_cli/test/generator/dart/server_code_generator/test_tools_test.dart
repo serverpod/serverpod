@@ -1334,4 +1334,85 @@ void main() {
       );
     });
   });
+
+  group(
+      'Given protocol definition with method annotated with @deprecated when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'deprecatedMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withAnnotations([
+            const AnnotationDefinition(
+              name: 'deprecated',
+            )
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    late var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test method has @deprecated annotation.', () {
+      expect(
+        testToolsFile,
+        contains('@deprecated'),
+      );
+    });
+  });
+
+  group(
+      'Given protocol definition with method annotated with @Deprecated when generating test tools file',
+      () {
+    var endpointName = 'testing';
+    var methodName = 'deprecatedMethod';
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('${endpointName.pascalCase}Endpoint')
+            .withName(endpointName)
+            .withMethods([
+          MethodDefinitionBuilder().withName(methodName).withAnnotations([
+            const AnnotationDefinition(
+              name: 'Deprecated',
+              arguments: ["'This method is deprecated'"],
+            )
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    late var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    test('then test tools file is created.', () {
+      expect(codeMap, contains(expectedFileName));
+    });
+
+    late var testToolsFile = codeMap[expectedFileName];
+
+    test('then test method has @Deprecated annotation with message.', () {
+      expect(
+        testToolsFile,
+        contains("@Deprecated('This method is deprecated')"),
+      );
+    });
+  });
 }
