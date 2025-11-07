@@ -236,7 +236,7 @@ class ModelParser {
 
     return convertToEnum<EnumSerialization>(
       value: serializedAs,
-      enumDefault: EnumSerialization.byIndex,
+      enumDefault: EnumSerialization.byName,
       enumValues: EnumSerialization.values,
     );
   }

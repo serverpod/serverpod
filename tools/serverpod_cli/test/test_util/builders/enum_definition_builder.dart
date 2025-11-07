@@ -19,7 +19,7 @@ class EnumDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
-        _serialized = EnumSerialization.byIndex,
+        _serialized = EnumSerialization.byName,
         _subDirParts = [],
         _serverOnly = false,
         _defaultValue = null,

@@ -1,4 +1,5 @@
 enum: EnumSerialization
+serialized: byIndex
 values:
   - byName
   - byIndex

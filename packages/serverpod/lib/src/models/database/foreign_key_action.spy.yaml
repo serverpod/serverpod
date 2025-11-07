@@ -1,5 +1,6 @@
 ### Describes how to react if the row a foreign key refers to changes / is deleted.
 enum: ForeignKeyAction
+serialized: byIndex
 values:
   ### [setNull] specifies that the appropriate values
   ### of a row referencing an other one should be set to
