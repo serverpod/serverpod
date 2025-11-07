@@ -482,10 +482,10 @@ class Serverpod {
         databaseConfiguration,
       );
 
-      // TODO: Remove this when we have a better way to handle this.
-      // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
-      // This is required because other operations in Serverpod assumes that the
-      // database is connected when the Serverpod is created
+      // ISSUE(https://github.com/serverpod/serverpod/issues/2421):
+      // Remove this when we have a better way to handle this.
+      // This is required because other operations in Serverpod assumes that
+      // the database is connected when the Serverpod is created
       // (such as createSession(...)).
       _databasePoolManager?.start();
     }

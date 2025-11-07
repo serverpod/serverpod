@@ -87,7 +87,9 @@ class ChatInputState extends State<ChatInput> {
             onDelete: () {
               setState(() {
                 _attachments.remove(attachment);
-                // TODO: Remove from server
+                // TODO(kasper): Investigate what:
+                // "Remove from server"
+                // means. Is there an issue already?
               });
             },
           ),

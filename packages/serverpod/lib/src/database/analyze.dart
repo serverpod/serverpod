@@ -219,7 +219,9 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         type: index[7],
         isUnique: index[2],
         isPrimary: index[3],
-        //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
+        // ISSUE(https://github.com/serverpod/serverpod/issues/716):
+        // Maybe unquote in the future. Should be considered when Serverpod
+        // introduces partial indexes.
         predicate: index[6],
         vectorDistanceFunction: vectorDistanceFunction,
         vectorColumnType: vectorColumnType,
@@ -360,7 +362,6 @@ extension on String {
   /// Removes the surrounding quotes if the string
   /// starts and ends with ".
   String get removeSurroundingQuotes {
-    //TODO: Handle " that are inside an expression.
     if (startsWith('"') && endsWith('"')) {
       return substring(1, length - 1);
     } else {

@@ -6,7 +6,6 @@ import 'package:path/path.dart' as p;
 
 const _endpointName = 'serverpod_cloud_storage';
 
-// TODO: Add more content type mappings.
 const _mimeTypeMapping = <String, MimeType>{
   '.js': MimeType.javascript,
   '.json': MimeType.json,

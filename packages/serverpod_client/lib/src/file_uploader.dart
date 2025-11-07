@@ -74,7 +74,6 @@ class FileUploader {
           return response.statusCode == 204;
       }
     } catch (e) {
-      // TODO: Shouldn't we log something here?
       return false;
     }
   }
