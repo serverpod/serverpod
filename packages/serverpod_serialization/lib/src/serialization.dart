@@ -65,7 +65,6 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
-    //TODO: all the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
     } else if (_isNullableType<double>(t)) {
@@ -214,7 +213,6 @@ abstract class SerializationManager {
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
       (nonEncodable) {
-        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {

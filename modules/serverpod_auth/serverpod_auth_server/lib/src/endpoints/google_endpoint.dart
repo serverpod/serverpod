@@ -53,7 +53,7 @@ class GoogleEndpoint extends Endpoint {
 
     if (person.names == null) return AuthenticationResponse(success: false);
 
-    var fullName = person.names?[0].displayName; // TODO: Double check
+    var fullName = person.names?[0].displayName;
     var name = person.names?[0].givenName;
     var image = person.photos?[0].url;
     var email = person.emailAddresses?[0].value;
@@ -136,7 +136,7 @@ class GoogleEndpoint extends Endpoint {
       String clientId = clientSecret.clientId;
 
       // Verify the token with Google's servers.
-      // TODO: This should probably be done on this server.
+      // This should probably be done on this server.
       var response = await http.get(Uri.parse(
           'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
 

@@ -66,9 +66,10 @@ class AppleIDPUtils {
       nonce: null,
     );
 
-    // TODO: Handle the edge-case where we already know the user, but they
-    //       disconnected and now "registered" again, in which case we need to
-    //       receive and store the new refresh token.
+    // TODO(https://github.com/serverpod/serverpod/issues/4105):
+    // Handle the edge-case where we already know the user, but they
+    // disconnected and now "registered" again, in which case we need to
+    // receive and store the new refresh token.
 
     var appleAccount = await AppleAccount.db.findFirstRow(
       session,
@@ -177,7 +178,8 @@ class AppleIDPUtils {
         return;
       }
 
-      /// TODO: Implement session revocation based on the notification for all
+      /// TODO(https://github.com/serverpod/serverpod/issues/4105):
+      /// Implement session revocation based on the notification for all
       /// the sessions associated with the Apple account.
       return;
     });

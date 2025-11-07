@@ -1,5 +1,3 @@
-// TODO: Put public facing types in this file.
-
 class ExternalCustomClass {
   final String value;
 
