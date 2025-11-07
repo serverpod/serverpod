@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
-import '../util/verification_code_generator.dart';
 
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction = void Function(

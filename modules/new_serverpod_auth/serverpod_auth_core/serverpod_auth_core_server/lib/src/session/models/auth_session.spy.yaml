@@ -2,7 +2,7 @@ class: AuthSession
 serverOnly: true
 table: serverpod_auth_core_session
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this session belongs to
   authUser: AuthUser?, relation(onDelete=Cascade)

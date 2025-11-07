@@ -6,8 +6,14 @@ import 'package:serverpod_auth_core_server/session.dart';
 
 import '../../../generated/protocol.dart';
 import 'google_idp_config.dart';
+import 'google_idp_token_verifier.dart';
 
 /// Details of the Google Account.
+///
+/// All nullable fields are not guaranteed to be available from Google OpenID
+/// docs, since the user may have not granted the app access to their profile or
+/// if the user is part of an organization that has restricted access to profile
+/// information.
 typedef GoogleAccountDetails = ({
   /// Google's user identifier for this account.
   String userIdentifier,
@@ -16,13 +22,16 @@ typedef GoogleAccountDetails = ({
   String email,
 
   /// The user's given name.
-  String name,
+  String? name,
 
   /// The user's full name.
-  String fullName,
+  String? fullName,
 
   /// The user's profile image URL.
   Uri? image,
+
+  /// Whether the email is verified.
+  bool? verifiedEmail,
 });
 
 /// Result of a successful authentication using Google as identity provider.
@@ -51,26 +60,28 @@ typedef GoogleAuthSuccess = ({
 /// But for most cases, the methods exposed by [GoogleIDP] and
 /// [GoogleIDPAdmin] should be sufficient.
 class GoogleIDPUtils {
-  /// The client secret used for the Google sign-in.
-  final GoogleClientSecret clientSecret;
+  /// Configuration for the Google identity provider.
+  final GoogleIDPConfig config;
 
   /// Creates a new instance of [GoogleIDPUtils].
   GoogleIDPUtils({
-    required this.clientSecret,
+    required this.config,
   });
 
-  /// Authenticates a user using an ID token.
+  /// Authenticates a user using an access token.
   ///
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
   Future<GoogleAuthSuccess> authenticate(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
     required final Transaction? transaction,
   }) async {
     final accountDetails = await fetchAccountDetails(
       session,
       idToken: idToken,
+      accessToken: accessToken,
     );
 
     var googleAccount = await GoogleAccount.db.findFirstRow(
@@ -113,90 +124,89 @@ class GoogleIDPUtils {
     );
   }
 
-  /// Returns the account details for the given [idToken].
+  /// Returns the account details for the given [accessToken].
   Future<GoogleAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
   }) async {
-    final String clientId = clientSecret.clientId;
+    final String clientId = config.clientSecret.clientId;
 
-    // Verify the ID token with Google's servers.
-    final response = await http.get(
-      Uri.https(
-        'www.googleapis.com',
-        '/oauth2/v3/tokeninfo',
-        {'id_token': idToken},
-      ),
-    );
-
-    if (response.statusCode != 200) {
-      session.log(
-        'Invalid token response status: ${response.statusCode}',
-        level: LogLevel.debug,
+    Map<String, dynamic> data;
+    try {
+      data = await GoogleIdTokenVerifier.verifyOAuth2Token(
+        idToken,
+        audience: clientId,
       );
-
-      throw GoogleIdTokenVerificationException();
+    } catch (e) {
+      session.logAndThrow('Failed to verify ID token from Google');
     }
 
-    final data = jsonDecode(response.body);
-    if (data is! Map<String, dynamic>) {
-      session.log(
-        'Invalid token response, content was not a Map.',
-        level: LogLevel.debug,
+    if (accessToken != null) {
+      final response = await http.get(
+        Uri.https('www.googleapis.com', '/oauth2/v3/userinfo'),
+        headers: {'Authorization': 'Bearer $accessToken'},
       );
 
-      throw GoogleIdTokenVerificationException();
+      if (response.statusCode != 200) {
+        session.logAndThrow('Failed to get user info from Google');
+      }
+
+      data = jsonDecode(response.body);
     }
 
-    final issuer = data['iss'] as String?;
-    if (issuer != 'accounts.google.com' &&
-        issuer != 'https://accounts.google.com') {
-      session.log(
-        'Invalid token response, unexpected issuer "$issuer"',
-        level: LogLevel.debug,
-      );
-
-      throw GoogleIdTokenVerificationException();
+    GoogleAccountDetails details;
+    try {
+      details = _parseAccountDetails(data);
+    } catch (e) {
+      session.logAndThrow('Invalid user info from Google: $e');
     }
 
-    if (data['aud'] != clientId) {
-      session.log(
-        'Invalid token response, client ID does not match',
-        level: LogLevel.debug,
-      );
-
-      throw GoogleIdTokenVerificationException();
+    try {
+      final getExtraInfoCallback = config.getExtraGoogleInfoCallback;
+      if (accessToken != null && getExtraInfoCallback != null) {
+        await getExtraInfoCallback(
+          session,
+          accountDetails: details,
+          accessToken: accessToken,
+          transaction: null,
+        );
+      }
+    } catch (e) {
+      session.logAndThrow('Failed to get extra Google account info: $e');
     }
 
+    return details;
+  }
+
+  GoogleAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
     final userId = data['sub'] as String?;
     final email = data['email'] as String?;
-    final verifiedEmail = data['verified_email'] as bool? ??
-        ((data['email_verified'] as String?) == 'true');
+    final name = data['given_name'] as String?;
     final fullName = data['name'] as String?;
     final image = data['picture'] as String?;
-    final name = data['given_name'] as String?;
+    final verifiedEmail = data['email_verified'] as bool?;
 
-    if (userId == null ||
-        email == null ||
-        verifiedEmail != true ||
-        fullName == null ||
-        image == null ||
-        name == null) {
-      session.log(
-        'Invalid token response, missing required data: $data',
-        level: LogLevel.debug,
-      );
-
-      throw GoogleIdTokenVerificationException();
+    if (userId == null || email == null) {
+      throw GoogleUserInfoMissingDataException();
     }
 
-    return (
+    final details = (
       userIdentifier: userId,
       email: email,
       name: name,
       fullName: fullName,
-      image: Uri.tryParse(image),
+      image: image != null ? Uri.tryParse(image) : null,
+      verifiedEmail: verifiedEmail,
     );
+
+    try {
+      config.googleAccountDetailsValidation(details);
+    } catch (e) {
+      throw GoogleUserInfoMissingDataException();
+    }
+
+    return details;
   }
 
   /// Adds a Google authentication to the given [authUserId].
@@ -219,3 +229,13 @@ class GoogleIDPUtils {
     );
   }
 }
+
+extension on Session {
+  Never logAndThrow(final String message) {
+    log(message, level: LogLevel.debug);
+    throw GoogleIdTokenVerificationException();
+  }
+}
+
+/// Exception thrown when the user info from Google is missing required data.
+class GoogleUserInfoMissingDataException implements Exception {}

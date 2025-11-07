@@ -718,10 +718,42 @@ class _EmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> finishPasswordReset(
+  _i3.Future<String> verifyPasswordResetCode(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'emailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'emailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> finishPasswordReset(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String finishPasswordResetToken,
     required String newPassword,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -736,8 +768,7 @@ class _EmailAccountEndpoint {
           endpointPath: 'emailAccount',
           methodName: 'finishPasswordReset',
           parameters: _i1.testObjectToJson({
-            'passwordResetRequestId': passwordResetRequestId,
-            'verificationCode': verificationCode,
+            'finishPasswordResetToken': finishPasswordResetToken,
             'newPassword': newPassword,
           }),
           serializationManager: _serializationManager,
@@ -767,6 +798,7 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
+    required String? accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -779,7 +811,10 @@ class _GoogleAccountBackwardsCompatibilityTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccountBackwardsCompatibilityTest',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          parameters: _i1.testObjectToJson({
+            'idToken': idToken,
+            'accessToken': accessToken,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -807,6 +842,7 @@ class _GoogleAccountEndpoint {
   _i3.Future<_i4.AuthSuccess> login(
     _i1.TestSessionBuilder sessionBuilder, {
     required String idToken,
+    required String? accessToken,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -819,7 +855,10 @@ class _GoogleAccountEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'googleAccount',
           methodName: 'login',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
+          parameters: _i1.testObjectToJson({
+            'idToken': idToken,
+            'accessToken': accessToken,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -1012,10 +1051,42 @@ class _PasswordImportingEmailAccountEndpoint {
     });
   }
 
-  _i3.Future<void> finishPasswordReset(
+  _i3.Future<String> verifyPasswordResetCode(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'passwordImportingEmailAccount',
+        method: 'verifyPasswordResetCode',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'passwordImportingEmailAccount',
+          methodName: 'verifyPasswordResetCode',
+          parameters: _i1.testObjectToJson({
+            'passwordResetRequestId': passwordResetRequestId,
+            'verificationCode': verificationCode,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> finishPasswordReset(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String finishPasswordResetToken,
     required String newPassword,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1030,8 +1101,7 @@ class _PasswordImportingEmailAccountEndpoint {
           endpointPath: 'passwordImportingEmailAccount',
           methodName: 'finishPasswordReset',
           parameters: _i1.testObjectToJson({
-            'passwordResetRequestId': passwordResetRequestId,
-            'verificationCode': verificationCode,
+            'finishPasswordResetToken': finishPasswordResetToken,
             'newPassword': newPassword,
           }),
           serializationManager: _serializationManager,
@@ -1057,33 +1127,6 @@ class _UserProfileEndpoint {
   final _i2.EndpointDispatch _endpointDispatch;
 
   final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<_i4.UserProfileModel> get(
-      _i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-        endpoint: 'userProfile',
-        method: 'get',
-      );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'userProfile',
-          methodName: 'get',
-          parameters: _i1.testObjectToJson({}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i3.Future<_i4.UserProfileModel>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
 
   _i3.Future<_i4.UserProfileModel> removeUserImage(
       _i1.TestSessionBuilder sessionBuilder) async {
@@ -1186,6 +1229,33 @@ class _UserProfileEndpoint {
           endpointPath: 'userProfile',
           methodName: 'changeFullName',
           parameters: _i1.testObjectToJson({'fullName': fullName}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserProfileModel> get(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'userProfile',
+        method: 'get',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'userProfile',
+          methodName: 'get',
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(

@@ -1,6 +1,9 @@
-import 'package:auth_client/auth_client.dart';
 import 'package:flutter/material.dart';
+import 'package:auth_client/auth_client.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+
+import 'widgets/profile_info.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
 /// anywhere in our app. The client is generated from your server code
@@ -24,86 +27,134 @@ void main() {
       serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
 
   client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor();
+    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..authSessionManager = ClientAuthSessionManager();
 
-  runApp(const MyApp());
+  client.auth.initialize();
+
+  runApp(const ExampleApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Serverpod Example'),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        colorScheme: const ColorScheme.light(
+          surface: Colors.white,
+          primary: Colors.black,
+        ),
+      ),
+      debugShowCheckedModeBanner: false,
+      home: const MainPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
-  /// Holds the last result or null if no result exists yet.
-  String? _resultMessage;
+class _MainPageState extends State<MainPage> {
+  bool _isSignedIn = false;
 
-  /// Holds the last error message that we've received from the server or null
-  /// if no error exists yet.
-  String? _errorMessage;
+  @override
+  void initState() {
+    super.initState();
 
-  final _textEditingController = TextEditingController();
+    // NOTE: This is the only required setState to ensure that the  UI gets
+    // updated when the auth state changes.
+    client.auth.authInfo.addListener(_updateSignedInState);
+  }
 
-  /// Calls the `hello` method of the `greeting` endpoint. Will set either the
-  /// `_resultMessage` or `_errorMessage` field, depending on if the call
-  /// is successful.
-  void _callHello() async {
-    try {
-      final result = await client.greeting.hello(_textEditingController.text);
-      setState(() {
-        _errorMessage = null;
-        _resultMessage = result.message;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = '$e';
-      });
-    }
+  @override
+  void dispose() {
+    client.auth.authInfo.removeListener(_updateSignedInState);
+    super.dispose();
+  }
+
+  void _updateSignedInState() {
+    setState(() {
+      _isSignedIn = client.auth.isAuthenticated;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    return _isSignedIn ? const ConnectedScreen() : const SignInScreen();
+  }
+}
+
+class SignInScreen extends StatelessWidget {
+  const SignInScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SignInWidget(
+        client: client,
+        // NOTE: No need to call navigation here if it gets done on the
+        // client.auth.authInfo listener.
+        onAuthenticated: () => onAuthenticated(context),
+        onError: (error) => onError(context, error),
+        // NOTE: To customize widgets, pass the desired widget here.
+        // googleSignInWidget: GoogleSignInWidget(
+        //   client: client,
+        //   onAuthenticated: () => onAuthenticated(context),
+        //   onError: (error) => onError(context, error),
+        //   scopes: const [],
+        // ),
+      ),
+    );
+  }
+
+  void onAuthenticated(BuildContext context) {
+    context.showSnackBar(
+      message: 'User authenticated.',
+      backgroundColor: Colors.green,
+    );
+  }
+
+  void onError(BuildContext context, Object error) {
+    context.showSnackBar(
+      message: 'Authentication failed: $error',
+      backgroundColor: Colors.red,
+    );
+  }
+}
+
+class ConnectedScreen extends StatelessWidget {
+  const ConnectedScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
         child: Column(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: TextField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(hintText: 'Enter your name'),
+            ProfileWidget(client: client),
+            const Text('You are connected'),
+            FilledButton(
+              onPressed: () async {
+                await client.auth.signOutDevice();
+              },
+              child: const Text('Sign out'),
+            ),
+            if (client.auth.idp.hasGoogle)
+              FilledButton(
+                onPressed: () async {
+                  await client.auth.disconnectGoogleAccount();
+                },
+                child: const Text('Disconnect Google'),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: ElevatedButton(
-                onPressed: _callHello,
-                child: const Text('Send to Server'),
-              ),
-            ),
-            ResultDisplay(
-              resultMessage: _resultMessage,
-              errorMessage: _errorMessage,
-            ),
           ],
         ),
       ),
@@ -111,34 +162,16 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// ResultDisplays shows the result of the call. Either the returned result
-/// from the `example.greeting` endpoint method or an error message.
-class ResultDisplay extends StatelessWidget {
-  final String? resultMessage;
-  final String? errorMessage;
-
-  const ResultDisplay({super.key, this.resultMessage, this.errorMessage});
-
-  @override
-  Widget build(BuildContext context) {
-    String text;
-    Color backgroundColor;
-    if (errorMessage != null) {
-      backgroundColor = Colors.red[300]!;
-      text = errorMessage!;
-    } else if (resultMessage != null) {
-      backgroundColor = Colors.green[300]!;
-      text = resultMessage!;
-    } else {
-      backgroundColor = Colors.grey[300]!;
-      text = 'No server response yet.';
-    }
-
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 50),
-      child: Container(
-        color: backgroundColor,
-        child: Center(child: Text(text)),
+extension on BuildContext {
+  void showSnackBar({
+    required String message,
+    Color? backgroundColor,
+  }) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: backgroundColor,
+        duration: const Duration(seconds: 5),
       ),
     );
   }

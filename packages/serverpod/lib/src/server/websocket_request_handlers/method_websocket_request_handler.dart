@@ -393,7 +393,7 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      return switch (e.authenticationFailedResult.reason) {
+      return switch (e.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,

@@ -15,6 +15,8 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
+import 'package:serverpod_auth_core_server/src/generated/profile/models/user_profile_model.dart'
+    as _i4;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -102,6 +104,8 @@ void withServerpod(
 
 class TestEndpoints {
   late final _StatusEndpoint status;
+
+  late final _UserProfileInfoEndpoint userProfileInfo;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -112,6 +116,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.EndpointDispatch endpoints,
   ) {
     status = _StatusEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    userProfileInfo = _UserProfileInfoEndpoint(
       endpoints,
       serializationManager,
     );
@@ -200,6 +208,44 @@ class _StatusEndpoint {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _UserProfileInfoEndpoint {
+  _UserProfileInfoEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i4.UserProfileModel> get(
+      _i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'userProfileInfo',
+        method: 'get',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'userProfileInfo',
+          methodName: 'get',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<_i4.UserProfileModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

@@ -2,7 +2,7 @@ class: UserProfileImage
 serverOnly: true
 table: serverpod_auth_core_profile_image
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [UserProfile] this image belongs to.
   userProfile: UserProfile?, relation(onDelete=Cascade)

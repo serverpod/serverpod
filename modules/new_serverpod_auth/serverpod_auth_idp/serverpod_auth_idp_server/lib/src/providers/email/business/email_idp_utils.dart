@@ -3,6 +3,7 @@ import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
+import 'utils/email_idp_account_utils.dart';
 import 'utils/email_idp_authentication_util.dart';
 import 'utils/email_idp_password_reset_util.dart';
 
@@ -32,12 +33,16 @@ class EmailIDPUtils {
   /// {@macro email_idp_authentication_utils}
   late final EmailIDPAuthenticationUtil authentication;
 
+  /// {@macro email_idp_account_utils}
+  final EmailIDPAccountUtils account;
+
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({required final EmailIDPConfig config})
       : hashUtil = SecretHashUtil(
           hashPepper: config.secretHashPepper,
           hashSaltLength: config.secretHashSaltLength,
-        ) {
+        ),
+        account = EmailIDPAccountUtils() {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
       passwordHashUtils: hashUtil,
@@ -87,11 +92,17 @@ extension on EmailAccountRequestServerException {
   EmailAccountRequestExceptionReason get reason {
     switch (this) {
       case EmailAccountRequestInvalidVerificationCodeException():
+      // It is important that NotVerified and NotFound are grouped together
+      // so that we don't leak information about the existence of the request.
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
-      case EmailAccountRequestVerificationTooManyAttemptsException():
+      case EmailAccountAlreadyRegisteredException():
+      case EmailAccountRequestAlreadyExistsException():
         return EmailAccountRequestExceptionReason.invalid;
+      case EmailAccountRequestVerificationTooManyAttemptsException():
+        return EmailAccountRequestExceptionReason.tooManyAttempts;
       case EmailPasswordPolicyViolationException():
+      case EmailAccountRequestInvalidEmailException():
         return EmailAccountRequestExceptionReason.policyViolation;
       case EmailAccountRequestVerificationExpiredException():
         return EmailAccountRequestExceptionReason.expired;
@@ -105,10 +116,13 @@ extension on EmailPasswordResetServerException {
       case EmailPasswordResetAccountNotFoundException():
       case EmailPasswordResetInvalidVerificationCodeException():
       case EmailPasswordResetRequestNotFoundException():
+      case EmailPasswordResetVerificationCodeAlreadyUsedException():
+      case EmailPasswordResetEmailNotFoundException():
+      case EmailPasswordResetNotVerifiedException():
+        return EmailAccountPasswordResetExceptionReason.invalid;
       case EmailPasswordResetTooManyAttemptsException():
       case EmailPasswordResetTooManyVerificationAttemptsException():
-      case EmailPasswordResetEmailNotFoundException():
-        return EmailAccountPasswordResetExceptionReason.invalid;
+        return EmailAccountPasswordResetExceptionReason.tooManyAttempts;
       case EmailPasswordResetPasswordPolicyViolationException():
         return EmailAccountPasswordResetExceptionReason.policyViolation;
       case EmailPasswordResetRequestExpiredException():

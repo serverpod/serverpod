@@ -7,7 +7,6 @@ import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp
 import 'email_idp_admin.dart';
 import 'email_idp_config.dart';
 import 'email_idp_utils.dart';
-import 'utils/email_idp_account_creation_util.dart';
 
 /// Main class for the email identity provider.
 /// The methods defined here are intended to be called from an endpoint.
@@ -61,8 +60,7 @@ final class EmailIDP {
   /// {@macro email_account_base_endpoint.finish_password_reset}
   Future<void> finishPasswordReset(
     final Session session, {
-    required final UuidValue passwordResetRequestId,
-    required final String verificationCode,
+    required final String finishPasswordResetToken,
     required final String newPassword,
     final Transaction? transaction,
   }) async {
@@ -73,8 +71,7 @@ final class EmailIDP {
           EmailIDPUtils.withReplacedServerEmailException(() async {
         final authUserId = await utils.passwordReset.completePasswordReset(
           session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
+          completePasswordResetToken: finishPasswordResetToken,
           newPassword: newPassword,
           transaction: transaction,
         );
@@ -193,7 +190,7 @@ final class EmailIDP {
             // one used by the [EmailAccountPasswordResetRequestAttempt] model to
             // prevent attackers from using the difference on the version bit of the
             // uuid to determine whether an email is registered or not.
-            return const Uuid().v4obj();
+            return const Uuid().v7obj();
           }
         },
       ),
@@ -212,29 +209,63 @@ final class EmailIDP {
       transaction,
       (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
         () async {
-          final result = await utils.accountCreation.startAccountCreation(
+          try {
+            return await utils.accountCreation.startAccountCreation(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            );
+          } on EmailAccountRequestServerException catch (e) {
+            // The details of these operation are intentionally not given to the caller, in order to not leak the existence of accounts.
+            // Clients should always show something like "check your email to proceed with the account creation".
+            // One might want to send a "password reset" in case of a "email already exists" exception, to help the user log in.
+            switch (e) {
+              case EmailAccountAlreadyRegisteredException():
+                session.log(
+                  'Failed to start account registration for $email, reason: email already registered',
+                  level: LogLevel.debug,
+                );
+                break;
+              case EmailAccountRequestAlreadyExistsException():
+                session.log(
+                  'Failed to start account registration for $email, reason: email account request already exists',
+                  level: LogLevel.debug,
+                );
+                break;
+              default:
+                rethrow;
+            }
+
+            // NOTE: It is necessary to keep the version of the uuid in sync with the
+            // one used by the [EmailAccountRequest] model to prevent attackers from
+            // using the difference on the version bit of the uuid to determine whether
+            // an email is registered or not.
+            return const Uuid().v7obj();
+          }
+        },
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_password_reset_code}
+  Future<String> verifyPasswordResetCode(
+    final Session session, {
+    required final UuidValue passwordResetRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+        () async {
+          return await utils.passwordReset.verifyPasswordResetCode(
             session,
-            email: email,
-            password: password,
+            passwordResetRequestId: passwordResetRequestId,
+            verificationCode: verificationCode,
             transaction: transaction,
           );
-
-          // The details of the operation are intentionally not given to the caller, in order to not leak the existence of accounts.
-          // Clients should always show something like "check your email to proceed with the account creation".
-          // One might want to send a "password reset" in case of a "email already exists" status, to help the user log in.
-          if (result.result !=
-              EmailAccountRequestResult.accountRequestCreated) {
-            session.log(
-              'Failed to start account registration for $email, reason: ${result.result}',
-              level: LogLevel.debug,
-            );
-          }
-
-          // NOTE: It is necessary to keep the version of the uuid in sync with the
-          // one used by the [EmailAccountRequest] model to prevent attackers from
-          // using the difference on the version bit of the uuid to determine whether
-          // an email is registered or not.
-          return result.accountRequestId ?? const Uuid().v4obj();
         },
       ),
     );

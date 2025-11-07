@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -522,7 +523,7 @@ class LibraryGenerator {
               Method(
                 (m) => m
                   ..docs.add(methodDef.documentationComment ?? '')
-                  ..annotations.addAll(_buildEndpointCallAnnotations(methodDef))
+                  ..annotations.addAll(buildEndpointCallAnnotations(methodDef))
                   ..annotations.addAll(
                       _buildInheritanceAnnotations(endpointDef, methodDef))
                   ..returns = returnType.reference(false, config: config)
@@ -791,18 +792,6 @@ class LibraryGenerator {
     return config.modulesDependent
         .firstWhere((m) => m.serverPackage == packageName)
         .dartImportUrl(false);
-  }
-
-  Iterable<Expression> _buildEndpointCallAnnotations(
-      MethodDefinition methodDef) {
-    return methodDef.annotations
-        .where((e) => e.name != 'unauthenticatedClientCall')
-        .map((annotation) {
-      var args = annotation.arguments;
-      return refer(args != null
-          ? '${annotation.name}(${args.join(',')})'
-          : annotation.name);
-    });
   }
 
   Code _buildCallServerEndpoint(

@@ -26,25 +26,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: SERVERPOD_VERSION
   auth_client:
     path: ../auth_client
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.5
+  extended_image: ^10.0.1
+  serverpod_auth_idp_flutter: SERVERPOD_VERSION
+  serverpod_flutter: SERVERPOD_VERSION
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
 
-dependency_overrides: 
-  serverpod_flutter:
-    path: ../../../packages/serverpod_flutter
+dependency_overrides:
+  serverpod_auth_core_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
+  serverpod_auth_idp_client:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_auth_idp_flutter:
+    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_flutter:
+    path: ../../../packages/serverpod_flutter
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
 

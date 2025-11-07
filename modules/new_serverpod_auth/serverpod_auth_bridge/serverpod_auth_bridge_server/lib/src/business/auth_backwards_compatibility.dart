@@ -208,12 +208,14 @@ abstract final class AuthBackwardsCompatibility {
   static Future<void> importGoogleAccount(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
     final Transaction? transaction,
   }) async {
     final accountDetails =
         await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
       session,
       idToken: idToken,
+      accessToken: accessToken,
     );
 
     final legacyUserIdentifier =

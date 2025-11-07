@@ -3080,6 +3080,7 @@ class _DeprecationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
+  @deprecated
   _i3.Future<void> setGlobalDouble(
     _i1.TestSessionBuilder sessionBuilder,
     double? value,
@@ -3109,6 +3110,7 @@ class _DeprecationEndpoint {
     });
   }
 
+  @Deprecated('Marking endpoint method as deprecated')
   _i3.Future<double> getGlobalDouble(
       _i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {

@@ -57,19 +57,17 @@ void main() {
               passwordResetRequestIdFuture, completion(isA<UuidValue>()));
         });
 
-        test(
-            'then password reset request can be used to complete password reset',
+        test('then password reset request can be used to verify password reset',
             () async {
           final passwordResetRequestId = await passwordResetRequestIdFuture;
 
-          final passwordResetResult = fixture.emailIDP.finishPasswordReset(
+          final passwordResetResult = fixture.emailIDP.verifyPasswordResetCode(
             session,
             passwordResetRequestId: passwordResetRequestId,
             verificationCode: verificationCode,
-            newPassword: 'NewPassword123!',
           );
 
-          await expectLater(passwordResetResult, completes);
+          await expectLater(passwordResetResult, completion(isA<String>()));
         });
       });
     },
@@ -118,7 +116,7 @@ void main() {
     });
 
     test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
       final result = fixture.emailIDP.startPasswordReset(
         session,
@@ -130,7 +128,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )));
     });
   });
@@ -229,7 +227,7 @@ void main() {
     });
 
     test(
-        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "invalid"',
+        'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
       final result = fixture.emailIDP.startPasswordReset(
         session,
@@ -241,7 +239,7 @@ void main() {
           throwsA(isA<EmailAccountPasswordResetException>().having(
             (final e) => e.reason,
             'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
+            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
           )));
     });
   });

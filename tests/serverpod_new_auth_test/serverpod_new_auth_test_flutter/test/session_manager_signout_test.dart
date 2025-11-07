@@ -169,4 +169,77 @@ void main() {
       });
     });
   });
+
+  group(
+      'Given an authenticated client with an unreachable server when signing out',
+      () {
+    late Client client;
+    late TestStorage storage;
+
+    setUp(() async {
+      final tempClient = Client('http://localhost:8080/');
+      final testUserId = await tempClient.authTest.createTestUser();
+      final authSuccess = await tempClient.authTest.createJwtToken(testUserId);
+
+      storage = TestStorage();
+      await storage.set(authSuccess);
+
+      client = Client(
+        'http://unreachable-server/',
+        connectionTimeout: const Duration(milliseconds: 100),
+      )..authSessionManager = ClientAuthSessionManager(storage: storage);
+
+      await client.auth.restore();
+
+      expect(client.auth.isAuthenticated, isTrue);
+    });
+
+    group('when calling signOutDevice', () {
+      late bool signOutResult;
+
+      setUp(() async {
+        signOutResult = await client.auth.signOutDevice();
+      });
+
+      test('then signOutDevice returns false.', () {
+        expect(signOutResult, isFalse);
+      });
+
+      test('then the user is signed out locally.', () {
+        expect(client.auth.isAuthenticated, isFalse);
+      });
+
+      test('then the auth info value is null.', () {
+        expect(client.auth.authInfo.value, isNull);
+      });
+
+      test('then the storage is cleared.', () async {
+        expect(await storage.get(), isNull);
+      });
+    });
+
+    group('when calling signOutAllDevices', () {
+      late bool signOutResult;
+
+      setUp(() async {
+        signOutResult = await client.auth.signOutAllDevices();
+      });
+
+      test('then signOutAllDevices returns false.', () {
+        expect(signOutResult, isFalse);
+      });
+
+      test('then the user is signed out locally.', () {
+        expect(client.auth.isAuthenticated, isFalse);
+      });
+
+      test('then the auth info value is null.', () {
+        expect(client.auth.authInfo.value, isNull);
+      });
+
+      test('then the storage is cleared.', () async {
+        expect(await storage.get(), isNull);
+      });
+    });
+  });
 }

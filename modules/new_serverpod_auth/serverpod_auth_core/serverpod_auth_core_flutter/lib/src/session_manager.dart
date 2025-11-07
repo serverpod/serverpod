@@ -108,14 +108,31 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     return authKeyProvider.refreshAuthKey(force: force);
   }
 
-  /// Restores any existing session from the storage and validates it. If the
-  /// authentication is no longer valid, the user is signed out from the current
-  /// device, updating the [authInfo] value. If the refresh fails due to other
-  /// reasons (network error, server error, etc.), returns false, but does not
-  /// sign out the user. Returns true if the authentication was validated.
-  Future<bool> initialize() async {
+  /// Restores any existing session from storage and validates with the server.
+  ///
+  /// This method is intended to be called when the app starts and is the same
+  /// as calling [restore] followed by [validateAuthentication]. To only restore
+  /// the session from storage without validating with the server, use [restore]
+  /// instead.
+  ///
+  /// After restoring the session, if the authentication is no longer valid, the
+  /// user is signed out from the current device, updating the [authInfo] value.
+  /// Returns false if the refresh fails due to other reasons (network error,
+  /// server error, timeout, etc.), but does not sign out the user. Returns true
+  /// if the authentication was validated.
+  ///
+  /// Use [timeout] to set a maximum time for the server validation call. The
+  /// validation can be retried at any time by calling [validateAuthentication].
+  Future<bool> initialize({
+    Duration timeout = const Duration(seconds: 2),
+  }) async {
     await restore();
-    return validateAuthentication();
+    try {
+      await validateAuthentication(timeout: timeout);
+      return true;
+    } on ServerpodClientException catch (_) {
+      return false;
+    }
   }
 
   /// Restore the current sign in status from the storage. If the underlying
@@ -139,21 +156,25 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
 
   /// Verifies the current sign in status of the user with the server and
   /// updates the authentication info, if needed. If the user authentication is
-  /// no longer valid, the user is signed out from the current device.
-  Future<bool> validateAuthentication() async {
-    try {
-      if (isAuthenticated) {
-        final refreshResult = await refreshAuthKey(force: true);
-        if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
-            !await caller.status.isSignedIn()) {
-          return await signOutDevice();
-        }
+  /// no longer valid, the user is signed out from the current device. If the
+  /// sign out fails for any reason, returns false. Otherwise, returns true.
+  /// Other exceptions during the validation are propagated to the caller. The
+  /// [timeout] parameter can be used to override the default client timeout.
+  Future<bool> validateAuthentication({Duration? timeout}) async {
+    return await _validateAuthentication().timeout(
+      timeout ?? caller.client.connectionTimeout,
+    );
+  }
+
+  Future<bool> _validateAuthentication() async {
+    if (isAuthenticated) {
+      final refreshResult = await refreshAuthKey(force: true);
+      if (refreshResult == RefreshAuthKeyResult.failedUnauthorized ||
+          !await caller.status.isSignedIn()) {
+        return await signOutDevice();
       }
-      return true;
-    } on ServerpodClientException catch (_) {
-      // Other errors, like network errors, should not sign out the user.
     }
-    return false;
+    return true;
   }
 
   Future<bool> _signOut({required bool allDevices}) async {
@@ -164,15 +185,16 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         case false:
           await caller.status.signOutDevice();
       }
-
-      // Must be updated after the signout for the server to receive the header
-      // info and recognize the signing out user. Otherwise, the call to the
-      // status endpoint will go with no user info and no signout will be done.
-      await updateSignedInUser(null);
-
       return true;
     } catch (e) {
       return false;
+    } finally {
+      // Must be updated after the signout for the server to receive the header
+      // info and recognize the signing out user. Otherwise, the call to the
+      // status endpoint will go with no user info and no signout will be done.
+      // Called from finally block to ensure the device is disconnected, even
+      // if the call to the server fails.
+      await updateSignedInUser(null);
     }
   }
 

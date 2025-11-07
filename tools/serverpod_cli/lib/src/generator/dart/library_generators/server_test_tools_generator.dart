@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -159,6 +160,9 @@ class ServerTestToolsGenerator {
                 ),
             ],
           );
+
+        // Add deprecated annotations if present
+        methodBuilder.annotations.addAll(buildEndpointCallAnnotations(method));
 
         methodBuilder.body = returnsStream || hasStreamParameter
             ? _buildEndpointStreamMethodCall(endpoint, method,

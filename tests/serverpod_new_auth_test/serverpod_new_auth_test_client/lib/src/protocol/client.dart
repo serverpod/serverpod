@@ -262,8 +262,10 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -272,31 +274,58 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to verify the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i2.Future<String> verifyPasswordResetCode({
+    required _i1.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i2.Future<void> finishPasswordReset({
-    required _i1.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'emailAccount',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );
@@ -314,11 +343,17 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String? accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccountBackwardsCompatibilityTest',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 
@@ -335,11 +370,17 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i3.AuthSuccess> login({required String idToken}) =>
+  _i2.Future<_i3.AuthSuccess> login({
+    required String idToken,
+    required String? accessToken,
+  }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'googleAccount',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 
@@ -461,8 +502,10 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   @override
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
@@ -471,31 +514,58 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to verify the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i2.Future<String> verifyPasswordResetCode({
+    required _i1.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'passwordImportingEmailAccount',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i2.Future<void> finishPasswordReset({
-    required _i1.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'passwordImportingEmailAccount',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );
@@ -503,20 +573,11 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
 
 /// Endpoint to view and edit one's profile.
 /// {@category Endpoint}
-class EndpointUserProfile extends _i3.EndpointUserProfileBase {
+class EndpointUserProfile extends _i3.EndpointUserProfileEditBase {
   EndpointUserProfile(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'userProfile';
-
-  /// Returns the user profile of the current user.
-  @override
-  _i2.Future<_i3.UserProfileModel> get() =>
-      caller.callServerEndpoint<_i3.UserProfileModel>(
-        'userProfile',
-        'get',
-        {},
-      );
 
   /// Removes the users uploaded image, replacing it with the default user
   /// image.
@@ -553,6 +614,15 @@ class EndpointUserProfile extends _i3.EndpointUserProfileBase {
         'userProfile',
         'changeFullName',
         {'fullName': fullName},
+      );
+
+  /// Returns the user profile of the current user.
+  @override
+  _i2.Future<_i3.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i3.UserProfileModel>(
+        'userProfile',
+        'get',
+        {},
       );
 }
 

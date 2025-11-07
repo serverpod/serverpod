@@ -43,6 +43,18 @@ sealed class EmailLoginServerException extends EmailServerException {}
 final class EmailPasswordPolicyViolationException
     extends EmailAccountRequestServerException {}
 
+/// Exception thrown when an email address is already registered.
+final class EmailAccountAlreadyRegisteredException
+    extends EmailAccountRequestServerException {}
+
+/// Exception thrown when email address fails email validation.
+final class EmailAccountRequestInvalidEmailException
+    extends EmailAccountRequestServerException {}
+
+/// Exception thrown when an email account request already exists.
+final class EmailAccountRequestAlreadyExistsException
+    extends EmailAccountRequestServerException {}
+
 /// Exception thrown when requesting password reset for an inexistent account.
 final class EmailPasswordResetAccountNotFoundException
     extends EmailPasswordResetServerException {}
@@ -79,6 +91,15 @@ final class EmailPasswordResetEmailNotFoundException
 /// Exception thrown when trying to complete the password reset request too
 /// many times.
 final class EmailPasswordResetTooManyVerificationAttemptsException
+    extends EmailPasswordResetServerException {}
+
+/// Exception thrown when trying to validate a password reset verification code that has already been used.
+final class EmailPasswordResetVerificationCodeAlreadyUsedException
+    extends EmailPasswordResetServerException {}
+
+/// Exception thrown when trying to validate a password reset request with a
+/// set password token that has not been set.
+final class EmailPasswordResetNotVerifiedException
     extends EmailPasswordResetServerException {}
 
 /// Base exception for all email related errors.

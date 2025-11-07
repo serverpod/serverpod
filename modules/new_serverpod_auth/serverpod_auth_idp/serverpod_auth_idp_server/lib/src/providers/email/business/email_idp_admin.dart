@@ -125,24 +125,84 @@ final class EmailIDPAdmin {
     );
   }
 
+  /// Deletes an email account by email address.
+  ///
+  /// This will delete the email authentication account for the given email
+  /// address. Related data such as password reset requests will be
+  /// automatically deleted due to cascade delete constraints.
+  ///
+  /// Throws an [EmailAccountNotFoundException] if no account exists for the
+  /// given email address.
+  Future<void> deleteEmailAccount(
+    final Session session, {
+    required final String email,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final deleted = await _utils.account.deleteAccount(
+          session,
+          email: email,
+          authUserId: null,
+          transaction: transaction,
+        );
+
+        if (deleted.isEmpty) {
+          throw EmailAccountNotFoundException();
+        }
+      },
+    );
+  }
+
+  /// Deletes all email accounts by authentication user ID.
+  ///
+  /// This will delete all email authentication accounts for the given auth user
+  /// ID. Related data such as password reset requests will be automatically
+  /// deleted due to cascade delete constraints.
+  ///
+  /// Throws an [EmailAccountNotFoundException] if no accounts exist for the
+  /// given auth user ID.
+  Future<void> deleteEmailAccountByAuthUserId(
+    final Session session, {
+    required final UuidValue authUserId,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final deleted = await _utils.account.deleteAccount(
+          session,
+          email: null,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
+
+        if (deleted.isEmpty) {
+          throw EmailAccountNotFoundException();
+        }
+      },
+    );
+  }
+
   /// Gets an email authentication exists for the given email address.
   Future<EmailAccount?> findAccount(
     final Session session, {
-    required String email,
+    required final String email,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
-      email = email.normalizedEmail;
-
-      final account = await EmailAccount.db.findFirstRow(
+    return (await DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => _utils.account.listAccounts(
         session,
-        where: (final t) => t.email.equals(email),
+        email: email,
         transaction: transaction,
-      );
-
-      return account;
-    });
+      ),
+    ))
+        .firstOrNull;
   }
 
   /// {@macro email_idp_account_creation_util.find_active_email_account_request}
@@ -182,9 +242,9 @@ final class EmailIDPAdmin {
       (final transaction) async {
         email = email.normalizedEmail;
 
-        final account = (await EmailAccount.db.find(
+        final account = (await _utils.account.listAccounts(
           session,
-          where: (final t) => t.email.equals(email),
+          email: email,
           transaction: transaction,
         ))
             .singleOrNull;

@@ -454,8 +454,8 @@ class Endpoints extends _i1.EndpointDispatch {
             email: params['email'],
           ),
         ),
-        'finishPasswordReset': _i1.MethodConnector(
-          name: 'finishPasswordReset',
+        'verifyPasswordResetCode': _i1.MethodConnector(
+          name: 'verifyPasswordResetCode',
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
@@ -464,6 +464,26 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'verificationCode': _i1.ParameterDescription(
               name: 'verificationCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['emailAccount'] as _i4.EmailAccountEndpoint)
+                  .verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: params['passwordResetRequestId'],
+            verificationCode: params['verificationCode'],
+          ),
+        ),
+        'finishPasswordReset': _i1.MethodConnector(
+          name: 'finishPasswordReset',
+          params: {
+            'finishPasswordResetToken': _i1.ParameterDescription(
+              name: 'finishPasswordResetToken',
               type: _i1.getType<String>(),
               nullable: false,
             ),
@@ -480,8 +500,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['emailAccount'] as _i4.EmailAccountEndpoint)
                   .finishPasswordReset(
             session,
-            passwordResetRequestId: params['passwordResetRequestId'],
-            verificationCode: params['verificationCode'],
+            finishPasswordResetToken: params['finishPasswordResetToken'],
             newPassword: params['newPassword'],
           ),
         ),
@@ -499,7 +518,12 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'idToken',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
+            'accessToken': _i1.ParameterDescription(
+              name: 'accessToken',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -510,6 +534,7 @@ class Endpoints extends _i1.EndpointDispatch {
                   .login(
             session,
             idToken: params['idToken'],
+            accessToken: params['accessToken'],
           ),
         )
       },
@@ -525,7 +550,12 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'idToken',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
+            'accessToken': _i1.ParameterDescription(
+              name: 'accessToken',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -534,6 +564,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['googleAccount'] as _i6.GoogleAccountEndpoint).login(
             session,
             idToken: params['idToken'],
+            accessToken: params['accessToken'],
           ),
         )
       },
@@ -665,8 +696,8 @@ class Endpoints extends _i1.EndpointDispatch {
             email: params['email'],
           ),
         ),
-        'finishPasswordReset': _i1.MethodConnector(
-          name: 'finishPasswordReset',
+        'verifyPasswordResetCode': _i1.MethodConnector(
+          name: 'verifyPasswordResetCode',
           params: {
             'passwordResetRequestId': _i1.ParameterDescription(
               name: 'passwordResetRequestId',
@@ -675,6 +706,27 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'verificationCode': _i1.ParameterDescription(
               name: 'verificationCode',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['passwordImportingEmailAccount']
+                      as _i8.PasswordImportingEmailAccountEndpoint)
+                  .verifyPasswordResetCode(
+            session,
+            passwordResetRequestId: params['passwordResetRequestId'],
+            verificationCode: params['verificationCode'],
+          ),
+        ),
+        'finishPasswordReset': _i1.MethodConnector(
+          name: 'finishPasswordReset',
+          params: {
+            'finishPasswordResetToken': _i1.ParameterDescription(
+              name: 'finishPasswordResetToken',
               type: _i1.getType<String>(),
               nullable: false,
             ),
@@ -692,8 +744,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       as _i8.PasswordImportingEmailAccountEndpoint)
                   .finishPasswordReset(
             session,
-            passwordResetRequestId: params['passwordResetRequestId'],
-            verificationCode: params['verificationCode'],
+            finishPasswordResetToken: params['finishPasswordResetToken'],
             newPassword: params['newPassword'],
           ),
         ),
@@ -703,16 +754,6 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'userProfile',
       endpoint: endpoints['userProfile']!,
       methodConnectors: {
-        'get': _i1.MethodConnector(
-          name: 'get',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
-                  .get(session),
-        ),
         'removeUserImage': _i1.MethodConnector(
           name: 'removeUserImage',
           params: {},
@@ -779,6 +820,16 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['fullName'],
           ),
+        ),
+        'get': _i1.MethodConnector(
+          name: 'get',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['userProfile'] as _i9.UserProfileEndpoint)
+                  .get(session),
         ),
       },
     );

@@ -148,8 +148,10 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   @override
   _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i2.UuidValue>(
@@ -158,31 +160,58 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
         {'email': email},
       );
 
+  /// Verifies a password reset code and returns a finishPasswordResetToken
+  /// that can be used to finish the password reset.
+  ///
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
+  ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to verify the password reset.
+  /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
+  ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
+  ///
+  /// If multiple steps are required to complete the password reset, this endpoint
+  /// should be overridden to return credentials for the next step instead
+  /// of the credentials for setting the password.
+  @override
+  _i3.Future<String> verifyPasswordResetCode({
+    required _i2.UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailIDP',
+        'verifyPasswordResetCode',
+        {
+          'passwordResetRequestId': passwordResetRequestId,
+          'verificationCode': verificationCode,
+        },
+      );
+
   /// Completes a password reset request by setting a new password.
+  ///
+  /// The [verificationCode] returned from [verifyPasswordResetCode] is used to
+  /// validate the password reset request.
   ///
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i3.Future<void> finishPasswordReset({
-    required _i2.UuidValue passwordResetRequestId,
-    required String verificationCode,
+    required String finishPasswordResetToken,
     required String newPassword,
   }) =>
       caller.callServerEndpoint<void>(
         'emailIDP',
         'finishPasswordReset',
         {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
+          'finishPasswordResetToken': finishPasswordResetToken,
           'newPassword': newPassword,
         },
       );
@@ -200,11 +229,17 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
+  _i3.Future<_i4.AuthSuccess> login({
+    required String idToken,
+    required String? accessToken,
+  }) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'googleIDP',
         'login',
-        {'idToken': idToken},
+        {
+          'idToken': idToken,
+          'accessToken': accessToken,
+        },
       );
 }
 

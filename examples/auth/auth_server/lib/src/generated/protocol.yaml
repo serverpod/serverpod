@@ -5,6 +5,7 @@ emailIDP:
   - startRegistration:
   - finishRegistration:
   - startPasswordReset:
+  - verifyPasswordResetCode:
   - finishPasswordReset:
 googleIDP:
   - login:

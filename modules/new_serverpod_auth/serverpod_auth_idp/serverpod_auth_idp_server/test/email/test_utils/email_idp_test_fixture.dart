@@ -28,14 +28,13 @@ final class EmailAccountPasswordString extends EmailAccountPassword {
 }
 
 final class EmailIDPTestFixture {
-  late final EmailIDPConfig config;
   late final EmailIDP emailIDP;
   late final TokenManager tokenManager;
 
   final List<UuidValue> _authUserIds = [];
 
   EmailIDPTestFixture({
-    this.config = const EmailIDPConfig(
+    final EmailIDPConfig config = const EmailIDPConfig(
       secretHashPepper: 'pepper',
     ),
     TokenManager? tokenManager,
@@ -111,4 +110,5 @@ final class EmailIDPTestFixture {
       emailIDP.utils.passwordReset;
   EmailIDPAccountCreationUtil get accountCreationUtil =>
       emailIDP.utils.accountCreation;
+  EmailIDPConfig get config => emailIDP.config;
 }
