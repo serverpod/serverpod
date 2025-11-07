@@ -596,8 +596,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             return {'hookClaim': 'hookValue', 'userRole': 'admin'};
           },
         ),
@@ -626,11 +625,10 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             // Provider can decide how to merge extraClaims
             return {
-              ...?extraClaims,
+              ...?context.extraClaims,
               'providerClaim': 'fromProvider',
               'conflictKey': 'providerWins'
             };
@@ -663,8 +661,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             return {'hookClaim': 'persistsAcrossRotation'};
           },
         ),
@@ -698,8 +695,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             return null;
           },
         ),
@@ -728,12 +724,11 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             // Provider can fetch additional data from database using session
             final authUser = await AuthUsers.get(
-              session,
-              authUserId: authUserId,
+              context.session,
+              authUserId: context.authUserId,
             );
             return {
               'userId': authUser.id.toString(),
@@ -766,13 +761,12 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final session, final authUserId, final method,
-              final scopes, final extraClaims) async {
+          extraClaimsProvider: (final context) async {
             // Provider can use method and scopes to customize claims
             return {
-              'authMethod': method,
-              'scopeCount': scopes.length,
-              'hasAdminScope': scopes.any((s) => s.name == 'admin'),
+              'authMethod': context.method,
+              'scopeCount': context.scopes.length,
+              'hasAdminScope': context.scopes.any((s) => s.name == 'admin'),
             };
           },
         ),

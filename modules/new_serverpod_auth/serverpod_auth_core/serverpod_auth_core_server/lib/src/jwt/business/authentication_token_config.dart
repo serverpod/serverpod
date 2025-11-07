@@ -1,6 +1,39 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 
+/// Context provided to the [AuthenticationTokenConfig.extraClaimsProvider].
+///
+/// This class contains all the contextual information available when a refresh
+/// token is being created, allowing the provider to make informed decisions
+/// about which claims to include.
+class AuthenticationContext {
+  /// The current session.
+  final Session session;
+
+  /// The authenticated user ID.
+  final UuidValue authUserId;
+
+  /// The authentication method used (e.g., "email", "google", "apple").
+  final String method;
+
+  /// The scopes granted to this authentication session.
+  final Set<Scope> scopes;
+
+  /// Extra claims provided programmatically via the `createTokens` method.
+  ///
+  /// The provider can use this to merge or override these claims as needed.
+  final Map<String, dynamic>? extraClaims;
+
+  /// Creates a new authentication context.
+  const AuthenticationContext({
+    required this.session,
+    required this.authUserId,
+    required this.method,
+    required this.scopes,
+    this.extraClaims,
+  });
+}
+
 /// Configuration for an authentication token algorithm.
 sealed class AuthenticationTokenAlgorithm {
   /// The key used to verify the JWT tokens.
@@ -91,11 +124,10 @@ class AuthenticationTokenConfig {
   /// Optional provider for extra claims to add to refresh tokens.
   ///
   /// This function is called during refresh token creation and allows developers
-  /// to dynamically add custom claims to the token. The function receives the
-  /// session, the authenticated user ID, the authentication method, the scopes,
-  /// and any extra claims already provided as parameters, enabling it to fetch
-  /// any additional information needed and decide how to merge with existing
-  /// claims.
+  /// to dynamically add custom claims to the token. The function receives an
+  /// [AuthenticationContext] containing all contextual information about the
+  /// authentication, enabling it to fetch any additional information needed and
+  /// decide how to merge with existing claims.
   ///
   /// The returned map contains extra claims to be included in the refresh
   /// token payload. These claims will be embedded in every access token
@@ -104,11 +136,7 @@ class AuthenticationTokenConfig {
   /// Claims must not conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   /// or Serverpod's internal claims (those starting with "dev.serverpod.").
   final Future<Map<String, dynamic>?> Function(
-    Session session,
-    UuidValue authUserId,
-    String method,
-    Set<Scope> scopes,
-    Map<String, dynamic>? extraClaims,
+    AuthenticationContext context,
   )? extraClaimsProvider;
 
   /// Create a new user profile configuration.
