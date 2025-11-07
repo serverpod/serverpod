@@ -596,7 +596,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             return {'hookClaim': 'hookValue', 'userRole': 'admin'};
           },
         ),
@@ -625,7 +625,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             // Provider can decide how to merge extraClaims
             return {
               ...?context.extraClaims,
@@ -661,7 +661,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             return {'hookClaim': 'persistsAcrossRotation'};
           },
         ),
@@ -695,7 +695,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             return null;
           },
         ),
@@ -724,10 +724,10 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             // Provider can fetch additional data from database using session
             final authUser = await AuthUsers.get(
-              context.session,
+              session,
               authUserId: context.authUserId,
             );
             return {
@@ -761,7 +761,7 @@ void main() {
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
-          extraClaimsProvider: (final context) async {
+          extraClaimsProvider: (final session, final context) async {
             // Provider can use method and scopes to customize claims
             return {
               'authMethod': context.method,

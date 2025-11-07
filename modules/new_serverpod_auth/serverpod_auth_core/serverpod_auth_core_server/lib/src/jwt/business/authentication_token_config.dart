@@ -3,13 +3,10 @@ import 'package:serverpod/serverpod.dart';
 
 /// Context provided to the [AuthenticationTokenConfig.extraClaimsProvider].
 ///
-/// This class contains all the contextual information available when a refresh
+/// This class contains the contextual information available when a refresh
 /// token is being created, allowing the provider to make informed decisions
 /// about which claims to include.
 class AuthenticationContext {
-  /// The current session.
-  final Session session;
-
   /// The authenticated user ID.
   final UuidValue authUserId;
 
@@ -26,7 +23,6 @@ class AuthenticationContext {
 
   /// Creates a new authentication context.
   const AuthenticationContext({
-    required this.session,
     required this.authUserId,
     required this.method,
     required this.scopes,
@@ -124,10 +120,10 @@ class AuthenticationTokenConfig {
   /// Optional provider for extra claims to add to refresh tokens.
   ///
   /// This function is called during refresh token creation and allows developers
-  /// to dynamically add custom claims to the token. The function receives an
-  /// [AuthenticationContext] containing all contextual information about the
-  /// authentication, enabling it to fetch any additional information needed and
-  /// decide how to merge with existing claims.
+  /// to dynamically add custom claims to the token. The function receives the
+  /// session and an [AuthenticationContext] containing contextual information
+  /// about the authentication, enabling it to fetch any additional information
+  /// needed and decide how to merge with existing claims.
   ///
   /// The returned map contains extra claims to be included in the refresh
   /// token payload. These claims will be embedded in every access token
@@ -136,6 +132,7 @@ class AuthenticationTokenConfig {
   /// Claims must not conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   /// or Serverpod's internal claims (those starting with "dev.serverpod.").
   final Future<Map<String, dynamic>?> Function(
+    Session session,
     AuthenticationContext context,
   )? extraClaimsProvider;
 

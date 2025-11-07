@@ -124,8 +124,8 @@ final class AuthenticationTokens {
     // Invoke the extra claims provider if configured
     final mergedExtraClaims = config.extraClaimsProvider != null
         ? await config.extraClaimsProvider!(
+            session,
             AuthenticationContext(
-              session: session,
               authUserId: authUserId,
               method: method,
               scopes: scopes,
