@@ -161,21 +161,7 @@ class ServerTestToolsGenerator {
           );
 
         // Add deprecated annotations if present
-        for (var annotation in method.annotations) {
-          if (annotation.name == 'deprecated') {
-            methodBuilder.annotations.add(refer('deprecated'));
-          } else if (annotation.name == 'Deprecated') {
-            if (annotation.arguments != null &&
-                annotation.arguments!.isNotEmpty) {
-              methodBuilder.annotations.add(
-                refer('Deprecated')
-                    .call([CodeExpression(Code(annotation.arguments!.first))]),
-              );
-            } else {
-              methodBuilder.annotations.add(refer('Deprecated').call([]));
-            }
-          }
-        }
+        methodBuilder.annotations.addAll(_buildEndpointCallAnnotations(method));
 
         methodBuilder.body = returnsStream || hasStreamParameter
             ? _buildEndpointStreamMethodCall(endpoint, method,
@@ -184,6 +170,18 @@ class ServerTestToolsGenerator {
             : _buildEndpointMethodCall(endpoint, method);
       },
     );
+  }
+
+  Iterable<Expression> _buildEndpointCallAnnotations(
+      MethodDefinition methodDef) {
+    return methodDef.annotations
+        .where((e) => e.name != 'unauthenticatedClientCall')
+        .map((annotation) {
+      var args = annotation.arguments;
+      return refer(args != null
+          ? '${annotation.name}(${args.join(',')})'
+          : annotation.name);
+    });
   }
 
   Code _buildEndpointMethodCall(
