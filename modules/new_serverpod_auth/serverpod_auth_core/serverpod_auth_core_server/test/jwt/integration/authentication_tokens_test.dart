@@ -766,7 +766,8 @@ void main() {
             return {
               'authMethod': context.method,
               'scopeCount': context.scopes.length,
-              'hasAdminScope': context.scopes.any((s) => s.name == 'admin'),
+              'hasAdminScope':
+                  context.scopes.any((final s) => s.name == 'admin'),
             };
           },
         ),
