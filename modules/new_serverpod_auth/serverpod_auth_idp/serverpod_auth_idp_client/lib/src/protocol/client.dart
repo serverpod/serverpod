@@ -119,8 +119,10 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   /// the reset. If the email is not registered, the returned ID will not be
   /// valid.
   ///
-  /// Throws an [EmailAccountPasswordResetException] in case the client or
-  /// account has been involved in too many reset attempts.
+  /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to request a password reset.
+  ///
   _i2.Future<_i1.UuidValue> startPasswordReset({required String email});
 
   /// Verifies a password reset code and returns a finishPasswordResetToken
@@ -129,6 +131,8 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   /// Throws an [EmailAccountPasswordResetException] in case of errors, with reason:
   /// - [EmailAccountPasswordResetExceptionReason.expired] if the password reset
   ///   request has already expired.
+  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
+  ///   made too many attempts trying to verify the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///
@@ -150,8 +154,6 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   ///   request has already expired.
   /// - [EmailAccountPasswordResetExceptionReason.policyViolation] if the new
   ///   password does not comply with the password policy.
-  /// - [EmailAccountPasswordResetExceptionReason.tooManyAttempts] if the user has
-  ///   made too many attempts trying to complete the password reset.
   /// - [EmailAccountPasswordResetExceptionReason.invalid] if no request exists
   ///   for the given [passwordResetRequestId] or [verificationCode] is invalid.
   ///

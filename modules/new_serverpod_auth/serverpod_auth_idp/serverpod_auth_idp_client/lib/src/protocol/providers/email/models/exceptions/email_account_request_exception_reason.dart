@@ -26,6 +26,10 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
   /// match the configured policy.
   policyViolation,
 
+  /// Exception to be thrown when attempting to complete an email account
+  /// request too many times.
+  tooManyAttempts,
+
   /// Unknown error occurred.
   unknown;
 
@@ -37,6 +41,8 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
         return EmailAccountRequestExceptionReason.invalid;
       case 'policyViolation':
         return EmailAccountRequestExceptionReason.policyViolation;
+      case 'tooManyAttempts':
+        return EmailAccountRequestExceptionReason.tooManyAttempts;
       case 'unknown':
         return EmailAccountRequestExceptionReason.unknown;
       default:

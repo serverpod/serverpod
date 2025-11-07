@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/src/session/business/session_key.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -37,7 +36,7 @@ void main() {
         () async {
       final deleted = await authSessions.destroySession(
         session,
-        authSessionId: _extractAuthSessionId(sessionKey),
+        authSessionId: _extractAuthSessionId(session, sessionKey),
       );
 
       expect(deleted, isTrue);
@@ -72,9 +71,9 @@ void main() {
       );
 
       expect(deletedIds.toSet(), {
-        _extractAuthSessionId(sessionKey),
+        _extractAuthSessionId(session, sessionKey),
         for (final authSuccess in newAuthSuccesses)
-          _extractAuthSessionId(authSuccess.token),
+          _extractAuthSessionId(session, authSuccess.token),
       });
     });
 
@@ -175,8 +174,8 @@ void main() {
       ))
           .token;
 
-      final sessionToDestroy = UuidValue.fromByteList(
-          base64Decode(destroyedSessionKey.split(':')[1]));
+      final sessionToDestroy =
+          _extractAuthSessionId(session, destroyedSessionKey);
       await authSessions.destroySession(
         session,
         authSessionId: sessionToDestroy,
@@ -280,7 +279,7 @@ void main() {
   });
 }
 
-UuidValue _extractAuthSessionId(final String sessionKey) {
-  final parts = sessionKey.split(':');
-  return UuidValue.fromByteList(base64Url.decode(parts[1]));
+UuidValue _extractAuthSessionId(
+    final Session session, final String sessionKey) {
+  return tryParseSessionKey(session, sessionKey)!.authSessionId;
 }

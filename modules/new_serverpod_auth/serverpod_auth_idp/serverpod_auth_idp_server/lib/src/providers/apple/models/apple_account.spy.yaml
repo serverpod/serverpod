@@ -3,7 +3,7 @@ class: AppleAccount
 serverOnly: true
 table: serverpod_auth_idp_apple_account
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The Apple-provided user identifier
   userIdentifier: String

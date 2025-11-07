@@ -92,11 +92,17 @@ extension on EmailAccountRequestServerException {
   EmailAccountRequestExceptionReason get reason {
     switch (this) {
       case EmailAccountRequestInvalidVerificationCodeException():
+      // It is important that NotVerified and NotFound are grouped together
+      // so that we don't leak information about the existence of the request.
       case EmailAccountRequestNotFoundException():
       case EmailAccountRequestNotVerifiedException():
-      case EmailAccountRequestVerificationTooManyAttemptsException():
+      case EmailAccountAlreadyRegisteredException():
+      case EmailAccountRequestAlreadyExistsException():
         return EmailAccountRequestExceptionReason.invalid;
+      case EmailAccountRequestVerificationTooManyAttemptsException():
+        return EmailAccountRequestExceptionReason.tooManyAttempts;
       case EmailPasswordPolicyViolationException():
+      case EmailAccountRequestInvalidEmailException():
         return EmailAccountRequestExceptionReason.policyViolation;
       case EmailAccountRequestVerificationExpiredException():
         return EmailAccountRequestExceptionReason.expired;
@@ -110,12 +116,13 @@ extension on EmailPasswordResetServerException {
       case EmailPasswordResetAccountNotFoundException():
       case EmailPasswordResetInvalidVerificationCodeException():
       case EmailPasswordResetRequestNotFoundException():
-      case EmailPasswordResetTooManyAttemptsException():
-      case EmailPasswordResetTooManyVerificationAttemptsException():
       case EmailPasswordResetVerificationCodeAlreadyUsedException():
       case EmailPasswordResetEmailNotFoundException():
       case EmailPasswordResetNotVerifiedException():
         return EmailAccountPasswordResetExceptionReason.invalid;
+      case EmailPasswordResetTooManyAttemptsException():
+      case EmailPasswordResetTooManyVerificationAttemptsException():
+        return EmailAccountPasswordResetExceptionReason.tooManyAttempts;
       case EmailPasswordResetPasswordPolicyViolationException():
         return EmailAccountPasswordResetExceptionReason.policyViolation;
       case EmailPasswordResetRequestExpiredException():

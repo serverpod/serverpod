@@ -31,7 +31,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -40,8 +40,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {
@@ -174,7 +172,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -183,8 +181,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Verify the request
         await session.db.transaction(
@@ -244,7 +240,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -253,8 +249,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Verify and finalize the request
         await session.db.transaction(
@@ -329,7 +323,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -338,8 +332,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Make one failed attempt
         try {
@@ -404,7 +396,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -413,8 +405,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Make one failed attempt
         try {
@@ -482,7 +472,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -491,8 +481,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Exhaust allowed attempts
         try {
@@ -575,7 +563,7 @@ void main() {
           ),
         );
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -584,8 +572,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
 
         // Try to verify after expiration
         await withClock(

@@ -24,7 +24,7 @@ void main() {
 
         fixture = EmailIDPTestFixture();
 
-        final result = await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.startAccountCreation(
             session,
@@ -33,8 +33,6 @@ void main() {
             transaction: transaction,
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {
@@ -83,7 +81,7 @@ void main() {
           ),
         );
 
-        final result = await withClock(
+        accountRequestId = await withClock(
           Clock.fixed(
             DateTime.now().subtract(
               registrationVerificationCodeLifetime + const Duration(minutes: 1),
@@ -99,8 +97,6 @@ void main() {
             ),
           ),
         );
-
-        accountRequestId = result.accountRequestId!;
       });
 
       tearDown(() async {

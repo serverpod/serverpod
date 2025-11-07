@@ -12,85 +12,6 @@ import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
 
-/// This describes the detailed status of the account creation operation.
-///
-/// In the general case the caller should take care not to leak this to clients,
-/// such that outside clients can not use this result to determine whether a
-/// specific account is registered on the server.
-enum EmailAccountRequestResult {
-  /// An account request has been created.
-  accountRequestCreated,
-
-  /// There is a pending account request for this email already.
-  ///
-  /// No account request has been created.
-  emailAlreadyRequested,
-
-  /// There an account for this email already.
-  ///
-  /// No account request has been created.
-  emailAlreadyRegistered,
-
-  /// The given email does not seem valid.
-  ///
-  /// No account request has been created.
-  emailInvalid,
-}
-
-/// The result of the [EmailIDPAccountCreationUtil.startAccountCreation] operation.
-///
-/// This describes the detailed status of the operation to the caller.
-///
-/// In the general case the caller should take care not to leak this to clients,
-/// such that outside clients can not use this result to determine whether a
-/// specific account is registered on the server.
-class EmailIDPAccountCreationResult {
-  /// The result of the operation.
-  final EmailAccountRequestResult result;
-
-  /// The account request ID if the operation was successful.
-  final UuidValue? accountRequestId;
-
-  /// Creates a new [EmailIDPAccountCreationResult] with the result [EmailAccountRequestResult.accountRequestCreated].
-  factory EmailIDPAccountCreationResult.accountRequestCreated(
-    final UuidValue accountRequestId,
-  ) {
-    return EmailIDPAccountCreationResult._(
-      result: EmailAccountRequestResult.accountRequestCreated,
-      accountRequestId: accountRequestId,
-    );
-  }
-
-  /// Creates a new [EmailIDPAccountCreationResult] with the result [EmailAccountRequestResult.emailAlreadyRegistered].
-  factory EmailIDPAccountCreationResult.emailAlreadyRegistered() {
-    return EmailIDPAccountCreationResult._(
-      result: EmailAccountRequestResult.emailAlreadyRegistered,
-      accountRequestId: null,
-    );
-  }
-
-  /// Creates a new [EmailIDPAccountCreationResult] with the result [EmailAccountRequestResult.emailAlreadyRequested].
-  factory EmailIDPAccountCreationResult.emailAlreadyRequested() {
-    return EmailIDPAccountCreationResult._(
-      result: EmailAccountRequestResult.emailAlreadyRequested,
-      accountRequestId: null,
-    );
-  }
-
-  /// Creates a new [EmailIDPAccountCreationResult] with the result [EmailAccountRequestResult.emailInvalid].
-  factory EmailIDPAccountCreationResult.emailInvalid() {
-    return EmailIDPAccountCreationResult._(
-      result: EmailAccountRequestResult.emailInvalid,
-      accountRequestId: null,
-    );
-  }
-
-  EmailIDPAccountCreationResult._({
-    required this.result,
-    required this.accountRequestId,
-  });
-}
-
 /// {@template email_idp_account_creation_util}
 /// This class contains utility functions for the email identity provider
 /// account creation.
@@ -352,7 +273,7 @@ class EmailIDPAccountCreationUtil {
   /// `accountRequestId`, which will be returned from [verifyAccountRequest]
   /// later on.
   /// {@endtemplate}
-  Future<EmailIDPAccountCreationResult> startAccountCreation(
+  Future<UuidValue> startAccountCreation(
     final Session session, {
     required String email,
     required final String password,
@@ -365,7 +286,7 @@ class EmailIDPAccountCreationUtil {
     email = email.normalizedEmail;
 
     if (!EmailValidator.validate(email)) {
-      return EmailIDPAccountCreationResult.emailInvalid();
+      throw EmailAccountRequestInvalidEmailException();
     }
 
     final existingAccountCount = await EmailAccount.db.count(
@@ -374,7 +295,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
     if (existingAccountCount > 0) {
-      return EmailIDPAccountCreationResult.emailAlreadyRegistered();
+      throw EmailAccountAlreadyRegisteredException();
     }
 
     final verificationCode = _config.registrationVerificationCodeGenerator();
@@ -394,7 +315,7 @@ class EmailIDPAccountCreationUtil {
           transaction: transaction,
         );
       } else {
-        return EmailIDPAccountCreationResult.emailAlreadyRequested();
+        throw EmailAccountRequestAlreadyExistsException();
       }
     }
 
@@ -434,9 +355,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    return EmailIDPAccountCreationResult.accountRequestCreated(
-      emailAccountRequest.id!,
-    );
+    return emailAccountRequest.id!;
   }
 
   /// Checks whether the verification code matches the pending account creation
@@ -526,6 +445,15 @@ class EmailIDPAccountCreationUtil {
     // NOTE: The attempt counting runs in a separate transaction, so that it is
     // never rolled back with the parent transaction.
     return session.db.transaction((final transaction) async {
+      final savePoint = await transaction.createSavepoint();
+      final recentRequests =
+          await EmailAccountRequestCompletionAttempt.db.count(
+        session,
+        where: (final t) =>
+            t.emailAccountRequestId.equals(emailAccountRequestId),
+        transaction: transaction,
+      );
+
       await EmailAccountRequestCompletionAttempt.db.insertRow(
         session,
         EmailAccountRequestCompletionAttempt(
@@ -535,16 +463,15 @@ class EmailIDPAccountCreationUtil {
         transaction: transaction,
       );
 
-      final recentRequests =
-          await EmailAccountRequestCompletionAttempt.db.count(
-        session,
-        where: (final t) =>
-            t.emailAccountRequestId.equals(emailAccountRequestId),
-        transaction: transaction,
-      );
+      if (recentRequests >=
+          _config.registrationVerificationCodeAllowedAttempts) {
+        await savePoint.rollback();
+        return true;
+      }
 
-      return recentRequests >
-          _config.registrationVerificationCodeAllowedAttempts;
+      await savePoint.release();
+
+      return false;
     });
   }
 

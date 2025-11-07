@@ -22,6 +22,7 @@ void main() {
       const password = 'Password123!';
       late String verificationCode;
       const passwordResetVerificationCodeLifetime = Duration(hours: 1);
+      const passwordResetVerificationCodeAllowedAttempts = 4;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -33,6 +34,9 @@ void main() {
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
                 passwordResetVerificationCodeLifetime,
+            // This is to make sure that the test does not fail because of the rate limit
+            passwordResetVerificationCodeAllowedAttempts:
+                passwordResetVerificationCodeAllowedAttempts,
           ),
         );
 
@@ -100,7 +104,7 @@ void main() {
           'when verifyPasswordResetCode is called multiple times in quick succession',
           () {
         late Future<List<String>> attempts;
-        const numberOfAttempts = 3;
+        const numberOfAttempts = passwordResetVerificationCodeAllowedAttempts;
 
         setUp(() async {
           attempts = List.generate(
@@ -517,7 +521,7 @@ void main() {
       });
 
       test(
-          'when verifyPasswordResetCode is called with valid credentials then it throws EmailAccountPasswordResetException with reason "invalid"',
+          'when verifyPasswordResetCode is called with valid credentials then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
           () async {
         final result = fixture.emailIDP.verifyPasswordResetCode(
           session,
@@ -531,7 +535,7 @@ void main() {
             isA<EmailAccountPasswordResetException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountPasswordResetExceptionReason.invalid,
+              EmailAccountPasswordResetExceptionReason.tooManyAttempts,
             ),
           ),
         );
@@ -604,7 +608,7 @@ void main() {
       });
 
       test(
-          'when verifyPasswordResetCode is called with valid verification code then throws EmailAccountPasswordResetException with reason "invalid"',
+          'when verifyPasswordResetCode is called with valid verification code then throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
           () async {
         final result = fixture.emailIDP.verifyPasswordResetCode(
           session,
@@ -618,7 +622,7 @@ void main() {
             isA<EmailAccountPasswordResetException>().having(
               (final e) => e.reason,
               'reason',
-              EmailAccountPasswordResetExceptionReason.invalid,
+              EmailAccountPasswordResetExceptionReason.tooManyAttempts,
             ),
           ),
         );
@@ -635,7 +639,13 @@ void main() {
 
     setUp(() async {
       session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture();
+      fixture = EmailIDPTestFixture(
+        config: const EmailIDPConfig(
+          secretHashPepper: 'pepper',
+          passwordResetVerificationCodeAllowedAttempts: 1,
+          passwordResetVerificationCodeLifetime: Duration(days: 1),
+        ),
+      );
     });
 
     tearDown(() async {
@@ -660,6 +670,37 @@ void main() {
             EmailAccountPasswordResetExceptionReason.invalid,
           ),
         ),
+      );
+    });
+
+    test(
+        'when verifyPasswordResetCode is called passed the allowed attempts then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
+        () async {
+      final passwordResetRequestId = const Uuid().v4obj();
+      // Make attempts up to the limit
+      try {
+        await fixture.emailIDP.verifyPasswordResetCode(
+          session,
+          passwordResetRequestId: passwordResetRequestId,
+          verificationCode: 'some-code',
+        );
+      } on EmailAccountPasswordResetException {
+        // Expected
+      }
+
+      final result = fixture.emailIDP.verifyPasswordResetCode(
+        session,
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: 'some-code',
+      );
+
+      await expectLater(
+        result,
+        throwsA(isA<EmailAccountPasswordResetException>().having(
+          (final e) => e.reason,
+          'reason',
+          EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+        )),
       );
     });
   });
