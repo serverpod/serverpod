@@ -1349,8 +1349,6 @@ void main() {
           MethodDefinitionBuilder().withName(methodName).withAnnotations([
             const AnnotationDefinition(
               name: 'deprecated',
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
             )
           ]).buildMethodCallDefinition(),
         ]).build(),
@@ -1392,8 +1390,6 @@ void main() {
             const AnnotationDefinition(
               name: 'Deprecated',
               arguments: ["'This method is deprecated'"],
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
             )
           ]).buildMethodCallDefinition(),
         ]).build(),
