@@ -1,5 +1,4 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: storybook
 description: "A storybook for Serverpod Auth IDP"
@@ -7,8 +6,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
   flutter:
