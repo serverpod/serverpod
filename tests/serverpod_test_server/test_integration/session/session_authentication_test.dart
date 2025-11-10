@@ -10,12 +10,12 @@ void main() {
     (sessionBuilder, endpoints) {
       late Session session;
 
-      setUp(() async {
-        session = await sessionBuilder
+      setUp(() {
+        session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.unauthenticated(),
             )
-            .buildWithAuthentication();
+            .build();
       });
 
       tearDown(() async {
@@ -44,15 +44,15 @@ void main() {
       const userId = '12345';
       late Session session;
 
-      setUp(() async {
-        session = await sessionBuilder
+      setUp(() {
+        session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
                 userId,
                 {Scope.admin},
               ),
             )
-            .buildWithAuthentication();
+            .build();
       });
 
       tearDown(() async {
@@ -84,15 +84,15 @@ void main() {
       const userId = 'user-1';
       late Session session;
 
-      setUp(() async {
-        session = await sessionBuilder
+      setUp(() {
+        session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
                 userId,
                 {},
               ),
             )
-            .buildWithAuthentication();
+            .build();
       });
 
       tearDown(() async {
@@ -119,15 +119,15 @@ void main() {
       const newUserId = 'user-2';
       late Session session;
 
-      setUp(() async {
-        session = await sessionBuilder
+      setUp(() {
+        session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
                 initialUserId,
                 {},
               ),
             )
-            .buildWithAuthentication();
+            .build();
 
         session.server.authenticationHandler = (session, key) async {
           if (key == 'new-key') {
@@ -159,15 +159,15 @@ void main() {
       const initialUserId = 'user-1';
       late Session session;
 
-      setUp(() async {
-        session = await sessionBuilder
+      setUp(() {
+        session = sessionBuilder
             .copyWith(
               authentication: AuthenticationOverride.authenticationInfo(
                 initialUserId,
                 {},
               ),
             )
-            .buildWithAuthentication();
+            .build();
       });
 
       tearDown(() async {

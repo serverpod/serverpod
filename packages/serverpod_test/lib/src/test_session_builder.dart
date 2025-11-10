@@ -47,16 +47,6 @@ class InternalTestSessionBuilder extends TestSessionBuilder {
   }
 
   @override
-  Future<Session> buildWithAuthentication() async {
-    final session = internalBuild();
-    // Authentication is already configured via updateAuthenticated in _configureServerpodSession
-    // Call initializeAuthentication for API consistency, but it will be idempotent
-    // since _authenticationInitialized is set to true by updateAuthenticated
-    await session.initializeAuthentication();
-    return session;
-  }
-
-  @override
   TestSessionBuilder copyWith({
     AuthenticationOverride? authentication,
     bool? enableLogging,
@@ -104,22 +94,7 @@ class InternalTestSessionBuilder extends TestSessionBuilder {
 abstract class TestSessionBuilder {
   /// Given the properties set on the session through the `copyWith` method,
   /// this returns a serverpod [Session] that has the configured state.
-  ///
-  /// **Note**: This method creates sessions synchronously and does not initialize
-  /// authentication via the authentication handler. For testing authenticated sessions,
-  /// consider using [buildWithAuthentication] instead.
   Session build();
-
-  /// Creates a session asynchronously with authentication initialized.
-  ///
-  /// This method should be preferred when testing authenticated sessions as it
-  /// ensures that authentication is properly initialized, matching the behavior
-  /// of sessions created in production code.
-  ///
-  /// **Note**: When using [AuthenticationOverride], the authentication is set
-  /// directly via `updateAuthenticated`, so this method primarily ensures API
-  /// consistency with production session creation.
-  Future<Session> buildWithAuthentication();
 
   /// Creates a new unique session with the provided properties.
   /// This is useful for setting up different session states in the tests
