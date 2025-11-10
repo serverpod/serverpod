@@ -15,17 +15,20 @@ final class AuthUsers {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUser.db.findById(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUser = await AuthUser.db.findById(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
 
-    if (authUser == null) {
-      throw AuthUserNotFoundException();
-    }
+      if (authUser == null) {
+        throw AuthUserNotFoundException();
+      }
 
-    return authUser.toModel();
+      return authUser.toModel();
+    });
   }
 
   /// Creates a new auth user.
@@ -35,16 +38,19 @@ final class AuthUsers {
     final bool blocked = false,
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUser.db.insertRow(
-      session,
-      AuthUser(
-        blocked: blocked,
-        scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
-      ),
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(
+          blocked: blocked,
+          scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+        ),
+        transaction: transaction,
+      );
 
-    return authUser.toModel();
+      return authUser.toModel();
+    });
   }
 
   /// Updates an auth user.
@@ -57,34 +63,37 @@ final class AuthUsers {
     final bool? blocked,
     final Transaction? transaction,
   }) async {
-    var authUser = await AuthUser.db.findById(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-    if (authUser == null) {
-      throw AuthUserNotFoundException();
-    }
-
-    if (scopes != null) {
-      authUser = authUser.copyWith(
-        scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      var authUser = await AuthUser.db.findById(
+        session,
+        authUserId,
+        transaction: transaction,
       );
-    }
+      if (authUser == null) {
+        throw AuthUserNotFoundException();
+      }
 
-    if (blocked != null) {
-      authUser = authUser.copyWith(
-        blocked: blocked,
+      if (scopes != null) {
+        authUser = authUser.copyWith(
+          scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+        );
+      }
+
+      if (blocked != null) {
+        authUser = authUser.copyWith(
+          blocked: blocked,
+        );
+      }
+
+      authUser = await AuthUser.db.updateRow(
+        session,
+        authUser,
+        transaction: transaction,
       );
-    }
 
-    authUser = await AuthUser.db.updateRow(
-      session,
-      authUser,
-      transaction: transaction,
-    );
-
-    return authUser.toModel();
+      return authUser.toModel();
+    });
   }
 
   /// Returns all auth users.
@@ -92,12 +101,15 @@ final class AuthUsers {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final authUsers = await AuthUser.db.find(
-      session,
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUsers = await AuthUser.db.find(
+        session,
+        transaction: transaction,
+      );
 
-    return authUsers.map((final a) => a.toModel()).toList();
+      return authUsers.map((final a) => a.toModel()).toList();
+    });
   }
 
   /// Removes the specified auth user.
@@ -115,15 +127,18 @@ final class AuthUsers {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final deletedUsers = await AuthUser.db.deleteWhere(
-      session,
-      where: (final t) => t.id.equals(authUserId),
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final deletedUsers = await AuthUser.db.deleteWhere(
+        session,
+        where: (final t) => t.id.equals(authUserId),
+        transaction: transaction,
+      );
 
-    if (deletedUsers.isEmpty) {
-      throw AuthUserNotFoundException();
-    }
+      if (deletedUsers.isEmpty) {
+        throw AuthUserNotFoundException();
+      }
+    });
   }
 }
 
