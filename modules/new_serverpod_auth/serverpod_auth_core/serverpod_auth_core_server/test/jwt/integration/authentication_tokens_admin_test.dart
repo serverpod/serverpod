@@ -27,7 +27,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
       final authSuccess = await authenticationTokens.createTokens(
@@ -230,8 +230,8 @@ void main() {
     setUpAll(() async {
       session = sessionBuilder.build();
 
-      authUserId1 = (await AuthUsers.create(session)).id;
-      authUserId2 = (await AuthUsers.create(session)).id;
+      authUserId1 = (await authenticationTokens.authUsers.create(session)).id;
+      authUserId2 = (await authenticationTokens.authUsers.create(session)).id;
       refreshTokenIdsInOrderOfCreation = [];
 
       for (var i = 0; i < 100; i++) {
@@ -348,7 +348,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(
+      final authUser = await authenticationTokens.authUsers.create(
         session,
       );
       authUserId = authUser.id;
@@ -388,7 +388,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
       final authSuccess1 = await authenticationTokens.createTokens(
@@ -473,10 +473,10 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser1 = await AuthUsers.create(session);
+      final authUser1 = await authenticationTokens.authUsers.create(session);
       firstUserAuthUserId = authUser1.id;
 
-      final authUser2 = await AuthUsers.create(session);
+      final authUser2 = await authenticationTokens.authUsers.create(session);
       authUserId2 = authUser2.id;
 
       final authSuccess1 = await authenticationTokens.createTokens(

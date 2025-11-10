@@ -20,9 +20,13 @@ final class AuthSessions {
   /// The secrets configuration.
   final AuthSessionKeyHash _sessionKeyHash;
 
+  /// Management functions for auth users.
+  final AuthUsers authUsers;
+
   /// Creates a new [AuthSessions] instance.
   AuthSessions({
     required final AuthSessionsConfig config,
+    this.authUsers = const AuthUsers(),
   })  : _config = config,
         _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
 
@@ -158,7 +162,7 @@ final class AuthSessions {
     final Transaction? transaction,
   }) async {
     if (!skipUserBlockedChecked || scopes == null) {
-      final authUser = await AuthUsers.get(
+      final authUser = await authUsers.get(
         session,
         authUserId: authUserId,
         transaction: transaction,

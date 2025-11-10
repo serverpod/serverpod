@@ -4,7 +4,6 @@ import 'package:serverpod_auth_core_server/session.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../test_utils.dart';
 
 void main() {
   final authSessions = AuthSessions(
@@ -20,7 +19,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
       // ignore: unused_result
       await authSessions.createSession(

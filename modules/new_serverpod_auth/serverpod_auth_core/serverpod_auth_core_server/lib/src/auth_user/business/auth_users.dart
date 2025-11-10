@@ -3,11 +3,14 @@ import 'package:serverpod/serverpod.dart';
 import '../../generated/protocol.dart';
 
 /// Management functions for auth users.
-abstract final class AuthUsers {
+final class AuthUsers {
+  /// Creates a new [AuthUsers] instance.
+  const AuthUsers();
+
   /// Retrieves an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> get(
+  Future<AuthUserModel> get(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -26,7 +29,7 @@ abstract final class AuthUsers {
   }
 
   /// Creates a new auth user.
-  static Future<AuthUserModel> create(
+  Future<AuthUserModel> create(
     final Session session, {
     final Set<Scope> scopes = const {},
     final bool blocked = false,
@@ -47,7 +50,7 @@ abstract final class AuthUsers {
   /// Updates an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> update(
+  Future<AuthUserModel> update(
     final Session session, {
     required final UuidValue authUserId,
     final Set<Scope>? scopes,
@@ -85,7 +88,7 @@ abstract final class AuthUsers {
   }
 
   /// Returns all auth users.
-  static Future<List<AuthUserModel>> list(
+  Future<List<AuthUserModel>> list(
     final Session session, {
     final Transaction? transaction,
   }) async {
@@ -107,7 +110,7 @@ abstract final class AuthUsers {
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for
   /// the ID.
-  static Future<void> delete(
+  Future<void> delete(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,

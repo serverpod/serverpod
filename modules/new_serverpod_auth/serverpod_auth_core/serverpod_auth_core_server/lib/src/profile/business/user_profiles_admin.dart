@@ -4,7 +4,7 @@ part of 'user_profiles.dart';
 ///
 /// An instance of this class is available at [UserProfiles.admin].
 final class UserProfilesAdmin {
-  UserProfilesAdmin._();
+  const UserProfilesAdmin._();
 
   /// Returns all user profiles that match the specified criteria.
   ///

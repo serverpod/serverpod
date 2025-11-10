@@ -988,6 +988,7 @@ void testSuite<T extends TokenManager>(
 
 void main() {
   final fakeTokenStorage = FakeTokenStorage();
+  const authUsers = AuthUsers();
   testSuite(
     'FakeTokenManager',
     () {
@@ -1013,7 +1014,7 @@ void main() {
       ));
     },
     createAuthId: (final session) =>
-        AuthUsers.create(session).then((final value) => value.id),
+        authUsers.create(session).then((final value) => value.id),
     tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
     isDatabaseBackedManager: true,
     usesRefreshTokens: false,
@@ -1032,7 +1033,7 @@ void main() {
       );
     },
     createAuthId: (final session) =>
-        AuthUsers.create(session).then((final value) => value.id),
+        authUsers.create(session).then((final value) => value.id),
     tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
     isDatabaseBackedManager: true,
     usesRefreshTokens: true,

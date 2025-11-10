@@ -1,10 +1,11 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/session/business/session_key.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../test_utils.dart';
+import '../../test_tags.dart';
 
 void main() {
   final authSessions = AuthSessions(
@@ -12,6 +13,8 @@ void main() {
   );
 
   withServerpod('Given an auth sessions for a user,',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -20,7 +23,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
       sessionKey = (await authSessions.createSession(
         session,
@@ -29,6 +32,13 @@ void main() {
         method: 'test',
       ))
           .token;
+    });
+
+    tearDown(() async {
+      await AuthSession.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      );
     });
 
     test(
@@ -157,7 +167,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
       destroyedSessionKey = (await authSessions.createSession(
         session,
@@ -224,7 +234,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
       sessionKey1 = (await authSessions.createSession(
         session,
