@@ -53,7 +53,7 @@ void main() {
         );
 
         // Create auth user
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
       });
 
@@ -143,7 +143,7 @@ void main() {
         );
 
         // Create auth user but don't verify the request
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
       });
 
@@ -217,7 +217,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
 
         await session.db.transaction(
@@ -271,7 +271,7 @@ void main() {
         fixture = EmailIDPTestFixture();
 
         // Create auth user but no account request
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
       });
 

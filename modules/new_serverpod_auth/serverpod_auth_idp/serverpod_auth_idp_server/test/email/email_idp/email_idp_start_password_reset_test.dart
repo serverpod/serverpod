@@ -29,7 +29,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,
@@ -96,7 +96,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: authUser.id,
@@ -165,7 +165,7 @@ void main() {
             'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
             () async {
           const existingUserEmail = 'existinguser@serverpod.dev';
-          final authUser = await fixture.createAuthUser(session);
+          final authUser = await fixture.authUsers.create(session);
           await fixture.createEmailAccount(
             session,
             authUserId: authUser.id,

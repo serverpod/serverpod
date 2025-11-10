@@ -21,7 +21,7 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,

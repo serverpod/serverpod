@@ -31,7 +31,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,
@@ -130,7 +130,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -213,7 +213,7 @@ void main() {
       );
 
       // Create first user and make request to hit rate limit
-      final firstAuthUser = await fixture.createAuthUser(session);
+      final firstAuthUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: firstAuthUser.id,
@@ -228,7 +228,7 @@ void main() {
       );
 
       // Create second user and make request to hit rate limit
-      final secondAuthUser = await fixture.createAuthUser(session);
+      final secondAuthUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: secondAuthUser.id,

@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../providers/google/google.dart';
@@ -11,11 +12,22 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
   GoogleIdentityProviderFactory(
     this.config, {
     super.tokenManagerOverride,
+    super.authUsersOverride,
+    super.userProfilesOverride,
   });
 
   @override
-  GoogleIDP construct({required final TokenManager tokenManager}) {
-    return GoogleIDP(config, tokenIssuer: tokenManager);
+  GoogleIDP construct({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return GoogleIDP(
+      config,
+      tokenIssuer: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
   }
 }
 

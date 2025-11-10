@@ -83,7 +83,7 @@ void main() {
         test('then the account request can be finalized', () async {
           await verifyAccountRequestFuture;
 
-          final authUser = await fixture.createAuthUser(session);
+          final authUser = await fixture.authUsers.create(session);
 
           final finalizeAccountRequestFuture = session.db.transaction(
             (final transaction) =>
@@ -261,7 +261,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await session.db.transaction(
           (final transaction) =>

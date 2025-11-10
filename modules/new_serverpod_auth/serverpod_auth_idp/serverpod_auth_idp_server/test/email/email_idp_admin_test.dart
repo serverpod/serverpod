@@ -21,7 +21,7 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
       });
 
@@ -68,7 +68,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
       fixture = EmailIDPTestFixture();
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       final emailAccount = await fixture.createEmailAccount(
         session,
         authUserId: authUser.id,
@@ -107,7 +107,7 @@ void main() {
       session = sessionBuilder.build();
       fixture = EmailIDPTestFixture();
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -173,7 +173,7 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,
@@ -227,7 +227,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         await fixture.createEmailAccount(
           session,
           authUserId: authUser.id,
@@ -453,7 +453,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: authUser.id,
@@ -521,7 +521,7 @@ void main() {
           failedLoginRateLimit: maxFailedLoginAttempts,
         ),
       );
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: authUser.id,
@@ -609,7 +609,7 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
 
         await fixture.createEmailAccount(

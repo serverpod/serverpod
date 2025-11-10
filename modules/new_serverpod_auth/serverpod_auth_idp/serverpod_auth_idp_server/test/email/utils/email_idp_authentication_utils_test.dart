@@ -20,9 +20,9 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        final authUser = await AuthUsers.create(session);
-        authUserId = authUser.id;
         final fixture = EmailIDPTestFixture();
+        final authUser = await fixture.authUsers.create(session);
+        authUserId = authUser.id;
         await fixture.createEmailAccount(
           session,
           authUserId: authUserId,
@@ -137,7 +137,7 @@ void main() {
           ),
         );
 
-        authUser = await AuthUsers.create(session);
+        authUser = await fixture.authUsers.create(session);
         final authUserId = authUser.id;
         await fixture.createEmailAccount(
           session,
@@ -425,7 +425,7 @@ void main() {
           failedLoginRateLimit: failedLoginRateLimit,
         ),
       );
-      final authUser = await AuthUsers.create(session);
+      final authUser = await fixture.authUsers.create(session);
       authUserId = authUser.id;
       await fixture.createEmailAccount(
         session,

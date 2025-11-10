@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 
@@ -10,11 +11,22 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
   AppleIdentityProviderFactory(
     this.config, {
     super.tokenManagerOverride,
+    super.authUsersOverride,
+    super.userProfilesOverride,
   });
 
   @override
-  AppleIDP construct({required final TokenManager tokenManager}) {
-    return AppleIDP(config, tokenIssuer: tokenManager);
+  AppleIDP construct({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return AppleIDP(
+      config,
+      tokenIssuer: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
   }
 }
 

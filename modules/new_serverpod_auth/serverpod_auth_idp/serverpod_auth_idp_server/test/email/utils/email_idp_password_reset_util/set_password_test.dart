@@ -19,7 +19,7 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         emailAccount = await fixture.createEmailAccount(
           session,

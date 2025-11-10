@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../../providers/email.dart';
@@ -11,11 +12,22 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
   EmailIdentityProviderFactory(
     this.config, {
     super.tokenManagerOverride,
+    super.authUsersOverride,
+    super.userProfilesOverride,
   });
 
   @override
-  EmailIDP construct({required final TokenManager tokenManager}) {
-    return EmailIDP(config, tokenManager: tokenManager);
+  EmailIDP construct({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return EmailIDP(
+      config,
+      tokenManager: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
   }
 }
 
