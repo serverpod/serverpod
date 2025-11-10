@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/src/auth_user/business/auth_users_config.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -85,5 +86,98 @@ void main() {
         throwsA(isA<AuthUserNotFoundException>()),
       );
     });
+  });
+
+  withServerpod(
+      'Given an auth user creation hook that adds admin scope and blocked,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late AuthUsers authUsers;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      authUsers = AuthUsers(
+        config: AuthUsersConfig(
+          onBeforeAuthUserCreated: (
+            final session,
+            final scopes,
+            final blocked, {
+            required final transaction,
+          }) =>
+              (scopes: {...scopes, Scope.admin}, blocked: true),
+        ),
+      );
+    });
+
+    test(
+      'when creating an auth user with empty scopes, then the created auth user has admin scope and is blocked.',
+      () async {
+        final createdAuthUser = await authUsers.create(
+          session,
+          scopes: {},
+          blocked: false,
+        );
+
+        expect(createdAuthUser.scopes, {Scope.admin});
+        expect(createdAuthUser.blocked, isTrue);
+      },
+    );
+
+    test(
+      'when creating an auth user with a custom scope, then the created auth user has the custom scope and is blocked.',
+      () async {
+        const customScope = Scope('test');
+        final createdAuthUser = await authUsers.create(
+          session,
+          scopes: {customScope},
+          blocked: false,
+        );
+
+        expect(createdAuthUser.scopes, {customScope, Scope.admin});
+        expect(createdAuthUser.blocked, isTrue);
+      },
+    );
+  });
+
+  withServerpod(
+      'Given an auth user creation hook that captures the created user,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late AuthUsers authUsers;
+    late AuthUserModel? createdAuthUserFromCallback;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+      createdAuthUserFromCallback = null;
+
+      authUsers = AuthUsers(
+        config: AuthUsersConfig(
+          onAfterAuthUserCreated: (
+            final session,
+            final authUser, {
+            required final transaction,
+          }) {
+            createdAuthUserFromCallback = authUser;
+          },
+        ),
+      );
+    });
+
+    test(
+      'when creating an auth user, then the hook is invoked with the created auth user.',
+      () async {
+        final createdAuthUser = await authUsers.create(
+          session,
+          scopes: {Scope.admin},
+          blocked: true,
+        );
+
+        expect(
+          createdAuthUser,
+          equals(createdAuthUserFromCallback),
+        );
+      },
+    );
   });
 }

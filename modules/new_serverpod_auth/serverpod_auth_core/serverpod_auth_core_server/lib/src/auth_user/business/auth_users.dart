@@ -1,11 +1,16 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
+import 'auth_users_config.dart';
 
 /// Management functions for auth users.
 final class AuthUsers {
+  final AuthUsersConfig _config;
+
   /// Creates a new [AuthUsers] instance.
-  const AuthUsers();
+  const AuthUsers({
+    final AuthUsersConfig config = const AuthUsersConfig(),
+  }) : _config = config;
 
   /// Retrieves an auth user.
   ///
@@ -40,16 +45,33 @@ final class AuthUsers {
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
         (final transaction) async {
+      final authUserToCreate = await _config.onBeforeAuthUserCreated?.call(
+            session,
+            scopes,
+            blocked,
+            transaction: transaction,
+          ) ??
+          (scopes: scopes, blocked: blocked);
+
       final authUser = await AuthUser.db.insertRow(
         session,
         AuthUser(
-          blocked: blocked,
-          scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+          blocked: authUserToCreate.blocked,
+          scopeNames:
+              authUserToCreate.scopes.map((final s) => s.name).nonNulls.toSet(),
         ),
         transaction: transaction,
       );
 
-      return authUser.toModel();
+      final createdAuthUser = authUser.toModel();
+
+      await _config.onAfterAuthUserCreated?.call(
+        session,
+        createdAuthUser,
+        transaction: transaction,
+      );
+
+      return createdAuthUser;
     });
   }
 
