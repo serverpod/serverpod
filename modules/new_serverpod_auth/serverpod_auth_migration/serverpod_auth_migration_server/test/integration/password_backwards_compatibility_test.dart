@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = new_auth_core.AuthSessionsTokenManager(
+  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
     config:
         new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
@@ -26,7 +26,7 @@ void main() {
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
     newEmailIDP = AuthServices.instance.emailIDP;
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
@@ -35,7 +35,7 @@ void main() {
   tearDownAll(() async {
     AuthServices.set(
       identityProviders: [],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
   });
   withServerpod(

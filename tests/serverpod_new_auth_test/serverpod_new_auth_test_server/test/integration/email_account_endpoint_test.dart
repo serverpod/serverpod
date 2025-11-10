@@ -7,14 +7,14 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
-final tokenManager = AuthSessionsTokenManager(
+final tokenManagerFactory = AuthSessionsTokenManagerFactory(
   config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
 );
 
 void main() {
   setUp(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
       identityProviders: [
         EmailIdentityProviderFactory(
           const EmailIDPConfig(
@@ -27,7 +27,7 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
       identityProviders: [],
     );
   });
@@ -62,7 +62,7 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManager,
+            primaryTokenManager: tokenManagerFactory,
           );
 
           clientReceivedRequestId =
@@ -147,7 +147,7 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManager,
+            primaryTokenManager: tokenManagerFactory,
           );
 
           clientReceivedRequestId =
@@ -207,7 +207,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         await endpoints.emailAccount.startRegistration(
@@ -359,7 +359,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
       });
 
@@ -465,7 +465,8 @@ void main() {
           password: password,
         );
 
-        await AuthUsers.update(
+        const authUsers = AuthUsers();
+        await authUsers.update(
           sessionBuilder.build(),
           authUserId: registrationResult.authUserId,
           blocked: true,
@@ -505,7 +506,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -661,7 +662,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -870,7 +871,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -977,7 +978,7 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
 
     await emailAccount.startRegistration(
@@ -1027,7 +1028,7 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
 
     await emailAccount.startPasswordReset(

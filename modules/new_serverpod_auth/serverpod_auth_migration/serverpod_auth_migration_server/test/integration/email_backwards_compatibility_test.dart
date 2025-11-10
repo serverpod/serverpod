@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = new_auth_core.AuthSessionsTokenManager(
+  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
     config:
         new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
@@ -26,7 +26,7 @@ void main() {
       identityProviders: [
         new_auth_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
     newEmailIDP = new_auth_core.AuthServices.instance.emailIDP;
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
@@ -35,7 +35,7 @@ void main() {
   tearDownAll(() async {
     new_auth_core.AuthServices.set(
       identityProviders: [],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
   });
 
@@ -293,9 +293,9 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
+          const userProfiles = new_auth_profile.UserProfiles();
           final profile =
-              await new_auth_profile.UserProfiles.findUserProfileByUserId(
-                  session, authUserId);
+              await userProfiles.findUserProfileByUserId(session, authUserId);
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);
@@ -341,8 +341,9 @@ void main() {
       test(
         'when reading the profile, then it throws because none has been created.',
         () async {
+          const userProfiles = new_auth_profile.UserProfiles();
           await expectLater(
-            () => new_auth_profile.UserProfiles.findUserProfileByUserId(
+            () => userProfiles.findUserProfileByUserId(
               session,
               authUserId,
             ),
@@ -512,9 +513,9 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
+          const userProfiles = new_auth_profile.UserProfiles();
           final profile =
-              await new_auth_profile.UserProfiles.findUserProfileByUserId(
-                  session, authUserId);
+              await userProfiles.findUserProfileByUserId(session, authUserId);
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);

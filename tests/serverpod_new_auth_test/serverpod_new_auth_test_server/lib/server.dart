@@ -22,7 +22,7 @@ void run(final List<String> args) async {
 
   const universalHashPepper = 'test-pepper';
   final authConfig = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManager(
+      primaryTokenManager: AuthSessionsTokenManagerFactory(
         config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),
       identityProviders: [
@@ -34,7 +34,7 @@ void run(final List<String> args) async {
         ),
       ],
       additionalTokenManagers: [
-        AuthenticationTokensTokenManager(
+        AuthenticationTokensTokenManagerFactory(
           config: AuthenticationTokenConfig(
             refreshTokenHashPepper: universalHashPepper,
             algorithm: AuthenticationTokenAlgorithm.hmacSha512(
