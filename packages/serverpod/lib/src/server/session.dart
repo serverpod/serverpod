@@ -63,9 +63,6 @@ abstract class Session implements DatabaseAccessor {
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  ///
-  /// This property is initialized automatically by the framework before
-  /// endpoint methods are invoked.
   AuthenticationInfo? get authenticated => _authenticated;
 
   /// Returns true if the user is signed in.
@@ -334,8 +331,7 @@ class MethodCallSession extends Session {
   /// Creates a new [MethodCallSession] with authentication initialized.
   ///
   /// This factory method creates a session and initializes authentication
-  /// before returning it. Use this method when you need authentication to be
-  /// ready immediately after session creation.
+  /// before returning it.
   static Future<MethodCallSession> create({
     required Server server,
     required Uri uri,
@@ -383,8 +379,7 @@ class WebCallSession extends Session {
   /// Creates a new [WebCallSession] with authentication initialized.
   ///
   /// This factory method creates a session and initializes authentication
-  /// before returning it. Use this method when you need authentication to be
-  /// ready immediately after session creation.
+  /// before returning it.
   static Future<WebCallSession> create({
     required Server server,
     required String endpoint,
@@ -431,8 +426,7 @@ class MethodStreamSession extends Session {
   /// Creates a new [MethodStreamSession] with authentication initialized.
   ///
   /// This factory method creates a session and initializes authentication
-  /// before returning it. Use this method when you need authentication to be
-  /// ready immediately after session creation.
+  /// before returning it.
   static Future<MethodStreamSession> create({
     required Server server,
     required bool enableLogging,
@@ -507,8 +501,7 @@ class StreamingSession extends Session {
   /// Creates a new [StreamingSession] with authentication initialized.
   ///
   /// This factory method creates a session and initializes authentication
-  /// before returning it. Use this method when you need authentication to be
-  /// ready immediately after session creation.
+  /// before returning it.
   static Future<StreamingSession> create({
     required Server server,
     required Uri uri,
