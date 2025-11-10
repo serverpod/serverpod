@@ -61,7 +61,7 @@ class UserAuthentication {
     Session session, {
     int? userId,
   }) async {
-    userId ??= (await session.authenticated)?.userId;
+    userId ??= session.authenticated?.userId;
     if (userId == null) return;
 
     // Delete all authentication keys for the user
@@ -79,7 +79,7 @@ class UserAuthentication {
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
-    var authInfo = await session.authenticated;
+    var authInfo = session.authenticated;
     if (userId == authInfo?.userId) {
       session.updateAuthenticated(null);
     }
@@ -117,7 +117,7 @@ class UserAuthentication {
 
     // Clear session authentication if the signed-out user is the currently
     // authenticated user
-    var authInfo = await session.authenticated;
+    var authInfo = session.authenticated;
     if (auth.userId == authInfo?.userId) {
       session.updateAuthenticated(null);
     }
