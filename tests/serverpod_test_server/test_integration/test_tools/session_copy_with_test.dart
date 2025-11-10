@@ -18,26 +18,26 @@ void main() {
 
         test(
             'then the first test gets the modifiedSessionBuilder according to the group assignment',
-            () async {
-          await expectLater(
+            () {
+          expect(
             modifiedSessionBuilder.build().authenticated,
-            completion(isA<AuthenticationInfo>().having(
+            isA<AuthenticationInfo>().having(
               (a) => a.userId,
               'userId',
               123,
-            )),
+            ),
           );
         });
         test(
             'then the second test gets the modifiedSessionBuilder according to the group assignment',
-            () async {
-          await expectLater(
+            () {
+          expect(
             modifiedSessionBuilder.build().authenticated,
-            completion(isA<AuthenticationInfo>().having(
+            isA<AuthenticationInfo>().having(
               (a) => a.userId,
               'userId',
               123,
-            )),
+            ),
           );
         });
       });
@@ -49,7 +49,7 @@ void main() {
           authentication: AuthenticationOverride.unauthenticated(),
         );
 
-        test('then the first test can change it', () async {
+        test('then the first test can change it', () {
           modifiedSessionBuilder = sessionBuilder.copyWith(
             authentication: AuthenticationOverride.authenticationInfo(
               '123',
@@ -57,26 +57,26 @@ void main() {
             ),
           );
 
-          await expectLater(
+          expect(
             modifiedSessionBuilder.build().authenticated,
-            completion(isA<AuthenticationInfo>().having(
+            isA<AuthenticationInfo>().having(
               (a) => a.userId,
               'userId',
               123,
-            )),
+            ),
           );
         });
 
         test(
             'then the second test gets the modifiedSessionBuilder according to the first test',
-            () async {
-          await expectLater(
+            () {
+          expect(
             modifiedSessionBuilder.build().authenticated,
-            completion(isA<AuthenticationInfo>().having(
+            isA<AuthenticationInfo>().having(
               (a) => a.userId,
               'userId',
               123,
-            )),
+            ),
           );
         });
       });
