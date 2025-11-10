@@ -323,21 +323,29 @@ class Serverpod {
 
   /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
-  final Map<String, dynamic> httpResponseHeaders;
+  final Headers httpResponseHeaders;
 
   /// HTTP headers used for OPTIONS responses. These headers are sent in
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
-  final Map<String, dynamic> httpOptionsResponseHeaders;
+  final Headers httpOptionsResponseHeaders;
 
-  static const _defaultHttpResponseHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST',
-  };
+  static final _defaultHttpResponseHeaders = Headers.build((mh) {
+    mh.accessControlAllowOrigin =
+        const AccessControlAllowOriginHeader.wildcard();
+    mh.accessControlAllowMethods =
+        AccessControlAllowMethodsHeader.methods(methods: [Method.post]);
+  });
 
-  static const _defaultHttpOptionsResponseHeaders = {
-    'Access-Control-Allow-Headers':
-        'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
-  };
+  static final _defaultHttpOptionsResponseHeaders = Headers.build((mh) {
+    mh.accessControlAllowHeaders =
+        AccessControlAllowHeadersHeader.headers(headers: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'User-Agent',
+      'X-Requested-With',
+    ]);
+  });
 
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
@@ -366,12 +374,16 @@ class Serverpod {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.httpResponseHeaders = _defaultHttpResponseHeaders,
-    this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
+    Headers? httpResponseHeaders,
+    Headers? httpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  })  : _securityContextConfig = securityContextConfig,
+  })  : httpResponseHeaders =
+            httpResponseHeaders ?? _defaultHttpResponseHeaders,
+        httpOptionsResponseHeaders =
+            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
+        _securityContextConfig = securityContextConfig,
         _experimental = ExperimentalApi._(
           config: config,
           experimentalFeatures: experimentalFeatures,

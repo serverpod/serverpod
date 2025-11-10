@@ -97,11 +97,11 @@ class Server implements RouterInjectable {
 
   /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
-  final Map<String, dynamic> httpResponseHeaders;
+  final Headers httpResponseHeaders;
 
   /// HTTP headers used for OPTIONS responses. These headers are sent in
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
-  final Map<String, dynamic> httpOptionsResponseHeaders;
+  final Headers httpOptionsResponseHeaders;
 
   /// Creates a new [Server] object.
   Server({
@@ -248,16 +248,13 @@ class Server implements RouterInjectable {
   Handler _headers(Handler next) {
     return (req) async {
       final isOptions = req.method == Method.options;
-      final headers = Headers.build((mh) {
-        for (var rh in httpResponseHeaders.entries) {
-          mh[rh.key] = ['${rh.value}'];
-        }
-        if (isOptions) {
-          for (var orh in httpOptionsResponseHeaders.entries) {
-            mh[orh.key] = ['${orh.value}'];
-          }
-        }
-      });
+      final headers = isOptions
+          ? httpResponseHeaders.transform((mh) {
+              for (final h in httpOptionsResponseHeaders.entries) {
+                mh[h.key] = h.value;
+              }
+            })
+          : httpResponseHeaders;
 
       // early exit on Method.options
       if (isOptions) return Response.ok(headers: headers);
