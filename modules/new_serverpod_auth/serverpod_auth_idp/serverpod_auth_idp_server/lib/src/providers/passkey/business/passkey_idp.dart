@@ -24,6 +24,7 @@ final class PasskeyIDP {
   /// Utility functions for the Passkey identity provider.
   final PasskeyIDPUtils utils;
 
+  final AuthUsers _authUsers;
   final TokenIssuer _tokenIssuer;
 
   PasskeyIDP._(
@@ -31,12 +32,14 @@ final class PasskeyIDP {
     this._tokenIssuer,
     this.utils,
     this.admin,
+    this._authUsers,
   );
 
   /// Creates a new instance of [PasskeyIDP].
   factory PasskeyIDP(
     final PasskeyIDPConfig config, {
     required final TokenIssuer tokenIssuer,
+    final AuthUsers authUsers = const AuthUsers(),
   }) {
     final utils = PasskeyIDPUtils(
       challengeLifetime: config.challengeLifetime,
@@ -52,6 +55,7 @@ final class PasskeyIDP {
         challengeLifetime: config.challengeLifetime,
         utils: utils,
       ),
+      authUsers,
     );
   }
 
@@ -106,7 +110,7 @@ final class PasskeyIDP {
         transaction: transaction,
       );
 
-      final authUser = await AuthUsers.get(
+      final authUser = await _authUsers.get(
         session,
         authUserId: authUserId,
         transaction: transaction,

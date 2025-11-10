@@ -37,11 +37,14 @@ typedef AppleAuthSuccess = ({
 /// be sufficient.
 class AppleIDPUtils {
   final SignInWithApple _signInWithApple;
+  final AuthUsers _authUsers;
 
   /// Creates a new instance of [AppleIDPUtils].
   AppleIDPUtils({
     required final SignInWithApple signInWithApple,
-  }) : _signInWithApple = signInWithApple;
+    required final AuthUsers authUsers,
+  })  : _signInWithApple = signInWithApple,
+        _authUsers = authUsers;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -82,11 +85,11 @@ class AppleIDPUtils {
     final createNewAccount = appleAccount == null;
 
     final AuthUserModel authUser = switch (createNewAccount) {
-      true => await AuthUsers.create(
+      true => await _authUsers.create(
           session,
           transaction: transaction,
         ),
-      false => await AuthUsers.get(
+      false => await _authUsers.get(
           session,
           authUserId: appleAccount!.authUserId,
         ),

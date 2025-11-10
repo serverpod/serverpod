@@ -586,7 +586,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      const authUsers = AuthUsers();
+      final authUser = await authUsers.create(session);
       authUserId = authUser.id;
     });
 
@@ -721,6 +722,7 @@ void main() {
     test(
         'when provider accesses session context, then it can fetch additional data.',
         () async {
+      const authUsers = AuthUsers();
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
           algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
@@ -729,7 +731,7 @@ void main() {
           refreshTokenHashPepper: 'test-pepper',
           extraClaimsProvider: (final session, final context) async {
             // Provider can fetch additional data from database using session
-            final authUser = await AuthUsers.get(
+            final authUser = await authUsers.get(
               session,
               authUserId: context.authUserId,
             );
