@@ -1,4 +1,5 @@
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
+import '../../../profile.dart';
+import 'token_manager.dart';
 
 /// Interface for factories that can create auth providers.
 /// These factories are responsible for constructing instances of auth providers
@@ -11,12 +12,30 @@ abstract class IdentityProviderFactory<T extends Object> {
   /// Default constructor that allows for overriding the token manager.
   IdentityProviderFactory({
     this.tokenManagerOverride,
+    this.authUsersOverride,
+    this.userProfilesOverride,
   });
 
   /// Optional [TokenManager] to override for this provider.
   /// If null, the default manager will be used.
   final TokenManager? tokenManagerOverride;
 
+  /// Optional [AuthUsers] to override for this provider.
+  /// If null, the default manager will be used.
+  final AuthUsers? authUsersOverride;
+
+  /// Optional [UserProfiles] to override for this provider.
+  /// If null, the default manager will be used.
+  final UserProfiles? userProfilesOverride;
+
   /// Constructs a new instance of the provider.
-  T construct({required final TokenManager tokenManager});
+  ///
+  /// [tokenManager] is the token manager to use for the provider.
+  /// [authUsers] is the manager for managing auth users.
+  /// [userProfiles] is the manager for managing user profiles.
+  T construct({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  });
 }

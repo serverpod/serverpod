@@ -1,6 +1,9 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_core_server/src/auth_user/business/auth_users_config.dart';
 import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
+import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -10,21 +13,22 @@ void main() {
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
-      late FakeTokenManager fakeTokenManager;
+      late FakeTokenManagerFactory fakeTokenManagerFactory;
       late List<IdentityProviderFactory<Object>> identityProviderFactories;
-      late List<TokenManager> tokenManagers;
+      late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+        fakeTokenManagerFactory =
+            FakeTokenManagerFactory(tokenStorage: fakeTokenStorage);
 
         identityProviderFactories = [
           FakeIdentityProviderFactory(),
         ];
 
         tokenManagers = [
-          FakeTokenManager(fakeTokenStorage),
+          FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
         ];
       });
 
@@ -33,7 +37,8 @@ void main() {
 
         setUp(() {
           authServices = AuthServices.set(
-            primaryTokenManager: fakeTokenManager,
+            primaryTokenManager:
+                FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
@@ -47,20 +52,22 @@ void main() {
       group('when AuthServices.set is called multiple times', () {
         late AuthServices firstAuthServices;
         late AuthServices secondAuthServices;
-        late FakeTokenManager secondTokenManager;
+        late FakeTokenManagerFactory secondTokenManagerFactory;
         late FakeTokenStorage secondTokenStorage;
 
         setUp(() {
           firstAuthServices = AuthServices.set(
-            primaryTokenManager: fakeTokenManager,
+            primaryTokenManager: fakeTokenManagerFactory,
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
 
           secondTokenStorage = FakeTokenStorage();
-          secondTokenManager = FakeTokenManager(secondTokenStorage);
+          secondTokenManagerFactory = FakeTokenManagerFactory(
+            tokenStorage: secondTokenStorage,
+          );
           secondAuthServices = AuthServices.set(
-            primaryTokenManager: secondTokenManager,
+            primaryTokenManager: secondTokenManagerFactory,
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
@@ -77,27 +84,29 @@ void main() {
   withServerpod(
     'Given an AuthServices with identity providers',
     (final sessionBuilder, final endpoints) {
-      late FakeTokenManager fakeTokenManager;
+      late FakeTokenManagerFactory fakeTokenManagerFactory;
       late List<IdentityProviderFactory<Object>> identityProviderFactories;
-      late List<TokenManager> tokenManagers;
+      late List<TokenManagerFactory> tokenManagerFactories;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+        fakeTokenManagerFactory = FakeTokenManagerFactory(
+          tokenStorage: fakeTokenStorage,
+        );
 
         identityProviderFactories = [
           FakeIdentityProviderFactory(),
         ];
 
-        tokenManagers = [
-          FakeTokenManager(fakeTokenStorage),
+        tokenManagerFactories = [
+          FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
         ];
 
         AuthServices.set(
-          primaryTokenManager: fakeTokenManager,
+          primaryTokenManager: fakeTokenManagerFactory,
           identityProviders: identityProviderFactories,
-          additionalTokenManagers: tokenManagers,
+          additionalTokenManagers: tokenManagerFactories,
         );
       });
 
@@ -161,27 +170,29 @@ void main() {
   withServerpod(
     'Given an AuthServices with multiple identity providers',
     (final sessionBuilder, final endpoints) {
-      late FakeTokenManager fakeTokenManager;
+      late FakeTokenManagerFactory fakeTokenManagerFactory;
       late List<IdentityProviderFactory<Object>> multipleProviderFactories;
-      late List<TokenManager> tokenManagers;
+      late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late FakeIdentityProviderFactory firstFactory;
       late FakeIdentityProviderFactory secondFactory;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+        fakeTokenManagerFactory = FakeTokenManagerFactory(
+          tokenStorage: fakeTokenStorage,
+        );
 
         firstFactory = FakeIdentityProviderFactory();
         secondFactory = FakeIdentityProviderFactory();
         multipleProviderFactories = [firstFactory, secondFactory];
 
         tokenManagers = [
-          FakeTokenManager(fakeTokenStorage),
+          FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
         ];
 
         AuthServices.set(
-          primaryTokenManager: fakeTokenManager,
+          primaryTokenManager: fakeTokenManagerFactory,
           identityProviders: multipleProviderFactories,
           additionalTokenManagers: tokenManagers,
         );
@@ -201,31 +212,35 @@ void main() {
   withServerpod(
     'Given an AuthServices with authentication handler',
     (final sessionBuilder, final endpoints) {
-      late FakeTokenManager fakeTokenManager;
+      late FakeTokenManagerFactory fakeTokenManagerFactory;
       late List<IdentityProviderFactory<Object>> identityProviderFactories;
-      late List<TokenManager> tokenManagers;
+      late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
       late AuthServices authServices;
+      late UuidValue authUserId;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManager = FakeTokenManager(fakeTokenStorage);
+        fakeTokenManagerFactory = FakeTokenManagerFactory(
+          tokenStorage: fakeTokenStorage,
+        );
 
         identityProviderFactories = [
           FakeIdentityProviderFactory(),
         ];
 
         tokenManagers = [
-          FakeTokenManager(fakeTokenStorage),
+          FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
         ];
 
         authServices = AuthServices.set(
-          primaryTokenManager: fakeTokenManager,
+          primaryTokenManager: fakeTokenManagerFactory,
           identityProviders: identityProviderFactories,
           additionalTokenManagers: tokenManagers,
         );
+        authUserId = (await authServices.authUsers.create(session)).id;
       });
 
       group('when validating a valid token with single scope', () {
@@ -233,8 +248,9 @@ void main() {
         late String validToken;
 
         setUp(() async {
-          final authSuccess = await fakeTokenManager.issueToken(session,
-              authUserId: UuidValue.fromString('user-123'),
+          final authSuccess = await authServices.tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
               method: 'test-method',
               scopes: {const Scope('test-scope')});
           validToken = authSuccess.token;
@@ -248,7 +264,7 @@ void main() {
         });
 
         test('then the user identifier should match', () {
-          expect(result!.userIdentifier, equals('user-123'));
+          expect(result!.userIdentifier, equals(authUserId.uuid));
         });
 
         test('then the scopes should match', () {
@@ -263,8 +279,9 @@ void main() {
         late String validToken;
 
         setUp(() async {
-          final authSuccess = await fakeTokenManager.issueToken(session,
-              authUserId: UuidValue.fromString('user-456'),
+          final authSuccess = await authServices.tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
               method: 'oauth',
               scopes: {
                 const Scope('read'),
@@ -304,4 +321,330 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given an AuthServices with identity providers that have overrides',
+    (final sessionBuilder, final endpoints) {
+      late FakeTokenManagerFactory fakeTokenManagerFactory;
+      late FakeTokenStorage fakeTokenStorage;
+      late Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fakeTokenStorage = FakeTokenStorage();
+        fakeTokenManagerFactory = FakeTokenManagerFactory(
+          tokenStorage: fakeTokenStorage,
+        );
+
+        // Create AuthUsers override that adds a scope when creating users
+        final authUsersWithOverride = AuthUsers(
+          config: AuthUsersConfig(
+            onBeforeAuthUserCreated: (
+              final session,
+              final scopes,
+              final blocked, {
+              required final transaction,
+            }) async {
+              // Add an override scope to all created users
+              return (
+                scopes: {...scopes, const Scope('override-scope')},
+                blocked: blocked,
+              );
+            },
+          ),
+        );
+
+        // Create UserProfiles override that modifies the profile
+        final userProfilesWithOverride = UserProfiles(
+          config: UserProfileConfig(
+            onBeforeUserProfileCreated: (
+              final session,
+              final authUserId,
+              final userProfile, {
+              required final transaction,
+            }) async {
+              // Add a prefix to userName if it exists
+              return userProfile.copyWith(
+                userName: userProfile.userName != null
+                    ? 'override-${userProfile.userName}'
+                    : null,
+              );
+            },
+          ),
+        );
+
+        // Create identity providers - one with overrides, one without
+        final identityProviderFactories = <IdentityProviderFactory<Object>>[
+          FakeIdentityProviderFactory(),
+          FakeIdentityProviderWithOverridesFactory(
+            authUsersOverride: authUsersWithOverride,
+            userProfilesOverride: userProfilesWithOverride,
+          ),
+        ];
+
+        final tokenManagers = [
+          FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
+        ];
+
+        AuthServices.set(
+          primaryTokenManager: fakeTokenManagerFactory,
+          identityProviders: identityProviderFactories,
+          additionalTokenManagers: tokenManagers,
+        );
+      });
+
+      group('when creating a user through provider without overrides', () {
+        late AuthUserModel createdUser;
+        late UserProfileModel createdProfile;
+
+        setUp(() async {
+          final provider =
+              AuthServices.getIdentityProvider<FakeIdentityProvider>();
+          createdUser = await provider.authUsers.create(
+            session,
+            scopes: {const Scope('test-scope')},
+          );
+          createdProfile = await provider.userProfiles.createUserProfile(
+            session,
+            createdUser.id,
+            UserProfileData(userName: 'testuser'),
+          );
+        });
+
+        test('then the user should have only the provided scopes', () {
+          expect(createdUser.scopes.map((final s) => s.name), {
+            'test-scope',
+          });
+        });
+
+        test('then the profile should have the original userName', () {
+          expect(createdProfile.userName, 'testuser');
+        });
+      });
+
+      group('when creating a user through provider with overrides', () {
+        late AuthUserModel createdUser;
+        late UserProfileModel createdProfile;
+
+        setUp(() async {
+          final provider = AuthServices.getIdentityProvider<
+              FakeIdentityProviderWithOverrides>();
+          createdUser = await provider.authUsers.create(
+            session,
+            scopes: {const Scope('test-scope')},
+          );
+          createdProfile = await provider.userProfiles.createUserProfile(
+            session,
+            createdUser.id,
+            UserProfileData(userName: 'testuser'),
+          );
+        });
+
+        test('then the user should have the override scope added', () {
+          expect(createdUser.scopes.map((final s) => s.name), {
+            'test-scope',
+            'override-scope',
+          });
+        });
+
+        test('then the profile should have the userName modified with prefix',
+            () {
+          expect(createdProfile.userName, 'override-testuser');
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given an AuthServices with primary token manager and additional token manager without authUsersOverride',
+    (final sessionBuilder, final endpoints) {
+      late FakePrimaryTokenManagerFactory primaryTokenManagerFactory;
+      late FakeAdditionalTokenManagerFactory additionalTokenManagerFactory;
+      late FakeTokenStorage primaryTokenStorage;
+      late FakeTokenStorage additionalTokenStorage;
+      late AuthServices authServices;
+      late AuthUsers defaultAuthUsers;
+
+      setUp(() {
+        primaryTokenStorage = FakeTokenStorage();
+        additionalTokenStorage = FakeTokenStorage();
+        defaultAuthUsers = const AuthUsers();
+
+        primaryTokenManagerFactory = FakePrimaryTokenManagerFactory(
+          tokenStorage: primaryTokenStorage,
+          // No authUsersOverride
+        );
+
+        additionalTokenManagerFactory = FakeAdditionalTokenManagerFactory(
+          tokenStorage: additionalTokenStorage,
+          // No authUsersOverride
+        );
+
+        authServices = AuthServices.set(
+          primaryTokenManager: primaryTokenManagerFactory,
+          identityProviders: [FakeIdentityProviderFactory()],
+          additionalTokenManagers: [additionalTokenManagerFactory],
+        );
+      });
+
+      group('when retrieving authUsers from token managers', () {
+        test('then primary token manager should use default authUsers', () {
+          final primaryTokenManager = authServices
+              .tokenManager.primaryTokenManager as FakePrimaryTokenManager;
+          expect(primaryTokenManager.authUsers, same(defaultAuthUsers));
+        });
+
+        test('then additional token manager should use default authUsers', () {
+          final additionalTokenManager = authServices.tokenManager
+              .getTokenManager<FakeAdditionalTokenManager>();
+          expect(additionalTokenManager.authUsers, same(defaultAuthUsers));
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given an AuthServices with primary token manager and additional token manager with authUsersOverride',
+    (final sessionBuilder, final endpoints) {
+      late FakePrimaryTokenManagerFactory primaryTokenManagerFactory;
+      late FakeAdditionalTokenManagerFactory additionalTokenManagerFactory;
+      late FakeTokenStorage primaryTokenStorage;
+      late FakeTokenStorage additionalTokenStorage;
+      late AuthServices authServices;
+      late AuthUsers defaultAuthUsers;
+      late AuthUsers overrideAuthUsers;
+
+      setUp(() {
+        primaryTokenStorage = FakeTokenStorage();
+        additionalTokenStorage = FakeTokenStorage();
+        defaultAuthUsers = const AuthUsers();
+
+        // Create AuthUsers override that adds a scope when creating users
+        overrideAuthUsers = AuthUsers(
+          config: AuthUsersConfig(
+            onBeforeAuthUserCreated: (
+              final session,
+              final scopes,
+              final blocked, {
+              required final transaction,
+            }) async {
+              // Add an override scope to all created users
+              return (
+                scopes: {...scopes, const Scope('override-scope')},
+                blocked: blocked,
+              );
+            },
+          ),
+        );
+
+        primaryTokenManagerFactory = FakePrimaryTokenManagerFactory(
+          tokenStorage: primaryTokenStorage,
+          // No authUsersOverride
+        );
+
+        additionalTokenManagerFactory = FakeAdditionalTokenManagerFactory(
+          tokenStorage: additionalTokenStorage,
+          authUsersOverride: overrideAuthUsers,
+        );
+
+        authServices = AuthServices.set(
+          primaryTokenManager: primaryTokenManagerFactory,
+          identityProviders: [FakeIdentityProviderFactory()],
+          additionalTokenManagers: [additionalTokenManagerFactory],
+        );
+      });
+
+      group('when retrieving authUsers from token managers', () {
+        test('then primary token manager should use default authUsers', () {
+          final primaryTokenManager =
+              authServices.tokenManager.primaryTokenManager as FakeTokenManager;
+          expect(primaryTokenManager.authUsers, same(defaultAuthUsers));
+        });
+
+        test('then additional token manager should use override authUsers', () {
+          final additionalTokenManager = authServices.tokenManager
+              .getTokenManager<FakeAdditionalTokenManager>();
+          expect(additionalTokenManager.authUsers, same(overrideAuthUsers));
+        });
+      });
+    },
+  );
+}
+
+class FakeIdentityProviderWithOverrides {
+  final TokenManager tokenManager;
+  final AuthUsers authUsers;
+  final UserProfiles userProfiles;
+
+  FakeIdentityProviderWithOverrides({
+    required this.tokenManager,
+    required this.authUsers,
+    required this.userProfiles,
+  });
+}
+
+class FakeIdentityProviderWithOverridesFactory
+    extends IdentityProviderFactory<FakeIdentityProviderWithOverrides> {
+  FakeIdentityProviderWithOverridesFactory({
+    super.tokenManagerOverride,
+    super.authUsersOverride,
+    super.userProfilesOverride,
+  });
+
+  @override
+  FakeIdentityProviderWithOverrides construct({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return FakeIdentityProviderWithOverrides(
+      tokenManager: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
+  }
+}
+
+class FakePrimaryTokenManager extends FakeTokenManager {
+  FakePrimaryTokenManager(
+    super.tokenStorage, {
+    super.authUsers = const AuthUsers(),
+  });
+}
+
+class FakePrimaryTokenManagerFactory
+    extends TokenManagerFactory<FakePrimaryTokenManager> {
+  FakePrimaryTokenManagerFactory({
+    required this.tokenStorage,
+    super.authUsersOverride,
+  });
+
+  final FakeTokenStorage tokenStorage;
+
+  @override
+  FakePrimaryTokenManager construct({required final AuthUsers authUsers}) {
+    return FakePrimaryTokenManager(tokenStorage, authUsers: authUsers);
+  }
+}
+
+class FakeAdditionalTokenManager extends FakeTokenManager {
+  FakeAdditionalTokenManager(
+    super.tokenStorage, {
+    super.authUsers = const AuthUsers(),
+  });
+}
+
+class FakeAdditionalTokenManagerFactory
+    extends TokenManagerFactory<FakeAdditionalTokenManager> {
+  FakeAdditionalTokenManagerFactory({
+    required this.tokenStorage,
+    super.authUsersOverride,
+  });
+
+  final FakeTokenStorage tokenStorage;
+
+  @override
+  FakeAdditionalTokenManager construct({required final AuthUsers authUsers}) {
+    return FakeAdditionalTokenManager(tokenStorage, authUsers: authUsers);
+  }
 }

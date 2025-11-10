@@ -1,7 +1,9 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/provider_factory.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
+import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens
@@ -26,11 +28,15 @@ class AuthServices {
   ///
   /// {@macro auth_services_constructor}
   factory AuthServices.set({
-    required final TokenManager primaryTokenManager,
+    final AuthUsers authUsers = const AuthUsers(),
+    final UserProfiles userProfiles = const UserProfiles(),
+    required final TokenManagerFactory primaryTokenManager,
     required final List<IdentityProviderFactory<Object>> identityProviders,
-    final List<TokenManager> additionalTokenManagers = const [],
+    final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     final instance = AuthServices(
+      authUsers: authUsers,
+      userProfiles: userProfiles,
       primaryTokenManager: primaryTokenManager,
       identityProviders: identityProviders,
       additionalTokenManagers: additionalTokenManagers,
@@ -54,20 +60,40 @@ class AuthServices {
   /// handle token lifecycle operations alongside the [primaryTokenManager].
   /// These additional token managers are also used to validate tokens in the
   /// same order they are represented in the list.
+  ///
+  /// [authUsers] is the default manager for managing auth users. If no override
+  /// is provided for specific [IdentityProviderFactory] instances, or
+  /// [TokenManagerFactory], this instance will be used.
+  ///
+  /// [userProfiles] is the default manager for managing user profiles. If no
+  /// override is provided for specific [IdentityProviderFactory] instances,
+  /// this instance will be used.
   /// {@endtemplate}
   AuthServices({
-    required final TokenManager primaryTokenManager,
+    required this.authUsers,
+    required this.userProfiles,
+    required final TokenManagerFactory primaryTokenManager,
     required final List<IdentityProviderFactory<Object>> identityProviders,
-    final List<TokenManager> additionalTokenManagers = const [],
+    final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
-      primaryTokenManager: primaryTokenManager,
-      additionalTokenManagers: additionalTokenManagers,
+      primaryTokenManager: primaryTokenManager.construct(
+        authUsers: primaryTokenManager.authUsersOverride ?? authUsers,
+      ),
+      additionalTokenManagers: additionalTokenManagers
+          .map(
+            (final factory) => factory.construct(
+              authUsers: factory.authUsersOverride ?? authUsers,
+            ),
+          )
+          .toList(),
     );
 
     for (final provider in identityProviders) {
       _providers[provider.type] = provider.construct(
         tokenManager: provider.tokenManagerOverride ?? tokenManager,
+        authUsers: provider.authUsersOverride ?? authUsers,
+        userProfiles: provider.userProfilesOverride ?? userProfiles,
       );
     }
   }
@@ -86,6 +112,12 @@ class AuthServices {
     }
     return provider as T;
   }
+
+  /// Manager for managing auth users.
+  final AuthUsers authUsers;
+
+  /// Manager for managing user profiles.
+  final UserProfiles userProfiles;
 
   /// The token manager that handles token lifecycle operations.
   late final MultiTokenManager tokenManager;

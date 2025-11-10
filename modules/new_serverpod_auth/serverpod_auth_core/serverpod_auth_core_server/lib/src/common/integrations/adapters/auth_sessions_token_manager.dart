@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
+import '../../../../auth_user.dart';
 import '../../../generated/protocol.dart';
 import '../../../session/business/auth_sessions.dart';
 import '../../../session/business/auth_sessions_config.dart';
@@ -18,8 +19,10 @@ class AuthSessionsTokenManager implements TokenManager {
   final AuthSessions authSessions;
 
   /// Creates a new [AuthSessionsTokenManager] instance.
-  AuthSessionsTokenManager({required final AuthSessionsConfig config})
-      : authSessions = AuthSessions(config: config);
+  AuthSessionsTokenManager({
+    required final AuthSessionsConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
+  }) : authSessions = AuthSessions(config: config, authUsers: authUsers);
 
   @override
   Future<AuthSuccess> issueToken(
