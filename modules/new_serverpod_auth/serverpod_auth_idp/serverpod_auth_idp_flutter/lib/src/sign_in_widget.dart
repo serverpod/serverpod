@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import 'apple/apple_sign_in_widget.dart';
 import 'common/widgets/gaps.dart';
 import 'common/widgets/column.dart';
 import 'common/widgets/divider.dart';
@@ -54,6 +55,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Google sign-in.
   final GoogleSignInWidget? googleSignInWidget;
 
+  /// Customized widget to use for Apple sign-in.
+  final AppleSignInWidget? appleSignInWidget;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -61,6 +65,7 @@ class SignInWidget extends StatefulWidget {
     this.onError,
     this.emailSignInWidget,
     this.googleSignInWidget,
+    this.appleSignInWidget,
     super.key,
   });
 
@@ -103,16 +108,13 @@ class _SignInWidgetState extends State<SignInWidget> {
                 onAuthenticated: widget.onAuthenticated,
                 onError: widget.onError,
               ),
-        // TODO: Add the Apple sign-in widget.
-        // if (auth.idp.hasApple)
-        //   Padding(
-        //     padding: const EdgeInsets.only(top: 8),
-        //     child: AppleSignInWidget(
-        //       client: widget.client,
-        //       onAuthenticated: widget.onAuthenticated,
-        //       onError: widget.onError,
-        //     ),
-        //   ),
+        if (auth.idp.hasApple)
+          widget.appleSignInWidget ??
+              AppleSignInWidget(
+                client: widget.client,
+                onAuthenticated: widget.onAuthenticated,
+                onError: widget.onError,
+              ),
       ],
     );
   }

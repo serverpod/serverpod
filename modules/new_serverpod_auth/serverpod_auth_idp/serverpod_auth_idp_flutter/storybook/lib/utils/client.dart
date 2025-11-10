@@ -131,6 +131,25 @@ class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
       Future.value(_mockData.authSuccess);
 }
 
+class AppleIDPEndpoint extends EndpointAppleIDPBase {
+  AppleIDPEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'appleIDP';
+
+  @override
+  Future<AuthSuccess> login({
+    required String identityToken,
+    required String authorizationCode,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+  }) =>
+      Future.value(_mockData.authSuccess);
+}
+
 class Modules {
   Modules(Client client) {
     auth = Caller(client);
@@ -149,6 +168,7 @@ class Client extends ServerpodClientShared {
         ) {
     authEmail = EndpointAuthEmail(this);
     googleIDP = GoogleIDPEndpoint(this);
+    appleIDP = AppleIDPEndpoint(this);
     modules = Modules(this);
   }
 
@@ -156,12 +176,15 @@ class Client extends ServerpodClientShared {
 
   late final GoogleIDPEndpoint googleIDP;
 
+  late final AppleIDPEndpoint appleIDP;
+
   late final Modules modules;
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
         'emailAuth': authEmail,
         'googleIDP': googleIDP,
+        'appleIDP': appleIDP,
       };
 
   @override
