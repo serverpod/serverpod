@@ -58,7 +58,6 @@ abstract class Session implements DatabaseAccessor {
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
   void updateAuthenticated(AuthenticationInfo? info) {
-    _authenticationInitialized = true;
     _authenticated = info;
   }
 
@@ -204,8 +203,6 @@ abstract class Session implements DatabaseAccessor {
     );
   }
 
-  bool _authenticationInitialized = false;
-
   /// Returns the duration this session has been open.
   Duration get duration => DateTime.now().difference(_startTime);
 
@@ -319,7 +316,7 @@ class MethodCallSession extends Session {
   final Request request;
 
   /// Creates a new [Session] for a method call to an endpoint.
-  MethodCallSession({
+  MethodCallSession._({
     required super.server,
     required this.uri,
     required this.body,
@@ -352,7 +349,7 @@ class MethodCallSession extends Session {
     bool enableLogging = true,
     String? remoteInfo,
   }) async {
-    final session = MethodCallSession(
+    final session = MethodCallSession._(
       server: server,
       uri: uri,
       body: body,
@@ -375,7 +372,7 @@ class MethodCallSession extends Session {
 /// provides easy access to the database.
 class WebCallSession extends Session {
   /// Creates a new [Session] for a method call to an endpoint.
-  WebCallSession({
+  WebCallSession._({
     required super.server,
     required super.endpoint,
     required super.authenticationKey,
@@ -395,7 +392,7 @@ class WebCallSession extends Session {
     bool enableLogging = true,
     String? remoteInfo,
   }) async {
-    final session = WebCallSession(
+    final session = WebCallSession._(
       server: server,
       endpoint: endpoint,
       authenticationKey: authenticationKey,
@@ -421,7 +418,7 @@ class MethodStreamSession extends Session {
   String get method => _method;
 
   /// Creates a new [MethodStreamSession].
-  MethodStreamSession({
+  MethodStreamSession._({
     required super.server,
     required super.enableLogging,
     required super.authenticationKey,
@@ -444,7 +441,7 @@ class MethodStreamSession extends Session {
     required String method,
     required UuidValue connectionId,
   }) async {
-    final session = MethodStreamSession(
+    final session = MethodStreamSession._(
       server: server,
       enableLogging: enableLogging,
       authenticationKey: authenticationKey,
@@ -489,7 +486,7 @@ class StreamingSession extends Session {
   String get endpointName => _endpoint;
 
   /// Creates a new [Session] for the web socket stream.
-  StreamingSession({
+  StreamingSession._({
     required super.server,
     required this.uri,
     required this.request,
@@ -520,7 +517,7 @@ class StreamingSession extends Session {
     String endpoint = 'StreamingSession',
     bool enableLogging = true,
   }) async {
-    final session = StreamingSession(
+    final session = StreamingSession._(
       server: server,
       uri: uri,
       request: request,
@@ -813,14 +810,10 @@ extension SessionAuthenticationInitializationExtension on Session {
   /// authentication once. Subsequent calls will return immediately without performing
   /// any work.
   Future<void> initializeAuthentication() async {
-    if (_authenticationInitialized) return;
-
     var authKey = authenticationKey;
     if (authKey != null) {
       _authenticated = await server.authenticationHandler(this, authKey);
     }
-
-    _authenticationInitialized = true;
   }
 
   /// Updates the authentication key and re-initializes authentication.
@@ -831,16 +824,12 @@ extension SessionAuthenticationInitializationExtension on Session {
   ///
   /// After calling this method, the [Session.authenticated] property will reflect
   /// the authentication status for the new key.
-  // TODO: Move this to an extension method on StreamingSession.
-  // TODO: Make static Session.create
   Future<void> updateAuthenticationKey(String? authenticationKey) async {
     _authenticationKey = authenticationKey;
 
     if (authenticationKey == null) {
       _authenticated = null;
-      _authenticationInitialized = true;
     } else {
-      _authenticationInitialized = false;
       await initializeAuthentication();
     }
   }
