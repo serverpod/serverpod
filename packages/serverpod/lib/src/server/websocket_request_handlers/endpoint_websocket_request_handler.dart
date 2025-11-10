@@ -23,7 +23,7 @@ abstract class EndpointWebsocketRequestHandler {
     void Function() onClosed,
   ) async {
     try {
-      var session = await StreamingSession.create(
+      var session = await InternalSessionFactory.createStreamingSession(
         server: server,
         uri: request.requestedUri,
         request: request,

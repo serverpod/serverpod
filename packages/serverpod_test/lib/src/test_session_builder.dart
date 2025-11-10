@@ -1,6 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-// ignore: implementation_imports
-import 'package:serverpod/src/server/session.dart';
 
 import 'test_serverpod.dart';
 

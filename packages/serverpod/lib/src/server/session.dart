@@ -332,7 +332,7 @@ class MethodCallSession extends Session {
   ///
   /// This factory method creates a session and initializes authentication
   /// before returning it.
-  static Future<MethodCallSession> create({
+  static Future<MethodCallSession> _create({
     required Server server,
     required Uri uri,
     required String body,
@@ -380,7 +380,7 @@ class WebCallSession extends Session {
   ///
   /// This factory method creates a session and initializes authentication
   /// before returning it.
-  static Future<WebCallSession> create({
+  static Future<WebCallSession> _create({
     required Server server,
     required String endpoint,
     required String? authenticationKey,
@@ -427,7 +427,7 @@ class MethodStreamSession extends Session {
   ///
   /// This factory method creates a session and initializes authentication
   /// before returning it.
-  static Future<MethodStreamSession> create({
+  static Future<MethodStreamSession> _create({
     required Server server,
     required bool enableLogging,
     required String? authenticationKey,
@@ -502,7 +502,7 @@ class StreamingSession extends Session {
   ///
   /// This factory method creates a session and initializes authentication
   /// before returning it.
-  static Future<StreamingSession> create({
+  static Future<StreamingSession> _create({
     required Server server,
     required Uri uri,
     required Request request,
@@ -757,6 +757,94 @@ class MessageCentralAccess {
       MessageCentralServerpodChannels.revokedAuthentication(userIdentifier),
       message,
       global: false,
+    );
+  }
+}
+
+/// Internal factory methods for creating Session instances.
+/// This class is hidden from the public API and should only be used within Serverpod.
+abstract interface class InternalSessionFactory {
+  /// Creates a new [MethodCallSession].
+  static Future<MethodCallSession> createMethodCallSession({
+    required Server server,
+    required Uri uri,
+    required String body,
+    required String path,
+    required Request request,
+    required String method,
+    required String endpoint,
+    required Map<String, dynamic> queryParameters,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    return MethodCallSession._create(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      request: request,
+      method: method,
+      endpoint: endpoint,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+  }
+
+  /// Creates a new [WebCallSession].
+  static Future<WebCallSession> createWebCallSession({
+    required Server server,
+    required String endpoint,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    return WebCallSession._create(
+      server: server,
+      endpoint: endpoint,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+  }
+
+  /// Creates a new [MethodStreamSession].
+  static Future<MethodStreamSession> createMethodStreamSession({
+    required Server server,
+    required bool enableLogging,
+    required String? authenticationKey,
+    required String endpoint,
+    required String method,
+    required UuidValue connectionId,
+  }) async {
+    return MethodStreamSession._create(
+      server: server,
+      enableLogging: enableLogging,
+      authenticationKey: authenticationKey,
+      endpoint: endpoint,
+      method: method,
+      connectionId: connectionId,
+    );
+  }
+
+  /// Creates a new [StreamingSession].
+  static Future<StreamingSession> createStreamingSession({
+    required Server server,
+    required Uri uri,
+    required Request request,
+    required RelicWebSocket webSocket,
+    String endpoint = 'StreamingSession',
+    bool enableLogging = true,
+  }) async {
+    return StreamingSession._create(
+      server: server,
+      uri: uri,
+      request: request,
+      webSocket: webSocket,
+      endpoint: endpoint,
+      enableLogging: enableLogging,
     );
   }
 }
