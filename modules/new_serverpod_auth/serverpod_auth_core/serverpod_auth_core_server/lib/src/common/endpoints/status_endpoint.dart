@@ -18,7 +18,7 @@ class StatusEndpoint extends Endpoint {
 
   /// Signs out a user from the current device.
   Future<void> signOutDevice(final Session session) async {
-    final authInfoIdStr = (session.authenticated)?.authId;
+    final authInfoIdStr = session.authenticated?.authId;
     if (authInfoIdStr == null) return;
     final authInfoId = UuidValue.withValidation(authInfoIdStr);
 

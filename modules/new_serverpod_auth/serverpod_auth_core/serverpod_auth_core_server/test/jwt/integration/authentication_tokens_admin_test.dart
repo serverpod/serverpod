@@ -261,7 +261,7 @@ void main() {
 
       expect(tokens, hasLength(100));
       expect(
-        tokens.map(((final t) => t.id)),
+        tokens.map((final t) => t.id),
         refreshTokenIdsInOrderOfCreation.take(100),
       );
     });
@@ -276,7 +276,7 @@ void main() {
 
       expect(tokens, hasLength(100));
       expect(
-        tokens.map(((final t) => t.id)),
+        tokens.map((final t) => t.id),
         refreshTokenIdsInOrderOfCreation.skip(50).take(100),
       );
     });
@@ -292,7 +292,7 @@ void main() {
 
       expect(tokens, hasLength(2));
       expect(
-        tokens.map(((final t) => t.id)),
+        tokens.map((final t) => t.id),
         [
           refreshTokenIdsInOrderOfCreation[0],
           refreshTokenIdsInOrderOfCreation[2],
