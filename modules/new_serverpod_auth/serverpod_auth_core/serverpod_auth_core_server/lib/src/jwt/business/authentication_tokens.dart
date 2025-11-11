@@ -374,10 +374,10 @@ final class AuthenticationTokens {
 }
 
 extension on Set<Scope> {
-  Set<String> get names => ({
+  Set<String> get names => {
         for (final scope in this)
           if (scope.name != null) scope.name!,
-      });
+      };
 }
 
 extension on RefreshToken {

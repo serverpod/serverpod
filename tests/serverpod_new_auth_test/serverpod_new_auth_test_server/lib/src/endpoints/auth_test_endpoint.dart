@@ -65,7 +65,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    final userId = await session.authenticated;
+    final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
 }

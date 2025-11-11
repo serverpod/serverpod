@@ -41,9 +41,11 @@ import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_fiel
     as _i21;
 import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
     as _i22;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
     as _i23;
-import 'protocol.dart' as _i24;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i24;
+import 'protocol.dart' as _i25;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -3242,6 +3244,80 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointSessionAuthentication extends _i1.EndpointRef {
+  EndpointSessionAuthentication(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'sessionAuthentication';
+
+  /// Returns authenticated user identifier or null
+  _i2.Future<String?> getAuthenticatedUserId() =>
+      caller.callServerEndpoint<String?>(
+        'sessionAuthentication',
+        'getAuthenticatedUserId',
+        {},
+      );
+
+  /// Returns all scope names
+  _i2.Future<List<String>> getAuthenticatedScopes() =>
+      caller.callServerEndpoint<List<String>>(
+        'sessionAuthentication',
+        'getAuthenticatedScopes',
+        {},
+      );
+
+  /// Returns authenticated auth ID or null
+  _i2.Future<String?> getAuthenticatedAuthId() =>
+      caller.callServerEndpoint<String?>(
+        'sessionAuthentication',
+        'getAuthenticatedAuthId',
+        {},
+      );
+
+  /// Returns full authentication info
+  _i2.Future<_i23.SessionAuthInfo> getAuthenticationInfo() =>
+      caller.callServerEndpoint<_i23.SessionAuthInfo>(
+        'sessionAuthentication',
+        'getAuthenticationInfo',
+        {},
+      );
+
+  /// Returns authentication status as boolean
+  _i2.Future<bool> isAuthenticated() => caller.callServerEndpoint<bool>(
+        'sessionAuthentication',
+        'isAuthenticated',
+        {},
+      );
+
+  /// Stream that yields authenticated user ID
+  _i2.Stream<String?> streamAuthenticatedUserId() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<String?>, String?>(
+        'sessionAuthentication',
+        'streamAuthenticatedUserId',
+        {},
+        {},
+      );
+
+  /// Stream that yields authentication status
+  _i2.Stream<bool> streamIsAuthenticated() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+        'sessionAuthentication',
+        'streamIsAuthenticated',
+        {},
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointSessionAuthenticationStreaming extends _i1.EndpointRef {
+  EndpointSessionAuthenticationStreaming(_i1.EndpointCaller caller)
+      : super(caller);
+
+  @override
+  String get name => 'sessionAuthenticationStreaming';
+}
+
+/// {@category Endpoint}
 class EndpointSetParameters extends _i1.EndpointRef {
   EndpointSetParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -4143,8 +4219,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i23.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i23.MyFeatureModel>(
+  _i2.Future<_i24.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i24.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -4178,7 +4254,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i24.Protocol(),
+          _i25.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -4239,6 +4315,9 @@ class Client extends _i1.ServerpodClientShared {
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
     serverOnlyScopedFieldChildModel =
         EndpointServerOnlyScopedFieldChildModel(this);
+    sessionAuthentication = EndpointSessionAuthentication(this);
+    sessionAuthenticationStreaming =
+        EndpointSessionAuthenticationStreaming(this);
     setParameters = EndpointSetParameters(this);
     signInRequired = EndpointSignInRequired(this);
     adminScopeRequired = EndpointAdminScopeRequired(this);
@@ -4358,6 +4437,11 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointServerOnlyScopedFieldChildModel
       serverOnlyScopedFieldChildModel;
 
+  late final EndpointSessionAuthentication sessionAuthentication;
+
+  late final EndpointSessionAuthenticationStreaming
+      sessionAuthenticationStreaming;
+
   late final EndpointSetParameters setParameters;
 
   late final EndpointSignInRequired signInRequired;
@@ -4443,6 +4527,8 @@ class Client extends _i1.ServerpodClientShared {
         'redis': redis,
         'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,
         'serverOnlyScopedFieldChildModel': serverOnlyScopedFieldChildModel,
+        'sessionAuthentication': sessionAuthentication,
+        'sessionAuthenticationStreaming': sessionAuthenticationStreaming,
         'setParameters': setParameters,
         'signInRequired': signInRequired,
         'adminScopeRequired': adminScopeRequired,

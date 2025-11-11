@@ -378,6 +378,15 @@ serverOnlyScopedFieldModel:
   - getScopeServerOnlyField:
 serverOnlyScopedFieldChildModel:
   - getProtocolField:
+sessionAuthentication:
+  - getAuthenticatedUserId:
+  - getAuthenticatedScopes:
+  - getAuthenticatedAuthId:
+  - getAuthenticationInfo:
+  - isAuthenticated:
+  - streamAuthenticatedUserId:
+  - streamIsAuthenticated:
+sessionAuthenticationStreaming:
 setParameters:
   - returnIntSet:
   - returnIntSetSet:

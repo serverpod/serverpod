@@ -6,6 +6,7 @@ import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -169,7 +170,7 @@ class _SessionMiddleware extends MiddlewareObject {
   @override
   Handler call(Handler next) {
     return (req) async {
-      final session = WebCallSession(
+      final session = await SessionInternalMethods.createWebCallSession(
         server: _server,
         endpoint: req.requestedUri.path,
         authenticationKey: req.headers.authorization?.headerValue,

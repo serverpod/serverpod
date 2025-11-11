@@ -27,7 +27,7 @@ abstract class PasskeyIDPBaseEndpoint extends Endpoint {
   }) async {
     await passkeyIDP.register(
       session,
-      authUserId: (await session.authenticated)!.authUserId,
+      authUserId: session.authenticated!.authUserId,
       request: registrationRequest,
     );
   }
