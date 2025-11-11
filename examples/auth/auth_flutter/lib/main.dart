@@ -16,7 +16,7 @@ late final Client client;
 
 late String serverUrl;
 
-void main() {
+void main() async {
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
@@ -30,6 +30,10 @@ void main() {
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = ClientAuthSessionManager();
 
+  await client.auth.initializeAppleSignIn(
+    serviceIdentifier: 'dev.serverpod.example.authFlutter-web',
+    redirectUri: 'https://90d4678ad584.ngrok.app/hooks/apple-notification',
+  );
   client.auth.initialize();
 
   runApp(const ExampleApp());
