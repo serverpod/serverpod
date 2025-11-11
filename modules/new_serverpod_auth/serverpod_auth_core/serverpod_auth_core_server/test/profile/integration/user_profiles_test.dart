@@ -506,6 +506,32 @@ void main() {
         );
       },
     );
+
+    test(
+        'Given a profile without an image when removing the user image then imageUrl remains null.',
+        () async {
+      final profileBefore = await UserProfiles.findUserProfileByUserId(
+        session,
+        authUserId,
+      );
+      expect(profileBefore.imageUrl, isNull);
+
+      final updatedProfile = await UserProfiles.removeUserImage(
+        session,
+        authUserId,
+      );
+
+      expect(updatedProfile.imageUrl, isNull);
+
+      final profileAfter = await UserProfiles.findUserProfileByUserId(
+        session,
+        authUserId,
+      );
+      expect(profileAfter.imageUrl, isNull);
+
+      final images = await UserProfileImage.db.find(session);
+      expect(images, isEmpty);
+    });
   });
 
   withServerpod('Given an `AuthUser` with a profile with an image,',
@@ -628,6 +654,49 @@ void main() {
       expect(
         profileImagesAfterDelete,
         isEmpty,
+      );
+    });
+
+    test(
+        'Given a user profile with an image when removing the user image then the image is deleted and imageUrl is null.',
+        () async {
+      final profileBeforeRemove = await UserProfiles.findUserProfileByUserId(
+        session,
+        authUserId,
+      );
+      expect(profileBeforeRemove.imageUrl, isNotNull);
+
+      final imageBeforeRemove = (await UserProfileImage.db.find(session)).single;
+      expect(
+        await session.storage.fileExists(
+          storageId: imageBeforeRemove.storageId,
+          path: imageBeforeRemove.path,
+        ),
+        isTrue,
+      );
+
+      final updatedProfile = await UserProfiles.removeUserImage(
+        session,
+        authUserId,
+      );
+
+      expect(updatedProfile.imageUrl, isNull);
+
+      final profileAfterRemove = await UserProfiles.findUserProfileByUserId(
+        session,
+        authUserId,
+      );
+      expect(profileAfterRemove.imageUrl, isNull);
+
+      final imagesAfterRemove = await UserProfileImage.db.find(session);
+      expect(imagesAfterRemove, isEmpty);
+
+      expect(
+        await session.storage.fileExists(
+          storageId: imageBeforeRemove.storageId,
+          path: imageBeforeRemove.path,
+        ),
+        isFalse,
       );
     });
   });

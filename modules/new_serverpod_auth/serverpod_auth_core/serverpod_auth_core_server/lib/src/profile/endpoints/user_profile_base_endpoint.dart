@@ -26,12 +26,13 @@ class UserProfileInfoEndpoint extends Endpoint {
 /// To expose these endpoint methods on your server, extend this class in a
 /// concrete class on your server.
 abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
-  /// Removes the users uploaded image, replacing it with the default user
-  /// image.
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
   Future<UserProfileModel> removeUserImage(final Session session) async {
     final userId = (await session.authenticated)!.authUserId;
 
-    return UserProfiles.setDefaultUserImage(session, userId);
+    return UserProfiles.removeUserImage(session, userId);
   }
 
   /// Sets a new user image for the signed in user.

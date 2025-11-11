@@ -403,6 +403,67 @@ abstract final class UserProfiles {
     );
   }
 
+  /// Removes a user's image, setting it to null.
+  ///
+  /// If the user had an existing image, it is deleted from storage.
+  /// The user profile will have no image URL after this operation.
+  static Future<UserProfileModel> removeUserImage(
+    final Session session,
+    final UuidValue authUserId, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
+        // Store the old image for deletion
+        final oldImage = userProfile.image;
+
+        // Clear the image reference
+        userProfile.imageId = null;
+        userProfile.image = null;
+
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
+
+        // Delete the old image from storage if it existed
+        if (oldImage != null) {
+          try {
+            await session.storage.deleteFile(
+              storageId: oldImage.storageId,
+              path: oldImage.path,
+            );
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to delete user image from storage',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+
+          // Delete the image record from the database
+          await UserProfileImage.db.deleteRow(
+            session,
+            oldImage,
+            transaction: transaction,
+          );
+        }
+
+        return updatedProfile.toModel();
+      },
+    );
+  }
+
   static Future<UserProfileModel> _setUserImage(
     final Session session,
     final UuidValue authUserId,
