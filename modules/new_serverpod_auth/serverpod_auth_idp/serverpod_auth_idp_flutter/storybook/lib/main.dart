@@ -16,6 +16,7 @@ final client = Client('http://localhost:8080/')
 void main() {
   client.auth.initialize();
   client.auth.initializeGoogleSignIn();
+  client.auth.initializeAppleSignIn();
 
   runApp(const MainApp());
 }

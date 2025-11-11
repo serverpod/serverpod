@@ -10,6 +10,7 @@ export 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 export 'src/apple/apple_auth_controller.dart';
 export 'src/apple/apple_sign_in_button.dart';
+export 'src/apple/apple_sign_in_service.dart';
 export 'src/apple/apple_sign_in_style.dart';
 export 'src/apple/apple_sign_in_widget.dart';
 export 'src/email/email_auth_controller.dart';

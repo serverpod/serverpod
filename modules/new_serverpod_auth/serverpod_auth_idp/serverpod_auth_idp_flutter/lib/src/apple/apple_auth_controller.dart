@@ -6,6 +6,8 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import 'apple_sign_in_service.dart';
+
 /// Controller for managing Apple-based authentication flows.
 ///
 /// This controller handles all the business logic for Apple authentication,
@@ -97,8 +99,12 @@ class AppleAuthController extends ChangeNotifier {
     _setState(AppleAuthState.loading);
 
     try {
+      final webAuthOptions =
+          await AppleSignInService.instance.webAuthenticationOptions();
+
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: scopes,
+        webAuthenticationOptions: webAuthOptions,
       );
 
       await _handleServerSideSignIn(credential);
