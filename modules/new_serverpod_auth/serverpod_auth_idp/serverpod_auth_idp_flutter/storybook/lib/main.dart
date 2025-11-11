@@ -7,6 +7,7 @@ import 'stories/email.dart';
 import 'stories/google.dart';
 import 'stories/signin.dart';
 import 'utils/client.dart';
+import 'utils/wrapper.dart';
 
 final client = Client('http://localhost:8080/')
   ..authSessionManager = ClientAuthSessionManager();
@@ -29,6 +30,7 @@ class MainApp extends StatelessWidget {
       ],
       child: Storybook(
         canvasColor: Colors.white,
+        wrapperBuilder: wrapperBuilder,
         initialStory: 'Home',
         plugins: StorybookPlugins(
           enableTimeDilation: true,
