@@ -10,11 +10,8 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
 
   /// Creates a new [EmailIdentityProviderFactory].
   EmailIdentityProviderFactory(
-    this.config, {
-    super.tokenManagerOverride,
-    super.authUsersOverride,
-    super.userProfilesOverride,
-  });
+    this.config,
+  );
 
   @override
   EmailIDP construct({

@@ -8,10 +8,9 @@ class AuthSessionsTokenManagerFactory
   final AuthSessionsConfig config;
 
   /// Creates a new [AuthSessionsTokenManagerFactory].
-  AuthSessionsTokenManagerFactory({
-    required this.config,
-    super.authUsersOverride,
-  });
+  AuthSessionsTokenManagerFactory(
+    this.config,
+  );
 
   @override
   AuthSessionsTokenManager construct({required final AuthUsers authUsers}) =>

@@ -11,10 +11,8 @@ class PasskeyIdentityProviderFactory
 
   /// Creates a new [PasskeyIdentityProviderFactory].
   PasskeyIdentityProviderFactory(
-    this.config, {
-    super.tokenManagerOverride,
-    super.authUsersOverride,
-  });
+    this.config,
+  );
 
   @override
   PasskeyIDP construct({

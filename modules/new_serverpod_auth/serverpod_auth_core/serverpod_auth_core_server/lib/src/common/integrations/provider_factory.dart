@@ -9,25 +9,6 @@ abstract class IdentityProviderFactory<T extends Object> {
   /// Used to store the provider in the AuthConfig.
   Type get type => T;
 
-  /// Default constructor that allows for overriding the token manager.
-  IdentityProviderFactory({
-    this.tokenManagerOverride,
-    this.authUsersOverride,
-    this.userProfilesOverride,
-  });
-
-  /// Optional [TokenManager] to override for this provider.
-  /// If null, the default manager will be used.
-  final TokenManager? tokenManagerOverride;
-
-  /// Optional [AuthUsers] to override for this provider.
-  /// If null, the default manager will be used.
-  final AuthUsers? authUsersOverride;
-
-  /// Optional [UserProfiles] to override for this provider.
-  /// If null, the default manager will be used.
-  final UserProfiles? userProfilesOverride;
-
   /// Constructs a new instance of the provider.
   ///
   /// [tokenManager] is the token manager to use for the provider.

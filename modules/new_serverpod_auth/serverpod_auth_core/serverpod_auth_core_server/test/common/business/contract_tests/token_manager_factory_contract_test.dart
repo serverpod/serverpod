@@ -56,7 +56,7 @@ void main() {
 
   testSuite<AuthSessionsTokenManager>(
     () => AuthSessionsTokenManagerFactory(
-      config: AuthSessionsConfig(
+      AuthSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),
     ),
@@ -64,7 +64,7 @@ void main() {
 
   testSuite<AuthenticationTokensTokenManager>(
     () => AuthenticationTokensTokenManagerFactory(
-      config: AuthenticationTokenConfig(
+      AuthenticationTokenConfig(
         algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
           key: SecretKey('test-private-key-for-HS512'),
         ),

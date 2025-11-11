@@ -10,11 +10,8 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
 
   /// Creates a new [GoogleIdentityProviderFactory].
   GoogleIdentityProviderFactory(
-    this.config, {
-    super.tokenManagerOverride,
-    super.authUsersOverride,
-    super.userProfilesOverride,
-  });
+    this.config,
+  );
 
   @override
   GoogleIDP construct({

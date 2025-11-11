@@ -7,7 +7,6 @@ import 'fake_token_storage.dart';
 class FakeTokenManagerFactory extends TokenManagerFactory<FakeTokenManager> {
   FakeTokenManagerFactory({
     required this.tokenStorage,
-    super.authUsersOverride,
   });
 
   final FakeTokenStorage tokenStorage;

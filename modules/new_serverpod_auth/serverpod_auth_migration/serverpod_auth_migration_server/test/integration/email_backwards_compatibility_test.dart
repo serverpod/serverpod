@@ -13,8 +13,7 @@ import './test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    config:
-        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   const newEmailIDPConfig =

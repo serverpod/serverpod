@@ -8,10 +8,9 @@ class AuthenticationTokensTokenManagerFactory
   final AuthenticationTokenConfig config;
 
   /// Creates a new [AuthenticationTokensTokenManagerFactory].
-  AuthenticationTokensTokenManagerFactory({
-    required this.config,
-    super.authUsersOverride,
-  });
+  AuthenticationTokensTokenManagerFactory(
+    this.config,
+  );
 
   @override
   AuthenticationTokensTokenManager construct({

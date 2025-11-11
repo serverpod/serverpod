@@ -7,12 +7,6 @@ import 'fake_identity_provider.dart';
 /// A fake implementation of [IdentityProviderFactory] for testing purposes.
 class FakeIdentityProviderFactory
     extends IdentityProviderFactory<FakeIdentityProvider> {
-  FakeIdentityProviderFactory({
-    super.tokenManagerOverride,
-    super.authUsersOverride,
-    super.userProfilesOverride,
-  });
-
   @override
   FakeIdentityProvider construct({
     required final TokenManager tokenManager,
