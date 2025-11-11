@@ -16,7 +16,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const verificationCode = '12345678';
 
       setUp(() async {
@@ -30,11 +29,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -45,7 +42,7 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called then attempting to verify request throws request not found exception',
+          'when delete email account request by id is called then attempting to verify registration code throws request not found exception',
           () async {
         await session.db.transaction(
           (final transaction) =>
@@ -58,7 +55,7 @@ void main() {
 
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -85,7 +82,6 @@ void main() {
       late UuidValue secondAccountRequestId;
       const firstEmail = 'test1@serverpod.dev';
       const secondEmail = 'test2@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -100,21 +96,17 @@ void main() {
         );
 
         firstAccountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: firstEmail,
-            password: password,
             transaction: transaction,
           ),
         );
 
         secondAccountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: secondEmail,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -125,7 +117,7 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called for one user then other user can still verify its request',
+          'when delete email account request by id is called for one user then other user can still verify its registration code',
           () async {
         await session.db.transaction(
           (final transaction) =>
@@ -138,7 +130,7 @@ void main() {
 
         final secondVerifyAccountRequestFuture = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: secondAccountRequestId,
             verificationCode: verificationCode,

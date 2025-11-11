@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/auth_user.dart';
@@ -10,15 +12,16 @@ import '../../test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given pending account request exists',
+    'Given a verified account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
+      late String verificationToken;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
+      const allowedPassword = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -29,15 +32,25 @@ void main() {
           config: EmailIDPConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
+            passwordValidationFunction: (final password) =>
+                password == allowedPassword,
           ),
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
+            transaction: transaction,
+          ),
+        );
+
+        verificationToken = await session.db.transaction(
+          (final transaction) =>
+              fixture.accountCreationUtil.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
             transaction: transaction,
           ),
         );
@@ -48,7 +61,7 @@ void main() {
       });
 
       group(
-          'when complete account creation is called with generated verification code',
+          'when complete account creation is called with valid verification token',
           () {
         late Future<EmailIDPCompleteAccountCreationResult>
             completeAccountCreationFuture;
@@ -57,13 +70,14 @@ void main() {
             (final transaction) =>
                 fixture.accountCreationUtil.completeAccountCreation(
               session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
+              completeAccountCreationToken: verificationToken,
+              password: allowedPassword,
               transaction: transaction,
             ),
           );
         });
-        test('then it succeeds and returns result with auth user id and email',
+        test(
+            'then it succeeds and returns result with auth user id, account request id and email',
             () async {
           await expectLater(
             completeAccountCreationFuture,
@@ -72,6 +86,11 @@ void main() {
                   .having(
                     (final result) => result.authUserId,
                     'authUserId',
+                    isA<UuidValue>(),
+                  )
+                  .having(
+                    (final result) => result.accountRequestId,
+                    'accountRequestId',
                     isA<UuidValue>(),
                   )
                   .having(
@@ -102,7 +121,7 @@ void main() {
             (final transaction) => fixture.authenticationUtil.authenticate(
               session,
               email: email,
-              password: password,
+              password: allowedPassword,
               transaction: transaction,
             ),
           );
@@ -112,14 +131,33 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with invalid verification code then it throws invalid verification code exception',
+          'when complete account creation is called with invalid password then it throws password policy violation exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.completeAccountCreation(
             session,
-            accountRequestId: accountRequestId,
-            verificationCode: '$verificationCode-invalid',
+            completeAccountCreationToken: verificationToken,
+            password: '$allowedPassword-invalid',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailPasswordPolicyViolationException>()),
+        );
+      });
+
+      test(
+          'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
+          () async {
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.accountCreationUtil.completeAccountCreation(
+            session,
+            completeAccountCreationToken: '$verificationToken-invalid',
+            password: allowedPassword,
             transaction: transaction,
           ),
         );
@@ -131,7 +169,7 @@ void main() {
       });
 
       test(
-          'when complete account creation is called with valid code after expiration then it throws verification expired exception',
+          'when complete account creation is called with valid verification token after expiration then it throws verification expired exception',
           () async {
         const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -146,8 +184,8 @@ void main() {
               (final transaction) =>
                   fixture.accountCreationUtil.completeAccountCreation(
                 session,
-                accountRequestId: accountRequestId,
-                verificationCode: verificationCode,
+                completeAccountCreationToken: verificationToken,
+                password: allowedPassword,
                 transaction: transaction,
               ),
             );
@@ -163,14 +201,70 @@ void main() {
   );
 
   withServerpod(
+    'Given an unverified account request exists',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      late UuidValue accountRequestId;
+      const email = 'test@serverpod.dev';
+      late String verificationCode;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        verificationCode = const Uuid().v4().toString();
+        fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            registrationVerificationCodeGenerator: () => verificationCode,
+          ),
+        );
+
+        // Create account request but DON'T verify it
+        accountRequestId = await session.db.transaction(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
+      });
+
+      test(
+        'when complete account creation is called with token for unverified request then it throws not verified exception',
+        () async {
+          // Create a fake token with correct format but for unverified request
+          final fakeToken = base64Encode(
+            utf8.encode('$accountRequestId:fake-token'),
+          );
+
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.completeAccountCreation(
+              session,
+              completeAccountCreationToken: fakeToken,
+              password: 'ValidPassword123!',
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotVerifiedException>()),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given no account request exists',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIDPTestFixture fixture;
-      final accountRequestId = const Uuid().v4obj();
-      const verificationCode = '12345678';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -182,14 +276,41 @@ void main() {
       });
 
       test(
-          'when complete account creation is called then it throws request not found exception',
+          'when complete account creation is called with invalid verification token then it throws invalid verification code exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.completeAccountCreation(
             session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
+            completeAccountCreationToken: 'invalid',
+            password: 'Foobar123!',
+            transaction: transaction,
+          ),
+        );
+
+        await expectLater(
+          result,
+          throwsA(isA<EmailAccountRequestInvalidVerificationCodeException>()),
+        );
+      });
+
+      test(
+          'when complete account creation is called with correctly formatted but missing verification token then it throws not found exception',
+          () async {
+        // This test depends in implementation details but ensures we return not
+        // found exception when the token is not found.
+
+        // This needs to be updated if the implementation details for the token change.
+        final mockedToken = base64Encode(
+          utf8.encode('${const Uuid().v7()}:mocked-token'),
+        );
+
+        final result = session.db.transaction(
+          (final transaction) =>
+              fixture.accountCreationUtil.completeAccountCreation(
+            session,
+            completeAccountCreationToken: mockedToken,
+            password: 'Foobar123!',
             transaction: transaction,
           ),
         );
@@ -197,156 +318,6 @@ void main() {
         await expectLater(
           result,
           throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
-    },
-  );
-
-  withServerpod(
-    'Given account request that has failed verification and config allows multiple attempts',
-    rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIDPTestFixture fixture;
-      late UuidValue accountRequestId;
-      const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
-      late String verificationCode;
-
-      setUp(() async {
-        session = sessionBuilder.build();
-
-        verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
-            secretHashPepper: 'pepper',
-            registrationVerificationCodeGenerator: () => verificationCode,
-            registrationVerificationCodeAllowedAttempts: 2,
-          ),
-        );
-
-        accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
-        );
-
-        // Make one failed attempt
-        try {
-          await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
-          );
-        } on EmailAccountRequestInvalidVerificationCodeException {
-          // Expected
-        }
-      });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
-
-      test(
-          'when complete account creation is called with valid verification code then it succeeds and returns result',
-          () async {
-        final result = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
-
-        expect(result, isNotNull);
-        expect(result.authUserId, isA<UuidValue>());
-        expect(result.email, equals(email));
-      });
-    },
-  );
-
-  withServerpod(
-    'Given account request that has failed verification matching the allowed attempts',
-    rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIDPTestFixture fixture;
-      late UuidValue accountRequestId;
-      const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
-      late String verificationCode;
-
-      setUp(() async {
-        session = sessionBuilder.build();
-
-        verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
-            secretHashPepper: 'pepper',
-            registrationVerificationCodeGenerator: () => verificationCode,
-            registrationVerificationCodeAllowedAttempts: 1,
-          ),
-        );
-
-        accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
-        );
-
-        // Exhaust allowed attempts
-        try {
-          await session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.completeAccountCreation(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: 'wrong-code',
-              transaction: transaction,
-            ),
-          );
-        } on EmailAccountRequestInvalidVerificationCodeException {
-          // Expected
-        }
-      });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
-
-      test(
-          'when complete account creation is called with valid verification code then it throws too many attempts exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.completeAccountCreation(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(
-              isA<EmailAccountRequestVerificationTooManyAttemptsException>()),
         );
       });
     },

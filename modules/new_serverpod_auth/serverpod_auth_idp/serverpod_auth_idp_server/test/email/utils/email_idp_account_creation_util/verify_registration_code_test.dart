@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
@@ -19,6 +21,7 @@ void main() {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       late String verificationCode;
+      const registrationVerificationCodeAllowedAttempts = 4;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -28,15 +31,15 @@ void main() {
           config: EmailIDPConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
+            registrationVerificationCodeAllowedAttempts:
+                registrationVerificationCodeAllowedAttempts,
           ),
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -47,13 +50,13 @@ void main() {
       });
 
       group(
-          'when verify account request is called with valid verification code',
+          'when verify registration code is called with valid verification code',
           () {
-        late Future<EmailAccountRequest> verifyAccountRequestFuture;
+        late Future<String> verifyAccountRequestFuture;
         setUp(() async {
           verifyAccountRequestFuture = session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -61,36 +64,25 @@ void main() {
             ),
           );
         });
-        test('then it succeeds and returns the account request', () async {
+
+        test('then it succeeds and returns the verification token', () async {
           await expectLater(
             verifyAccountRequestFuture,
-            completion(
-              isA<EmailAccountRequest>()
-                  .having(
-                    (final request) => request.id,
-                    'id',
-                    equals(accountRequestId),
-                  )
-                  .having(
-                    (final request) => request.email,
-                    'email',
-                    equals(email),
-                  ),
-            ),
+            completion(isA<String>()),
           );
         });
 
-        test('then the account request can be finalized', () async {
-          await verifyAccountRequestFuture;
-
-          final authUser = await fixture.createAuthUser(session);
+        test(
+            'then the returned verification token can be used to complete the account request',
+            () async {
+          final verificationToken = await verifyAccountRequestFuture;
 
           final finalizeAccountRequestFuture = session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.finalizeAccountRequest(
+                fixture.accountCreationUtil.completeAccountCreation(
               session,
-              accountRequestId: accountRequestId,
-              authUserId: authUser.id,
+              completeAccountCreationToken: verificationToken,
+              password: password,
               transaction: transaction,
             ),
           );
@@ -99,11 +91,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with invalid verification code then it throws invalid verification code exception',
+          'when verify registration code is called with invalid verification code then it throws invalid verification code exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: '$verificationCode-invalid',
@@ -118,7 +110,7 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid code after expiration then it throws verification expired exception',
+          'when verify registration code is called with valid code after expiration then it throws verification expired exception',
           () async {
         const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -131,7 +123,7 @@ void main() {
           () async {
             final result = session.db.transaction(
               (final transaction) =>
-                  fixture.accountCreationUtil.verifyAccountRequest(
+                  fixture.accountCreationUtil.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -146,6 +138,65 @@ void main() {
           },
         );
       });
+
+      group(
+          'when verify registration code is called multiple times in quick succession',
+          () {
+        late Future<List<String>> attempts;
+        const numberOfAttempts = registrationVerificationCodeAllowedAttempts;
+
+        setUp(() async {
+          attempts = List.generate(
+            numberOfAttempts,
+            (final _) => session.db.transaction(
+              (final transaction) =>
+                  fixture.accountCreationUtil.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
+            ),
+          ).wait;
+        });
+
+        test(
+            'then all attempts except one throw EmailAccountRequestVerificationCodeAlreadyUsedException',
+            () async {
+          await expectLater(
+            attempts,
+            throwsA(
+              isA<ParallelWaitError>()
+                  .having(
+                    (final e) => (e.errors as List<AsyncError?>).nonNulls,
+                    'errors',
+                    hasLength(numberOfAttempts - 1),
+                  )
+                  .having(
+                    (final e) => (e.errors as List<AsyncError?>).nonNulls.map(
+                          (final e) => e.error,
+                        ),
+                    'errors',
+                    everyElement(isA<
+                        EmailAccountRequestVerificationCodeAlreadyUsedException>()),
+                  ),
+            ),
+          );
+        });
+
+        test('then only one attempts succeeds', () async {
+          await expectLater(
+            attempts,
+            throwsA(
+              isA<ParallelWaitError>().having(
+                (final e) => (e.values as List<String?>).nonNulls,
+                'values',
+                hasLength(1),
+              ),
+            ),
+          );
+        });
+      });
     },
   );
 
@@ -158,7 +209,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -173,11 +223,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -185,7 +233,7 @@ void main() {
         // Verify the request
         await session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -199,11 +247,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it succeeds and returns the account request',
+          'when verify registration code is called with valid verification code then throws verification code already used exception',
           () async {
-        final request = await session.db.transaction(
+        final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -211,14 +259,17 @@ void main() {
           ),
         );
 
-        expect(request, isNotNull);
-        expect(request.id, equals(accountRequestId));
+        await expectLater(
+          result,
+          throwsA(
+              isA<EmailAccountRequestVerificationCodeAlreadyUsedException>()),
+        );
       });
     },
   );
 
   withServerpod(
-    'Given account request that has been finalized',
+    'Given account request that has been completed',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
@@ -241,19 +292,17 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
 
         // Verify and finalize the request
-        await session.db.transaction(
+        final verificationToken = await session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -261,14 +310,12 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
-
         await session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.finalizeAccountRequest(
+              fixture.accountCreationUtil.completeAccountCreation(
             session,
-            accountRequestId: accountRequestId,
-            authUserId: authUser.id,
+            completeAccountCreationToken: verificationToken,
+            password: password,
             transaction: transaction,
           ),
         );
@@ -279,11 +326,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
+          'when verify registration code is called with valid verification code then it throws request not found exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -308,7 +355,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -324,11 +370,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -337,7 +381,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -354,11 +398,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it succeeds and returns account request',
+          'when verify registration code is called with valid verification code then it succeeds and returns verification token',
           () async {
-        final request = await session.db.transaction(
+        final request = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -366,8 +410,7 @@ void main() {
           ),
         );
 
-        expect(request, isNotNull);
-        expect(request.id, equals(accountRequestId));
+        await expectLater(request, completion(isA<String>()));
       });
     },
   );
@@ -381,7 +424,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -397,11 +439,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -410,7 +450,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -427,11 +467,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with invalid verification code then it throws too many attempts exception',
+          'when verify registration code is called with invalid verification code then it throws too many attempts exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'wrong-code',
@@ -457,7 +497,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -473,11 +512,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -486,7 +523,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -501,7 +538,7 @@ void main() {
         try {
           await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'wrong-code',
@@ -518,11 +555,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
+          'when verify registration code is called with valid verification code then it throws too many attempts exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -532,7 +569,8 @@ void main() {
 
         await expectLater(
           result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
+          throwsA(
+              isA<EmailAccountRequestVerificationTooManyAttemptsException>()),
         );
       });
     },
@@ -547,7 +585,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const verificationCode = '12345678';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
 
@@ -564,11 +601,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -584,7 +619,7 @@ void main() {
             try {
               await session.db.transaction(
                 (final transaction) =>
-                    fixture.accountCreationUtil.verifyAccountRequest(
+                    fixture.accountCreationUtil.verifyRegistrationCode(
                   session,
                   accountRequestId: accountRequestId,
                   verificationCode: verificationCode,
@@ -603,11 +638,11 @@ void main() {
       });
 
       test(
-          'when verify account request is called with valid verification code then it throws request not found exception',
+          'when verify registration code is called with valid verification code then it throws request not found exception',
           () async {
         final result = session.db.transaction(
           (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+              fixture.accountCreationUtil.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,

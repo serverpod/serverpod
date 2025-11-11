@@ -85,9 +85,21 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   /// Always returns a account request ID, which can be used to complete the
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
-  _i2.Future<_i1.UuidValue> startRegistration({
-    required String email,
-    required String password,
+  _i2.Future<_i1.UuidValue> startRegistration({required String email});
+
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  _i2.Future<String> verifyRegistrationCode({
+    required _i1.UuidValue accountRequestId,
+    required String verificationCode,
   });
 
   /// Completes a new account registration, creating a new auth user with a
@@ -106,8 +118,8 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   ///
   /// Returns a session for the newly created user.
   _i2.Future<_i3.AuthSuccess> finishRegistration({
-    required _i1.UuidValue accountRequestId,
-    required String verificationCode,
+    required String registrationToken,
+    required String password,
   });
 
   /// Requests a password reset for [email].
