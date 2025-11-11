@@ -106,6 +106,9 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Whether the database is enabled and supported by the project configuration.
   final bool isDatabaseEnabled;
 
+  /// The output mode for test server logs.
+  final TestServerOutputMode testServerOutputMode;
+
   /// Creates a new test serverpod instance.
   TestServerpod({
     required bool? applyMigrations,
@@ -115,9 +118,11 @@ class TestServerpod<T extends InternalTestEndpoints> {
     required this.testEndpoints,
     required ServerpodLoggingMode? serverpodLoggingMode,
     required String? runMode,
+    required TestServerOutputMode? testServerOutputMode,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-  }) {
+  }) : testServerOutputMode =
+            testServerOutputMode ?? TestServerOutputMode.normal {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
     // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
@@ -146,10 +151,24 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
     try {
-      await IOOverrides.runZoned(
-        () => _serverpod.start(runInGuardedZone: false),
-        stdout: () => NullStdOut(),
-      );
+      switch (testServerOutputMode) {
+        case TestServerOutputMode.normal:
+          // Suppress stdout, allow stderr
+          await IOOverrides.runZoned(
+            () => _serverpod.start(runInGuardedZone: false),
+            stdout: () => NullStdOut(),
+          );
+        case TestServerOutputMode.verbose:
+          // Allow both stdout and stderr
+          await _serverpod.start(runInGuardedZone: false);
+        case TestServerOutputMode.silent:
+          // Suppress both stdout and stderr
+          await IOOverrides.runZoned(
+            () => _serverpod.start(runInGuardedZone: false),
+            stdout: () => NullStdOut(),
+            stderr: () => NullStdOut(),
+          );
+      }
     } on ExitException catch (e) {
       throw InitializationException(
         'Failed to start the serverpod instance${e.message.isEmpty ? ', check the log for more info.' : ': ${e.message}'}',
@@ -164,10 +183,24 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Shuts down the underlying serverpod instance.
   Future<void> shutdown() async {
     try {
-      await IOOverrides.runZoned(
-        () => _serverpod.shutdown(exitProcess: false),
-        stdout: () => NullStdOut(),
-      );
+      switch (testServerOutputMode) {
+        case TestServerOutputMode.normal:
+          // Suppress stdout, allow stderr
+          await IOOverrides.runZoned(
+            () => _serverpod.shutdown(exitProcess: false),
+            stdout: () => NullStdOut(),
+          );
+        case TestServerOutputMode.verbose:
+          // Allow both stdout and stderr
+          await _serverpod.shutdown(exitProcess: false);
+        case TestServerOutputMode.silent:
+          // Suppress both stdout and stderr
+          await IOOverrides.runZoned(
+            () => _serverpod.shutdown(exitProcess: false),
+            stdout: () => NullStdOut(),
+            stderr: () => NullStdOut(),
+          );
+      }
     } catch (e, stackTrace) {
       throw InitializationException(
         'Failed to shutdown the serverpod instance: $e\n$stackTrace',
