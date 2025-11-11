@@ -8,6 +8,8 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
+  const validTestToken = 'valid-test-token';
+
   group('Given a server with an authenticationHandler', () {
     late Serverpod server;
     const testUserId = 'test-user-123';
@@ -21,7 +23,7 @@ void main() {
           // This is likely a bug. For now, we handle it here.
           final t = token.replaceFirst('Bearer ', '');
 
-          if (t == 'valid-test-token') {
+          if (t == validTestToken) {
             return AuthenticationInfo(
               testUserId,
               testScopes,
@@ -52,7 +54,7 @@ void main() {
             'http://localhost:8080/',
             authenticationKeyManager: authKeyManager,
           );
-          authKeyManager.put('valid-test-token');
+          authKeyManager.put(validTestToken);
         });
 
         tearDown(() {
@@ -98,7 +100,7 @@ void main() {
             'http://localhost:8080/',
             authenticationKeyManager: authKeyManager,
           );
-          authKeyManager.put('valid-test-token');
+          authKeyManager.put(validTestToken);
         });
 
         tearDown(() {
@@ -134,7 +136,7 @@ void main() {
         response = await http.get(
           Uri.parse('http://localhost:8082/session-test'),
           headers: {
-            'Authorization': 'Bearer valid-test-token',
+            'Authorization': 'Bearer $validTestToken',
           },
         );
         body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -160,7 +162,7 @@ void main() {
           'http://localhost:8080/',
           authenticationKeyManager: authKeyManager,
         );
-        authKeyManager.put('valid-test-token');
+        authKeyManager.put(validTestToken);
 
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
@@ -186,7 +188,7 @@ void main() {
           'http://localhost:8080/',
           authenticationKeyManager: authKeyManager,
         );
-        authKeyManager.put('valid-test-token');
+        authKeyManager.put(validTestToken);
 
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
