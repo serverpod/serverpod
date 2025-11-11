@@ -40,8 +40,8 @@ class EmailIDPPasswordResetUtil {
   /// [transaction] and can not be rolled back, so the throttling will always be
   /// enforced.
   ///
-  /// Can throw [EmailPasswordResetTooManyAttemptsException] if the account
-  /// email does not exist in the database.
+  /// Can throw [EmailPasswordResetTooManyAttemptsException] if the user has
+  /// made too many attempts to request a password reset.
   ///
   /// Can throw [EmailPasswordResetEmailNotFoundException] if the email account
   /// does not exist. In this case, the caller should not expose this detail to
