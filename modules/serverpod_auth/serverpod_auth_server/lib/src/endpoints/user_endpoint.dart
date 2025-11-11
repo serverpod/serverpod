@@ -14,16 +14,15 @@ class UserEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  /// Removes the user's uploaded image, setting it to null.
-  ///
-  /// The client should handle displaying a placeholder for users without images.
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
   Future<bool> removeUserImage(Session session) async {
     if (!AuthConfig.current.userCanEditUserImage) {
       return false;
     }
 
     var userId = (await session.authenticated)?.userId;
-    return await UserImages.removeUserImage(session, userId!);
+    return await UserImages.setDefaultUserImage(session, userId!);
   }
 
   /// Sets a new user image for the signed in user.

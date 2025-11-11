@@ -267,9 +267,8 @@ class EndpointUser extends _i1.EndpointRef {
   @override
   String get name => 'serverpod_auth.user';
 
-  /// Removes the user's uploaded image, setting it to null.
-  ///
-  /// The client should handle displaying a placeholder for users without images.
+  /// Removes the users uploaded image, replacing it with the default user
+  /// image.
   _i2.Future<bool> removeUserImage() => caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'removeUserImage',
