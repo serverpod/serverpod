@@ -13,6 +13,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.0.0
   serverpod_auth_idp_flutter:
     path: ../
   storybook_toolkit: 2.0.0-dev.4

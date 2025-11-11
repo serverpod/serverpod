@@ -32,10 +32,11 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
     required String email,
   }) async {
     _mockData.email = email;
-    _mockData.verificationCode = 'A1b2C3';
+    _mockData.registrationCode = 'a1b2c3d4';
+    _mockData.registrationToken = null;
 
-    final accountRequestId = const Uuid().v4obj();
-    _mockData.accountRequestId = accountRequestId;
+    final accountRequestId = const Uuid().v7obj();
+    _mockData.registrationRequestId = accountRequestId;
     return accountRequestId;
   }
 
@@ -44,14 +45,14 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
     required UuidValue accountRequestId,
     required String verificationCode,
   }) async {
-    if (accountRequestId != _mockData.accountRequestId ||
-        verificationCode != _mockData.verificationCode) {
+    if (accountRequestId != _mockData.registrationRequestId ||
+        verificationCode != _mockData.registrationCode) {
       throw EmailAccountRequestException(
         reason: EmailAccountRequestExceptionReason.invalid,
       );
     }
 
-    final registrationToken = const Uuid().v4();
+    final registrationToken = const Uuid().v7();
     _mockData.registrationToken = registrationToken;
     return registrationToken;
   }
@@ -66,31 +67,20 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
         reason: EmailAccountRequestExceptionReason.invalid,
       );
     }
+    _mockData.password = password;
+    _mockData.registrationToken = null;
     return _mockData.authSuccess;
   }
 
   @override
   Future<UuidValue> startPasswordReset({required String email}) async {
     _mockData.email = email;
-    _mockData.passwordResetCode = 'A1b2C3';
+    _mockData.passwordResetCode = 'a1b2c3d4';
+    _mockData.passwordResetToken = null;
 
-    final passwordResetRequestId = const Uuid().v4obj();
+    final passwordResetRequestId = const Uuid().v7obj();
     _mockData.passwordResetRequestId = passwordResetRequestId;
     return passwordResetRequestId;
-  }
-
-  @override
-  Future<AuthSuccess> finishPasswordReset({
-    required String finishPasswordResetToken,
-    required String newPassword,
-  }) async {
-    if (finishPasswordResetToken != _mockData.passwordResetToken) {
-      throw EmailAccountRequestException(
-        reason: EmailAccountRequestExceptionReason.invalid,
-      );
-    }
-    _mockData.password = newPassword;
-    return _mockData.authSuccess;
   }
 
   @override
@@ -104,9 +94,24 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
         reason: EmailAccountRequestExceptionReason.invalid,
       );
     }
-    final finishPasswordResetToken = const Uuid().v4();
+    final finishPasswordResetToken = const Uuid().v7();
     _mockData.passwordResetToken = finishPasswordResetToken;
     return finishPasswordResetToken;
+  }
+
+  @override
+  Future<AuthSuccess> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) async {
+    if (finishPasswordResetToken != _mockData.passwordResetToken) {
+      throw EmailAccountRequestException(
+        reason: EmailAccountRequestExceptionReason.invalid,
+      );
+    }
+    _mockData.password = newPassword;
+    _mockData.passwordResetToken = null;
+    return _mockData.authSuccess;
   }
 }
 
@@ -178,16 +183,16 @@ class Client extends ServerpodClientShared {
 class MockAuthData {
   MockAuthData();
 
-  final authUserId = const Uuid().v4obj();
+  final authUserId = const Uuid().v7obj();
 
   String? email;
   String? password;
-  String? verificationCode;
+  String? registrationCode;
   String? passwordResetCode;
-  String? passwordResetToken;
   String? registrationToken;
+  String? passwordResetToken;
 
-  UuidValue? accountRequestId;
+  UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;
 
   AuthSuccess get authSuccess => AuthSuccess(

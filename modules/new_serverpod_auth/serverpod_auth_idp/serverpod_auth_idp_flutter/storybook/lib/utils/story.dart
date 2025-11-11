@@ -24,15 +24,22 @@ Widget buildIsolatedElementsForStory(
         for (var e in elements.entries) ...[
           divider,
           if (showTitles) Text(e.key),
-          SignInWidgetsColumn(
-            spacing: 8,
-            width: width.toDouble(),
-            children: e.value,
-          ),
+          wrapWidgetInDefaultColumn(e.value, width: width.toDouble()),
           if (e.key == elements.entries.last.key) divider,
         ],
       ],
     ),
+  );
+}
+
+Widget wrapWidgetInDefaultColumn(
+  List<Widget> children, {
+  required double width,
+}) {
+  return SignInWidgetsColumn(
+    spacing: 8,
+    width: width,
+    children: children,
   );
 }
 
