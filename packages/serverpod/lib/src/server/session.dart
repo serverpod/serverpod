@@ -327,40 +327,6 @@ class MethodCallSession extends Session {
     super.remoteInfo,
   })  : _method = method,
         super(method: method);
-
-  /// Creates a new [MethodCallSession] with authentication initialized.
-  ///
-  /// This factory method creates a session and initializes authentication
-  /// before returning it.
-  static Future<MethodCallSession> _create({
-    required Server server,
-    required Uri uri,
-    required String body,
-    required String path,
-    required Request request,
-    required String method,
-    required String endpoint,
-    required Map<String, dynamic> queryParameters,
-    required String? authenticationKey,
-    bool enableLogging = true,
-    String? remoteInfo,
-  }) async {
-    final session = MethodCallSession._(
-      server: server,
-      uri: uri,
-      body: body,
-      path: path,
-      request: request,
-      method: method,
-      endpoint: endpoint,
-      queryParameters: queryParameters,
-      authenticationKey: authenticationKey,
-      enableLogging: enableLogging,
-      remoteInfo: remoteInfo,
-    );
-    await session.initializeAuthentication();
-    return session;
-  }
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -375,28 +341,6 @@ class WebCallSession extends Session {
     super.enableLogging = true,
     super.remoteInfo,
   });
-
-  /// Creates a new [WebCallSession] with authentication initialized.
-  ///
-  /// This factory method creates a session and initializes authentication
-  /// before returning it.
-  static Future<WebCallSession> _create({
-    required Server server,
-    required String endpoint,
-    required String? authenticationKey,
-    bool enableLogging = true,
-    String? remoteInfo,
-  }) async {
-    final session = WebCallSession._(
-      server: server,
-      endpoint: endpoint,
-      authenticationKey: authenticationKey,
-      enableLogging: enableLogging,
-      remoteInfo: remoteInfo,
-    );
-    await session.initializeAuthentication();
-    return session;
-  }
 }
 
 /// When a connection is made to the [Server] to an endpoint method that uses a
@@ -422,30 +366,6 @@ class MethodStreamSession extends Session {
     required this.connectionId,
   })  : _method = method,
         super(method: method);
-
-  /// Creates a new [MethodStreamSession] with authentication initialized.
-  ///
-  /// This factory method creates a session and initializes authentication
-  /// before returning it.
-  static Future<MethodStreamSession> _create({
-    required Server server,
-    required bool enableLogging,
-    required String? authenticationKey,
-    required String endpoint,
-    required String method,
-    required UuidValue connectionId,
-  }) async {
-    final session = MethodStreamSession._(
-      server: server,
-      enableLogging: enableLogging,
-      authenticationKey: authenticationKey,
-      endpoint: endpoint,
-      method: method,
-      connectionId: connectionId,
-    );
-    await session.initializeAuthentication();
-    return session;
-  }
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -496,30 +416,6 @@ class StreamingSession extends Session {
 
     // Get the authentication key, if any
     _authenticationKey = queryParameters['auth'];
-  }
-
-  /// Creates a new [StreamingSession] with authentication initialized.
-  ///
-  /// This factory method creates a session and initializes authentication
-  /// before returning it.
-  static Future<StreamingSession> _create({
-    required Server server,
-    required Uri uri,
-    required Request request,
-    required RelicWebSocket webSocket,
-    String endpoint = 'StreamingSession',
-    bool enableLogging = true,
-  }) async {
-    final session = StreamingSession._(
-      server: server,
-      uri: uri,
-      request: request,
-      webSocket: webSocket,
-      endpoint: endpoint,
-      enableLogging: enableLogging,
-    );
-    await session.initializeAuthentication();
-    return session;
   }
 }
 
@@ -778,7 +674,7 @@ abstract interface class InternalSessionFactory {
     bool enableLogging = true,
     String? remoteInfo,
   }) async {
-    return MethodCallSession._create(
+    final session = MethodCallSession._(
       server: server,
       uri: uri,
       body: body,
@@ -791,6 +687,8 @@ abstract interface class InternalSessionFactory {
       enableLogging: enableLogging,
       remoteInfo: remoteInfo,
     );
+    await session.initializeAuthentication();
+    return session;
   }
 
   /// Creates a new [WebCallSession].
@@ -801,13 +699,15 @@ abstract interface class InternalSessionFactory {
     bool enableLogging = true,
     String? remoteInfo,
   }) async {
-    return WebCallSession._create(
+    final session = WebCallSession._(
       server: server,
       endpoint: endpoint,
       authenticationKey: authenticationKey,
       enableLogging: enableLogging,
       remoteInfo: remoteInfo,
     );
+    await session.initializeAuthentication();
+    return session;
   }
 
   /// Creates a new [MethodStreamSession].
@@ -819,7 +719,7 @@ abstract interface class InternalSessionFactory {
     required String method,
     required UuidValue connectionId,
   }) async {
-    return MethodStreamSession._create(
+    final session = MethodStreamSession._(
       server: server,
       enableLogging: enableLogging,
       authenticationKey: authenticationKey,
@@ -827,6 +727,8 @@ abstract interface class InternalSessionFactory {
       method: method,
       connectionId: connectionId,
     );
+    await session.initializeAuthentication();
+    return session;
   }
 
   /// Creates a new [StreamingSession].
@@ -838,7 +740,7 @@ abstract interface class InternalSessionFactory {
     String endpoint = 'StreamingSession',
     bool enableLogging = true,
   }) async {
-    return StreamingSession._create(
+    final session = StreamingSession._(
       server: server,
       uri: uri,
       request: request,
@@ -846,6 +748,8 @@ abstract interface class InternalSessionFactory {
       endpoint: endpoint,
       enableLogging: enableLogging,
     );
+    await session.initializeAuthentication();
+    return session;
   }
 }
 
