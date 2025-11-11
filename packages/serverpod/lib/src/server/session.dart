@@ -791,6 +791,8 @@ extension SessionInternalMethods on Session {
     var authKey = authenticationKey;
     if (authKey != null) {
       _authenticated = await server.authenticationHandler(this, authKey);
+    } else {
+      _authenticated = null;
     }
   }
 
@@ -804,12 +806,7 @@ extension SessionInternalMethods on Session {
   /// the authentication status for the new key.
   Future<void> updateAuthenticationKey(String? authenticationKey) async {
     _authenticationKey = authenticationKey;
-
-    if (authenticationKey == null) {
-      _authenticated = null;
-    } else {
-      await initializeAuthentication();
-    }
+    await initializeAuthentication();
   }
 }
 
