@@ -170,10 +170,13 @@ class _SessionMiddleware extends MiddlewareObject {
   @override
   Handler call(Handler next) {
     return (req) async {
+      final authenticationKey = unwrapAuthHeaderValue(
+        req.headers.authorization?.headerValue,
+      );
       final session = await SessionInternalMethods.createWebCallSession(
         server: _server,
         endpoint: req.requestedUri.path,
-        authenticationKey: req.headers.authorization?.headerValue,
+        authenticationKey: authenticationKey,
         remoteInfo: req.remoteInfo,
       );
       _sessionProperty[req] = session;
