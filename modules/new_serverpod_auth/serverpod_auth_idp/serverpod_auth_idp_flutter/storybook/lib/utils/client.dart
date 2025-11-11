@@ -30,10 +30,8 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
   @override
   Future<UuidValue> startRegistration({
     required String email,
-    required String password,
   }) async {
     _mockData.email = email;
-    _mockData.password = password;
     _mockData.verificationCode = 'A1b2C3';
 
     final accountRequestId = const Uuid().v4obj();
@@ -42,12 +40,28 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
   }
 
   @override
-  Future<AuthSuccess> finishRegistration({
+  Future<String> verifyRegistrationCode({
     required UuidValue accountRequestId,
     required String verificationCode,
   }) async {
     if (accountRequestId != _mockData.accountRequestId ||
         verificationCode != _mockData.verificationCode) {
+      throw EmailAccountRequestException(
+        reason: EmailAccountRequestExceptionReason.invalid,
+      );
+    }
+
+    final registrationToken = const Uuid().v4();
+    _mockData.registrationToken = registrationToken;
+    return registrationToken;
+  }
+
+  @override
+  Future<AuthSuccess> finishRegistration({
+    required String registrationToken,
+    required String password,
+  }) async {
+    if (registrationToken != _mockData.registrationToken) {
       throw EmailAccountRequestException(
         reason: EmailAccountRequestExceptionReason.invalid,
       );
@@ -171,6 +185,7 @@ class MockAuthData {
   String? verificationCode;
   String? passwordResetCode;
   String? passwordResetToken;
+  String? registrationToken;
 
   UuidValue? accountRequestId;
   UuidValue? passwordResetRequestId;

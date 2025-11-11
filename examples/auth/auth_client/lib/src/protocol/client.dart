@@ -97,16 +97,34 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
   @override
-  _i3.Future<_i2.UuidValue> startRegistration({
-    required String email,
-    required String password,
-  }) =>
+  _i3.Future<_i2.UuidValue> startRegistration({required String email}) =>
       caller.callServerEndpoint<_i2.UuidValue>(
         'emailIDP',
         'startRegistration',
+        {'email': email},
+      );
+
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  @override
+  _i3.Future<String> verifyRegistrationCode({
+    required _i2.UuidValue accountRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailIDP',
+        'verifyRegistrationCode',
         {
-          'email': email,
-          'password': password,
+          'accountRequestId': accountRequestId,
+          'verificationCode': verificationCode,
         },
       );
 
@@ -127,15 +145,15 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   /// Returns a session for the newly created user.
   @override
   _i3.Future<_i4.AuthSuccess> finishRegistration({
-    required _i2.UuidValue accountRequestId,
-    required String verificationCode,
+    required String registrationToken,
+    required String password,
   }) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'emailIDP',
         'finishRegistration',
         {
-          'accountRequestId': accountRequestId,
-          'verificationCode': verificationCode,
+          'registrationToken': registrationToken,
+          'password': password,
         },
       );
 

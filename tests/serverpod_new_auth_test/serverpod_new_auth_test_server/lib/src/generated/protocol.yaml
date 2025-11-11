@@ -16,6 +16,7 @@ emailAccountBackwardsCompatibilityTest:
 emailAccount:
   - login:
   - startRegistration:
+  - verifyRegistrationCode:
   - finishRegistration:
   - startPasswordReset:
   - verifyPasswordResetCode:
@@ -29,6 +30,7 @@ jwtRefresh:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:
+  - verifyRegistrationCode:
   - finishRegistration:
   - startPasswordReset:
   - verifyPasswordResetCode:
