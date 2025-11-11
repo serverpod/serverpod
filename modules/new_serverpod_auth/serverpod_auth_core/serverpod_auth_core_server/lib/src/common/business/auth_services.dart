@@ -27,6 +27,13 @@ class AuthServices {
 
   /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
+  /// [authUsersConfig] is the configuration for the auth users manager.
+  /// [userProfileConfig] is the configuration for the user profiles manager.
+  /// [primaryTokenManager] is the factory for the primary token manager.
+  /// [identityProviders] is a list of factories for the identity providers.
+  /// [additionalTokenManagers] is a list of factories for the additional token managers.
+  ///
+  /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@macro auth_services_constructor}
   factory AuthServices.set({
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
@@ -49,26 +56,22 @@ class AuthServices {
   ///
   /// Use [AuthServices.set] to create a new instance and set it as the global instance.
   /// {@template auth_services_constructor}
+  /// [authUsers] is the default manager for managing auth users.
+  ///
+  /// [userProfiles] is the default manager for managing user profiles.
+  ///
   /// [primaryTokenManager] is the primary token manager used by identity providers
-  /// for issuing new tokens. Each identity provider can optionally override this
-  /// with their own token manager via [IdentityProviderFactory.tokenManagerOverride].
+  /// for issuing new tokens. The factory is used to construct the token manager
+  /// instance with the necessary dependencies.
   ///
   /// [identityProviders] is a list of [IdentityProviderFactory] instances that
   /// construct the identity providers used by authentication endpoints. Each factory
   /// creates a provider instance with the appropriate token manager dependency.
   ///
-  /// [additionalTokenManagers] is a list of additional token managers that
-  /// handle token lifecycle operations alongside the [primaryTokenManager].
-  /// These additional token managers are also used to validate tokens in the
-  /// same order they are represented in the list.
-  ///
-  /// [authUsers] is the default manager for managing auth users. If no override
-  /// is provided for specific [IdentityProviderFactory] instances, or
-  /// [TokenManagerFactory], this instance will be used.
-  ///
-  /// [userProfiles] is the default manager for managing user profiles. If no
-  /// override is provided for specific [IdentityProviderFactory] instances,
-  /// this instance will be used.
+  /// [additionalTokenManagers] is a list of additional token managers factories
+  /// that are used to construct additional token managers that handle token lifecycle
+  /// operations alongside the [primaryTokenManager]. These additional token managers
+  /// are used to validate tokens in the same order they are represented in the list.
   /// {@endtemplate}
   AuthServices({
     required this.authUsers,
