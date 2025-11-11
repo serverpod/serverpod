@@ -76,7 +76,8 @@ class UserImages {
       try {
         await session.storage.deleteFile(
           storageId: 'public',
-          path: 'serverpod/user_images/${image.userId}-${image.version}.${image.url.endsWith('.jpg') ? 'jpg' : 'png'}',
+          path:
+              'serverpod/user_images/${image.userId}-${image.version}.${image.url.endsWith('.jpg') ? 'jpg' : 'png'}',
         );
       } catch (e, stackTrace) {
         session.log(

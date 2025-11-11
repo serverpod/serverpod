@@ -666,7 +666,8 @@ void main() {
       );
       expect(profileBeforeRemove.imageUrl, isNotNull);
 
-      final imageBeforeRemove = (await UserProfileImage.db.find(session)).single;
+      final imageBeforeRemove =
+          (await UserProfileImage.db.find(session)).single;
       expect(
         await session.storage.fileExists(
           storageId: imageBeforeRemove.storageId,

@@ -169,7 +169,8 @@ void main() {
         final profileBefore = await endpoints.userProfile.get(session);
         expect(profileBefore.imageUrl, isNotNull);
 
-        final updatedProfile = await endpoints.userProfile.removeUserImage(session);
+        final updatedProfile =
+            await endpoints.userProfile.removeUserImage(session);
 
         expect(updatedProfile.imageUrl, isNull);
 
