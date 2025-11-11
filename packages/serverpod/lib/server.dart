@@ -12,7 +12,7 @@ export 'src/generated/protocol.dart'
         RevokedAuthenticationUser,
         RevokedAuthenticationScope;
 export 'src/server/run_mode.dart';
-export 'src/server/server.dart';
+export 'src/server/server.dart' hide ServerInternalMethods;
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart'
     hide SessionInternalMethods, InternalSessionFactory;

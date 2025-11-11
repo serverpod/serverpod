@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/server.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:test/test.dart';
 
@@ -129,12 +130,12 @@ void main() {
             )
             .build();
 
-        session.server.authenticationHandler = (session, key) async {
+        session.server.setAuthenticationHandlerForTesting((session, key) async {
           if (key == 'new-key') {
             return AuthenticationInfo(newUserId, {});
           }
           return null;
-        };
+        });
       });
 
       tearDown(() async {

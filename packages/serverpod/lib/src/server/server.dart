@@ -552,3 +552,16 @@ class _RequestTooLargeException implements Exception {
     return errorDescription;
   }
 }
+
+/// Extension providing testing utilities for [Server] authentication.
+extension ServerInternalMethods on Server {
+  /// Sets the authentication handler for testing purposes.
+  ///
+  /// This method allows tests to override the default authentication handler
+  /// by directly setting the internal [_authenticationHandler] field.
+  void setAuthenticationHandlerForTesting(
+    AuthenticationHandler authenticationHandler,
+  ) {
+    _authenticationHandler = authenticationHandler;
+  }
+}
