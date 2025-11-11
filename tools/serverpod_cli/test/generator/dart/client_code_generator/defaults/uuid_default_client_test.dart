@@ -35,25 +35,24 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('uuidDefaultRandom')
-            .withTypeDefinition('UuidValue', false)
-            .withDefaults(defaultModelValue: 'random')
+            .withTypeUuidValue(defaultModelValue: 'random')
             .build(),
         FieldDefinitionBuilder()
             .withName('uuidDefaultRandomV7')
-            .withTypeDefinition('UuidValue', false)
-            .withDefaults(defaultModelValue: 'random_v7')
+            .withTypeUuidValue(defaultModelValue: 'random_v7')
             .build(),
         FieldDefinitionBuilder()
             .withName('uuidDefaultStr')
-            .withTypeDefinition('UuidValue', false)
-            .withDefaults(
-                defaultModelValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
+            .withTypeUuidValue(
+              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+            )
             .build(),
         FieldDefinitionBuilder()
             .withName('uuidDefaultStrNull')
-            .withTypeDefinition('UuidValue', true)
-            .withDefaults(
-                defaultModelValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
+            .withTypeUuidValue(
+              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+              nullable: true,
+            )
             .build(),
       ];
 
@@ -124,7 +123,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('uuidDefaultStr'));
           expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
+              "uuidDefaultStr = uuidDefaultStr ?? UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000')");
         },
       );
 
@@ -134,7 +133,7 @@ void main() {
           var initializer = privateConstructor?.initializers
               .firstWhere((e) => e.toSource().contains('uuidDefaultStrNull'));
           expect(initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString(\'550e8400-e29b-41d4-a716-446655440000\')');
+              "uuidDefaultStrNull = uuidDefaultStrNull ?? UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000')");
         },
       );
     });
@@ -161,14 +160,13 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('uuidDefaultPersistRandom')
-            .withTypeDefinition('UuidValue', true)
-            .withDefaults(defaultPersistValue: 'random')
+            .withTypeUuidValue(defaultPersistValue: 'random', nullable: true)
             .build(),
         FieldDefinitionBuilder()
             .withName('uuidDefaultPersistStr')
-            .withTypeDefinition('UuidValue', true)
-            .withDefaults(
-                defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
+            .withTypeUuidValue(
+                defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+                nullable: true)
             .build(),
       ];
 

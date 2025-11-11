@@ -36,22 +36,149 @@ class FieldDefinitionBuilder {
     bool isNullable = false,
   }) {
     type ??= SupportedIdType.int;
-    return withName('id')
-      ..withIdType(type: type.type, isNullable: isNullable)
-      ..withDefaults(
-        defaultPersistValue: type.defaultValue,
-      );
+    _defaultPersistValue = type.defaultValue;
+    return withName('id').withIdType(type: type.type, isNullable: isNullable);
   }
 
-  FieldDefinitionBuilder withEnumDefinition(
-    EnumDefinition enumDefinition, [
+  FieldDefinitionBuilder withTypeEnum(
+    EnumDefinition enumDefinition, {
+    String? defaultModelValue,
+    String? defaultPersistValue,
     bool nullable = false,
-  ]) {
+  }) {
     _type = TypeDefinition(
       className: enumDefinition.className,
       nullable: nullable,
       enumDefinition: enumDefinition,
     );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeString({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'String',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeBool({
+    bool? defaultModelValue,
+    bool? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'bool',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeDouble({
+    double? defaultModelValue,
+    double? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'double',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeInt({
+    int? defaultModelValue,
+    int? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'int',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeDateTime({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'DateTime',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeUuidValue({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'UuidValue',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeDuration({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'Duration',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeBigInt({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'BigInt',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
+    return this;
+  }
+
+  FieldDefinitionBuilder withTypeUri({
+    String? defaultModelValue,
+    String? defaultPersistValue,
+    bool nullable = false,
+  }) {
+    _type = TypeDefinition(
+      className: 'Uri',
+      nullable: nullable,
+    );
+    _defaultModelValue = defaultModelValue;
+    _defaultPersistValue = defaultPersistValue;
     return this;
   }
 
@@ -121,15 +248,6 @@ class FieldDefinitionBuilder {
     List<String>? documentation,
   ) {
     _documentation = documentation;
-    return this;
-  }
-
-  FieldDefinitionBuilder withDefaults({
-    dynamic defaultModelValue,
-    dynamic defaultPersistValue,
-  }) {
-    _defaultModelValue = defaultModelValue ?? _defaultModelValue;
-    _defaultPersistValue = defaultPersistValue ?? _defaultPersistValue;
     return this;
   }
 

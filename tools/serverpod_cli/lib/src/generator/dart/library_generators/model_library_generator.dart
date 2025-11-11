@@ -1695,17 +1695,17 @@ class SerializableModelLibraryGenerator {
             .call([CodeExpression(Code("'$defaultValue'"))]).code;
       case DefaultValueAllowedType.bool:
         return switch (defaultValue) {
-          defaultBooleanTrue => literalBool(true).code,
-          defaultBooleanFalse => literalBool(false).code,
+          true => literalBool(true).code,
+          false => literalBool(false).code,
           _ => null,
         };
       case DefaultValueAllowedType.int:
         if (defaultValue == defaultIntSerial) return null;
-        return literalNum(int.parse(defaultValue)).code;
+        return literalNum(defaultValue).code;
       case DefaultValueAllowedType.double:
-        return literalNum(double.parse(defaultValue)).code;
+        return literalNum(defaultValue).code;
       case DefaultValueAllowedType.string:
-        return Code(defaultValue);
+        return literalString(defaultValue).code;
       case DefaultValueAllowedType.uuidValue:
         if (defaultValue is! String) return null;
 
@@ -1722,11 +1722,11 @@ class SerializableModelLibraryGenerator {
 
         return refer(field.type.className, serverpodUrl(serverCode))
             .property('fromString')
-            .call([CodeExpression(Code(defaultValue))]).code;
+            .call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.uri:
         return refer(field.type.className)
             .property('parse')
-            .call([CodeExpression(Code(defaultValue))]).code;
+            .call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.bigInt:
         return refer(field.type.className)
             .property('parse')

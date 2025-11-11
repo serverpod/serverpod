@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('bigint')
-          .withTypeDefinition('BigInt', false)
-          .withDefaults(defaultPersistValue: '0')
+          .withTypeBigInt(defaultPersistValue: '0')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -87,8 +86,10 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('bigint')
-          .withTypeDefinition('BigInt', true)
-          .withDefaults(defaultPersistValue: '-12345678909999999')
+          .withTypeBigInt(
+            defaultPersistValue: '-12345678909999999',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -160,8 +161,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('bigint')
-          .withTypeDefinition('BigInt', false)
-          .withDefaults(defaultModelValue: '12345678909999999')
+          .withTypeBigInt(defaultModelValue: '12345678909999999')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -188,8 +188,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('bigint')
-          .withTypeDefinition('BigInt', true)
-          .withDefaults(defaultModelValue: '12345678909999999')
+          .withTypeBigInt(
+            defaultModelValue: '12345678909999999',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

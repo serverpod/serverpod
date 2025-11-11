@@ -12,7 +12,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type double and the defaultModel is set to "10.5", then the field should have a "default model" value',
+      'when the field is of type BigInt and the defaultModel is set to "10", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -20,7 +20,7 @@ void main() {
           class: Example
           table: example
           fields:
-            doubleType: double, defaultModel=10.5
+            bigIntType: BigInt, defaultModel="10"
           ''',
           ).build()
         ];
@@ -33,12 +33,12 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, 10.5);
+        expect(definition.fields.last.defaultModelValue, '10');
       },
     );
 
     test(
-      'when the field is of type double and the defaultModel is set to "20.5", then the field should have a "default model" value',
+      'when the field is of type BigInt and the defaultModel is set to "10", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -46,7 +46,33 @@ void main() {
           class: Example
           table: example
           fields:
-            doubleType: double, defaultModel=20.5
+            bigIntType: BigInt, defaultModel='10'
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var definitions =
+            StatefulAnalyzer(config, models, onErrorsCollector(collector))
+                .validateAll();
+
+        expect(collector.errors, isEmpty);
+
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.last.defaultModelValue, '10');
+      },
+    );
+
+    test(
+      'when the field is of type BigInt and the defaultModel is set to 20, then the field should have a "default model" value',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            bigIntType: BigInt, defaultModel=20
           ''',
           ).build()
         ];
@@ -60,12 +86,12 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(definition.fields.last.defaultModelValue, 20.5);
+        expect(definition.fields.last.defaultModelValue, '20');
       },
     );
 
     test(
-      'when the field is of type double and the defaultModel is set to an integer "10", then the field should have a "default model" value',
+      'when the field is of type BigInt and the defaultModel is set to "99999999999999999999999", then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -73,7 +99,7 @@ void main() {
           class: Example
           table: example
           fields:
-            doubleType: double, defaultModel=10
+            bigIntType: BigInt, defaultModel="99999999999999999999999"
           ''',
           ).build()
         ];
@@ -86,12 +112,16 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, 10);
+
+        expect(
+          definition.fields.last.defaultModelValue,
+          '99999999999999999999999',
+        );
       },
     );
 
     test(
-      'when the field is of type double and the defaultModel is empty, then an error is generated',
+      'when the field is of type BigInt and the defaultModel is set to an unquoted larger than 64 bit integer, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -99,7 +129,7 @@ void main() {
           class: Example
           table: example
           fields:
-            doubleType: double, defaultModel=
+            bigIntType: BigInt, defaultModel=9999999999999999999999999
           ''',
           ).build()
         ];
@@ -113,13 +143,41 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
+          'The "defaultModel" value must be a valid BigInt (e.g., defaultModel="1234567890").',
         );
       },
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value "TEN.POINT_FIVE", then an error is generated',
+      'when the field is of type BigInt and the defaultModel is empty, then an error is generated',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+          class: Example
+          table: example
+          fields:
+            bigIntType: BigInt, defaultModel=
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(config, models, onErrorsCollector(collector))
+            .validateAll();
+
+        expect(collector.errors, isNotEmpty);
+
+        var firstError = collector.errors.first as SourceSpanSeverityException;
+        expect(
+          firstError.message,
+          'The "defaultModel" value must be a valid BigInt (e.g., defaultModel="1234567890").',
+        );
+      },
+    );
+
+    test(
+      'when the field is of type BigInt with an invalid default value "TEN", then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -127,7 +185,7 @@ void main() {
         class: Example
         table: example
         fields:
-          doubleInvalid: double?, defaultModel=TEN.POINT_FIVE
+          bigIntInvalid: BigInt?, defaultModel=TEN
         ''',
           ).build()
         ];
@@ -141,13 +199,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
+          'The "defaultModel" value must be a valid BigInt (e.g., defaultModel="1234567890").',
         );
       },
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value containing non-numeric characters, then an error is generated',
+      'when the field is of type BigInt with an invalid default value containing decimals, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -155,7 +213,7 @@ void main() {
         class: Example
         table: example
         fields:
-          doubleInvalid: double?, defaultModel=10.5a
+          bigIntInvalid: BigInt?, defaultModel=10.5
         ''',
           ).build()
         ];
@@ -169,13 +227,13 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
+          'The "defaultModel" value must be a valid BigInt (e.g., defaultModel="1234567890").',
         );
       },
     );
 
     test(
-      'when the field is of type double with an invalid defaultModel value, then an error is generated',
+      'when the field is of type BigInt with an invalid defaultModel value, then an error is generated',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -183,7 +241,7 @@ void main() {
           class: Example
           table: example
           fields:
-            doubleInvalid: double?, defaultModel=test
+            bigIntInvalid: BigInt?, defaultModel=test
           ''',
           ).build()
         ];
@@ -197,7 +255,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a valid double (e.g., "defaultModel"=10.5).',
+          'The "defaultModel" value must be a valid BigInt (e.g., defaultModel="1234567890").',
         );
       },
     );

@@ -626,10 +626,6 @@ const String defaultIntSerial = 'serial';
 /// DateTime
 const String defaultDateTimeValueNow = 'now';
 
-/// bool
-const String defaultBooleanTrue = 'true';
-const String defaultBooleanFalse = 'false';
-
 /// UuidValue
 const String defaultUuidValueRandom = 'random';
 const String defaultUuidValueRandomV7 = 'random_v7';

@@ -29,18 +29,18 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('dateTimeDefaultNow')
-            .withTypeDefinition('DateTime', false)
-            .withDefaults(defaultModelValue: 'now')
+            .withTypeDateTime(defaultModelValue: 'now')
             .build(),
         FieldDefinitionBuilder()
             .withName('dateTimeDefaultStr')
-            .withTypeDefinition('DateTime', false)
-            .withDefaults(defaultModelValue: '2024-05-24T22:00:00.000Z')
+            .withTypeDateTime(defaultModelValue: '2024-05-24T22:00:00.000Z')
             .build(),
         FieldDefinitionBuilder()
             .withName('dateTimeDefaultStrNull')
-            .withTypeDefinition('DateTime', true)
-            .withDefaults(defaultModelValue: '2024-05-24T22:00:00.000Z')
+            .withTypeDateTime(
+              defaultModelValue: '2024-05-24T22:00:00.000Z',
+              nullable: true,
+            )
             .build(),
       ];
 
@@ -133,13 +133,14 @@ void main() {
       var fields = [
         FieldDefinitionBuilder()
             .withName('dateTimeDefaultPersistNow')
-            .withTypeDefinition('DateTime', true)
-            .withDefaults(defaultPersistValue: 'now')
+            .withTypeDateTime(defaultPersistValue: 'now', nullable: true)
             .build(),
         FieldDefinitionBuilder()
             .withName('dateTimeDefaultPersistStr')
-            .withTypeDefinition('DateTime', true)
-            .withDefaults(defaultPersistValue: '2024-05-24T22:00:00.000Z')
+            .withTypeDateTime(
+              defaultPersistValue: '2024-05-24T22:00:00.000Z',
+              nullable: true,
+            )
             .build(),
       ];
 

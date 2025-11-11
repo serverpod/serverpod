@@ -153,6 +153,8 @@ class TypeDefinition {
 
   bool get isFutureType => className == 'Future';
 
+  bool get isBigIntType => className == 'BigInt';
+
   bool get isModuleType =>
       url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
 

@@ -9,6 +9,7 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/index_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 import '../../test_util/builders/model_class_definition_builder.dart';
+import '../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
   group('Given classes with a circular relation when generating migration', () {
@@ -144,11 +145,10 @@ ALTER TABLE ONLY "town"
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
           .withTableName(citizen)
-          .withSimpleField(
-            'uuid',
-            'UuidValue',
-            defaultPersistValue: defaultUuidValueRandomV7,
-          )
+          .withField(FieldDefinitionBuilder()
+              .withName('uuid')
+              .withTypeUuidValue(defaultPersistValue: defaultUuidValueRandomV7)
+              .build())
           .build(),
     ];
 

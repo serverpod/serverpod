@@ -34,7 +34,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This is a default model value\'');
+            'This is a default model value');
       },
     );
 
@@ -61,7 +61,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'Another default model value\'');
+            'Another default model value');
       },
     );
 
@@ -88,7 +88,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This \\\'is\\\' a default model value\'');
+            'This \\\'is\\\' a default model value');
       },
     );
 
@@ -115,7 +115,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This \\"is\\" a default model value\'');
+            'This \\"is\\" a default model value');
       },
     );
 
@@ -142,7 +142,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This, is a default model value\'');
+            'This, is a default model value');
       },
     );
 
@@ -169,7 +169,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            '\'This \\"is\\", a default model value\'');
+            'This \\"is\\", a default model value');
       },
     );
 
@@ -197,7 +197,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'This \\\'is\\\' a default model value\'',
+          'This \'is\' a default model value',
         );
       },
     );
@@ -226,7 +226,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          '\'This "is" a default model value\'',
+          'This "is" a default model value',
         );
       },
     );
@@ -242,34 +242,6 @@ void main() {
           fields:
             stringType: String, defaultModel=
           ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultModel" must be a quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid defaultModel value without quotes, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, defaultModel=InvalidValue
-        ''',
           ).build()
         ];
 
@@ -316,34 +288,6 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid defaultModel value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringInvalid: String?, defaultModel=test
-          ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultModel" must be a quoted string (e.g., "defaultModel"=\'This is a string\' or "defaultModel"="This is a string").',
-        );
-      },
-    );
-
-    test(
       'when the field is of type String with an invalid defaultModel value containing unescaped single quotes, then an error is generated',
       () {
         var models = [
@@ -366,7 +310,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "defaultModel" string values, single quotes must be escaped or use double quotes (e.g., "defaultModel"=\'This "is" a string\' or "defaultModel"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -394,7 +338,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "defaultModel" string values, double quotes must be escaped or use single quotes (e.g., "defaultModel"="This \'is\' a string" or "defaultModel"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );

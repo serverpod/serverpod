@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('intDefault')
-          .withTypeDefinition('int', false)
-          .withDefaults(defaultPersistValue: '10')
+          .withTypeInt(defaultPersistValue: 10)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -58,10 +57,8 @@ void main() {
     });
 
     group('when no "defaultPersist" is set', () {
-      var field = FieldDefinitionBuilder()
-          .withName('intDefault')
-          .withTypeDefinition('int', false)
-          .build();
+      var field =
+          FieldDefinitionBuilder().withName('intDefault').withTypeInt().build();
 
       var model = ModelClassDefinitionBuilder()
           .withTableName('example')
@@ -110,8 +107,7 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('intDefault')
-          .withTypeDefinition('int', true)
-          .withDefaults(defaultPersistValue: '10')
+          .withTypeInt(defaultPersistValue: 10, nullable: true)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -170,7 +166,7 @@ void main() {
     group('when the field is nullable and has no "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('intDefault')
-          .withTypeDefinition('int', true)
+          .withTypeInt(nullable: true)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -229,8 +225,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('intDefault')
-          .withTypeDefinition('int', false)
-          .withDefaults(defaultModelValue: '10')
+          .withTypeInt(defaultModelValue: 10)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -280,8 +275,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('intDefault')
-          .withTypeDefinition('int', true)
-          .withDefaults(defaultModelValue: '10')
+          .withTypeInt(
+            defaultModelValue: 10,
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

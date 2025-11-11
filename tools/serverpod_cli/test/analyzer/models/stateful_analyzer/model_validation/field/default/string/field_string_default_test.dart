@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_escapes
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -34,9 +36,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            "'This is a default value'");
+            'This is a default value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This is a default value'");
+            'This is a default value');
       },
     );
 
@@ -64,9 +66,9 @@ void main() {
         var definition = definitions.first as ClassDefinition;
 
         expect(definition.fields.last.defaultModelValue,
-            "'This is a default null value'");
+            'This is a default null value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This is a default null value'");
+            'This is a default null value');
       },
     );
 
@@ -93,9 +95,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultModelValue,
-            "'This \\'is\\' a default value'");
+            'This \\\'is\\\' a default value');
         expect(definition.fields.last.defaultPersistValue,
-            "'This \\'is\\' a default value'");
+            'This \\\'is\\\' a default value');
       },
     );
 
@@ -123,11 +125,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\\"is\\\" a default value'",
+          'This \\"is\\" a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\\"is\\\" a default value'",
+          'This \\"is\\" a default value',
         );
       },
     );
@@ -156,11 +158,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This, is a default value'",
+          'This, is a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This, is a default value'",
+          'This, is a default value',
         );
       },
     );
@@ -189,11 +191,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\\"is\\\", a default value'",
+          'This \\"is\\", a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\\"is\\\", a default value'",
+          'This \\"is\\", a default value',
         );
       },
     );
@@ -222,11 +224,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \\'is\\' a default value'",
+          "This \\'is\\' a default value",
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \\'is\\' a default value'",
+          "This \\'is\\' a default value",
         );
       },
     );
@@ -255,11 +257,11 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultModelValue,
-          "'This \"is\" a default value'",
+          'This "is" a default value',
         );
         expect(
           definition.fields.last.defaultPersistValue,
-          "'This \"is\" a default value'",
+          'This "is" a default value',
         );
       },
     );
@@ -321,34 +323,6 @@ void main() {
     );
 
     test(
-      'when the field is of type String with an invalid default value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, default=test
-        ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "default" must be a quoted string (e.g., "default"=\'This is a string\' or "default"="This is a string").',
-        );
-      },
-    );
-
-    test(
       'when the field is of type String with an invalid default value containing unescaped single quotes, then an error is generated',
       () {
         var models = [
@@ -371,7 +345,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "default" string values, single quotes must be escaped or use double quotes (e.g., "default"=\'This "is" a string\' or "default"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -399,7 +373,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "default" string values, double quotes must be escaped or use single quotes (e.g., "default"="This \'is\' a string" or "default"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );

@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -241,14 +242,20 @@ void main() {
           .withClassName(parentClassName)
           .withFileName(parentClassFileName)
           .withSimpleField('name', 'String')
-          .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
+          .withField(FieldDefinitionBuilder()
+              .withName('parentDefault')
+              .withTypeInt(defaultModelValue: 0)
+              .build())
           .withChildClasses(
         [
           ModelClassDefinitionBuilder()
               .withClassName(childClassName)
               .withFileName(childClassFileName)
               .withSimpleField('age', 'int')
-              .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
+              .withField(FieldDefinitionBuilder()
+                  .withName('childDefault')
+                  .withTypeInt(defaultModelValue: -1)
+                  .build())
               .build(),
         ],
       ).build(),
@@ -256,13 +263,19 @@ void main() {
           .withClassName(childClassName)
           .withFileName(childClassFileName)
           .withSimpleField('age', 'int', nullable: true)
-          .withSimpleField('childDefault', 'int', defaultModelValue: '-1')
+          .withField(FieldDefinitionBuilder()
+              .withName('childDefault')
+              .withTypeInt(defaultModelValue: -1)
+              .build())
           .withExtendsClass(
             ModelClassDefinitionBuilder()
                 .withClassName(parentClassName)
                 .withFileName(parentClassFileName)
                 .withSimpleField('name', 'String')
-                .withSimpleField('parentDefault', 'int', defaultModelValue: '0')
+                .withField(FieldDefinitionBuilder()
+                    .withName('parentDefault')
+                    .withTypeInt(defaultModelValue: 0)
+                    .build())
                 .build(),
           )
           .build(),

@@ -182,8 +182,11 @@ class ModelParser {
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
     );
-    var defaultEnumDefinitionValue =
-        _parseEnumDefaultValue(documentContents, values);
+    var defaultEnumDefinitionValue = _parseEnumDefaultValue(
+      documentContents,
+      values,
+      enumType,
+    );
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -313,10 +316,12 @@ class ModelParser {
     var defaultModelValue = _parseDefaultValue(
       node,
       Keyword.defaultModelKey,
+      typeResult,
     );
     var defaultPersistValue = _parseDefaultValue(
       node,
       Keyword.defaultPersistKey,
+      typeResult,
     );
 
     RelationDefinition? relation = _parseRelation(
@@ -469,7 +474,11 @@ class ModelParser {
     return _parseBooleanKey(node, Keyword.requiredKey);
   }
 
-  static dynamic _parseDefaultValue(YamlMap node, String keyword) {
+  static dynamic _parseDefaultValue(
+    YamlMap node,
+    String keyword,
+    TypeDefinition fieldType,
+  ) {
     var value =
         node.nodes[keyword]?.value ?? node.nodes[Keyword.defaultKey]?.value;
 
@@ -477,6 +486,14 @@ class ModelParser {
     /// convert it to a single-quoted string with proper escaping.
     if (value is String && isValidDoubleQuote(value)) {
       return convertToSingleQuotedString(value);
+    }
+
+    if (fieldType.isBigIntType) {
+      if (value is String) return value;
+      if (value is int) return value.toString();
+
+      // Fallback but analyzer will prevent this from happening
+      return null;
     }
 
     return value;
@@ -667,9 +684,10 @@ class ModelParser {
   static ProtocolEnumValueDefinition? _parseEnumDefaultValue(
     YamlMap documentContents,
     List<ProtocolEnumValueDefinition> values,
+    TypeDefinition fieldType,
   ) {
     final defaultValue =
-        _parseDefaultValue(documentContents, Keyword.defaultKey);
+        _parseDefaultValue(documentContents, Keyword.defaultKey, fieldType);
     return values.where((value) => value.name == defaultValue).firstOrNull;
   }
 

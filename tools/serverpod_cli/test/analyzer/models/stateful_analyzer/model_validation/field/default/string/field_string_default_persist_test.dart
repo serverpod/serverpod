@@ -34,7 +34,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This is a default persist value\'');
+            'This is a default persist value');
       },
     );
 
@@ -63,7 +63,7 @@ void main() {
 
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'Another default persist value\'',
+          'Another default persist value',
         );
       },
     );
@@ -92,7 +92,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This \\\'is\\\' a default persist value\'',
+          'This \\\'is\\\' a default persist value',
         );
       },
     );
@@ -121,7 +121,7 @@ void main() {
         var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.last.defaultPersistValue,
-          '\'This "is" a default persist value\'',
+          'This "is" a default persist value',
         );
       },
     );
@@ -149,7 +149,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\\'is\\\' a default persist value\'');
+            'This \\\'is\\\' a default persist value');
       },
     );
 
@@ -176,7 +176,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\"is\\" a default persist value\'');
+            'This \\"is\\" a default persist value');
       },
     );
 
@@ -203,7 +203,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This, is a default persist value\'');
+            'This, is a default persist value');
       },
     );
 
@@ -230,35 +230,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue,
-            '\'This \\"is\\", a default persist value\'');
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid defaultPersist value without quotes, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-        class: Example
-        table: example
-        fields:
-          stringInvalid: String?, defaultPersist=InvalidValue
-        ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" must be a quoted string (e.g., "defaultPersist"=\'This is a string\' or "defaultPersist"="This is a string").',
-        );
+            'This \\"is\\", a default persist value');
       },
     );
 
@@ -273,34 +245,6 @@ void main() {
         fields:
           stringInvalid: String?, defaultPersist=10
         ''',
-          ).build()
-        ];
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
-
-        expect(collector.errors, isNotEmpty);
-
-        var firstError = collector.errors.first as SourceSpanSeverityException;
-        expect(
-          firstError.message,
-          'The "defaultPersist" must be a quoted string (e.g., "defaultPersist"=\'This is a string\' or "defaultPersist"="This is a string").',
-        );
-      },
-    );
-
-    test(
-      'when the field is of type String with an invalid defaultPersist value, then an error is generated',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          table: example
-          fields:
-            stringInvalid: String?, defaultPersist=test
-          ''',
           ).build()
         ];
 
@@ -341,7 +285,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For single quoted "defaultPersist" string values, single quotes must be escaped or use double quotes (e.g., "defaultPersist"=\'This "is" a string\' or "defaultPersist"=\'This \\\'is\\\' a string\').',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );
@@ -369,7 +313,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'For double quoted "defaultPersist" string values, double quotes must be escaped or use single quotes (e.g., "defaultPersist"="This \'is\' a string" or "defaultPersist"="This \\"is\\" a string").',
+          'Unescaped quotes in string value is not allowed.',
         );
       },
     );

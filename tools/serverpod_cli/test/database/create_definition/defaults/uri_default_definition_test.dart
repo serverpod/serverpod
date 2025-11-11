@@ -9,9 +9,8 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', false)
-          .withDefaults(
-            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+          .withTypeUri(
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
           )
           .build();
 
@@ -54,7 +53,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          "'https://serverpod.dev/defaultPersistValue'::text",
+          "\$\$https://serverpod.dev/defaultPersistValue\$\$::text",
         );
       });
     });
@@ -89,10 +88,10 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', true)
-          .withDefaults(
-              defaultPersistValue:
-                  "'https://serverpod.dev/defaultPersistValue'")
+          .withTypeUri(
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -111,7 +110,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          "'https://serverpod.dev/defaultPersistValue'::text",
+          "\$\$https://serverpod.dev/defaultPersistValue\$\$::text",
         );
       });
 
@@ -164,9 +163,9 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', false)
-          .withDefaults(
-              defaultModelValue: "'https://serverpod.dev/defaultModelValue'")
+          .withTypeUri(
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -193,9 +192,10 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', true)
-          .withDefaults(
-              defaultModelValue: 'https://serverpod.dev/defaultModelValue')
+          .withTypeUri(
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
+            nullable: true,
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
