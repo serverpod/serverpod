@@ -8,10 +8,10 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const validTestToken = 'valid-test-token';
-
   group('Given a server with an authenticationHandler', () {
     late Serverpod server;
+    const validTestToken = 'valid-test-token';
+    const invalidTestToken = 'invalid-test-token';
     const testUserId = 'test-user-123';
     const testAuthId = 'auth-id-456';
     final testScopes = {Scope('test'), Scope('admin')};
@@ -21,6 +21,7 @@ void main() {
         authenticationHandler: (final session, final token) async {
           // Web routes do not strip "Bearer " prefix automatically
           // This is likely a bug. For now, we handle it here.
+          // Issue tracked in https://github.com/serverpod/serverpod/issues/4184
           final t = token.replaceFirst('Bearer ', '');
 
           if (t == validTestToken) {
@@ -44,7 +45,7 @@ void main() {
     });
 
     group(
-      'when calling standard endpoint methods with an authenticated client',
+      'when calling standard endpoint methods with an authenticated client and a valid token',
       () {
         late Client client;
 
@@ -90,7 +91,50 @@ void main() {
     );
 
     group(
-      'when calling streaming endpoint methods with an authenticated client',
+      'when calling standard endpoint methods with an authenticated client and an invalid token',
+      () {
+        late Client client;
+
+        setUp(() {
+          final authKeyManager = TestAuthKeyManager();
+          client = Client(
+            'http://localhost:8080/',
+            authenticationKeyManager: authKeyManager,
+          );
+          authKeyManager.put(invalidTestToken);
+        });
+
+        tearDown(() {
+          client.close();
+        });
+
+        test(
+            'then getAuthenticationInfo returns session.authenticated as false',
+            () async {
+          final result =
+              await client.sessionAuthentication.getAuthenticationInfo();
+
+          expect(result.isAuthenticated, isFalse);
+        });
+
+        test('then getAuthenticatedUserId returns null', () async {
+          final userId =
+              await client.sessionAuthentication.getAuthenticatedUserId();
+
+          expect(userId, isNull);
+        });
+
+        test('then getAuthenticatedScopes returns empty list', () async {
+          final scopes =
+              await client.sessionAuthentication.getAuthenticatedScopes();
+
+          expect(scopes, isEmpty);
+        });
+      },
+    );
+
+    group(
+      'when calling streaming endpoint methods with an authenticated client and a valid token',
       () {
         late Client client;
 
@@ -128,6 +172,41 @@ void main() {
       },
     );
 
+    group(
+      'when calling streaming endpoint methods with an authenticated client and an invalid token',
+      () {
+        late Client client;
+
+        setUp(() {
+          final authKeyManager = TestAuthKeyManager();
+          client = Client(
+            'http://localhost:8080/',
+            authenticationKeyManager: authKeyManager,
+          );
+          authKeyManager.put(invalidTestToken);
+        });
+
+        tearDown(() {
+          client.close();
+        });
+
+        test('then streamIsAuthenticated yields false', () async {
+          final stream = client.sessionAuthentication.streamIsAuthenticated();
+
+          final isAuthenticated = await stream.first;
+          expect(isAuthenticated, isFalse);
+        });
+
+        test('then streamAuthenticatedUserId yields null', () async {
+          final stream =
+              client.sessionAuthentication.streamAuthenticatedUserId();
+
+          final userId = await stream.first;
+          expect(userId, isNull);
+        });
+      },
+    );
+
     group('when accessing web route with a valid Authorization header', () {
       late http.Response response;
       late Map<String, dynamic> body;
@@ -154,8 +233,34 @@ void main() {
       });
     });
 
+    group('when accessing web route with an invalid Authorization header', () {
+      late http.Response response;
+      late Map<String, dynamic> body;
+
+      setUp(() async {
+        response = await http.get(
+          Uri.parse('http://localhost:8082/session-test'),
+          headers: {
+            'Authorization': 'Bearer $invalidTestToken',
+          },
+        );
+        body = jsonDecode(response.body) as Map<String, dynamic>;
+      });
+
+      test('then session.authenticated is null', () async {
+        expect(response.statusCode, equals(200));
+        expect(body['isAuthenticated'], isFalse);
+      });
+
+      test('then authenticated user details are null/empty', () async {
+        expect(body['userId'], isNull);
+        expect(body['scopes'], isEmpty);
+        expect(body['authId'], isNull);
+      });
+    });
+
     test(
-      'when opening a streaming connection then session.authenticated is initialized',
+      'when opening a streaming connection with a valid token then session.authenticated is initialized',
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
@@ -181,7 +286,34 @@ void main() {
     );
 
     test(
-      'when sending message over a streaming connection then session.authenticated remains initialized',
+      'when opening a streaming connection with an invalid token then session.authenticated is null',
+      () async {
+        final authKeyManager = TestAuthKeyManager();
+        final client = Client(
+          'http://localhost:8080/',
+          authenticationKeyManager: authKeyManager,
+        );
+        authKeyManager.put(invalidTestToken);
+
+        await client.openStreamingConnection(
+          disconnectOnLostInternetConnection: false,
+        );
+
+        try {
+          final message = await client
+              .sessionAuthenticationStreaming.stream.first as SimpleData;
+
+          expect(message.num, equals(0));
+        } finally {
+          await client.closeStreamingConnection();
+          client.close();
+        }
+      },
+    );
+
+    test(
+      'when sending message over a streaming connection with a valid token '
+      'then session.authenticated remains initialized',
       () async {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
@@ -204,6 +336,38 @@ void main() {
               .first as SimpleData;
 
           expect(message.num, equals(1));
+        } finally {
+          await client.closeStreamingConnection();
+          client.close();
+        }
+      },
+    );
+
+    test(
+      'when sending message over a streaming connection with an invalid token '
+      'then session.authenticated remains null',
+      () async {
+        final authKeyManager = TestAuthKeyManager();
+        final client = Client(
+          'http://localhost:8080/',
+          authenticationKeyManager: authKeyManager,
+        );
+        authKeyManager.put(invalidTestToken);
+
+        await client.openStreamingConnection(
+          disconnectOnLostInternetConnection: false,
+        );
+
+        try {
+          client.sessionAuthenticationStreaming
+              .sendStreamMessage(SimpleData(num: 999));
+
+          // Skip the first message from streamOpened
+          final message = await client.sessionAuthenticationStreaming.stream
+              .skip(1)
+              .first as SimpleData;
+
+          expect(message.num, equals(0));
         } finally {
           await client.closeStreamingConnection();
           client.close();
