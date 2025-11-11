@@ -1,6 +1,5 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -85,7 +84,8 @@ void main() {
 
         test('then user profile is created', () async {
           final authSuccess = await authSuccessFuture;
-          final profile = await UserProfiles.maybeFindUserProfileByUserId(
+          final profile =
+              await fixture.userProfiles.maybeFindUserProfileByUserId(
             session,
             authSuccess.authUserId,
           );

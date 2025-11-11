@@ -33,20 +33,26 @@ final class GoogleIDP {
 
   final TokenIssuer _tokenIssuer;
 
+  final UserProfiles _userProfiles;
+
   GoogleIDP._(
     this.config,
     this._tokenIssuer,
     this.utils,
     this.admin,
+    this._userProfiles,
   );
 
   /// Creates a new instance of [GoogleIDP].
   factory GoogleIDP(
     final GoogleIDPConfig config, {
     required final TokenIssuer tokenIssuer,
+    final AuthUsers authUsers = const AuthUsers(),
+    final UserProfiles userProfiles = const UserProfiles(),
   }) {
     final utils = GoogleIDPUtils(
       config: config,
+      authUsers: authUsers,
     );
     final admin = GoogleIDPAdmin(
       utils: utils,
@@ -56,6 +62,7 @@ final class GoogleIDP {
       tokenIssuer,
       utils,
       admin,
+      userProfiles,
     );
   }
 
@@ -78,7 +85,7 @@ final class GoogleIDP {
       final image = account.details.image;
       if (account.newAccount) {
         try {
-          await UserProfiles.createUserProfile(
+          await _userProfiles.createUserProfile(
             session,
             account.authUserId,
             UserProfileData(
@@ -104,7 +111,7 @@ final class GoogleIDP {
             transaction: transaction,
           );
           if (user != null && user.image == null) {
-            await UserProfiles.setUserImageFromUrl(
+            await _userProfiles.setUserImageFromUrl(
               session,
               account.authUserId,
               image,

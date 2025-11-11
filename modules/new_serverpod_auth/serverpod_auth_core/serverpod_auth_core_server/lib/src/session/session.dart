@@ -1,5 +1,6 @@
 export '../auth_user/auth_user.dart';
 export '../common/integrations/adapters/auth_sessions_token_manager.dart';
+export '../common/integrations/adapters/auth_sessions_token_manager_factory.dart';
 export '../generated/protocol.dart' show AuthSessionInfo, AuthSuccess;
 export 'business/auth_sessions.dart' show AuthSessions;
 export 'business/auth_sessions_admin.dart' show AuthSessionsAdmin;

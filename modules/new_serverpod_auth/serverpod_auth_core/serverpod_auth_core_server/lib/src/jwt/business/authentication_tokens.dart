@@ -29,9 +29,13 @@ final class AuthenticationTokens {
   /// The refresh token secret hash.
   final RefreshTokenSecretHash refreshTokenSecretHash;
 
+  /// Management functions for auth users.
+  final AuthUsers authUsers;
+
   /// Creates a new instance of [AuthenticationTokens].
   AuthenticationTokens({
     required this.config,
+    this.authUsers = const AuthUsers(),
   })  : admin = AuthenticationTokensAdmin(
           refreshTokenLifetime: config.refreshTokenLifetime,
         ),
@@ -108,7 +112,7 @@ final class AuthenticationTokens {
     final Transaction? transaction,
   }) async {
     if (!skipUserBlockedChecked || scopes == null) {
-      final authUser = await AuthUsers.get(
+      final authUser = await authUsers.get(
         session,
         authUserId: authUserId,
         transaction: transaction,

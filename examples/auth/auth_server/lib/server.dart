@@ -59,9 +59,7 @@ void run(List<String> args) async {
   );
 
   final authServices = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManager(
-        config: authSessionsConfig,
-      ),
+      primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
       identityProviders: [
         GoogleIdentityProviderFactory(googleIDPConfig),
         AppleIdentityProviderFactory(appleIDPConfig),
@@ -69,8 +67,8 @@ void run(List<String> args) async {
         PasskeyIdentityProviderFactory(passkeyIDPConfig),
       ],
       additionalTokenManagers: [
-        AuthenticationTokensTokenManager(
-          config: authenticationTokenConfig,
+        AuthenticationTokensTokenManagerFactory(
+          authenticationTokenConfig,
         ),
       ]);
 

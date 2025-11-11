@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -106,11 +105,11 @@ void main() {
           final result = await completeAccountCreationFuture;
 
           // Verify auth user exists
-          final authUsers = await AuthUsers.list(
+          final authUsers = await fixture.authUsers.list(
             session,
           );
           expect(authUsers, hasLength(1));
-          expect(authUsers.first.id, equals(result.authUserId));
+          expect(authUsers.single.id, equals(result.authUserId));
         });
 
         test('then the user can authenticate with the registered credentials',

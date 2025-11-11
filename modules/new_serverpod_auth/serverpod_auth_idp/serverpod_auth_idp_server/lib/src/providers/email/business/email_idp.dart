@@ -34,9 +34,13 @@ final class EmailIDP {
   final EmailIDPConfig config;
 
   final TokenManager _tokenManager;
+  final AuthUsers _authUsers;
+  final UserProfiles _userProfiles;
 
   EmailIDP._(
     this.config,
+    this._authUsers,
+    this._userProfiles,
     this._tokenManager,
     this.utils,
     this.admin,
@@ -46,11 +50,15 @@ final class EmailIDP {
   factory EmailIDP(
     final EmailIDPConfig config, {
     required final TokenManager tokenManager,
+    final AuthUsers authUsers = const AuthUsers(),
+    final UserProfiles userProfiles = const UserProfiles(),
   }) {
-    final utils = EmailIDPUtils(config: config);
+    final utils = EmailIDPUtils(config: config, authUsers: authUsers);
     final admin = EmailIDPAdmin(utils: utils);
     return EmailIDP._(
       config,
+      authUsers,
+      userProfiles,
       tokenManager,
       utils,
       admin,
@@ -105,7 +113,7 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        await UserProfiles.createUserProfile(
+        await _userProfiles.createUserProfile(
           session,
           result.authUserId,
           UserProfileData(
@@ -144,7 +152,7 @@ final class EmailIDP {
           transaction: transaction,
         );
 
-        final authUser = await AuthUsers.get(
+        final authUser = await _authUsers.get(
           session,
           authUserId: authUserId,
           transaction: transaction,

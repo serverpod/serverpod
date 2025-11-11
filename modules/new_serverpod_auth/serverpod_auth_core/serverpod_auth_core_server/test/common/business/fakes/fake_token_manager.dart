@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 
@@ -10,38 +11,53 @@ class FakeTokenManager implements TokenManager {
   final FakeTokenStorage _storage;
   final String _tokenIssuer;
   final bool _usesRefreshTokens;
+  final AuthUsers _authUsers;
 
   FakeTokenManager(
     this._storage, {
+    final AuthUsers authUsers = const AuthUsers(),
     final String tokenIssuer = 'fake',
     final bool usesRefreshTokens = true,
   })  : _tokenIssuer = tokenIssuer,
-        _usesRefreshTokens = usesRefreshTokens;
+        _usesRefreshTokens = usesRefreshTokens,
+        _authUsers = authUsers;
 
   @override
   Future<AuthSuccess> issueToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
-    final Set<Scope>? scopes,
+    Set<Scope>? scopes,
     final Transaction? transaction,
   }) async {
+    {
+      final authUser = await _authUsers.get(
+        session,
+        authUserId: authUserId,
+        transaction: transaction,
+      );
+
+      if (authUser.blocked) {
+        throw AuthUserBlockedException();
+      }
+
+      scopes ??= authUser.scopes;
+    }
+
     final tokenId = _storage.generateTokenId();
     final refreshTokenId =
         _usesRefreshTokens ? _storage.generateRefreshTokenId() : null;
 
-    final scopeSet = scopes != null
-        ? scopes
-            .where((final scope) => scope.name != null)
-            .map((final scope) => scope.name!)
-            .toSet()
-        : <String>{};
+    final scopeSet = scopes
+        .where((final scope) => scope.name != null)
+        .map((final scope) => scope.name!)
+        .toSet();
 
     final tokenInfo = TokenInfo(
       userId: authUserId.toString(),
       tokenIssuer: _tokenIssuer,
       tokenId: tokenId,
-      scopes: scopes ?? {},
+      scopes: scopes,
       method: method,
     );
     _storage.storeToken(tokenInfo);
@@ -159,4 +175,7 @@ class FakeTokenManager implements TokenManager {
 
   int get tokenCount => _storage.tokenCount;
   List<TokenInfo> get allTokens => _storage.allTokens;
+
+  /// Exposes the authUsers instance for testing purposes.
+  AuthUsers get authUsers => _authUsers;
 }

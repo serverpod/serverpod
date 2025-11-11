@@ -39,7 +39,8 @@ void main() {
       late TestSessionBuilder session;
 
       setUp(() async {
-        authUserId = (await AuthUsers.create(sessionBuilder.build())).id;
+        const authUsers = AuthUsers();
+        authUserId = (await authUsers.create(sessionBuilder.build())).id;
 
         session = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.authenticationInfo(
@@ -67,9 +68,11 @@ void main() {
       late TestSessionBuilder session;
 
       setUp(() async {
-        authUserId = (await AuthUsers.create(sessionBuilder.build())).id;
+        const authUsers = AuthUsers();
+        authUserId = (await authUsers.create(sessionBuilder.build())).id;
 
-        await UserProfiles.createUserProfile(
+        const userProfiles = UserProfiles();
+        await userProfiles.createUserProfile(
           sessionBuilder.build(),
           authUserId,
           UserProfileData(

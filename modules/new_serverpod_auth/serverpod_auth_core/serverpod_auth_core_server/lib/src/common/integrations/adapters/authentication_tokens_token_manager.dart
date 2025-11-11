@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
+import '../../../../auth_user.dart';
 import '../../../generated/common/models/auth_strategy.dart';
 import '../../../jwt/business/authentication_token_config.dart';
 import '../../../jwt/business/authentication_tokens.dart';
@@ -21,8 +22,10 @@ class AuthenticationTokensTokenManager implements TokenManager {
   /// Creates a new [AuthenticationTokensTokenManager] instance.
   AuthenticationTokensTokenManager({
     required final AuthenticationTokenConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
   }) : authenticationTokens = AuthenticationTokens(
           config: config,
+          authUsers: authUsers,
         );
 
   @override

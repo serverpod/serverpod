@@ -23,7 +23,7 @@ void main() {
 
       fixture = EmailIDPTestFixture();
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -114,7 +114,7 @@ void main() {
         },
       ));
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -175,7 +175,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -350,7 +350,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -442,7 +442,7 @@ void main() {
       );
 
       // First user
-      final firstUser = await fixture.createAuthUser(session);
+      final firstUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: firstUser.id,
@@ -459,7 +459,7 @@ void main() {
 
       // Second user
       const secondEmail = 'test2@serverpod.dev';
-      final secondUser = await fixture.createAuthUser(session);
+      final secondUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: secondUser.id,

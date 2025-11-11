@@ -28,12 +28,15 @@ import '../email_idp_server_exceptions.dart';
 class EmailIDPAccountCreationUtil {
   final SecretHashUtil _hashUtils;
   final EmailIDPAccountCreationUtilsConfig _config;
+  final AuthUsers _authUsers;
 
   /// Creates a new [EmailIDPAccountCreationUtil] instance.
   EmailIDPAccountCreationUtil({
     required final EmailIDPAccountCreationUtilsConfig config,
     required final SecretHashUtil passwordHashUtils,
+    required final AuthUsers authUsers,
   })  : _config = config,
+        _authUsers = authUsers,
         _hashUtils = passwordHashUtils;
 
   /// {@template email_idp_account_creation_util.start_account_creation}
@@ -290,7 +293,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    final newUser = await AuthUsers.create(
+    final newUser = await _authUsers.create(
       session,
       transaction: transaction,
     );

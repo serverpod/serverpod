@@ -22,9 +22,9 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
-        await AuthUsers.update(
+        await fixture.authUsers.update(
           session,
           authUserId: authUser.id,
           scopes: {const Scope('test-scope'), const Scope('admin')},
@@ -105,8 +105,8 @@ void main() {
         session = sessionBuilder.build();
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
-        await AuthUsers.update(
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.authUsers.update(
           session,
           authUserId: authUser.id,
           blocked: true,
@@ -165,7 +165,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,

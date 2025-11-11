@@ -59,7 +59,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
       authSuccess = await authenticationTokens.createTokens(
@@ -144,7 +144,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
       authSuccess = await authenticationTokens.createTokens(

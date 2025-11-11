@@ -18,6 +18,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
   required final auth_next.EmailIDP newEmailIDP,
+  final new_auth_user.AuthUsers authUsers = const new_auth_user.AuthUsers(),
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
     session,
@@ -34,7 +35,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     return (migratedUser, false);
   }
 
-  final authUser = await new_auth_user.AuthUsers.create(
+  final authUser = await authUsers.create(
     session,
     blocked: userInfo.blocked,
     scopes: userInfo.scopes,
@@ -160,8 +161,10 @@ Future<void> _importProfile(
   final UuidValue authUserId,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
+  final new_profile.UserProfiles userProfiles =
+      const new_profile.UserProfiles(),
 }) async {
-  await new_profile.UserProfiles.createUserProfile(
+  await userProfiles.createUserProfile(
     session,
     authUserId,
     new_profile.UserProfileData(
@@ -176,7 +179,7 @@ Future<void> _importProfile(
       userInfo.imageUrl != null ? Uri.tryParse(userInfo.imageUrl!) : null;
   if (profileImageUrl != null) {
     try {
-      await new_profile.UserProfiles.setUserImageFromUrl(
+      await userProfiles.setUserImageFromUrl(
         session,
         authUserId,
         profileImageUrl,

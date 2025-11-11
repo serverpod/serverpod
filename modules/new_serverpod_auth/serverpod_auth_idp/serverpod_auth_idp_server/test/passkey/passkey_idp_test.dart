@@ -13,10 +13,12 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  const authUsers = AuthUsers();
   final tokenManager = AuthSessionsTokenManager(
     config: AuthSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
+    authUsers: authUsers,
   );
 
   final passKeyIDP = PasskeyIDP(
@@ -35,7 +37,7 @@ void main() {
       final challengeId = const Uuid().v4obj();
 
       setUp(() async {
-        user = await AuthUsers.create(sessionBuilder.build());
+        user = await authUsers.create(sessionBuilder.build());
 
         session = sessionBuilder
             .copyWith(
@@ -114,7 +116,7 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        user = await AuthUsers.create(session);
+        user = await authUsers.create(session);
 
         {
           final registrationChallengeId = const Uuid().v4obj();

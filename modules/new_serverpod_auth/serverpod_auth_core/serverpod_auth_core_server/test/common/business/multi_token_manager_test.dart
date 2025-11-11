@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/auth_user.dart';
 import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
@@ -21,9 +22,10 @@ void main() {
       late MultiTokenManager multiTokenManager;
       late UuidValue userId;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
-        userId = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+        final authUser = await const AuthUsers().create(session);
+        userId = authUser.id;
 
         defaultStorage = FakeTokenStorage();
         additionalStorage1 = FakeTokenStorage();
@@ -146,8 +148,9 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        user1Id = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
-        user2Id = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440001');
+        const authUsers = AuthUsers();
+        user1Id = (await authUsers.create(session)).id;
+        user2Id = (await authUsers.create(session)).id;
 
         defaultStorage = FakeTokenStorage();
         additionalStorage1 = FakeTokenStorage();
@@ -643,9 +646,12 @@ void main() {
       late Session session;
       late FakeTokenStorage storage;
       late MultiTokenManager multiTokenManager;
+      late UuidValue userId;
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
+        const authUsers = AuthUsers();
+        userId = (await authUsers.create(session)).id;
         storage = FakeTokenStorage();
 
         multiTokenManager = MultiTokenManager(
@@ -660,8 +666,7 @@ void main() {
         setUp(() async {
           authSuccess = await multiTokenManager.issueToken(
             session,
-            authUserId:
-                UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+            authUserId: userId,
             method: 'test',
             scopes: {const Scope('test')},
             transaction: null,
@@ -685,7 +690,7 @@ void main() {
           'when listing tokens then all tokens from the default manager should be returned',
           () async {
         storage.storeToken(TokenInfo(
-          userId: '550e8400-e29b-41d4-a716-446655440000',
+          userId: userId.uuid,
           tokenIssuer: 'default',
           tokenId: 'token-1',
           scopes: {const Scope('test')},
@@ -722,8 +727,10 @@ void main() {
         tokenIssuer5
       ];
 
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
+        const authUsers = AuthUsers();
+        final userId = (await authUsers.create(session)).id;
         storages = List.generate(5, (final _) => FakeTokenStorage());
         final tokenManagers = List.generate(
             5,
@@ -742,10 +749,9 @@ void main() {
 
         // Add one token to each manager
         for (var i = 0; i < 5; i++) {
-          tokenManagers[i].issueToken(
+          await tokenManagers[i].issueToken(
             session,
-            authUserId:
-                UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+            authUserId: userId,
             method: 'email',
             scopes: {const Scope('read')},
           );
@@ -799,7 +805,8 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        userId = UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000');
+        const authUsers = AuthUsers();
+        userId = (await authUsers.create(session)).id;
 
         defaultStorage = FakeTokenStorage();
         storage1 = FakeTokenStorage();

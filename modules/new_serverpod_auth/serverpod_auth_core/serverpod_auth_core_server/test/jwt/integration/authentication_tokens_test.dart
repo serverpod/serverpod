@@ -5,6 +5,7 @@ import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
+import '../../test_tags.dart';
 
 void main() {
   final authenticationTokens = AuthenticationTokens(
@@ -24,7 +25,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
     });
 
@@ -114,7 +115,8 @@ void main() {
 
   withServerpod(
       'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
-      (
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags, (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -126,7 +128,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(
+      final authUser = await authenticationTokens.authUsers.create(
         session,
       );
       authUserId = authUser.id;
@@ -379,7 +381,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
 
       initialAuthSuccess = await authenticationTokens.createTokens(
         session,
@@ -423,7 +425,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
       await authenticationTokens.createTokens(
@@ -454,7 +456,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser1 = await AuthUsers.create(session);
+      final authUser1 = await authenticationTokens.authUsers.create(session);
       authUserId1 = authUser1.id;
 
       await authenticationTokens.createTokens(
@@ -464,7 +466,7 @@ void main() {
         method: 'test',
       );
 
-      final authUser2 = await AuthUsers.create(session);
+      final authUser2 = await authenticationTokens.authUsers.create(session);
       authUserId2 = authUser2.id;
 
       await authenticationTokens.createTokens(
@@ -494,10 +496,10 @@ void main() {
 
     setUp(() async {
       session = sessionBuilder.build();
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
       // Assign scopes to the user using update
-      await AuthUsers.update(
+      await authenticationTokens.authUsers.update(
         session,
         authUserId: authUserId,
         scopes: {const Scope('user-scope')},
@@ -542,10 +544,11 @@ void main() {
 
     setUp(() async {
       session = sessionBuilder.build();
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
       // Block the user using update
-      await AuthUsers.update(session, authUserId: authUserId, blocked: true);
+      await authenticationTokens.authUsers
+          .update(session, authUserId: authUserId, blocked: true);
     });
 
     test('when creating tokens, an AuthUserBlockedException should be thrown.',
@@ -583,7 +586,8 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      const authUsers = AuthUsers();
+      final authUser = await authUsers.create(session);
       authUserId = authUser.id;
     });
 
@@ -718,6 +722,7 @@ void main() {
     test(
         'when provider accesses session context, then it can fetch additional data.',
         () async {
+      const authUsers = AuthUsers();
       final authenticationTokensWithHook = AuthenticationTokens(
         config: AuthenticationTokenConfig(
           algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
@@ -726,7 +731,7 @@ void main() {
           refreshTokenHashPepper: 'test-pepper',
           extraClaimsProvider: (final session, final context) async {
             // Provider can fetch additional data from database using session
-            final authUser = await AuthUsers.get(
+            final authUser = await authUsers.get(
               session,
               authUserId: context.authUserId,
             );

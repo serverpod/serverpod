@@ -7,12 +7,13 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final tokenManagerFactory = AuthSessionsTokenManagerFactory(
+    AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   tearDown(() {
-    AuthServices.set(primaryTokenManager: tokenManager, identityProviders: []);
+    AuthServices.set(
+        primaryTokenManager: tokenManagerFactory, identityProviders: []);
   });
 
   withServerpod(
@@ -63,7 +64,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
       });
 
@@ -178,7 +179,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
       });
 

@@ -38,7 +38,7 @@ void main() {
               passwordResetVerificationCodeLifetime,
         ));
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
 
         await fixture.createEmailAccount(
@@ -199,7 +199,7 @@ void main() {
               password == allowedNewPassword,
         ));
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,
@@ -270,7 +270,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -341,7 +341,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         const email = 'test@serverpod.dev';
         const password = 'Foobar123!';
@@ -431,7 +431,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         const email = 'test@serverpod.dev';
         const password = 'Foobar123!';

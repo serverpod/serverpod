@@ -63,10 +63,13 @@ class GoogleIDPUtils {
   /// Configuration for the Google identity provider.
   final GoogleIDPConfig config;
 
+  final AuthUsers _authUsers;
+
   /// Creates a new instance of [GoogleIDPUtils].
   GoogleIDPUtils({
     required this.config,
-  });
+    required final AuthUsers authUsers,
+  }) : _authUsers = authUsers;
 
   /// Authenticates a user using an access token.
   ///
@@ -95,11 +98,11 @@ class GoogleIDPUtils {
     final createNewUser = googleAccount == null;
 
     final AuthUserModel authUser = switch (createNewUser) {
-      true => await AuthUsers.create(
+      true => await _authUsers.create(
           session,
           transaction: transaction,
         ),
-      false => await AuthUsers.get(
+      false => await _authUsers.get(
           session,
           authUserId: googleAccount!.authUserId,
           transaction: transaction,
