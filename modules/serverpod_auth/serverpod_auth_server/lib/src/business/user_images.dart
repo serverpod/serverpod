@@ -56,6 +56,55 @@ class UserImages {
     return await _setUserImage(session, userId, imageBytes);
   }
 
+  /// Removes a user's image, setting it to null.
+  ///
+  /// If the user had an existing image, it is deleted from storage.
+  /// The user info will have no image URL after this operation.
+  static Future<bool> removeUserImage(Session session, int userId) async {
+    var userInfo =
+        await Users.findUserByUserId(session, userId, useCache: false);
+    if (userInfo == null) return false;
+
+    // Find all user image records for this user
+    var userImages = await UserImage.db.find(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+
+    // Delete all image files from storage
+    for (var image in userImages) {
+      try {
+        await session.storage.deleteFile(
+          storageId: 'public',
+          path: 'serverpod/user_images/${image.userId}-${image.version}.${image.url.endsWith('.jpg') ? 'jpg' : 'png'}',
+        );
+      } catch (e, stackTrace) {
+        session.log(
+          'Failed to delete user image from storage',
+          level: LogLevel.error,
+          exception: e,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+
+    // Delete all image records from database
+    await UserImage.db.deleteWhere(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+
+    // Update the UserInfo to have null image URL
+    userInfo.imageUrl = null;
+    await UserInfo.db.updateRow(session, userInfo);
+
+    if (AuthConfig.current.onUserUpdated != null) {
+      await AuthConfig.current.onUserUpdated!(session, userInfo);
+    }
+
+    return true;
+  }
+
   static Uint8List _encodeImage(Image image) =>
       AuthConfig.current.userImageFormat == UserImageType.jpg
           ? encodeJpg(image, quality: AuthConfig.current.userImageQuality)
