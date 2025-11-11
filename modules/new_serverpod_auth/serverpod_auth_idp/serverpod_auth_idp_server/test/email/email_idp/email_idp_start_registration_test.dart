@@ -42,7 +42,6 @@ void main() {
           accountRequestIdFuture = fixture.emailIDP.startRegistration(
             session,
             email: email,
-            password: password,
           );
         });
 
@@ -54,7 +53,6 @@ void main() {
               await fixture.emailIDP.startRegistration(
             session,
             email: nonRegisteredEmail,
-            password: password,
           );
 
           await expectLater(
@@ -79,7 +77,6 @@ void main() {
           accountRequestIdFuture = fixture.emailIDP.startRegistration(
             session,
             email: email.toUpperCase(),
-            password: password,
           );
         });
 
@@ -91,7 +88,6 @@ void main() {
               await fixture.emailIDP.startRegistration(
             session,
             email: nonRegisteredEmail,
-            password: password,
           );
 
           await expectLater(
@@ -117,7 +113,6 @@ void main() {
       late Session session;
       late EmailIDPTestFixture fixture;
       const email = 'newuser@serverpod.dev';
-      const password = 'Password123!';
       late String verificationCode;
 
       setUp(() async {
@@ -142,26 +137,12 @@ void main() {
           accountRequestIdFuture = fixture.emailIDP.startRegistration(
             session,
             email: email,
-            password: password,
           );
         });
 
         test('then it returns account registration request id', () async {
           await expectLater(
               accountRequestIdFuture, completion(isA<UuidValue>()));
-        });
-
-        test(
-            'then account registration request can be used to complete registration',
-            () async {
-          final accountRequestId = await accountRequestIdFuture;
-          final authSuccessFuture = fixture.emailIDP.finishRegistration(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-          );
-
-          await expectLater(authSuccessFuture, completion(isA<AuthSuccess>()));
         });
       });
     },

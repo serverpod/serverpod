@@ -17,7 +17,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       late String verificationCode;
 
       setUp(() async {
@@ -32,11 +31,9 @@ void main() {
         );
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -59,8 +56,7 @@ void main() {
 
         // Should still succeed
         final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+          (final transaction) => fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -82,7 +78,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const verificationCode = '12345678';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
       late Clock clockBeforeTimeframe;
@@ -108,10 +103,9 @@ void main() {
           clockBeforeTimeframe,
           () => session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.startAccountCreation(
+                fixture.accountCreationUtil.startRegistration(
               session,
               email: email,
-              password: password,
               transaction: transaction,
             ),
           ),
@@ -139,7 +133,7 @@ void main() {
         await withClock(clockBeforeTimeframe, () async {
           final result = session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyAccountRequest(
+                fixture.accountCreationUtil.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,

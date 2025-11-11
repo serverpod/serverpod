@@ -61,12 +61,34 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   Future<UuidValue> startRegistration(
     final Session session, {
     required final String email,
-    required final String password,
   }) async {
     return emailIDP.startRegistration(
       session,
       email: email,
-      password: password,
+    );
+  }
+
+  /// {@template email_account_base_endpoint.verify_registration_code}
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  /// {@endtemplate}
+  Future<String> verifyRegistrationCode(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
+  }) async {
+    return emailIDP.verifyRegistrationCode(
+      session,
+      accountRequestId: accountRequestId,
+      verificationCode: verificationCode,
     );
   }
 
@@ -89,13 +111,13 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   /// {@endtemplate}
   Future<AuthSuccess> finishRegistration(
     final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
+    required final String registrationToken,
+    required final String password,
   }) async {
     return emailIDP.finishRegistration(
       session,
-      accountRequestId: accountRequestId,
-      verificationCode: verificationCode,
+      registrationToken: registrationToken,
+      password: password,
     );
   }
 
