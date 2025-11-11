@@ -12,13 +12,13 @@ class StatusEndpoint extends Endpoint {
 
   /// Returns true if the client user is signed in.
   Future<bool> isSignedIn(final Session session) async {
-    final authInfo = await session.authenticated;
+    final authInfo = session.authenticated;
     return authInfo?.authId != null;
   }
 
   /// Signs out a user from the current device.
   Future<void> signOutDevice(final Session session) async {
-    final authInfoIdStr = (await session.authenticated)?.authId;
+    final authInfoIdStr = session.authenticated?.authId;
     if (authInfoIdStr == null) return;
     final authInfoId = UuidValue.withValidation(authInfoIdStr);
 
@@ -27,7 +27,7 @@ class StatusEndpoint extends Endpoint {
 
   /// Signs out a user from all active devices.
   Future<void> signOutAllDevices(final Session session) async {
-    final authUserIdStr = (await session.authenticated)?.userIdentifier;
+    final authUserIdStr = session.authenticated?.userIdentifier;
     if (authUserIdStr == null) return;
     final authUserId = UuidValue.withValidation(authUserIdStr);
 

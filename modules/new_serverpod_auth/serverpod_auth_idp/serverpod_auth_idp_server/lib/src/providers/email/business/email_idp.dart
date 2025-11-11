@@ -97,8 +97,8 @@ final class EmailIDP {
   /// {@macro email_account_base_endpoint.finish_registration}
   Future<AuthSuccess> finishRegistration(
     final Session session, {
-    required final UuidValue accountRequestId,
-    required final String verificationCode,
+    required final String registrationToken,
+    required final String password,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -108,8 +108,8 @@ final class EmailIDP {
           EmailIDPUtils.withReplacedServerEmailException(() async {
         final result = await utils.accountCreation.completeAccountCreation(
           session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
+          completeAccountCreationToken: registrationToken,
+          password: password,
           transaction: transaction,
         );
 
@@ -209,7 +209,6 @@ final class EmailIDP {
   Future<UuidValue> startRegistration(
     final Session session, {
     required final String email,
-    required final String password,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
@@ -218,10 +217,9 @@ final class EmailIDP {
       (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
         () async {
           try {
-            return await utils.accountCreation.startAccountCreation(
+            return await utils.accountCreation.startRegistration(
               session,
               email: email,
-              password: password,
               transaction: transaction,
             );
           } on EmailAccountRequestServerException catch (e) {
@@ -251,6 +249,29 @@ final class EmailIDP {
             // an email is registered or not.
             return const Uuid().v7obj();
           }
+        },
+      ),
+    );
+  }
+
+  /// {@macro email_account_base_endpoint.verify_registration_code}
+  Future<String> verifyRegistrationCode(
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+        () async {
+          return await utils.accountCreation.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          );
         },
       ),
     );

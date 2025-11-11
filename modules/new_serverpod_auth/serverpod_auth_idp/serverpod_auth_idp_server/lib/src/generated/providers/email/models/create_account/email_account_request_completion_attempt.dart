@@ -9,11 +9,8 @@
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
 
-// ignore_for_file: unnecessary_null_comparison
-
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../providers/email/models/email_account_request.dart' as _i2;
 
 /// Database table for tracking email account completion requests.
 /// A new entry will be created whenever the user tries to complete the email account setup.
@@ -24,7 +21,6 @@ abstract class EmailAccountRequestCompletionAttempt
     DateTime? attemptedAt,
     required this.ipAddress,
     required this.emailAccountRequestId,
-    this.emailAccountRequest,
   }) : attemptedAt = attemptedAt ?? DateTime.now();
 
   factory EmailAccountRequestCompletionAttempt({
@@ -32,7 +28,6 @@ abstract class EmailAccountRequestCompletionAttempt
     DateTime? attemptedAt,
     required String ipAddress,
     required _i1.UuidValue emailAccountRequestId,
-    _i2.EmailAccountRequest? emailAccountRequest,
   }) = _EmailAccountRequestCompletionAttemptImpl;
 
   factory EmailAccountRequestCompletionAttempt.fromJson(
@@ -46,11 +41,6 @@ abstract class EmailAccountRequestCompletionAttempt
       ipAddress: jsonSerialization['ipAddress'] as String,
       emailAccountRequestId: _i1.UuidValueJsonExtension.fromJson(
           jsonSerialization['emailAccountRequestId']),
-      emailAccountRequest: jsonSerialization['emailAccountRequest'] == null
-          ? null
-          : _i2.EmailAccountRequest.fromJson(
-              (jsonSerialization['emailAccountRequest']
-                  as Map<String, dynamic>)),
     );
   }
 
@@ -67,9 +57,9 @@ abstract class EmailAccountRequestCompletionAttempt
   /// The IP address of the sign in attempt.
   String ipAddress;
 
+  /// The ID of the email account request.
+  /// This is explicitly not a relation to be able to track dummy requests.
   _i1.UuidValue emailAccountRequestId;
-
-  _i2.EmailAccountRequest? emailAccountRequest;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -82,7 +72,6 @@ abstract class EmailAccountRequestCompletionAttempt
     DateTime? attemptedAt,
     String? ipAddress,
     _i1.UuidValue? emailAccountRequestId,
-    _i2.EmailAccountRequest? emailAccountRequest,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,8 +80,6 @@ abstract class EmailAccountRequestCompletionAttempt
       'attemptedAt': attemptedAt.toJson(),
       'ipAddress': ipAddress,
       'emailAccountRequestId': emailAccountRequestId.toJson(),
-      if (emailAccountRequest != null)
-        'emailAccountRequest': emailAccountRequest?.toJson(),
     };
   }
 
@@ -101,10 +88,8 @@ abstract class EmailAccountRequestCompletionAttempt
     return {};
   }
 
-  static EmailAccountRequestCompletionAttemptInclude include(
-      {_i2.EmailAccountRequestInclude? emailAccountRequest}) {
-    return EmailAccountRequestCompletionAttemptInclude._(
-        emailAccountRequest: emailAccountRequest);
+  static EmailAccountRequestCompletionAttemptInclude include() {
+    return EmailAccountRequestCompletionAttemptInclude._();
   }
 
   static EmailAccountRequestCompletionAttemptIncludeList includeList({
@@ -144,13 +129,11 @@ class _EmailAccountRequestCompletionAttemptImpl
     DateTime? attemptedAt,
     required String ipAddress,
     required _i1.UuidValue emailAccountRequestId,
-    _i2.EmailAccountRequest? emailAccountRequest,
   }) : super._(
           id: id,
           attemptedAt: attemptedAt,
           ipAddress: ipAddress,
           emailAccountRequestId: emailAccountRequestId,
-          emailAccountRequest: emailAccountRequest,
         );
 
   /// Returns a shallow copy of this [EmailAccountRequestCompletionAttempt]
@@ -162,7 +145,6 @@ class _EmailAccountRequestCompletionAttemptImpl
     DateTime? attemptedAt,
     String? ipAddress,
     _i1.UuidValue? emailAccountRequestId,
-    Object? emailAccountRequest = _Undefined,
   }) {
     return EmailAccountRequestCompletionAttempt(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -170,9 +152,6 @@ class _EmailAccountRequestCompletionAttemptImpl
       ipAddress: ipAddress ?? this.ipAddress,
       emailAccountRequestId:
           emailAccountRequestId ?? this.emailAccountRequestId,
-      emailAccountRequest: emailAccountRequest is _i2.EmailAccountRequest?
-          ? emailAccountRequest
-          : this.emailAccountRequest?.copyWith(),
     );
   }
 }
@@ -228,22 +207,9 @@ class EmailAccountRequestCompletionAttemptTable
   /// The IP address of the sign in attempt.
   late final _i1.ColumnString ipAddress;
 
+  /// The ID of the email account request.
+  /// This is explicitly not a relation to be able to track dummy requests.
   late final _i1.ColumnUuid emailAccountRequestId;
-
-  _i2.EmailAccountRequestTable? _emailAccountRequest;
-
-  _i2.EmailAccountRequestTable get emailAccountRequest {
-    if (_emailAccountRequest != null) return _emailAccountRequest!;
-    _emailAccountRequest = _i1.createRelationTable(
-      relationFieldName: 'emailAccountRequest',
-      field: EmailAccountRequestCompletionAttempt.t.emailAccountRequestId,
-      foreignField: _i2.EmailAccountRequest.t.id,
-      tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.EmailAccountRequestTable(tableRelation: foreignTableRelation),
-    );
-    return _emailAccountRequest!;
-  }
 
   @override
   List<_i1.Column> get columns => [
@@ -252,27 +218,13 @@ class EmailAccountRequestCompletionAttemptTable
         ipAddress,
         emailAccountRequestId,
       ];
-
-  @override
-  _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'emailAccountRequest') {
-      return emailAccountRequest;
-    }
-    return null;
-  }
 }
 
 class EmailAccountRequestCompletionAttemptInclude extends _i1.IncludeObject {
-  EmailAccountRequestCompletionAttemptInclude._(
-      {_i2.EmailAccountRequestInclude? emailAccountRequest}) {
-    _emailAccountRequest = emailAccountRequest;
-  }
-
-  _i2.EmailAccountRequestInclude? _emailAccountRequest;
+  EmailAccountRequestCompletionAttemptInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes =>
-      {'emailAccountRequest': _emailAccountRequest};
+  Map<String, _i1.Include?> get includes => {};
 
   @override
   _i1.Table<_i1.UuidValue?> get table => EmailAccountRequestCompletionAttempt.t;
@@ -301,9 +253,6 @@ class EmailAccountRequestCompletionAttemptIncludeList extends _i1.IncludeList {
 
 class EmailAccountRequestCompletionAttemptRepository {
   const EmailAccountRequestCompletionAttemptRepository._();
-
-  final attachRow =
-      const EmailAccountRequestCompletionAttemptAttachRowRepository._();
 
   /// Returns a list of [EmailAccountRequestCompletionAttempt]s matching the given query parameters.
   ///
@@ -338,7 +287,6 @@ class EmailAccountRequestCompletionAttemptRepository {
     _i1.OrderByListBuilder<EmailAccountRequestCompletionAttemptTable>?
         orderByList,
     _i1.Transaction? transaction,
-    EmailAccountRequestCompletionAttemptInclude? include,
   }) async {
     return session.db.find<EmailAccountRequestCompletionAttempt>(
       where: where?.call(EmailAccountRequestCompletionAttempt.t),
@@ -348,7 +296,6 @@ class EmailAccountRequestCompletionAttemptRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -379,7 +326,6 @@ class EmailAccountRequestCompletionAttemptRepository {
     _i1.OrderByListBuilder<EmailAccountRequestCompletionAttemptTable>?
         orderByList,
     _i1.Transaction? transaction,
-    EmailAccountRequestCompletionAttemptInclude? include,
   }) async {
     return session.db.findFirstRow<EmailAccountRequestCompletionAttempt>(
       where: where?.call(EmailAccountRequestCompletionAttempt.t),
@@ -388,7 +334,6 @@ class EmailAccountRequestCompletionAttemptRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -397,12 +342,10 @@ class EmailAccountRequestCompletionAttemptRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
-    EmailAccountRequestCompletionAttemptInclude? include,
   }) async {
     return session.db.findById<EmailAccountRequestCompletionAttempt>(
       id,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -572,35 +515,6 @@ class EmailAccountRequestCompletionAttemptRepository {
     return session.db.count<EmailAccountRequestCompletionAttempt>(
       where: where?.call(EmailAccountRequestCompletionAttempt.t),
       limit: limit,
-      transaction: transaction,
-    );
-  }
-}
-
-class EmailAccountRequestCompletionAttemptAttachRowRepository {
-  const EmailAccountRequestCompletionAttemptAttachRowRepository._();
-
-  /// Creates a relation between the given [EmailAccountRequestCompletionAttempt] and [EmailAccountRequest]
-  /// by setting the [EmailAccountRequestCompletionAttempt]'s foreign key `emailAccountRequestId` to refer to the [EmailAccountRequest].
-  Future<void> emailAccountRequest(
-    _i1.Session session,
-    EmailAccountRequestCompletionAttempt emailAccountRequestCompletionAttempt,
-    _i2.EmailAccountRequest emailAccountRequest, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (emailAccountRequestCompletionAttempt.id == null) {
-      throw ArgumentError.notNull('emailAccountRequestCompletionAttempt.id');
-    }
-    if (emailAccountRequest.id == null) {
-      throw ArgumentError.notNull('emailAccountRequest.id');
-    }
-
-    var $emailAccountRequestCompletionAttempt =
-        emailAccountRequestCompletionAttempt.copyWith(
-            emailAccountRequestId: emailAccountRequest.id);
-    await session.db.updateRow<EmailAccountRequestCompletionAttempt>(
-      $emailAccountRequestCompletionAttempt,
-      columns: [EmailAccountRequestCompletionAttempt.t.emailAccountRequestId],
       transaction: transaction,
     );
   }

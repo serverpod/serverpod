@@ -32,106 +32,87 @@ class EmailIDPPasswordResetUtil {
   })  : _config = config,
         _passwordHashUtil = passwordHashUtils;
 
-  /// Returns the auth user ID for the successfully changed password.
+  /// Sends out a password reset email for the given account, if it exists and
+  /// returns a password reset request ID, which can be used to complete the
+  /// reset.
   ///
-  /// This method should only be called after the [verifyPasswordResetCode]
-  /// method has been called successfully.
+  /// Each reset request will be logged to the database outside of the
+  /// [transaction] and can not be rolled back, so the throttling will always be
+  /// enforced.
   ///
-  /// The method takes the [completePasswordResetToken] returned from
-  /// [verifyPasswordResetCode] and uses it to complete the password reset.
+  /// Can throw [EmailPasswordResetTooManyAttemptsException] if the user has
+  /// made too many attempts to request a password reset.
   ///
-  /// Can throw the following [EmailPasswordResetServerException] subclasses:
-  /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
-  ///   be found for [passwordResetRequestId].
-  /// - [EmailPasswordResetNotVerifiedException] if the set
-  ///   password token has not been set.
-  /// - [EmailPasswordResetRequestExpiredException] if the reset request has
-  ///   expired and has not been cleaned up yet.
-  /// - [EmailPasswordResetPasswordPolicyViolationException] if the new password
-  ///   does not comply with the configured password policy.
-  /// - [EmailPasswordResetTooManyVerificationAttemptsException] if the user has
-  ///   made too many attempts trying to complete the password reset.
-  /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
-  ///   [verificationCode] is not valid.
-  Future<UuidValue> completePasswordReset(
+  /// Can throw [EmailPasswordResetEmailNotFoundException] if the email account
+  /// does not exist. In this case, the caller should not expose this detail to
+  /// the client, so that this method can not be misused to check which emails
+  /// are registered.
+  Future<UuidValue> startPasswordReset(
     final Session session, {
-    required final String completePasswordResetToken,
-    required final String newPassword,
+    required String email,
     required final Transaction transaction,
   }) async {
-    if (!_config.passwordValidationFunction(newPassword)) {
-      throw EmailPasswordResetPasswordPolicyViolationException();
-    }
+    email = email.normalizedEmail;
 
-    final credentials =
-        _tryDecodeCompletePasswordResetToken(completePasswordResetToken);
-    if (credentials == null) {
-      throw EmailPasswordResetInvalidVerificationCodeException();
-    }
-
-    final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
+    if (await _hasTooManyPasswordResetRequestAttempts(
       session,
-      credentials.passwordResetRequestId,
-      include: EmailAccountPasswordResetRequest.include(
-        setPasswordChallenge: SecretChallenge.include(),
-      ),
-      transaction: transaction,
-    );
-
-    if (resetRequest == null) {
-      throw EmailPasswordResetRequestNotFoundException();
-    }
-
-    final setPasswordChallenge = resetRequest.setPasswordChallenge;
-    if (setPasswordChallenge == null) {
-      throw EmailPasswordResetNotVerifiedException();
-    }
-
-    if (!await _passwordHashUtil.validateHash(
-      value: credentials.verificationCode,
-      hash: setPasswordChallenge.challengeCodeHash.asUint8List,
-      salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
+      email: email,
     )) {
-      throw EmailPasswordResetInvalidVerificationCodeException();
+      throw EmailPasswordResetTooManyAttemptsException();
     }
 
-    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
-      await EmailAccountPasswordResetRequest.db.deleteRow(
-        session,
-        resetRequest,
-        // passing no transaction, so this will not be rolled back
-      );
-
-      throw EmailPasswordResetRequestExpiredException();
-    }
-
-    await EmailAccountPasswordResetRequest.db.deleteRow(
+    final account = await EmailAccount.db.findFirstRow(
       session,
-      resetRequest,
+      where: (final t) => t.email.equals(email),
       transaction: transaction,
     );
 
-    final account = (await EmailAccount.db.findById(
-      session,
-      resetRequest.emailAccountId,
-      transaction: transaction,
-    ))!;
+    if (account == null) {
+      throw EmailPasswordResetEmailNotFoundException();
+    }
 
-    await setPassword(
+    await deletePasswordResetRequests(
       session,
-      emailAccount: account,
-      password: newPassword,
-      transaction: transaction,
-    );
-
-    // Call the password reset completion callback
-    _config.onPasswordResetCompleted?.call(
-      session,
+      olderThan: Duration.zero,
       emailAccountId: account.id!,
       transaction: transaction,
     );
 
-    return account.authUserId;
+    final verificationCode = _config.passwordResetVerificationCodeGenerator();
+
+    final verificationCodeHash = await _passwordHashUtil.createHash(
+      value: verificationCode,
+    );
+
+    final challenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(
+        challengeCodeHash: verificationCodeHash.hash.asByteData,
+        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+      ),
+      transaction: transaction,
+    );
+
+    final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
+      session,
+      EmailAccountPasswordResetRequest(
+        emailAccountId: account.id!,
+        challengeId: challenge.id!,
+        createdAt: clock.now(),
+      ),
+      transaction: transaction,
+    );
+
+    final passwordResetRequestId = resetRequest.id!;
+    _config.sendPasswordResetVerificationCode?.call(
+      session,
+      email: email,
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode,
+      transaction: transaction,
+    );
+
+    return passwordResetRequestId;
   }
 
   /// Returns the credentials for setting the password for the password reset request.
@@ -235,6 +216,108 @@ class EmailIDPPasswordResetUtil {
       resetRequest.id!,
       setPasswordToken,
     );
+  }
+
+  /// Returns the auth user ID for the successfully changed password.
+  ///
+  /// This method should only be called after the [verifyPasswordResetCode]
+  /// method has been called successfully.
+  ///
+  /// The method takes the [completePasswordResetToken] returned from
+  /// [verifyPasswordResetCode] and uses it to complete the password reset.
+  ///
+  /// Can throw the following [EmailPasswordResetServerException] subclasses:
+  /// - [EmailPasswordResetRequestNotFoundException] if no reset request could
+  ///   be found for [passwordResetRequestId].
+  /// - [EmailPasswordResetNotVerifiedException] if the set
+  ///   password token has not been set.
+  /// - [EmailPasswordResetRequestExpiredException] if the reset request has
+  ///   expired and has not been cleaned up yet.
+  /// - [EmailPasswordResetPasswordPolicyViolationException] if the new password
+  ///   does not comply with the configured password policy.
+  /// - [EmailPasswordResetTooManyVerificationAttemptsException] if the user has
+  ///   made too many attempts trying to complete the password reset.
+  /// - [EmailPasswordResetInvalidVerificationCodeException] if the provided
+  ///   [verificationCode] is not valid.
+  Future<UuidValue> completePasswordReset(
+    final Session session, {
+    required final String completePasswordResetToken,
+    required final String newPassword,
+    required final Transaction transaction,
+  }) async {
+    if (!_config.passwordValidationFunction(newPassword)) {
+      throw EmailPasswordResetPasswordPolicyViolationException();
+    }
+
+    final credentials =
+        _tryDecodeCompletePasswordResetToken(completePasswordResetToken);
+    if (credentials == null) {
+      throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
+    final resetRequest = await EmailAccountPasswordResetRequest.db.findById(
+      session,
+      credentials.passwordResetRequestId,
+      include: EmailAccountPasswordResetRequest.include(
+        setPasswordChallenge: SecretChallenge.include(),
+      ),
+      transaction: transaction,
+    );
+
+    if (resetRequest == null) {
+      throw EmailPasswordResetRequestNotFoundException();
+    }
+
+    final setPasswordChallenge = resetRequest.setPasswordChallenge;
+    if (setPasswordChallenge == null) {
+      throw EmailPasswordResetNotVerifiedException();
+    }
+
+    if (!await _passwordHashUtil.validateHash(
+      value: credentials.verificationCode,
+      hash: setPasswordChallenge.challengeCodeHash.asUint8List,
+      salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
+    )) {
+      throw EmailPasswordResetInvalidVerificationCodeException();
+    }
+
+    if (resetRequest.isExpired(_config.passwordResetVerificationCodeLifetime)) {
+      await EmailAccountPasswordResetRequest.db.deleteRow(
+        session,
+        resetRequest,
+        // passing no transaction, so this will not be rolled back
+      );
+
+      throw EmailPasswordResetRequestExpiredException();
+    }
+
+    await EmailAccountPasswordResetRequest.db.deleteRow(
+      session,
+      resetRequest,
+      transaction: transaction,
+    );
+
+    final account = (await EmailAccount.db.findById(
+      session,
+      resetRequest.emailAccountId,
+      transaction: transaction,
+    ))!;
+
+    await setPassword(
+      session,
+      emailAccount: account,
+      password: newPassword,
+      transaction: transaction,
+    );
+
+    // Call the password reset completion callback
+    _config.onPasswordResetCompleted?.call(
+      session,
+      emailAccountId: account.id!,
+      transaction: transaction,
+    );
+
+    return account.authUserId;
   }
 
   /// Inserts a new set password challenge and updates the password reset request to link to it.
@@ -362,89 +445,6 @@ class EmailIDPPasswordResetUtil {
       ),
       transaction: transaction,
     );
-  }
-
-  /// Sends out a password reset email for the given account, if it exists and
-  /// returns a password reset request ID, which can be used to complete the
-  /// reset.
-  ///
-  /// Each reset request will be logged to the database outside of the
-  /// [transaction] and can not be rolled back, so the throttling will always be
-  /// enforced.
-  ///
-  /// Can throw [EmailPasswordResetTooManyAttemptsException] if the account
-  /// email does not exist in the database.
-  ///
-  /// Can throw [EmailPasswordResetEmailNotFoundException] if the email account
-  /// does not exist. In this case, the caller should not expose this detail to
-  /// the client, so that this method can not be misused to check which emails
-  /// are registered.
-  Future<UuidValue> startPasswordReset(
-    final Session session, {
-    required String email,
-    required final Transaction transaction,
-  }) async {
-    email = email.normalizedEmail;
-
-    if (await _hasTooManyPasswordResetRequestAttempts(
-      session,
-      email: email,
-    )) {
-      throw EmailPasswordResetTooManyAttemptsException();
-    }
-
-    final account = await EmailAccount.db.findFirstRow(
-      session,
-      where: (final t) => t.email.equals(email),
-      transaction: transaction,
-    );
-
-    if (account == null) {
-      throw EmailPasswordResetEmailNotFoundException();
-    }
-
-    await deletePasswordResetRequests(
-      session,
-      olderThan: Duration.zero,
-      emailAccountId: account.id!,
-      transaction: transaction,
-    );
-
-    final verificationCode = _config.passwordResetVerificationCodeGenerator();
-
-    final verificationCodeHash = await _passwordHashUtil.createHash(
-      value: verificationCode,
-    );
-
-    final challenge = await SecretChallenge.db.insertRow(
-      session,
-      SecretChallenge(
-        challengeCodeHash: verificationCodeHash.hash.asByteData,
-        challengeCodeSalt: verificationCodeHash.salt.asByteData,
-      ),
-      transaction: transaction,
-    );
-
-    final resetRequest = await EmailAccountPasswordResetRequest.db.insertRow(
-      session,
-      EmailAccountPasswordResetRequest(
-        emailAccountId: account.id!,
-        challengeId: challenge.id!,
-        createdAt: clock.now(),
-      ),
-      transaction: transaction,
-    );
-
-    final passwordResetRequestId = resetRequest.id!;
-    _config.sendPasswordResetVerificationCode?.call(
-      session,
-      email: email,
-      passwordResetRequestId: passwordResetRequestId,
-      verificationCode: verificationCode,
-      transaction: transaction,
-    );
-
-    return passwordResetRequestId;
   }
 
   Future<bool> _hasTooManyPasswordResetCompleteAttempts(

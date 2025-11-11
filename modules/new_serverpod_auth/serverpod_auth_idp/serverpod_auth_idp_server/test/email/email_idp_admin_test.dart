@@ -304,7 +304,6 @@ void main() {
           (final transaction) => fixture.emailIDP.startRegistration(
             session,
             email: 'test@serverpod.dev',
-            password: 'Password123!',
             transaction: transaction,
           ),
         );

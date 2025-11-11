@@ -17,27 +17,34 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'newuser@serverpod.dev';
-      const password = 'Password123!';
-      late String verificationCode;
+      const allowedPassword = 'AllowedPassword123!';
+      late String registrationToken;
       const accountRequestVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        verificationCode = const Uuid().v4().toString();
+        final verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
           config: EmailIDPConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
                 accountRequestVerificationCodeLifetime,
+            passwordValidationFunction: (final password) =>
+                password == allowedPassword,
           ),
         );
 
         accountRequestId = await fixture.emailIDP.startRegistration(
           session,
           email: email,
-          password: password,
+        );
+
+        registrationToken = await fixture.emailIDP.verifyRegistrationCode(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: verificationCode,
         );
       });
 
@@ -51,8 +58,8 @@ void main() {
         setUp(() async {
           authSuccessFuture = fixture.emailIDP.finishRegistration(
             session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
+            registrationToken: registrationToken,
+            password: allowedPassword,
           );
         });
 
@@ -67,7 +74,7 @@ void main() {
             (final transaction) => fixture.emailIDP.login(
               session,
               email: email,
-              password: password,
+              password: allowedPassword,
               transaction: transaction,
             ),
           );
@@ -95,12 +102,12 @@ void main() {
       });
 
       test(
-          'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
+          'when finishRegistration is called with invalid registration token then it throws EmailAccountRequestException with reason "invalid"',
           () async {
         final result = fixture.emailIDP.finishRegistration(
           session,
-          accountRequestId: accountRequestId,
-          verificationCode: '$verificationCode-invalid',
+          registrationToken: '$registrationToken-invalid',
+          password: allowedPassword,
         );
 
         await expectLater(
@@ -114,10 +121,31 @@ void main() {
           ),
         );
       });
+
+      test(
+          'when finishRegistration is called with invalid password then it throws EmailAccountRequestException with reason "policyViolation"',
+          () async {
+        final result = fixture.emailIDP.finishRegistration(
+          session,
+          registrationToken: registrationToken,
+          password: '$allowedPassword-invalid',
+        );
+
+        await expectLater(
+          result,
+          throwsA(
+            isA<EmailAccountRequestException>().having(
+              (final e) => e.reason,
+              'reason',
+              EmailAccountRequestExceptionReason.policyViolation,
+            ),
+          ),
+        );
+      });
     },
   );
 
-  withServerpod('Given expired account request',
+  withServerpod('Given verified expired account request',
       rollbackDatabase: RollbackDatabase.disabled,
       testGroupTagsOverride: TestTags.concurrencyOneTestTags,
       (final sessionBuilder, final endpoints) {
@@ -126,13 +154,13 @@ void main() {
     late UuidValue accountRequestId;
     const email = 'expired@serverpod.dev';
     const password = 'Password123!';
-    late String verificationCode;
+    late String registrationToken;
     const accountRequestVerificationCodeLifetime = Duration(hours: 1);
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      verificationCode = const Uuid().v4().toString();
+      final verificationCode = const Uuid().v4().toString();
       fixture = EmailIDPTestFixture(
         config: EmailIDPConfig(
           secretHashPepper: 'pepper',
@@ -151,7 +179,12 @@ void main() {
         accountRequestId = await fixture.emailIDP.startRegistration(
           session,
           email: email,
-          password: password,
+        );
+
+        registrationToken = await fixture.emailIDP.verifyRegistrationCode(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: verificationCode,
         );
       });
     });
@@ -165,8 +198,8 @@ void main() {
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,
-        accountRequestId: accountRequestId,
-        verificationCode: verificationCode,
+        registrationToken: registrationToken,
+        password: password,
       );
 
       await expectLater(
@@ -186,8 +219,8 @@ void main() {
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,
-        accountRequestId: accountRequestId,
-        verificationCode: '$verificationCode-invalid',
+        registrationToken: '$registrationToken-invalid',
+        password: password,
       );
 
       await expectLater(
@@ -224,8 +257,8 @@ void main() {
         () async {
       final result = fixture.emailIDP.finishRegistration(
         session,
-        accountRequestId: const Uuid().v4obj(),
-        verificationCode: 'some-code',
+        registrationToken: const Uuid().v4(),
+        password: 'some-password',
       );
 
       await expectLater(

@@ -17,21 +17,12 @@ fields:
   ### Stored in lower-case.
   email: String
 
-  ### The hashed password of the user.
-  ###
-  ### Obtained in conjunction with [passwordSalt].
-  passwordHash: ByteData
-
-  ### The salt used for creating the [passwordHash].
-  passwordSalt: ByteData
-
   ### The associated challenge for this request
   challenge: SecretChallenge?, relation(onDelete=Cascade)
 
-  ### Time at which the email address has been verified, or `null` if it did not happen yet.
-  ###
-  ### The requests can only be turned into an account if this is non-`null`.
-  verifiedAt: DateTime?
+  ### Used to complete the account creation.
+  ### This will be set after the account creation challenge has been validated.
+  createAccountChallenge: SecretChallenge?, relation(onDelete=Cascade, optional)
 
 indexes:
   serverpod_auth_idp_email_account_request_email:

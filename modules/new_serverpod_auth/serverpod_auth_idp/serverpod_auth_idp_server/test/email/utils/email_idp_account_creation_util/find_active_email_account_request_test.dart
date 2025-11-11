@@ -17,7 +17,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -25,11 +24,9 @@ void main() {
         fixture = EmailIDPTestFixture();
 
         accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -67,7 +64,6 @@ void main() {
       late EmailIDPTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
@@ -89,10 +85,9 @@ void main() {
           ),
           () => session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.startAccountCreation(
+                fixture.accountCreationUtil.startRegistration(
               session,
               email: email,
-              password: password,
               transaction: transaction,
             ),
           ),
