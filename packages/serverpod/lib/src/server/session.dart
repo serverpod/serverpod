@@ -776,14 +776,7 @@ extension SessionInternalMethods on Session {
 
     return id;
   }
-}
 
-/// Provides authentication initialization support for sessions.
-///
-/// This extension manages the lazy initialization of authentication information
-/// for sessions, ensuring that authentication is resolved exactly once per session
-/// and making the authentication data immediately available without async operations.
-extension SessionAuthenticationInitializationExtension on Session {
   /// Initializes authentication for this session.
   ///
   /// This method resolves the authentication information for the current session
