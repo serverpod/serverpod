@@ -19,12 +19,7 @@ void main() {
     setUpAll(() async {
       server = IntegrationTestServer.create(
         authenticationHandler: (final session, final token) async {
-          // Web routes do not strip "Bearer " prefix automatically
-          // This is likely a bug. For now, we handle it here.
-          // Issue tracked in https://github.com/serverpod/serverpod/issues/4184
-          final t = token.replaceFirst('Bearer ', '');
-
-          if (t == validTestToken) {
+          if (token == validTestToken) {
             return AuthenticationInfo(
               testUserId,
               testScopes,
