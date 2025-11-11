@@ -84,7 +84,7 @@ void main() {
           final scopes =
               await client.sessionAuthentication.getAuthenticatedScopes();
 
-          expect(scopes, containsAll(['test', 'admin']));
+          expect(scopes, containsAll(testScopes.map((s) => s.name)));
         });
       },
     );
@@ -149,7 +149,7 @@ void main() {
 
       test('then authenticated user details are returned', () async {
         expect(body['userId'], equals(testUserId));
-        expect(body['scopes'], containsAll(['test', 'admin']));
+        expect(body['scopes'], containsAll(testScopes.map((s) => s.name)));
         expect(body['authId'], equals(testAuthId));
       });
     });
