@@ -179,33 +179,18 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
 
-    final request = await EmailAccountRequest.db.findById(
+    final request = await _getAccountRequest(
       session,
       accountRequestId,
-      include: EmailAccountRequest.include(
-        challenge: SecretChallenge.include(),
-        createAccountChallenge: SecretChallenge.include(),
-      ),
-      transaction: transaction,
+      transaction,
     );
 
-    if (request == null) {
-      throw EmailAccountRequestNotFoundException();
-    }
-
-    if (request.isVerificationCodeUsed) {
+    if (request.isRequestVerified) {
       throw EmailAccountRequestVerificationCodeAlreadyUsedException();
     }
 
     final challenge = request.getChallenge;
-
-    if (!await _hashUtils.validateHash(
-      value: verificationCode,
-      hash: challenge.challengeCodeHash.asUint8List,
-      salt: challenge.challengeCodeSalt.asUint8List,
-    )) {
-      throw EmailAccountRequestInvalidVerificationCodeException();
-    }
+    await _validateHash(verificationCode, challenge);
 
     if (request.isExpired(_config.registrationVerificationCodeLifetime)) {
       await EmailAccountRequest.db.deleteRow(
@@ -273,31 +258,21 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestInvalidVerificationCodeException();
     }
 
-    final request = await EmailAccountRequest.db.findById(
+    final request = await _getAccountRequest(
       session,
       credentials.requestId,
-      transaction: transaction,
-      include: EmailAccountRequest.include(
-        createAccountChallenge: SecretChallenge.include(),
-      ),
+      transaction,
     );
-
-    if (request == null) {
-      throw EmailAccountRequestNotFoundException();
-    }
 
     final createAccountChallenge = request.createAccountChallenge;
     if (createAccountChallenge == null) {
       throw EmailAccountRequestNotVerifiedException();
     }
 
-    if (!await _hashUtils.validateHash(
-      value: credentials.verificationCode,
-      hash: createAccountChallenge.challengeCodeHash.asUint8List,
-      salt: createAccountChallenge.challengeCodeSalt.asUint8List,
-    )) {
-      throw EmailAccountRequestInvalidVerificationCodeException();
-    }
+    await _validateHash(
+      credentials.verificationCode,
+      createAccountChallenge,
+    );
 
     if (request.isExpired(_config.registrationVerificationCodeLifetime)) {
       await EmailAccountRequest.db.deleteRow(
@@ -341,6 +316,41 @@ class EmailIDPAccountCreationUtil {
       email: request.email,
       scopes: newUser.scopes,
     );
+  }
+
+  Future<EmailAccountRequest> _getAccountRequest(
+    final Session session,
+    final UuidValue accountRequestId,
+    final Transaction transaction,
+  ) async {
+    final request = await EmailAccountRequest.db.findById(
+      session,
+      accountRequestId,
+      transaction: transaction,
+      include: EmailAccountRequest.include(
+        challenge: SecretChallenge.include(),
+        createAccountChallenge: SecretChallenge.include(),
+      ),
+    );
+
+    if (request == null) {
+      throw EmailAccountRequestNotFoundException();
+    }
+
+    return request;
+  }
+
+  Future<void> _validateHash(
+    final String verificationCode,
+    final SecretChallenge challenge,
+  ) async {
+    if (!await _hashUtils.validateHash(
+      value: verificationCode,
+      hash: challenge.challengeCodeHash.asUint8List,
+      salt: challenge.challengeCodeSalt.asUint8List,
+    )) {
+      throw EmailAccountRequestInvalidVerificationCodeException();
+    }
   }
 
   /// {@template email_idp_account_creation_util.create_email_authentication}
@@ -666,7 +676,7 @@ extension on EmailAccountRequest {
 /// Extension methods for [EmailAccountRequest].
 extension EmailAccountRequestExtension on EmailAccountRequest {
   /// Checks whether the account request has been verified.
-  bool get isVerificationCodeUsed => createAccountChallenge != null;
+  bool get isRequestVerified => createAccountChallenge != null;
 }
 
 /// The credentials for completing the account creation process.
