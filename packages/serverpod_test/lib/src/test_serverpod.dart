@@ -149,7 +149,6 @@ class TestServerpod<T extends InternalTestEndpoints> {
       await IOOverrides.runZoned(
         () => _serverpod.start(runInGuardedZone: false),
         stdout: () => NullStdOut(),
-        stderr: () => NullStdOut(),
       );
     } on ExitException catch (e) {
       throw InitializationException(
@@ -168,7 +167,6 @@ class TestServerpod<T extends InternalTestEndpoints> {
       await IOOverrides.runZoned(
         () => _serverpod.shutdown(exitProcess: false),
         stdout: () => NullStdOut(),
-        stderr: () => NullStdOut(),
       );
     } catch (e, stackTrace) {
       throw InitializationException(
