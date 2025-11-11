@@ -77,6 +77,11 @@ final class AuthUsers {
 
   /// Updates an auth user.
   ///
+  /// When updating scopes or the blocked status of an auth user, you may need
+  /// to communicate these changes to the rest of the server using
+  /// [session.messages.authenticationRevoked] with an appropriate message type
+  /// (e.g., [RevokedAuthenticationUser] or [RevokedAuthenticationScope]).
+  ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
   Future<AuthUserModel> update(
     final Session session, {
@@ -141,6 +146,10 @@ final class AuthUsers {
   /// various authentication methods and sessions.
   /// (This is based on the `onDelete=Cascade` relationship between the models.
   /// Other packages linking to the `AuthUser` may or may not opt into this.)
+  ///
+  /// When deleting an auth user, you may need to communicate this revocation
+  /// to the rest of the server using [session.messages.authenticationRevoked]
+  /// with [RevokedAuthenticationUser].
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for
   /// the ID.
