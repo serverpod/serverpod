@@ -301,7 +301,7 @@ class MethodWebsocketRequestHandler {
       methodStreamCallContext =
           await server.endpoints.getMethodStreamCallContext(
         createSessionCallback: (connector) async {
-          maybeSession = await InternalSessionFactory.createMethodStreamSession(
+          maybeSession = await SessionInternalMethods.createMethodStreamSession(
             server: server,
             authenticationKey: unwrapAuthHeaderValue(message.authentication),
             endpoint: message.endpoint,

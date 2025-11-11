@@ -657,9 +657,10 @@ class MessageCentralAccess {
   }
 }
 
-/// Internal factory methods for creating Session instances.
-/// This class is hidden from the public API and should only be used within Serverpod.
-abstract interface class InternalSessionFactory {
+/// Internal methods for [Session].
+/// This is used to provide access to internal methods that should not be
+/// accessed from outside the library.
+extension SessionInternalMethods on Session {
   /// Creates a new [MethodCallSession].
   static Future<MethodCallSession> createMethodCallSession({
     required Server server,
@@ -751,12 +752,7 @@ abstract interface class InternalSessionFactory {
     await session.initializeAuthentication();
     return session;
   }
-}
 
-/// Internal methods for [Session].
-/// This is used to provide access to internal methods that should not be
-/// accessed from outside the library.
-extension SessionInternalMethods on Session {
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 

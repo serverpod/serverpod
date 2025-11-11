@@ -405,7 +405,7 @@ class Server implements RouterInjectable {
     try {
       var methodCallContext = await endpoints.getMethodCallContext(
         createSessionCallback: (connector) async {
-          maybeSession = await InternalSessionFactory.createMethodCallSession(
+          maybeSession = await SessionInternalMethods.createMethodCallSession(
             server: this,
             uri: uri,
             body: body,
