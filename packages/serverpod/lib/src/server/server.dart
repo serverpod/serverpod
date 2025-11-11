@@ -63,11 +63,10 @@ class Server implements RouterInjectable {
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
 
+  late AuthenticationHandler _authenticationHandler;
+
   /// [AuthenticationHandler] responsible for authenticating users.
-  // DISCUSSION: Made non-final to support testing scenarios where authentication
-  // behavior needs to be mocked or overridden. Consider if there's a better approach
-  // that maintains immutability while supporting test cases.
-  late AuthenticationHandler authenticationHandler;
+  AuthenticationHandler get authenticationHandler => _authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -151,7 +150,7 @@ class Server implements RouterInjectable {
   Future<bool> start({
     required AuthenticationHandler authenticationHandler,
   }) async {
-    this.authenticationHandler = authenticationHandler;
+    _authenticationHandler = authenticationHandler;
     try {
       final server = await _app.serve(
         address: io.InternetAddress.anyIPv6,
