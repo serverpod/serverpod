@@ -148,27 +148,32 @@ class TestServerpod<T extends InternalTestEndpoints> {
     testEndpoints.initialize(serializationManager, endpoints);
   }
 
+  /// Executes a callback with output suppression based on the configured mode.
+  Future<R> _withOutputMode<R>(Future<R> Function() callback) async {
+    switch (testServerOutputMode) {
+      case TestServerOutputMode.normal:
+        // Suppress stdout, allow stderr
+        return await IOOverrides.runZoned(
+          callback,
+          stdout: () => NullStdOut(),
+        );
+      case TestServerOutputMode.verbose:
+        // Allow both stdout and stderr
+        return await callback();
+      case TestServerOutputMode.silent:
+        // Suppress both stdout and stderr
+        return await IOOverrides.runZoned(
+          callback,
+          stdout: () => NullStdOut(),
+          stderr: () => NullStdOut(),
+        );
+    }
+  }
+
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
     try {
-      switch (testServerOutputMode) {
-        case TestServerOutputMode.normal:
-          // Suppress stdout, allow stderr
-          await IOOverrides.runZoned(
-            () => _serverpod.start(runInGuardedZone: false),
-            stdout: () => NullStdOut(),
-          );
-        case TestServerOutputMode.verbose:
-          // Allow both stdout and stderr
-          await _serverpod.start(runInGuardedZone: false);
-        case TestServerOutputMode.silent:
-          // Suppress both stdout and stderr
-          await IOOverrides.runZoned(
-            () => _serverpod.start(runInGuardedZone: false),
-            stdout: () => NullStdOut(),
-            stderr: () => NullStdOut(),
-          );
-      }
+      await _withOutputMode(() => _serverpod.start(runInGuardedZone: false));
     } on ExitException catch (e) {
       throw InitializationException(
         'Failed to start the serverpod instance${e.message.isEmpty ? ', check the log for more info.' : ': ${e.message}'}',
@@ -183,24 +188,7 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Shuts down the underlying serverpod instance.
   Future<void> shutdown() async {
     try {
-      switch (testServerOutputMode) {
-        case TestServerOutputMode.normal:
-          // Suppress stdout, allow stderr
-          await IOOverrides.runZoned(
-            () => _serverpod.shutdown(exitProcess: false),
-            stdout: () => NullStdOut(),
-          );
-        case TestServerOutputMode.verbose:
-          // Allow both stdout and stderr
-          await _serverpod.shutdown(exitProcess: false);
-        case TestServerOutputMode.silent:
-          // Suppress both stdout and stderr
-          await IOOverrides.runZoned(
-            () => _serverpod.shutdown(exitProcess: false),
-            stdout: () => NullStdOut(),
-            stderr: () => NullStdOut(),
-          );
-      }
+      await _withOutputMode(() => _serverpod.shutdown(exitProcess: false));
     } catch (e, stackTrace) {
       throw InitializationException(
         'Failed to shutdown the serverpod instance: $e\n$stackTrace',
