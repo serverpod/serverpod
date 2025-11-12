@@ -30,11 +30,7 @@ void main() async {
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = ClientAuthSessionManager();
 
-  await client.auth.initializeAppleSignIn(
-    serviceIdentifier: 'dev.serverpod.example.authFlutter-web',
-    redirectUri: 'https://90d4678ad584.ngrok.app/hooks/apple-notification',
-  );
-  client.auth.initialize();
+  await client.auth.initialize();
 
   runApp(const ExampleApp());
 }
