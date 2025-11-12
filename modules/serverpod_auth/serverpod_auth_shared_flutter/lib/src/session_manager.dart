@@ -113,15 +113,6 @@ class SessionManager with ChangeNotifier {
     }
   }
 
-  /// **[Deprecated]** Signs the user out from all connected devices.
-  /// Use `signOutDevice` for the current device or `signOutAllDevices` for all devices.
-  /// Returns true if successful.
-  @Deprecated(
-      'Use signOutDevice for the current device or signOutAllDevices for all devices. This method will be removed in future releases.')
-  Future<bool> signOut() async {
-    return _signOut(allDevices: true);
-  }
-
   /// Signs the user out from all connected devices.
   /// Returns true if successful.
   Future<bool> signOutAllDevices() async {

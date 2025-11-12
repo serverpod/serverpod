@@ -13,7 +13,6 @@ import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
-import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -61,14 +60,6 @@ class Serverpod {
   String get runMode => config.runMode;
 
   late final CommandLineArgs _commandLineArgs;
-
-  /// The parsed runtime arguments passed to Serverpod at startup.
-  @Deprecated(
-    'Use config instead. The commandLineArgs field provides raw command line arguments, '
-    'but the config field offers a more structured and comprehensive configuration system. '
-    'This field will be removed in a future major version.',
-  )
-  CommandLineArgs get commandLineArgs => _commandLineArgs;
 
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
@@ -147,13 +138,6 @@ class Serverpod {
     return server;
   }
 
-  late LogManager _logManager;
-
-  /// The [LogManager] of the Serverpod, its typically only used internally
-  /// by the Serverpod. Instead of using this object directly, call the log
-  /// method on the current [Session].
-  LogManager get logManager => _logManager;
-
   LogSettingsManager? _logSettingsManager;
 
   FutureCallManager? _futureCallManager;
@@ -206,7 +190,6 @@ class Serverpod {
   void _updateLogSettings(internal.RuntimeSettings settings) {
     _runtimeSettings = settings;
     _logSettingsManager = LogSettingsManager(settings);
-    _logManager = LogManager(settings, serverId: serverId);
   }
 
   /// Initializes the servers internal shutdown task managers and registers

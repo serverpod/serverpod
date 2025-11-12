@@ -1,5 +1,7 @@
 // Call a streaming method unauthenticated, with invalid authentication and with valid authentication.
 
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:serverpod/src/authentication/scope.dart';

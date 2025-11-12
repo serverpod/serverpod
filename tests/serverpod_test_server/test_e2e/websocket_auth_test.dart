@@ -18,6 +18,7 @@ void main() {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
