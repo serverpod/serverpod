@@ -137,4 +137,51 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given a session for a user with a profile and an image,',
+    (final sessionBuilder, final endpoints) {
+      late UuidValue authUserId;
+      late TestSessionBuilder session;
+
+      setUp(() async {
+        const authUsers = AuthUsers();
+        authUserId = (await authUsers.create(sessionBuilder.build())).id;
+
+        const userProfiles = UserProfiles();
+        await userProfiles.createUserProfile(
+          sessionBuilder.build(),
+          authUserId,
+          UserProfileData(userName: 'user name'),
+        );
+
+        await userProfiles.setDefaultUserImage(
+          sessionBuilder.build(),
+          authUserId,
+        );
+
+        session = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            authUserId.uuid,
+            {},
+          ),
+        );
+      });
+
+      test(
+          'when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
+          () async {
+        final profileBefore = await endpoints.userProfile.get(session);
+        expect(profileBefore.imageUrl, isNotNull);
+
+        final updatedProfile =
+            await endpoints.userProfile.removeUserImage(session);
+
+        expect(updatedProfile.imageUrl, isNull);
+
+        final profileAfter = await endpoints.userProfile.get(session);
+        expect(profileAfter.imageUrl, isNull);
+      });
+    },
+  );
 }

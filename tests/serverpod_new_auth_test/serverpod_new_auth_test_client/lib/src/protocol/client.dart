@@ -621,8 +621,9 @@ class EndpointUserProfile extends _i3.EndpointUserProfileEditBase {
   @override
   String get name => 'userProfile';
 
-  /// Removes the users uploaded image, replacing it with the default user
-  /// image.
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
   @override
   _i2.Future<_i3.UserProfileModel> removeUserImage() =>
       caller.callServerEndpoint<_i3.UserProfileModel>(

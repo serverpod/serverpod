@@ -100,8 +100,9 @@ class EndpointUserProfileInfo extends _i1.EndpointRef {
 abstract class EndpointUserProfileEditBase extends EndpointUserProfileInfo {
   EndpointUserProfileEditBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// Removes the users uploaded image, replacing it with the default user
-  /// image.
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
   _i2.Future<_i4.UserProfileModel> removeUserImage();
 
   /// Sets a new user image for the signed in user.
