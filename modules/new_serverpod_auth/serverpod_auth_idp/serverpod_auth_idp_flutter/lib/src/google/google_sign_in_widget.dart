@@ -160,7 +160,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.size = GSIButtonSize.large,
     this.text = GSIButtonText.continueWith,
     this.shape = GSIButtonShape.pill,
-    this.logoAlignment = GSIButtonLogoAlignment.left,
+    this.logoAlignment = GSIButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.getButtonText,
     this.locale,
