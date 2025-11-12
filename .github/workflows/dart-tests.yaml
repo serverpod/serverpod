@@ -24,12 +24,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ['3.8.0']
+        flutter-version: ['3.32.0']
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1.3
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: ${{ matrix.dart-version }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Run pub get
+        run: dart pub get
+      - name: Bootstrap
+        run: dart run melos bootstrap
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
