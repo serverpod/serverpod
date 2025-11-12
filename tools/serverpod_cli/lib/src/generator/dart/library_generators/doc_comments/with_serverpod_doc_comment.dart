@@ -28,6 +28,24 @@ enum RollbackDatabase {
       'The logging mode used when creating Serverpod. Defaults to `ServerpodLoggingMode.normal`',
   'serverpodStartTimeout':
       'The timeout to use when starting Serverpod, which connects to the database among other things. Defaults to `Duration(seconds: 30)`.',
+  'testServerOutputMode': '''
+Options for controlling test server output during test execution. Defaults to `TestServerOutputMode.normal`.
+```dart
+/// Options for controlling test server output during test execution.
+enum TestServerOutputMode {
+  /// Default mode - only stderr is printed (stdout suppressed).
+  /// This hides normal startup/shutdown logs while preserving error messages.
+  normal,
+
+  /// All logging - both stdout and stderr are printed.
+  /// Useful for debugging when you need to see all server output.
+  verbose,
+
+  /// No logging - both stdout and stderr are suppressed.
+  /// Completely silent mode, useful when you don't want any server output.
+  silent,
+}
+```''',
   'testGroupTagsOverride': '''
 By default Serverpod test tools tags the `withServerpod` test group with `"integration"`. 
 This is to provide a simple way to only run unit or integration tests. 

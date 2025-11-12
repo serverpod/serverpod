@@ -467,6 +467,10 @@ class ServerTestToolsGenerator {
         ..name = 'serverpodStartTimeout'
         ..named = true
         ..type = refer('Duration?')),
+      Parameter((p) => p
+        ..name = 'testServerOutputMode'
+        ..named = true
+        ..type = refer('TestServerOutputMode?', serverpodTestUrl)),
       Parameter(
         (p) => p
           ..name = 'experimentalFeatures'
@@ -527,6 +531,7 @@ class ServerTestToolsGenerator {
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                'testServerOutputMode': refer('testServerOutputMode'),
                 'experimentalFeatures': refer('experimentalFeatures'),
                 if (config.isFeatureEnabled(ServerpodFeature.database))
                   'runtimeParametersBuilder': refer('runtimeParametersBuilder'),
@@ -542,6 +547,7 @@ class ServerTestToolsGenerator {
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
             'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
+            'maybeTestServerOutputMode': refer('testServerOutputMode'),
           },
         ).call([
           refer('testClosure'),

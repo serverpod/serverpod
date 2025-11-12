@@ -74,6 +74,7 @@ void main() {
             r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
             r'  Duration\? serverpodStartTimeout,\n'
             r'  List<String>\? testGroupTagsOverride,\n'
+            r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
             r'\}\)',
           ));
     });
@@ -126,6 +127,10 @@ void main() {
       expect(
         testToolsFile,
         contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testServerOutputMode] '),
       );
       expect(
         testToolsFile,
@@ -210,6 +215,7 @@ void main() {
             r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
             r'  Duration\? serverpodStartTimeout,\n'
             r'  List<String>\? testGroupTagsOverride,\n'
+            r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
             r'\}\)',
           ));
     });
@@ -254,6 +260,10 @@ void main() {
       expect(
         testToolsFile,
         contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testServerOutputMode] '),
       );
       expect(
         testToolsFile,
@@ -319,6 +329,7 @@ void main() {
             r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
             r'  Duration\? serverpodStartTimeout,\n'
             r'  List<String>\? testGroupTagsOverride,\n'
+            r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
             r'\}\)',
           ));
     });
@@ -371,6 +382,10 @@ void main() {
       expect(
         testToolsFile,
         contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testServerOutputMode] '),
       );
       expect(
         testToolsFile,
@@ -446,6 +461,7 @@ void main() {
             r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
             r'  Duration\? serverpodStartTimeout,\n'
             r'  List<String>\? testGroupTagsOverride,\n'
+            r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
             r'\}\)',
           ));
     });
@@ -498,6 +514,14 @@ void main() {
       expect(
         testToolsFile,
         contains('\n///\n/// [testGroupTagsOverride] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testServerOutputMode] '),
+      );
+      expect(
+        testToolsFile,
+        contains('\n///\n/// [testServerOutputMode] '),
       );
       expect(
         testToolsFile,
