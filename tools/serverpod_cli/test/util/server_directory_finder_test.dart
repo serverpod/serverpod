@@ -1,52 +1,32 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  late Directory tempDir;
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('serverpod_finder_test_');
-  });
-
-  tearDown(() async {
-    await tempDir.delete(recursive: true);
-  });
-
-  Future<Directory> createMockServerDirectory(
-    Directory parent,
-    String name,
-  ) async {
-    var serverDir = Directory(path.join(parent.path, name));
-    await serverDir.create(recursive: true);
-
-    var pubspecFile = File(path.join(serverDir.path, 'pubspec.yaml'));
-    await pubspecFile.writeAsString('''
+  /// Creates a mock Serverpod server directory descriptor
+  d.DirectoryDescriptor serverDir(String name) {
+    return d.dir(name, [
+      d.file('pubspec.yaml', '''
 name: $name
 dependencies:
   serverpod: ^2.0.0
-''');
-
-    return serverDir;
+'''),
+    ]);
   }
 
-  Future<Directory> createMockNonServerDirectory(
-    Directory parent,
-    String name,
-  ) async {
-    var dir = Directory(path.join(parent.path, name));
-    await dir.create(recursive: true);
-
-    var pubspecFile = File(path.join(dir.path, 'pubspec.yaml'));
-    await pubspecFile.writeAsString('''
+  /// Creates a mock non-server directory descriptor
+  d.DirectoryDescriptor nonServerDir(String name) {
+    return d.dir(name, [
+      d.file('pubspec.yaml', '''
 name: $name
 dependencies:
   http: ^1.0.0
-''');
-
-    return dir;
+'''),
+    ]);
   }
 
   group('ServerDirectoryFinder.search', () {
@@ -55,15 +35,15 @@ dependencies:
       'when search is called, '
       'then it returns found status with current directory',
       () async {
-        var serverDir = await createMockServerDirectory(tempDir, 'test_server');
+        await serverDir('test_server').create();
 
-        var result = ServerDirectoryFinder.search(serverDir);
+        var testDir = Directory(path.join(d.sandbox, 'test_server'));
+        var result = ServerDirectoryFinder.search(testDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.normalize(result!.path),
+          equals(path.normalize(testDir.path)),
         );
       },
     );
@@ -73,19 +53,19 @@ dependencies:
       'when search is called, '
       'then it finds the _server sibling',
       () async {
-        var projectName = 'myapp';
-        var serverDir =
-            await createMockServerDirectory(tempDir, '${projectName}_server');
-        var flutterDir = await createMockNonServerDirectory(
-            tempDir, '${projectName}_flutter');
+        await d.dir('project', [
+          serverDir('myapp_server'),
+          nonServerDir('myapp_flutter'),
+        ]).create();
 
+        var flutterDir =
+            Directory(path.join(d.sandbox, 'project', 'myapp_flutter'));
         var result = ServerDirectoryFinder.search(flutterDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('myapp_server'),
         );
       },
     );
@@ -95,19 +75,19 @@ dependencies:
       'when search is called, '
       'then it finds the _server sibling',
       () async {
-        var projectName = 'myapp';
-        var serverDir =
-            await createMockServerDirectory(tempDir, '${projectName}_server');
-        var clientDir = await createMockNonServerDirectory(
-            tempDir, '${projectName}_client');
+        await d.dir('project', [
+          serverDir('myapp_server'),
+          nonServerDir('myapp_client'),
+        ]).create();
 
+        var clientDir =
+            Directory(path.join(d.sandbox, 'project', 'myapp_client'));
         var result = ServerDirectoryFinder.search(clientDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('myapp_server'),
         );
       },
     );
@@ -117,15 +97,17 @@ dependencies:
       'when search is called from parent, '
       'then it finds the server directory',
       () async {
-        var serverDir = await createMockServerDirectory(tempDir, 'test_server');
+        await d.dir('parent', [
+          serverDir('test_server'),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var parentDir = Directory(path.join(d.sandbox, 'parent'));
+        var result = ServerDirectoryFinder.search(parentDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('test_server'),
         );
       },
     );
@@ -135,18 +117,21 @@ dependencies:
       'when search is called from root, '
       'then it finds the server directory',
       () async {
-        var nestedDir = Directory(path.join(tempDir.path, 'level1', 'level2'));
-        await nestedDir.create(recursive: true);
-        var serverDir =
-            await createMockServerDirectory(nestedDir, 'test_server');
+        await d.dir('root', [
+          d.dir('level1', [
+            d.dir('level2', [
+              serverDir('test_server'),
+            ]),
+          ]),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var rootDir = Directory(path.join(d.sandbox, 'root'));
+        var result = ServerDirectoryFinder.search(rootDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('test_server'),
         );
       },
     );
@@ -156,17 +141,25 @@ dependencies:
       'when search is called from child directory, '
       'then it finds the server directory',
       () async {
-        var serverDir = await createMockServerDirectory(tempDir, 'test_server');
-        var childDir = Directory(path.join(serverDir.path, 'lib', 'src'));
-        await childDir.create(recursive: true);
+        await d.dir('test_server', [
+          d.file('pubspec.yaml', '''
+name: test_server
+dependencies:
+  serverpod: ^2.0.0
+'''),
+          d.dir('lib', [
+            d.dir('src', []),
+          ]),
+        ]).create();
 
+        var childDir =
+            Directory(path.join(d.sandbox, 'test_server', 'lib', 'src'));
         var result = ServerDirectoryFinder.search(childDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('test_server'),
         );
       },
     );
@@ -176,29 +169,37 @@ dependencies:
       'when search is called, '
       'then it returns notFound status',
       () async {
-        await createMockNonServerDirectory(tempDir, 'some_project');
+        await d.dir('project', [
+          nonServerDir('some_project'),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
+        var result = ServerDirectoryFinder.search(projectDir);
 
-        expect(result.status, equals(SearchStatus.notFound));
-        expect(result.directory, isNull);
-        expect(result.candidates, isEmpty);
+        expect(result, isNull);
       },
     );
 
     test(
       'Given multiple server directories exist at same level, '
       'when search is called, '
-      'then it returns multipleFound status',
+      'then it throws AmbiguousSearchException',
       () async {
-        await createMockServerDirectory(tempDir, 'server1');
-        await createMockServerDirectory(tempDir, 'server2');
+        await d.dir('project', [
+          serverDir('server1'),
+          serverDir('server2'),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
 
-        expect(result.status, equals(SearchStatus.multipleFound));
-        expect(result.directory, isNull);
-        expect(result.candidates.length, equals(2));
+        expect(
+          () => ServerDirectoryFinder.search(projectDir),
+          throwsA(isA<AmbiguousSearchException>().having(
+            (e) => e.matches.length,
+            'matches.length',
+            equals(2),
+          )),
+        );
       },
     );
 
@@ -207,17 +208,19 @@ dependencies:
       'when search is called, '
       'then it only finds server directories',
       () async {
-        await createMockNonServerDirectory(tempDir, 'client');
-        var serverDir = await createMockServerDirectory(tempDir, 'server');
-        await createMockNonServerDirectory(tempDir, 'flutter');
+        await d.dir('project', [
+          nonServerDir('client'),
+          serverDir('server'),
+          nonServerDir('flutter'),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
+        var result = ServerDirectoryFinder.search(projectDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('server'),
         );
       },
     );
@@ -227,15 +230,22 @@ dependencies:
       'when server directory is 3 levels deep, '
       'then it does not find the server directory',
       () async {
-        var deepDir =
-            Directory(path.join(tempDir.path, 'l1', 'l2', 'l3', 'l4'));
-        await deepDir.create(recursive: true);
-        await createMockServerDirectory(deepDir, 'test_server');
+        await d.dir('root', [
+          d.dir('l1', [
+            d.dir('l2', [
+              d.dir('l3', [
+                d.dir('l4', [
+                  serverDir('test_server'),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(tempDir);
+        var rootDir = Directory(path.join(d.sandbox, 'root'));
+        var result = ServerDirectoryFinder.search(rootDir);
 
-        // Should not find it because it's too deep
-        expect(result.status, equals(SearchStatus.notFound));
+        expect(result, isNull);
       },
     );
 
@@ -244,18 +254,23 @@ dependencies:
       'when search is called from deeply nested directory, '
       'then it finds the server by searching upward',
       () async {
-        // Create structure: tempDir/server (server) and tempDir/app/lib/src (search from here)
-        var serverDir = await createMockServerDirectory(tempDir, 'server');
-        var appDir = Directory(path.join(tempDir.path, 'app', 'lib', 'src'));
-        await appDir.create(recursive: true);
+        await d.dir('root', [
+          serverDir('server'),
+          d.dir('app', [
+            d.dir('lib', [
+              d.dir('src', []),
+            ]),
+          ]),
+        ]).create();
 
-        var result = ServerDirectoryFinder.search(appDir);
+        var deepDir =
+            Directory(path.join(d.sandbox, 'root', 'app', 'lib', 'src'));
+        var result = ServerDirectoryFinder.search(deepDir);
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, isNotNull);
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('server'),
         );
       },
     );
@@ -265,24 +280,41 @@ dependencies:
       'when searching upward, '
       'then it stops at the repository boundary',
       () async {
-        var gitDir = Directory(path.join(tempDir.path, '.git'));
-        await gitDir.create(recursive: true);
+        await d.dir('repo', [
+          d.dir('.git', []),
+          d.dir('subdir', [
+            d.dir('server', [
+              d.file('pubspec.yaml', '''
+name: server
+dependencies:
+  serverpod: ^2.0.0
+'''),
+              d.dir('lib', [
+                d.dir('src', [
+                  d.dir('models', []),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]).create();
 
-        var subDir = Directory(path.join(tempDir.path, 'subdir'));
-        await subDir.create(recursive: true);
+        var actualServerDir =
+            Directory(path.join(d.sandbox, 'repo', 'subdir', 'server'));
+        var result = ServerDirectoryFinder.search(actualServerDir);
+        expect(result, isNotNull);
+        expect(
+          path.basename(result!.path),
+          equals('server'),
+        );
 
-        var serverDir = await createMockServerDirectory(subDir, 'server');
-
-        var result = ServerDirectoryFinder.search(serverDir);
-        expect(result.status, equals(SearchStatus.found));
-
-        var deepDir =
-            Directory(path.join(serverDir.path, 'lib', 'src', 'models'));
-        await deepDir.create(recursive: true);
-
+        var deepDir = Directory(path.join(
+            d.sandbox, 'repo', 'subdir', 'server', 'lib', 'src', 'models'));
         result = ServerDirectoryFinder.search(deepDir);
-
-        expect(result.status, equals(SearchStatus.found));
+        expect(result, isNotNull);
+        expect(
+          path.basename(result!.path),
+          equals('server'),
+        );
       },
     );
 
@@ -291,20 +323,24 @@ dependencies:
       'when searching upward, '
       'then it stops at the workspace boundary',
       () async {
-        var melosFile = File(path.join(tempDir.path, 'melos.yaml'));
-        await melosFile
-            .writeAsString('name: my_workspace\npackages:\n  - packages/**\n');
+        await d.dir('workspace', [
+          d.file(
+              'melos.yaml', 'name: my_workspace\npackages:\n  - packages/**\n'),
+          d.dir('packages', [
+            serverDir('server'),
+          ]),
+          d.dir('outside', []),
+        ]).create();
 
-        var packagesDir = Directory(path.join(tempDir.path, 'packages'));
-        await packagesDir.create(recursive: true);
+        var actualServerDir =
+            Directory(path.join(d.sandbox, 'workspace', 'packages', 'server'));
+        var result = ServerDirectoryFinder.search(actualServerDir);
 
-        var serverDir = await createMockServerDirectory(packagesDir, 'server');
-
-        var outsideDir = Directory(path.join(tempDir.path, 'outside'));
-        await outsideDir.create(recursive: true);
-
-        var result = ServerDirectoryFinder.search(serverDir);
-        expect(result.status, equals(SearchStatus.found));
+        expect(result, isNotNull);
+        expect(
+          path.basename(result!.path),
+          equals('server'),
+        );
       },
     );
 
@@ -313,22 +349,20 @@ dependencies:
       'when searching from inside boundary, '
       'then it does not find server outside boundary',
       () async {
-        var outsideDir =
-            Directory(path.join(tempDir.parent.path, 'outside_repo'));
-        await outsideDir.create(recursive: true);
-        await createMockServerDirectory(outsideDir, 'server_outside');
+        await d.dir('outside_repo', [
+          serverDir('server_outside'),
+        ]).create();
 
-        var gitDir = Directory(path.join(tempDir.path, '.git'));
-        await gitDir.create(recursive: true);
+        await d.dir('inside_repo', [
+          d.dir('.git', []),
+          d.dir('inside', []),
+        ]).create();
 
-        var insideDir = Directory(path.join(tempDir.path, 'inside'));
-        await insideDir.create(recursive: true);
-
+        var insideDir =
+            Directory(path.join(d.sandbox, 'inside_repo', 'inside'));
         var result = ServerDirectoryFinder.search(insideDir);
 
-        expect(result.status, equals(SearchStatus.notFound));
-
-        await outsideDir.delete(recursive: true);
+        expect(result, isNull);
       },
     );
 
@@ -337,27 +371,23 @@ dependencies:
       'when searching from root, '
       'then it does not check siblings outside the repository',
       () async {
-        var parentDir = tempDir.parent;
-        var siblingRepoDir = Directory(path.join(parentDir.path, 'other_repo'));
-        await siblingRepoDir.create(recursive: true);
-        await createMockServerDirectory(siblingRepoDir, 'other_server');
+        await d.dir('other_repo', [
+          serverDir('other_server'),
+        ]).create();
 
-        var gitDir = Directory(path.join(tempDir.path, '.git'));
-        await gitDir.create(recursive: true);
+        await d.dir('my_repo', [
+          d.dir('.git', []),
+          serverDir('my_server'),
+        ]).create();
 
-        var insideServerDir =
-            await createMockServerDirectory(tempDir, 'myproject_server');
+        var repoDir = Directory(path.join(d.sandbox, 'my_repo'));
+        var result = ServerDirectoryFinder.search(repoDir);
 
-        var result = ServerDirectoryFinder.search(tempDir);
-
-        expect(result.status, equals(SearchStatus.found));
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(insideServerDir.path)),
+          path.basename(result!.path),
+          equals('my_server'),
         );
-        expect(result.candidates.length, equals(1));
-
-        await siblingRepoDir.delete(recursive: true);
       },
     );
 
@@ -366,68 +396,98 @@ dependencies:
       'when searching from sibling directory (e.g., apps/), '
       'then it finds the deeply nested server',
       () async {
-        var gitDir = Directory(path.join(tempDir.path, '.git'));
-        await gitDir.create(recursive: true);
+        await d.dir('monorepo', [
+          d.dir('.git', []),
+          d.dir('apps', []),
+          d.dir('backend', [
+            serverDir('level_api'),
+          ]),
+        ]).create();
 
-        var appsDir = Directory(path.join(tempDir.path, 'apps'));
-        await appsDir.create(recursive: true);
-
-        var backendDir = Directory(path.join(tempDir.path, 'backend'));
-        await backendDir.create(recursive: true);
-        var serverDir =
-            await createMockServerDirectory(backendDir, 'myproject_server');
-
+        var appsDir = Directory(path.join(d.sandbox, 'monorepo', 'apps'));
         var result = ServerDirectoryFinder.search(appsDir);
 
-        expect(result.status, equals(SearchStatus.found));
+        expect(result, isNotNull);
         expect(
-          path.normalize(result.directory!.path),
-          equals(path.normalize(serverDir.path)),
+          path.basename(result!.path),
+          equals('level_api'),
         );
       },
     );
   });
 
-  group('SearchResult', () {
+  group('ServerDirectoryFinder.findOrPrompt with interactive flag', () {
     test(
-      'Given SearchResult.single constructor, '
-      'when created, '
-      'then status is found and directory is set',
-      () {
-        var dir = Directory('/test/path');
-        var result = SearchResult.single(dir);
+      'Given multiple server directories exist, '
+      'when findOrPrompt is called with interactive=false, '
+      'then it throws ServerpodProjectNotFoundException (for CI/CD)',
+      () async {
+        await d.dir('project', [
+          serverDir('server1'),
+          serverDir('server2'),
+        ]).create();
 
-        expect(result.status, equals(SearchStatus.found));
-        expect(result.directory, equals(dir));
-        expect(result.candidates, equals([dir]));
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
+
+        expect(
+          () => ServerDirectoryFinder.findOrPrompt(
+            startDir: projectDir,
+            interactive: false,
+          ),
+          throwsA(isA<ServerpodProjectNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            contains('Multiple Serverpod projects detected'),
+          )),
+        );
       },
     );
 
     test(
-      'Given SearchResult.multiple constructor, '
-      'when created with 2 directories, '
-      'then status is multipleFound and candidates are set',
-      () {
-        var dir1 = Directory('/test/path1');
-        var dir2 = Directory('/test/path2');
-        var result = SearchResult.multiple([dir1, dir2]);
+      'Given single server directory exists, '
+      'when findOrPrompt is called with interactive=false, '
+      'then it returns the server directory',
+      () async {
+        await d.dir('project', [
+          serverDir('server'),
+        ]).create();
 
-        expect(result.status, equals(SearchStatus.multipleFound));
-        expect(result.directory, isNull);
-        expect(result.candidates, equals([dir1, dir2]));
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
+        var result = await ServerDirectoryFinder.findOrPrompt(
+          startDir: projectDir,
+          interactive: false,
+        );
+
+        expect(result, isNotNull);
+        expect(
+          path.basename(result.path),
+          equals('server'),
+        );
       },
     );
 
     test(
-      'Given SearchResult.notFound constructor, '
-      'when created, '
-      'then status is notFound and directory is null',
-      () {
-        var result = SearchResult.notFound();
+      'Given no server directory exists, '
+      'when findOrPrompt is called with interactive=false, '
+      'then it throws ServerpodProjectNotFoundException',
+      () async {
+        await d.dir('project', [
+          nonServerDir('client'),
+        ]).create();
 
-        expect(result.status, equals(SearchStatus.notFound));
-        expect(result.directory, isNull);
-        expect(result.candidates, isEmpty);
+        var projectDir = Directory(path.join(d.sandbox, 'project'));
+
+        expect(
+          () => ServerDirectoryFinder.findOrPrompt(
+            startDir: projectDir,
+            interactive: false,
+          ),
+          throwsA(isA<ServerpodProjectNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            contains('No Serverpod server project detected'),
+          )),
+        );
       },
     );
   });
