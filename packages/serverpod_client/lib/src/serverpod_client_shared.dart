@@ -131,10 +131,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  // TODO(https://github.com/serverpod/serverpod/issues/4105):
-  // Deprecate after the new authentication system is in place.
   /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
-  final AuthenticationKeyManager? authenticationKeyManager;
+  @Deprecated(
+      'Use authKeyProvider instead, this will be removed in future releases.')
+  AuthenticationKeyManager? get authenticationKeyManager =>
+      authKeyProvider as AuthenticationKeyManager?;
 
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
@@ -210,7 +211,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic securityContext,
-    this.authenticationKeyManager,
+    AuthenticationKeyManager? authenticationKeyManager,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
@@ -234,8 +235,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // TODO(https://github.com/serverpod/serverpod/issues/4105):
-    // Remove this backwards compatibility assignment.
+    // This is a backwards compatibility assignment.
     authKeyProvider ??= authenticationKeyManager;
   }
 
