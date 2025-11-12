@@ -113,13 +113,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     return uri;
   }
 
-  /// Full host name of the web socket endpoint.
-  /// E.g. "wss://example.com/websocket"
-  @Deprecated('This is only for internal use and may be removed in the future.')
-  Future<String> get websocketHost async {
-    return _webSocketHostWithAuth;
-  }
-
   Future<String> get _webSocketHostWithAuth async {
     var uri = _webSocketHost;
 
