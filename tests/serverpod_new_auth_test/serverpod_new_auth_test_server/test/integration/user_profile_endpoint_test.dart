@@ -164,7 +164,7 @@ void main() {
       });
 
       test(
-          'Given a user with an image when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
+          'when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
           () async {
         final profileBefore = await endpoints.userProfile.get(session);
         expect(profileBefore.imageUrl, isNotNull);

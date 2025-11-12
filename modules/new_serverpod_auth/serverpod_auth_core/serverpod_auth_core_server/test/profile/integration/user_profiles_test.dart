@@ -508,7 +508,7 @@ void main() {
     );
 
     test(
-        'Given a profile without an image when removing the user image then imageUrl remains null.',
+        'when removing the user image then no default image is added and imageUrl remains null.',
         () async {
       final profileBefore = await UserProfiles.findUserProfileByUserId(
         session,
