@@ -11,3 +11,6 @@
 analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
+
+formatter:
+  trailing_commas: preserve
