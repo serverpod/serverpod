@@ -84,38 +84,6 @@ void main() {
       secondaryClient.close();
     });
 
-    group(
-        'when calling the deprecated signOut method on the first SessionManager',
-        () {
-      setUp(() async {
-        // ignore: deprecated_member_use
-        bool result = await primarySessionManager.signOut();
-        assert(result, 'Primary SessionManager failed to sign out.');
-      });
-
-      test(
-          'then the first client is signed out in SessionManager and on the server',
-          () async {
-        expect(
-          await primaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Primary client should be signed out but is still signed in on the server.',
-        );
-      });
-
-      test(
-          'then the second client is signed out in SessionManager and on the server',
-          () async {
-        expect(
-          await secondaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Secondary client should be signed out but is still signed in on the server.',
-        );
-      });
-    });
-
     group('when calling signOutDevice on the first SessionManager', () {
       setUp(() async {
         bool result = await primarySessionManager.signOutDevice();
