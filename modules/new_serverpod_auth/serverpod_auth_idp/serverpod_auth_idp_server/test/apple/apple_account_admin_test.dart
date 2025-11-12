@@ -14,18 +14,25 @@ void main() {
       late Session session;
       late UuidValue activeUser;
       late UuidValue inactiveUser;
-      late AppleAccountsAdmin admin;
+      late AppleIDPAdmin admin;
 
       setUp(() async {
         session = sessionBuilder.build();
+        const authUsers = AuthUsers();
 
-        activeUser = await _createAppleBackedUser(session);
-        inactiveUser = await _createAppleBackedUser(session);
+        activeUser = await _createAppleBackedUser(session, authUsers);
+        inactiveUser = await _createAppleBackedUser(session, authUsers);
 
-        final siwa = _SignInWithAppleFake(knownRefreshTokens: {
+        final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
           activeUser.uuid,
         });
-        admin = AppleAccountsAdmin(siwa);
+        final utils = AppleIDPUtils(
+          signInWithApple: signInWithApple,
+          authUsers: authUsers,
+        );
+        admin = AppleIDPAdmin(
+          utils: utils,
+        );
       });
 
       test(
@@ -66,8 +73,11 @@ void main() {
 ///
 /// The account's refresh token is marked as not having been checked in the last 24 hours,
 /// so that it will get picked up by the next `checkAccountStatus` run.
-Future<UuidValue> _createAppleBackedUser(final Session session) async {
-  final authUser = await AuthUsers.create(session);
+Future<UuidValue> _createAppleBackedUser(
+  final Session session,
+  final AuthUsers authUsers,
+) async {
+  final authUser = await authUsers.create(session);
 
   await AppleAccount.db.insertRow(
     session,

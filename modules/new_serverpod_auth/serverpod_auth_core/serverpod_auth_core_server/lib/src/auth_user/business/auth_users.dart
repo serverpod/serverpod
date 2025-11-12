@@ -1,100 +1,142 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
+import 'auth_users_config.dart';
 
 /// Management functions for auth users.
-abstract final class AuthUsers {
+final class AuthUsers {
+  final AuthUsersConfig _config;
+
+  /// Creates a new [AuthUsers] instance.
+  const AuthUsers({
+    final AuthUsersConfig config = const AuthUsersConfig(),
+  }) : _config = config;
+
   /// Retrieves an auth user.
   ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> get(
+  Future<AuthUserModel> get(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUser.db.findById(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUser = await AuthUser.db.findById(
+        session,
+        authUserId,
+        transaction: transaction,
+      );
 
-    if (authUser == null) {
-      throw AuthUserNotFoundException();
-    }
+      if (authUser == null) {
+        throw AuthUserNotFoundException();
+      }
 
-    return authUser.toModel();
+      return authUser.toModel();
+    });
   }
 
   /// Creates a new auth user.
-  static Future<AuthUserModel> create(
+  Future<AuthUserModel> create(
     final Session session, {
     final Set<Scope> scopes = const {},
     final bool blocked = false,
     final Transaction? transaction,
   }) async {
-    final authUser = await AuthUser.db.insertRow(
-      session,
-      AuthUser(
-        blocked: blocked,
-        scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
-      ),
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUserToCreate = await _config.onBeforeAuthUserCreated?.call(
+            session,
+            scopes,
+            blocked,
+            transaction: transaction,
+          ) ??
+          (scopes: scopes, blocked: blocked);
 
-    return authUser.toModel();
+      final authUser = await AuthUser.db.insertRow(
+        session,
+        AuthUser(
+          blocked: authUserToCreate.blocked,
+          scopeNames:
+              authUserToCreate.scopes.map((final s) => s.name).nonNulls.toSet(),
+        ),
+        transaction: transaction,
+      );
+
+      final createdAuthUser = authUser.toModel();
+
+      await _config.onAfterAuthUserCreated?.call(
+        session,
+        createdAuthUser,
+        transaction: transaction,
+      );
+
+      return createdAuthUser;
+    });
   }
 
   /// Updates an auth user.
   ///
+  /// When updating scopes or the blocked status of an auth user, you may need
+  /// to communicate these changes to the rest of the server using
+  /// [session.messages.authenticationRevoked] with an appropriate message type
+  /// (e.g., [RevokedAuthenticationUser] or [RevokedAuthenticationScope]).
+  ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for the ID.
-  static Future<AuthUserModel> update(
+  Future<AuthUserModel> update(
     final Session session, {
     required final UuidValue authUserId,
     final Set<Scope>? scopes,
     final bool? blocked,
     final Transaction? transaction,
   }) async {
-    var authUser = await AuthUser.db.findById(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-    if (authUser == null) {
-      throw AuthUserNotFoundException();
-    }
-
-    if (scopes != null) {
-      authUser = authUser.copyWith(
-        scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      var authUser = await AuthUser.db.findById(
+        session,
+        authUserId,
+        transaction: transaction,
       );
-    }
+      if (authUser == null) {
+        throw AuthUserNotFoundException();
+      }
 
-    if (blocked != null) {
-      authUser = authUser.copyWith(
-        blocked: blocked,
+      if (scopes != null) {
+        authUser = authUser.copyWith(
+          scopeNames: scopes.map((final s) => s.name).nonNulls.toSet(),
+        );
+      }
+
+      if (blocked != null) {
+        authUser = authUser.copyWith(
+          blocked: blocked,
+        );
+      }
+
+      authUser = await AuthUser.db.updateRow(
+        session,
+        authUser,
+        transaction: transaction,
       );
-    }
 
-    authUser = await AuthUser.db.updateRow(
-      session,
-      authUser,
-      transaction: transaction,
-    );
-
-    return authUser.toModel();
+      return authUser.toModel();
+    });
   }
 
   /// Returns all auth users.
-  static Future<List<AuthUserModel>> list(
+  Future<List<AuthUserModel>> list(
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final authUsers = await AuthUser.db.find(
-      session,
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final authUsers = await AuthUser.db.find(
+        session,
+        transaction: transaction,
+      );
 
-    return authUsers.map((final a) => a.toModel()).toList();
+      return authUsers.map((final a) => a.toModel()).toList();
+    });
   }
 
   /// Removes the specified auth user.
@@ -105,22 +147,29 @@ abstract final class AuthUsers {
   /// (This is based on the `onDelete=Cascade` relationship between the models.
   /// Other packages linking to the `AuthUser` may or may not opt into this.)
   ///
+  /// When deleting an auth user, you may need to communicate this revocation
+  /// to the rest of the server using [session.messages.authenticationRevoked]
+  /// with [RevokedAuthenticationUser].
+  ///
   /// Throws an [AuthUserNotFoundException] in case no auth user is found for
   /// the ID.
-  static Future<void> delete(
+  Future<void> delete(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    final deletedUsers = await AuthUser.db.deleteWhere(
-      session,
-      where: (final t) => t.id.equals(authUserId),
-      transaction: transaction,
-    );
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
+        (final transaction) async {
+      final deletedUsers = await AuthUser.db.deleteWhere(
+        session,
+        where: (final t) => t.id.equals(authUserId),
+        transaction: transaction,
+      );
 
-    if (deletedUsers.isEmpty) {
-      throw AuthUserNotFoundException();
-    }
+      if (deletedUsers.isEmpty) {
+        throw AuthUserNotFoundException();
+      }
+    });
   }
 }
 

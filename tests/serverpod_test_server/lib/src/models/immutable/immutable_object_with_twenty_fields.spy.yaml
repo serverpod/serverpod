@@ -1,0 +1,23 @@
+class: ImmutableObjectWithTwentyFields
+immutable: true
+fields:
+  variable1: String?
+  variable2: String?
+  variable3: String?
+  variable4: String?
+  variable5: String?
+  variable6: String?
+  variable7: String?
+  variable8: String?
+  variable9: String?
+  variable10: String?
+  variable11: String?
+  variable12: String?
+  variable13: String?
+  variable14: String?
+  variable15: String?
+  variable16: String?
+  variable17: String?
+  variable18: String?
+  variable19: String?
+  variable20: String?

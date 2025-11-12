@@ -1,0 +1,5 @@
+class: ImmutableObjectWithTable
+table: immutable_object_with_table
+immutable: true
+fields:
+  variable: String

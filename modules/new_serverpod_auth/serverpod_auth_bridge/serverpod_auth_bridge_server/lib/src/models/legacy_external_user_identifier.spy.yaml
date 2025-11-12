@@ -2,7 +2,7 @@ class: LegacyExternalUserIdentifier
 serverOnly: true
 table: serverpod_auth_bridge_external_user_id
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this session belongs to
   authUser: module:auth:AuthUser?, relation(onDelete=Cascade)

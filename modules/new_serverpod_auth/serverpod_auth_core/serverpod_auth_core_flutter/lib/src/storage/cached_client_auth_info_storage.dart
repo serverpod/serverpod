@@ -17,6 +17,13 @@ class CachedClientAuthInfoStorage implements ClientAuthInfoStorage {
 
   AuthSuccess? _cachedData;
 
+  /// Clear the cache for the authentication info, if any. The next call to the
+  /// [get] method will perform the operation on the delegate.
+  Future<void> clearCache() async {
+    _cachedData = null;
+    _cached = false;
+  }
+
   @override
   Future<void> set(AuthSuccess? data) async {
     await _delegate.set(data);

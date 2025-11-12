@@ -16,22 +16,28 @@ emailAccountBackwardsCompatibilityTest:
 emailAccount:
   - login:
   - startRegistration:
+  - verifyRegistrationCode:
   - finishRegistration:
   - startPasswordReset:
+  - verifyPasswordResetCode:
   - finishPasswordReset:
 googleAccountBackwardsCompatibilityTest:
-  - authenticate:
+  - login:
 googleAccount:
-  - authenticate:
+  - login:
+jwtRefresh:
+  - refreshAccessToken:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:
+  - verifyRegistrationCode:
   - finishRegistration:
   - startPasswordReset:
+  - verifyPasswordResetCode:
   - finishPasswordReset:
 userProfile:
-  - get:
   - removeUserImage:
   - setUserImage:
   - changeUserName:
   - changeFullName:
+  - get:

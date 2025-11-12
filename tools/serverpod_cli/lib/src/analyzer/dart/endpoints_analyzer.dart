@@ -115,11 +115,14 @@ class EndpointsAnalyzer {
 
       endpointDefs.addAll(_parseLibrary(
         library,
-        collector,
         filePath,
         failingExceptions,
       ));
     }
+
+    // After parsing all endpoints, we must remove all that are not part of
+    // this package to avoid generating them as well.
+    endpointDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
     _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
@@ -145,45 +148,25 @@ class EndpointsAnalyzer {
 
   List<EndpointDefinition> _parseLibrary(
     ResolvedLibraryResult library,
-    CodeAnalysisCollector collector,
     String filePath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
-    var classElements = library.element.classes;
-    var endpointClasses = classElements
-        .where(EndpointClassAnalyzer.isEndpointClass)
+    var endpointClasses = _getEndpointClasses(library)
         .where((element) => !validationErrors.containsKey(
               EndpointClassAnalyzer.elementNamespace(element, filePath),
             ));
 
-    var endpointDefs = <EndpointDefinition>[];
+    var endpointDefinitions = <EndpointDefinition>[];
     for (var classElement in endpointClasses) {
-      var endpointMethods = classElement.collectionEndpointMethods(
-        validationErrors: validationErrors,
-        filePath: filePath,
-      );
-
-      var methodDefs = <MethodDefinition>[];
-      for (var method in endpointMethods) {
-        var parameters =
-            EndpointParameterAnalyzer.parse(method.formalParameters);
-
-        methodDefs.add(EndpointMethodAnalyzer.parse(
-          method,
-          parameters,
-        ));
-      }
-
-      var endpointDefinition = EndpointClassAnalyzer.parse(
+      EndpointClassAnalyzer.parse(
         classElement,
-        methodDefs,
+        validationErrors,
         filePath,
+        endpointDefinitions,
       );
-
-      endpointDefs.add(endpointDefinition);
     }
 
-    return endpointDefs;
+    return endpointDefinitions;
   }
 
   Future<void> _refreshContextForFiles(Set<String>? changedFiles) async {
@@ -284,49 +267,5 @@ class EndpointsAnalyzer {
     failingErrors.removeWhere((key, exceptions) => exceptions.isEmpty);
 
     return failingErrors;
-  }
-}
-
-extension on ClassElement {
-  /// Returns all endpoints methods from the class.
-  ///
-  /// Those defined directly on the class, as well as those inherited from the base classes.
-  List<MethodElement> collectionEndpointMethods({
-    required Map<String, List<SourceSpanSeverityException>> validationErrors,
-    required String filePath,
-  }) {
-    var endPointMethods = <MethodElement>[];
-    var handledMethods = <String>{};
-
-    for (final method in methods) {
-      if (EndpointMethodAnalyzer.isEndpointMethod(method) &&
-          !validationErrors.containsKey(
-            EndpointMethodAnalyzer.elementNamespace(this, method, filePath),
-          )) {
-        endPointMethods.add(method);
-      }
-
-      handledMethods.add(method.name!);
-    }
-
-    var inheritedMethods = allSupertypes
-        .map((s) => s.element)
-        .whereType<ClassElement>()
-        .where(EndpointClassAnalyzer.isEndpointInterface)
-        .expand((s) => s.methods);
-
-    for (var method in inheritedMethods) {
-      if (handledMethods.contains(method.name)) {
-        continue;
-      }
-
-      if (EndpointMethodAnalyzer.isEndpointMethod(method)) {
-        endPointMethods.add(method);
-      }
-
-      handledMethods.add(method.name!);
-    }
-
-    return endPointMethods;
   }
 }

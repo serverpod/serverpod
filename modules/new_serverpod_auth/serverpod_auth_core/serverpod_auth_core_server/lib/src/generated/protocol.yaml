@@ -2,5 +2,5 @@ status:
   - isSignedIn:
   - signOutDevice:
   - signOutAllDevices:
-refreshJwtTokens:
-  - refreshAccessToken:
+userProfileInfo:
+  - get:

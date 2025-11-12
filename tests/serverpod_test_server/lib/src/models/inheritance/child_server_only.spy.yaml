@@ -1,0 +1,5 @@
+class: ServerOnlyChildClass
+serverOnly: true
+extends: NonServerOnlyParentClass
+fields:
+  childField: String

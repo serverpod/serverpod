@@ -14,6 +14,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart'
     as _i3;
+import 'package:serverpod_auth_core_client/src/protocol/profile/models/user_profile_model.dart'
+    as _i4;
+import 'dart:typed_data' as _i5;
 
 /// Endpoint for getting status and managing a signed in user.
 /// {@category Endpoint}
@@ -47,11 +50,8 @@ class EndpointStatus extends _i1.EndpointRef {
 
 /// Endpoint for JWT tokens management.
 /// {@category Endpoint}
-class EndpointRefreshJwtTokens extends _i1.EndpointRef {
+abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   EndpointRefreshJwtTokens(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'serverpod_auth_core.refreshJwtTokens';
 
   /// Creates a new token pair for the given [refreshToken].
   ///
@@ -72,28 +72,66 @@ class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   _i2.Future<_i3.AuthSuccess> refreshAccessToken(
-          {required String refreshToken}) =>
-      caller.callServerEndpoint<_i3.AuthSuccess>(
-        'serverpod_auth_core.refreshJwtTokens',
-        'refreshAccessToken',
-        {'refreshToken': refreshToken},
-        authenticated: false,
+      {required String refreshToken});
+}
+
+/// Endpoint for read-only access to user profile information.
+/// {@category Endpoint}
+class EndpointUserProfileInfo extends _i1.EndpointRef {
+  EndpointUserProfileInfo(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_core.userProfileInfo';
+
+  /// Returns the user profile of the current user.
+  _i2.Future<_i4.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'serverpod_auth_core.userProfileInfo',
+        'get',
+        {},
       );
+}
+
+/// Base endpoint for user profile management.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class on your server.
+/// {@category Endpoint}
+abstract class EndpointUserProfileEditBase extends EndpointUserProfileInfo {
+  EndpointUserProfileEditBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
+  _i2.Future<_i4.UserProfileModel> removeUserImage();
+
+  /// Sets a new user image for the signed in user.
+  _i2.Future<_i4.UserProfileModel> setUserImage(_i5.ByteData image);
+
+  /// Changes the name of a user.
+  _i2.Future<_i4.UserProfileModel> changeUserName(String? userName);
+
+  /// Changes the full name of a user.
+  _i2.Future<_i4.UserProfileModel> changeFullName(String? fullName);
+
+  /// Returns the user profile of the current user.
+  @override
+  _i2.Future<_i4.UserProfileModel> get();
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     status = EndpointStatus(this);
-    refreshJwtTokens = EndpointRefreshJwtTokens(this);
+    userProfileInfo = EndpointUserProfileInfo(this);
   }
 
   late final EndpointStatus status;
 
-  late final EndpointRefreshJwtTokens refreshJwtTokens;
+  late final EndpointUserProfileInfo userProfileInfo;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'serverpod_auth_core.status': status,
-        'serverpod_auth_core.refreshJwtTokens': refreshJwtTokens,
+        'serverpod_auth_core.userProfileInfo': userProfileInfo,
       };
 }

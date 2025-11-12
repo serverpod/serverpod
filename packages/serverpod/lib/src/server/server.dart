@@ -11,12 +11,13 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
-class Server {
+class Server implements RouterInjectable {
   // Map of [WebSocket] connected to the server.
   // The key is a unique identifier for the connection.
   // The value is a tuple of a [Future] that completes when the connection is
@@ -30,8 +31,14 @@ class Server {
   /// ids.
   final String serverId;
 
+  final int _port;
+
+  int? _actualPort;
+
   /// Port the server is listening on.
-  final int port;
+  /// Returns the actual port from the running server if available,
+  /// otherwise returns the configured port.
+  int get port => _actualPort ?? _port;
 
   /// The [ServerpodRunMode] the server is running in.
   final String runMode;
@@ -56,8 +63,10 @@ class Server {
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
 
+  late AuthenticationHandler _authenticationHandler;
+
   /// [AuthenticationHandler] responsible for authenticating users.
-  final AuthenticationHandler authenticationHandler;
+  AuthenticationHandler get authenticationHandler => _authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
@@ -76,7 +85,6 @@ class Server {
   /// True if the server is currently running.
   bool get running => _running;
 
-  io.HttpServer? _ioServer;
   RelicServer? _relicServer;
 
   /// Currently not in use.
@@ -90,22 +98,21 @@ class Server {
 
   /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
-  final Map<String, dynamic> httpResponseHeaders;
+  final Headers httpResponseHeaders;
 
   /// HTTP headers used for OPTIONS responses. These headers are sent in
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
-  final Map<String, dynamic> httpOptionsResponseHeaders;
+  final Headers httpOptionsResponseHeaders;
 
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
     required this.serverId,
-    required this.port,
+    required int port,
     required this.serializationManager,
     required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
-    required this.authenticationHandler,
     String? name,
     required this.caches,
     io.SecurityContext? securityContext,
@@ -115,24 +122,46 @@ class Server {
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
         _databasePoolManager = databasePoolManager,
-        _securityContext = securityContext;
+        _securityContext = securityContext,
+        _port = port;
+
+  late final _app = RelicApp()..inject(this);
+
+  @override
+  void injectIn(RelicRouter router) {
+    if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
+      router.use('/', _verboseLogging);
+    }
+    router
+      ..use('/', _headers)
+      ..use('/', _reportException)
+      ..get('/', _health)
+      ..get('/websocket',
+          _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket))
+      ..get('/v1/websocket',
+          _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket))
+      ..anyOf({Method.get, Method.options, Method.post},
+          '/serverpod_cloud_storage', _cloudStorage)
+      ..any('/**', _endpoints);
+  }
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
-  Future<bool> start() async {
+  Future<bool> start({
+    required AuthenticationHandler authenticationHandler,
+  }) async {
+    _authenticationHandler = authenticationHandler;
     try {
-      final ioServer = await bindHttpServer(
-        io.InternetAddress.anyIPv6,
-        port: port,
-        context: _securityContext,
+      final server = await _app.serve(
+        address: io.InternetAddress.anyIPv6,
+        port: _port,
+        securityContext: _securityContext,
       );
-      final server = RelicServer(IOAdapter(ioServer));
-      await server.mountAndStart(_relicRequestHandler);
-      _ioServer = ioServer;
+      _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
       await _reportFrameworkException(e, stackTrace,
-          message: 'Failed to bind socket, port $port may already be in use.');
+          message: 'Failed to bind socket, port $_port may already be in use.');
       return false;
     }
 
@@ -147,257 +176,150 @@ class Server {
     return _running;
   }
 
-  FutureOr<HandledContext> _relicRequestHandler(NewContext context) async {
-    try {
-      return await _handleRequest(context);
-    } catch (e, stackTrace) {
-      await _reportFrameworkException(
-        e,
-        stackTrace,
-        message:
-            'Internal server error. Request handler failed with exception.',
-        request: context.request,
-      );
-      return context.withResponse(Response.internalServerError(
-        body: Body.fromString('Internal Server Error'),
-      ));
-    }
+  Handler _verboseLogging(Handler next) {
+    return (req) async {
+      final path = req.requestedUri.path;
+      serverpod.logVerbose('handleRequest: ${req.method} $path');
+      return await next(req);
+    };
   }
 
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
-    final request = context.request;
-    final uri = request.requestedUri;
-    serverpod.logVerbose('handleRequest: ${request.method} ${uri.path}');
-
-    // TODO: Make httpResponseHeaders a Headers object from the get-go.
-    // or better yet, use middleware
-    final headers = Headers.build((mh) {
-      for (var rh in httpResponseHeaders.entries) {
-        mh[rh.key] = ['${rh.value}'];
-      }
-    });
-
-    var readBody = true;
-
-    // TODO: Use Router instead of manual dispatch on path and verb
-    if (uri.path == '/') {
-      // Perform health checks
-      var checks = await performHealthChecks(serverpod);
-      var issues = <String>[];
-      var allOk = true;
-      for (var metric in checks.metrics) {
-        if (!metric.isHealthy) {
-          allOk = false;
-          issues.add('${metric.name}: ${metric.value}');
-        }
-      }
-
-      var responseBuffer = StringBuffer();
-      if (allOk) {
-        responseBuffer.writeln('OK ${DateTime.now().toUtc()}');
-      } else {
-        responseBuffer.writeln('SADNESS ${DateTime.now().toUtc()}');
-      }
-      for (var issue in issues) {
-        responseBuffer.writeln(issue);
-      }
-
-      var response = Response(
-        allOk ? io.HttpStatus.ok : io.HttpStatus.serviceUnavailable,
-        body: Body.fromString(responseBuffer.toString()),
-        headers: headers,
-      );
-      return context.withResponse(response);
-    } else if (uri.path == '/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        EndpointWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/v1/websocket') {
-      return await _dispatchWebSocketUpgradeRequest(
-        context,
-        MethodWebsocketRequestHandler.handleWebsocket,
-      );
-    } else if (uri.path == '/serverpod_cloud_storage') {
-      readBody = false;
-    }
-
-    // This OPTIONS check is necessary when making requests from
-    // eg `editor.swagger.io`. It ensures proper handling of preflight requests
-    // with the OPTIONS method.
-    if (request.method == RequestMethod.options) {
-      final combinedHeaders = headers.transform((mh) {
-        for (var orh in httpOptionsResponseHeaders.entries) {
-          mh[orh.key] = ['${orh.value}'];
-        }
-        mh.contentLength = 0; // TODO: Why set this explicitly?
-      });
-
-      return context.withResponse(Response.ok(headers: combinedHeaders));
-    }
-
-    late final String body;
-    if (readBody) {
+  Handler _reportException(Handler next) {
+    return (req) async {
       try {
-        body = await _readBody(request);
+        return await next(req);
       } on _RequestTooLargeException catch (e) {
-        if (serverpod.runtimeSettings.logMalformedCalls) {
-          // TODO: Log to database?
-          io.stderr.writeln('${DateTime.now().toUtc()} ${e.errorDescription}');
-        }
-        return context.withResponse(Response(
+        return Response(
           io.HttpStatus.requestEntityTooLarge,
           body: Body.fromString(e.errorDescription),
-          headers: headers,
-        ));
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(e, stackTrace,
-            message: 'Internal server error. Failed to read body of request.',
-            request: context.request);
-        return context.withResponse(Response.badRequest(
-          body: Body.fromString('Failed to read request body.'),
-          headers: headers,
-        ));
-      }
-    } else {
-      body = '';
-    }
-
-    var result = await _handleUriCall(uri, body, request);
-    if (serverpod.runtimeSettings.logMalformedCalls) {
-      _logMalformedCalls(result);
-    }
-    return context.withResponse(_toResponse(result, headers));
-  }
-
-  void _logMalformedCalls(Result result) {
-    final error = switch (result) {
-      ResultInvalidParams() => 'Malformed call',
-      ResultNoSuchEndpoint() => 'Malformed call',
-      ResultAuthenticationFailed() => 'Access denied',
-      // ResultInternalServerError // TODO: historically not included
-      _ => null
-    };
-    if (error != null) {
-      // TODO: Log to database?
-      io.stderr.writeln('$error: $result');
-    }
-  }
-
-  Response _toResponse(Result result, Headers headers) {
-    switch (result) {
-      case ResultNoSuchEndpoint():
-        return Response.notFound(
-          body: Body.fromString(result.errorDescription),
-          headers: headers,
         );
-      case ResultInvalidParams():
-        return Response.badRequest(
-          body: Body.fromString(result.errorDescription),
-          headers: headers,
-        );
-      case ResultAuthenticationFailed():
-        var authFailedStatusCode = switch (result.reason) {
-          AuthenticationFailureReason.unauthenticated =>
-            io.HttpStatus.unauthorized,
-          AuthenticationFailureReason.insufficientAccess =>
-            io.HttpStatus.forbidden,
+      } on EndpointDispatchException catch (e) {
+        return switch (e) {
+          EndpointNotFoundException() =>
+            Response.notFound(body: Body.fromString(e.message)),
+          NotAuthorizedException() => Response(switch (e.reason) {
+              AuthenticationFailureReason.unauthenticated =>
+                io.HttpStatus.unauthorized,
+              AuthenticationFailureReason.insufficientAccess =>
+                io.HttpStatus.forbidden,
+            }),
+          MethodNotFoundException() ||
+          InvalidEndpointMethodTypeException() ||
+          InvalidParametersException() =>
+            Response.badRequest(body: Body.fromString(e.message)),
         };
-        return Response(
-          authFailedStatusCode,
-          headers: headers,
-        );
-      case ResultInternalServerError():
-        return Response.internalServerError(
-          body: Body.fromString(
-              'Internal server error. Call log id: ${result.sessionLogId}'),
-          headers: headers,
-        );
-      case ResultStatusCode():
-        return Response(
-          result.statusCode,
-          body: result.message != null
-              ? Body.fromString(result.message!)
-              : Body.empty(),
-          headers: headers,
-        );
-      case ExceptionResult():
-        var serializedModel =
-            serializationManager.encodeWithTypeForProtocol(result.model);
+      } on SerializableException catch (e) {
         return Response.badRequest(
-          body: Body.fromString(serializedModel, mimeType: MimeType.json),
-          headers: headers,
-        );
-      case ResultSuccess():
-        var value = result.returnValue;
-        if (result.sendAsRaw) {
-          switch (value) {
-            case String():
-              value = Body.fromString(value);
-              continue body;
-            case Stream<Uint8List>():
-              value = Body.fromDataStream(value);
-              continue body;
-            case ByteData():
-              value = Uint8List.sublistView(value);
-              continue bytes;
-            bytes:
-            case Uint8List():
-              value = Body.fromData(value);
-              continue body;
-            body:
-            case Body():
-              value = Response.ok(body: value, headers: headers);
-              continue response;
-            response:
-            case Response():
-              return value;
-          }
-        }
-        return Response.ok(
           body: Body.fromString(
-            SerializationManager.encodeForProtocol(value),
-            mimeType: MimeType.json,
-          ),
-          headers: headers,
+              serializationManager.encodeWithTypeForProtocol(e),
+              mimeType: MimeType.json),
         );
-    }
+      } on HeaderException catch (e) {
+        return Response.badRequest(body: Body.fromString(e.httpResponseBody));
+      } on AuthHeaderEncodingException catch (_) {
+        return Response.badRequest(
+            body:
+                Body.fromString('Request has invalid "authorization" header'));
+      } catch (e, stackTrace) {
+        await _reportFrameworkException(
+          e,
+          stackTrace,
+          message:
+              'Internal server error. Request handler failed with exception.',
+          request: req,
+        );
+        return Response.internalServerError();
+      }
+    };
   }
 
-  FutureOr<HandledContext> _dispatchWebSocketUpgradeRequest(
-    NewContext newContext,
+  Future<Result> _health(Request _) async {
+    final metrics = (await performHealthChecks(serverpod)).metrics;
+    final issues = metrics.where((m) => !m.isHealthy);
+    final ok = issues.isEmpty;
+    final now = DateTime.timestamp();
+    if (ok) return Response.ok(body: Body.fromString('OK $now'));
+    return Response(503, body: Body.fromDataStream(() async* {
+      yield utf8.encode('SADNESS $now\r\n');
+      for (final metric in issues) {
+        yield utf8.encode('${metric.name}: ${metric.value}\r\n');
+      }
+    }()));
+  }
+
+  Handler _headers(Handler next) {
+    return (req) async {
+      final isOptions = req.method == Method.options;
+      final headers = isOptions
+          ? httpResponseHeaders.transform((mh) {
+              for (final h in httpOptionsResponseHeaders.entries) {
+                mh[h.key] = h.value;
+              }
+            })
+          : httpResponseHeaders;
+
+      // early exit on Method.options
+      if (isOptions) return Response.ok(headers: headers);
+
+      final result = await next(req);
+      return switch (result) {
+        Response() => result.copyWith(
+            headers: result.headers.isEmpty
+                ? headers
+                : result.headers.transform((mh) {
+                    for (final h in headers.entries) {
+                      mh[h.key] ??= h.value;
+                    }
+                  })),
+        _ => result,
+      };
+    };
+  }
+
+  FutureOr<Result> _cloudStorage(Request req) async {
+    final uri = req.requestedUri;
+    assert(uri.path == '/serverpod_cloud_storage');
+    return await _handleEndpointCall(uri, '', req);
+  }
+
+  Future<Response> _endpoints(Request req) async {
+    final body = await _readBody(req);
+    return await _handleEndpointCall(req.requestedUri, body, req);
+  }
+
+  Handler _dispatchWebSocket(
     Future<void> Function(
       Server,
       RelicWebSocket,
       Request,
       void Function(),
     ) requestHandler,
-  ) async {
-    return newContext.connect((webSocket) async {
-      try {
-        // TODO(kasper): Should we keep doing this?
-        webSocket.pingInterval = const Duration(seconds: 30);
+  ) {
+    return (req) async {
+      return WebSocketUpgrade((webSocket) async {
+        try {
+          webSocket.pingInterval = const Duration(seconds: 30);
+          var websocketKey = const Uuid().v4();
+          final handlerFuture = requestHandler(
+            this,
+            webSocket,
+            req,
+            () => _webSockets.remove(websocketKey),
+          );
 
-        var websocketKey = const Uuid().v4();
-        final handlerFuture = requestHandler(
-          this,
-          webSocket,
-          newContext.request,
-          () => _webSockets.remove(websocketKey),
-        );
+          _webSockets[websocketKey] = (handlerFuture, webSocket);
 
-        _webSockets[websocketKey] = (handlerFuture, webSocket);
-
-        await handlerFuture;
-      } catch (e, stackTrace) {
-        await _reportFrameworkException(
-          e,
-          stackTrace,
-          message: 'Failed to upgrade connection to websocket.',
-          operationType: OperationType.stream,
-        );
-      }
-    });
+          await handlerFuture;
+        } catch (e, stackTrace) {
+          await _reportFrameworkException(
+            e,
+            stackTrace,
+            message: 'Failed to upgrade connection to websocket.',
+            operationType: OperationType.stream,
+          );
+        }
+      });
+    };
   }
 
   Future<String> _readBody(Request request) async {
@@ -422,7 +344,7 @@ class Server {
     return const Utf8Decoder().convert(builder.takeBytes());
   }
 
-  Future<Result> _handleUriCall(
+  Future<Response> _handleEndpointCall(
     Uri uri,
     String body,
     Request request,
@@ -430,7 +352,7 @@ class Server {
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
+      throw InvalidParametersException('Endpoint name is not valid');
     }
 
     // Read query parameters
@@ -440,7 +362,7 @@ class Server {
       try {
         queryParameters = jsonDecode(body);
       } catch (_) {
-        return ResultInvalidParams('Invalid JSON in body: $body');
+        throw InvalidParametersException('Invalid JSON in body');
       }
     }
 
@@ -462,9 +384,7 @@ class Server {
       if (method is String) {
         methodName = method;
       } else {
-        return ResultInvalidParams(
-          'No method name specified in call to $endpointName',
-        );
+        throw InvalidParametersException('No method name specified');
       }
     }
 
@@ -474,27 +394,15 @@ class Server {
     String? authenticationKey;
     String? authenticationHeaderValue;
 
-    try {
-      authenticationHeaderValue = request.headers.authorization?.headerValue;
-      authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
-    } catch (e) {
-      if (e is AuthHeaderEncodingException || e is InvalidHeaderException) {
-        // Use authHeaderValueFromHeader in the error message as it's the (potentially problematic) value we read
-        return ResultStatusCode(
-          400,
-          'Request has invalid "authorization" header: $authenticationHeaderValue',
-        );
-      } else {
-        rethrow;
-      }
-    }
+    authenticationHeaderValue = request.headers.authorization?.headerValue;
+    authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
     authenticationKey ??= queryParameters['auth'] as String?;
 
     MethodCallSession? maybeSession;
     try {
       var methodCallContext = await endpoints.getMethodCallContext(
-        createSessionCallback: (connector) {
-          maybeSession = MethodCallSession(
+        createSessionCallback: (connector) async {
+          maybeSession = await SessionInternalMethods.createMethodCallSession(
             server: this,
             uri: uri,
             body: body,
@@ -524,9 +432,7 @@ class Server {
           space: OriginSpace.framework,
           context: contextFromRequest(this, request, OperationType.method),
         );
-
-        return ResultInternalServerError(
-            'Session was not created', StackTrace.current, 0);
+        return Response.internalServerError();
       }
 
       try {
@@ -534,10 +440,12 @@ class Server {
           session,
           methodCallContext.arguments,
         );
-
-        return ResultSuccess(
-          result,
-          sendAsRaw: methodCallContext.endpoint.sendAsRaw,
+        if (methodCallContext.endpoint.sendAsRaw) return _toResponse(result);
+        return Response.ok(
+          body: Body.fromString(
+            SerializationManager.encodeForProtocol(result),
+            mimeType: MimeType.json,
+          ),
         );
       } catch (e, stackTrace) {
         // Note: In case of malformed argument, the method connector may throw,
@@ -547,41 +455,32 @@ class Server {
           space: OriginSpace.application,
           context: contextFromSession(session, request: request),
         );
-
+        await session.close(error: e, stackTrace: stackTrace);
         rethrow;
       }
-    } on MethodNotFoundException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on InvalidEndpointMethodTypeException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on EndpointNotFoundException catch (e) {
-      return ResultNoSuchEndpoint(e.message);
-    } on NotAuthorizedException catch (e) {
-      return e.authenticationFailedResult;
-    } on InvalidParametersException catch (e) {
-      return ResultInvalidParams(e.message);
-    } on SerializableException catch (exception) {
-      return ExceptionResult(model: exception);
-    } on Exception catch (e, stackTrace) {
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
-    } catch (e, stackTrace) {
-      // Something did not work out
-      var sessionLogId =
-          await maybeSession?.close(error: e, stackTrace: stackTrace);
-      return ResultInternalServerError(
-          e.toString(), stackTrace, sessionLogId ?? 0);
     } finally {
-      await maybeSession?.close();
+      await maybeSession?.close(); // safe to close twice
     }
+  }
+
+  static Response _toResponse(dynamic value) {
+    if (value is Response) return value;
+    final body = value is Body
+        ? value
+        : switch (value) {
+            String() => Body.fromString(value),
+            Stream<Uint8List>() => Body.fromDataStream(value),
+            ByteData() => Body.fromData(Uint8List.sublistView(value)),
+            Uint8List() => Body.fromData(value),
+            _ => Body.fromString('$value'), // use toString as fallback
+          };
+    return Response.ok(body: body);
   }
 
   /// Shuts the server down.
   /// Returns a [Future] that completes when the server is shut down.
   Future<void> shutdown() async {
-    await _relicServer?.close();
+    await _app.close();
     var webSockets = _webSockets.values.toList();
     List<Future<void>> webSocketCompletions = [];
     for (var (webSocketCompletion, webSocket) in webSockets) {
@@ -591,7 +490,6 @@ class Server {
 
     // Wait for all WebSockets to close.
     await Future.wait(webSocketCompletions);
-    await _ioServer?.close(force: true);
     _running = false;
   }
 
@@ -619,6 +517,10 @@ class Server {
       context: context,
     );
   }
+
+  /// Returns information about the current connections to the server.
+  Future<ConnectionsInfo> connectionsInfo() async =>
+      await _relicServer?.connectionsInfo() ?? (active: 0, closing: 0, idle: 0);
 }
 
 /// The result of a failed request to the server where the request size
@@ -634,14 +536,13 @@ class _RequestTooLargeException implements Exception {
   ///
   /// Contains a human-readable explanation of the error, including the maximum
   /// allowed size and the actual size of the request.
-  final String errorDescription;
+  String get errorDescription =>
+      'Request size exceeds the maximum allowed size of $maxSize bytes.';
 
   /// Creates a new [ResultRequestTooLarge] object.
   ///
   /// - [maxSize]: The maximum allowed size for the request in bytes.
-  _RequestTooLargeException(this.maxSize)
-      : errorDescription =
-            'Request size exceeds the maximum allowed size of $maxSize bytes.';
+  const _RequestTooLargeException(this.maxSize);
 
   @override
   String toString() {
@@ -649,10 +550,15 @@ class _RequestTooLargeException implements Exception {
   }
 }
 
-// ignore: public_member_api_docs
+/// Extension providing testing utilities for [Server] authentication.
 extension ServerInternalMethods on Server {
-  /// Returns the underlying [io.HttpServer] instance.
+  /// Sets the authentication handler for testing purposes.
   ///
-  /// This method is not intended for public use.
-  io.HttpServer? get ioServer => _ioServer;
+  /// This method allows tests to override the default authentication handler
+  /// by directly setting the internal [_authenticationHandler] field.
+  void setAuthenticationHandlerForTesting(
+    AuthenticationHandler authenticationHandler,
+  ) {
+    _authenticationHandler = authenticationHandler;
+  }
 }

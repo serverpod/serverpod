@@ -14,7 +14,9 @@ class EndpointDefinition {
   /// The actual class name of the endpoint.
   final String className;
 
-  /// The file path, the endpoint is stored in.
+  /// The file path, the endpoint is stored in. For endpoint definitions of
+  /// external modules (evaluated for inheritance parsing), this will be the
+  /// library identifier - with format "package:{packageName}/{path}".
   final String filePath;
 
   /// The methods this endpoint defines.
@@ -22,6 +24,12 @@ class EndpointDefinition {
 
   /// The annotations of this endpoint.
   final List<AnnotationDefinition> annotations;
+
+  /// Whether this endpoint is abstract.
+  final bool isAbstract;
+
+  /// The parent of this endpoint if it exists.
+  final EndpointDefinition? extendsClass;
 
   /// Create a new [EndpointDefinition].
   const EndpointDefinition({
@@ -31,7 +39,15 @@ class EndpointDefinition {
     required this.className,
     required this.filePath,
     required this.annotations,
+    required this.isAbstract,
+    required this.extendsClass,
   });
+
+  /// The name of the external package where this endpoint is defined. Will
+  /// return null if the endpoint comes from the project under generation.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
 }
 
 /// Describes a single method in a [EndpointDefinition].

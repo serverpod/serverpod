@@ -4,3 +4,9 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 dev_dependencies:
   melos: ^6.1.0
+
+serverpod_cli:
+  analyze_pubspecs:
+    ignore_packages:
+      - google_sign_in
+      - sign_in_with_apple

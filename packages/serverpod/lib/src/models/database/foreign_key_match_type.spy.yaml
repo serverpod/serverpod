@@ -1,5 +1,6 @@
 ### Defines how a foreign key should be matched.
 enum: ForeignKeyMatchType
+serialized: byIndex
 values:
   ### [full] will not allow one column of a multicolumn foreign key
   ### to be null unless all foreign key columns are null.

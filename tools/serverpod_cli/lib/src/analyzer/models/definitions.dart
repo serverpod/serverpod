@@ -75,6 +75,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set to true the class is sealed.
   final bool isSealed;
 
+  /// If set to true the class is immutable.
+  final bool isImmutable;
+
   /// If set, the default data type used for serialization of the JSON columns in this class.
   /// It can be overridden for each field.
   final SerializationDataType? serializationDataType;
@@ -97,6 +100,7 @@ final class ModelClassDefinition extends ClassDefinition {
     required this.manageMigration,
     required super.type,
     required this.isSealed,
+    required this.isImmutable,
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
@@ -122,8 +126,16 @@ final class ModelClassDefinition extends ClassDefinition {
 
   /// Returns a list of all fields in the parent class.
   /// If there is no parent class, an empty list is returned.
+  /// Excludes the id field, as it is re-declared on child classes.
   List<SerializableModelFieldDefinition> get inheritedFields =>
-      parentClass?.fieldsIncludingInherited ?? [];
+      parentClass?.fieldsIncludingInherited
+          .where((element) => tableName == null || element.name != 'id')
+          .toList() ??
+      [];
+
+  /// Returns `true` if the 'id' field is inherited from a parent class.
+  bool get isIdInherited =>
+      parentClass?.fieldsIncludingInherited.any((f) => f.name == 'id') ?? false;
 
   /// Returns a list of all fields in this class, including inherited fields.
   /// It ensures that the 'id' field, if present, is always included at the beginning of the list.

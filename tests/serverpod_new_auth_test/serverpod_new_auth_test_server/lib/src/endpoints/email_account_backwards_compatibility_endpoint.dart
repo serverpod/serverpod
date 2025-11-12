@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
@@ -82,7 +83,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
   /// Since the server runs with the backwards compatible auth handler, both
   /// old session keys will work post migration.
   Future<String?> sessionUserIdentifier(final Session session) async {
-    return (await session.authenticated)?.userIdentifier;
+    return session.authenticated?.userIdentifier;
   }
 
   /// Returns the user ID of associated with the session derived from the session key
@@ -91,7 +92,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    final account = await EmailAccounts.admin.findAccount(
+    final account = await AuthServices.instance.emailIDP.admin.findAccount(
       session,
       email: email,
     );
@@ -102,7 +103,7 @@ class EmailAccountBackwardsCompatibilityTestEndpoint extends Endpoint {
 
     return await AuthBackwardsCompatibility.isLegacyPasswordValid(
       session,
-      emailAccountId: account.emailAccountId,
+      emailAccountId: account.id!,
       email: email,
       password: password,
     );

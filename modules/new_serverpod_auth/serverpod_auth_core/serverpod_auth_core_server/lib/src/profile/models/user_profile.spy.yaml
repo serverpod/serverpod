@@ -2,7 +2,7 @@ class: UserProfile
 serverOnly: true
 table: serverpod_auth_core_profile
 fields:
-  id: UuidValue?, defaultPersist=random
+  id: UuidValue?, defaultPersist=random_v7
 
   ### The [AuthUser] this profile belongs to.
   authUser: AuthUser?, relation(onDelete=Cascade)

@@ -35,7 +35,7 @@ class LoggingEndpoint extends Endpoint {
   }
 
   Future<void> log(Session session, String message, List<int> logLevels) async {
-    var levels = logLevels.map((level) => LogLevel.fromJson(level));
+    var levels = logLevels.map((level) => LogLevel.values[level]);
 
     for (var logLevel in levels) {
       session.log(message, level: logLevel);

@@ -108,7 +108,7 @@ abstract class GoogleAccount
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static GoogleAccountInclude include({_i2.AuthUserInclude? authUser}) {

@@ -1,3 +1,7 @@
+concreteBase:
+  - virtualMethod:
+  - concreteMethod:
+  - abstractBaseMethod:
 module:
   - hello:
   - modifyModuleObject:

@@ -90,7 +90,7 @@ abstract class LegacyExternalUserIdentifier
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {};
   }
 
   static LegacyExternalUserIdentifierInclude include(

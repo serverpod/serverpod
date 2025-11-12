@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -30,6 +31,7 @@ class ServerTestToolsGenerator {
     );
 
     for (var endpoint in protocolDefinition.endpoints) {
+      if (endpoint.isAbstract) continue;
       library.body.add(_buildEndpointClassWithMethodCalls(endpoint));
     }
 
@@ -158,6 +160,9 @@ class ServerTestToolsGenerator {
                 ),
             ],
           );
+
+        // Add deprecated annotations if present
+        methodBuilder.annotations.addAll(buildEndpointCallAnnotations(method));
 
         methodBuilder.body = returnsStream || hasStreamParameter
             ? _buildEndpointStreamMethodCall(endpoint, method,
@@ -401,16 +406,17 @@ class ServerTestToolsGenerator {
               ..body = Block.of(
                 [
                   for (var endpoint in protocolDefinition.endpoints)
-                    refer(endpoint.name)
-                        .assign(
-                          refer('_${endpoint.className}').newInstance(
-                            [
-                              refer('endpoints'),
-                              refer('serializationManager'),
-                            ],
-                          ),
-                        )
-                        .statement,
+                    if (!endpoint.isAbstract)
+                      refer(endpoint.name)
+                          .assign(
+                            refer('_${endpoint.className}').newInstance(
+                              [
+                                refer('endpoints'),
+                                refer('serializationManager'),
+                              ],
+                            ),
+                          )
+                          .statement,
                 ],
               );
           },
@@ -423,6 +429,7 @@ class ServerTestToolsGenerator {
       classBuilder.name = 'TestEndpoints';
 
       for (var endpoint in protocolDefinition.endpoints) {
+        if (endpoint.isAbstract) continue;
         classBuilder.fields.add(
           Field(
             (fieldBuilder) {
@@ -460,6 +467,10 @@ class ServerTestToolsGenerator {
         ..name = 'serverpodStartTimeout'
         ..named = true
         ..type = refer('Duration?')),
+      Parameter((p) => p
+        ..name = 'testServerOutputMode'
+        ..named = true
+        ..type = refer('TestServerOutputMode?', serverpodTestUrl)),
       Parameter(
         (p) => p
           ..name = 'experimentalFeatures'
@@ -520,6 +531,7 @@ class ServerTestToolsGenerator {
                   config.isFeatureEnabled(ServerpodFeature.database),
                 ),
                 'serverpodLoggingMode': refer('serverpodLoggingMode'),
+                'testServerOutputMode': refer('testServerOutputMode'),
                 'experimentalFeatures': refer('experimentalFeatures'),
                 if (config.isFeatureEnabled(ServerpodFeature.database))
                   'runtimeParametersBuilder': refer('runtimeParametersBuilder'),
@@ -535,6 +547,7 @@ class ServerTestToolsGenerator {
             'maybeEnableSessionLogging': refer('enableSessionLogging'),
             'maybeTestGroupTagsOverride': refer('testGroupTagsOverride'),
             'maybeServerpodStartTimeout': refer('serverpodStartTimeout'),
+            'maybeTestServerOutputMode': refer('testServerOutputMode'),
           },
         ).call([
           refer('testClosure'),

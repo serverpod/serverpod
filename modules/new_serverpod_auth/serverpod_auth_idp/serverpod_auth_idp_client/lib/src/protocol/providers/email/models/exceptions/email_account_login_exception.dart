@@ -11,7 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../../providers/email/models/exceptions/email_account_login_failure_reason.dart'
+import '../../../../providers/email/models/exceptions/email_account_login_exception_reason.dart'
     as _i2;
 
 /// Exception to be thrown if the login via email/password fails.
@@ -23,23 +23,23 @@ abstract class EmailAccountLoginException
   EmailAccountLoginException._({required this.reason});
 
   factory EmailAccountLoginException(
-          {required _i2.EmailAccountLoginFailureReason reason}) =
+          {required _i2.EmailAccountLoginExceptionReason reason}) =
       _EmailAccountLoginExceptionImpl;
 
   factory EmailAccountLoginException.fromJson(
       Map<String, dynamic> jsonSerialization) {
     return EmailAccountLoginException(
-        reason: _i2.EmailAccountLoginFailureReason.fromJson(
-            (jsonSerialization['reason'] as int)));
+        reason: _i2.EmailAccountLoginExceptionReason.fromJson(
+            (jsonSerialization['reason'] as String)));
   }
 
-  _i2.EmailAccountLoginFailureReason reason;
+  _i2.EmailAccountLoginExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountLoginException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   EmailAccountLoginException copyWith(
-      {_i2.EmailAccountLoginFailureReason? reason});
+      {_i2.EmailAccountLoginExceptionReason? reason});
   @override
   Map<String, dynamic> toJson() {
     return {'reason': reason.toJson()};
@@ -53,7 +53,7 @@ abstract class EmailAccountLoginException
 
 class _EmailAccountLoginExceptionImpl extends EmailAccountLoginException {
   _EmailAccountLoginExceptionImpl(
-      {required _i2.EmailAccountLoginFailureReason reason})
+      {required _i2.EmailAccountLoginExceptionReason reason})
       : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountLoginException]
@@ -61,7 +61,7 @@ class _EmailAccountLoginExceptionImpl extends EmailAccountLoginException {
   @_i1.useResult
   @override
   EmailAccountLoginException copyWith(
-      {_i2.EmailAccountLoginFailureReason? reason}) {
+      {_i2.EmailAccountLoginExceptionReason? reason}) {
     return EmailAccountLoginException(reason: reason ?? this.reason);
   }
 }

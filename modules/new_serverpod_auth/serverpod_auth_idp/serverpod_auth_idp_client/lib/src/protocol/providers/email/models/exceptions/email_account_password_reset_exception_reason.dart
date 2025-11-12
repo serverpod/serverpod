@@ -14,54 +14,44 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The reason for why the password reset request was rejected.
 enum EmailAccountPasswordResetExceptionReason implements _i1.SerializableModel {
+  /// Exception to be thrown when attempting to complete a valid password reset
+  /// request that has already expired.
+  expired,
+
+  /// Exception to be thrown when attempting to complete a password reset with
+  /// an invalid verification code or password reset request id.
+  invalid,
+
   /// Exception to be thrown when attempting to set a password which does not
   /// match the configured policy.
   policyViolation,
 
-  /// Exception to be thrown when the password reset request was used after
-  /// it has expired.
-  requestExpired,
+  /// Exception to be thrown when attempting to verify a password reset
+  /// request too many times.
+  tooManyAttempts,
 
-  /// Exception to be thrown when a password reset request could not be found.
-  ///
-  /// This might mean that the password reset request never existed or has been
-  /// removed in the meantime.
-  requestNotFound,
+  /// Unknown error occurred.
+  unknown;
 
-  /// Exception to be thrown when too many attempts were made to request a
-  /// password reset.
-  requestTooManyAttempts,
-
-  /// Exception to be thrown when an attempt was made to complete a password reset
-  /// with an invalid verification code.
-  requestUnauthorized,
-
-  /// Exception to be thrown when too many attempts were made on a single password
-  /// reset request.
-  tooManyAttempts;
-
-  static EmailAccountPasswordResetExceptionReason fromJson(int index) {
-    switch (index) {
-      case 0:
+  static EmailAccountPasswordResetExceptionReason fromJson(String name) {
+    switch (name) {
+      case 'expired':
+        return EmailAccountPasswordResetExceptionReason.expired;
+      case 'invalid':
+        return EmailAccountPasswordResetExceptionReason.invalid;
+      case 'policyViolation':
         return EmailAccountPasswordResetExceptionReason.policyViolation;
-      case 1:
-        return EmailAccountPasswordResetExceptionReason.requestExpired;
-      case 2:
-        return EmailAccountPasswordResetExceptionReason.requestNotFound;
-      case 3:
-        return EmailAccountPasswordResetExceptionReason.requestTooManyAttempts;
-      case 4:
-        return EmailAccountPasswordResetExceptionReason.requestUnauthorized;
-      case 5:
+      case 'tooManyAttempts':
         return EmailAccountPasswordResetExceptionReason.tooManyAttempts;
+      case 'unknown':
+        return EmailAccountPasswordResetExceptionReason.unknown;
       default:
-        throw ArgumentError(
-            'Value "$index" cannot be converted to "EmailAccountPasswordResetExceptionReason"');
+        return EmailAccountPasswordResetExceptionReason.unknown;
     }
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
 
   @override
   String toString() => name;

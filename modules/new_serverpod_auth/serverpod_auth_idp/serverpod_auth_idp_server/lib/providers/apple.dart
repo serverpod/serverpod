@@ -2,4 +2,5 @@
 /// Serverpod IDP module.
 library;
 
+export '../src/integrations/apple_identity_provider_factory.dart';
 export '../src/providers/apple/apple.dart';

@@ -75,15 +75,20 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer =
+      late var collector = CodeGenerationCollector();
+      late var analyzer =
           StatefulAnalyzer(config, models, onErrorsCollector(collector));
-      var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
+
+      late List<SerializableModelDefinition> definitions;
+      setUpAll(() {
+        definitions = analyzer.validateAll();
+      });
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
       });
+
+      late var definition = definitions.first as ClassDefinition;
 
       test('then the generated model has the scope.', () {
         expect(
@@ -212,13 +217,17 @@ void main() {
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      var definitions = analyzer.validateAll();
+
+      late List<SerializableModelDefinition> definitions;
+      setUpAll(() {
+        definitions = analyzer.validateAll();
+      });
 
       test('then an error is collected.', () {
         expect(collector.errors, isNotEmpty);
@@ -243,6 +252,7 @@ void main() {
           'The field "name" belongs to a server only class which makes setting the "scope" to "serverOnly" redundant.',
         );
       });
+
       test('then the field is declared with the server only scope.', () {
         var definition = definitions.first as ClassDefinition;
         expect(
@@ -362,13 +372,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -402,13 +414,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -480,13 +494,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -523,13 +539,15 @@ void main() {
       ).build(),
     ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+    late var collector = CodeGenerationCollector();
+
+    setUpAll(() {
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
     test('then an error is collected.', () {
       expect(collector.errors, isNotEmpty);
@@ -640,4 +658,36 @@ void main() {
       );
     },
   );
+
+  group(
+      'Given a serverOnly table class with a declared id field and no scope set',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        serverOnly: true
+        table: example
+        fields:
+          id: UuidValue?, defaultPersist=random
+        ''',
+      ).build(),
+    ];
+
+    late var collector = CodeGenerationCollector();
+    late var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    late final definitions = analyzer.validateAll();
+
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    late final exampleClass = definitions.first as ModelClassDefinition;
+
+    test('then the scope of the id field is serverOnly.', () {
+      var idField = exampleClass.findField('id');
+      expect(idField?.scope, ModelFieldScopeDefinition.serverOnly);
+    });
+  });
 }

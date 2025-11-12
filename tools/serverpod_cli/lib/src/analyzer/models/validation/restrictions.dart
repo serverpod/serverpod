@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -228,7 +229,18 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateTableName(
+  List<SourceSpanSeverityException> validateTable(
+    String parentNodeName,
+    dynamic tableName,
+    SourceSpan? span,
+  ) {
+    return [
+      ..._validateTableName(parentNodeName, tableName, span),
+      ..._validateTableInheritedIdField(span),
+    ];
+  }
+
+  List<SourceSpanSeverityException> _validateTableName(
     String parentNodeName,
     dynamic tableName,
     SourceSpan? span,
@@ -947,41 +959,7 @@ class Restrictions {
     if (field == null) return errors;
 
     errors.addAll(_validateFieldDataType(field.type, span));
-
-    if ((classDefinition is ModelClassDefinition) &&
-        (classDefinition.tableName != null) &&
-        (parentNodeName == defaultPrimaryKeyName)) {
-      var typeClassName = field.type.className;
-      var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
-
-      if (!supportedTypes.contains(typeClassName)) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The type "$typeClassName" is not a valid id type. Valid options '
-            'are: ${supportedTypes.toSet().join(', ')}.',
-            span,
-          ),
-        );
-      } else if (!field.hasDefaults) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The type "$typeClassName" must have a default value. Use '
-            'either the "${Keyword.defaultModelKey}" key or the '
-            '"${Keyword.defaultPersistKey}" key to set it.',
-            span,
-          ),
-        );
-      } else if (field.type.className == 'int' && !field.type.nullable) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The type "$typeClassName" must be nullable for the field '
-            '"$parentNodeName". Use the "?" operator to make it nullable '
-            '(e.g. $parentNodeName: $typeClassName?).',
-            span,
-          ),
-        );
-      }
-    }
+    errors.addAll(_validateIdFieldDataType(field, span));
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -1011,6 +989,101 @@ class Restrictions {
         field: field,
         span: span,
       ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateTableInheritedIdField(
+    SourceSpan? span,
+  ) {
+    final model = documentDefinition;
+    if (model is! ModelClassDefinition || !model.isIdInherited) return [];
+
+    var errors = _validateIdFieldDataType(model.idField, span);
+
+    if (model.idField.defaultModelValue != null) {
+      var defaultModelErrors = DefaultValueRestriction(
+        Keyword.defaultKey,
+        documentDefinition,
+      ).validate(model.idField.name, model.idField.defaultModelValue, span);
+      errors.addAll(defaultModelErrors);
+    }
+
+    if (model.idField.defaultPersistValue != null) {
+      var defaultPersistErrors = DefaultValueRestriction(
+        Keyword.defaultKey,
+        documentDefinition,
+      ).validate(model.idField.name, model.idField.defaultPersistValue, span);
+      errors.addAll(defaultPersistErrors);
+    }
+
+    errors = [
+      for (var error in errors)
+        SourceSpanSeverityException(
+          'The "table" property is not allowed due to invalid "id" field '
+          'defined on parent classes. ${error.message}',
+          error.span,
+        )
+    ];
+
+    if (model.idField.scope != ModelFieldScopeDefinition.all &&
+        !(model.serverOnly &&
+            model.idField.scope == ModelFieldScopeDefinition.serverOnly)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The "table" property is not allowed when parent classes set the '
+          '${Keyword.scope} of the "id" field to a value other than "all".',
+          span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateIdFieldDataType(
+    SerializableModelFieldDefinition field,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+    if ((classDefinition is! ModelClassDefinition) ||
+        (classDefinition.tableName == null) ||
+        (field.name != defaultPrimaryKeyName)) {
+      return [];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var typeClassName = field.type.className;
+    var supportedTypes = SupportedIdType.all.map((e) => e.type.className);
+
+    if (!supportedTypes.contains(typeClassName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The type "$typeClassName" is not a valid id type. Valid options '
+          'are: ${supportedTypes.toSet().join(', ')}.',
+          span,
+        ),
+      );
+    } else if (!field.hasDefaults) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The type "$typeClassName" must have a default value. Use '
+          'either the "${Keyword.defaultModelKey}" key or the '
+          '"${Keyword.defaultPersistKey}" key to set it.',
+          span,
+        ),
+      );
+    } else if (field.type.className == 'int' && !field.type.nullable) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The type "$typeClassName" must be nullable for the field '
+          '"${field.name}". Use the "?" operator to make it nullable '
+          '(e.g. ${field.name}: $typeClassName?).',
+          span,
+        ),
+      );
     }
 
     return errors;

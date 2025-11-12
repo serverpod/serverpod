@@ -3,33 +3,41 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/profile.dart';
 
-/// Base endpoint for user profile management.
-///
-/// To expose these endpoint methods on your server, extend this class in a
-/// concrete class.
-/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-abstract class UserProfileBaseEndpoint extends Endpoint {
+/// Endpoint for read-only access to user profile information.
+class UserProfileInfoEndpoint extends Endpoint {
+  /// The user profiles instance used by the endpoint.
+  ///
+  /// Defaults to a new [UserProfiles] instance with the default configuration.
+  final UserProfiles userProfiles = const UserProfiles();
+
   @override
   bool get requireLogin => true;
 
   /// Returns the user profile of the current user.
   Future<UserProfileModel> get(final Session session) async {
-    final authUserId = (await session.authenticated)!.authUserId;
+    final authUserId = session.authenticated!.authUserId;
 
-    final profile = await UserProfiles.findUserProfileByUserId(
+    final profile = await userProfiles.findUserProfileByUserId(
       session,
       authUserId,
     );
 
     return profile;
   }
+}
 
-  /// Removes the users uploaded image, replacing it with the default user
-  /// image.
+/// Base endpoint for user profile management.
+///
+/// To expose these endpoint methods on your server, extend this class in a
+/// concrete class on your server.
+abstract class UserProfileEditBaseEndpoint extends UserProfileInfoEndpoint {
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
   Future<UserProfileModel> removeUserImage(final Session session) async {
-    final userId = (await session.authenticated)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
-    return UserProfiles.setDefaultUserImage(session, userId);
+    return userProfiles.removeUserImage(session, userId);
   }
 
   /// Sets a new user image for the signed in user.
@@ -37,9 +45,9 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final ByteData image,
   ) async {
-    final userId = (await session.authenticated)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
-    return UserProfiles.setUserImageFromBytes(
+    return userProfiles.setUserImageFromBytes(
       session,
       userId,
       image.buffer.asUint8List(),
@@ -51,9 +59,9 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final String? userName,
   ) async {
-    final userId = (await session.authenticated)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
-    return UserProfiles.changeUserName(session, userId, userName);
+    return userProfiles.changeUserName(session, userId, userName);
   }
 
   /// Changes the full name of a user.
@@ -61,8 +69,8 @@ abstract class UserProfileBaseEndpoint extends Endpoint {
     final Session session,
     final String? fullName,
   ) async {
-    final userId = (await session.authenticated)!.authUserId;
+    final userId = session.authenticated!.authUserId;
 
-    return UserProfiles.changeFullName(session, userId, fullName);
+    return userProfiles.changeFullName(session, userId, fullName);
   }
 }

@@ -4,9 +4,12 @@ import 'package:serverpod_auth_core_server/session.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../test_utils.dart';
 
 void main() {
+  final authSessions = AuthSessions(
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
   withServerpod('Given an auth session for a user,',
       (final sessionBuilder, final endpoints) {
     late Session session;
@@ -16,10 +19,10 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
       // ignore: unused_result
-      await AuthSessions.createSession(
+      await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -31,7 +34,7 @@ void main() {
     test(
       'when calling `listSessions` for the user, then it is returned.',
       () async {
-        final sessions = await AuthSessions.listSessions(
+        final sessions = await authSessions.listSessions(
           session,
           authUserId: authUserId,
         );
@@ -46,7 +49,7 @@ void main() {
     test(
       'when calling `listSessions` for another user, then nothing is returned.',
       () async {
-        final sessions = await AuthSessions.listSessions(
+        final sessions = await authSessions.listSessions(
           session,
           authUserId: const Uuid().v4obj(),
         );

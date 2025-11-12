@@ -6,6 +6,7 @@ import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -23,8 +24,9 @@ class WebServer {
 
   int? _actualPort;
 
-  /// Router for handling incoming requests.
-  final router = ServerpodRouter();
+  late final _app = RelicApp()
+    ..inject(_ReportExceptionMiddleware(this))
+    ..inject(_SessionMiddleware(serverpod.server));
 
   RelicServer? _server;
 
@@ -53,12 +55,23 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds a [Route] to the server, together with a path that defines how
+  /// Adds [route] to the server, together with a [path] that defines how
   /// calls are routed.
-  void addRoute(Route route, String matchPath) {
-    route._matchPath = matchPath;
-    router.add(route);
-  }
+  void addRoute(Route route, [String path = '/']) =>
+      _app.group(path).inject(route);
+
+  /// Adds a [Middleware] to the server for all routes below [path].
+  void addMiddleware(Middleware middleware, String path) =>
+      _app.use(path, middleware);
+
+  /// Sets a fallback [route] to use if no other registered [Route] matches
+  /// a request.
+  ///
+  /// If not set, default behavior is to return "404 Not Found".
+  set fallbackRoute(Route route) => _app.fallback = route.asHandler;
+
+  /// Returns true if the webserver has any routes registered.
+  bool get hasRoutes => !_app.isEmpty;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -71,101 +84,24 @@ class WebServer {
     }
 
     try {
-      var context = _securityContext;
-      final server = await serve(
-        _handleRequest,
-        InternetAddress.anyIPv6,
-        _config.port,
-        context: context,
+      final server = await _app.serve(
+        address: InternetAddress.anyIPv6,
+        port: _config.port,
+        securityContext: _securityContext,
       );
       _server = server;
-      _actualPort = (server.adapter as IOAdapter).port;
+      _actualPort = server.port;
       _running = true;
 
       var scheme = _securityContext != null ? 'https' : 'http';
       var host = _config.publicHost;
-      var port = _actualPort;
-      logInfo('Webserver listening on $scheme://$host:$port');
+      logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
       await _reportException(e, stackTrace,
-          message: 'Failed to bind socket, '
-              'port $port may already be in use.');
+          message:
+              'Failed to bind socket, port ${_config.port} may already be in use.');
     }
     return _running;
-  }
-
-  FutureOr<HandledContext> _handleRequest(NewContext context) async {
-    final request = context.request;
-
-    var headers = Headers.empty();
-    if (serverpod.runMode == ServerpodRunMode.production) {
-      headers = headers.transform((mh) {
-        mh.strictTransportSecurity = StrictTransportSecurityHeader(
-          maxAge: 63072000,
-          includeSubDomains: true,
-          preload: true,
-        );
-      });
-    }
-
-    Uri uri;
-    try {
-      uri = request.requestedUri;
-    } catch (e) {
-      logDebug('Malformed call, invalid uri. Client IP: ${request.remoteInfo}');
-      return context.withResponse(Response.badRequest());
-    }
-
-    String? authenticationKey;
-    for (var cookie in request.headers.cookie?.cookies ?? const <Cookie>[]) {
-      if (cookie.name == 'auth') {
-        authenticationKey = cookie.value;
-      }
-    }
-
-    var queryParameters = request.url.queryParameters;
-    authenticationKey ??= queryParameters['auth'];
-
-    WebCallSession session = WebCallSession(
-      server: serverpod.server,
-      endpoint: uri.path,
-      authenticationKey: authenticationKey,
-      remoteInfo: request.remoteInfo,
-    );
-
-    final match = router.lookup(
-      request.method.toMethod(),
-      uri.path,
-    );
-    if (match != null) {
-      final route = match.value;
-      return await _handleRouteCall(route, session, context);
-    }
-
-    // No matching patch found
-    return context.withResponse(Response.notFound());
-  }
-
-  Future<HandledContext> _handleRouteCall(
-    Route route,
-    Session session,
-    NewContext context,
-  ) async {
-    // TODO: route.setHeaders(request.response.headers);
-    try {
-      return await route.handleCall(session, context);
-    } catch (e, stackTrace) {
-      final request = context.request;
-      await _reportException(
-        e,
-        stackTrace,
-        space: OriginSpace.application,
-        session: session,
-        request: request,
-      );
-
-      return context.withResponse(Response.internalServerError());
-    }
   }
 
   Future<void> _reportException(
@@ -226,55 +162,101 @@ class WebServer {
   }
 }
 
-/// Defines HTTP call methods for routes.
-enum RouteMethod {
-  /// HTTP get.
-  get,
+class _SessionMiddleware extends MiddlewareObject {
+  final Server _server;
 
-  /// HTTP post.
-  post,
+  const _SessionMiddleware(this._server);
+
+  @override
+  Handler call(Handler next) {
+    return (req) async {
+      final authenticationKey = unwrapAuthHeaderValue(
+        req.headers.authorization?.headerValue,
+      );
+      final session = await SessionInternalMethods.createWebCallSession(
+        server: _server,
+        endpoint: req.requestedUri.path,
+        authenticationKey: authenticationKey,
+        remoteInfo: req.remoteInfo,
+      );
+      _sessionProperty[req] = session;
+      try {
+        return await next(req);
+      } finally {
+        await session.close();
+      }
+    };
+  }
+}
+
+class _ReportExceptionMiddleware extends MiddlewareObject {
+  final WebServer _webServer;
+
+  const _ReportExceptionMiddleware(this._webServer);
+
+  @override
+  Handler call(Handler next) {
+    return (req) async {
+      try {
+        return await next(req);
+      } catch (e, stackTrace) {
+        await _webServer._reportException(
+          e,
+          stackTrace,
+          space: OriginSpace.application,
+          session: req.sessionOrNull,
+          request: req,
+        );
+        return Response.internalServerError();
+      }
+    };
+  }
+}
+
+final _sessionProperty = ContextProperty<Session>();
+
+/// [Session] related extension methods for [Context].
+extension SessionEx on Request {
+  /// The session associated with this request context.
+  ///
+  /// Throws, if no session has been initiated.
+  Session get session => _sessionProperty[this];
+
+  /// The session associated with this request context, if any.
+  ///
+  /// Safe to use, even before session is initiated.
+  Session? get sessionOrNull => _sessionProperty.getOrNull(this);
 }
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle
 /// a call and generate an appropriate response by manipulating the
 /// [Request] object. You override [Route], or more likely it's subclass
 /// [WidgetRoute] to create your own custom routes in your server.
-abstract class Route {
-  /// The method this route will respond to, i.e. HTTP get or post.
-  final RouteMethod method;
-  String? _matchPath;
+abstract class Route extends HandlerObject {
+  /// The methods this route will respond to, i.e. HTTP get or post.
+  final Set<Method> methods;
+
+  /// The suffix path this route will respond to.
+  ///
+  /// The complete path is determined by where the route is added, ie.
+  /// the path given to [WebServer.addRoute].
+  final String path;
 
   /// Creates a new [Route].
-  Route({this.method = RouteMethod.get});
+  Route({this.methods = const {Method.get}, this.path = '/'});
+
+  @override
+  void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
+
+  /// Handles a call to this route, by extracting [Session] from context and
+  /// forwarding to [handleCall].
+  @override
+  FutureOr<Result> call(Request context) {
+    return handleCall(context.session, context);
+  }
 
   /// Handles a call to this route.
-  FutureOr<HandledContext> handleCall(Session session, NewContext context);
-
-  // TODO: May want to create another abstraction layer here, to handle other
-  // types of responses too. Or at least clarify the naming of the method.
-
-  /// Returns the body of the request, assuming it is standard URL encoded form
-  /// post request.
-  static Future<Map<String, String>> getBody(Request request) async {
-    var body = await request.readAsString();
-
-    var params = <String, String>{};
-
-    var encodedParams = body.split('&');
-    for (var encodedParam in encodedParams) {
-      var comps = encodedParam.split('=');
-      if (comps.length != 2) {
-        continue;
-      }
-
-      var name = Uri.decodeQueryComponent(comps[0]);
-      var value = Uri.decodeQueryComponent(comps[1]);
-
-      params[name] = value;
-    }
-
-    return params;
-  }
+  FutureOr<Result> handleCall(Session session, Request context);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
@@ -285,15 +267,15 @@ abstract class WidgetRoute extends Route {
   Future<WebWidget> build(Session session, Request request);
 
   @override
-  FutureOr<HandledContext> handleCall(
+  FutureOr<Result> handleCall(
     Session session,
-    NewContext context,
+    Request req,
   ) async {
-    var widget = await build(session, context.request);
+    var widget = await build(session, req);
 
     if (widget is RedirectWidget) {
       var uri = Uri.parse(widget.url);
-      return context.withResponse(Response.seeOther(uri));
+      return Response.seeOther(uri);
     }
 
     final mimeType = widget is JsonWidget ? MimeType.json : MimeType.html;
@@ -305,51 +287,9 @@ abstract class WidgetRoute extends Route {
       ),
     );
 
-    return context.withResponse(Response.ok(
+    return Response.ok(
       body: Body.fromString(widget.toString(), mimeType: mimeType),
       headers: headers,
-    ));
+    );
   }
-}
-
-/// A [ServerpodRouter] is a collection of [Route]s that can be used to
-/// handle incoming requests. It uses the [relic] package to match routes.
-extension type ServerpodRouter._(Router<Route> _router) {
-  /// Creates a new [ServerpodRouter].
-  ServerpodRouter() : _router = Router<Route>();
-
-  /// Adds a [Route] to the router.
-  void add(Route route) =>
-      _router.add(route.method.toMethod(), route._matchPath!, route);
-
-  /// Looks up a [Route] in the router based on the HTTP method and path.
-  LookupResult<Route>? lookup(Method method, String path) =>
-      _router.lookup(method, path);
-
-  /// Checks if the router is empty.
-  bool get isEmpty => _router.isEmpty;
-}
-
-// Temporary helper method
-extension on RouteMethod {
-  Method toMethod() => switch (this) {
-        RouteMethod.get => Method.get,
-        RouteMethod.post => Method.post,
-      };
-}
-
-// Temporary helper method
-extension on RequestMethod {
-  Method toMethod() => switch (this) {
-        RequestMethod.get => Method.get,
-        RequestMethod.head => Method.head,
-        RequestMethod.post => Method.post,
-        RequestMethod.put => Method.put,
-        RequestMethod.delete => Method.delete,
-        RequestMethod.patch => Method.patch,
-        RequestMethod.options => Method.options,
-        RequestMethod.trace => Method.trace,
-        RequestMethod.connect => Method.connect,
-        _ => throw UnimplementedError(),
-      };
 }

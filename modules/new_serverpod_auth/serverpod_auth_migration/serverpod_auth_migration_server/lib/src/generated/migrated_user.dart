@@ -95,7 +95,7 @@ abstract class MigratedUser
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id};
+    return {};
   }
 
   static MigratedUserInclude include({

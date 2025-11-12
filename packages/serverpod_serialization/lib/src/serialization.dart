@@ -24,39 +24,6 @@ class DeserializationTypeNotFoundException implements Exception {
   String toString() => message;
 }
 
-/// **DEPRECATED**: This class is deprecated and will be removed in version 2.1.
-/// Please implement the [SerializableModel] interface instead for creating serializable
-/// models.
-///
-/// **Migration Guide**:
-/// - Replace `extends SerializableEntity` with `implements SerializableModel`
-///   in your model classes.
-///
-/// ```dart
-/// // Before:
-/// class CustomClass extends SerializableEntity {
-///   // Your code here
-/// }
-///
-/// // After:
-/// class CustomClass implements SerializableModel {
-///   // Your code here
-/// }
-/// ```
-///
-/// For more details, refer to the
-/// [migration documentation](https://docs.serverpod.dev/next/upgrading/upgrade-to-two)
-@Deprecated(
-  'This class is deprecated and will be removed in version 2.1. '
-  'Please implement SerializableModel instead.',
-)
-abstract mixin class SerializableEntity implements SerializableModel {
-  @override
-  String toString() {
-    return SerializationManager.encode(this);
-  }
-}
-
 /// The [SerializableModel] is the base interface for all serializable objects in
 /// Serverpod, except primitives.
 abstract interface class SerializableModel {
@@ -98,7 +65,6 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
-    //TODO: all the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
     } else if (_isNullableType<double>(t)) {
@@ -247,7 +213,6 @@ abstract class SerializationManager {
     return JsonEncoder.withIndent(
       formatted ? '  ' : null,
       (nonEncodable) {
-        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {

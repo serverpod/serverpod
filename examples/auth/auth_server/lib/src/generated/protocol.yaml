@@ -1,0 +1,18 @@
+appleIDP:
+  - login:
+emailIDP:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+googleIDP:
+  - login:
+passkeyIDP:
+  - createChallenge:
+  - register:
+  - login:
+greeting:
+  - hello:

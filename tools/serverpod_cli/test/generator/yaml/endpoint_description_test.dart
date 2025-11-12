@@ -202,4 +202,187 @@ example3:
 '''),
     );
   });
+
+  test(
+      'Given protocol definition with abstract endpoint when generating protocol files then the protocol.yaml does not contain the abstract endpoint',
+      () {
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        EndpointDefinitionBuilder()
+            .withClassName('BaseAbstractEndpoint')
+            .withName('baseAbstract')
+            .withIsAbstract()
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName('testMethod')
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    expect(codeMap[expectedFileName], isEmpty);
+  });
+
+  test(
+      'Given protocol definition with abstract endpoint and concrete implementation when generating protocol files then the protocol.yaml only contains concrete endpoint',
+      () {
+    var abstractEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseAbstractEndpoint')
+        .withName('baseAbstract')
+        .withIsAbstract()
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('testMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        abstractEndpoint,
+        EndpointDefinitionBuilder()
+            .withClassName('ConcreteEndpoint')
+            .withName('concrete')
+            .withExtends(abstractEndpoint)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName('testMethod')
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    expect(
+      codeMap[expectedFileName],
+      equals('''
+concrete:
+  - testMethod:
+'''),
+    );
+  });
+
+  test(
+      'Given protocol definition with concrete endpoint that extends another concrete endpoint when generating protocol files then the protocol.yaml contains both endpoints',
+      () {
+    var baseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseEndpoint')
+        .withName('base')
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('baseMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        baseEndpoint,
+        EndpointDefinitionBuilder()
+            .withClassName('SubclassEndpoint')
+            .withName('subclass')
+            .withExtends(baseEndpoint)
+            .withMethods([
+          MethodDefinitionBuilder()
+              .withName('subclassMethod')
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    expect(
+      codeMap[expectedFileName],
+      equals('''
+base:
+  - baseMethod:
+subclass:
+  - subclassMethod:
+'''),
+    );
+  });
+
+  test(
+      'Given protocol definition with abstract > concrete > abstract subclass > concrete subclass endpoint hierarchy when generating protocol files then the protocol.yaml contains only concrete endpoints and methods',
+      () {
+    var abstractBaseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseAbstractEndpoint')
+        .withName('abstractBase')
+        .withIsAbstract()
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('abstractBaseMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var concreteBaseEndpoint = EndpointDefinitionBuilder()
+        .withClassName('BaseEndpoint')
+        .withName('concreteBase')
+        .withExtends(abstractBaseEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('concreteBaseMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var abstractSubClassEndpoint = EndpointDefinitionBuilder()
+        .withClassName('AbstractSubClassEndpoint')
+        .withName('abstractSubClass')
+        .withIsAbstract()
+        .withExtends(concreteBaseEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('abstractSubClassMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var concreteSubclassEndpoint = EndpointDefinitionBuilder()
+        .withClassName('SubclassEndpoint')
+        .withName('concreteSubclass')
+        .withExtends(abstractSubClassEndpoint)
+        .withMethods([
+      MethodDefinitionBuilder()
+          .withName('concreteSubclassMethod')
+          .buildMethodCallDefinition(),
+    ]).build();
+
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [
+        abstractBaseEndpoint,
+        concreteBaseEndpoint,
+        abstractSubClassEndpoint,
+        concreteSubclassEndpoint,
+      ],
+      models: [],
+    );
+
+    var codeMap = generator.generateProtocolCode(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    expect(
+      codeMap[expectedFileName],
+      equals('''
+concreteBase:
+  - concreteBaseMethod:
+concreteSubclass:
+  - concreteSubclassMethod:
+'''),
+    );
+  });
 }

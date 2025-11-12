@@ -54,7 +54,7 @@ class UserProfileConfig {
   final AfterUserProfileUpdatedHandler? onAfterUserProfileUpdated;
 
   /// Create a new user profile configuration.
-  UserProfileConfig({
+  const UserProfileConfig({
     this.userImageSize = 256,
     this.userInfoCacheLifetime = const Duration(minutes: 1),
     this.userImageGenerator = defaultUserImageGenerator,
@@ -66,15 +66,13 @@ class UserProfileConfig {
     this.onAfterUserProfileUpdated,
     this.imageFetchFunc = _defaultImageFetch,
   });
-
-  /// The current user profile module configuration.
-  static UserProfileConfig current = UserProfileConfig();
 }
 
 /// Generates a default user image (avatar) for a user who hasn't uploaded a
 /// user image.
 typedef UserImageGenerator = Future<Image> Function(
   UserProfileModel userProfile,
+  int imageSize,
 );
 
 /// Defines the format of stored user images.

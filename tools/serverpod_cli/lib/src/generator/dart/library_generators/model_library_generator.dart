@@ -75,6 +75,7 @@ class SerializableModelLibraryGenerator {
             inheritedFields: [],
             isParentClass: false,
             hasImplicitClass: false,
+            isImmutable: false,
           ),
         ]);
       },
@@ -139,6 +140,7 @@ class SerializableModelLibraryGenerator {
               subDirParts: classDefinition.subDirParts,
               inheritedFields: classDefinition.inheritedFields,
               isParentClass: classDefinition.isParentClass,
+              isImmutable: classDefinition.isImmutable,
               hasImplicitClass: requiresImplicitClass,
             ),
           if (requiresImplicitClass)
@@ -246,6 +248,7 @@ class SerializableModelLibraryGenerator {
         classDefinition.fields,
         null,
         classDefinition.subDirParts,
+        false,
       ));
 
       classBuilder.constructors.addAll([
@@ -255,6 +258,7 @@ class SerializableModelLibraryGenerator {
           isParentClass: false,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: [],
+          isImmutable: false,
         ),
         _buildModelClassFactoryConstructor(
           className,
@@ -262,6 +266,7 @@ class SerializableModelLibraryGenerator {
           null,
           inheritedFields: [],
           subDirParts: classDefinition.subDirParts,
+          isImmutable: false,
         ),
         _buildModelClassFromJsonConstructor(
           className,
@@ -277,6 +282,7 @@ class SerializableModelLibraryGenerator {
         shouldOverrideAbstractCopyWith: () => false,
         subDirParts: classDefinition.subDirParts,
         inheritedFields: [],
+        isIdInherited: false,
       ));
 
       classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
@@ -284,7 +290,8 @@ class SerializableModelLibraryGenerator {
       // Serialization for database and everything
       if (serverCode) {
         classBuilder.methods.add(
-          _buildModelClassToJsonForProtocolMethod(fields),
+          _buildModelClassToJsonForProtocolMethod(
+              fields, classDefinition.serverOnly),
         );
       }
 
@@ -347,12 +354,13 @@ class SerializableModelLibraryGenerator {
         classBuilder.fields.add(_buildModelClassDBField(className));
 
         classBuilder.fields.add(Field(
-          (f) => f
-            ..name = 'id'
-            ..type = idTypeReference
-            ..annotations.add(
-              refer('override'),
-            ),
+          (f) {
+            f
+              ..name = 'id'
+              ..type = idTypeReference
+              ..annotations.add(refer('override'));
+            if (classDefinition.isImmutable) f.modifier = FieldModifier.final$;
+          },
         ));
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
@@ -370,6 +378,7 @@ class SerializableModelLibraryGenerator {
         classDefinition.fields,
         tableName,
         classDefinition.subDirParts,
+        classDefinition.isImmutable,
       ));
 
       classBuilder.constructors.addAll([
@@ -379,6 +388,7 @@ class SerializableModelLibraryGenerator {
           isParentClass: classDefinition.isParentClass,
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
+          isImmutable: classDefinition.isImmutable,
         ),
         if (!classDefinition.isParentClass)
           _buildModelClassFactoryConstructor(
@@ -387,6 +397,7 @@ class SerializableModelLibraryGenerator {
             tableName,
             inheritedFields: classDefinition.inheritedFields,
             subDirParts: classDefinition.subDirParts,
+            isImmutable: classDefinition.isImmutable,
           ),
         if (!classDefinition.isSealed)
           _buildModelClassFromJsonConstructor(
@@ -405,6 +416,7 @@ class SerializableModelLibraryGenerator {
               _shouldOverrideAbstractCopyWithMethod(classDefinition),
           subDirParts: classDefinition.subDirParts,
           inheritedFields: classDefinition.inheritedFields,
+          isIdInherited: classDefinition.isIdInherited,
         ));
       } else if (!classDefinition.isSealed) {
         classBuilder.methods.add(_buildCopyWithMethod(
@@ -415,6 +427,15 @@ class SerializableModelLibraryGenerator {
           hasImplicitClass: hasImplicitClass,
         ));
       }
+
+      // Immutability
+      if (classDefinition.isImmutable) {
+        classBuilder.methods.add(_buildEqualOperator(classDefinition, fields));
+        classBuilder.methods.add(_buildHashCodeMethod(classDefinition, fields));
+        classBuilder.annotations
+            .add(refer('immutable', serverpodUrl(serverCode)));
+      }
+
       // Serialization
 
       if (!classDefinition.isSealed) {
@@ -425,7 +446,8 @@ class SerializableModelLibraryGenerator {
       if (serverCode) {
         if (!classDefinition.isSealed) {
           classBuilder.methods.add(
-            _buildModelClassToJsonForProtocolMethod(fields),
+            _buildModelClassToJsonForProtocolMethod(
+                fields, classDefinition.serverOnly),
           );
         }
 
@@ -487,6 +509,7 @@ class SerializableModelLibraryGenerator {
     required List<SerializableModelFieldDefinition> inheritedFields,
     required bool isParentClass,
     required bool hasImplicitClass,
+    required bool isImmutable,
   }) {
     return Class((classBuilder) {
       classBuilder
@@ -498,6 +521,7 @@ class SerializableModelLibraryGenerator {
             tableName,
             subDirParts: subDirParts,
             inheritedFields: inheritedFields,
+            isImmutable: isImmutable,
           ),
         )
         ..methods.add(_buildCopyWithMethod(
@@ -552,7 +576,10 @@ class SerializableModelLibraryGenerator {
                 classDefinition.tableName,
                 setAsToThis: false,
                 subDirParts: classDefinition.subDirParts,
-                inheritedFields: classDefinition.inheritedFields,
+                inheritedFields: [
+                  if (classDefinition.isIdInherited) classDefinition.idField,
+                  ...classDefinition.inheritedFields
+                ],
               ),
             )
             ..optionalParameters.addAll(hiddenFields.map((field) {
@@ -639,6 +666,7 @@ class SerializableModelLibraryGenerator {
     required bool Function() shouldOverrideAbstractCopyWith,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
+    required bool isIdInherited,
   }) {
     return Method((methodBuilder) {
       if (shouldOverrideAbstractCopyWith()) {
@@ -656,6 +684,7 @@ class SerializableModelLibraryGenerator {
             fields,
             subDirParts: subDirParts,
             inheritedFields: inheritedFields,
+            isIdInherited: isIdInherited,
           ),
         )
         ..returns = refer(className);
@@ -769,6 +798,103 @@ class SerializableModelLibraryGenerator {
       ...visibleAssignments,
       ...hiddenAssignments,
     };
+  }
+
+  Method _buildEqualOperator(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.name = 'operator ==';
+        m.annotations.add(refer('override'));
+        m.requiredParameters.add(Parameter((p) {
+          p
+            ..name = 'other'
+            ..named = false
+            ..type = refer('Object');
+        }));
+
+        var comparisons = [
+          refer('other').property('runtimeType').equalTo(refer('runtimeType')),
+          refer('other').isA(refer(classDefinition.className)),
+          ...fields.map((field) {
+            var name = field.name;
+            var thisProperty = refer(name);
+            var otherProperty = refer('other').property(name);
+
+            if (field.type.isCollectionType) {
+              return refer('DeepCollectionEquality', serverpodUrl(serverCode))
+                  .constInstance([])
+                  .property('equals')
+                  .call([otherProperty, thisProperty]);
+            }
+
+            return _wrapWithParentheses(
+              refer('identical').call([otherProperty, thisProperty]).or(
+                  otherProperty.equalTo(thisProperty)),
+            );
+          })
+        ];
+
+        var comparisonCode = refer('identical')
+            .call([refer('other'), refer('this')]).or(
+                comparisons.reduce((value, nextField) => value.and(nextField)));
+
+        m.returns = refer('bool');
+        m.body = Block.of([
+          const Code('return '),
+          comparisonCode.code,
+          const Code(';'),
+        ]);
+      },
+    );
+  }
+
+  Expression _wrapWithParentheses(Expression expr) {
+    return CodeExpression(Code('(${expr.accept(DartEmitter())})'));
+  }
+
+  Method _buildHashCodeMethod(
+    ClassDefinition classDefinition,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.name = 'hashCode';
+        m.type = MethodType.getter;
+        m.annotations.add(refer('override'));
+
+        var expressions = [
+          refer('runtimeType'),
+          ...fields.map((field) {
+            if (field.type.isCollectionType) {
+              return refer('DeepCollectionEquality', serverpodUrl(serverCode))
+                  .constInstance([])
+                  .property('hash')
+                  .call([refer(field.name)]);
+            }
+
+            return refer(field.name);
+          })
+        ];
+
+        var hashCode = switch (expressions.length) {
+          1 => expressions.first.property('hashCode'),
+          <= 20 => refer('Object').property('hash').call(expressions),
+          _ => refer('Object').property('hashAll').call([
+              literalList(expressions),
+            ]),
+        };
+
+        m.returns = refer('int');
+        m.body = Block.of([
+          const Code('return '),
+          hashCode.code,
+          const Code(';'),
+        ]);
+      },
+    );
   }
 
   Expression _buildDeepCloneTree(
@@ -1142,6 +1268,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassToJsonForProtocolMethod(
     Iterable<SerializableModelFieldDefinition> fields,
+    bool isServerOnlyClass,
   ) {
     return Method(
       (m) {
@@ -1149,8 +1276,8 @@ class SerializableModelLibraryGenerator {
         m.name = _toJsonForProtocolMethodName;
         m.annotations.add(refer('override'));
 
-        var filteredFields =
-            fields.where((field) => field.shouldSerializeField(serverCode));
+        var filteredFields = fields.where((field) =>
+            field.shouldSerializeField(serverCode) && !isServerOnlyClass);
 
         m.body = _createToJsonBodyFromFields(
           filteredFields,
@@ -1394,6 +1521,7 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required bool isParentClass,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
@@ -1409,6 +1537,10 @@ class SerializableModelLibraryGenerator {
         subDirParts: subDirParts,
         inheritedFields: inheritedFields,
       ));
+
+      if (isImmutable) {
+        c.constant = true;
+      }
 
       var classFields =
           fields.where((field) => !inheritedFields.contains(field)).toList();
@@ -1446,6 +1578,7 @@ class SerializableModelLibraryGenerator {
     String className,
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
@@ -1459,6 +1592,10 @@ class SerializableModelLibraryGenerator {
         inheritedFields: inheritedFields,
       ));
 
+      if (isImmutable) {
+        c.constant = true;
+      }
+
       c.redirect = refer('_${className}Impl');
     });
   }
@@ -1466,6 +1603,7 @@ class SerializableModelLibraryGenerator {
   Constructor _buildModelImplClassConstructor(
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
+    required bool isImmutable,
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
   }) {
@@ -1486,6 +1624,10 @@ class SerializableModelLibraryGenerator {
           field.name: refer(field.name),
         };
       });
+
+      if (isImmutable) {
+        c.constant = true;
+      }
 
       c.initializers.add(refer('super._').call([], namedParams).code);
     });
@@ -1615,6 +1757,7 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields, {
     required List<String> subDirParts,
     required List<SerializableModelFieldDefinition> inheritedFields,
+    required bool isIdInherited,
   }) {
     return fields
         .where((field) => field.shouldIncludeField(serverCode))
@@ -1626,7 +1769,8 @@ class SerializableModelLibraryGenerator {
         config: config,
       );
 
-      var isInheritedField = inheritedFields.contains(field);
+      var isInheritedField = inheritedFields.contains(field) ||
+          (field.name == defaultPrimaryKeyName && isIdInherited);
 
       var type = field.type.nullable && isInheritedField
           ? refer('Object?')
@@ -1644,7 +1788,8 @@ class SerializableModelLibraryGenerator {
   List<Field> _buildModelClassFields(
       List<SerializableModelFieldDefinition> fields,
       String? tableName,
-      List<String> subDirParts) {
+      List<String> subDirParts,
+      bool isClassImmutable) {
     List<Field> modelClassFields = [];
     var classFields = fields
         .where((f) =>
@@ -1665,6 +1810,9 @@ class SerializableModelLibraryGenerator {
           ..docs.addAll(field.documentation ?? []);
         if (field.hiddenSerializableField(serverCode)) {
           f.modifier = FieldModifier.final$;
+        } else {
+          f.modifier =
+              isClassImmutable ? FieldModifier.final$ : FieldModifier.var$;
         }
       }));
     }

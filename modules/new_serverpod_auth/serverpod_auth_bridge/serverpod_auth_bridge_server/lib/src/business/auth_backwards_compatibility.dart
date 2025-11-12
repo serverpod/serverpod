@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_bridge_server/src/business/legacy_email_password_validator.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
@@ -9,8 +10,11 @@ import 'package:serverpod_auth_idp_server/providers/google.dart';
 abstract final class AuthBackwardsCompatibility {
   /// The configuration used for the backwards compatibility.
   ///
-  /// Should match the previous `AuthConfig`.
-  static var config = AuthBackwardsCompatibilityConfig();
+  /// Should match the previous `AuthServices`.
+  static AuthBackwardsCompatibilityConfig get config =>
+      AuthBackwardsCompatibilityConfig(
+        emailIDP: AuthServices.instance.emailIDP,
+      );
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
   /// for a `EmailAccount`.
@@ -69,20 +73,20 @@ abstract final class AuthBackwardsCompatibility {
     await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
       final transaction,
     ) async {
-      final emailAccountInfo = await EmailAccounts.admin.findAccount(
+      final emailAccount = await config.emailIDP.admin.findAccount(
         session,
         email: email,
         transaction: transaction,
       );
 
-      if (emailAccountInfo == null || emailAccountInfo.hasPassword) {
+      if (emailAccount == null || emailAccount.hasPassword) {
         return;
       }
 
       final passwordIsValid = await isLegacyPasswordValid(
         session,
         email: email,
-        emailAccountId: emailAccountInfo.emailAccountId,
+        emailAccountId: emailAccount.id!,
         password: password,
         transaction: transaction,
       );
@@ -95,13 +99,13 @@ abstract final class AuthBackwardsCompatibility {
 
       await clearLegacyPassword(
         session,
-        emailAccountId: emailAccountInfo.emailAccountId,
+        emailAccountId: emailAccount.id!,
         transaction: transaction,
       );
 
       // The account was already migrated without a password, and now we need to
       // set the password to the correct one from the old system.
-      await EmailAccounts.admin.setPassword(
+      await config.emailIDP.admin.setPassword(
         session,
         email: email,
         password: password,
@@ -204,11 +208,14 @@ abstract final class AuthBackwardsCompatibility {
   static Future<void> importGoogleAccount(
     final Session session, {
     required final String idToken,
+    required final String? accessToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails = await GoogleAccounts.admin.fetchAccountDetails(
+    final accountDetails =
+        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
       session,
       idToken: idToken,
+      accessToken: accessToken,
     );
 
     final legacyUserIdentifier =
@@ -223,7 +230,7 @@ abstract final class AuthBackwardsCompatibility {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await GoogleAccounts.admin.linkGoogleAuthentication(
+        await AuthServices.instance.googleIDP.admin.linkGoogleAuthentication(
           session,
           authUserId: legacyUserIdentifier.authUserId,
           accountDetails: accountDetails,

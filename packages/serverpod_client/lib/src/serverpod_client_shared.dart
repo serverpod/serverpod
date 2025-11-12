@@ -138,7 +138,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// The [SerializationManager] used to serialize objects sent to the server.
   final SerializationManager serializationManager;
 
-  // TODO: Deprecate after the new authentication system is in place.
+  // TODO(https://github.com/serverpod/serverpod/issues/4105):
+  // Deprecate after the new authentication system is in place.
   /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
@@ -240,7 +241,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // TODO: Remove this backwards compatibility assignment.
+    // TODO(https://github.com/serverpod/serverpod/issues/4105):
+    // Remove this backwards compatibility assignment.
     authKeyProvider ??= authenticationKeyManager;
   }
 
@@ -675,6 +677,22 @@ abstract class EndpointCaller {
     Map<String, Stream> streams, {
     bool authenticated = true,
   });
+
+  /// Returns an endpoint of type [T]. If more than one endpoint of type [T]
+  /// exists, [name] can be used to disambiguate.
+  T getEndpointOfType<T extends EndpointRef>([String? name]) {
+    if (name != null) return endpointRefLookup[name] as T;
+
+    var foundEndpoints = endpointRefLookup.values.whereType<T>();
+    switch (foundEndpoints.length) {
+      case 0:
+        throw ServerpodClientEndpointNotFound(T);
+      case 1:
+        return foundEndpoints.single;
+      default:
+        throw ServerpodClientMultipleEndpointsFound(T, foundEndpoints);
+    }
+  }
 }
 
 /// This class connects endpoints on the server with the client, it also
@@ -722,4 +740,40 @@ abstract class EndpointRef {
     }
     _streamController = StreamController<SerializableModel>();
   }
+}
+
+/// Thrown if not able to get an endpoint on the client by type.
+sealed class ServerpodClientGetEndpointException implements Exception {
+  /// The error message to show to the user.
+  final String message;
+
+  /// Creates an Endpoint Missing Exception.
+  const ServerpodClientGetEndpointException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+/// Thrown if the client tries to call an endpoint that was not generated.
+/// This will typically happen if getting the endpoint by type while the user
+/// has not defined the endpoint in their project.
+final class ServerpodClientEndpointNotFound
+    extends ServerpodClientGetEndpointException {
+  /// Creates an Endpoint Missing Exception.
+  const ServerpodClientEndpointNotFound(Type type)
+      : super('No endpoint of type "$type" found.');
+}
+
+/// Thrown if the client tries to call an endpoint by type, but multiple
+/// endpoints of that type exists. The user should disambiguate by using the
+/// name parameter.
+final class ServerpodClientMultipleEndpointsFound
+    extends ServerpodClientGetEndpointException {
+  /// Creates an Multiple Endpoints Found Exception.
+  ServerpodClientMultipleEndpointsFound(
+    Type type,
+    Iterable<EndpointRef> endpoints,
+  ) : super('Found ${endpoints.length} endpoints of type "$type": '
+            '${endpoints.map((e) => '"${e.name}"').join(', ')}. '
+            'Use the name parameter to disambiguate.');
 }

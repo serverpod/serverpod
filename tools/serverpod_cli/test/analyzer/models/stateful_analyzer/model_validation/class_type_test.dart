@@ -56,7 +56,7 @@ void main() {
     expect(model.type.className, model.className);
     expect(model.type.enumDefinition, model);
     expect(model.defaultValue, isNull);
-    expect(model.serialized, EnumSerialization.byIndex);
+    expect(model.serialized, EnumSerialization.byName);
   });
 
   test(

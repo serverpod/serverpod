@@ -1,0 +1,8 @@
+class: ImmutableObjectWithMultipleFields
+immutable: true
+fields:
+  anInt: int?
+  aBool: bool?
+  aDouble: double?
+  aDateTime: DateTime?
+  aString: String?

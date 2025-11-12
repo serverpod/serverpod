@@ -300,8 +300,8 @@ class MethodWebsocketRequestHandler {
     try {
       methodStreamCallContext =
           await server.endpoints.getMethodStreamCallContext(
-        createSessionCallback: (connector) {
-          maybeSession = MethodStreamSession(
+        createSessionCallback: (connector) async {
+          maybeSession = await SessionInternalMethods.createMethodStreamSession(
             server: server,
             authenticationKey: unwrapAuthHeaderValue(message.authentication),
             endpoint: message.endpoint,
@@ -393,7 +393,7 @@ class MethodWebsocketRequestHandler {
         webSocketIntermediary: webSocket,
         session: maybeSession,
       );
-      return switch (e.authenticationFailedResult.reason) {
+      return switch (e.reason) {
         AuthenticationFailureReason.insufficientAccess =>
           OpenMethodStreamResponse.buildMessage(
             endpoint: message.endpoint,

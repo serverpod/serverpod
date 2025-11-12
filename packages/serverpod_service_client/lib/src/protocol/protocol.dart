@@ -11,7 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'database/database_migration_warning.dart' as _i2;
+import 'cache_info.dart' as _i2;
 import 'caches_info.dart' as _i3;
 import 'cloud_storage.dart' as _i4;
 import 'cloud_storage_direct_upload.dart' as _i5;
@@ -30,7 +30,7 @@ import 'database/database_migration.dart' as _i17;
 import 'database/database_migration_action.dart' as _i18;
 import 'database/database_migration_action_type.dart' as _i19;
 import 'database/database_migration_version.dart' as _i20;
-import 'cache_info.dart' as _i21;
+import 'database/database_migration_warning.dart' as _i21;
 import 'database/database_migration_warning_type.dart' as _i22;
 import 'database/enum_serialization.dart' as _i23;
 import 'database/filter/filter.dart' as _i24;
@@ -48,7 +48,7 @@ import 'database/table_definition.dart' as _i35;
 import 'database/table_migration.dart' as _i36;
 import 'database/vector_distance_function.dart' as _i37;
 import 'distributed_cache_entry.dart' as _i38;
-import 'session_log_result.dart' as _i39;
+import 'exceptions/access_denied.dart' as _i39;
 import 'exceptions/file_not_found.dart' as _i40;
 import 'future_call_entry.dart' as _i41;
 import 'log_entry.dart' as _i42;
@@ -68,7 +68,7 @@ import 'serverpod_sql_exception.dart' as _i55;
 import 'session_log_entry.dart' as _i56;
 import 'session_log_filter.dart' as _i57;
 import 'session_log_info.dart' as _i58;
-import 'exceptions/access_denied.dart' as _i59;
+import 'session_log_result.dart' as _i59;
 import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
     as _i60;
 export 'cache_info.dart';
@@ -144,8 +144,8 @@ class Protocol extends _i1.SerializationManager {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i2.DatabaseMigrationWarning) {
-      return _i2.DatabaseMigrationWarning.fromJson(data) as T;
+    if (t == _i2.CacheInfo) {
+      return _i2.CacheInfo.fromJson(data) as T;
     }
     if (t == _i3.CachesInfo) {
       return _i3.CachesInfo.fromJson(data) as T;
@@ -201,8 +201,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i20.DatabaseMigrationVersion) {
       return _i20.DatabaseMigrationVersion.fromJson(data) as T;
     }
-    if (t == _i21.CacheInfo) {
-      return _i21.CacheInfo.fromJson(data) as T;
+    if (t == _i21.DatabaseMigrationWarning) {
+      return _i21.DatabaseMigrationWarning.fromJson(data) as T;
     }
     if (t == _i22.DatabaseMigrationWarningType) {
       return _i22.DatabaseMigrationWarningType.fromJson(data) as T;
@@ -255,8 +255,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i38.DistributedCacheEntry) {
       return _i38.DistributedCacheEntry.fromJson(data) as T;
     }
-    if (t == _i39.SessionLogResult) {
-      return _i39.SessionLogResult.fromJson(data) as T;
+    if (t == _i39.AccessDeniedException) {
+      return _i39.AccessDeniedException.fromJson(data) as T;
     }
     if (t == _i40.FileNotFoundException) {
       return _i40.FileNotFoundException.fromJson(data) as T;
@@ -315,12 +315,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i58.SessionLogInfo) {
       return _i58.SessionLogInfo.fromJson(data) as T;
     }
-    if (t == _i59.AccessDeniedException) {
-      return _i59.AccessDeniedException.fromJson(data) as T;
+    if (t == _i59.SessionLogResult) {
+      return _i59.SessionLogResult.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.DatabaseMigrationWarning?>()) {
-      return (data != null ? _i2.DatabaseMigrationWarning.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i2.CacheInfo?>()) {
+      return (data != null ? _i2.CacheInfo.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i3.CachesInfo?>()) {
       return (data != null ? _i3.CachesInfo.fromJson(data) : null) as T;
@@ -387,8 +386,10 @@ class Protocol extends _i1.SerializationManager {
           ? _i20.DatabaseMigrationVersion.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i21.CacheInfo?>()) {
-      return (data != null ? _i21.CacheInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.DatabaseMigrationWarning?>()) {
+      return (data != null
+          ? _i21.DatabaseMigrationWarning.fromJson(data)
+          : null) as T;
     }
     if (t == _i1.getType<_i22.DatabaseMigrationWarningType?>()) {
       return (data != null
@@ -452,8 +453,9 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i38.DistributedCacheEntry.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i39.SessionLogResult?>()) {
-      return (data != null ? _i39.SessionLogResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i39.AccessDeniedException?>()) {
+      return (data != null ? _i39.AccessDeniedException.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i40.FileNotFoundException?>()) {
       return (data != null ? _i40.FileNotFoundException.fromJson(data) : null)
@@ -520,12 +522,13 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i58.SessionLogInfo?>()) {
       return (data != null ? _i58.SessionLogInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i59.AccessDeniedException?>()) {
-      return (data != null ? _i59.AccessDeniedException.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i59.SessionLogResult?>()) {
+      return (data != null ? _i59.SessionLogResult.fromJson(data) : null) as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    if (t == _i1.getType<List<String>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<String>(e)).toList()
+          : null) as T;
     }
     if (t == List<_i7.ClusterServerInfo>) {
       return (data as List)
@@ -552,15 +555,13 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i18.DatabaseMigrationAction>(e))
           .toList() as T;
     }
-    if (t == List<_i2.DatabaseMigrationWarning>) {
+    if (t == List<_i21.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i2.DatabaseMigrationWarning>(e))
+          .map((e) => deserialize<_i21.DatabaseMigrationWarning>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as T;
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == List<_i25.FilterConstraint>) {
       return (data as List)
@@ -598,11 +599,6 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i13.ColumnMigration>(e))
           .toList() as T;
     }
-    if (t == List<_i58.SessionLogInfo>) {
-      return (data as List)
-          .map((e) => deserialize<_i58.SessionLogInfo>(e))
-          .toList() as T;
-    }
     if (t == List<_i42.LogEntry>) {
       return (data as List).map((e) => deserialize<_i42.LogEntry>(e)).toList()
           as T;
@@ -632,6 +628,11 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i47.MessageLogEntry>(e))
           .toList() as T;
     }
+    if (t == List<_i58.SessionLogInfo>) {
+      return (data as List)
+          .map((e) => deserialize<_i58.SessionLogInfo>(e))
+          .toList() as T;
+    }
     if (t == List<_i60.TableDefinition>) {
       return (data as List)
           .map((e) => deserialize<_i60.TableDefinition>(e))
@@ -648,8 +649,8 @@ class Protocol extends _i1.SerializationManager {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i2.DatabaseMigrationWarning():
-        return 'DatabaseMigrationWarning';
+      case _i2.CacheInfo():
+        return 'CacheInfo';
       case _i3.CachesInfo():
         return 'CachesInfo';
       case _i4.CloudStorageEntry():
@@ -686,8 +687,8 @@ class Protocol extends _i1.SerializationManager {
         return 'DatabaseMigrationActionType';
       case _i20.DatabaseMigrationVersion():
         return 'DatabaseMigrationVersion';
-      case _i21.CacheInfo():
-        return 'CacheInfo';
+      case _i21.DatabaseMigrationWarning():
+        return 'DatabaseMigrationWarning';
       case _i22.DatabaseMigrationWarningType():
         return 'DatabaseMigrationWarningType';
       case _i23.EnumSerialization():
@@ -722,8 +723,8 @@ class Protocol extends _i1.SerializationManager {
         return 'VectorDistanceFunction';
       case _i38.DistributedCacheEntry():
         return 'DistributedCacheEntry';
-      case _i39.SessionLogResult():
-        return 'SessionLogResult';
+      case _i39.AccessDeniedException():
+        return 'AccessDeniedException';
       case _i40.FileNotFoundException():
         return 'FileNotFoundException';
       case _i41.FutureCallEntry():
@@ -762,8 +763,8 @@ class Protocol extends _i1.SerializationManager {
         return 'SessionLogFilter';
       case _i58.SessionLogInfo():
         return 'SessionLogInfo';
-      case _i59.AccessDeniedException():
-        return 'AccessDeniedException';
+      case _i59.SessionLogResult():
+        return 'SessionLogResult';
     }
     return null;
   }
@@ -774,8 +775,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'DatabaseMigrationWarning') {
-      return deserialize<_i2.DatabaseMigrationWarning>(data['data']);
+    if (dataClassName == 'CacheInfo') {
+      return deserialize<_i2.CacheInfo>(data['data']);
     }
     if (dataClassName == 'CachesInfo') {
       return deserialize<_i3.CachesInfo>(data['data']);
@@ -831,8 +832,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'DatabaseMigrationVersion') {
       return deserialize<_i20.DatabaseMigrationVersion>(data['data']);
     }
-    if (dataClassName == 'CacheInfo') {
-      return deserialize<_i21.CacheInfo>(data['data']);
+    if (dataClassName == 'DatabaseMigrationWarning') {
+      return deserialize<_i21.DatabaseMigrationWarning>(data['data']);
     }
     if (dataClassName == 'DatabaseMigrationWarningType') {
       return deserialize<_i22.DatabaseMigrationWarningType>(data['data']);
@@ -885,8 +886,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'DistributedCacheEntry') {
       return deserialize<_i38.DistributedCacheEntry>(data['data']);
     }
-    if (dataClassName == 'SessionLogResult') {
-      return deserialize<_i39.SessionLogResult>(data['data']);
+    if (dataClassName == 'AccessDeniedException') {
+      return deserialize<_i39.AccessDeniedException>(data['data']);
     }
     if (dataClassName == 'FileNotFoundException') {
       return deserialize<_i40.FileNotFoundException>(data['data']);
@@ -945,8 +946,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SessionLogInfo') {
       return deserialize<_i58.SessionLogInfo>(data['data']);
     }
-    if (dataClassName == 'AccessDeniedException') {
-      return deserialize<_i59.AccessDeniedException>(data['data']);
+    if (dataClassName == 'SessionLogResult') {
+      return deserialize<_i59.SessionLogResult>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

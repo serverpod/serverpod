@@ -3,9 +3,17 @@ import 'package:serverpod_auth_idp_server/core.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
+  late final AuthSessions _authSessions =
+      AuthServices.getTokenManager<AuthSessionsTokenManager>().authSessions;
+
+  late final AuthenticationTokens _authenticationTokens =
+      AuthServices.getTokenManager<AuthenticationTokensTokenManager>()
+          .authenticationTokens;
+
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
-    final authUser = await AuthUsers.create(session);
+    const authUsers = AuthUsers();
+    final authUser = await authUsers.create(session);
     return authUser.id;
   }
 
@@ -14,7 +22,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthSessions.createSession(
+    return _authSessions.createSession(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -26,7 +34,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await AuthSessions.destroyAllSessions(session, authUserId: authUserId);
+    await _authSessions.destroyAllSessions(session, authUserId: authUserId);
   }
 
   /// Creates a new JWT token for the test user.
@@ -34,7 +42,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthenticationTokens.createTokens(
+    return _authenticationTokens.createTokens(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -47,7 +55,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await AuthenticationTokens.destroyAllRefreshTokens(
+    await _authenticationTokens.destroyAllRefreshTokens(
       session,
       authUserId: authUserId,
     );
@@ -58,7 +66,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    final userId = await session.authenticated;
+    final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
 }

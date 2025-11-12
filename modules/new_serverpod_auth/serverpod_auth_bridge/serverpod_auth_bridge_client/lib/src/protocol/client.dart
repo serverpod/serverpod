@@ -23,7 +23,7 @@ class EndpointSessionMigration extends _i1.EndpointRef {
   @override
   String get name => 'serverpod_auth_bridge.sessionMigration';
 
-  /// Converts a legacy session into a `serverpod_auth_session` one.
+  /// Converts a legacy session into a new token from the token manager.
   _i2.Future<_i3.AuthSuccess?> convertSession({required String sessionKey}) =>
       caller.callServerEndpoint<_i3.AuthSuccess?>(
         'serverpod_auth_bridge.sessionMigration',

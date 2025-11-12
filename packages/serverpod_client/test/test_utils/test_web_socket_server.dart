@@ -30,21 +30,20 @@ abstract class TestWebSocketServer {
     void Function(Uri webSocketHost)? onConnected,
     void Function(RelicWebSocket webSocket) webSocketHandler,
   ) async {
-    FutureOr<HandledContext> requestHandler(NewContext context) async {
-      return context.connect(webSocketHandler);
+    FutureOr<Result> requestHandler(Request req) async {
+      return WebSocketUpgrade(webSocketHandler);
     }
 
-    final adapter = IOAdapter(await HttpServer.bind(
-      InternetAddress.loopbackIPv4,
-      0, // Pick an available port
-    ));
     final server = RelicServer(
-      adapter,
+      () => IOAdapter.bind(
+        InternetAddress.loopbackIPv4,
+        port: 0, // Pick an available port
+      ),
     );
     await server.mountAndStart(requestHandler);
 
     var webSocketHost =
-        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${adapter.port}');
+        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${server.port}');
     onConnected?.call(webSocketHost);
 
     return server;

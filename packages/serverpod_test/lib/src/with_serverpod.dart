@@ -47,6 +47,21 @@ enum RollbackDatabase {
   disabled,
 }
 
+/// Options for controlling test server output during test execution.
+enum TestServerOutputMode {
+  /// Default mode - only stderr is printed (stdout suppressed).
+  /// This hides normal startup/shutdown logs while preserving error messages.
+  normal,
+
+  /// All logging - both stdout and stderr are printed.
+  /// Useful for debugging when you need to see all server output.
+  verbose,
+
+  /// No logging - both stdout and stderr are suppressed.
+  /// Completely silent mode, useful when you don't want any server output.
+  silent,
+}
+
 /// The test closure that is called by the `withServerpod` test helper.
 typedef TestClosure<T> = void Function(
   TestSessionBuilder testSession,
@@ -67,6 +82,7 @@ void Function(TestClosure<T>)
   required bool? maybeEnableSessionLogging,
   required List<String>? maybeTestGroupTagsOverride,
   required Duration? maybeServerpodStartTimeout,
+  required TestServerOutputMode? maybeTestServerOutputMode,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 

@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/serverpod.dart' hide Message;
 
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
@@ -36,8 +38,8 @@ void run(List<String> args) async {
 
   // Serve all files in the /static directory.
   pod.webServer.addRoute(
-    RouteStaticDirectory(serverDirectory: 'static', basePath: '/'),
-    '/*',
+    StaticRoute.directory(Directory('static')),
+    '/**',
   );
 
   // Configuration for sign in with email.

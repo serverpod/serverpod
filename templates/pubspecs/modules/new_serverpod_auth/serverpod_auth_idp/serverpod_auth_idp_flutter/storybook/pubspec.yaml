@@ -1,0 +1,44 @@
+# TEMPLATE
+
+name: storybook
+description: "A storybook for Serverpod Auth IDP"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.5
+  serverpod_auth_idp_flutter:
+    path: ../
+  storybook_toolkit: 2.0.0-dev.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: '>=3.0.0 <7.0.0'
+
+dependency_overrides:
+  serverpod_auth_idp_client:
+    path: ../../serverpod_auth_idp_client
+  serverpod_auth_idp_flutter:
+    path: ../
+  serverpod_auth_core_client:
+    path: ../../../serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_core_flutter:
+    path: ../../../serverpod_auth_core/serverpod_auth_core_flutter
+  serverpod_client:
+    path: ../../../../../packages/serverpod_client
+  serverpod_flutter:
+    path: ../../../../../packages/serverpod_flutter
+  serverpod_lints:
+    path: ../../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../../packages/serverpod_serialization
+
+flutter:
+  uses-material-design: true

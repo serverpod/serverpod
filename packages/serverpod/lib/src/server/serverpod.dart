@@ -78,7 +78,7 @@ class Serverpod {
   late PasswordManager _passwordManager;
 
   /// Custom [AuthenticationHandler] used to authenticate users.
-  final AuthenticationHandler? authenticationHandler;
+  AuthenticationHandler? authenticationHandler;
 
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
@@ -186,7 +186,9 @@ class Serverpod {
         logFailedSessions: true,
         logFailedQueries: true,
         logStreamingSessionsContinuously: true,
-        logLevel: internal.LogLevel.info,
+        logLevel: runMode == ServerpodRunMode.development
+            ? internal.LogLevel.debug
+            : internal.LogLevel.info,
         slowSessionDuration: 1.0,
         slowQueryDuration: 1.0,
       ),
@@ -321,21 +323,29 @@ class Serverpod {
 
   /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
-  final Map<String, dynamic> httpResponseHeaders;
+  final Headers httpResponseHeaders;
 
   /// HTTP headers used for OPTIONS responses. These headers are sent in
   /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
-  final Map<String, dynamic> httpOptionsResponseHeaders;
+  final Headers httpOptionsResponseHeaders;
 
-  static const _defaultHttpResponseHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST',
-  };
+  static final _defaultHttpResponseHeaders = Headers.build((mh) {
+    mh.accessControlAllowOrigin =
+        const AccessControlAllowOriginHeader.wildcard();
+    mh.accessControlAllowMethods =
+        AccessControlAllowMethodsHeader.methods(methods: [Method.post]);
+  });
 
-  static const _defaultHttpOptionsResponseHeaders = {
-    'Access-Control-Allow-Headers':
-        'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
-  };
+  static final _defaultHttpOptionsResponseHeaders = Headers.build((mh) {
+    mh.accessControlAllowHeaders =
+        AccessControlAllowHeadersHeader.headers(headers: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'User-Agent',
+      'X-Requested-With',
+    ]);
+  });
 
   /// Security context if the insights server is running over https.
   final SecurityContextConfig? _securityContextConfig;
@@ -364,12 +374,16 @@ class Serverpod {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.httpResponseHeaders = _defaultHttpResponseHeaders,
-    this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
+    Headers? httpResponseHeaders,
+    Headers? httpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  })  : _securityContextConfig = securityContextConfig,
+  })  : httpResponseHeaders =
+            httpResponseHeaders ?? _defaultHttpResponseHeaders,
+        httpOptionsResponseHeaders =
+            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
+        _securityContextConfig = securityContextConfig,
         _experimental = ExperimentalApi._(
           config: config,
           experimentalFeatures: experimentalFeatures,
@@ -480,10 +494,10 @@ class Serverpod {
         databaseConfiguration,
       );
 
-      // TODO: Remove this when we have a better way to handle this.
-      // Tracked by issue: https://github.com/serverpod/serverpod/issues/2421
-      // This is required because other operations in Serverpod assumes that the
-      // database is connected when the Serverpod is created
+      // ISSUE(https://github.com/serverpod/serverpod/issues/2421):
+      // Remove this when we have a better way to handle this.
+      // This is required because other operations in Serverpod assumes that
+      // the database is connected when the Serverpod is created
       // (such as createSession(...)).
       _databasePoolManager?.start();
     }
@@ -514,8 +528,6 @@ class Serverpod {
       redisController,
     );
 
-    var authHandler = authenticationHandler ?? defaultAuthenticationHandler;
-
     server = Server(
       serverpod: this,
       serverId: serverId,
@@ -525,7 +537,6 @@ class Serverpod {
       passwords: _passwords,
       runMode: runMode,
       caches: caches,
-      authenticationHandler: authHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
@@ -681,11 +692,17 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        serversStarted &= await _insightsServer?.start() ?? true;
+        serversStarted &= await _insightsServer?.start(
+              authenticationHandler: serviceAuthenticationHandler,
+            ) ??
+            true;
       }
 
       // Main API server.
-      serversStarted &= await server.start();
+      serversStarted &= await server.start(
+        authenticationHandler:
+            authenticationHandler ?? defaultAuthenticationHandler,
+      );
 
       /// Web server.
       if (Features.enableWebServer(_webServer)) {
@@ -922,7 +939,6 @@ class Serverpod {
       runMode: runMode,
       name: 'Insights',
       caches: caches,
-      authenticationHandler: serviceAuthenticationHandler,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,

@@ -1,0 +1,30 @@
+### Pending email account registration.
+###
+### There is no user ID stored with the request.
+### If an existing user should be assigned to this specific request,
+### store that with the request's `id` and link them up during registration.
+class: EmailAccountRequest
+serverOnly: true
+table: serverpod_auth_idp_email_account_request
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, default=now
+
+  ### The email of the user.
+  ###
+  ### Stored in lower-case.
+  email: String
+
+  ### The associated challenge for this request
+  challenge: SecretChallenge?, relation(onDelete=Cascade)
+
+  ### Used to complete the account creation.
+  ### This will be set after the account creation challenge has been validated.
+  createAccountChallenge: SecretChallenge?, relation(onDelete=Cascade, optional)
+
+indexes:
+  serverpod_auth_idp_email_account_request_email:
+    fields: email
+    unique: true

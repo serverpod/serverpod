@@ -4,3 +4,7 @@ analyzer:
   exclude:
     - lib/src/generated/**
     - test/serverpod_test_tools.dart
+
+linter:
+  rules:
+    unnecessary_parenthesis: true

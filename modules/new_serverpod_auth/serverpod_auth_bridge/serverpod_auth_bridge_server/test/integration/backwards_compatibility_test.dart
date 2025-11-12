@@ -1,10 +1,20 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManagerFactory = AuthSessionsTokenManagerFactory(
+    AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
+  );
+
+  const newEmailIDPConfig = EmailIDPConfig(secretHashPepper: 'test');
+
   withServerpod('Given no legacy passwords,', (
     final sessionBuilder,
     final endpoints,
@@ -13,6 +23,19 @@ void main() {
 
     setUp(() {
       session = sessionBuilder.build();
+      AuthServices.set(
+        identityProviders: [
+          EmailIdentityProviderFactory(newEmailIDPConfig),
+        ],
+        primaryTokenManager: tokenManagerFactory,
+      );
+    });
+
+    tearDown(() {
+      AuthServices.set(
+        identityProviders: [],
+        primaryTokenManager: tokenManagerFactory,
+      );
     });
 
     test(

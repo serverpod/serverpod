@@ -276,8 +276,9 @@ class GeneratorConfig implements ModelLoadConfig {
     }
 
     if (!isServerDirectory(Directory(serverRootDir))) {
-      throw const ServerpodProjectNotFoundException(
-        'Could not find the Serverpod dependency. Are you running serverpod from your '
+      throw ServerpodProjectNotFoundException(
+        'Could not find the Serverpod dependency in the directory '
+        '$serverRootDir. Are you running serverpod from your '
         'projects root directory?',
       );
     }

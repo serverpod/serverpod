@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/log_manager/log_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
@@ -59,21 +58,15 @@ abstract class Session implements DatabaseAccessor {
   /// This is typically done by the [Server] when the user is authenticated.
   /// Using this method modifies the authenticated user for this session.
   void updateAuthenticated(AuthenticationInfo? info) {
-    _initialized = true;
     _authenticated = info;
   }
 
   /// The authentication information for the session.
   /// This will be null if the session is not authenticated.
-  Future<AuthenticationInfo?> get authenticated async {
-    if (!_initialized) await _initialize();
-    return _authenticated;
-  }
+  AuthenticationInfo? get authenticated => _authenticated;
 
   /// Returns true if the user is signed in.
-  Future<bool> get isUserSignedIn async {
-    return (await authenticated) != null;
-  }
+  bool get isUserSignedIn => _authenticated != null;
 
   String? _authenticationKey;
 
@@ -207,17 +200,6 @@ abstract class Session implements DatabaseAccessor {
     );
   }
 
-  bool _initialized = false;
-
-  Future<void> _initialize() async {
-    var authKey = _authenticationKey;
-    if (authKey != null) {
-      _authenticated = await server.authenticationHandler(this, authKey);
-    }
-
-    _initialized = true;
-  }
-
   /// Returns the duration this session has been open.
   Duration get duration => DateTime.now().difference(_startTime);
 
@@ -331,7 +313,7 @@ class MethodCallSession extends Session {
   final Request request;
 
   /// Creates a new [Session] for a method call to an endpoint.
-  MethodCallSession({
+  MethodCallSession._({
     required super.server,
     required this.uri,
     required this.body,
@@ -352,7 +334,7 @@ class MethodCallSession extends Session {
 /// provides easy access to the database.
 class WebCallSession extends Session {
   /// Creates a new [Session] for a method call to an endpoint.
-  WebCallSession({
+  WebCallSession._({
     required super.server,
     required super.endpoint,
     required super.authenticationKey,
@@ -375,7 +357,7 @@ class MethodStreamSession extends Session {
   String get method => _method;
 
   /// Creates a new [MethodStreamSession].
-  MethodStreamSession({
+  MethodStreamSession._({
     required super.server,
     required super.enableLogging,
     required super.authenticationKey,
@@ -418,7 +400,7 @@ class StreamingSession extends Session {
   String get endpointName => _endpoint;
 
   /// Creates a new [Session] for the web socket stream.
-  StreamingSession({
+  StreamingSession._({
     required super.server,
     required this.uri,
     required this.request,
@@ -434,13 +416,6 @@ class StreamingSession extends Session {
 
     // Get the authentication key, if any
     _authenticationKey = queryParameters['auth'];
-  }
-
-  /// Updates the authentication key for the streaming session.
-  @internal
-  void updateAuthenticationKey(String? authenticationKey) {
-    _authenticationKey = authenticationKey;
-    _initialized = false;
   }
 }
 
@@ -686,6 +661,98 @@ class MessageCentralAccess {
 /// This is used to provide access to internal methods that should not be
 /// accessed from outside the library.
 extension SessionInternalMethods on Session {
+  /// Creates a new [MethodCallSession].
+  static Future<MethodCallSession> createMethodCallSession({
+    required Server server,
+    required Uri uri,
+    required String body,
+    required String path,
+    required Request request,
+    required String method,
+    required String endpoint,
+    required Map<String, dynamic> queryParameters,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    final session = MethodCallSession._(
+      server: server,
+      uri: uri,
+      body: body,
+      path: path,
+      request: request,
+      method: method,
+      endpoint: endpoint,
+      queryParameters: queryParameters,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
+
+  /// Creates a new [WebCallSession].
+  static Future<WebCallSession> createWebCallSession({
+    required Server server,
+    required String endpoint,
+    required String? authenticationKey,
+    bool enableLogging = true,
+    String? remoteInfo,
+  }) async {
+    final session = WebCallSession._(
+      server: server,
+      endpoint: endpoint,
+      authenticationKey: authenticationKey,
+      enableLogging: enableLogging,
+      remoteInfo: remoteInfo,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
+
+  /// Creates a new [MethodStreamSession].
+  static Future<MethodStreamSession> createMethodStreamSession({
+    required Server server,
+    required bool enableLogging,
+    required String? authenticationKey,
+    required String endpoint,
+    required String method,
+    required UuidValue connectionId,
+  }) async {
+    final session = MethodStreamSession._(
+      server: server,
+      enableLogging: enableLogging,
+      authenticationKey: authenticationKey,
+      endpoint: endpoint,
+      method: method,
+      connectionId: connectionId,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
+
+  /// Creates a new [StreamingSession].
+  static Future<StreamingSession> createStreamingSession({
+    required Server server,
+    required Uri uri,
+    required Request request,
+    required RelicWebSocket webSocket,
+    String endpoint = 'StreamingSession',
+    bool enableLogging = true,
+  }) async {
+    final session = StreamingSession._(
+      server: server,
+      uri: uri,
+      request: request,
+      webSocket: webSocket,
+      endpoint: endpoint,
+      enableLogging: enableLogging,
+    );
+    await session.initializeAuthentication();
+    return session;
+  }
+
   /// Returns the [LogManager] for the session.
   SessionLogManager? get logManager => _logManager;
 
@@ -704,6 +771,38 @@ extension SessionInternalMethods on Session {
     _messageId = id + 1;
 
     return id;
+  }
+
+  /// Initializes authentication for this session.
+  ///
+  /// This method resolves the authentication information for the current session
+  /// by calling the server's authentication handler with the session's authentication key.
+  /// The authentication information is cached in the session, making subsequent accesses
+  /// to [Session.authenticated] synchronous and efficient.
+  ///
+  /// This method is idempotent - calling it multiple times will only initialize
+  /// authentication once. Subsequent calls will return immediately without performing
+  /// any work.
+  Future<void> initializeAuthentication() async {
+    var authKey = authenticationKey;
+    if (authKey != null) {
+      _authenticated = await server.authenticationHandler(this, authKey);
+    } else {
+      _authenticated = null;
+    }
+  }
+
+  /// Updates the authentication key and re-initializes authentication.
+  ///
+  /// This method sets a new authentication key for the session and triggers
+  /// re-initialization of the authentication information. This is useful for
+  /// scenarios where authentication needs to be refreshed or changed mid-session.
+  ///
+  /// After calling this method, the [Session.authenticated] property will reflect
+  /// the authentication status for the new key.
+  Future<void> updateAuthenticationKey(String? authenticationKey) async {
+    _authenticationKey = authenticationKey;
+    await initializeAuthentication();
   }
 }
 

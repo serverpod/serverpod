@@ -15,179 +15,202 @@ import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i4;
-import 'scopes/scope_server_only_field_child.dart' as _i5;
-import 'inheritance/child_class.dart' as _i6;
-import 'inheritance/child_with_default.dart' as _i7;
-import 'inheritance/parent_class.dart' as _i8;
-import 'inheritance/sealed_parent.dart' as _i9;
-import 'defaults/uri/uri_default_model.dart' as _i10;
-import 'changed_id_type/one_to_many/comment.dart' as _i11;
-import 'changed_id_type/one_to_many/customer.dart' as _i12;
-import 'changed_id_type/one_to_many/order.dart' as _i13;
-import 'changed_id_type/one_to_one/address.dart' as _i14;
-import 'changed_id_type/one_to_one/citizen.dart' as _i15;
-import 'changed_id_type/one_to_one/company.dart' as _i16;
-import 'changed_id_type/one_to_one/town.dart' as _i17;
-import 'changed_id_type/self.dart' as _i18;
-import 'defaults/bigint/bigint_default.dart' as _i19;
-import 'defaults/bigint/bigint_default_mix.dart' as _i20;
-import 'defaults/bigint/bigint_default_model.dart' as _i21;
-import 'defaults/bigint/bigint_default_persist.dart' as _i22;
-import 'defaults/boolean/bool_default.dart' as _i23;
-import 'defaults/boolean/bool_default_mix.dart' as _i24;
-import 'defaults/boolean/bool_default_model.dart' as _i25;
-import 'defaults/boolean/bool_default_persist.dart' as _i26;
-import 'defaults/datetime/datetime_default.dart' as _i27;
-import 'defaults/datetime/datetime_default_mix.dart' as _i28;
-import 'defaults/datetime/datetime_default_model.dart' as _i29;
-import 'defaults/datetime/datetime_default_persist.dart' as _i30;
-import 'defaults/double/double_default.dart' as _i31;
-import 'defaults/double/double_default_mix.dart' as _i32;
-import 'defaults/double/double_default_model.dart' as _i33;
-import 'defaults/double/double_default_persist.dart' as _i34;
-import 'defaults/duration/duration_default.dart' as _i35;
-import 'defaults/duration/duration_default_mix.dart' as _i36;
-import 'defaults/duration/duration_default_model.dart' as _i37;
-import 'defaults/duration/duration_default_persist.dart' as _i38;
-import 'defaults/enum/enum_default.dart' as _i39;
-import 'defaults/enum/enum_default_mix.dart' as _i40;
-import 'defaults/enum/enum_default_model.dart' as _i41;
-import 'defaults/enum/enum_default_persist.dart' as _i42;
-import 'defaults/enum/enums/by_index_enum.dart' as _i43;
-import 'defaults/enum/enums/by_name_enum.dart' as _i44;
-import 'defaults/enum/enums/default_value_enum.dart' as _i45;
-import 'defaults/exception/default_exception.dart' as _i46;
-import 'defaults/integer/int_default.dart' as _i47;
-import 'defaults/integer/int_default_mix.dart' as _i48;
-import 'defaults/integer/int_default_model.dart' as _i49;
-import 'defaults/integer/int_default_persist.dart' as _i50;
-import 'defaults/string/string_default.dart' as _i51;
-import 'defaults/string/string_default_mix.dart' as _i52;
-import 'defaults/string/string_default_model.dart' as _i53;
-import 'defaults/string/string_default_persist.dart' as _i54;
-import 'defaults/uri/uri_default.dart' as _i55;
-import 'defaults/uri/uri_default_mix.dart' as _i56;
-import 'by_index_enum_with_name_value.dart' as _i57;
-import 'defaults/uri/uri_default_persist.dart' as _i58;
-import 'defaults/uuid/uuid_default.dart' as _i59;
-import 'defaults/uuid/uuid_default_mix.dart' as _i60;
-import 'defaults/uuid/uuid_default_model.dart' as _i61;
-import 'defaults/uuid/uuid_default_persist.dart' as _i62;
-import 'empty_model/empty_model.dart' as _i63;
-import 'empty_model/empty_model_relation_item.dart' as _i64;
-import 'empty_model/empty_model_with_table.dart' as _i65;
-import 'empty_model/relation_empy_model.dart' as _i66;
-import 'exception_with_data.dart' as _i67;
-import 'by_name_enum_with_name_value.dart' as _i68;
-import 'changed_id_type/many_to_many/course.dart' as _i69;
-import 'inheritance/grandparent_class.dart' as _i70;
-import 'changed_id_type/many_to_many/enrollment.dart' as _i71;
-import 'inheritance/parent_with_default.dart' as _i72;
-import 'changed_id_type/many_to_many/student.dart' as _i73;
-import 'changed_id_type/nested_one_to_many/arena.dart' as _i74;
-import 'changed_id_type/nested_one_to_many/player.dart' as _i75;
-import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i76;
+import 'by_index_enum_with_name_value.dart' as _i5;
+import 'by_name_enum_with_name_value.dart' as _i6;
+import 'changed_id_type/many_to_many/course.dart' as _i7;
+import 'changed_id_type/many_to_many/enrollment.dart' as _i8;
+import 'changed_id_type/many_to_many/student.dart' as _i9;
+import 'changed_id_type/nested_one_to_many/arena.dart' as _i10;
+import 'changed_id_type/nested_one_to_many/player.dart' as _i11;
+import 'changed_id_type/nested_one_to_many/team.dart' as _i12;
+import 'changed_id_type/one_to_many/comment.dart' as _i13;
+import 'changed_id_type/one_to_many/customer.dart' as _i14;
+import 'changed_id_type/one_to_many/order.dart' as _i15;
+import 'changed_id_type/one_to_one/address.dart' as _i16;
+import 'changed_id_type/one_to_one/citizen.dart' as _i17;
+import 'changed_id_type/one_to_one/company.dart' as _i18;
+import 'changed_id_type/one_to_one/town.dart' as _i19;
+import 'changed_id_type/self.dart' as _i20;
+import 'changed_id_type/server_only.dart' as _i21;
+import 'defaults/bigint/bigint_default.dart' as _i22;
+import 'defaults/bigint/bigint_default_mix.dart' as _i23;
+import 'defaults/bigint/bigint_default_model.dart' as _i24;
+import 'defaults/bigint/bigint_default_persist.dart' as _i25;
+import 'defaults/boolean/bool_default.dart' as _i26;
+import 'defaults/boolean/bool_default_mix.dart' as _i27;
+import 'defaults/boolean/bool_default_model.dart' as _i28;
+import 'defaults/boolean/bool_default_persist.dart' as _i29;
+import 'defaults/datetime/datetime_default.dart' as _i30;
+import 'defaults/datetime/datetime_default_mix.dart' as _i31;
+import 'defaults/datetime/datetime_default_model.dart' as _i32;
+import 'defaults/datetime/datetime_default_persist.dart' as _i33;
+import 'defaults/double/double_default.dart' as _i34;
+import 'defaults/double/double_default_mix.dart' as _i35;
+import 'defaults/double/double_default_model.dart' as _i36;
+import 'defaults/double/double_default_persist.dart' as _i37;
+import 'defaults/duration/duration_default.dart' as _i38;
+import 'defaults/duration/duration_default_mix.dart' as _i39;
+import 'defaults/duration/duration_default_model.dart' as _i40;
+import 'defaults/duration/duration_default_persist.dart' as _i41;
+import 'defaults/enum/enum_default.dart' as _i42;
+import 'defaults/enum/enum_default_mix.dart' as _i43;
+import 'defaults/enum/enum_default_model.dart' as _i44;
+import 'defaults/enum/enum_default_persist.dart' as _i45;
+import 'defaults/enum/enums/by_index_enum.dart' as _i46;
+import 'defaults/enum/enums/by_name_enum.dart' as _i47;
+import 'defaults/enum/enums/default_value_enum.dart' as _i48;
+import 'defaults/exception/default_exception.dart' as _i49;
+import 'defaults/integer/int_default.dart' as _i50;
+import 'defaults/integer/int_default_mix.dart' as _i51;
+import 'defaults/integer/int_default_model.dart' as _i52;
+import 'defaults/integer/int_default_persist.dart' as _i53;
+import 'defaults/string/string_default.dart' as _i54;
+import 'defaults/string/string_default_mix.dart' as _i55;
+import 'defaults/string/string_default_model.dart' as _i56;
+import 'defaults/string/string_default_persist.dart' as _i57;
+import 'defaults/uri/uri_default.dart' as _i58;
+import 'defaults/uri/uri_default_mix.dart' as _i59;
+import 'defaults/uri/uri_default_model.dart' as _i60;
+import 'defaults/uri/uri_default_persist.dart' as _i61;
+import 'defaults/uuid/uuid_default.dart' as _i62;
+import 'defaults/uuid/uuid_default_mix.dart' as _i63;
+import 'defaults/uuid/uuid_default_model.dart' as _i64;
+import 'defaults/uuid/uuid_default_persist.dart' as _i65;
+import 'empty_model/empty_model.dart' as _i66;
+import 'empty_model/empty_model_relation_item.dart' as _i67;
+import 'empty_model/empty_model_with_table.dart' as _i68;
+import 'empty_model/relation_empy_model.dart' as _i69;
+import 'exception_with_data.dart' as _i70;
+import 'immutable/immutable_child_object.dart' as _i71;
+import 'immutable/immutable_child_object_with_no_additional_fields.dart'
+    as _i72;
+import 'immutable/immutable_object.dart' as _i73;
+import 'immutable/immutable_object_with_immutable_object.dart' as _i74;
+import 'immutable/immutable_object_with_list.dart' as _i75;
+import 'immutable/immutable_object_with_map.dart' as _i76;
+import 'immutable/immutable_object_with_multiple_fields.dart' as _i77;
+import 'immutable/immutable_object_with_no_fields.dart' as _i78;
+import 'immutable/immutable_object_with_record.dart' as _i79;
+import 'immutable/immutable_object_with_table.dart' as _i80;
+import 'immutable/immutable_object_with_twenty_fields.dart' as _i81;
+import 'inheritance/child_class.dart' as _i82;
+import 'inheritance/child_server_only.dart' as _i83;
+import 'inheritance/child_with_default.dart' as _i84;
+import 'inheritance/child_with_inherited_id.dart' as _i85;
+import 'inheritance/child_without_id.dart' as _i86;
+import 'inheritance/child_without_id_server_only.dart' as _i87;
+import 'inheritance/parent_class.dart' as _i88;
+import 'inheritance/grandparent_class.dart' as _i89;
+import 'inheritance/parent_without_id.dart' as _i90;
+import 'inheritance/grandparent_with_id.dart' as _i91;
+import 'inheritance/parent_non_server_only.dart' as _i92;
+import 'inheritance/parent_with_changed_id.dart' as _i93;
+import 'inheritance/parent_with_default.dart' as _i94;
+import 'inheritance/sealed_parent.dart' as _i95;
+import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i96;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
-    as _i77;
+    as _i97;
 import 'long_identifiers/deep_includes/person_with_long_table_name.dart'
-    as _i78;
-import 'long_identifiers/max_field_name.dart' as _i79;
+    as _i98;
+import 'long_identifiers/max_field_name.dart' as _i99;
 import 'long_identifiers/models_with_relations/long_implicit_id_field.dart'
-    as _i80;
+    as _i100;
 import 'long_identifiers/models_with_relations/long_implicit_id_field_collection.dart'
-    as _i81;
+    as _i101;
 import 'long_identifiers/models_with_relations/relation_to_mutiple_max_field_name.dart'
-    as _i82;
-import 'long_identifiers/models_with_relations/user_note.dart' as _i83;
+    as _i102;
+import 'long_identifiers/models_with_relations/user_note.dart' as _i103;
 import 'long_identifiers/models_with_relations/user_note_collection.dart'
-    as _i84;
+    as _i104;
 import 'long_identifiers/models_with_relations/user_note_collection_with_a_long_name.dart'
-    as _i85;
+    as _i105;
 import 'long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
-    as _i86;
-import 'long_identifiers/multiple_max_field_name.dart' as _i87;
-import 'models_with_list_relations/city.dart' as _i88;
-import 'models_with_list_relations/organization.dart' as _i89;
-import 'models_with_list_relations/person.dart' as _i90;
-import 'models_with_relations/many_to_many/course.dart' as _i91;
-import 'models_with_relations/many_to_many/enrollment.dart' as _i92;
-import 'models_with_relations/many_to_many/student.dart' as _i93;
-import 'models_with_relations/module/object_user.dart' as _i94;
-import 'models_with_relations/module/parent_user.dart' as _i95;
-import 'models_with_relations/nested_one_to_many/arena.dart' as _i96;
-import 'models_with_relations/nested_one_to_many/player.dart' as _i97;
-import 'models_with_relations/nested_one_to_many/team.dart' as _i98;
-import 'models_with_relations/one_to_many/comment.dart' as _i99;
-import 'models_with_relations/one_to_many/customer.dart' as _i100;
-import 'models_with_relations/one_to_many/implicit/book.dart' as _i101;
-import 'models_with_relations/one_to_many/implicit/chapter.dart' as _i102;
-import 'models_with_relations/one_to_many/order.dart' as _i103;
-import 'models_with_relations/one_to_one/address.dart' as _i104;
-import 'models_with_relations/one_to_one/citizen.dart' as _i105;
-import 'models_with_relations/one_to_one/company.dart' as _i106;
-import 'models_with_relations/one_to_one/town.dart' as _i107;
+    as _i106;
+import 'long_identifiers/multiple_max_field_name.dart' as _i107;
+import 'models_with_list_relations/city.dart' as _i108;
+import 'models_with_list_relations/organization.dart' as _i109;
+import 'models_with_list_relations/person.dart' as _i110;
+import 'models_with_relations/many_to_many/course.dart' as _i111;
+import 'models_with_relations/many_to_many/enrollment.dart' as _i112;
+import 'models_with_relations/many_to_many/student.dart' as _i113;
+import 'models_with_relations/module/object_user.dart' as _i114;
+import 'models_with_relations/module/parent_user.dart' as _i115;
+import 'models_with_relations/nested_one_to_many/arena.dart' as _i116;
+import 'models_with_relations/nested_one_to_many/player.dart' as _i117;
+import 'models_with_relations/nested_one_to_many/team.dart' as _i118;
+import 'models_with_relations/one_to_many/comment.dart' as _i119;
+import 'models_with_relations/one_to_many/customer.dart' as _i120;
+import 'models_with_relations/one_to_many/implicit/book.dart' as _i121;
+import 'models_with_relations/one_to_many/implicit/chapter.dart' as _i122;
+import 'models_with_relations/one_to_many/order.dart' as _i123;
+import 'models_with_relations/one_to_one/address.dart' as _i124;
+import 'models_with_relations/one_to_one/citizen.dart' as _i125;
+import 'models_with_relations/one_to_one/company.dart' as _i126;
+import 'models_with_relations/one_to_one/town.dart' as _i127;
 import 'models_with_relations/self_relation/many_to_many/blocking.dart'
-    as _i108;
-import 'my_feature/models/my_feature_model.dart' as _i109;
-import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i110;
-import 'models_with_relations/self_relation/one_to_one/post.dart' as _i111;
-import 'module_datatype.dart' as _i112;
-import 'nullability.dart' as _i113;
-import 'object_field_persist.dart' as _i114;
-import 'object_field_scopes.dart' as _i115;
-import 'object_with_bit.dart' as _i116;
-import 'object_with_bytedata.dart' as _i117;
-import 'object_with_custom_class.dart' as _i118;
-import 'object_with_duration.dart' as _i119;
-import 'object_with_enum.dart' as _i120;
-import 'object_with_half_vector.dart' as _i121;
-import 'object_with_index.dart' as _i122;
-import 'object_with_jsonb.dart' as _i123;
-import 'object_with_jsonb_class_level.dart' as _i124;
-import 'object_with_maps.dart' as _i125;
-import 'object_with_nullable_custom_class.dart' as _i126;
-import 'object_with_object.dart' as _i127;
-import 'object_with_parent.dart' as _i128;
-import 'object_with_self_parent.dart' as _i129;
-import 'object_with_sparse_vector.dart' as _i130;
-import 'object_with_uuid.dart' as _i131;
-import 'object_with_vector.dart' as _i132;
-import 'record.dart' as _i133;
-import 'related_unique_data.dart' as _i134;
-import 'required/exception_with_required_field.dart' as _i135;
-import 'required/model_with_required_field.dart' as _i136;
-import 'scopes/scope_none_fields.dart' as _i137;
-import 'scopes/scope_server_only_field.dart' as _i138;
-import 'changed_id_type/nested_one_to_many/team.dart' as _i139;
-import 'scopes/serverOnly/default_server_only_class.dart' as _i140;
-import 'scopes/serverOnly/default_server_only_enum.dart' as _i141;
-import 'scopes/serverOnly/not_server_only_class.dart' as _i142;
-import 'scopes/serverOnly/not_server_only_enum.dart' as _i143;
-import 'scopes/serverOnly/server_only_class.dart' as _i144;
-import 'scopes/serverOnly/server_only_enum.dart' as _i145;
-import 'scopes/server_only_class_field.dart' as _i146;
-import 'server_only_default.dart' as _i147;
-import 'simple_data.dart' as _i148;
-import 'simple_data_list.dart' as _i149;
-import 'simple_data_map.dart' as _i150;
-import 'simple_data_object.dart' as _i151;
-import 'simple_date_time.dart' as _i152;
-import 'subfolder/model_in_subfolder.dart' as _i153;
-import 'test_enum.dart' as _i154;
-import 'test_enum_stringified.dart' as _i155;
-import 'types.dart' as _i156;
-import 'types_list.dart' as _i157;
-import 'types_map.dart' as _i158;
-import 'types_record.dart' as _i159;
-import 'types_set.dart' as _i160;
-import 'types_set_required.dart' as _i161;
-import 'unique_data.dart' as _i162;
-import 'models_with_relations/self_relation/many_to_many/member.dart' as _i163;
-import 'dart:typed_data' as _i164;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i165;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i166;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i167;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i168;
+    as _i128;
+import 'models_with_relations/self_relation/many_to_many/member.dart' as _i129;
+import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i130;
+import 'models_with_relations/self_relation/one_to_one/post.dart' as _i131;
+import 'module_datatype.dart' as _i132;
+import 'my_feature/models/my_feature_model.dart' as _i133;
+import 'nullability.dart' as _i134;
+import 'object_field_persist.dart' as _i135;
+import 'object_field_scopes.dart' as _i136;
+import 'object_with_bit.dart' as _i137;
+import 'object_with_bytedata.dart' as _i138;
+import 'object_with_custom_class.dart' as _i139;
+import 'object_with_duration.dart' as _i140;
+import 'object_with_enum.dart' as _i141;
+import 'object_with_half_vector.dart' as _i142;
+import 'object_with_index.dart' as _i143;
+import 'object_with_jsonb.dart' as _i144;
+import 'object_with_jsonb_class_level.dart' as _i145;
+import 'object_with_maps.dart' as _i146;
+import 'object_with_nullable_custom_class.dart' as _i147;
+import 'object_with_object.dart' as _i148;
+import 'object_with_parent.dart' as _i149;
+import 'object_with_self_parent.dart' as _i150;
+import 'object_with_sparse_vector.dart' as _i151;
+import 'object_with_uuid.dart' as _i152;
+import 'object_with_vector.dart' as _i153;
+import 'record.dart' as _i154;
+import 'related_unique_data.dart' as _i155;
+import 'required/exception_with_required_field.dart' as _i156;
+import 'required/model_with_required_field.dart' as _i157;
+import 'scopes/scope_none_fields.dart' as _i158;
+import 'scopes/scope_server_only_field_child.dart' as _i159;
+import 'scopes/scope_server_only_field.dart' as _i160;
+import 'scopes/serverOnly/default_server_only_class.dart' as _i161;
+import 'scopes/serverOnly/default_server_only_enum.dart' as _i162;
+import 'scopes/serverOnly/not_server_only_class.dart' as _i163;
+import 'scopes/serverOnly/not_server_only_enum.dart' as _i164;
+import 'scopes/serverOnly/server_only_class.dart' as _i165;
+import 'scopes/serverOnly/server_only_enum.dart' as _i166;
+import 'scopes/server_only_class_field.dart' as _i167;
+import 'server_only_default.dart' as _i168;
+import 'session_auth_info.dart' as _i169;
+import 'simple_data.dart' as _i170;
+import 'simple_data_list.dart' as _i171;
+import 'simple_data_map.dart' as _i172;
+import 'simple_data_object.dart' as _i173;
+import 'simple_date_time.dart' as _i174;
+import 'subfolder/model_in_subfolder.dart' as _i175;
+import 'test_enum.dart' as _i176;
+import 'test_enum_default_serialization.dart' as _i177;
+import 'test_enum_stringified.dart' as _i178;
+import 'types.dart' as _i179;
+import 'types_list.dart' as _i180;
+import 'types_map.dart' as _i181;
+import 'types_record.dart' as _i182;
+import 'types_set.dart' as _i183;
+import 'types_set_required.dart' as _i184;
+import 'unique_data.dart' as _i185;
+import 'dart:typed_data' as _i186;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i187;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i188;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i189;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i190;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -204,6 +227,7 @@ export 'changed_id_type/one_to_one/citizen.dart';
 export 'changed_id_type/one_to_one/company.dart';
 export 'changed_id_type/one_to_one/town.dart';
 export 'changed_id_type/self.dart';
+export 'changed_id_type/server_only.dart';
 export 'defaults/bigint/bigint_default.dart';
 export 'defaults/bigint/bigint_default_mix.dart';
 export 'defaults/bigint/bigint_default_model.dart';
@@ -253,10 +277,29 @@ export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empty_model_with_table.dart';
 export 'empty_model/relation_empy_model.dart';
 export 'exception_with_data.dart';
+export 'immutable/immutable_child_object.dart';
+export 'immutable/immutable_child_object_with_no_additional_fields.dart';
+export 'immutable/immutable_object.dart';
+export 'immutable/immutable_object_with_immutable_object.dart';
+export 'immutable/immutable_object_with_list.dart';
+export 'immutable/immutable_object_with_map.dart';
+export 'immutable/immutable_object_with_multiple_fields.dart';
+export 'immutable/immutable_object_with_no_fields.dart';
+export 'immutable/immutable_object_with_record.dart';
+export 'immutable/immutable_object_with_table.dart';
+export 'immutable/immutable_object_with_twenty_fields.dart';
 export 'inheritance/child_class.dart';
+export 'inheritance/child_server_only.dart';
 export 'inheritance/child_with_default.dart';
-export 'inheritance/grandparent_class.dart';
+export 'inheritance/child_with_inherited_id.dart';
+export 'inheritance/child_without_id.dart';
+export 'inheritance/child_without_id_server_only.dart';
 export 'inheritance/parent_class.dart';
+export 'inheritance/grandparent_class.dart';
+export 'inheritance/parent_without_id.dart';
+export 'inheritance/grandparent_with_id.dart';
+export 'inheritance/parent_non_server_only.dart';
+export 'inheritance/parent_with_changed_id.dart';
 export 'inheritance/parent_with_default.dart';
 export 'inheritance/sealed_no_child.dart';
 export 'inheritance/sealed_parent.dart';
@@ -297,6 +340,7 @@ export 'models_with_relations/self_relation/many_to_many/member.dart';
 export 'models_with_relations/self_relation/one_to_many/cat.dart';
 export 'models_with_relations/self_relation/one_to_one/post.dart';
 export 'module_datatype.dart';
+export 'my_feature/models/my_feature_model.dart';
 export 'nullability.dart';
 export 'object_field_persist.dart';
 export 'object_field_scopes.dart';
@@ -322,8 +366,8 @@ export 'related_unique_data.dart';
 export 'required/exception_with_required_field.dart';
 export 'required/model_with_required_field.dart';
 export 'scopes/scope_none_fields.dart';
-export 'scopes/scope_server_only_field.dart';
 export 'scopes/scope_server_only_field_child.dart';
+export 'scopes/scope_server_only_field.dart';
 export 'scopes/serverOnly/default_server_only_class.dart';
 export 'scopes/serverOnly/default_server_only_enum.dart';
 export 'scopes/serverOnly/not_server_only_class.dart';
@@ -332,6 +376,7 @@ export 'scopes/serverOnly/server_only_class.dart';
 export 'scopes/serverOnly/server_only_enum.dart';
 export 'scopes/server_only_class_field.dart';
 export 'server_only_default.dart';
+export 'session_auth_info.dart';
 export 'simple_data.dart';
 export 'simple_data_list.dart';
 export 'simple_data_map.dart';
@@ -339,6 +384,7 @@ export 'simple_data_object.dart';
 export 'simple_date_time.dart';
 export 'subfolder/model_in_subfolder.dart';
 export 'test_enum.dart';
+export 'test_enum_default_serialization.dart';
 export 'test_enum_stringified.dart';
 export 'types.dart';
 export 'types_list.dart';
@@ -347,7 +393,6 @@ export 'types_record.dart';
 export 'types_set.dart';
 export 'types_set_required.dart';
 export 'unique_data.dart';
-export 'my_feature/models/my_feature_model.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -1253,6 +1298,111 @@ class Protocol extends _i1.SerializationManagerServer {
       indexes: [
         _i2.IndexDefinition(
           indexName: 'chapter_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'child_table_with_inherited_id',
+      dartName: 'ChildClassWithoutId',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'grandParentField',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'parentField',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'childField',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'child_table_with_inherited_id_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'child_with_inherited_id',
+      dartName: 'ChildWithInheritedId',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'parentId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'child_with_inherited_id_fk_0',
+          columns: ['parentId'],
+          referenceTable: 'child_with_inherited_id',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'child_with_inherited_id_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -2879,6 +3029,45 @@ class Protocol extends _i1.SerializationManagerServer {
       indexes: [
         _i2.IndexDefinition(
           indexName: 'enum_default_persist_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'immutable_object_with_table',
+      dartName: 'ImmutableObjectWithTable',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'immutable_object_with_table_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'variable',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'immutable_object_with_table_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -5457,6 +5646,38 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'server_only_changed_id_field_class',
+      dartName: 'ServerOnlyChangedIdFieldClass',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid()',
+        )
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'server_only_changed_id_field_class_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'simple_data',
       dartName: 'SimpleData',
       schema: 'public',
@@ -6927,1171 +7148,1359 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i5.ScopeServerOnlyFieldChild) {
-      return _i5.ScopeServerOnlyFieldChild.fromJson(data) as T;
+    if (t == _i5.ByIndexEnumWithNameValue) {
+      return _i5.ByIndexEnumWithNameValue.fromJson(data) as T;
     }
-    if (t == _i6.ChildClass) {
-      return _i6.ChildClass.fromJson(data) as T;
+    if (t == _i6.ByNameEnumWithNameValue) {
+      return _i6.ByNameEnumWithNameValue.fromJson(data) as T;
     }
-    if (t == _i7.ChildWithDefault) {
-      return _i7.ChildWithDefault.fromJson(data) as T;
+    if (t == _i7.CourseUuid) {
+      return _i7.CourseUuid.fromJson(data) as T;
     }
-    if (t == _i8.ParentClass) {
-      return _i8.ParentClass.fromJson(data) as T;
+    if (t == _i8.EnrollmentInt) {
+      return _i8.EnrollmentInt.fromJson(data) as T;
     }
-    if (t == _i9.SealedGrandChild) {
-      return _i9.SealedGrandChild.fromJson(data) as T;
+    if (t == _i9.StudentUuid) {
+      return _i9.StudentUuid.fromJson(data) as T;
     }
-    if (t == _i9.SealedChild) {
-      return _i9.SealedChild.fromJson(data) as T;
+    if (t == _i10.ArenaUuid) {
+      return _i10.ArenaUuid.fromJson(data) as T;
     }
-    if (t == _i9.SealedOtherChild) {
-      return _i9.SealedOtherChild.fromJson(data) as T;
+    if (t == _i11.PlayerUuid) {
+      return _i11.PlayerUuid.fromJson(data) as T;
     }
-    if (t == _i10.UriDefaultModel) {
-      return _i10.UriDefaultModel.fromJson(data) as T;
+    if (t == _i12.TeamInt) {
+      return _i12.TeamInt.fromJson(data) as T;
     }
-    if (t == _i11.CommentInt) {
-      return _i11.CommentInt.fromJson(data) as T;
+    if (t == _i13.CommentInt) {
+      return _i13.CommentInt.fromJson(data) as T;
     }
-    if (t == _i12.CustomerInt) {
-      return _i12.CustomerInt.fromJson(data) as T;
+    if (t == _i14.CustomerInt) {
+      return _i14.CustomerInt.fromJson(data) as T;
     }
-    if (t == _i13.OrderUuid) {
-      return _i13.OrderUuid.fromJson(data) as T;
+    if (t == _i15.OrderUuid) {
+      return _i15.OrderUuid.fromJson(data) as T;
     }
-    if (t == _i14.AddressUuid) {
-      return _i14.AddressUuid.fromJson(data) as T;
+    if (t == _i16.AddressUuid) {
+      return _i16.AddressUuid.fromJson(data) as T;
     }
-    if (t == _i15.CitizenInt) {
-      return _i15.CitizenInt.fromJson(data) as T;
+    if (t == _i17.CitizenInt) {
+      return _i17.CitizenInt.fromJson(data) as T;
     }
-    if (t == _i16.CompanyUuid) {
-      return _i16.CompanyUuid.fromJson(data) as T;
+    if (t == _i18.CompanyUuid) {
+      return _i18.CompanyUuid.fromJson(data) as T;
     }
-    if (t == _i17.TownInt) {
-      return _i17.TownInt.fromJson(data) as T;
+    if (t == _i19.TownInt) {
+      return _i19.TownInt.fromJson(data) as T;
     }
-    if (t == _i18.ChangedIdTypeSelf) {
-      return _i18.ChangedIdTypeSelf.fromJson(data) as T;
+    if (t == _i20.ChangedIdTypeSelf) {
+      return _i20.ChangedIdTypeSelf.fromJson(data) as T;
     }
-    if (t == _i19.BigIntDefault) {
-      return _i19.BigIntDefault.fromJson(data) as T;
+    if (t == _i21.ServerOnlyChangedIdFieldClass) {
+      return _i21.ServerOnlyChangedIdFieldClass.fromJson(data) as T;
     }
-    if (t == _i20.BigIntDefaultMix) {
-      return _i20.BigIntDefaultMix.fromJson(data) as T;
+    if (t == _i22.BigIntDefault) {
+      return _i22.BigIntDefault.fromJson(data) as T;
     }
-    if (t == _i21.BigIntDefaultModel) {
-      return _i21.BigIntDefaultModel.fromJson(data) as T;
+    if (t == _i23.BigIntDefaultMix) {
+      return _i23.BigIntDefaultMix.fromJson(data) as T;
     }
-    if (t == _i22.BigIntDefaultPersist) {
-      return _i22.BigIntDefaultPersist.fromJson(data) as T;
+    if (t == _i24.BigIntDefaultModel) {
+      return _i24.BigIntDefaultModel.fromJson(data) as T;
     }
-    if (t == _i23.BoolDefault) {
-      return _i23.BoolDefault.fromJson(data) as T;
+    if (t == _i25.BigIntDefaultPersist) {
+      return _i25.BigIntDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i24.BoolDefaultMix) {
-      return _i24.BoolDefaultMix.fromJson(data) as T;
+    if (t == _i26.BoolDefault) {
+      return _i26.BoolDefault.fromJson(data) as T;
     }
-    if (t == _i25.BoolDefaultModel) {
-      return _i25.BoolDefaultModel.fromJson(data) as T;
+    if (t == _i27.BoolDefaultMix) {
+      return _i27.BoolDefaultMix.fromJson(data) as T;
     }
-    if (t == _i26.BoolDefaultPersist) {
-      return _i26.BoolDefaultPersist.fromJson(data) as T;
+    if (t == _i28.BoolDefaultModel) {
+      return _i28.BoolDefaultModel.fromJson(data) as T;
     }
-    if (t == _i27.DateTimeDefault) {
-      return _i27.DateTimeDefault.fromJson(data) as T;
+    if (t == _i29.BoolDefaultPersist) {
+      return _i29.BoolDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i28.DateTimeDefaultMix) {
-      return _i28.DateTimeDefaultMix.fromJson(data) as T;
+    if (t == _i30.DateTimeDefault) {
+      return _i30.DateTimeDefault.fromJson(data) as T;
     }
-    if (t == _i29.DateTimeDefaultModel) {
-      return _i29.DateTimeDefaultModel.fromJson(data) as T;
+    if (t == _i31.DateTimeDefaultMix) {
+      return _i31.DateTimeDefaultMix.fromJson(data) as T;
     }
-    if (t == _i30.DateTimeDefaultPersist) {
-      return _i30.DateTimeDefaultPersist.fromJson(data) as T;
+    if (t == _i32.DateTimeDefaultModel) {
+      return _i32.DateTimeDefaultModel.fromJson(data) as T;
     }
-    if (t == _i31.DoubleDefault) {
-      return _i31.DoubleDefault.fromJson(data) as T;
+    if (t == _i33.DateTimeDefaultPersist) {
+      return _i33.DateTimeDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i32.DoubleDefaultMix) {
-      return _i32.DoubleDefaultMix.fromJson(data) as T;
+    if (t == _i34.DoubleDefault) {
+      return _i34.DoubleDefault.fromJson(data) as T;
     }
-    if (t == _i33.DoubleDefaultModel) {
-      return _i33.DoubleDefaultModel.fromJson(data) as T;
+    if (t == _i35.DoubleDefaultMix) {
+      return _i35.DoubleDefaultMix.fromJson(data) as T;
     }
-    if (t == _i34.DoubleDefaultPersist) {
-      return _i34.DoubleDefaultPersist.fromJson(data) as T;
+    if (t == _i36.DoubleDefaultModel) {
+      return _i36.DoubleDefaultModel.fromJson(data) as T;
     }
-    if (t == _i35.DurationDefault) {
-      return _i35.DurationDefault.fromJson(data) as T;
+    if (t == _i37.DoubleDefaultPersist) {
+      return _i37.DoubleDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i36.DurationDefaultMix) {
-      return _i36.DurationDefaultMix.fromJson(data) as T;
+    if (t == _i38.DurationDefault) {
+      return _i38.DurationDefault.fromJson(data) as T;
     }
-    if (t == _i37.DurationDefaultModel) {
-      return _i37.DurationDefaultModel.fromJson(data) as T;
+    if (t == _i39.DurationDefaultMix) {
+      return _i39.DurationDefaultMix.fromJson(data) as T;
     }
-    if (t == _i38.DurationDefaultPersist) {
-      return _i38.DurationDefaultPersist.fromJson(data) as T;
+    if (t == _i40.DurationDefaultModel) {
+      return _i40.DurationDefaultModel.fromJson(data) as T;
     }
-    if (t == _i39.EnumDefault) {
-      return _i39.EnumDefault.fromJson(data) as T;
+    if (t == _i41.DurationDefaultPersist) {
+      return _i41.DurationDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i40.EnumDefaultMix) {
-      return _i40.EnumDefaultMix.fromJson(data) as T;
+    if (t == _i42.EnumDefault) {
+      return _i42.EnumDefault.fromJson(data) as T;
     }
-    if (t == _i41.EnumDefaultModel) {
-      return _i41.EnumDefaultModel.fromJson(data) as T;
+    if (t == _i43.EnumDefaultMix) {
+      return _i43.EnumDefaultMix.fromJson(data) as T;
     }
-    if (t == _i42.EnumDefaultPersist) {
-      return _i42.EnumDefaultPersist.fromJson(data) as T;
+    if (t == _i44.EnumDefaultModel) {
+      return _i44.EnumDefaultModel.fromJson(data) as T;
     }
-    if (t == _i43.ByIndexEnum) {
-      return _i43.ByIndexEnum.fromJson(data) as T;
+    if (t == _i45.EnumDefaultPersist) {
+      return _i45.EnumDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i44.ByNameEnum) {
-      return _i44.ByNameEnum.fromJson(data) as T;
+    if (t == _i46.ByIndexEnum) {
+      return _i46.ByIndexEnum.fromJson(data) as T;
     }
-    if (t == _i45.DefaultValueEnum) {
-      return _i45.DefaultValueEnum.fromJson(data) as T;
+    if (t == _i47.ByNameEnum) {
+      return _i47.ByNameEnum.fromJson(data) as T;
     }
-    if (t == _i46.DefaultException) {
-      return _i46.DefaultException.fromJson(data) as T;
+    if (t == _i48.DefaultValueEnum) {
+      return _i48.DefaultValueEnum.fromJson(data) as T;
     }
-    if (t == _i47.IntDefault) {
-      return _i47.IntDefault.fromJson(data) as T;
+    if (t == _i49.DefaultException) {
+      return _i49.DefaultException.fromJson(data) as T;
     }
-    if (t == _i48.IntDefaultMix) {
-      return _i48.IntDefaultMix.fromJson(data) as T;
+    if (t == _i50.IntDefault) {
+      return _i50.IntDefault.fromJson(data) as T;
     }
-    if (t == _i49.IntDefaultModel) {
-      return _i49.IntDefaultModel.fromJson(data) as T;
+    if (t == _i51.IntDefaultMix) {
+      return _i51.IntDefaultMix.fromJson(data) as T;
     }
-    if (t == _i50.IntDefaultPersist) {
-      return _i50.IntDefaultPersist.fromJson(data) as T;
+    if (t == _i52.IntDefaultModel) {
+      return _i52.IntDefaultModel.fromJson(data) as T;
     }
-    if (t == _i51.StringDefault) {
-      return _i51.StringDefault.fromJson(data) as T;
+    if (t == _i53.IntDefaultPersist) {
+      return _i53.IntDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i52.StringDefaultMix) {
-      return _i52.StringDefaultMix.fromJson(data) as T;
+    if (t == _i54.StringDefault) {
+      return _i54.StringDefault.fromJson(data) as T;
     }
-    if (t == _i53.StringDefaultModel) {
-      return _i53.StringDefaultModel.fromJson(data) as T;
+    if (t == _i55.StringDefaultMix) {
+      return _i55.StringDefaultMix.fromJson(data) as T;
     }
-    if (t == _i54.StringDefaultPersist) {
-      return _i54.StringDefaultPersist.fromJson(data) as T;
+    if (t == _i56.StringDefaultModel) {
+      return _i56.StringDefaultModel.fromJson(data) as T;
     }
-    if (t == _i55.UriDefault) {
-      return _i55.UriDefault.fromJson(data) as T;
+    if (t == _i57.StringDefaultPersist) {
+      return _i57.StringDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i56.UriDefaultMix) {
-      return _i56.UriDefaultMix.fromJson(data) as T;
+    if (t == _i58.UriDefault) {
+      return _i58.UriDefault.fromJson(data) as T;
     }
-    if (t == _i57.ByIndexEnumWithNameValue) {
-      return _i57.ByIndexEnumWithNameValue.fromJson(data) as T;
+    if (t == _i59.UriDefaultMix) {
+      return _i59.UriDefaultMix.fromJson(data) as T;
     }
-    if (t == _i58.UriDefaultPersist) {
-      return _i58.UriDefaultPersist.fromJson(data) as T;
+    if (t == _i60.UriDefaultModel) {
+      return _i60.UriDefaultModel.fromJson(data) as T;
     }
-    if (t == _i59.UuidDefault) {
-      return _i59.UuidDefault.fromJson(data) as T;
+    if (t == _i61.UriDefaultPersist) {
+      return _i61.UriDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i60.UuidDefaultMix) {
-      return _i60.UuidDefaultMix.fromJson(data) as T;
+    if (t == _i62.UuidDefault) {
+      return _i62.UuidDefault.fromJson(data) as T;
     }
-    if (t == _i61.UuidDefaultModel) {
-      return _i61.UuidDefaultModel.fromJson(data) as T;
+    if (t == _i63.UuidDefaultMix) {
+      return _i63.UuidDefaultMix.fromJson(data) as T;
     }
-    if (t == _i62.UuidDefaultPersist) {
-      return _i62.UuidDefaultPersist.fromJson(data) as T;
+    if (t == _i64.UuidDefaultModel) {
+      return _i64.UuidDefaultModel.fromJson(data) as T;
     }
-    if (t == _i63.EmptyModel) {
-      return _i63.EmptyModel.fromJson(data) as T;
+    if (t == _i65.UuidDefaultPersist) {
+      return _i65.UuidDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i64.EmptyModelRelationItem) {
-      return _i64.EmptyModelRelationItem.fromJson(data) as T;
+    if (t == _i66.EmptyModel) {
+      return _i66.EmptyModel.fromJson(data) as T;
     }
-    if (t == _i65.EmptyModelWithTable) {
-      return _i65.EmptyModelWithTable.fromJson(data) as T;
+    if (t == _i67.EmptyModelRelationItem) {
+      return _i67.EmptyModelRelationItem.fromJson(data) as T;
     }
-    if (t == _i66.RelationEmptyModel) {
-      return _i66.RelationEmptyModel.fromJson(data) as T;
+    if (t == _i68.EmptyModelWithTable) {
+      return _i68.EmptyModelWithTable.fromJson(data) as T;
     }
-    if (t == _i67.ExceptionWithData) {
-      return _i67.ExceptionWithData.fromJson(data) as T;
+    if (t == _i69.RelationEmptyModel) {
+      return _i69.RelationEmptyModel.fromJson(data) as T;
     }
-    if (t == _i68.ByNameEnumWithNameValue) {
-      return _i68.ByNameEnumWithNameValue.fromJson(data) as T;
+    if (t == _i70.ExceptionWithData) {
+      return _i70.ExceptionWithData.fromJson(data) as T;
     }
-    if (t == _i69.CourseUuid) {
-      return _i69.CourseUuid.fromJson(data) as T;
+    if (t == _i71.ImmutableChildObject) {
+      return _i71.ImmutableChildObject.fromJson(data) as T;
     }
-    if (t == _i70.GrandparentClass) {
-      return _i70.GrandparentClass.fromJson(data) as T;
+    if (t == _i72.ImmutableChildObjectWithNoAdditionalFields) {
+      return _i72.ImmutableChildObjectWithNoAdditionalFields.fromJson(data)
+          as T;
     }
-    if (t == _i71.EnrollmentInt) {
-      return _i71.EnrollmentInt.fromJson(data) as T;
+    if (t == _i73.ImmutableObject) {
+      return _i73.ImmutableObject.fromJson(data) as T;
     }
-    if (t == _i72.ParentWithDefault) {
-      return _i72.ParentWithDefault.fromJson(data) as T;
+    if (t == _i74.ImmutableObjectWithImmutableObject) {
+      return _i74.ImmutableObjectWithImmutableObject.fromJson(data) as T;
     }
-    if (t == _i73.StudentUuid) {
-      return _i73.StudentUuid.fromJson(data) as T;
+    if (t == _i75.ImmutableObjectWithList) {
+      return _i75.ImmutableObjectWithList.fromJson(data) as T;
     }
-    if (t == _i74.ArenaUuid) {
-      return _i74.ArenaUuid.fromJson(data) as T;
+    if (t == _i76.ImmutableObjectWithMap) {
+      return _i76.ImmutableObjectWithMap.fromJson(data) as T;
     }
-    if (t == _i75.PlayerUuid) {
-      return _i75.PlayerUuid.fromJson(data) as T;
+    if (t == _i77.ImmutableObjectWithMultipleFields) {
+      return _i77.ImmutableObjectWithMultipleFields.fromJson(data) as T;
     }
-    if (t == _i76.CityWithLongTableName) {
-      return _i76.CityWithLongTableName.fromJson(data) as T;
+    if (t == _i78.ImmutableObjectWithNoFields) {
+      return _i78.ImmutableObjectWithNoFields.fromJson(data) as T;
     }
-    if (t == _i77.OrganizationWithLongTableName) {
-      return _i77.OrganizationWithLongTableName.fromJson(data) as T;
+    if (t == _i79.ImmutableObjectWithRecord) {
+      return _i79.ImmutableObjectWithRecord.fromJson(data) as T;
     }
-    if (t == _i78.PersonWithLongTableName) {
-      return _i78.PersonWithLongTableName.fromJson(data) as T;
+    if (t == _i80.ImmutableObjectWithTable) {
+      return _i80.ImmutableObjectWithTable.fromJson(data) as T;
     }
-    if (t == _i79.MaxFieldName) {
-      return _i79.MaxFieldName.fromJson(data) as T;
+    if (t == _i81.ImmutableObjectWithTwentyFields) {
+      return _i81.ImmutableObjectWithTwentyFields.fromJson(data) as T;
     }
-    if (t == _i80.LongImplicitIdField) {
-      return _i80.LongImplicitIdField.fromJson(data) as T;
+    if (t == _i82.ChildClass) {
+      return _i82.ChildClass.fromJson(data) as T;
     }
-    if (t == _i81.LongImplicitIdFieldCollection) {
-      return _i81.LongImplicitIdFieldCollection.fromJson(data) as T;
+    if (t == _i83.ServerOnlyChildClass) {
+      return _i83.ServerOnlyChildClass.fromJson(data) as T;
     }
-    if (t == _i82.RelationToMultipleMaxFieldName) {
-      return _i82.RelationToMultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i84.ChildWithDefault) {
+      return _i84.ChildWithDefault.fromJson(data) as T;
     }
-    if (t == _i83.UserNote) {
-      return _i83.UserNote.fromJson(data) as T;
+    if (t == _i85.ChildWithInheritedId) {
+      return _i85.ChildWithInheritedId.fromJson(data) as T;
     }
-    if (t == _i84.UserNoteCollection) {
-      return _i84.UserNoteCollection.fromJson(data) as T;
+    if (t == _i86.ChildClassWithoutId) {
+      return _i86.ChildClassWithoutId.fromJson(data) as T;
     }
-    if (t == _i85.UserNoteCollectionWithALongName) {
-      return _i85.UserNoteCollectionWithALongName.fromJson(data) as T;
+    if (t == _i87.ServerOnlyChildClassWithoutId) {
+      return _i87.ServerOnlyChildClassWithoutId.fromJson(data) as T;
     }
-    if (t == _i86.UserNoteWithALongName) {
-      return _i86.UserNoteWithALongName.fromJson(data) as T;
+    if (t == _i88.ParentClass) {
+      return _i88.ParentClass.fromJson(data) as T;
     }
-    if (t == _i87.MultipleMaxFieldName) {
-      return _i87.MultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i89.GrandparentClass) {
+      return _i89.GrandparentClass.fromJson(data) as T;
     }
-    if (t == _i88.City) {
-      return _i88.City.fromJson(data) as T;
+    if (t == _i90.ParentClassWithoutId) {
+      return _i90.ParentClassWithoutId.fromJson(data) as T;
     }
-    if (t == _i89.Organization) {
-      return _i89.Organization.fromJson(data) as T;
+    if (t == _i91.GrandparentClassWithId) {
+      return _i91.GrandparentClassWithId.fromJson(data) as T;
     }
-    if (t == _i90.Person) {
-      return _i90.Person.fromJson(data) as T;
+    if (t == _i92.NonServerOnlyParentClass) {
+      return _i92.NonServerOnlyParentClass.fromJson(data) as T;
     }
-    if (t == _i91.Course) {
-      return _i91.Course.fromJson(data) as T;
+    if (t == _i93.ParentWithChangedId) {
+      return _i93.ParentWithChangedId.fromJson(data) as T;
     }
-    if (t == _i92.Enrollment) {
-      return _i92.Enrollment.fromJson(data) as T;
+    if (t == _i94.ParentWithDefault) {
+      return _i94.ParentWithDefault.fromJson(data) as T;
     }
-    if (t == _i93.Student) {
-      return _i93.Student.fromJson(data) as T;
+    if (t == _i95.SealedGrandChild) {
+      return _i95.SealedGrandChild.fromJson(data) as T;
     }
-    if (t == _i94.ObjectUser) {
-      return _i94.ObjectUser.fromJson(data) as T;
+    if (t == _i95.SealedChild) {
+      return _i95.SealedChild.fromJson(data) as T;
     }
-    if (t == _i95.ParentUser) {
-      return _i95.ParentUser.fromJson(data) as T;
+    if (t == _i95.SealedOtherChild) {
+      return _i95.SealedOtherChild.fromJson(data) as T;
     }
-    if (t == _i96.Arena) {
-      return _i96.Arena.fromJson(data) as T;
+    if (t == _i96.CityWithLongTableName) {
+      return _i96.CityWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i97.Player) {
-      return _i97.Player.fromJson(data) as T;
+    if (t == _i97.OrganizationWithLongTableName) {
+      return _i97.OrganizationWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i98.Team) {
-      return _i98.Team.fromJson(data) as T;
+    if (t == _i98.PersonWithLongTableName) {
+      return _i98.PersonWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i99.Comment) {
-      return _i99.Comment.fromJson(data) as T;
+    if (t == _i99.MaxFieldName) {
+      return _i99.MaxFieldName.fromJson(data) as T;
     }
-    if (t == _i100.Customer) {
-      return _i100.Customer.fromJson(data) as T;
+    if (t == _i100.LongImplicitIdField) {
+      return _i100.LongImplicitIdField.fromJson(data) as T;
     }
-    if (t == _i101.Book) {
-      return _i101.Book.fromJson(data) as T;
+    if (t == _i101.LongImplicitIdFieldCollection) {
+      return _i101.LongImplicitIdFieldCollection.fromJson(data) as T;
     }
-    if (t == _i102.Chapter) {
-      return _i102.Chapter.fromJson(data) as T;
+    if (t == _i102.RelationToMultipleMaxFieldName) {
+      return _i102.RelationToMultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i103.Order) {
-      return _i103.Order.fromJson(data) as T;
+    if (t == _i103.UserNote) {
+      return _i103.UserNote.fromJson(data) as T;
     }
-    if (t == _i104.Address) {
-      return _i104.Address.fromJson(data) as T;
+    if (t == _i104.UserNoteCollection) {
+      return _i104.UserNoteCollection.fromJson(data) as T;
     }
-    if (t == _i105.Citizen) {
-      return _i105.Citizen.fromJson(data) as T;
+    if (t == _i105.UserNoteCollectionWithALongName) {
+      return _i105.UserNoteCollectionWithALongName.fromJson(data) as T;
     }
-    if (t == _i106.Company) {
-      return _i106.Company.fromJson(data) as T;
+    if (t == _i106.UserNoteWithALongName) {
+      return _i106.UserNoteWithALongName.fromJson(data) as T;
     }
-    if (t == _i107.Town) {
-      return _i107.Town.fromJson(data) as T;
+    if (t == _i107.MultipleMaxFieldName) {
+      return _i107.MultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i108.Blocking) {
-      return _i108.Blocking.fromJson(data) as T;
+    if (t == _i108.City) {
+      return _i108.City.fromJson(data) as T;
     }
-    if (t == _i109.MyFeatureModel) {
-      return _i109.MyFeatureModel.fromJson(data) as T;
+    if (t == _i109.Organization) {
+      return _i109.Organization.fromJson(data) as T;
     }
-    if (t == _i110.Cat) {
-      return _i110.Cat.fromJson(data) as T;
+    if (t == _i110.Person) {
+      return _i110.Person.fromJson(data) as T;
     }
-    if (t == _i111.Post) {
-      return _i111.Post.fromJson(data) as T;
+    if (t == _i111.Course) {
+      return _i111.Course.fromJson(data) as T;
     }
-    if (t == _i112.ModuleDatatype) {
-      return _i112.ModuleDatatype.fromJson(data) as T;
+    if (t == _i112.Enrollment) {
+      return _i112.Enrollment.fromJson(data) as T;
     }
-    if (t == _i113.Nullability) {
-      return _i113.Nullability.fromJson(data) as T;
+    if (t == _i113.Student) {
+      return _i113.Student.fromJson(data) as T;
     }
-    if (t == _i114.ObjectFieldPersist) {
-      return _i114.ObjectFieldPersist.fromJson(data) as T;
+    if (t == _i114.ObjectUser) {
+      return _i114.ObjectUser.fromJson(data) as T;
     }
-    if (t == _i115.ObjectFieldScopes) {
-      return _i115.ObjectFieldScopes.fromJson(data) as T;
+    if (t == _i115.ParentUser) {
+      return _i115.ParentUser.fromJson(data) as T;
     }
-    if (t == _i116.ObjectWithBit) {
-      return _i116.ObjectWithBit.fromJson(data) as T;
+    if (t == _i116.Arena) {
+      return _i116.Arena.fromJson(data) as T;
     }
-    if (t == _i117.ObjectWithByteData) {
-      return _i117.ObjectWithByteData.fromJson(data) as T;
+    if (t == _i117.Player) {
+      return _i117.Player.fromJson(data) as T;
     }
-    if (t == _i118.ObjectWithCustomClass) {
-      return _i118.ObjectWithCustomClass.fromJson(data) as T;
+    if (t == _i118.Team) {
+      return _i118.Team.fromJson(data) as T;
     }
-    if (t == _i119.ObjectWithDuration) {
-      return _i119.ObjectWithDuration.fromJson(data) as T;
+    if (t == _i119.Comment) {
+      return _i119.Comment.fromJson(data) as T;
     }
-    if (t == _i120.ObjectWithEnum) {
-      return _i120.ObjectWithEnum.fromJson(data) as T;
+    if (t == _i120.Customer) {
+      return _i120.Customer.fromJson(data) as T;
     }
-    if (t == _i121.ObjectWithHalfVector) {
-      return _i121.ObjectWithHalfVector.fromJson(data) as T;
+    if (t == _i121.Book) {
+      return _i121.Book.fromJson(data) as T;
     }
-    if (t == _i122.ObjectWithIndex) {
-      return _i122.ObjectWithIndex.fromJson(data) as T;
+    if (t == _i122.Chapter) {
+      return _i122.Chapter.fromJson(data) as T;
     }
-    if (t == _i123.ObjectWithJsonb) {
-      return _i123.ObjectWithJsonb.fromJson(data) as T;
+    if (t == _i123.Order) {
+      return _i123.Order.fromJson(data) as T;
     }
-    if (t == _i124.ObjectWithJsonbClassLevel) {
-      return _i124.ObjectWithJsonbClassLevel.fromJson(data) as T;
+    if (t == _i124.Address) {
+      return _i124.Address.fromJson(data) as T;
     }
-    if (t == _i125.ObjectWithMaps) {
-      return _i125.ObjectWithMaps.fromJson(data) as T;
+    if (t == _i125.Citizen) {
+      return _i125.Citizen.fromJson(data) as T;
     }
-    if (t == _i126.ObjectWithNullableCustomClass) {
-      return _i126.ObjectWithNullableCustomClass.fromJson(data) as T;
+    if (t == _i126.Company) {
+      return _i126.Company.fromJson(data) as T;
     }
-    if (t == _i127.ObjectWithObject) {
-      return _i127.ObjectWithObject.fromJson(data) as T;
+    if (t == _i127.Town) {
+      return _i127.Town.fromJson(data) as T;
     }
-    if (t == _i128.ObjectWithParent) {
-      return _i128.ObjectWithParent.fromJson(data) as T;
+    if (t == _i128.Blocking) {
+      return _i128.Blocking.fromJson(data) as T;
     }
-    if (t == _i129.ObjectWithSelfParent) {
-      return _i129.ObjectWithSelfParent.fromJson(data) as T;
+    if (t == _i129.Member) {
+      return _i129.Member.fromJson(data) as T;
     }
-    if (t == _i130.ObjectWithSparseVector) {
-      return _i130.ObjectWithSparseVector.fromJson(data) as T;
+    if (t == _i130.Cat) {
+      return _i130.Cat.fromJson(data) as T;
     }
-    if (t == _i131.ObjectWithUuid) {
-      return _i131.ObjectWithUuid.fromJson(data) as T;
+    if (t == _i131.Post) {
+      return _i131.Post.fromJson(data) as T;
     }
-    if (t == _i132.ObjectWithVector) {
-      return _i132.ObjectWithVector.fromJson(data) as T;
+    if (t == _i132.ModuleDatatype) {
+      return _i132.ModuleDatatype.fromJson(data) as T;
     }
-    if (t == _i133.Record) {
-      return _i133.Record.fromJson(data) as T;
+    if (t == _i133.MyFeatureModel) {
+      return _i133.MyFeatureModel.fromJson(data) as T;
     }
-    if (t == _i134.RelatedUniqueData) {
-      return _i134.RelatedUniqueData.fromJson(data) as T;
+    if (t == _i134.Nullability) {
+      return _i134.Nullability.fromJson(data) as T;
     }
-    if (t == _i135.ExceptionWithRequiredField) {
-      return _i135.ExceptionWithRequiredField.fromJson(data) as T;
+    if (t == _i135.ObjectFieldPersist) {
+      return _i135.ObjectFieldPersist.fromJson(data) as T;
     }
-    if (t == _i136.ModelWithRequiredField) {
-      return _i136.ModelWithRequiredField.fromJson(data) as T;
+    if (t == _i136.ObjectFieldScopes) {
+      return _i136.ObjectFieldScopes.fromJson(data) as T;
     }
-    if (t == _i137.ScopeNoneFields) {
-      return _i137.ScopeNoneFields.fromJson(data) as T;
+    if (t == _i137.ObjectWithBit) {
+      return _i137.ObjectWithBit.fromJson(data) as T;
     }
-    if (t == _i138.ScopeServerOnlyField) {
-      return _i138.ScopeServerOnlyField.fromJson(data) as T;
+    if (t == _i138.ObjectWithByteData) {
+      return _i138.ObjectWithByteData.fromJson(data) as T;
     }
-    if (t == _i139.TeamInt) {
-      return _i139.TeamInt.fromJson(data) as T;
+    if (t == _i139.ObjectWithCustomClass) {
+      return _i139.ObjectWithCustomClass.fromJson(data) as T;
     }
-    if (t == _i140.DefaultServerOnlyClass) {
-      return _i140.DefaultServerOnlyClass.fromJson(data) as T;
+    if (t == _i140.ObjectWithDuration) {
+      return _i140.ObjectWithDuration.fromJson(data) as T;
     }
-    if (t == _i141.DefaultServerOnlyEnum) {
-      return _i141.DefaultServerOnlyEnum.fromJson(data) as T;
+    if (t == _i141.ObjectWithEnum) {
+      return _i141.ObjectWithEnum.fromJson(data) as T;
     }
-    if (t == _i142.NotServerOnlyClass) {
-      return _i142.NotServerOnlyClass.fromJson(data) as T;
+    if (t == _i142.ObjectWithHalfVector) {
+      return _i142.ObjectWithHalfVector.fromJson(data) as T;
     }
-    if (t == _i143.NotServerOnlyEnum) {
-      return _i143.NotServerOnlyEnum.fromJson(data) as T;
+    if (t == _i143.ObjectWithIndex) {
+      return _i143.ObjectWithIndex.fromJson(data) as T;
     }
-    if (t == _i144.ServerOnlyClass) {
-      return _i144.ServerOnlyClass.fromJson(data) as T;
+    if (t == _i144.ObjectWithJsonb) {
+      return _i144.ObjectWithJsonb.fromJson(data) as T;
     }
-    if (t == _i145.ServerOnlyEnum) {
-      return _i145.ServerOnlyEnum.fromJson(data) as T;
+    if (t == _i145.ObjectWithJsonbClassLevel) {
+      return _i145.ObjectWithJsonbClassLevel.fromJson(data) as T;
     }
-    if (t == _i146.ServerOnlyClassField) {
-      return _i146.ServerOnlyClassField.fromJson(data) as T;
+    if (t == _i146.ObjectWithMaps) {
+      return _i146.ObjectWithMaps.fromJson(data) as T;
     }
-    if (t == _i147.ServerOnlyDefault) {
-      return _i147.ServerOnlyDefault.fromJson(data) as T;
+    if (t == _i147.ObjectWithNullableCustomClass) {
+      return _i147.ObjectWithNullableCustomClass.fromJson(data) as T;
     }
-    if (t == _i148.SimpleData) {
-      return _i148.SimpleData.fromJson(data) as T;
+    if (t == _i148.ObjectWithObject) {
+      return _i148.ObjectWithObject.fromJson(data) as T;
     }
-    if (t == _i149.SimpleDataList) {
-      return _i149.SimpleDataList.fromJson(data) as T;
+    if (t == _i149.ObjectWithParent) {
+      return _i149.ObjectWithParent.fromJson(data) as T;
     }
-    if (t == _i150.SimpleDataMap) {
-      return _i150.SimpleDataMap.fromJson(data) as T;
+    if (t == _i150.ObjectWithSelfParent) {
+      return _i150.ObjectWithSelfParent.fromJson(data) as T;
     }
-    if (t == _i151.SimpleDataObject) {
-      return _i151.SimpleDataObject.fromJson(data) as T;
+    if (t == _i151.ObjectWithSparseVector) {
+      return _i151.ObjectWithSparseVector.fromJson(data) as T;
     }
-    if (t == _i152.SimpleDateTime) {
-      return _i152.SimpleDateTime.fromJson(data) as T;
+    if (t == _i152.ObjectWithUuid) {
+      return _i152.ObjectWithUuid.fromJson(data) as T;
     }
-    if (t == _i153.ModelInSubfolder) {
-      return _i153.ModelInSubfolder.fromJson(data) as T;
+    if (t == _i153.ObjectWithVector) {
+      return _i153.ObjectWithVector.fromJson(data) as T;
     }
-    if (t == _i154.TestEnum) {
-      return _i154.TestEnum.fromJson(data) as T;
+    if (t == _i154.Record) {
+      return _i154.Record.fromJson(data) as T;
     }
-    if (t == _i155.TestEnumStringified) {
-      return _i155.TestEnumStringified.fromJson(data) as T;
+    if (t == _i155.RelatedUniqueData) {
+      return _i155.RelatedUniqueData.fromJson(data) as T;
     }
-    if (t == _i156.Types) {
-      return _i156.Types.fromJson(data) as T;
+    if (t == _i156.ExceptionWithRequiredField) {
+      return _i156.ExceptionWithRequiredField.fromJson(data) as T;
     }
-    if (t == _i157.TypesList) {
-      return _i157.TypesList.fromJson(data) as T;
+    if (t == _i157.ModelWithRequiredField) {
+      return _i157.ModelWithRequiredField.fromJson(data) as T;
     }
-    if (t == _i158.TypesMap) {
-      return _i158.TypesMap.fromJson(data) as T;
+    if (t == _i158.ScopeNoneFields) {
+      return _i158.ScopeNoneFields.fromJson(data) as T;
     }
-    if (t == _i159.TypesRecord) {
-      return _i159.TypesRecord.fromJson(data) as T;
+    if (t == _i159.ScopeServerOnlyFieldChild) {
+      return _i159.ScopeServerOnlyFieldChild.fromJson(data) as T;
     }
-    if (t == _i160.TypesSet) {
-      return _i160.TypesSet.fromJson(data) as T;
+    if (t == _i160.ScopeServerOnlyField) {
+      return _i160.ScopeServerOnlyField.fromJson(data) as T;
     }
-    if (t == _i161.TypesSetRequired) {
-      return _i161.TypesSetRequired.fromJson(data) as T;
+    if (t == _i161.DefaultServerOnlyClass) {
+      return _i161.DefaultServerOnlyClass.fromJson(data) as T;
     }
-    if (t == _i162.UniqueData) {
-      return _i162.UniqueData.fromJson(data) as T;
+    if (t == _i162.DefaultServerOnlyEnum) {
+      return _i162.DefaultServerOnlyEnum.fromJson(data) as T;
     }
-    if (t == _i163.Member) {
-      return _i163.Member.fromJson(data) as T;
+    if (t == _i163.NotServerOnlyClass) {
+      return _i163.NotServerOnlyClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.ScopeServerOnlyFieldChild?>()) {
+    if (t == _i164.NotServerOnlyEnum) {
+      return _i164.NotServerOnlyEnum.fromJson(data) as T;
+    }
+    if (t == _i165.ServerOnlyClass) {
+      return _i165.ServerOnlyClass.fromJson(data) as T;
+    }
+    if (t == _i166.ServerOnlyEnum) {
+      return _i166.ServerOnlyEnum.fromJson(data) as T;
+    }
+    if (t == _i167.ServerOnlyClassField) {
+      return _i167.ServerOnlyClassField.fromJson(data) as T;
+    }
+    if (t == _i168.ServerOnlyDefault) {
+      return _i168.ServerOnlyDefault.fromJson(data) as T;
+    }
+    if (t == _i169.SessionAuthInfo) {
+      return _i169.SessionAuthInfo.fromJson(data) as T;
+    }
+    if (t == _i170.SimpleData) {
+      return _i170.SimpleData.fromJson(data) as T;
+    }
+    if (t == _i171.SimpleDataList) {
+      return _i171.SimpleDataList.fromJson(data) as T;
+    }
+    if (t == _i172.SimpleDataMap) {
+      return _i172.SimpleDataMap.fromJson(data) as T;
+    }
+    if (t == _i173.SimpleDataObject) {
+      return _i173.SimpleDataObject.fromJson(data) as T;
+    }
+    if (t == _i174.SimpleDateTime) {
+      return _i174.SimpleDateTime.fromJson(data) as T;
+    }
+    if (t == _i175.ModelInSubfolder) {
+      return _i175.ModelInSubfolder.fromJson(data) as T;
+    }
+    if (t == _i176.TestEnum) {
+      return _i176.TestEnum.fromJson(data) as T;
+    }
+    if (t == _i177.TestEnumDefaultSerialization) {
+      return _i177.TestEnumDefaultSerialization.fromJson(data) as T;
+    }
+    if (t == _i178.TestEnumStringified) {
+      return _i178.TestEnumStringified.fromJson(data) as T;
+    }
+    if (t == _i179.Types) {
+      return _i179.Types.fromJson(data) as T;
+    }
+    if (t == _i180.TypesList) {
+      return _i180.TypesList.fromJson(data) as T;
+    }
+    if (t == _i181.TypesMap) {
+      return _i181.TypesMap.fromJson(data) as T;
+    }
+    if (t == _i182.TypesRecord) {
+      return _i182.TypesRecord.fromJson(data) as T;
+    }
+    if (t == _i183.TypesSet) {
+      return _i183.TypesSet.fromJson(data) as T;
+    }
+    if (t == _i184.TypesSetRequired) {
+      return _i184.TypesSetRequired.fromJson(data) as T;
+    }
+    if (t == _i185.UniqueData) {
+      return _i185.UniqueData.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i5.ByIndexEnumWithNameValue?>()) {
+      return (data != null ? _i5.ByIndexEnumWithNameValue.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i6.ByNameEnumWithNameValue?>()) {
+      return (data != null ? _i6.ByNameEnumWithNameValue.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i7.CourseUuid?>()) {
+      return (data != null ? _i7.CourseUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.EnrollmentInt?>()) {
+      return (data != null ? _i8.EnrollmentInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.StudentUuid?>()) {
+      return (data != null ? _i9.StudentUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.ArenaUuid?>()) {
+      return (data != null ? _i10.ArenaUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.PlayerUuid?>()) {
+      return (data != null ? _i11.PlayerUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.TeamInt?>()) {
+      return (data != null ? _i12.TeamInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.CommentInt?>()) {
+      return (data != null ? _i13.CommentInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.CustomerInt?>()) {
+      return (data != null ? _i14.CustomerInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.OrderUuid?>()) {
+      return (data != null ? _i15.OrderUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.AddressUuid?>()) {
+      return (data != null ? _i16.AddressUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.CitizenInt?>()) {
+      return (data != null ? _i17.CitizenInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.CompanyUuid?>()) {
+      return (data != null ? _i18.CompanyUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i19.TownInt?>()) {
+      return (data != null ? _i19.TownInt.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.ChangedIdTypeSelf?>()) {
+      return (data != null ? _i20.ChangedIdTypeSelf.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.ServerOnlyChangedIdFieldClass?>()) {
       return (data != null
-          ? _i5.ScopeServerOnlyFieldChild.fromJson(data)
+          ? _i21.ServerOnlyChangedIdFieldClass.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i6.ChildClass?>()) {
-      return (data != null ? _i6.ChildClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.BigIntDefault?>()) {
+      return (data != null ? _i22.BigIntDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.ChildWithDefault?>()) {
-      return (data != null ? _i7.ChildWithDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.BigIntDefaultMix?>()) {
+      return (data != null ? _i23.BigIntDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.ParentClass?>()) {
-      return (data != null ? _i8.ParentClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.SealedGrandChild?>()) {
-      return (data != null ? _i9.SealedGrandChild.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.SealedChild?>()) {
-      return (data != null ? _i9.SealedChild.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.SealedOtherChild?>()) {
-      return (data != null ? _i9.SealedOtherChild.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.UriDefaultModel?>()) {
-      return (data != null ? _i10.UriDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.CommentInt?>()) {
-      return (data != null ? _i11.CommentInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.CustomerInt?>()) {
-      return (data != null ? _i12.CustomerInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i13.OrderUuid?>()) {
-      return (data != null ? _i13.OrderUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.AddressUuid?>()) {
-      return (data != null ? _i14.AddressUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.CitizenInt?>()) {
-      return (data != null ? _i15.CitizenInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.CompanyUuid?>()) {
-      return (data != null ? _i16.CompanyUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i17.TownInt?>()) {
-      return (data != null ? _i17.TownInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.ChangedIdTypeSelf?>()) {
-      return (data != null ? _i18.ChangedIdTypeSelf.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.BigIntDefault?>()) {
-      return (data != null ? _i19.BigIntDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.BigIntDefaultMix?>()) {
-      return (data != null ? _i20.BigIntDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.BigIntDefaultModel?>()) {
-      return (data != null ? _i21.BigIntDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i24.BigIntDefaultModel?>()) {
+      return (data != null ? _i24.BigIntDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i22.BigIntDefaultPersist?>()) {
-      return (data != null ? _i22.BigIntDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i25.BigIntDefaultPersist?>()) {
+      return (data != null ? _i25.BigIntDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.BoolDefault?>()) {
-      return (data != null ? _i23.BoolDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.BoolDefault?>()) {
+      return (data != null ? _i26.BoolDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.BoolDefaultMix?>()) {
-      return (data != null ? _i24.BoolDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i27.BoolDefaultMix?>()) {
+      return (data != null ? _i27.BoolDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.BoolDefaultModel?>()) {
-      return (data != null ? _i25.BoolDefaultModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.BoolDefaultModel?>()) {
+      return (data != null ? _i28.BoolDefaultModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.BoolDefaultPersist?>()) {
-      return (data != null ? _i26.BoolDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i29.BoolDefaultPersist?>()) {
+      return (data != null ? _i29.BoolDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i27.DateTimeDefault?>()) {
-      return (data != null ? _i27.DateTimeDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i30.DateTimeDefault?>()) {
+      return (data != null ? _i30.DateTimeDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i28.DateTimeDefaultMix?>()) {
-      return (data != null ? _i28.DateTimeDefaultMix.fromJson(data) : null)
+    if (t == _i1.getType<_i31.DateTimeDefaultMix?>()) {
+      return (data != null ? _i31.DateTimeDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i29.DateTimeDefaultModel?>()) {
-      return (data != null ? _i29.DateTimeDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i32.DateTimeDefaultModel?>()) {
+      return (data != null ? _i32.DateTimeDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i30.DateTimeDefaultPersist?>()) {
-      return (data != null ? _i30.DateTimeDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i33.DateTimeDefaultPersist?>()) {
+      return (data != null ? _i33.DateTimeDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i31.DoubleDefault?>()) {
-      return (data != null ? _i31.DoubleDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.DoubleDefault?>()) {
+      return (data != null ? _i34.DoubleDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i32.DoubleDefaultMix?>()) {
-      return (data != null ? _i32.DoubleDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.DoubleDefaultMix?>()) {
+      return (data != null ? _i35.DoubleDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.DoubleDefaultModel?>()) {
-      return (data != null ? _i33.DoubleDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i36.DoubleDefaultModel?>()) {
+      return (data != null ? _i36.DoubleDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i34.DoubleDefaultPersist?>()) {
-      return (data != null ? _i34.DoubleDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i37.DoubleDefaultPersist?>()) {
+      return (data != null ? _i37.DoubleDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i35.DurationDefault?>()) {
-      return (data != null ? _i35.DurationDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i38.DurationDefault?>()) {
+      return (data != null ? _i38.DurationDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i36.DurationDefaultMix?>()) {
-      return (data != null ? _i36.DurationDefaultMix.fromJson(data) : null)
+    if (t == _i1.getType<_i39.DurationDefaultMix?>()) {
+      return (data != null ? _i39.DurationDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i37.DurationDefaultModel?>()) {
-      return (data != null ? _i37.DurationDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i40.DurationDefaultModel?>()) {
+      return (data != null ? _i40.DurationDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i38.DurationDefaultPersist?>()) {
-      return (data != null ? _i38.DurationDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i41.DurationDefaultPersist?>()) {
+      return (data != null ? _i41.DurationDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i39.EnumDefault?>()) {
-      return (data != null ? _i39.EnumDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i42.EnumDefault?>()) {
+      return (data != null ? _i42.EnumDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i40.EnumDefaultMix?>()) {
-      return (data != null ? _i40.EnumDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i43.EnumDefaultMix?>()) {
+      return (data != null ? _i43.EnumDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i41.EnumDefaultModel?>()) {
-      return (data != null ? _i41.EnumDefaultModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i44.EnumDefaultModel?>()) {
+      return (data != null ? _i44.EnumDefaultModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i42.EnumDefaultPersist?>()) {
-      return (data != null ? _i42.EnumDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i45.EnumDefaultPersist?>()) {
+      return (data != null ? _i45.EnumDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i43.ByIndexEnum?>()) {
-      return (data != null ? _i43.ByIndexEnum.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i46.ByIndexEnum?>()) {
+      return (data != null ? _i46.ByIndexEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i44.ByNameEnum?>()) {
-      return (data != null ? _i44.ByNameEnum.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i47.ByNameEnum?>()) {
+      return (data != null ? _i47.ByNameEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i45.DefaultValueEnum?>()) {
-      return (data != null ? _i45.DefaultValueEnum.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i48.DefaultValueEnum?>()) {
+      return (data != null ? _i48.DefaultValueEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i46.DefaultException?>()) {
-      return (data != null ? _i46.DefaultException.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i49.DefaultException?>()) {
+      return (data != null ? _i49.DefaultException.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i47.IntDefault?>()) {
-      return (data != null ? _i47.IntDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i50.IntDefault?>()) {
+      return (data != null ? _i50.IntDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i48.IntDefaultMix?>()) {
-      return (data != null ? _i48.IntDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i51.IntDefaultMix?>()) {
+      return (data != null ? _i51.IntDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i49.IntDefaultModel?>()) {
-      return (data != null ? _i49.IntDefaultModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i52.IntDefaultModel?>()) {
+      return (data != null ? _i52.IntDefaultModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i50.IntDefaultPersist?>()) {
-      return (data != null ? _i50.IntDefaultPersist.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i53.IntDefaultPersist?>()) {
+      return (data != null ? _i53.IntDefaultPersist.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i51.StringDefault?>()) {
-      return (data != null ? _i51.StringDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i54.StringDefault?>()) {
+      return (data != null ? _i54.StringDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i52.StringDefaultMix?>()) {
-      return (data != null ? _i52.StringDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i55.StringDefaultMix?>()) {
+      return (data != null ? _i55.StringDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i53.StringDefaultModel?>()) {
-      return (data != null ? _i53.StringDefaultModel.fromJson(data) : null)
+    if (t == _i1.getType<_i56.StringDefaultModel?>()) {
+      return (data != null ? _i56.StringDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i54.StringDefaultPersist?>()) {
-      return (data != null ? _i54.StringDefaultPersist.fromJson(data) : null)
+    if (t == _i1.getType<_i57.StringDefaultPersist?>()) {
+      return (data != null ? _i57.StringDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i55.UriDefault?>()) {
-      return (data != null ? _i55.UriDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i58.UriDefault?>()) {
+      return (data != null ? _i58.UriDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i56.UriDefaultMix?>()) {
-      return (data != null ? _i56.UriDefaultMix.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i59.UriDefaultMix?>()) {
+      return (data != null ? _i59.UriDefaultMix.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i57.ByIndexEnumWithNameValue?>()) {
+    if (t == _i1.getType<_i60.UriDefaultModel?>()) {
+      return (data != null ? _i60.UriDefaultModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i61.UriDefaultPersist?>()) {
+      return (data != null ? _i61.UriDefaultPersist.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i62.UuidDefault?>()) {
+      return (data != null ? _i62.UuidDefault.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i63.UuidDefaultMix?>()) {
+      return (data != null ? _i63.UuidDefaultMix.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i64.UuidDefaultModel?>()) {
+      return (data != null ? _i64.UuidDefaultModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i65.UuidDefaultPersist?>()) {
+      return (data != null ? _i65.UuidDefaultPersist.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i66.EmptyModel?>()) {
+      return (data != null ? _i66.EmptyModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i67.EmptyModelRelationItem?>()) {
+      return (data != null ? _i67.EmptyModelRelationItem.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i68.EmptyModelWithTable?>()) {
+      return (data != null ? _i68.EmptyModelWithTable.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i69.RelationEmptyModel?>()) {
+      return (data != null ? _i69.RelationEmptyModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i70.ExceptionWithData?>()) {
+      return (data != null ? _i70.ExceptionWithData.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i71.ImmutableChildObject?>()) {
+      return (data != null ? _i71.ImmutableChildObject.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i72.ImmutableChildObjectWithNoAdditionalFields?>()) {
       return (data != null
-          ? _i57.ByIndexEnumWithNameValue.fromJson(data)
+          ? _i72.ImmutableChildObjectWithNoAdditionalFields.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i58.UriDefaultPersist?>()) {
-      return (data != null ? _i58.UriDefaultPersist.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i73.ImmutableObject?>()) {
+      return (data != null ? _i73.ImmutableObject.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i59.UuidDefault?>()) {
-      return (data != null ? _i59.UuidDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i60.UuidDefaultMix?>()) {
-      return (data != null ? _i60.UuidDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i61.UuidDefaultModel?>()) {
-      return (data != null ? _i61.UuidDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i62.UuidDefaultPersist?>()) {
-      return (data != null ? _i62.UuidDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i63.EmptyModel?>()) {
-      return (data != null ? _i63.EmptyModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i64.EmptyModelRelationItem?>()) {
-      return (data != null ? _i64.EmptyModelRelationItem.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i65.EmptyModelWithTable?>()) {
-      return (data != null ? _i65.EmptyModelWithTable.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i66.RelationEmptyModel?>()) {
-      return (data != null ? _i66.RelationEmptyModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i67.ExceptionWithData?>()) {
-      return (data != null ? _i67.ExceptionWithData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i68.ByNameEnumWithNameValue?>()) {
-      return (data != null ? _i68.ByNameEnumWithNameValue.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i69.CourseUuid?>()) {
-      return (data != null ? _i69.CourseUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i70.GrandparentClass?>()) {
-      return (data != null ? _i70.GrandparentClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i71.EnrollmentInt?>()) {
-      return (data != null ? _i71.EnrollmentInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i72.ParentWithDefault?>()) {
-      return (data != null ? _i72.ParentWithDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i73.StudentUuid?>()) {
-      return (data != null ? _i73.StudentUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i74.ArenaUuid?>()) {
-      return (data != null ? _i74.ArenaUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i75.PlayerUuid?>()) {
-      return (data != null ? _i75.PlayerUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i76.CityWithLongTableName?>()) {
-      return (data != null ? _i76.CityWithLongTableName.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i77.OrganizationWithLongTableName?>()) {
+    if (t == _i1.getType<_i74.ImmutableObjectWithImmutableObject?>()) {
       return (data != null
-          ? _i77.OrganizationWithLongTableName.fromJson(data)
+          ? _i74.ImmutableObjectWithImmutableObject.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i78.PersonWithLongTableName?>()) {
-      return (data != null ? _i78.PersonWithLongTableName.fromJson(data) : null)
+    if (t == _i1.getType<_i75.ImmutableObjectWithList?>()) {
+      return (data != null ? _i75.ImmutableObjectWithList.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i79.MaxFieldName?>()) {
-      return (data != null ? _i79.MaxFieldName.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i80.LongImplicitIdField?>()) {
-      return (data != null ? _i80.LongImplicitIdField.fromJson(data) : null)
+    if (t == _i1.getType<_i76.ImmutableObjectWithMap?>()) {
+      return (data != null ? _i76.ImmutableObjectWithMap.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i81.LongImplicitIdFieldCollection?>()) {
+    if (t == _i1.getType<_i77.ImmutableObjectWithMultipleFields?>()) {
       return (data != null
-          ? _i81.LongImplicitIdFieldCollection.fromJson(data)
+          ? _i77.ImmutableObjectWithMultipleFields.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i82.RelationToMultipleMaxFieldName?>()) {
+    if (t == _i1.getType<_i78.ImmutableObjectWithNoFields?>()) {
       return (data != null
-          ? _i82.RelationToMultipleMaxFieldName.fromJson(data)
+          ? _i78.ImmutableObjectWithNoFields.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i83.UserNote?>()) {
-      return (data != null ? _i83.UserNote.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i84.UserNoteCollection?>()) {
-      return (data != null ? _i84.UserNoteCollection.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i85.UserNoteCollectionWithALongName?>()) {
+    if (t == _i1.getType<_i79.ImmutableObjectWithRecord?>()) {
       return (data != null
-          ? _i85.UserNoteCollectionWithALongName.fromJson(data)
+          ? _i79.ImmutableObjectWithRecord.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i86.UserNoteWithALongName?>()) {
-      return (data != null ? _i86.UserNoteWithALongName.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i87.MultipleMaxFieldName?>()) {
-      return (data != null ? _i87.MultipleMaxFieldName.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i88.City?>()) {
-      return (data != null ? _i88.City.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i89.Organization?>()) {
-      return (data != null ? _i89.Organization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i90.Person?>()) {
-      return (data != null ? _i90.Person.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i91.Course?>()) {
-      return (data != null ? _i91.Course.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i92.Enrollment?>()) {
-      return (data != null ? _i92.Enrollment.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i93.Student?>()) {
-      return (data != null ? _i93.Student.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i94.ObjectUser?>()) {
-      return (data != null ? _i94.ObjectUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i95.ParentUser?>()) {
-      return (data != null ? _i95.ParentUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i96.Arena?>()) {
-      return (data != null ? _i96.Arena.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i97.Player?>()) {
-      return (data != null ? _i97.Player.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i98.Team?>()) {
-      return (data != null ? _i98.Team.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i99.Comment?>()) {
-      return (data != null ? _i99.Comment.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i100.Customer?>()) {
-      return (data != null ? _i100.Customer.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i101.Book?>()) {
-      return (data != null ? _i101.Book.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i102.Chapter?>()) {
-      return (data != null ? _i102.Chapter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i103.Order?>()) {
-      return (data != null ? _i103.Order.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i104.Address?>()) {
-      return (data != null ? _i104.Address.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i105.Citizen?>()) {
-      return (data != null ? _i105.Citizen.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i106.Company?>()) {
-      return (data != null ? _i106.Company.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i107.Town?>()) {
-      return (data != null ? _i107.Town.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i108.Blocking?>()) {
-      return (data != null ? _i108.Blocking.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i109.MyFeatureModel?>()) {
-      return (data != null ? _i109.MyFeatureModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i110.Cat?>()) {
-      return (data != null ? _i110.Cat.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i111.Post?>()) {
-      return (data != null ? _i111.Post.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i112.ModuleDatatype?>()) {
-      return (data != null ? _i112.ModuleDatatype.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i113.Nullability?>()) {
-      return (data != null ? _i113.Nullability.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i114.ObjectFieldPersist?>()) {
-      return (data != null ? _i114.ObjectFieldPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i115.ObjectFieldScopes?>()) {
-      return (data != null ? _i115.ObjectFieldScopes.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i116.ObjectWithBit?>()) {
-      return (data != null ? _i116.ObjectWithBit.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i117.ObjectWithByteData?>()) {
-      return (data != null ? _i117.ObjectWithByteData.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i118.ObjectWithCustomClass?>()) {
-      return (data != null ? _i118.ObjectWithCustomClass.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i119.ObjectWithDuration?>()) {
-      return (data != null ? _i119.ObjectWithDuration.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i120.ObjectWithEnum?>()) {
-      return (data != null ? _i120.ObjectWithEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i121.ObjectWithHalfVector?>()) {
-      return (data != null ? _i121.ObjectWithHalfVector.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i122.ObjectWithIndex?>()) {
-      return (data != null ? _i122.ObjectWithIndex.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i123.ObjectWithJsonb?>()) {
-      return (data != null ? _i123.ObjectWithJsonb.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i124.ObjectWithJsonbClassLevel?>()) {
+    if (t == _i1.getType<_i80.ImmutableObjectWithTable?>()) {
       return (data != null
-          ? _i124.ObjectWithJsonbClassLevel.fromJson(data)
+          ? _i80.ImmutableObjectWithTable.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i125.ObjectWithMaps?>()) {
-      return (data != null ? _i125.ObjectWithMaps.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i126.ObjectWithNullableCustomClass?>()) {
+    if (t == _i1.getType<_i81.ImmutableObjectWithTwentyFields?>()) {
       return (data != null
-          ? _i126.ObjectWithNullableCustomClass.fromJson(data)
+          ? _i81.ImmutableObjectWithTwentyFields.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i127.ObjectWithObject?>()) {
-      return (data != null ? _i127.ObjectWithObject.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i82.ChildClass?>()) {
+      return (data != null ? _i82.ChildClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i128.ObjectWithParent?>()) {
-      return (data != null ? _i128.ObjectWithParent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i129.ObjectWithSelfParent?>()) {
-      return (data != null ? _i129.ObjectWithSelfParent.fromJson(data) : null)
+    if (t == _i1.getType<_i83.ServerOnlyChildClass?>()) {
+      return (data != null ? _i83.ServerOnlyChildClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i130.ObjectWithSparseVector?>()) {
-      return (data != null ? _i130.ObjectWithSparseVector.fromJson(data) : null)
+    if (t == _i1.getType<_i84.ChildWithDefault?>()) {
+      return (data != null ? _i84.ChildWithDefault.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i85.ChildWithInheritedId?>()) {
+      return (data != null ? _i85.ChildWithInheritedId.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i131.ObjectWithUuid?>()) {
-      return (data != null ? _i131.ObjectWithUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i132.ObjectWithVector?>()) {
-      return (data != null ? _i132.ObjectWithVector.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i133.Record?>()) {
-      return (data != null ? _i133.Record.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i134.RelatedUniqueData?>()) {
-      return (data != null ? _i134.RelatedUniqueData.fromJson(data) : null)
+    if (t == _i1.getType<_i86.ChildClassWithoutId?>()) {
+      return (data != null ? _i86.ChildClassWithoutId.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i135.ExceptionWithRequiredField?>()) {
+    if (t == _i1.getType<_i87.ServerOnlyChildClassWithoutId?>()) {
       return (data != null
-          ? _i135.ExceptionWithRequiredField.fromJson(data)
+          ? _i87.ServerOnlyChildClassWithoutId.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i136.ModelWithRequiredField?>()) {
-      return (data != null ? _i136.ModelWithRequiredField.fromJson(data) : null)
+    if (t == _i1.getType<_i88.ParentClass?>()) {
+      return (data != null ? _i88.ParentClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i89.GrandparentClass?>()) {
+      return (data != null ? _i89.GrandparentClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i90.ParentClassWithoutId?>()) {
+      return (data != null ? _i90.ParentClassWithoutId.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i137.ScopeNoneFields?>()) {
-      return (data != null ? _i137.ScopeNoneFields.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i138.ScopeServerOnlyField?>()) {
-      return (data != null ? _i138.ScopeServerOnlyField.fromJson(data) : null)
+    if (t == _i1.getType<_i91.GrandparentClassWithId?>()) {
+      return (data != null ? _i91.GrandparentClassWithId.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i139.TeamInt?>()) {
-      return (data != null ? _i139.TeamInt.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i140.DefaultServerOnlyClass?>()) {
-      return (data != null ? _i140.DefaultServerOnlyClass.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i141.DefaultServerOnlyEnum?>()) {
-      return (data != null ? _i141.DefaultServerOnlyEnum.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i142.NotServerOnlyClass?>()) {
-      return (data != null ? _i142.NotServerOnlyClass.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i143.NotServerOnlyEnum?>()) {
-      return (data != null ? _i143.NotServerOnlyEnum.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i144.ServerOnlyClass?>()) {
-      return (data != null ? _i144.ServerOnlyClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i145.ServerOnlyEnum?>()) {
-      return (data != null ? _i145.ServerOnlyEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i146.ServerOnlyClassField?>()) {
-      return (data != null ? _i146.ServerOnlyClassField.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i147.ServerOnlyDefault?>()) {
-      return (data != null ? _i147.ServerOnlyDefault.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i148.SimpleData?>()) {
-      return (data != null ? _i148.SimpleData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i149.SimpleDataList?>()) {
-      return (data != null ? _i149.SimpleDataList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i150.SimpleDataMap?>()) {
-      return (data != null ? _i150.SimpleDataMap.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i151.SimpleDataObject?>()) {
-      return (data != null ? _i151.SimpleDataObject.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i152.SimpleDateTime?>()) {
-      return (data != null ? _i152.SimpleDateTime.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i153.ModelInSubfolder?>()) {
-      return (data != null ? _i153.ModelInSubfolder.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i154.TestEnum?>()) {
-      return (data != null ? _i154.TestEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i155.TestEnumStringified?>()) {
-      return (data != null ? _i155.TestEnumStringified.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i156.Types?>()) {
-      return (data != null ? _i156.Types.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i157.TypesList?>()) {
-      return (data != null ? _i157.TypesList.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i158.TypesMap?>()) {
-      return (data != null ? _i158.TypesMap.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i159.TypesRecord?>()) {
-      return (data != null ? _i159.TypesRecord.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i160.TypesSet?>()) {
-      return (data != null ? _i160.TypesSet.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i161.TypesSetRequired?>()) {
-      return (data != null ? _i161.TypesSetRequired.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i162.UniqueData?>()) {
-      return (data != null ? _i162.UniqueData.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i163.Member?>()) {
-      return (data != null ? _i163.Member.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<List<_i13.OrderUuid>?>()) {
+    if (t == _i1.getType<_i92.NonServerOnlyParentClass?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i13.OrderUuid>(e)).toList()
+          ? _i92.NonServerOnlyParentClass.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<List<_i11.CommentInt>?>()) {
+    if (t == _i1.getType<_i93.ParentWithChangedId?>()) {
+      return (data != null ? _i93.ParentWithChangedId.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i94.ParentWithDefault?>()) {
+      return (data != null ? _i94.ParentWithDefault.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i95.SealedGrandChild?>()) {
+      return (data != null ? _i95.SealedGrandChild.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i95.SealedChild?>()) {
+      return (data != null ? _i95.SealedChild.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i95.SealedOtherChild?>()) {
+      return (data != null ? _i95.SealedOtherChild.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i96.CityWithLongTableName?>()) {
+      return (data != null ? _i96.CityWithLongTableName.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i97.OrganizationWithLongTableName?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i11.CommentInt>(e)).toList()
+          ? _i97.OrganizationWithLongTableName.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<List<_i18.ChangedIdTypeSelf>?>()) {
+    if (t == _i1.getType<_i98.PersonWithLongTableName?>()) {
+      return (data != null ? _i98.PersonWithLongTableName.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i99.MaxFieldName?>()) {
+      return (data != null ? _i99.MaxFieldName.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i100.LongImplicitIdField?>()) {
+      return (data != null ? _i100.LongImplicitIdField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i101.LongImplicitIdFieldCollection?>()) {
+      return (data != null
+          ? _i101.LongImplicitIdFieldCollection.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i102.RelationToMultipleMaxFieldName?>()) {
+      return (data != null
+          ? _i102.RelationToMultipleMaxFieldName.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i103.UserNote?>()) {
+      return (data != null ? _i103.UserNote.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i104.UserNoteCollection?>()) {
+      return (data != null ? _i104.UserNoteCollection.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i105.UserNoteCollectionWithALongName?>()) {
+      return (data != null
+          ? _i105.UserNoteCollectionWithALongName.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i106.UserNoteWithALongName?>()) {
+      return (data != null ? _i106.UserNoteWithALongName.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i107.MultipleMaxFieldName?>()) {
+      return (data != null ? _i107.MultipleMaxFieldName.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i108.City?>()) {
+      return (data != null ? _i108.City.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i109.Organization?>()) {
+      return (data != null ? _i109.Organization.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i110.Person?>()) {
+      return (data != null ? _i110.Person.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i111.Course?>()) {
+      return (data != null ? _i111.Course.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i112.Enrollment?>()) {
+      return (data != null ? _i112.Enrollment.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i113.Student?>()) {
+      return (data != null ? _i113.Student.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i114.ObjectUser?>()) {
+      return (data != null ? _i114.ObjectUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i115.ParentUser?>()) {
+      return (data != null ? _i115.ParentUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i116.Arena?>()) {
+      return (data != null ? _i116.Arena.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i117.Player?>()) {
+      return (data != null ? _i117.Player.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i118.Team?>()) {
+      return (data != null ? _i118.Team.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i119.Comment?>()) {
+      return (data != null ? _i119.Comment.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i120.Customer?>()) {
+      return (data != null ? _i120.Customer.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i121.Book?>()) {
+      return (data != null ? _i121.Book.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i122.Chapter?>()) {
+      return (data != null ? _i122.Chapter.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i123.Order?>()) {
+      return (data != null ? _i123.Order.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i124.Address?>()) {
+      return (data != null ? _i124.Address.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i125.Citizen?>()) {
+      return (data != null ? _i125.Citizen.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i126.Company?>()) {
+      return (data != null ? _i126.Company.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i127.Town?>()) {
+      return (data != null ? _i127.Town.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i128.Blocking?>()) {
+      return (data != null ? _i128.Blocking.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i129.Member?>()) {
+      return (data != null ? _i129.Member.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i130.Cat?>()) {
+      return (data != null ? _i130.Cat.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i131.Post?>()) {
+      return (data != null ? _i131.Post.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i132.ModuleDatatype?>()) {
+      return (data != null ? _i132.ModuleDatatype.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i133.MyFeatureModel?>()) {
+      return (data != null ? _i133.MyFeatureModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i134.Nullability?>()) {
+      return (data != null ? _i134.Nullability.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i135.ObjectFieldPersist?>()) {
+      return (data != null ? _i135.ObjectFieldPersist.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i136.ObjectFieldScopes?>()) {
+      return (data != null ? _i136.ObjectFieldScopes.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i137.ObjectWithBit?>()) {
+      return (data != null ? _i137.ObjectWithBit.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i138.ObjectWithByteData?>()) {
+      return (data != null ? _i138.ObjectWithByteData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i139.ObjectWithCustomClass?>()) {
+      return (data != null ? _i139.ObjectWithCustomClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i140.ObjectWithDuration?>()) {
+      return (data != null ? _i140.ObjectWithDuration.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i141.ObjectWithEnum?>()) {
+      return (data != null ? _i141.ObjectWithEnum.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i142.ObjectWithHalfVector?>()) {
+      return (data != null ? _i142.ObjectWithHalfVector.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i143.ObjectWithIndex?>()) {
+      return (data != null ? _i143.ObjectWithIndex.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i144.ObjectWithJsonb?>()) {
+      return (data != null ? _i144.ObjectWithJsonb.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i145.ObjectWithJsonbClassLevel?>()) {
+      return (data != null
+          ? _i145.ObjectWithJsonbClassLevel.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i146.ObjectWithMaps?>()) {
+      return (data != null ? _i146.ObjectWithMaps.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i147.ObjectWithNullableCustomClass?>()) {
+      return (data != null
+          ? _i147.ObjectWithNullableCustomClass.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i148.ObjectWithObject?>()) {
+      return (data != null ? _i148.ObjectWithObject.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i149.ObjectWithParent?>()) {
+      return (data != null ? _i149.ObjectWithParent.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i150.ObjectWithSelfParent?>()) {
+      return (data != null ? _i150.ObjectWithSelfParent.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i151.ObjectWithSparseVector?>()) {
+      return (data != null ? _i151.ObjectWithSparseVector.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i152.ObjectWithUuid?>()) {
+      return (data != null ? _i152.ObjectWithUuid.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i153.ObjectWithVector?>()) {
+      return (data != null ? _i153.ObjectWithVector.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i154.Record?>()) {
+      return (data != null ? _i154.Record.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i155.RelatedUniqueData?>()) {
+      return (data != null ? _i155.RelatedUniqueData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i156.ExceptionWithRequiredField?>()) {
+      return (data != null
+          ? _i156.ExceptionWithRequiredField.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i157.ModelWithRequiredField?>()) {
+      return (data != null ? _i157.ModelWithRequiredField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i158.ScopeNoneFields?>()) {
+      return (data != null ? _i158.ScopeNoneFields.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i159.ScopeServerOnlyFieldChild?>()) {
+      return (data != null
+          ? _i159.ScopeServerOnlyFieldChild.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i160.ScopeServerOnlyField?>()) {
+      return (data != null ? _i160.ScopeServerOnlyField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i161.DefaultServerOnlyClass?>()) {
+      return (data != null ? _i161.DefaultServerOnlyClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i162.DefaultServerOnlyEnum?>()) {
+      return (data != null ? _i162.DefaultServerOnlyEnum.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i163.NotServerOnlyClass?>()) {
+      return (data != null ? _i163.NotServerOnlyClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i164.NotServerOnlyEnum?>()) {
+      return (data != null ? _i164.NotServerOnlyEnum.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i165.ServerOnlyClass?>()) {
+      return (data != null ? _i165.ServerOnlyClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i166.ServerOnlyEnum?>()) {
+      return (data != null ? _i166.ServerOnlyEnum.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i167.ServerOnlyClassField?>()) {
+      return (data != null ? _i167.ServerOnlyClassField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i168.ServerOnlyDefault?>()) {
+      return (data != null ? _i168.ServerOnlyDefault.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i169.SessionAuthInfo?>()) {
+      return (data != null ? _i169.SessionAuthInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i170.SimpleData?>()) {
+      return (data != null ? _i170.SimpleData.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i171.SimpleDataList?>()) {
+      return (data != null ? _i171.SimpleDataList.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i172.SimpleDataMap?>()) {
+      return (data != null ? _i172.SimpleDataMap.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i173.SimpleDataObject?>()) {
+      return (data != null ? _i173.SimpleDataObject.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i174.SimpleDateTime?>()) {
+      return (data != null ? _i174.SimpleDateTime.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i175.ModelInSubfolder?>()) {
+      return (data != null ? _i175.ModelInSubfolder.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i176.TestEnum?>()) {
+      return (data != null ? _i176.TestEnum.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i177.TestEnumDefaultSerialization?>()) {
+      return (data != null
+          ? _i177.TestEnumDefaultSerialization.fromJson(data)
+          : null) as T;
+    }
+    if (t == _i1.getType<_i178.TestEnumStringified?>()) {
+      return (data != null ? _i178.TestEnumStringified.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i179.Types?>()) {
+      return (data != null ? _i179.Types.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i180.TypesList?>()) {
+      return (data != null ? _i180.TypesList.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i181.TypesMap?>()) {
+      return (data != null ? _i181.TypesMap.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i182.TypesRecord?>()) {
+      return (data != null ? _i182.TypesRecord.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i183.TypesSet?>()) {
+      return (data != null ? _i183.TypesSet.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i184.TypesSetRequired?>()) {
+      return (data != null ? _i184.TypesSetRequired.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i185.UniqueData?>()) {
+      return (data != null ? _i185.UniqueData.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<List<_i8.EnrollmentInt>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i18.ChangedIdTypeSelf>(e))
+              .map((e) => deserialize<_i8.EnrollmentInt>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i64.EmptyModelRelationItem>?>()) {
+    if (t == _i1.getType<List<_i8.EnrollmentInt>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i64.EmptyModelRelationItem>(e))
+              .map((e) => deserialize<_i8.EnrollmentInt>(e))
+              .toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i11.PlayerUuid>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i11.PlayerUuid>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i15.OrderUuid>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i15.OrderUuid>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i13.CommentInt>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i13.CommentInt>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i20.ChangedIdTypeSelf>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<_i20.ChangedIdTypeSelf>(e))
+              .toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i67.EmptyModelRelationItem>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<_i67.EmptyModelRelationItem>(e))
               .toList()
           : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == _i1.getType<List<_i71.EnrollmentInt>?>()) {
+    if (t == Map<String, String>) {
+      return (data as Map).map((k, v) =>
+          MapEntry(deserialize<String>(k), deserialize<String>(v))) as T;
+    }
+    if (t == _i1.getType<(int, String)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
+    if (t == _i1.getType<List<_i98.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i71.EnrollmentInt>(e))
+              .map((e) => deserialize<_i98.PersonWithLongTableName>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i71.EnrollmentInt>?>()) {
+    if (t == _i1.getType<List<_i97.OrganizationWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i71.EnrollmentInt>(e))
+              .map((e) => deserialize<_i97.OrganizationWithLongTableName>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i78.PersonWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i98.PersonWithLongTableName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i78.PersonWithLongTableName>(e))
+              .map((e) => deserialize<_i98.PersonWithLongTableName>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i77.OrganizationWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i100.LongImplicitIdField>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i77.OrganizationWithLongTableName>(e))
+              .map((e) => deserialize<_i100.LongImplicitIdField>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i78.PersonWithLongTableName>?>()) {
+    if (t == _i1.getType<List<_i107.MultipleMaxFieldName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i78.PersonWithLongTableName>(e))
+              .map((e) => deserialize<_i107.MultipleMaxFieldName>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i80.LongImplicitIdField>?>()) {
+    if (t == _i1.getType<List<_i103.UserNote>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i103.UserNote>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i106.UserNoteWithALongName>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i80.LongImplicitIdField>(e))
+              .map((e) => deserialize<_i106.UserNoteWithALongName>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i87.MultipleMaxFieldName>?>()) {
+    if (t == _i1.getType<List<_i110.Person>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i110.Person>(e)).toList()
+          : null) as T;
+    }
+    if (t == _i1.getType<List<_i109.Organization>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i87.MultipleMaxFieldName>(e))
+              .map((e) => deserialize<_i109.Organization>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i83.UserNote>?>()) {
+    if (t == _i1.getType<List<_i110.Person>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i83.UserNote>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i110.Person>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i86.UserNoteWithALongName>?>()) {
+    if (t == _i1.getType<List<_i112.Enrollment>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i86.UserNoteWithALongName>(e))
-              .toList()
+          ? (data as List).map((e) => deserialize<_i112.Enrollment>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i90.Person>?>()) {
+    if (t == _i1.getType<List<_i112.Enrollment>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i90.Person>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i112.Enrollment>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i89.Organization>?>()) {
+    if (t == _i1.getType<List<_i117.Player>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i89.Organization>(e))
-              .toList()
+          ? (data as List).map((e) => deserialize<_i117.Player>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i90.Person>?>()) {
+    if (t == _i1.getType<List<_i123.Order>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i90.Person>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i123.Order>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i92.Enrollment>?>()) {
+    if (t == _i1.getType<List<_i122.Chapter>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i92.Enrollment>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i122.Chapter>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i92.Enrollment>?>()) {
+    if (t == _i1.getType<List<_i119.Comment>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i92.Enrollment>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i119.Comment>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i97.Player>?>()) {
+    if (t == _i1.getType<List<_i128.Blocking>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i97.Player>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i128.Blocking>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i103.Order>?>()) {
+    if (t == _i1.getType<List<_i128.Blocking>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i103.Order>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i128.Blocking>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i102.Chapter>?>()) {
+    if (t == _i1.getType<List<_i130.Cat>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i102.Chapter>(e)).toList()
-          : null) as T;
-    }
-    if (t == _i1.getType<List<_i99.Comment>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i99.Comment>(e)).toList()
-          : null) as T;
-    }
-    if (t == _i1.getType<List<_i110.Cat>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i110.Cat>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i130.Cat>(e)).toList()
           : null) as T;
     }
     if (t == List<_i4.ModuleClass>) {
@@ -8125,25 +8534,25 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i148.SimpleData>) {
+    if (t == List<_i170.SimpleData>) {
       return (data as List)
-          .map((e) => deserialize<_i148.SimpleData>(e))
+          .map((e) => deserialize<_i170.SimpleData>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<_i148.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i170.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i148.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i170.SimpleData>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i148.SimpleData?>) {
+    if (t == List<_i170.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i148.SimpleData?>(e))
+          .map((e) => deserialize<_i170.SimpleData?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<_i148.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i170.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i148.SimpleData?>(e))
+              .map((e) => deserialize<_i170.SimpleData?>(e))
               .toList()
           : null) as T;
     }
@@ -8163,22 +8572,22 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<DateTime?>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i164.ByteData>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData>(e)).toList()
+    if (t == List<_i186.ByteData>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData>(e)).toList()
           as T;
     }
-    if (t == _i1.getType<List<_i164.ByteData>?>()) {
+    if (t == _i1.getType<List<_i186.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i164.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i186.ByteData>(e)).toList()
           : null) as T;
     }
-    if (t == List<_i164.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData?>(e)).toList()
+    if (t == List<_i186.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData?>(e)).toList()
           as T;
     }
-    if (t == _i1.getType<List<_i164.ByteData?>?>()) {
+    if (t == _i1.getType<List<_i186.ByteData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i164.ByteData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i186.ByteData?>(e)).toList()
           : null) as T;
     }
     if (t == List<Duration>) {
@@ -8236,44 +8645,40 @@ class Protocol extends _i1.SerializationManagerServer {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as T;
     }
-    if (t == _i165.CustomClassWithoutProtocolSerialization) {
-      return _i165.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
+    if (t == _i187.CustomClassWithoutProtocolSerialization) {
+      return _i187.CustomClassWithoutProtocolSerialization.fromJson(data) as T;
     }
-    if (t == _i165.CustomClassWithProtocolSerialization) {
-      return _i165.CustomClassWithProtocolSerialization.fromJson(data) as T;
+    if (t == _i187.CustomClassWithProtocolSerialization) {
+      return _i187.CustomClassWithProtocolSerialization.fromJson(data) as T;
     }
-    if (t == _i165.CustomClassWithProtocolSerializationMethod) {
-      return _i165.CustomClassWithProtocolSerializationMethod.fromJson(data)
+    if (t == _i187.CustomClassWithProtocolSerializationMethod) {
+      return _i187.CustomClassWithProtocolSerializationMethod.fromJson(data)
           as T;
     }
-    if (t == List<_i154.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i154.TestEnum>(e)).toList()
+    if (t == List<_i176.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i176.TestEnum>(e)).toList()
           as T;
     }
-    if (t == List<_i154.TestEnum?>) {
-      return (data as List).map((e) => deserialize<_i154.TestEnum?>(e)).toList()
+    if (t == List<_i176.TestEnum?>) {
+      return (data as List).map((e) => deserialize<_i176.TestEnum?>(e)).toList()
           as T;
     }
-    if (t == List<List<_i154.TestEnum>>) {
+    if (t == List<List<_i176.TestEnum>>) {
       return (data as List)
-          .map((e) => deserialize<List<_i154.TestEnum>>(e))
+          .map((e) => deserialize<List<_i176.TestEnum>>(e))
           .toList() as T;
     }
-    if (t == Map<String, _i148.SimpleData>) {
+    if (t == Map<String, _i170.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i148.SimpleData>(v))) as T;
-    }
-    if (t == Map<String, String>) {
-      return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<String>(v))) as T;
+          deserialize<String>(k), deserialize<_i170.SimpleData>(v))) as T;
     }
     if (t == Map<String, DateTime>) {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime>(v))) as T;
     }
-    if (t == Map<String, _i164.ByteData>) {
+    if (t == Map<String, _i186.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i164.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i186.ByteData>(v)))
           as T;
     }
     if (t == Map<String, Duration>) {
@@ -8284,9 +8689,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v))) as T;
     }
-    if (t == Map<String, _i148.SimpleData?>) {
+    if (t == Map<String, _i170.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i148.SimpleData?>(v))) as T;
+          deserialize<String>(k), deserialize<_i170.SimpleData?>(v))) as T;
     }
     if (t == Map<String, String?>) {
       return (data as Map).map((k, v) =>
@@ -8296,9 +8701,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
-    if (t == Map<String, _i164.ByteData?>) {
+    if (t == Map<String, _i186.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i164.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i186.ByteData?>(v)))
           as T;
     }
     if (t == Map<String, Duration?>) {
@@ -8314,68 +8719,68 @@ class Protocol extends _i1.SerializationManagerServer {
       return Map.fromEntries((data as List).map((e) =>
           MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v'])))) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithoutProtocolSerialization?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithoutProtocolSerialization?>()) {
       return (data != null
-          ? _i165.CustomClassWithoutProtocolSerialization.fromJson(data)
+          ? _i187.CustomClassWithoutProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithProtocolSerialization?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithProtocolSerialization?>()) {
       return (data != null
-          ? _i165.CustomClassWithProtocolSerialization.fromJson(data)
+          ? _i187.CustomClassWithProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithProtocolSerializationMethod?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithProtocolSerializationMethod?>()) {
       return (data != null
-          ? _i165.CustomClassWithProtocolSerializationMethod.fromJson(data)
+          ? _i187.CustomClassWithProtocolSerializationMethod.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<List<_i148.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i170.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i148.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i170.SimpleData>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i148.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i170.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i148.SimpleData?>(e))
+              .map((e) => deserialize<_i170.SimpleData?>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<List<_i148.SimpleData>>?>()) {
+    if (t == _i1.getType<List<List<_i170.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<List<_i148.SimpleData>>(e))
+              .map((e) => deserialize<List<_i170.SimpleData>>(e))
               .toList()
           : null) as T;
     }
     if (t ==
-        _i1.getType<Map<String, List<List<Map<int, _i148.SimpleData>>?>>?>()) {
+        _i1.getType<Map<String, List<List<Map<int, _i170.SimpleData>>?>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<List<List<Map<int, _i148.SimpleData>>?>>(v)))
+              deserialize<List<List<Map<int, _i170.SimpleData>>?>>(v)))
           : null) as T;
     }
-    if (t == List<List<Map<int, _i148.SimpleData>>?>) {
+    if (t == List<List<Map<int, _i170.SimpleData>>?>) {
       return (data as List)
-          .map((e) => deserialize<List<Map<int, _i148.SimpleData>>?>(e))
+          .map((e) => deserialize<List<Map<int, _i170.SimpleData>>?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<Map<int, _i148.SimpleData>>?>()) {
+    if (t == _i1.getType<List<Map<int, _i170.SimpleData>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<Map<int, _i148.SimpleData>>(e))
+              .map((e) => deserialize<Map<int, _i170.SimpleData>>(e))
               .toList()
           : null) as T;
     }
-    if (t == Map<int, _i148.SimpleData>) {
+    if (t == Map<int, _i170.SimpleData>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<int>(e['k']), deserialize<_i148.SimpleData>(e['v']))))
+              deserialize<int>(e['k']), deserialize<_i170.SimpleData>(e['v']))))
           as T;
     }
-    if (t == _i1.getType<Map<String, Map<int, _i148.SimpleData>>?>()) {
+    if (t == _i1.getType<Map<String, Map<int, _i170.SimpleData>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<Map<int, _i148.SimpleData>>(v)))
+              deserialize<Map<int, _i170.SimpleData>>(v)))
           : null) as T;
     }
     if (t == _i1.getType<(bool,)?>()) {
@@ -8383,49 +8788,44 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<List<_i75.PlayerUuid>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i75.PlayerUuid>(e)).toList()
-          : null) as T;
-    }
-    if (t == _i1.getType<List<_i144.ServerOnlyClass>?>()) {
+    if (t == _i1.getType<List<_i165.ServerOnlyClass>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i144.ServerOnlyClass>(e))
+              .map((e) => deserialize<_i165.ServerOnlyClass>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i144.ServerOnlyClass>?>()) {
+    if (t == _i1.getType<Map<String, _i165.ServerOnlyClass>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i144.ServerOnlyClass>(v)))
+              deserialize<String>(k), deserialize<_i165.ServerOnlyClass>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<List<_i155.TestEnumStringified>?>()) {
+    if (t == _i1.getType<List<_i178.TestEnumStringified>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i155.TestEnumStringified>(e))
+              .map((e) => deserialize<_i178.TestEnumStringified>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)?>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i155.TestEnumStringified>(
+              deserialize<_i178.TestEnumStringified>(
                   ((data as Map)['p'] as List)[0]),
             ) as T;
     }
-    if (t == _i1.getType<List<(_i155.TestEnumStringified,)>?>()) {
+    if (t == _i1.getType<List<(_i178.TestEnumStringified,)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(_i155.TestEnumStringified,)>(e))
+              .map((e) => deserialize<(_i178.TestEnumStringified,)>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)>()) {
       return (
-        deserialize<_i155.TestEnumStringified>(((data as Map)['p'] as List)[0]),
+        deserialize<_i178.TestEnumStringified>(((data as Map)['p'] as List)[0]),
       ) as T;
     }
     if (t == _i1.getType<(_i4.ModuleClass,)?>()) {
@@ -8434,30 +8834,30 @@ class Protocol extends _i1.SerializationManagerServer {
           : (deserialize<_i4.ModuleClass>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<(_i113.Nullability,)?>()) {
+    if (t == _i1.getType<(_i134.Nullability,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i113.Nullability>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i134.Nullability>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<({_i155.TestEnumStringified value})?>()) {
+    if (t == _i1.getType<({_i178.TestEnumStringified value})?>()) {
       return (data == null)
           ? null as T
           : (
-              value: deserialize<_i155.TestEnumStringified>(
+              value: deserialize<_i178.TestEnumStringified>(
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
-    if (t == _i1.getType<List<({_i155.TestEnumStringified value})>?>()) {
+    if (t == _i1.getType<List<({_i178.TestEnumStringified value})>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<({_i155.TestEnumStringified value})>(e))
+              .map((e) => deserialize<({_i178.TestEnumStringified value})>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<({_i155.TestEnumStringified value})>()) {
+    if (t == _i1.getType<({_i178.TestEnumStringified value})>()) {
       return (
-        value: deserialize<_i155.TestEnumStringified>(
+        value: deserialize<_i178.TestEnumStringified>(
             ((data as Map)['n'] as Map)['value']),
       ) as T;
     }
@@ -8469,11 +8869,11 @@ class Protocol extends _i1.SerializationManagerServer {
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
-    if (t == _i1.getType<({_i113.Nullability value})?>()) {
+    if (t == _i1.getType<({_i134.Nullability value})?>()) {
       return (data == null)
           ? null as T
           : (
-              value: deserialize<_i113.Nullability>(
+              value: deserialize<_i134.Nullability>(
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
@@ -8528,9 +8928,9 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<String>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i164.ByteData>?>()) {
+    if (t == _i1.getType<List<_i186.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i164.ByteData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i186.ByteData>(e)).toList()
           : null) as T;
     }
     if (t == _i1.getType<List<Duration>?>()) {
@@ -8553,43 +8953,43 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<BigInt>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i154.TestEnum>?>()) {
+    if (t == _i1.getType<List<_i176.TestEnum>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i154.TestEnum>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i176.TestEnum>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i155.TestEnumStringified>?>()) {
+    if (t == _i1.getType<List<_i178.TestEnumStringified>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i155.TestEnumStringified>(e))
+              .map((e) => deserialize<_i178.TestEnumStringified>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i156.Types>?>()) {
+    if (t == _i1.getType<List<_i179.Types>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i156.Types>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i179.Types>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<Map<String, _i156.Types>>?>()) {
+    if (t == _i1.getType<List<Map<String, _i179.Types>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<Map<String, _i156.Types>>(e))
+              .map((e) => deserialize<Map<String, _i179.Types>>(e))
               .toList()
           : null) as T;
     }
-    if (t == Map<String, _i156.Types>) {
+    if (t == Map<String, _i179.Types>) {
       return (data as Map).map((k, v) =>
-          MapEntry(deserialize<String>(k), deserialize<_i156.Types>(v))) as T;
+          MapEntry(deserialize<String>(k), deserialize<_i179.Types>(v))) as T;
     }
-    if (t == _i1.getType<List<List<_i156.Types>>?>()) {
+    if (t == _i1.getType<List<List<_i179.Types>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<List<_i156.Types>>(e))
+              .map((e) => deserialize<List<_i179.Types>>(e))
               .toList()
           : null) as T;
     }
-    if (t == List<_i156.Types>) {
-      return (data as List).map((e) => deserialize<_i156.Types>(e)).toList()
+    if (t == List<_i179.Types>) {
+      return (data as List).map((e) => deserialize<_i179.Types>(e)).toList()
           as T;
     }
     if (t == _i1.getType<List<(int,)>?>()) {
@@ -8610,27 +9010,27 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<List<(_i154.TestEnum,)>?>()) {
+    if (t == _i1.getType<List<(_i176.TestEnum,)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(_i154.TestEnum,)>(e))
+              .map((e) => deserialize<(_i176.TestEnum,)>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i154.TestEnum,)>()) {
-      return (deserialize<_i154.TestEnum>(((data as Map)['p'] as List)[0]),)
+    if (t == _i1.getType<(_i176.TestEnum,)>()) {
+      return (deserialize<_i176.TestEnum>(((data as Map)['p'] as List)[0]),)
           as T;
     }
-    if (t == _i1.getType<List<(_i155.TestEnumStringified,)>?>()) {
+    if (t == _i1.getType<List<(_i178.TestEnumStringified,)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(_i155.TestEnumStringified,)>(e))
+              .map((e) => deserialize<(_i178.TestEnumStringified,)>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)>()) {
       return (
-        deserialize<_i155.TestEnumStringified>(((data as Map)['p'] as List)[0]),
+        deserialize<_i178.TestEnumStringified>(((data as Map)['p'] as List)[0]),
       ) as T;
     }
     if (t == _i1.getType<Map<int, String>?>()) {
@@ -8663,10 +9063,10 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<_i164.ByteData, String>?>()) {
+    if (t == _i1.getType<Map<_i186.ByteData, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i164.ByteData>(e['k']),
+              deserialize<_i186.ByteData>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
@@ -8694,41 +9094,41 @@ class Protocol extends _i1.SerializationManagerServer {
               deserialize<BigInt>(e['k']), deserialize<String>(e['v']))))
           : null) as T;
     }
-    if (t == _i1.getType<Map<_i154.TestEnum, String>?>()) {
+    if (t == _i1.getType<Map<_i176.TestEnum, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i154.TestEnum>(e['k']),
+              deserialize<_i176.TestEnum>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
-    if (t == _i1.getType<Map<_i155.TestEnumStringified, String>?>()) {
+    if (t == _i1.getType<Map<_i178.TestEnumStringified, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i155.TestEnumStringified>(e['k']),
+              deserialize<_i178.TestEnumStringified>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
-    if (t == _i1.getType<Map<_i156.Types, String>?>()) {
+    if (t == _i1.getType<Map<_i179.Types, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i156.Types>(e['k']), deserialize<String>(e['v']))))
+              deserialize<_i179.Types>(e['k']), deserialize<String>(e['v']))))
           : null) as T;
     }
-    if (t == _i1.getType<Map<Map<_i156.Types, String>, String>?>()) {
+    if (t == _i1.getType<Map<Map<_i179.Types, String>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<Map<_i156.Types, String>>(e['k']),
+              deserialize<Map<_i179.Types, String>>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
-    if (t == Map<_i156.Types, String>) {
+    if (t == Map<_i179.Types, String>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-          deserialize<_i156.Types>(e['k']), deserialize<String>(e['v'])))) as T;
+          deserialize<_i179.Types>(e['k']), deserialize<String>(e['v'])))) as T;
     }
-    if (t == _i1.getType<Map<List<_i156.Types>, String>?>()) {
+    if (t == _i1.getType<Map<List<_i179.Types>, String>?>()) {
       return (data != null
           ? Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<List<_i156.Types>>(e['k']),
+              deserialize<List<_i179.Types>>(e['k']),
               deserialize<String>(e['v']))))
           : null) as T;
     }
@@ -8771,10 +9171,10 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<String>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i164.ByteData>?>()) {
+    if (t == _i1.getType<Map<String, _i186.ByteData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i164.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i186.ByteData>(v)))
           : null) as T;
     }
     if (t == _i1.getType<Map<String, Duration>?>()) {
@@ -8801,34 +9201,34 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<BigInt>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i154.TestEnum>?>()) {
+    if (t == _i1.getType<Map<String, _i176.TestEnum>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i154.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i176.TestEnum>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i155.TestEnumStringified>?>()) {
+    if (t == _i1.getType<Map<String, _i178.TestEnumStringified>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(deserialize<String>(k),
-              deserialize<_i155.TestEnumStringified>(v)))
+              deserialize<_i178.TestEnumStringified>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i156.Types>?>()) {
+    if (t == _i1.getType<Map<String, _i179.Types>?>()) {
       return (data != null
           ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i156.Types>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i179.Types>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, Map<String, _i156.Types>>?>()) {
+    if (t == _i1.getType<Map<String, Map<String, _i179.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<Map<String, _i156.Types>>(v)))
+              deserialize<String>(k), deserialize<Map<String, _i179.Types>>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, List<_i156.Types>>?>()) {
+    if (t == _i1.getType<Map<String, List<_i179.Types>>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<List<_i156.Types>>(v)))
+              deserialize<String>(k), deserialize<List<_i179.Types>>(v)))
           : null) as T;
     }
     if (t == _i1.getType<Map<String, (String,)>?>()) {
@@ -8887,10 +9287,10 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i164.ByteData,)?>()) {
+    if (t == _i1.getType<(_i186.ByteData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i164.ByteData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i186.ByteData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(Duration,)?>()) {
@@ -8913,17 +9313,17 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<BigInt>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i154.TestEnum,)?>()) {
+    if (t == _i1.getType<(_i176.TestEnum,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i154.TestEnum>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i176.TestEnum>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)?>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i155.TestEnumStringified>(
+              deserialize<_i178.TestEnumStringified>(
                   ((data as Map)['p'] as List)[0]),
             ) as T;
     }
@@ -8942,28 +9342,28 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<Set<int>>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i148.SimpleData,)?>()) {
+    if (t == _i1.getType<(_i170.SimpleData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<({_i148.SimpleData namedModel})?>()) {
+    if (t == _i1.getType<({_i170.SimpleData namedModel})?>()) {
       return (data == null)
           ? null as T
           : (
-              namedModel: deserialize<_i148.SimpleData>(
+              namedModel: deserialize<_i170.SimpleData>(
                   ((data as Map)['n'] as Map)['namedModel']),
             ) as T;
     }
     if (t ==
-        _i1.getType<(_i148.SimpleData, {_i148.SimpleData namedModel})?>()) {
+        _i1.getType<(_i170.SimpleData, {_i170.SimpleData namedModel})?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),
+              deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),
               namedModel:
-                  deserialize<_i148.SimpleData>(data['n']['namedModel']),
+                  deserialize<_i170.SimpleData>(data['n']['namedModel']),
             ) as T;
     }
     if (t ==
@@ -8979,21 +9379,21 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t ==
         _i1.getType<
             (
-              (List<(_i148.SimpleData,)>,), {
+              (List<(_i170.SimpleData,)>,), {
               (
-                _i148.SimpleData,
-                Map<String, _i148.SimpleData>
+                _i170.SimpleData,
+                Map<String, _i170.SimpleData>
               ) namedNestedRecord
             })?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<(List<(_i148.SimpleData,)>,)>(
+              deserialize<(List<(_i170.SimpleData,)>,)>(
                   ((data as Map)['p'] as List)[0]),
               namedNestedRecord: deserialize<
                   (
-                    _i148.SimpleData,
-                    Map<String, _i148.SimpleData>
+                    _i170.SimpleData,
+                    Map<String, _i170.SimpleData>
                   )>(data['n']['namedNestedRecord']),
             ) as T;
     }
@@ -9022,9 +9422,9 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<String>(e)).toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<_i164.ByteData>?>()) {
+    if (t == _i1.getType<Set<_i186.ByteData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i164.ByteData>(e)).toSet()
+          ? (data as List).map((e) => deserialize<_i186.ByteData>(e)).toSet()
           : null) as T;
     }
     if (t == _i1.getType<Set<Duration>?>()) {
@@ -9042,33 +9442,33 @@ class Protocol extends _i1.SerializationManagerServer {
           ? (data as List).map((e) => deserialize<BigInt>(e)).toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<_i154.TestEnum>?>()) {
+    if (t == _i1.getType<Set<_i176.TestEnum>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i154.TestEnum>(e)).toSet()
+          ? (data as List).map((e) => deserialize<_i176.TestEnum>(e)).toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<_i155.TestEnumStringified>?>()) {
+    if (t == _i1.getType<Set<_i178.TestEnumStringified>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i155.TestEnumStringified>(e))
+              .map((e) => deserialize<_i178.TestEnumStringified>(e))
               .toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<_i156.Types>?>()) {
+    if (t == _i1.getType<Set<_i179.Types>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i156.Types>(e)).toSet()
+          ? (data as List).map((e) => deserialize<_i179.Types>(e)).toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<Map<String, _i156.Types>>?>()) {
+    if (t == _i1.getType<Set<Map<String, _i179.Types>>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<Map<String, _i156.Types>>(e))
+              .map((e) => deserialize<Map<String, _i179.Types>>(e))
               .toSet()
           : null) as T;
     }
-    if (t == _i1.getType<Set<List<_i156.Types>>?>()) {
+    if (t == _i1.getType<Set<List<_i179.Types>>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<List<_i156.Types>>(e)).toSet()
+          ? (data as List).map((e) => deserialize<List<_i179.Types>>(e)).toSet()
           : null) as T;
     }
     if (t == _i1.getType<Set<(int,)>?>()) {
@@ -9092,16 +9492,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Set<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
     }
-    if (t == _i1.getType<List<_i108.Blocking>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i108.Blocking>(e)).toList()
-          : null) as T;
-    }
-    if (t == _i1.getType<List<_i108.Blocking>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i108.Blocking>(e)).toList()
-          : null) as T;
-    }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<String>(e)).toList()
@@ -9110,9 +9500,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i166.SimpleData>) {
+    if (t == List<_i188.SimpleData>) {
       return (data as List)
-          .map((e) => deserialize<_i166.SimpleData>(e))
+          .map((e) => deserialize<_i188.SimpleData>(e))
           .toList() as T;
     }
     if (t == List<int>) {
@@ -9169,28 +9559,28 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<DateTime?>) {
       return (data as List).map((e) => deserialize<DateTime?>(e)).toList() as T;
     }
-    if (t == List<_i164.ByteData>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData>(e)).toList()
+    if (t == List<_i186.ByteData>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData>(e)).toList()
           as T;
     }
-    if (t == List<_i164.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData?>(e)).toList()
+    if (t == List<_i186.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData?>(e)).toList()
           as T;
     }
-    if (t == List<_i166.SimpleData?>) {
+    if (t == List<_i188.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i166.SimpleData?>(e))
+          .map((e) => deserialize<_i188.SimpleData?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<List<_i166.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i188.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i166.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i188.SimpleData>(e)).toList()
           : null) as T;
     }
-    if (t == _i1.getType<List<_i166.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i188.SimpleData?>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<_i166.SimpleData?>(e))
+              .map((e) => deserialize<_i188.SimpleData?>(e))
               .toList()
           : null) as T;
     }
@@ -9233,13 +9623,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<Map<int, int>>(v))) as T;
     }
-    if (t == Map<_i167.TestEnum, int>) {
+    if (t == Map<_i189.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-          deserialize<_i167.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
+          deserialize<_i189.TestEnum>(e['k']), deserialize<int>(e['v'])))) as T;
     }
-    if (t == Map<String, _i167.TestEnum>) {
+    if (t == Map<String, _i189.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i167.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i189.TestEnum>(v)))
           as T;
     }
     if (t == Map<String, double>) {
@@ -9276,34 +9666,34 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as Map).map((k, v) =>
           MapEntry(deserialize<String>(k), deserialize<DateTime?>(v))) as T;
     }
-    if (t == Map<String, _i164.ByteData>) {
+    if (t == Map<String, _i186.ByteData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i164.ByteData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i186.ByteData>(v)))
           as T;
     }
-    if (t == Map<String, _i164.ByteData?>) {
+    if (t == Map<String, _i186.ByteData?>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i164.ByteData?>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i186.ByteData?>(v)))
           as T;
     }
-    if (t == Map<String, _i166.SimpleData>) {
+    if (t == Map<String, _i188.SimpleData>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i166.SimpleData>(v))) as T;
+          deserialize<String>(k), deserialize<_i188.SimpleData>(v))) as T;
     }
-    if (t == Map<String, _i166.SimpleData?>) {
+    if (t == Map<String, _i188.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i166.SimpleData?>(v))) as T;
+          deserialize<String>(k), deserialize<_i188.SimpleData?>(v))) as T;
     }
-    if (t == _i1.getType<Map<String, _i166.SimpleData>?>()) {
+    if (t == _i1.getType<Map<String, _i188.SimpleData>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i166.SimpleData>(v)))
+              deserialize<String>(k), deserialize<_i188.SimpleData>(v)))
           : null) as T;
     }
-    if (t == _i1.getType<Map<String, _i166.SimpleData?>?>()) {
+    if (t == _i1.getType<Map<String, _i188.SimpleData?>?>()) {
       return (data != null
           ? (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<_i166.SimpleData?>(v)))
+              deserialize<String>(k), deserialize<_i188.SimpleData?>(v)))
           : null) as T;
     }
     if (t == Map<String, Duration>) {
@@ -9355,13 +9745,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Set<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
     }
-    if (t == Set<_i166.SimpleData>) {
-      return (data as List).map((e) => deserialize<_i166.SimpleData>(e)).toSet()
+    if (t == Set<_i188.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i188.SimpleData>(e)).toSet()
           as T;
     }
-    if (t == List<Set<_i166.SimpleData>>) {
+    if (t == List<Set<_i188.SimpleData>>) {
       return (data as List)
-          .map((e) => deserialize<Set<_i166.SimpleData>>(e))
+          .map((e) => deserialize<Set<_i188.SimpleData>>(e))
           .toList() as T;
     }
     if (t == _i1.getType<(int, BigInt)>()) {
@@ -9408,18 +9798,18 @@ class Protocol extends _i1.SerializationManagerServer {
               deserialize<String>(data['p'][1]),
             ) as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i166.SimpleData>(data['p'][1]),
+              deserialize<_i188.SimpleData>(data['p'][1]),
             ) as T;
     }
     if (t == _i1.getType<(Map<String, int>,)>()) {
@@ -9449,27 +9839,27 @@ class Protocol extends _i1.SerializationManagerServer {
               text: deserialize<String>(data['n']['text']),
             ) as T;
     }
-    if (t == _i1.getType<({_i166.SimpleData data, int number})>()) {
+    if (t == _i1.getType<({_i188.SimpleData data, int number})>()) {
       return (
         data:
-            deserialize<_i166.SimpleData>(((data as Map)['n'] as Map)['data']),
+            deserialize<_i188.SimpleData>(((data as Map)['n'] as Map)['data']),
         number: deserialize<int>(data['n']['number']),
       ) as T;
     }
-    if (t == _i1.getType<({_i166.SimpleData data, int number})?>()) {
+    if (t == _i1.getType<({_i188.SimpleData data, int number})?>()) {
       return (data == null)
           ? null as T
           : (
-              data: deserialize<_i166.SimpleData>(
+              data: deserialize<_i188.SimpleData>(
                   ((data as Map)['n'] as Map)['data']),
               number: deserialize<int>(data['n']['number']),
             ) as T;
     }
-    if (t == _i1.getType<({_i166.SimpleData? data, int? number})>()) {
+    if (t == _i1.getType<({_i188.SimpleData? data, int? number})>()) {
       return (
         data: ((data as Map)['n'] as Map)['data'] == null
             ? null
-            : deserialize<_i166.SimpleData>(data['n']['data']),
+            : deserialize<_i188.SimpleData>(data['n']['data']),
         number: ((data)['n'] as Map)['number'] == null
             ? null
             : deserialize<int>(data['n']['number']),
@@ -9502,109 +9892,109 @@ class Protocol extends _i1.SerializationManagerServer {
             ((data as Map)['p'] as List)[0]),
       ) as T;
     }
-    if (t == _i1.getType<(int, {_i166.SimpleData data})>()) {
+    if (t == _i1.getType<(int, {_i188.SimpleData data})>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        data: deserialize<_i166.SimpleData>(data['n']['data']),
+        data: deserialize<_i188.SimpleData>(data['n']['data']),
       ) as T;
     }
-    if (t == _i1.getType<(int, {_i166.SimpleData data})?>()) {
+    if (t == _i1.getType<(int, {_i188.SimpleData data})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              data: deserialize<_i166.SimpleData>(data['n']['data']),
+              data: deserialize<_i188.SimpleData>(data['n']['data']),
             ) as T;
     }
-    if (t == List<(int, _i166.SimpleData)>) {
+    if (t == List<(int, _i188.SimpleData)>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i166.SimpleData)>(e))
+          .map((e) => deserialize<(int, _i188.SimpleData)>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == List<(int, _i166.SimpleData)?>) {
+    if (t == List<(int, _i188.SimpleData)?>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i166.SimpleData)?>(e))
+          .map((e) => deserialize<(int, _i188.SimpleData)?>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i166.SimpleData>(data['p'][1]),
+              deserialize<_i188.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == Set<(int, _i166.SimpleData)>) {
+    if (t == Set<(int, _i188.SimpleData)>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i166.SimpleData)>(e))
+          .map((e) => deserialize<(int, _i188.SimpleData)>(e))
           .toSet() as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Set<(int, _i166.SimpleData)?>) {
+    if (t == Set<(int, _i188.SimpleData)?>) {
       return (data as List)
-          .map((e) => deserialize<(int, _i166.SimpleData)?>(e))
+          .map((e) => deserialize<(int, _i188.SimpleData)?>(e))
           .toSet() as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i166.SimpleData>(data['p'][1]),
+              deserialize<_i188.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == _i1.getType<Set<(int, _i166.SimpleData)>?>()) {
+    if (t == _i1.getType<Set<(int, _i188.SimpleData)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(int, _i166.SimpleData)>(e))
+              .map((e) => deserialize<(int, _i188.SimpleData)>(e))
               .toSet()
           : null) as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Map<String, (int, _i166.SimpleData)>) {
+    if (t == Map<String, (int, _i188.SimpleData)>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<(int, _i166.SimpleData)>(v)))
+              deserialize<String>(k), deserialize<(int, _i188.SimpleData)>(v)))
           as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
-    if (t == Map<String, (int, _i166.SimpleData)?>) {
+    if (t == Map<String, (int, _i188.SimpleData)?>) {
       return (data as Map).map((k, v) => MapEntry(
-              deserialize<String>(k), deserialize<(int, _i166.SimpleData)?>(v)))
+              deserialize<String>(k), deserialize<(int, _i188.SimpleData)?>(v)))
           as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)?>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<int>(((data as Map)['p'] as List)[0]),
-              deserialize<_i166.SimpleData>(data['p'][1]),
+              deserialize<_i188.SimpleData>(data['p'][1]),
             ) as T;
     }
-    if (t == Map<(String, int), (int, _i166.SimpleData)>) {
+    if (t == Map<(String, int), (int, _i188.SimpleData)>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
           deserialize<(String, int)>(e['k']),
-          deserialize<(int, _i166.SimpleData)>(e['v'])))) as T;
+          deserialize<(int, _i188.SimpleData)>(e['v'])))) as T;
     }
     if (t == _i1.getType<(String, int)>()) {
       return (
@@ -9612,10 +10002,10 @@ class Protocol extends _i1.SerializationManagerServer {
         deserialize<int>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<(int, _i166.SimpleData)>()) {
+    if (t == _i1.getType<(int, _i188.SimpleData)>()) {
       return (
         deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<_i166.SimpleData>(data['p'][1]),
+        deserialize<_i188.SimpleData>(data['p'][1]),
       ) as T;
     }
     if (t == _i1.getType<(String, int)>()) {
@@ -9661,56 +10051,56 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<(int,)>()) {
       return (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<({(_i166.SimpleData, double) namedSubRecord})>()) {
+    if (t == _i1.getType<({(_i188.SimpleData, double) namedSubRecord})>()) {
       return (
-        namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i188.SimpleData, double)>(
             ((data as Map)['n'] as Map)['namedSubRecord']),
       ) as T;
     }
-    if (t == _i1.getType<(_i166.SimpleData, double)>()) {
+    if (t == _i1.getType<(_i188.SimpleData, double)>()) {
       return (
-        deserialize<_i166.SimpleData>(((data as Map)['p'] as List)[0]),
+        deserialize<_i188.SimpleData>(((data as Map)['p'] as List)[0]),
         deserialize<double>(data['p'][1]),
       ) as T;
     }
-    if (t == _i1.getType<({(_i166.SimpleData, double)? namedSubRecord})>()) {
+    if (t == _i1.getType<({(_i188.SimpleData, double)? namedSubRecord})>()) {
       return (
         namedSubRecord: ((data as Map)['n'] as Map)['namedSubRecord'] == null
             ? null
-            : deserialize<(_i166.SimpleData, double)>(
+            : deserialize<(_i188.SimpleData, double)>(
                 data['n']['namedSubRecord']),
       ) as T;
     }
-    if (t == _i1.getType<(_i166.SimpleData, double)?>()) {
+    if (t == _i1.getType<(_i188.SimpleData, double)?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i166.SimpleData>(((data as Map)['p'] as List)[0]),
+              deserialize<_i188.SimpleData>(((data as Map)['p'] as List)[0]),
               deserialize<double>(data['p'][1]),
             ) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i166.SimpleData, double) namedSubRecord})>()) {
+            ((int, String), {(_i188.SimpleData, double) namedSubRecord})>()) {
       return (
         deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-        namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i188.SimpleData, double)>(
             data['n']['namedSubRecord']),
       ) as T;
     }
     if (t ==
-        List<((int, String), {(_i166.SimpleData, double) namedSubRecord})>) {
+        List<((int, String), {(_i188.SimpleData, double) namedSubRecord})>) {
       return (data as List)
           .map((e) => deserialize<
-              ((int, String), {(_i166.SimpleData, double) namedSubRecord})>(e))
+              ((int, String), {(_i188.SimpleData, double) namedSubRecord})>(e))
           .toList() as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i166.SimpleData, double) namedSubRecord})>()) {
+            ((int, String), {(_i188.SimpleData, double) namedSubRecord})>()) {
       return (
         deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-        namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+        namedSubRecord: deserialize<(_i188.SimpleData, double)>(
             data['n']['namedSubRecord']),
       ) as T;
     }
@@ -9719,37 +10109,37 @@ class Protocol extends _i1.SerializationManagerServer {
             List<
                 (
                   (int, String), {
-                  (_i166.SimpleData, double) namedSubRecord
+                  (_i188.SimpleData, double) namedSubRecord
                 })?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<
                   (
                     (int, String), {
-                    (_i166.SimpleData, double) namedSubRecord
+                    (_i188.SimpleData, double) namedSubRecord
                   })?>(e))
               .toList()
           : null) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i166.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i188.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i188.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i166.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i188.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i188.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
@@ -9809,17 +10199,17 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Set<DateTime?>) {
       return (data as List).map((e) => deserialize<DateTime?>(e)).toSet() as T;
     }
-    if (t == Set<_i164.ByteData>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData>(e)).toSet()
+    if (t == Set<_i186.ByteData>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData>(e)).toSet()
           as T;
     }
-    if (t == Set<_i164.ByteData?>) {
-      return (data as List).map((e) => deserialize<_i164.ByteData?>(e)).toSet()
+    if (t == Set<_i186.ByteData?>) {
+      return (data as List).map((e) => deserialize<_i186.ByteData?>(e)).toSet()
           as T;
     }
-    if (t == Set<_i166.SimpleData?>) {
+    if (t == Set<_i188.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i166.SimpleData?>(e))
+          .map((e) => deserialize<_i188.SimpleData?>(e))
           .toSet() as T;
     }
     if (t == Set<Duration>) {
@@ -9828,8 +10218,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Set<Duration?>) {
       return (data as List).map((e) => deserialize<Duration?>(e)).toSet() as T;
     }
-    if (t == List<_i168.Types>) {
-      return (data as List).map((e) => deserialize<_i168.Types>(e)).toList()
+    if (t == List<_i190.Types>) {
+      return (data as List).map((e) => deserialize<_i190.Types>(e)).toList()
           as T;
     }
     if (t == _i1.getType<(String, (int, bool))>()) {
@@ -9859,7 +10249,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
             )>()) {
       return (
         deserialize<String>(((data as Map)['p'] as List)[0]),
@@ -9867,17 +10257,17 @@ class Protocol extends _i1.SerializationManagerServer {
             (
               Map<String, int>, {
               bool flag,
-              _i166.SimpleData simpleData
+              _i188.SimpleData simpleData
             })>(data['p'][1]),
       ) as T;
     }
     if (t ==
         _i1.getType<
-            (Map<String, int>, {bool flag, _i166.SimpleData simpleData})>()) {
+            (Map<String, int>, {bool flag, _i188.SimpleData simpleData})>()) {
       return (
         deserialize<Map<String, int>>(((data as Map)['p'] as List)[0]),
         flag: deserialize<bool>(data['n']['flag']),
-        simpleData: deserialize<_i166.SimpleData>(data['n']['simpleData']),
+        simpleData: deserialize<_i188.SimpleData>(data['n']['simpleData']),
       ) as T;
     }
     if (t == List<(String, int)>) {
@@ -9894,7 +10284,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
             )?>()) {
       return (data == null)
           ? null as T
@@ -9904,7 +10294,7 @@ class Protocol extends _i1.SerializationManagerServer {
                   (
                     Map<String, int>, {
                     bool flag,
-                    _i166.SimpleData simpleData
+                    _i188.SimpleData simpleData
                   })>(data['p'][1]),
             ) as T;
     }
@@ -9919,6 +10309,12 @@ class Protocol extends _i1.SerializationManagerServer {
         deserialize<int>(data['p'][1]),
       ) as T;
     }
+    if (t == _i1.getType<(int, String)>()) {
+      return (
+        deserialize<int>(((data as Map)['p'] as List)[0]),
+        deserialize<String>(data['p'][1]),
+      ) as T;
+    }
     if (t == _i1.getType<(_i4.ModuleClass,)?>()) {
       return (data == null)
           ? null as T
@@ -9930,61 +10326,61 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)?>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i155.TestEnumStringified>(
+              deserialize<_i178.TestEnumStringified>(
                   ((data as Map)['p'] as List)[0]),
             ) as T;
     }
-    if (t == _i1.getType<List<(_i155.TestEnumStringified,)>?>()) {
+    if (t == _i1.getType<List<(_i178.TestEnumStringified,)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(_i155.TestEnumStringified,)>(e))
+              .map((e) => deserialize<(_i178.TestEnumStringified,)>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)>()) {
       return (
-        deserialize<_i155.TestEnumStringified>(((data as Map)['p'] as List)[0]),
+        deserialize<_i178.TestEnumStringified>(((data as Map)['p'] as List)[0]),
       ) as T;
     }
-    if (t == _i1.getType<(_i155.TestEnumStringified,)>()) {
+    if (t == _i1.getType<(_i178.TestEnumStringified,)>()) {
       return (
-        deserialize<_i155.TestEnumStringified>(((data as Map)['p'] as List)[0]),
+        deserialize<_i178.TestEnumStringified>(((data as Map)['p'] as List)[0]),
       ) as T;
     }
-    if (t == _i1.getType<(_i113.Nullability,)?>()) {
+    if (t == _i1.getType<(_i134.Nullability,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i113.Nullability>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i134.Nullability>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<({_i155.TestEnumStringified value})?>()) {
+    if (t == _i1.getType<({_i178.TestEnumStringified value})?>()) {
       return (data == null)
           ? null as T
           : (
-              value: deserialize<_i155.TestEnumStringified>(
+              value: deserialize<_i178.TestEnumStringified>(
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
-    if (t == _i1.getType<List<({_i155.TestEnumStringified value})>?>()) {
+    if (t == _i1.getType<List<({_i178.TestEnumStringified value})>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<({_i155.TestEnumStringified value})>(e))
+              .map((e) => deserialize<({_i178.TestEnumStringified value})>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<({_i155.TestEnumStringified value})>()) {
+    if (t == _i1.getType<({_i178.TestEnumStringified value})>()) {
       return (
-        value: deserialize<_i155.TestEnumStringified>(
+        value: deserialize<_i178.TestEnumStringified>(
             ((data as Map)['n'] as Map)['value']),
       ) as T;
     }
-    if (t == _i1.getType<({_i155.TestEnumStringified value})>()) {
+    if (t == _i1.getType<({_i178.TestEnumStringified value})>()) {
       return (
-        value: deserialize<_i155.TestEnumStringified>(
+        value: deserialize<_i178.TestEnumStringified>(
             ((data as Map)['n'] as Map)['value']),
       ) as T;
     }
@@ -9996,11 +10392,11 @@ class Protocol extends _i1.SerializationManagerServer {
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
-    if (t == _i1.getType<({_i113.Nullability value})?>()) {
+    if (t == _i1.getType<({_i134.Nullability value})?>()) {
       return (data == null)
           ? null as T
           : (
-              value: deserialize<_i113.Nullability>(
+              value: deserialize<_i134.Nullability>(
                   ((data as Map)['n'] as Map)['value']),
             ) as T;
     }
@@ -10032,19 +10428,19 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<List<(_i154.TestEnum,)>?>()) {
+    if (t == _i1.getType<List<(_i176.TestEnum,)>?>()) {
       return (data != null
           ? (data as List)
-              .map((e) => deserialize<(_i154.TestEnum,)>(e))
+              .map((e) => deserialize<(_i176.TestEnum,)>(e))
               .toList()
           : null) as T;
     }
-    if (t == _i1.getType<(_i154.TestEnum,)>()) {
-      return (deserialize<_i154.TestEnum>(((data as Map)['p'] as List)[0]),)
+    if (t == _i1.getType<(_i176.TestEnum,)>()) {
+      return (deserialize<_i176.TestEnum>(((data as Map)['p'] as List)[0]),)
           as T;
     }
-    if (t == _i1.getType<(_i154.TestEnum,)>()) {
-      return (deserialize<_i154.TestEnum>(((data as Map)['p'] as List)[0]),)
+    if (t == _i1.getType<(_i176.TestEnum,)>()) {
+      return (deserialize<_i176.TestEnum>(((data as Map)['p'] as List)[0]),)
           as T;
     }
     if (t == _i1.getType<Map<(String,), String>?>()) {
@@ -10105,10 +10501,10 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<DateTime>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i164.ByteData,)?>()) {
+    if (t == _i1.getType<(_i186.ByteData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i164.ByteData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i186.ByteData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(Duration,)?>()) {
@@ -10131,10 +10527,10 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<BigInt>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i154.TestEnum,)?>()) {
+    if (t == _i1.getType<(_i176.TestEnum,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i154.TestEnum>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i176.TestEnum>(((data as Map)['p'] as List)[0]),)
               as T;
     }
     if (t == _i1.getType<(List<int>,)?>()) {
@@ -10152,28 +10548,28 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<Set<int>>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(_i148.SimpleData,)?>()) {
+    if (t == _i1.getType<(_i170.SimpleData,)?>()) {
       return (data == null)
           ? null as T
-          : (deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),)
+          : (deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),)
               as T;
     }
-    if (t == _i1.getType<({_i148.SimpleData namedModel})?>()) {
+    if (t == _i1.getType<({_i170.SimpleData namedModel})?>()) {
       return (data == null)
           ? null as T
           : (
-              namedModel: deserialize<_i148.SimpleData>(
+              namedModel: deserialize<_i170.SimpleData>(
                   ((data as Map)['n'] as Map)['namedModel']),
             ) as T;
     }
     if (t ==
-        _i1.getType<(_i148.SimpleData, {_i148.SimpleData namedModel})?>()) {
+        _i1.getType<(_i170.SimpleData, {_i170.SimpleData namedModel})?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),
+              deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),
               namedModel:
-                  deserialize<_i148.SimpleData>(data['n']['namedModel']),
+                  deserialize<_i170.SimpleData>(data['n']['namedModel']),
             ) as T;
     }
     if (t ==
@@ -10186,55 +10582,49 @@ class Protocol extends _i1.SerializationManagerServer {
                   deserialize<(int, String)>(data['n']['namedNestedRecord']),
             ) as T;
     }
-    if (t == _i1.getType<(int, String)>()) {
-      return (
-        deserialize<int>(((data as Map)['p'] as List)[0]),
-        deserialize<String>(data['p'][1]),
-      ) as T;
-    }
     if (t ==
         _i1.getType<
             (
-              (List<(_i148.SimpleData,)>,), {
+              (List<(_i170.SimpleData,)>,), {
               (
-                _i148.SimpleData,
-                Map<String, _i148.SimpleData>
+                _i170.SimpleData,
+                Map<String, _i170.SimpleData>
               ) namedNestedRecord
             })?>()) {
       return (data == null)
           ? null as T
           : (
-              deserialize<(List<(_i148.SimpleData,)>,)>(
+              deserialize<(List<(_i170.SimpleData,)>,)>(
                   ((data as Map)['p'] as List)[0]),
               namedNestedRecord: deserialize<
                   (
-                    _i148.SimpleData,
-                    Map<String, _i148.SimpleData>
+                    _i170.SimpleData,
+                    Map<String, _i170.SimpleData>
                   )>(data['n']['namedNestedRecord']),
             ) as T;
     }
-    if (t == _i1.getType<(List<(_i148.SimpleData,)>,)>()) {
+    if (t == _i1.getType<(List<(_i170.SimpleData,)>,)>()) {
       return (
-        deserialize<List<(_i148.SimpleData,)>>(((data as Map)['p'] as List)[0]),
+        deserialize<List<(_i170.SimpleData,)>>(((data as Map)['p'] as List)[0]),
       ) as T;
     }
-    if (t == List<(_i148.SimpleData,)>) {
+    if (t == List<(_i170.SimpleData,)>) {
       return (data as List)
-          .map((e) => deserialize<(_i148.SimpleData,)>(e))
+          .map((e) => deserialize<(_i170.SimpleData,)>(e))
           .toList() as T;
     }
-    if (t == _i1.getType<(_i148.SimpleData,)>()) {
-      return (deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),)
+    if (t == _i1.getType<(_i170.SimpleData,)>()) {
+      return (deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),)
           as T;
     }
-    if (t == _i1.getType<(_i148.SimpleData,)>()) {
-      return (deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),)
+    if (t == _i1.getType<(_i170.SimpleData,)>()) {
+      return (deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),)
           as T;
     }
-    if (t == _i1.getType<(_i148.SimpleData, Map<String, _i148.SimpleData>)>()) {
+    if (t == _i1.getType<(_i170.SimpleData, Map<String, _i170.SimpleData>)>()) {
       return (
-        deserialize<_i148.SimpleData>(((data as Map)['p'] as List)[0]),
-        deserialize<Map<String, _i148.SimpleData>>(data['p'][1]),
+        deserialize<_i170.SimpleData>(((data as Map)['p'] as List)[0]),
+        deserialize<Map<String, _i170.SimpleData>>(data['p'][1]),
       ) as T;
     }
     if (t == _i1.getType<Set<(int,)>?>()) {
@@ -10255,57 +10645,57 @@ class Protocol extends _i1.SerializationManagerServer {
           ? null as T
           : (deserialize<int>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i165.CustomClass) {
-      return _i165.CustomClass.fromJson(data) as T;
+    if (t == _i187.CustomClass) {
+      return _i187.CustomClass.fromJson(data) as T;
     }
-    if (t == _i165.CustomClass2) {
-      return _i165.CustomClass2.fromJson(data) as T;
+    if (t == _i187.CustomClass2) {
+      return _i187.CustomClass2.fromJson(data) as T;
     }
-    if (t == _i165.ProtocolCustomClass) {
-      return _i165.ProtocolCustomClass.fromJson(data) as T;
+    if (t == _i187.ProtocolCustomClass) {
+      return _i187.ProtocolCustomClass.fromJson(data) as T;
     }
-    if (t == _i165.ExternalCustomClass) {
-      return _i165.ExternalCustomClass.fromJson(data) as T;
+    if (t == _i187.ExternalCustomClass) {
+      return _i187.ExternalCustomClass.fromJson(data) as T;
     }
-    if (t == _i165.FreezedCustomClass) {
-      return _i165.FreezedCustomClass.fromJson(data) as T;
+    if (t == _i187.FreezedCustomClass) {
+      return _i187.FreezedCustomClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i165.CustomClass?>()) {
-      return (data != null ? _i165.CustomClass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i187.CustomClass?>()) {
+      return (data != null ? _i187.CustomClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClass2?>()) {
-      return (data != null ? _i165.CustomClass2.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i187.CustomClass2?>()) {
+      return (data != null ? _i187.CustomClass2.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithoutProtocolSerialization?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithoutProtocolSerialization?>()) {
       return (data != null
-          ? _i165.CustomClassWithoutProtocolSerialization.fromJson(data)
+          ? _i187.CustomClassWithoutProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithProtocolSerialization?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithProtocolSerialization?>()) {
       return (data != null
-          ? _i165.CustomClassWithProtocolSerialization.fromJson(data)
+          ? _i187.CustomClassWithProtocolSerialization.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i165.CustomClassWithProtocolSerializationMethod?>()) {
+    if (t == _i1.getType<_i187.CustomClassWithProtocolSerializationMethod?>()) {
       return (data != null
-          ? _i165.CustomClassWithProtocolSerializationMethod.fromJson(data)
+          ? _i187.CustomClassWithProtocolSerializationMethod.fromJson(data)
           : null) as T;
     }
-    if (t == _i1.getType<_i165.ProtocolCustomClass?>()) {
-      return (data != null ? _i165.ProtocolCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i187.ProtocolCustomClass?>()) {
+      return (data != null ? _i187.ProtocolCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i165.ExternalCustomClass?>()) {
-      return (data != null ? _i165.ExternalCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i187.ExternalCustomClass?>()) {
+      return (data != null ? _i187.ExternalCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i165.FreezedCustomClass?>()) {
-      return (data != null ? _i165.FreezedCustomClass.fromJson(data) : null)
+    if (t == _i1.getType<_i187.FreezedCustomClass?>()) {
+      return (data != null ? _i187.FreezedCustomClass.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<List<_i166.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i188.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i166.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i188.SimpleData>(e)).toList()
           : null) as T;
     }
     if (t == _i1.getType<(int?,)?>()) {
@@ -10322,26 +10712,26 @@ class Protocol extends _i1.SerializationManagerServer {
             List<
                 (
                   (int, String), {
-                  (_i166.SimpleData, double) namedSubRecord
+                  (_i188.SimpleData, double) namedSubRecord
                 })?>?>()) {
       return (data != null
           ? (data as List)
               .map((e) => deserialize<
                   (
                     (int, String), {
-                    (_i166.SimpleData, double) namedSubRecord
+                    (_i188.SimpleData, double) namedSubRecord
                   })?>(e))
               .toList()
           : null) as T;
     }
     if (t ==
         _i1.getType<
-            ((int, String), {(_i166.SimpleData, double) namedSubRecord})?>()) {
+            ((int, String), {(_i188.SimpleData, double) namedSubRecord})?>()) {
       return (data == null)
           ? null as T
           : (
               deserialize<(int, String)>(((data as Map)['p'] as List)[0]),
-              namedSubRecord: deserialize<(_i166.SimpleData, double)>(
+              namedSubRecord: deserialize<(_i188.SimpleData, double)>(
                   data['n']['namedSubRecord']),
             ) as T;
     }
@@ -10349,7 +10739,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
             )>()) {
       return (
         deserialize<String>(((data as Map)['p'] as List)[0]),
@@ -10357,7 +10747,7 @@ class Protocol extends _i1.SerializationManagerServer {
             (
               Map<String, int>, {
               bool flag,
-              _i166.SimpleData simpleData
+              _i188.SimpleData simpleData
             })>(data['p'][1]),
       ) as T;
     }
@@ -10371,7 +10761,7 @@ class Protocol extends _i1.SerializationManagerServer {
         _i1.getType<
             (
               String,
-              (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+              (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
             )?>()) {
       return (data == null)
           ? null as T
@@ -10381,7 +10771,7 @@ class Protocol extends _i1.SerializationManagerServer {
                   (
                     Map<String, int>, {
                     bool flag,
-                    _i166.SimpleData simpleData
+                    _i188.SimpleData simpleData
                   })>(data['p'][1]),
             ) as T;
     }
@@ -10413,344 +10803,388 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
     switch (data) {
-      case _i165.CustomClass():
+      case _i187.CustomClass():
         return 'CustomClass';
-      case _i165.CustomClass2():
+      case _i187.CustomClass2():
         return 'CustomClass2';
-      case _i165.CustomClassWithoutProtocolSerialization():
+      case _i187.CustomClassWithoutProtocolSerialization():
         return 'CustomClassWithoutProtocolSerialization';
-      case _i165.CustomClassWithProtocolSerialization():
+      case _i187.CustomClassWithProtocolSerialization():
         return 'CustomClassWithProtocolSerialization';
-      case _i165.CustomClassWithProtocolSerializationMethod():
+      case _i187.CustomClassWithProtocolSerializationMethod():
         return 'CustomClassWithProtocolSerializationMethod';
-      case _i165.ProtocolCustomClass():
+      case _i187.ProtocolCustomClass():
         return 'ProtocolCustomClass';
-      case _i165.ExternalCustomClass():
+      case _i187.ExternalCustomClass():
         return 'ExternalCustomClass';
-      case _i165.FreezedCustomClass():
+      case _i187.FreezedCustomClass():
         return 'FreezedCustomClass';
-      case _i5.ScopeServerOnlyFieldChild():
-        return 'ScopeServerOnlyFieldChild';
-      case _i6.ChildClass():
-        return 'ChildClass';
-      case _i7.ChildWithDefault():
-        return 'ChildWithDefault';
-      case _i8.ParentClass():
-        return 'ParentClass';
-      case _i9.SealedGrandChild():
-        return 'SealedGrandChild';
-      case _i9.SealedChild():
-        return 'SealedChild';
-      case _i9.SealedOtherChild():
-        return 'SealedOtherChild';
-      case _i10.UriDefaultModel():
-        return 'UriDefaultModel';
-      case _i11.CommentInt():
-        return 'CommentInt';
-      case _i12.CustomerInt():
-        return 'CustomerInt';
-      case _i13.OrderUuid():
-        return 'OrderUuid';
-      case _i14.AddressUuid():
-        return 'AddressUuid';
-      case _i15.CitizenInt():
-        return 'CitizenInt';
-      case _i16.CompanyUuid():
-        return 'CompanyUuid';
-      case _i17.TownInt():
-        return 'TownInt';
-      case _i18.ChangedIdTypeSelf():
-        return 'ChangedIdTypeSelf';
-      case _i19.BigIntDefault():
-        return 'BigIntDefault';
-      case _i20.BigIntDefaultMix():
-        return 'BigIntDefaultMix';
-      case _i21.BigIntDefaultModel():
-        return 'BigIntDefaultModel';
-      case _i22.BigIntDefaultPersist():
-        return 'BigIntDefaultPersist';
-      case _i23.BoolDefault():
-        return 'BoolDefault';
-      case _i24.BoolDefaultMix():
-        return 'BoolDefaultMix';
-      case _i25.BoolDefaultModel():
-        return 'BoolDefaultModel';
-      case _i26.BoolDefaultPersist():
-        return 'BoolDefaultPersist';
-      case _i27.DateTimeDefault():
-        return 'DateTimeDefault';
-      case _i28.DateTimeDefaultMix():
-        return 'DateTimeDefaultMix';
-      case _i29.DateTimeDefaultModel():
-        return 'DateTimeDefaultModel';
-      case _i30.DateTimeDefaultPersist():
-        return 'DateTimeDefaultPersist';
-      case _i31.DoubleDefault():
-        return 'DoubleDefault';
-      case _i32.DoubleDefaultMix():
-        return 'DoubleDefaultMix';
-      case _i33.DoubleDefaultModel():
-        return 'DoubleDefaultModel';
-      case _i34.DoubleDefaultPersist():
-        return 'DoubleDefaultPersist';
-      case _i35.DurationDefault():
-        return 'DurationDefault';
-      case _i36.DurationDefaultMix():
-        return 'DurationDefaultMix';
-      case _i37.DurationDefaultModel():
-        return 'DurationDefaultModel';
-      case _i38.DurationDefaultPersist():
-        return 'DurationDefaultPersist';
-      case _i39.EnumDefault():
-        return 'EnumDefault';
-      case _i40.EnumDefaultMix():
-        return 'EnumDefaultMix';
-      case _i41.EnumDefaultModel():
-        return 'EnumDefaultModel';
-      case _i42.EnumDefaultPersist():
-        return 'EnumDefaultPersist';
-      case _i43.ByIndexEnum():
-        return 'ByIndexEnum';
-      case _i44.ByNameEnum():
-        return 'ByNameEnum';
-      case _i45.DefaultValueEnum():
-        return 'DefaultValueEnum';
-      case _i46.DefaultException():
-        return 'DefaultException';
-      case _i47.IntDefault():
-        return 'IntDefault';
-      case _i48.IntDefaultMix():
-        return 'IntDefaultMix';
-      case _i49.IntDefaultModel():
-        return 'IntDefaultModel';
-      case _i50.IntDefaultPersist():
-        return 'IntDefaultPersist';
-      case _i51.StringDefault():
-        return 'StringDefault';
-      case _i52.StringDefaultMix():
-        return 'StringDefaultMix';
-      case _i53.StringDefaultModel():
-        return 'StringDefaultModel';
-      case _i54.StringDefaultPersist():
-        return 'StringDefaultPersist';
-      case _i55.UriDefault():
-        return 'UriDefault';
-      case _i56.UriDefaultMix():
-        return 'UriDefaultMix';
-      case _i57.ByIndexEnumWithNameValue():
+      case _i5.ByIndexEnumWithNameValue():
         return 'ByIndexEnumWithNameValue';
-      case _i58.UriDefaultPersist():
-        return 'UriDefaultPersist';
-      case _i59.UuidDefault():
-        return 'UuidDefault';
-      case _i60.UuidDefaultMix():
-        return 'UuidDefaultMix';
-      case _i61.UuidDefaultModel():
-        return 'UuidDefaultModel';
-      case _i62.UuidDefaultPersist():
-        return 'UuidDefaultPersist';
-      case _i63.EmptyModel():
-        return 'EmptyModel';
-      case _i64.EmptyModelRelationItem():
-        return 'EmptyModelRelationItem';
-      case _i65.EmptyModelWithTable():
-        return 'EmptyModelWithTable';
-      case _i66.RelationEmptyModel():
-        return 'RelationEmptyModel';
-      case _i67.ExceptionWithData():
-        return 'ExceptionWithData';
-      case _i68.ByNameEnumWithNameValue():
+      case _i6.ByNameEnumWithNameValue():
         return 'ByNameEnumWithNameValue';
-      case _i69.CourseUuid():
+      case _i7.CourseUuid():
         return 'CourseUuid';
-      case _i70.GrandparentClass():
-        return 'GrandparentClass';
-      case _i71.EnrollmentInt():
+      case _i8.EnrollmentInt():
         return 'EnrollmentInt';
-      case _i72.ParentWithDefault():
-        return 'ParentWithDefault';
-      case _i73.StudentUuid():
+      case _i9.StudentUuid():
         return 'StudentUuid';
-      case _i74.ArenaUuid():
+      case _i10.ArenaUuid():
         return 'ArenaUuid';
-      case _i75.PlayerUuid():
+      case _i11.PlayerUuid():
         return 'PlayerUuid';
-      case _i76.CityWithLongTableName():
-        return 'CityWithLongTableName';
-      case _i77.OrganizationWithLongTableName():
-        return 'OrganizationWithLongTableName';
-      case _i78.PersonWithLongTableName():
-        return 'PersonWithLongTableName';
-      case _i79.MaxFieldName():
-        return 'MaxFieldName';
-      case _i80.LongImplicitIdField():
-        return 'LongImplicitIdField';
-      case _i81.LongImplicitIdFieldCollection():
-        return 'LongImplicitIdFieldCollection';
-      case _i82.RelationToMultipleMaxFieldName():
-        return 'RelationToMultipleMaxFieldName';
-      case _i83.UserNote():
-        return 'UserNote';
-      case _i84.UserNoteCollection():
-        return 'UserNoteCollection';
-      case _i85.UserNoteCollectionWithALongName():
-        return 'UserNoteCollectionWithALongName';
-      case _i86.UserNoteWithALongName():
-        return 'UserNoteWithALongName';
-      case _i87.MultipleMaxFieldName():
-        return 'MultipleMaxFieldName';
-      case _i88.City():
-        return 'City';
-      case _i89.Organization():
-        return 'Organization';
-      case _i90.Person():
-        return 'Person';
-      case _i91.Course():
-        return 'Course';
-      case _i92.Enrollment():
-        return 'Enrollment';
-      case _i93.Student():
-        return 'Student';
-      case _i94.ObjectUser():
-        return 'ObjectUser';
-      case _i95.ParentUser():
-        return 'ParentUser';
-      case _i96.Arena():
-        return 'Arena';
-      case _i97.Player():
-        return 'Player';
-      case _i98.Team():
-        return 'Team';
-      case _i99.Comment():
-        return 'Comment';
-      case _i100.Customer():
-        return 'Customer';
-      case _i101.Book():
-        return 'Book';
-      case _i102.Chapter():
-        return 'Chapter';
-      case _i103.Order():
-        return 'Order';
-      case _i104.Address():
-        return 'Address';
-      case _i105.Citizen():
-        return 'Citizen';
-      case _i106.Company():
-        return 'Company';
-      case _i107.Town():
-        return 'Town';
-      case _i108.Blocking():
-        return 'Blocking';
-      case _i109.MyFeatureModel():
-        return 'MyFeatureModel';
-      case _i110.Cat():
-        return 'Cat';
-      case _i111.Post():
-        return 'Post';
-      case _i112.ModuleDatatype():
-        return 'ModuleDatatype';
-      case _i113.Nullability():
-        return 'Nullability';
-      case _i114.ObjectFieldPersist():
-        return 'ObjectFieldPersist';
-      case _i115.ObjectFieldScopes():
-        return 'ObjectFieldScopes';
-      case _i116.ObjectWithBit():
-        return 'ObjectWithBit';
-      case _i117.ObjectWithByteData():
-        return 'ObjectWithByteData';
-      case _i118.ObjectWithCustomClass():
-        return 'ObjectWithCustomClass';
-      case _i119.ObjectWithDuration():
-        return 'ObjectWithDuration';
-      case _i120.ObjectWithEnum():
-        return 'ObjectWithEnum';
-      case _i121.ObjectWithHalfVector():
-        return 'ObjectWithHalfVector';
-      case _i122.ObjectWithIndex():
-        return 'ObjectWithIndex';
-      case _i123.ObjectWithJsonb():
-        return 'ObjectWithJsonb';
-      case _i124.ObjectWithJsonbClassLevel():
-        return 'ObjectWithJsonbClassLevel';
-      case _i125.ObjectWithMaps():
-        return 'ObjectWithMaps';
-      case _i126.ObjectWithNullableCustomClass():
-        return 'ObjectWithNullableCustomClass';
-      case _i127.ObjectWithObject():
-        return 'ObjectWithObject';
-      case _i128.ObjectWithParent():
-        return 'ObjectWithParent';
-      case _i129.ObjectWithSelfParent():
-        return 'ObjectWithSelfParent';
-      case _i130.ObjectWithSparseVector():
-        return 'ObjectWithSparseVector';
-      case _i131.ObjectWithUuid():
-        return 'ObjectWithUuid';
-      case _i132.ObjectWithVector():
-        return 'ObjectWithVector';
-      case _i133.Record():
-        return 'Record';
-      case _i134.RelatedUniqueData():
-        return 'RelatedUniqueData';
-      case _i135.ExceptionWithRequiredField():
-        return 'ExceptionWithRequiredField';
-      case _i136.ModelWithRequiredField():
-        return 'ModelWithRequiredField';
-      case _i137.ScopeNoneFields():
-        return 'ScopeNoneFields';
-      case _i138.ScopeServerOnlyField():
-        return 'ScopeServerOnlyField';
-      case _i139.TeamInt():
+      case _i12.TeamInt():
         return 'TeamInt';
-      case _i140.DefaultServerOnlyClass():
-        return 'DefaultServerOnlyClass';
-      case _i141.DefaultServerOnlyEnum():
-        return 'DefaultServerOnlyEnum';
-      case _i142.NotServerOnlyClass():
-        return 'NotServerOnlyClass';
-      case _i143.NotServerOnlyEnum():
-        return 'NotServerOnlyEnum';
-      case _i144.ServerOnlyClass():
-        return 'ServerOnlyClass';
-      case _i145.ServerOnlyEnum():
-        return 'ServerOnlyEnum';
-      case _i146.ServerOnlyClassField():
-        return 'ServerOnlyClassField';
-      case _i147.ServerOnlyDefault():
-        return 'ServerOnlyDefault';
-      case _i148.SimpleData():
-        return 'SimpleData';
-      case _i149.SimpleDataList():
-        return 'SimpleDataList';
-      case _i150.SimpleDataMap():
-        return 'SimpleDataMap';
-      case _i151.SimpleDataObject():
-        return 'SimpleDataObject';
-      case _i152.SimpleDateTime():
-        return 'SimpleDateTime';
-      case _i153.ModelInSubfolder():
-        return 'ModelInSubfolder';
-      case _i154.TestEnum():
-        return 'TestEnum';
-      case _i155.TestEnumStringified():
-        return 'TestEnumStringified';
-      case _i156.Types():
-        return 'Types';
-      case _i157.TypesList():
-        return 'TypesList';
-      case _i158.TypesMap():
-        return 'TypesMap';
-      case _i159.TypesRecord():
-        return 'TypesRecord';
-      case _i160.TypesSet():
-        return 'TypesSet';
-      case _i161.TypesSetRequired():
-        return 'TypesSetRequired';
-      case _i162.UniqueData():
-        return 'UniqueData';
-      case _i163.Member():
+      case _i13.CommentInt():
+        return 'CommentInt';
+      case _i14.CustomerInt():
+        return 'CustomerInt';
+      case _i15.OrderUuid():
+        return 'OrderUuid';
+      case _i16.AddressUuid():
+        return 'AddressUuid';
+      case _i17.CitizenInt():
+        return 'CitizenInt';
+      case _i18.CompanyUuid():
+        return 'CompanyUuid';
+      case _i19.TownInt():
+        return 'TownInt';
+      case _i20.ChangedIdTypeSelf():
+        return 'ChangedIdTypeSelf';
+      case _i21.ServerOnlyChangedIdFieldClass():
+        return 'ServerOnlyChangedIdFieldClass';
+      case _i22.BigIntDefault():
+        return 'BigIntDefault';
+      case _i23.BigIntDefaultMix():
+        return 'BigIntDefaultMix';
+      case _i24.BigIntDefaultModel():
+        return 'BigIntDefaultModel';
+      case _i25.BigIntDefaultPersist():
+        return 'BigIntDefaultPersist';
+      case _i26.BoolDefault():
+        return 'BoolDefault';
+      case _i27.BoolDefaultMix():
+        return 'BoolDefaultMix';
+      case _i28.BoolDefaultModel():
+        return 'BoolDefaultModel';
+      case _i29.BoolDefaultPersist():
+        return 'BoolDefaultPersist';
+      case _i30.DateTimeDefault():
+        return 'DateTimeDefault';
+      case _i31.DateTimeDefaultMix():
+        return 'DateTimeDefaultMix';
+      case _i32.DateTimeDefaultModel():
+        return 'DateTimeDefaultModel';
+      case _i33.DateTimeDefaultPersist():
+        return 'DateTimeDefaultPersist';
+      case _i34.DoubleDefault():
+        return 'DoubleDefault';
+      case _i35.DoubleDefaultMix():
+        return 'DoubleDefaultMix';
+      case _i36.DoubleDefaultModel():
+        return 'DoubleDefaultModel';
+      case _i37.DoubleDefaultPersist():
+        return 'DoubleDefaultPersist';
+      case _i38.DurationDefault():
+        return 'DurationDefault';
+      case _i39.DurationDefaultMix():
+        return 'DurationDefaultMix';
+      case _i40.DurationDefaultModel():
+        return 'DurationDefaultModel';
+      case _i41.DurationDefaultPersist():
+        return 'DurationDefaultPersist';
+      case _i42.EnumDefault():
+        return 'EnumDefault';
+      case _i43.EnumDefaultMix():
+        return 'EnumDefaultMix';
+      case _i44.EnumDefaultModel():
+        return 'EnumDefaultModel';
+      case _i45.EnumDefaultPersist():
+        return 'EnumDefaultPersist';
+      case _i46.ByIndexEnum():
+        return 'ByIndexEnum';
+      case _i47.ByNameEnum():
+        return 'ByNameEnum';
+      case _i48.DefaultValueEnum():
+        return 'DefaultValueEnum';
+      case _i49.DefaultException():
+        return 'DefaultException';
+      case _i50.IntDefault():
+        return 'IntDefault';
+      case _i51.IntDefaultMix():
+        return 'IntDefaultMix';
+      case _i52.IntDefaultModel():
+        return 'IntDefaultModel';
+      case _i53.IntDefaultPersist():
+        return 'IntDefaultPersist';
+      case _i54.StringDefault():
+        return 'StringDefault';
+      case _i55.StringDefaultMix():
+        return 'StringDefaultMix';
+      case _i56.StringDefaultModel():
+        return 'StringDefaultModel';
+      case _i57.StringDefaultPersist():
+        return 'StringDefaultPersist';
+      case _i58.UriDefault():
+        return 'UriDefault';
+      case _i59.UriDefaultMix():
+        return 'UriDefaultMix';
+      case _i60.UriDefaultModel():
+        return 'UriDefaultModel';
+      case _i61.UriDefaultPersist():
+        return 'UriDefaultPersist';
+      case _i62.UuidDefault():
+        return 'UuidDefault';
+      case _i63.UuidDefaultMix():
+        return 'UuidDefaultMix';
+      case _i64.UuidDefaultModel():
+        return 'UuidDefaultModel';
+      case _i65.UuidDefaultPersist():
+        return 'UuidDefaultPersist';
+      case _i66.EmptyModel():
+        return 'EmptyModel';
+      case _i67.EmptyModelRelationItem():
+        return 'EmptyModelRelationItem';
+      case _i68.EmptyModelWithTable():
+        return 'EmptyModelWithTable';
+      case _i69.RelationEmptyModel():
+        return 'RelationEmptyModel';
+      case _i70.ExceptionWithData():
+        return 'ExceptionWithData';
+      case _i71.ImmutableChildObject():
+        return 'ImmutableChildObject';
+      case _i72.ImmutableChildObjectWithNoAdditionalFields():
+        return 'ImmutableChildObjectWithNoAdditionalFields';
+      case _i73.ImmutableObject():
+        return 'ImmutableObject';
+      case _i74.ImmutableObjectWithImmutableObject():
+        return 'ImmutableObjectWithImmutableObject';
+      case _i75.ImmutableObjectWithList():
+        return 'ImmutableObjectWithList';
+      case _i76.ImmutableObjectWithMap():
+        return 'ImmutableObjectWithMap';
+      case _i77.ImmutableObjectWithMultipleFields():
+        return 'ImmutableObjectWithMultipleFields';
+      case _i78.ImmutableObjectWithNoFields():
+        return 'ImmutableObjectWithNoFields';
+      case _i79.ImmutableObjectWithRecord():
+        return 'ImmutableObjectWithRecord';
+      case _i80.ImmutableObjectWithTable():
+        return 'ImmutableObjectWithTable';
+      case _i81.ImmutableObjectWithTwentyFields():
+        return 'ImmutableObjectWithTwentyFields';
+      case _i82.ChildClass():
+        return 'ChildClass';
+      case _i83.ServerOnlyChildClass():
+        return 'ServerOnlyChildClass';
+      case _i84.ChildWithDefault():
+        return 'ChildWithDefault';
+      case _i85.ChildWithInheritedId():
+        return 'ChildWithInheritedId';
+      case _i86.ChildClassWithoutId():
+        return 'ChildClassWithoutId';
+      case _i87.ServerOnlyChildClassWithoutId():
+        return 'ServerOnlyChildClassWithoutId';
+      case _i88.ParentClass():
+        return 'ParentClass';
+      case _i89.GrandparentClass():
+        return 'GrandparentClass';
+      case _i90.ParentClassWithoutId():
+        return 'ParentClassWithoutId';
+      case _i91.GrandparentClassWithId():
+        return 'GrandparentClassWithId';
+      case _i92.NonServerOnlyParentClass():
+        return 'NonServerOnlyParentClass';
+      case _i93.ParentWithChangedId():
+        return 'ParentWithChangedId';
+      case _i94.ParentWithDefault():
+        return 'ParentWithDefault';
+      case _i95.SealedGrandChild():
+        return 'SealedGrandChild';
+      case _i95.SealedChild():
+        return 'SealedChild';
+      case _i95.SealedOtherChild():
+        return 'SealedOtherChild';
+      case _i96.CityWithLongTableName():
+        return 'CityWithLongTableName';
+      case _i97.OrganizationWithLongTableName():
+        return 'OrganizationWithLongTableName';
+      case _i98.PersonWithLongTableName():
+        return 'PersonWithLongTableName';
+      case _i99.MaxFieldName():
+        return 'MaxFieldName';
+      case _i100.LongImplicitIdField():
+        return 'LongImplicitIdField';
+      case _i101.LongImplicitIdFieldCollection():
+        return 'LongImplicitIdFieldCollection';
+      case _i102.RelationToMultipleMaxFieldName():
+        return 'RelationToMultipleMaxFieldName';
+      case _i103.UserNote():
+        return 'UserNote';
+      case _i104.UserNoteCollection():
+        return 'UserNoteCollection';
+      case _i105.UserNoteCollectionWithALongName():
+        return 'UserNoteCollectionWithALongName';
+      case _i106.UserNoteWithALongName():
+        return 'UserNoteWithALongName';
+      case _i107.MultipleMaxFieldName():
+        return 'MultipleMaxFieldName';
+      case _i108.City():
+        return 'City';
+      case _i109.Organization():
+        return 'Organization';
+      case _i110.Person():
+        return 'Person';
+      case _i111.Course():
+        return 'Course';
+      case _i112.Enrollment():
+        return 'Enrollment';
+      case _i113.Student():
+        return 'Student';
+      case _i114.ObjectUser():
+        return 'ObjectUser';
+      case _i115.ParentUser():
+        return 'ParentUser';
+      case _i116.Arena():
+        return 'Arena';
+      case _i117.Player():
+        return 'Player';
+      case _i118.Team():
+        return 'Team';
+      case _i119.Comment():
+        return 'Comment';
+      case _i120.Customer():
+        return 'Customer';
+      case _i121.Book():
+        return 'Book';
+      case _i122.Chapter():
+        return 'Chapter';
+      case _i123.Order():
+        return 'Order';
+      case _i124.Address():
+        return 'Address';
+      case _i125.Citizen():
+        return 'Citizen';
+      case _i126.Company():
+        return 'Company';
+      case _i127.Town():
+        return 'Town';
+      case _i128.Blocking():
+        return 'Blocking';
+      case _i129.Member():
         return 'Member';
+      case _i130.Cat():
+        return 'Cat';
+      case _i131.Post():
+        return 'Post';
+      case _i132.ModuleDatatype():
+        return 'ModuleDatatype';
+      case _i133.MyFeatureModel():
+        return 'MyFeatureModel';
+      case _i134.Nullability():
+        return 'Nullability';
+      case _i135.ObjectFieldPersist():
+        return 'ObjectFieldPersist';
+      case _i136.ObjectFieldScopes():
+        return 'ObjectFieldScopes';
+      case _i137.ObjectWithBit():
+        return 'ObjectWithBit';
+      case _i138.ObjectWithByteData():
+        return 'ObjectWithByteData';
+      case _i139.ObjectWithCustomClass():
+        return 'ObjectWithCustomClass';
+      case _i140.ObjectWithDuration():
+        return 'ObjectWithDuration';
+      case _i141.ObjectWithEnum():
+        return 'ObjectWithEnum';
+      case _i142.ObjectWithHalfVector():
+        return 'ObjectWithHalfVector';
+      case _i143.ObjectWithIndex():
+        return 'ObjectWithIndex';
+      case _i144.ObjectWithJsonb():
+        return 'ObjectWithJsonb';
+      case _i145.ObjectWithJsonbClassLevel():
+        return 'ObjectWithJsonbClassLevel';
+      case _i146.ObjectWithMaps():
+        return 'ObjectWithMaps';
+      case _i147.ObjectWithNullableCustomClass():
+        return 'ObjectWithNullableCustomClass';
+      case _i148.ObjectWithObject():
+        return 'ObjectWithObject';
+      case _i149.ObjectWithParent():
+        return 'ObjectWithParent';
+      case _i150.ObjectWithSelfParent():
+        return 'ObjectWithSelfParent';
+      case _i151.ObjectWithSparseVector():
+        return 'ObjectWithSparseVector';
+      case _i152.ObjectWithUuid():
+        return 'ObjectWithUuid';
+      case _i153.ObjectWithVector():
+        return 'ObjectWithVector';
+      case _i154.Record():
+        return 'Record';
+      case _i155.RelatedUniqueData():
+        return 'RelatedUniqueData';
+      case _i156.ExceptionWithRequiredField():
+        return 'ExceptionWithRequiredField';
+      case _i157.ModelWithRequiredField():
+        return 'ModelWithRequiredField';
+      case _i158.ScopeNoneFields():
+        return 'ScopeNoneFields';
+      case _i159.ScopeServerOnlyFieldChild():
+        return 'ScopeServerOnlyFieldChild';
+      case _i160.ScopeServerOnlyField():
+        return 'ScopeServerOnlyField';
+      case _i161.DefaultServerOnlyClass():
+        return 'DefaultServerOnlyClass';
+      case _i162.DefaultServerOnlyEnum():
+        return 'DefaultServerOnlyEnum';
+      case _i163.NotServerOnlyClass():
+        return 'NotServerOnlyClass';
+      case _i164.NotServerOnlyEnum():
+        return 'NotServerOnlyEnum';
+      case _i165.ServerOnlyClass():
+        return 'ServerOnlyClass';
+      case _i166.ServerOnlyEnum():
+        return 'ServerOnlyEnum';
+      case _i167.ServerOnlyClassField():
+        return 'ServerOnlyClassField';
+      case _i168.ServerOnlyDefault():
+        return 'ServerOnlyDefault';
+      case _i169.SessionAuthInfo():
+        return 'SessionAuthInfo';
+      case _i170.SimpleData():
+        return 'SimpleData';
+      case _i171.SimpleDataList():
+        return 'SimpleDataList';
+      case _i172.SimpleDataMap():
+        return 'SimpleDataMap';
+      case _i173.SimpleDataObject():
+        return 'SimpleDataObject';
+      case _i174.SimpleDateTime():
+        return 'SimpleDateTime';
+      case _i175.ModelInSubfolder():
+        return 'ModelInSubfolder';
+      case _i176.TestEnum():
+        return 'TestEnum';
+      case _i177.TestEnumDefaultSerialization():
+        return 'TestEnumDefaultSerialization';
+      case _i178.TestEnumStringified():
+        return 'TestEnumStringified';
+      case _i179.Types():
+        return 'Types';
+      case _i180.TypesList():
+        return 'TypesList';
+      case _i181.TypesMap():
+        return 'TypesMap';
+      case _i182.TypesRecord():
+        return 'TypesRecord';
+      case _i183.TypesSet():
+        return 'TypesSet';
+      case _i184.TypesSetRequired():
+        return 'TypesSetRequired';
+      case _i185.UniqueData():
+        return 'UniqueData';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -10767,37 +11201,37 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is List<int>) {
       return 'List<int>';
     }
-    if (data is List<_i166.SimpleData>) {
+    if (data is List<_i188.SimpleData>) {
       return 'List<SimpleData>';
     }
     if (data is List<_i3.UserInfo>) {
       return 'List<serverpod_auth.UserInfo>';
     }
-    if (data is List<_i166.SimpleData>?) {
+    if (data is List<_i188.SimpleData>?) {
       return 'List<SimpleData>?';
     }
-    if (data is List<_i166.SimpleData?>) {
+    if (data is List<_i188.SimpleData?>) {
       return 'List<SimpleData?>';
     }
     if (data is Set<int>) {
       return 'Set<int>';
     }
-    if (data is Set<_i166.SimpleData>) {
+    if (data is Set<_i188.SimpleData>) {
       return 'Set<SimpleData>';
     }
-    if (data is List<Set<_i166.SimpleData>>) {
+    if (data is List<Set<_i188.SimpleData>>) {
       return 'List<Set<SimpleData>>';
     }
     if (data is (int?,)?) {
       return '(int?,)?';
     }
     if (data is List<
-        ((int, String), {(_i166.SimpleData, double) namedSubRecord})?>?) {
+        ((int, String), {(_i188.SimpleData, double) namedSubRecord})?>?) {
       return 'List<((int,String),{(SimpleData,double) namedSubRecord})?>?';
     }
     if (data is (
       String,
-      (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+      (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
     )) {
       return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))';
     }
@@ -10806,7 +11240,7 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data is (
       String,
-      (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+      (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
     )?) {
       return '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))?';
     }
@@ -10823,514 +11257,581 @@ class Protocol extends _i1.SerializationManagerServer {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'CustomClass') {
-      return deserialize<_i165.CustomClass>(data['data']);
+      return deserialize<_i187.CustomClass>(data['data']);
     }
     if (dataClassName == 'CustomClass2') {
-      return deserialize<_i165.CustomClass2>(data['data']);
+      return deserialize<_i187.CustomClass2>(data['data']);
     }
     if (dataClassName == 'CustomClassWithoutProtocolSerialization') {
-      return deserialize<_i165.CustomClassWithoutProtocolSerialization>(
+      return deserialize<_i187.CustomClassWithoutProtocolSerialization>(
           data['data']);
     }
     if (dataClassName == 'CustomClassWithProtocolSerialization') {
-      return deserialize<_i165.CustomClassWithProtocolSerialization>(
+      return deserialize<_i187.CustomClassWithProtocolSerialization>(
           data['data']);
     }
     if (dataClassName == 'CustomClassWithProtocolSerializationMethod') {
-      return deserialize<_i165.CustomClassWithProtocolSerializationMethod>(
+      return deserialize<_i187.CustomClassWithProtocolSerializationMethod>(
           data['data']);
     }
     if (dataClassName == 'ProtocolCustomClass') {
-      return deserialize<_i165.ProtocolCustomClass>(data['data']);
+      return deserialize<_i187.ProtocolCustomClass>(data['data']);
     }
     if (dataClassName == 'ExternalCustomClass') {
-      return deserialize<_i165.ExternalCustomClass>(data['data']);
+      return deserialize<_i187.ExternalCustomClass>(data['data']);
     }
     if (dataClassName == 'FreezedCustomClass') {
-      return deserialize<_i165.FreezedCustomClass>(data['data']);
-    }
-    if (dataClassName == 'ScopeServerOnlyFieldChild') {
-      return deserialize<_i5.ScopeServerOnlyFieldChild>(data['data']);
-    }
-    if (dataClassName == 'ChildClass') {
-      return deserialize<_i6.ChildClass>(data['data']);
-    }
-    if (dataClassName == 'ChildWithDefault') {
-      return deserialize<_i7.ChildWithDefault>(data['data']);
-    }
-    if (dataClassName == 'ParentClass') {
-      return deserialize<_i8.ParentClass>(data['data']);
-    }
-    if (dataClassName == 'SealedGrandChild') {
-      return deserialize<_i9.SealedGrandChild>(data['data']);
-    }
-    if (dataClassName == 'SealedChild') {
-      return deserialize<_i9.SealedChild>(data['data']);
-    }
-    if (dataClassName == 'SealedOtherChild') {
-      return deserialize<_i9.SealedOtherChild>(data['data']);
-    }
-    if (dataClassName == 'UriDefaultModel') {
-      return deserialize<_i10.UriDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'CommentInt') {
-      return deserialize<_i11.CommentInt>(data['data']);
-    }
-    if (dataClassName == 'CustomerInt') {
-      return deserialize<_i12.CustomerInt>(data['data']);
-    }
-    if (dataClassName == 'OrderUuid') {
-      return deserialize<_i13.OrderUuid>(data['data']);
-    }
-    if (dataClassName == 'AddressUuid') {
-      return deserialize<_i14.AddressUuid>(data['data']);
-    }
-    if (dataClassName == 'CitizenInt') {
-      return deserialize<_i15.CitizenInt>(data['data']);
-    }
-    if (dataClassName == 'CompanyUuid') {
-      return deserialize<_i16.CompanyUuid>(data['data']);
-    }
-    if (dataClassName == 'TownInt') {
-      return deserialize<_i17.TownInt>(data['data']);
-    }
-    if (dataClassName == 'ChangedIdTypeSelf') {
-      return deserialize<_i18.ChangedIdTypeSelf>(data['data']);
-    }
-    if (dataClassName == 'BigIntDefault') {
-      return deserialize<_i19.BigIntDefault>(data['data']);
-    }
-    if (dataClassName == 'BigIntDefaultMix') {
-      return deserialize<_i20.BigIntDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'BigIntDefaultModel') {
-      return deserialize<_i21.BigIntDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'BigIntDefaultPersist') {
-      return deserialize<_i22.BigIntDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'BoolDefault') {
-      return deserialize<_i23.BoolDefault>(data['data']);
-    }
-    if (dataClassName == 'BoolDefaultMix') {
-      return deserialize<_i24.BoolDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'BoolDefaultModel') {
-      return deserialize<_i25.BoolDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'BoolDefaultPersist') {
-      return deserialize<_i26.BoolDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'DateTimeDefault') {
-      return deserialize<_i27.DateTimeDefault>(data['data']);
-    }
-    if (dataClassName == 'DateTimeDefaultMix') {
-      return deserialize<_i28.DateTimeDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'DateTimeDefaultModel') {
-      return deserialize<_i29.DateTimeDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'DateTimeDefaultPersist') {
-      return deserialize<_i30.DateTimeDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'DoubleDefault') {
-      return deserialize<_i31.DoubleDefault>(data['data']);
-    }
-    if (dataClassName == 'DoubleDefaultMix') {
-      return deserialize<_i32.DoubleDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'DoubleDefaultModel') {
-      return deserialize<_i33.DoubleDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'DoubleDefaultPersist') {
-      return deserialize<_i34.DoubleDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'DurationDefault') {
-      return deserialize<_i35.DurationDefault>(data['data']);
-    }
-    if (dataClassName == 'DurationDefaultMix') {
-      return deserialize<_i36.DurationDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'DurationDefaultModel') {
-      return deserialize<_i37.DurationDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'DurationDefaultPersist') {
-      return deserialize<_i38.DurationDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'EnumDefault') {
-      return deserialize<_i39.EnumDefault>(data['data']);
-    }
-    if (dataClassName == 'EnumDefaultMix') {
-      return deserialize<_i40.EnumDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'EnumDefaultModel') {
-      return deserialize<_i41.EnumDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'EnumDefaultPersist') {
-      return deserialize<_i42.EnumDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'ByIndexEnum') {
-      return deserialize<_i43.ByIndexEnum>(data['data']);
-    }
-    if (dataClassName == 'ByNameEnum') {
-      return deserialize<_i44.ByNameEnum>(data['data']);
-    }
-    if (dataClassName == 'DefaultValueEnum') {
-      return deserialize<_i45.DefaultValueEnum>(data['data']);
-    }
-    if (dataClassName == 'DefaultException') {
-      return deserialize<_i46.DefaultException>(data['data']);
-    }
-    if (dataClassName == 'IntDefault') {
-      return deserialize<_i47.IntDefault>(data['data']);
-    }
-    if (dataClassName == 'IntDefaultMix') {
-      return deserialize<_i48.IntDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'IntDefaultModel') {
-      return deserialize<_i49.IntDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'IntDefaultPersist') {
-      return deserialize<_i50.IntDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'StringDefault') {
-      return deserialize<_i51.StringDefault>(data['data']);
-    }
-    if (dataClassName == 'StringDefaultMix') {
-      return deserialize<_i52.StringDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'StringDefaultModel') {
-      return deserialize<_i53.StringDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'StringDefaultPersist') {
-      return deserialize<_i54.StringDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'UriDefault') {
-      return deserialize<_i55.UriDefault>(data['data']);
-    }
-    if (dataClassName == 'UriDefaultMix') {
-      return deserialize<_i56.UriDefaultMix>(data['data']);
+      return deserialize<_i187.FreezedCustomClass>(data['data']);
     }
     if (dataClassName == 'ByIndexEnumWithNameValue') {
-      return deserialize<_i57.ByIndexEnumWithNameValue>(data['data']);
-    }
-    if (dataClassName == 'UriDefaultPersist') {
-      return deserialize<_i58.UriDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'UuidDefault') {
-      return deserialize<_i59.UuidDefault>(data['data']);
-    }
-    if (dataClassName == 'UuidDefaultMix') {
-      return deserialize<_i60.UuidDefaultMix>(data['data']);
-    }
-    if (dataClassName == 'UuidDefaultModel') {
-      return deserialize<_i61.UuidDefaultModel>(data['data']);
-    }
-    if (dataClassName == 'UuidDefaultPersist') {
-      return deserialize<_i62.UuidDefaultPersist>(data['data']);
-    }
-    if (dataClassName == 'EmptyModel') {
-      return deserialize<_i63.EmptyModel>(data['data']);
-    }
-    if (dataClassName == 'EmptyModelRelationItem') {
-      return deserialize<_i64.EmptyModelRelationItem>(data['data']);
-    }
-    if (dataClassName == 'EmptyModelWithTable') {
-      return deserialize<_i65.EmptyModelWithTable>(data['data']);
-    }
-    if (dataClassName == 'RelationEmptyModel') {
-      return deserialize<_i66.RelationEmptyModel>(data['data']);
-    }
-    if (dataClassName == 'ExceptionWithData') {
-      return deserialize<_i67.ExceptionWithData>(data['data']);
+      return deserialize<_i5.ByIndexEnumWithNameValue>(data['data']);
     }
     if (dataClassName == 'ByNameEnumWithNameValue') {
-      return deserialize<_i68.ByNameEnumWithNameValue>(data['data']);
+      return deserialize<_i6.ByNameEnumWithNameValue>(data['data']);
     }
     if (dataClassName == 'CourseUuid') {
-      return deserialize<_i69.CourseUuid>(data['data']);
-    }
-    if (dataClassName == 'GrandparentClass') {
-      return deserialize<_i70.GrandparentClass>(data['data']);
+      return deserialize<_i7.CourseUuid>(data['data']);
     }
     if (dataClassName == 'EnrollmentInt') {
-      return deserialize<_i71.EnrollmentInt>(data['data']);
-    }
-    if (dataClassName == 'ParentWithDefault') {
-      return deserialize<_i72.ParentWithDefault>(data['data']);
+      return deserialize<_i8.EnrollmentInt>(data['data']);
     }
     if (dataClassName == 'StudentUuid') {
-      return deserialize<_i73.StudentUuid>(data['data']);
+      return deserialize<_i9.StudentUuid>(data['data']);
     }
     if (dataClassName == 'ArenaUuid') {
-      return deserialize<_i74.ArenaUuid>(data['data']);
+      return deserialize<_i10.ArenaUuid>(data['data']);
     }
     if (dataClassName == 'PlayerUuid') {
-      return deserialize<_i75.PlayerUuid>(data['data']);
-    }
-    if (dataClassName == 'CityWithLongTableName') {
-      return deserialize<_i76.CityWithLongTableName>(data['data']);
-    }
-    if (dataClassName == 'OrganizationWithLongTableName') {
-      return deserialize<_i77.OrganizationWithLongTableName>(data['data']);
-    }
-    if (dataClassName == 'PersonWithLongTableName') {
-      return deserialize<_i78.PersonWithLongTableName>(data['data']);
-    }
-    if (dataClassName == 'MaxFieldName') {
-      return deserialize<_i79.MaxFieldName>(data['data']);
-    }
-    if (dataClassName == 'LongImplicitIdField') {
-      return deserialize<_i80.LongImplicitIdField>(data['data']);
-    }
-    if (dataClassName == 'LongImplicitIdFieldCollection') {
-      return deserialize<_i81.LongImplicitIdFieldCollection>(data['data']);
-    }
-    if (dataClassName == 'RelationToMultipleMaxFieldName') {
-      return deserialize<_i82.RelationToMultipleMaxFieldName>(data['data']);
-    }
-    if (dataClassName == 'UserNote') {
-      return deserialize<_i83.UserNote>(data['data']);
-    }
-    if (dataClassName == 'UserNoteCollection') {
-      return deserialize<_i84.UserNoteCollection>(data['data']);
-    }
-    if (dataClassName == 'UserNoteCollectionWithALongName') {
-      return deserialize<_i85.UserNoteCollectionWithALongName>(data['data']);
-    }
-    if (dataClassName == 'UserNoteWithALongName') {
-      return deserialize<_i86.UserNoteWithALongName>(data['data']);
-    }
-    if (dataClassName == 'MultipleMaxFieldName') {
-      return deserialize<_i87.MultipleMaxFieldName>(data['data']);
-    }
-    if (dataClassName == 'City') {
-      return deserialize<_i88.City>(data['data']);
-    }
-    if (dataClassName == 'Organization') {
-      return deserialize<_i89.Organization>(data['data']);
-    }
-    if (dataClassName == 'Person') {
-      return deserialize<_i90.Person>(data['data']);
-    }
-    if (dataClassName == 'Course') {
-      return deserialize<_i91.Course>(data['data']);
-    }
-    if (dataClassName == 'Enrollment') {
-      return deserialize<_i92.Enrollment>(data['data']);
-    }
-    if (dataClassName == 'Student') {
-      return deserialize<_i93.Student>(data['data']);
-    }
-    if (dataClassName == 'ObjectUser') {
-      return deserialize<_i94.ObjectUser>(data['data']);
-    }
-    if (dataClassName == 'ParentUser') {
-      return deserialize<_i95.ParentUser>(data['data']);
-    }
-    if (dataClassName == 'Arena') {
-      return deserialize<_i96.Arena>(data['data']);
-    }
-    if (dataClassName == 'Player') {
-      return deserialize<_i97.Player>(data['data']);
-    }
-    if (dataClassName == 'Team') {
-      return deserialize<_i98.Team>(data['data']);
-    }
-    if (dataClassName == 'Comment') {
-      return deserialize<_i99.Comment>(data['data']);
-    }
-    if (dataClassName == 'Customer') {
-      return deserialize<_i100.Customer>(data['data']);
-    }
-    if (dataClassName == 'Book') {
-      return deserialize<_i101.Book>(data['data']);
-    }
-    if (dataClassName == 'Chapter') {
-      return deserialize<_i102.Chapter>(data['data']);
-    }
-    if (dataClassName == 'Order') {
-      return deserialize<_i103.Order>(data['data']);
-    }
-    if (dataClassName == 'Address') {
-      return deserialize<_i104.Address>(data['data']);
-    }
-    if (dataClassName == 'Citizen') {
-      return deserialize<_i105.Citizen>(data['data']);
-    }
-    if (dataClassName == 'Company') {
-      return deserialize<_i106.Company>(data['data']);
-    }
-    if (dataClassName == 'Town') {
-      return deserialize<_i107.Town>(data['data']);
-    }
-    if (dataClassName == 'Blocking') {
-      return deserialize<_i108.Blocking>(data['data']);
-    }
-    if (dataClassName == 'MyFeatureModel') {
-      return deserialize<_i109.MyFeatureModel>(data['data']);
-    }
-    if (dataClassName == 'Cat') {
-      return deserialize<_i110.Cat>(data['data']);
-    }
-    if (dataClassName == 'Post') {
-      return deserialize<_i111.Post>(data['data']);
-    }
-    if (dataClassName == 'ModuleDatatype') {
-      return deserialize<_i112.ModuleDatatype>(data['data']);
-    }
-    if (dataClassName == 'Nullability') {
-      return deserialize<_i113.Nullability>(data['data']);
-    }
-    if (dataClassName == 'ObjectFieldPersist') {
-      return deserialize<_i114.ObjectFieldPersist>(data['data']);
-    }
-    if (dataClassName == 'ObjectFieldScopes') {
-      return deserialize<_i115.ObjectFieldScopes>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithBit') {
-      return deserialize<_i116.ObjectWithBit>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithByteData') {
-      return deserialize<_i117.ObjectWithByteData>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithCustomClass') {
-      return deserialize<_i118.ObjectWithCustomClass>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithDuration') {
-      return deserialize<_i119.ObjectWithDuration>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithEnum') {
-      return deserialize<_i120.ObjectWithEnum>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithHalfVector') {
-      return deserialize<_i121.ObjectWithHalfVector>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithIndex') {
-      return deserialize<_i122.ObjectWithIndex>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithJsonb') {
-      return deserialize<_i123.ObjectWithJsonb>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithJsonbClassLevel') {
-      return deserialize<_i124.ObjectWithJsonbClassLevel>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithMaps') {
-      return deserialize<_i125.ObjectWithMaps>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithNullableCustomClass') {
-      return deserialize<_i126.ObjectWithNullableCustomClass>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithObject') {
-      return deserialize<_i127.ObjectWithObject>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithParent') {
-      return deserialize<_i128.ObjectWithParent>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithSelfParent') {
-      return deserialize<_i129.ObjectWithSelfParent>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithSparseVector') {
-      return deserialize<_i130.ObjectWithSparseVector>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithUuid') {
-      return deserialize<_i131.ObjectWithUuid>(data['data']);
-    }
-    if (dataClassName == 'ObjectWithVector') {
-      return deserialize<_i132.ObjectWithVector>(data['data']);
-    }
-    if (dataClassName == 'Record') {
-      return deserialize<_i133.Record>(data['data']);
-    }
-    if (dataClassName == 'RelatedUniqueData') {
-      return deserialize<_i134.RelatedUniqueData>(data['data']);
-    }
-    if (dataClassName == 'ExceptionWithRequiredField') {
-      return deserialize<_i135.ExceptionWithRequiredField>(data['data']);
-    }
-    if (dataClassName == 'ModelWithRequiredField') {
-      return deserialize<_i136.ModelWithRequiredField>(data['data']);
-    }
-    if (dataClassName == 'ScopeNoneFields') {
-      return deserialize<_i137.ScopeNoneFields>(data['data']);
-    }
-    if (dataClassName == 'ScopeServerOnlyField') {
-      return deserialize<_i138.ScopeServerOnlyField>(data['data']);
+      return deserialize<_i11.PlayerUuid>(data['data']);
     }
     if (dataClassName == 'TeamInt') {
-      return deserialize<_i139.TeamInt>(data['data']);
+      return deserialize<_i12.TeamInt>(data['data']);
     }
-    if (dataClassName == 'DefaultServerOnlyClass') {
-      return deserialize<_i140.DefaultServerOnlyClass>(data['data']);
+    if (dataClassName == 'CommentInt') {
+      return deserialize<_i13.CommentInt>(data['data']);
     }
-    if (dataClassName == 'DefaultServerOnlyEnum') {
-      return deserialize<_i141.DefaultServerOnlyEnum>(data['data']);
+    if (dataClassName == 'CustomerInt') {
+      return deserialize<_i14.CustomerInt>(data['data']);
     }
-    if (dataClassName == 'NotServerOnlyClass') {
-      return deserialize<_i142.NotServerOnlyClass>(data['data']);
+    if (dataClassName == 'OrderUuid') {
+      return deserialize<_i15.OrderUuid>(data['data']);
     }
-    if (dataClassName == 'NotServerOnlyEnum') {
-      return deserialize<_i143.NotServerOnlyEnum>(data['data']);
+    if (dataClassName == 'AddressUuid') {
+      return deserialize<_i16.AddressUuid>(data['data']);
     }
-    if (dataClassName == 'ServerOnlyClass') {
-      return deserialize<_i144.ServerOnlyClass>(data['data']);
+    if (dataClassName == 'CitizenInt') {
+      return deserialize<_i17.CitizenInt>(data['data']);
     }
-    if (dataClassName == 'ServerOnlyEnum') {
-      return deserialize<_i145.ServerOnlyEnum>(data['data']);
+    if (dataClassName == 'CompanyUuid') {
+      return deserialize<_i18.CompanyUuid>(data['data']);
     }
-    if (dataClassName == 'ServerOnlyClassField') {
-      return deserialize<_i146.ServerOnlyClassField>(data['data']);
+    if (dataClassName == 'TownInt') {
+      return deserialize<_i19.TownInt>(data['data']);
     }
-    if (dataClassName == 'ServerOnlyDefault') {
-      return deserialize<_i147.ServerOnlyDefault>(data['data']);
+    if (dataClassName == 'ChangedIdTypeSelf') {
+      return deserialize<_i20.ChangedIdTypeSelf>(data['data']);
     }
-    if (dataClassName == 'SimpleData') {
-      return deserialize<_i148.SimpleData>(data['data']);
+    if (dataClassName == 'ServerOnlyChangedIdFieldClass') {
+      return deserialize<_i21.ServerOnlyChangedIdFieldClass>(data['data']);
     }
-    if (dataClassName == 'SimpleDataList') {
-      return deserialize<_i149.SimpleDataList>(data['data']);
+    if (dataClassName == 'BigIntDefault') {
+      return deserialize<_i22.BigIntDefault>(data['data']);
     }
-    if (dataClassName == 'SimpleDataMap') {
-      return deserialize<_i150.SimpleDataMap>(data['data']);
+    if (dataClassName == 'BigIntDefaultMix') {
+      return deserialize<_i23.BigIntDefaultMix>(data['data']);
     }
-    if (dataClassName == 'SimpleDataObject') {
-      return deserialize<_i151.SimpleDataObject>(data['data']);
+    if (dataClassName == 'BigIntDefaultModel') {
+      return deserialize<_i24.BigIntDefaultModel>(data['data']);
     }
-    if (dataClassName == 'SimpleDateTime') {
-      return deserialize<_i152.SimpleDateTime>(data['data']);
+    if (dataClassName == 'BigIntDefaultPersist') {
+      return deserialize<_i25.BigIntDefaultPersist>(data['data']);
     }
-    if (dataClassName == 'ModelInSubfolder') {
-      return deserialize<_i153.ModelInSubfolder>(data['data']);
+    if (dataClassName == 'BoolDefault') {
+      return deserialize<_i26.BoolDefault>(data['data']);
     }
-    if (dataClassName == 'TestEnum') {
-      return deserialize<_i154.TestEnum>(data['data']);
+    if (dataClassName == 'BoolDefaultMix') {
+      return deserialize<_i27.BoolDefaultMix>(data['data']);
     }
-    if (dataClassName == 'TestEnumStringified') {
-      return deserialize<_i155.TestEnumStringified>(data['data']);
+    if (dataClassName == 'BoolDefaultModel') {
+      return deserialize<_i28.BoolDefaultModel>(data['data']);
     }
-    if (dataClassName == 'Types') {
-      return deserialize<_i156.Types>(data['data']);
+    if (dataClassName == 'BoolDefaultPersist') {
+      return deserialize<_i29.BoolDefaultPersist>(data['data']);
     }
-    if (dataClassName == 'TypesList') {
-      return deserialize<_i157.TypesList>(data['data']);
+    if (dataClassName == 'DateTimeDefault') {
+      return deserialize<_i30.DateTimeDefault>(data['data']);
     }
-    if (dataClassName == 'TypesMap') {
-      return deserialize<_i158.TypesMap>(data['data']);
+    if (dataClassName == 'DateTimeDefaultMix') {
+      return deserialize<_i31.DateTimeDefaultMix>(data['data']);
     }
-    if (dataClassName == 'TypesRecord') {
-      return deserialize<_i159.TypesRecord>(data['data']);
+    if (dataClassName == 'DateTimeDefaultModel') {
+      return deserialize<_i32.DateTimeDefaultModel>(data['data']);
     }
-    if (dataClassName == 'TypesSet') {
-      return deserialize<_i160.TypesSet>(data['data']);
+    if (dataClassName == 'DateTimeDefaultPersist') {
+      return deserialize<_i33.DateTimeDefaultPersist>(data['data']);
     }
-    if (dataClassName == 'TypesSetRequired') {
-      return deserialize<_i161.TypesSetRequired>(data['data']);
+    if (dataClassName == 'DoubleDefault') {
+      return deserialize<_i34.DoubleDefault>(data['data']);
     }
-    if (dataClassName == 'UniqueData') {
-      return deserialize<_i162.UniqueData>(data['data']);
+    if (dataClassName == 'DoubleDefaultMix') {
+      return deserialize<_i35.DoubleDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'DoubleDefaultModel') {
+      return deserialize<_i36.DoubleDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'DoubleDefaultPersist') {
+      return deserialize<_i37.DoubleDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'DurationDefault') {
+      return deserialize<_i38.DurationDefault>(data['data']);
+    }
+    if (dataClassName == 'DurationDefaultMix') {
+      return deserialize<_i39.DurationDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'DurationDefaultModel') {
+      return deserialize<_i40.DurationDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'DurationDefaultPersist') {
+      return deserialize<_i41.DurationDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'EnumDefault') {
+      return deserialize<_i42.EnumDefault>(data['data']);
+    }
+    if (dataClassName == 'EnumDefaultMix') {
+      return deserialize<_i43.EnumDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'EnumDefaultModel') {
+      return deserialize<_i44.EnumDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'EnumDefaultPersist') {
+      return deserialize<_i45.EnumDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'ByIndexEnum') {
+      return deserialize<_i46.ByIndexEnum>(data['data']);
+    }
+    if (dataClassName == 'ByNameEnum') {
+      return deserialize<_i47.ByNameEnum>(data['data']);
+    }
+    if (dataClassName == 'DefaultValueEnum') {
+      return deserialize<_i48.DefaultValueEnum>(data['data']);
+    }
+    if (dataClassName == 'DefaultException') {
+      return deserialize<_i49.DefaultException>(data['data']);
+    }
+    if (dataClassName == 'IntDefault') {
+      return deserialize<_i50.IntDefault>(data['data']);
+    }
+    if (dataClassName == 'IntDefaultMix') {
+      return deserialize<_i51.IntDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'IntDefaultModel') {
+      return deserialize<_i52.IntDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'IntDefaultPersist') {
+      return deserialize<_i53.IntDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'StringDefault') {
+      return deserialize<_i54.StringDefault>(data['data']);
+    }
+    if (dataClassName == 'StringDefaultMix') {
+      return deserialize<_i55.StringDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'StringDefaultModel') {
+      return deserialize<_i56.StringDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'StringDefaultPersist') {
+      return deserialize<_i57.StringDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'UriDefault') {
+      return deserialize<_i58.UriDefault>(data['data']);
+    }
+    if (dataClassName == 'UriDefaultMix') {
+      return deserialize<_i59.UriDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'UriDefaultModel') {
+      return deserialize<_i60.UriDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'UriDefaultPersist') {
+      return deserialize<_i61.UriDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'UuidDefault') {
+      return deserialize<_i62.UuidDefault>(data['data']);
+    }
+    if (dataClassName == 'UuidDefaultMix') {
+      return deserialize<_i63.UuidDefaultMix>(data['data']);
+    }
+    if (dataClassName == 'UuidDefaultModel') {
+      return deserialize<_i64.UuidDefaultModel>(data['data']);
+    }
+    if (dataClassName == 'UuidDefaultPersist') {
+      return deserialize<_i65.UuidDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'EmptyModel') {
+      return deserialize<_i66.EmptyModel>(data['data']);
+    }
+    if (dataClassName == 'EmptyModelRelationItem') {
+      return deserialize<_i67.EmptyModelRelationItem>(data['data']);
+    }
+    if (dataClassName == 'EmptyModelWithTable') {
+      return deserialize<_i68.EmptyModelWithTable>(data['data']);
+    }
+    if (dataClassName == 'RelationEmptyModel') {
+      return deserialize<_i69.RelationEmptyModel>(data['data']);
+    }
+    if (dataClassName == 'ExceptionWithData') {
+      return deserialize<_i70.ExceptionWithData>(data['data']);
+    }
+    if (dataClassName == 'ImmutableChildObject') {
+      return deserialize<_i71.ImmutableChildObject>(data['data']);
+    }
+    if (dataClassName == 'ImmutableChildObjectWithNoAdditionalFields') {
+      return deserialize<_i72.ImmutableChildObjectWithNoAdditionalFields>(
+          data['data']);
+    }
+    if (dataClassName == 'ImmutableObject') {
+      return deserialize<_i73.ImmutableObject>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithImmutableObject') {
+      return deserialize<_i74.ImmutableObjectWithImmutableObject>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithList') {
+      return deserialize<_i75.ImmutableObjectWithList>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithMap') {
+      return deserialize<_i76.ImmutableObjectWithMap>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithMultipleFields') {
+      return deserialize<_i77.ImmutableObjectWithMultipleFields>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithNoFields') {
+      return deserialize<_i78.ImmutableObjectWithNoFields>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithRecord') {
+      return deserialize<_i79.ImmutableObjectWithRecord>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithTable') {
+      return deserialize<_i80.ImmutableObjectWithTable>(data['data']);
+    }
+    if (dataClassName == 'ImmutableObjectWithTwentyFields') {
+      return deserialize<_i81.ImmutableObjectWithTwentyFields>(data['data']);
+    }
+    if (dataClassName == 'ChildClass') {
+      return deserialize<_i82.ChildClass>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyChildClass') {
+      return deserialize<_i83.ServerOnlyChildClass>(data['data']);
+    }
+    if (dataClassName == 'ChildWithDefault') {
+      return deserialize<_i84.ChildWithDefault>(data['data']);
+    }
+    if (dataClassName == 'ChildWithInheritedId') {
+      return deserialize<_i85.ChildWithInheritedId>(data['data']);
+    }
+    if (dataClassName == 'ChildClassWithoutId') {
+      return deserialize<_i86.ChildClassWithoutId>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyChildClassWithoutId') {
+      return deserialize<_i87.ServerOnlyChildClassWithoutId>(data['data']);
+    }
+    if (dataClassName == 'ParentClass') {
+      return deserialize<_i88.ParentClass>(data['data']);
+    }
+    if (dataClassName == 'GrandparentClass') {
+      return deserialize<_i89.GrandparentClass>(data['data']);
+    }
+    if (dataClassName == 'ParentClassWithoutId') {
+      return deserialize<_i90.ParentClassWithoutId>(data['data']);
+    }
+    if (dataClassName == 'GrandparentClassWithId') {
+      return deserialize<_i91.GrandparentClassWithId>(data['data']);
+    }
+    if (dataClassName == 'NonServerOnlyParentClass') {
+      return deserialize<_i92.NonServerOnlyParentClass>(data['data']);
+    }
+    if (dataClassName == 'ParentWithChangedId') {
+      return deserialize<_i93.ParentWithChangedId>(data['data']);
+    }
+    if (dataClassName == 'ParentWithDefault') {
+      return deserialize<_i94.ParentWithDefault>(data['data']);
+    }
+    if (dataClassName == 'SealedGrandChild') {
+      return deserialize<_i95.SealedGrandChild>(data['data']);
+    }
+    if (dataClassName == 'SealedChild') {
+      return deserialize<_i95.SealedChild>(data['data']);
+    }
+    if (dataClassName == 'SealedOtherChild') {
+      return deserialize<_i95.SealedOtherChild>(data['data']);
+    }
+    if (dataClassName == 'CityWithLongTableName') {
+      return deserialize<_i96.CityWithLongTableName>(data['data']);
+    }
+    if (dataClassName == 'OrganizationWithLongTableName') {
+      return deserialize<_i97.OrganizationWithLongTableName>(data['data']);
+    }
+    if (dataClassName == 'PersonWithLongTableName') {
+      return deserialize<_i98.PersonWithLongTableName>(data['data']);
+    }
+    if (dataClassName == 'MaxFieldName') {
+      return deserialize<_i99.MaxFieldName>(data['data']);
+    }
+    if (dataClassName == 'LongImplicitIdField') {
+      return deserialize<_i100.LongImplicitIdField>(data['data']);
+    }
+    if (dataClassName == 'LongImplicitIdFieldCollection') {
+      return deserialize<_i101.LongImplicitIdFieldCollection>(data['data']);
+    }
+    if (dataClassName == 'RelationToMultipleMaxFieldName') {
+      return deserialize<_i102.RelationToMultipleMaxFieldName>(data['data']);
+    }
+    if (dataClassName == 'UserNote') {
+      return deserialize<_i103.UserNote>(data['data']);
+    }
+    if (dataClassName == 'UserNoteCollection') {
+      return deserialize<_i104.UserNoteCollection>(data['data']);
+    }
+    if (dataClassName == 'UserNoteCollectionWithALongName') {
+      return deserialize<_i105.UserNoteCollectionWithALongName>(data['data']);
+    }
+    if (dataClassName == 'UserNoteWithALongName') {
+      return deserialize<_i106.UserNoteWithALongName>(data['data']);
+    }
+    if (dataClassName == 'MultipleMaxFieldName') {
+      return deserialize<_i107.MultipleMaxFieldName>(data['data']);
+    }
+    if (dataClassName == 'City') {
+      return deserialize<_i108.City>(data['data']);
+    }
+    if (dataClassName == 'Organization') {
+      return deserialize<_i109.Organization>(data['data']);
+    }
+    if (dataClassName == 'Person') {
+      return deserialize<_i110.Person>(data['data']);
+    }
+    if (dataClassName == 'Course') {
+      return deserialize<_i111.Course>(data['data']);
+    }
+    if (dataClassName == 'Enrollment') {
+      return deserialize<_i112.Enrollment>(data['data']);
+    }
+    if (dataClassName == 'Student') {
+      return deserialize<_i113.Student>(data['data']);
+    }
+    if (dataClassName == 'ObjectUser') {
+      return deserialize<_i114.ObjectUser>(data['data']);
+    }
+    if (dataClassName == 'ParentUser') {
+      return deserialize<_i115.ParentUser>(data['data']);
+    }
+    if (dataClassName == 'Arena') {
+      return deserialize<_i116.Arena>(data['data']);
+    }
+    if (dataClassName == 'Player') {
+      return deserialize<_i117.Player>(data['data']);
+    }
+    if (dataClassName == 'Team') {
+      return deserialize<_i118.Team>(data['data']);
+    }
+    if (dataClassName == 'Comment') {
+      return deserialize<_i119.Comment>(data['data']);
+    }
+    if (dataClassName == 'Customer') {
+      return deserialize<_i120.Customer>(data['data']);
+    }
+    if (dataClassName == 'Book') {
+      return deserialize<_i121.Book>(data['data']);
+    }
+    if (dataClassName == 'Chapter') {
+      return deserialize<_i122.Chapter>(data['data']);
+    }
+    if (dataClassName == 'Order') {
+      return deserialize<_i123.Order>(data['data']);
+    }
+    if (dataClassName == 'Address') {
+      return deserialize<_i124.Address>(data['data']);
+    }
+    if (dataClassName == 'Citizen') {
+      return deserialize<_i125.Citizen>(data['data']);
+    }
+    if (dataClassName == 'Company') {
+      return deserialize<_i126.Company>(data['data']);
+    }
+    if (dataClassName == 'Town') {
+      return deserialize<_i127.Town>(data['data']);
+    }
+    if (dataClassName == 'Blocking') {
+      return deserialize<_i128.Blocking>(data['data']);
     }
     if (dataClassName == 'Member') {
-      return deserialize<_i163.Member>(data['data']);
+      return deserialize<_i129.Member>(data['data']);
+    }
+    if (dataClassName == 'Cat') {
+      return deserialize<_i130.Cat>(data['data']);
+    }
+    if (dataClassName == 'Post') {
+      return deserialize<_i131.Post>(data['data']);
+    }
+    if (dataClassName == 'ModuleDatatype') {
+      return deserialize<_i132.ModuleDatatype>(data['data']);
+    }
+    if (dataClassName == 'MyFeatureModel') {
+      return deserialize<_i133.MyFeatureModel>(data['data']);
+    }
+    if (dataClassName == 'Nullability') {
+      return deserialize<_i134.Nullability>(data['data']);
+    }
+    if (dataClassName == 'ObjectFieldPersist') {
+      return deserialize<_i135.ObjectFieldPersist>(data['data']);
+    }
+    if (dataClassName == 'ObjectFieldScopes') {
+      return deserialize<_i136.ObjectFieldScopes>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithBit') {
+      return deserialize<_i137.ObjectWithBit>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithByteData') {
+      return deserialize<_i138.ObjectWithByteData>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithCustomClass') {
+      return deserialize<_i139.ObjectWithCustomClass>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithDuration') {
+      return deserialize<_i140.ObjectWithDuration>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithEnum') {
+      return deserialize<_i141.ObjectWithEnum>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithHalfVector') {
+      return deserialize<_i142.ObjectWithHalfVector>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithIndex') {
+      return deserialize<_i143.ObjectWithIndex>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithJsonb') {
+      return deserialize<_i144.ObjectWithJsonb>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithJsonbClassLevel') {
+      return deserialize<_i145.ObjectWithJsonbClassLevel>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithMaps') {
+      return deserialize<_i146.ObjectWithMaps>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithNullableCustomClass') {
+      return deserialize<_i147.ObjectWithNullableCustomClass>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithObject') {
+      return deserialize<_i148.ObjectWithObject>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithParent') {
+      return deserialize<_i149.ObjectWithParent>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithSelfParent') {
+      return deserialize<_i150.ObjectWithSelfParent>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithSparseVector') {
+      return deserialize<_i151.ObjectWithSparseVector>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithUuid') {
+      return deserialize<_i152.ObjectWithUuid>(data['data']);
+    }
+    if (dataClassName == 'ObjectWithVector') {
+      return deserialize<_i153.ObjectWithVector>(data['data']);
+    }
+    if (dataClassName == 'Record') {
+      return deserialize<_i154.Record>(data['data']);
+    }
+    if (dataClassName == 'RelatedUniqueData') {
+      return deserialize<_i155.RelatedUniqueData>(data['data']);
+    }
+    if (dataClassName == 'ExceptionWithRequiredField') {
+      return deserialize<_i156.ExceptionWithRequiredField>(data['data']);
+    }
+    if (dataClassName == 'ModelWithRequiredField') {
+      return deserialize<_i157.ModelWithRequiredField>(data['data']);
+    }
+    if (dataClassName == 'ScopeNoneFields') {
+      return deserialize<_i158.ScopeNoneFields>(data['data']);
+    }
+    if (dataClassName == 'ScopeServerOnlyFieldChild') {
+      return deserialize<_i159.ScopeServerOnlyFieldChild>(data['data']);
+    }
+    if (dataClassName == 'ScopeServerOnlyField') {
+      return deserialize<_i160.ScopeServerOnlyField>(data['data']);
+    }
+    if (dataClassName == 'DefaultServerOnlyClass') {
+      return deserialize<_i161.DefaultServerOnlyClass>(data['data']);
+    }
+    if (dataClassName == 'DefaultServerOnlyEnum') {
+      return deserialize<_i162.DefaultServerOnlyEnum>(data['data']);
+    }
+    if (dataClassName == 'NotServerOnlyClass') {
+      return deserialize<_i163.NotServerOnlyClass>(data['data']);
+    }
+    if (dataClassName == 'NotServerOnlyEnum') {
+      return deserialize<_i164.NotServerOnlyEnum>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyClass') {
+      return deserialize<_i165.ServerOnlyClass>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyEnum') {
+      return deserialize<_i166.ServerOnlyEnum>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyClassField') {
+      return deserialize<_i167.ServerOnlyClassField>(data['data']);
+    }
+    if (dataClassName == 'ServerOnlyDefault') {
+      return deserialize<_i168.ServerOnlyDefault>(data['data']);
+    }
+    if (dataClassName == 'SessionAuthInfo') {
+      return deserialize<_i169.SessionAuthInfo>(data['data']);
+    }
+    if (dataClassName == 'SimpleData') {
+      return deserialize<_i170.SimpleData>(data['data']);
+    }
+    if (dataClassName == 'SimpleDataList') {
+      return deserialize<_i171.SimpleDataList>(data['data']);
+    }
+    if (dataClassName == 'SimpleDataMap') {
+      return deserialize<_i172.SimpleDataMap>(data['data']);
+    }
+    if (dataClassName == 'SimpleDataObject') {
+      return deserialize<_i173.SimpleDataObject>(data['data']);
+    }
+    if (dataClassName == 'SimpleDateTime') {
+      return deserialize<_i174.SimpleDateTime>(data['data']);
+    }
+    if (dataClassName == 'ModelInSubfolder') {
+      return deserialize<_i175.ModelInSubfolder>(data['data']);
+    }
+    if (dataClassName == 'TestEnum') {
+      return deserialize<_i176.TestEnum>(data['data']);
+    }
+    if (dataClassName == 'TestEnumDefaultSerialization') {
+      return deserialize<_i177.TestEnumDefaultSerialization>(data['data']);
+    }
+    if (dataClassName == 'TestEnumStringified') {
+      return deserialize<_i178.TestEnumStringified>(data['data']);
+    }
+    if (dataClassName == 'Types') {
+      return deserialize<_i179.Types>(data['data']);
+    }
+    if (dataClassName == 'TypesList') {
+      return deserialize<_i180.TypesList>(data['data']);
+    }
+    if (dataClassName == 'TypesMap') {
+      return deserialize<_i181.TypesMap>(data['data']);
+    }
+    if (dataClassName == 'TypesRecord') {
+      return deserialize<_i182.TypesRecord>(data['data']);
+    }
+    if (dataClassName == 'TypesSet') {
+      return deserialize<_i183.TypesSet>(data['data']);
+    }
+    if (dataClassName == 'TypesSetRequired') {
+      return deserialize<_i184.TypesSetRequired>(data['data']);
+    }
+    if (dataClassName == 'UniqueData') {
+      return deserialize<_i185.UniqueData>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -11348,25 +11849,25 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<List<int>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData>') {
-      return deserialize<List<_i166.SimpleData>>(data['data']);
+      return deserialize<List<_i188.SimpleData>>(data['data']);
     }
     if (dataClassName == 'List<serverpod_auth.UserInfo>') {
       return deserialize<List<_i3.UserInfo>>(data['data']);
     }
     if (dataClassName == 'List<SimpleData>?') {
-      return deserialize<List<_i166.SimpleData>?>(data['data']);
+      return deserialize<List<_i188.SimpleData>?>(data['data']);
     }
     if (dataClassName == 'List<SimpleData?>') {
-      return deserialize<List<_i166.SimpleData?>>(data['data']);
+      return deserialize<List<_i188.SimpleData?>>(data['data']);
     }
     if (dataClassName == 'Set<int>') {
       return deserialize<Set<int>>(data['data']);
     }
     if (dataClassName == 'Set<SimpleData>') {
-      return deserialize<Set<_i166.SimpleData>>(data['data']);
+      return deserialize<Set<_i188.SimpleData>>(data['data']);
     }
     if (dataClassName == 'List<Set<SimpleData>>') {
-      return deserialize<List<Set<_i166.SimpleData>>>(data['data']);
+      return deserialize<List<Set<_i188.SimpleData>>>(data['data']);
     }
     if (dataClassName == '(int?,)?') {
       return deserialize<(int?,)?>(data['data']);
@@ -11377,7 +11878,7 @@ class Protocol extends _i1.SerializationManagerServer {
           List<
               (
                 (int, String), {
-                (_i166.SimpleData, double) namedSubRecord
+                (_i188.SimpleData, double) namedSubRecord
               })?>?>(data['data']);
     }
     if (dataClassName ==
@@ -11385,7 +11886,7 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<
           (
             String,
-            (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+            (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
           )>(data['data']);
     }
     if (dataClassName == 'List<(String,int)>') {
@@ -11396,7 +11897,7 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<
           (
             String,
-            (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+            (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
           )?>(data['data']);
     }
     if (dataClassName == 'List<(String,int)>?') {
@@ -11426,240 +11927,248 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i69.CourseUuid:
-        return _i69.CourseUuid.t;
-      case _i71.EnrollmentInt:
-        return _i71.EnrollmentInt.t;
-      case _i73.StudentUuid:
-        return _i73.StudentUuid.t;
-      case _i74.ArenaUuid:
-        return _i74.ArenaUuid.t;
-      case _i75.PlayerUuid:
-        return _i75.PlayerUuid.t;
-      case _i139.TeamInt:
-        return _i139.TeamInt.t;
-      case _i11.CommentInt:
-        return _i11.CommentInt.t;
-      case _i12.CustomerInt:
-        return _i12.CustomerInt.t;
-      case _i13.OrderUuid:
-        return _i13.OrderUuid.t;
-      case _i14.AddressUuid:
-        return _i14.AddressUuid.t;
-      case _i15.CitizenInt:
-        return _i15.CitizenInt.t;
-      case _i16.CompanyUuid:
-        return _i16.CompanyUuid.t;
-      case _i17.TownInt:
-        return _i17.TownInt.t;
-      case _i18.ChangedIdTypeSelf:
-        return _i18.ChangedIdTypeSelf.t;
-      case _i19.BigIntDefault:
-        return _i19.BigIntDefault.t;
-      case _i20.BigIntDefaultMix:
-        return _i20.BigIntDefaultMix.t;
-      case _i21.BigIntDefaultModel:
-        return _i21.BigIntDefaultModel.t;
-      case _i22.BigIntDefaultPersist:
-        return _i22.BigIntDefaultPersist.t;
-      case _i23.BoolDefault:
-        return _i23.BoolDefault.t;
-      case _i24.BoolDefaultMix:
-        return _i24.BoolDefaultMix.t;
-      case _i25.BoolDefaultModel:
-        return _i25.BoolDefaultModel.t;
-      case _i26.BoolDefaultPersist:
-        return _i26.BoolDefaultPersist.t;
-      case _i27.DateTimeDefault:
-        return _i27.DateTimeDefault.t;
-      case _i28.DateTimeDefaultMix:
-        return _i28.DateTimeDefaultMix.t;
-      case _i29.DateTimeDefaultModel:
-        return _i29.DateTimeDefaultModel.t;
-      case _i30.DateTimeDefaultPersist:
-        return _i30.DateTimeDefaultPersist.t;
-      case _i31.DoubleDefault:
-        return _i31.DoubleDefault.t;
-      case _i32.DoubleDefaultMix:
-        return _i32.DoubleDefaultMix.t;
-      case _i33.DoubleDefaultModel:
-        return _i33.DoubleDefaultModel.t;
-      case _i34.DoubleDefaultPersist:
-        return _i34.DoubleDefaultPersist.t;
-      case _i35.DurationDefault:
-        return _i35.DurationDefault.t;
-      case _i36.DurationDefaultMix:
-        return _i36.DurationDefaultMix.t;
-      case _i37.DurationDefaultModel:
-        return _i37.DurationDefaultModel.t;
-      case _i38.DurationDefaultPersist:
-        return _i38.DurationDefaultPersist.t;
-      case _i39.EnumDefault:
-        return _i39.EnumDefault.t;
-      case _i40.EnumDefaultMix:
-        return _i40.EnumDefaultMix.t;
-      case _i41.EnumDefaultModel:
-        return _i41.EnumDefaultModel.t;
-      case _i42.EnumDefaultPersist:
-        return _i42.EnumDefaultPersist.t;
-      case _i47.IntDefault:
-        return _i47.IntDefault.t;
-      case _i48.IntDefaultMix:
-        return _i48.IntDefaultMix.t;
-      case _i49.IntDefaultModel:
-        return _i49.IntDefaultModel.t;
-      case _i50.IntDefaultPersist:
-        return _i50.IntDefaultPersist.t;
-      case _i51.StringDefault:
-        return _i51.StringDefault.t;
-      case _i52.StringDefaultMix:
-        return _i52.StringDefaultMix.t;
-      case _i53.StringDefaultModel:
-        return _i53.StringDefaultModel.t;
-      case _i54.StringDefaultPersist:
-        return _i54.StringDefaultPersist.t;
-      case _i55.UriDefault:
-        return _i55.UriDefault.t;
-      case _i56.UriDefaultMix:
-        return _i56.UriDefaultMix.t;
-      case _i10.UriDefaultModel:
-        return _i10.UriDefaultModel.t;
-      case _i58.UriDefaultPersist:
-        return _i58.UriDefaultPersist.t;
-      case _i59.UuidDefault:
-        return _i59.UuidDefault.t;
-      case _i60.UuidDefaultMix:
-        return _i60.UuidDefaultMix.t;
-      case _i61.UuidDefaultModel:
-        return _i61.UuidDefaultModel.t;
-      case _i62.UuidDefaultPersist:
-        return _i62.UuidDefaultPersist.t;
-      case _i64.EmptyModelRelationItem:
-        return _i64.EmptyModelRelationItem.t;
-      case _i65.EmptyModelWithTable:
-        return _i65.EmptyModelWithTable.t;
-      case _i66.RelationEmptyModel:
-        return _i66.RelationEmptyModel.t;
-      case _i8.ParentClass:
-        return _i8.ParentClass.t;
-      case _i76.CityWithLongTableName:
-        return _i76.CityWithLongTableName.t;
-      case _i77.OrganizationWithLongTableName:
-        return _i77.OrganizationWithLongTableName.t;
-      case _i78.PersonWithLongTableName:
-        return _i78.PersonWithLongTableName.t;
-      case _i79.MaxFieldName:
-        return _i79.MaxFieldName.t;
-      case _i80.LongImplicitIdField:
-        return _i80.LongImplicitIdField.t;
-      case _i81.LongImplicitIdFieldCollection:
-        return _i81.LongImplicitIdFieldCollection.t;
-      case _i82.RelationToMultipleMaxFieldName:
-        return _i82.RelationToMultipleMaxFieldName.t;
-      case _i83.UserNote:
-        return _i83.UserNote.t;
-      case _i84.UserNoteCollection:
-        return _i84.UserNoteCollection.t;
-      case _i85.UserNoteCollectionWithALongName:
-        return _i85.UserNoteCollectionWithALongName.t;
-      case _i86.UserNoteWithALongName:
-        return _i86.UserNoteWithALongName.t;
-      case _i87.MultipleMaxFieldName:
-        return _i87.MultipleMaxFieldName.t;
-      case _i88.City:
-        return _i88.City.t;
-      case _i89.Organization:
-        return _i89.Organization.t;
-      case _i90.Person:
-        return _i90.Person.t;
-      case _i91.Course:
-        return _i91.Course.t;
-      case _i92.Enrollment:
-        return _i92.Enrollment.t;
-      case _i93.Student:
-        return _i93.Student.t;
-      case _i94.ObjectUser:
-        return _i94.ObjectUser.t;
-      case _i95.ParentUser:
-        return _i95.ParentUser.t;
-      case _i96.Arena:
-        return _i96.Arena.t;
-      case _i97.Player:
-        return _i97.Player.t;
-      case _i98.Team:
-        return _i98.Team.t;
-      case _i99.Comment:
-        return _i99.Comment.t;
-      case _i100.Customer:
-        return _i100.Customer.t;
-      case _i101.Book:
-        return _i101.Book.t;
-      case _i102.Chapter:
-        return _i102.Chapter.t;
-      case _i103.Order:
-        return _i103.Order.t;
-      case _i104.Address:
-        return _i104.Address.t;
-      case _i105.Citizen:
-        return _i105.Citizen.t;
-      case _i106.Company:
-        return _i106.Company.t;
-      case _i107.Town:
-        return _i107.Town.t;
-      case _i108.Blocking:
-        return _i108.Blocking.t;
-      case _i163.Member:
-        return _i163.Member.t;
-      case _i110.Cat:
-        return _i110.Cat.t;
-      case _i111.Post:
-        return _i111.Post.t;
-      case _i114.ObjectFieldPersist:
-        return _i114.ObjectFieldPersist.t;
-      case _i115.ObjectFieldScopes:
-        return _i115.ObjectFieldScopes.t;
-      case _i116.ObjectWithBit:
-        return _i116.ObjectWithBit.t;
-      case _i117.ObjectWithByteData:
-        return _i117.ObjectWithByteData.t;
-      case _i119.ObjectWithDuration:
-        return _i119.ObjectWithDuration.t;
-      case _i120.ObjectWithEnum:
-        return _i120.ObjectWithEnum.t;
-      case _i121.ObjectWithHalfVector:
-        return _i121.ObjectWithHalfVector.t;
-      case _i122.ObjectWithIndex:
-        return _i122.ObjectWithIndex.t;
-      case _i123.ObjectWithJsonb:
-        return _i123.ObjectWithJsonb.t;
-      case _i124.ObjectWithJsonbClassLevel:
-        return _i124.ObjectWithJsonbClassLevel.t;
-      case _i127.ObjectWithObject:
-        return _i127.ObjectWithObject.t;
-      case _i128.ObjectWithParent:
-        return _i128.ObjectWithParent.t;
-      case _i129.ObjectWithSelfParent:
-        return _i129.ObjectWithSelfParent.t;
-      case _i130.ObjectWithSparseVector:
-        return _i130.ObjectWithSparseVector.t;
-      case _i131.ObjectWithUuid:
-        return _i131.ObjectWithUuid.t;
-      case _i132.ObjectWithVector:
-        return _i132.ObjectWithVector.t;
-      case _i134.RelatedUniqueData:
-        return _i134.RelatedUniqueData.t;
-      case _i136.ModelWithRequiredField:
-        return _i136.ModelWithRequiredField.t;
-      case _i137.ScopeNoneFields:
-        return _i137.ScopeNoneFields.t;
-      case _i148.SimpleData:
-        return _i148.SimpleData.t;
-      case _i152.SimpleDateTime:
-        return _i152.SimpleDateTime.t;
-      case _i156.Types:
-        return _i156.Types.t;
-      case _i162.UniqueData:
-        return _i162.UniqueData.t;
+      case _i7.CourseUuid:
+        return _i7.CourseUuid.t;
+      case _i8.EnrollmentInt:
+        return _i8.EnrollmentInt.t;
+      case _i9.StudentUuid:
+        return _i9.StudentUuid.t;
+      case _i10.ArenaUuid:
+        return _i10.ArenaUuid.t;
+      case _i11.PlayerUuid:
+        return _i11.PlayerUuid.t;
+      case _i12.TeamInt:
+        return _i12.TeamInt.t;
+      case _i13.CommentInt:
+        return _i13.CommentInt.t;
+      case _i14.CustomerInt:
+        return _i14.CustomerInt.t;
+      case _i15.OrderUuid:
+        return _i15.OrderUuid.t;
+      case _i16.AddressUuid:
+        return _i16.AddressUuid.t;
+      case _i17.CitizenInt:
+        return _i17.CitizenInt.t;
+      case _i18.CompanyUuid:
+        return _i18.CompanyUuid.t;
+      case _i19.TownInt:
+        return _i19.TownInt.t;
+      case _i20.ChangedIdTypeSelf:
+        return _i20.ChangedIdTypeSelf.t;
+      case _i21.ServerOnlyChangedIdFieldClass:
+        return _i21.ServerOnlyChangedIdFieldClass.t;
+      case _i22.BigIntDefault:
+        return _i22.BigIntDefault.t;
+      case _i23.BigIntDefaultMix:
+        return _i23.BigIntDefaultMix.t;
+      case _i24.BigIntDefaultModel:
+        return _i24.BigIntDefaultModel.t;
+      case _i25.BigIntDefaultPersist:
+        return _i25.BigIntDefaultPersist.t;
+      case _i26.BoolDefault:
+        return _i26.BoolDefault.t;
+      case _i27.BoolDefaultMix:
+        return _i27.BoolDefaultMix.t;
+      case _i28.BoolDefaultModel:
+        return _i28.BoolDefaultModel.t;
+      case _i29.BoolDefaultPersist:
+        return _i29.BoolDefaultPersist.t;
+      case _i30.DateTimeDefault:
+        return _i30.DateTimeDefault.t;
+      case _i31.DateTimeDefaultMix:
+        return _i31.DateTimeDefaultMix.t;
+      case _i32.DateTimeDefaultModel:
+        return _i32.DateTimeDefaultModel.t;
+      case _i33.DateTimeDefaultPersist:
+        return _i33.DateTimeDefaultPersist.t;
+      case _i34.DoubleDefault:
+        return _i34.DoubleDefault.t;
+      case _i35.DoubleDefaultMix:
+        return _i35.DoubleDefaultMix.t;
+      case _i36.DoubleDefaultModel:
+        return _i36.DoubleDefaultModel.t;
+      case _i37.DoubleDefaultPersist:
+        return _i37.DoubleDefaultPersist.t;
+      case _i38.DurationDefault:
+        return _i38.DurationDefault.t;
+      case _i39.DurationDefaultMix:
+        return _i39.DurationDefaultMix.t;
+      case _i40.DurationDefaultModel:
+        return _i40.DurationDefaultModel.t;
+      case _i41.DurationDefaultPersist:
+        return _i41.DurationDefaultPersist.t;
+      case _i42.EnumDefault:
+        return _i42.EnumDefault.t;
+      case _i43.EnumDefaultMix:
+        return _i43.EnumDefaultMix.t;
+      case _i44.EnumDefaultModel:
+        return _i44.EnumDefaultModel.t;
+      case _i45.EnumDefaultPersist:
+        return _i45.EnumDefaultPersist.t;
+      case _i50.IntDefault:
+        return _i50.IntDefault.t;
+      case _i51.IntDefaultMix:
+        return _i51.IntDefaultMix.t;
+      case _i52.IntDefaultModel:
+        return _i52.IntDefaultModel.t;
+      case _i53.IntDefaultPersist:
+        return _i53.IntDefaultPersist.t;
+      case _i54.StringDefault:
+        return _i54.StringDefault.t;
+      case _i55.StringDefaultMix:
+        return _i55.StringDefaultMix.t;
+      case _i56.StringDefaultModel:
+        return _i56.StringDefaultModel.t;
+      case _i57.StringDefaultPersist:
+        return _i57.StringDefaultPersist.t;
+      case _i58.UriDefault:
+        return _i58.UriDefault.t;
+      case _i59.UriDefaultMix:
+        return _i59.UriDefaultMix.t;
+      case _i60.UriDefaultModel:
+        return _i60.UriDefaultModel.t;
+      case _i61.UriDefaultPersist:
+        return _i61.UriDefaultPersist.t;
+      case _i62.UuidDefault:
+        return _i62.UuidDefault.t;
+      case _i63.UuidDefaultMix:
+        return _i63.UuidDefaultMix.t;
+      case _i64.UuidDefaultModel:
+        return _i64.UuidDefaultModel.t;
+      case _i65.UuidDefaultPersist:
+        return _i65.UuidDefaultPersist.t;
+      case _i67.EmptyModelRelationItem:
+        return _i67.EmptyModelRelationItem.t;
+      case _i68.EmptyModelWithTable:
+        return _i68.EmptyModelWithTable.t;
+      case _i69.RelationEmptyModel:
+        return _i69.RelationEmptyModel.t;
+      case _i80.ImmutableObjectWithTable:
+        return _i80.ImmutableObjectWithTable.t;
+      case _i85.ChildWithInheritedId:
+        return _i85.ChildWithInheritedId.t;
+      case _i86.ChildClassWithoutId:
+        return _i86.ChildClassWithoutId.t;
+      case _i88.ParentClass:
+        return _i88.ParentClass.t;
+      case _i96.CityWithLongTableName:
+        return _i96.CityWithLongTableName.t;
+      case _i97.OrganizationWithLongTableName:
+        return _i97.OrganizationWithLongTableName.t;
+      case _i98.PersonWithLongTableName:
+        return _i98.PersonWithLongTableName.t;
+      case _i99.MaxFieldName:
+        return _i99.MaxFieldName.t;
+      case _i100.LongImplicitIdField:
+        return _i100.LongImplicitIdField.t;
+      case _i101.LongImplicitIdFieldCollection:
+        return _i101.LongImplicitIdFieldCollection.t;
+      case _i102.RelationToMultipleMaxFieldName:
+        return _i102.RelationToMultipleMaxFieldName.t;
+      case _i103.UserNote:
+        return _i103.UserNote.t;
+      case _i104.UserNoteCollection:
+        return _i104.UserNoteCollection.t;
+      case _i105.UserNoteCollectionWithALongName:
+        return _i105.UserNoteCollectionWithALongName.t;
+      case _i106.UserNoteWithALongName:
+        return _i106.UserNoteWithALongName.t;
+      case _i107.MultipleMaxFieldName:
+        return _i107.MultipleMaxFieldName.t;
+      case _i108.City:
+        return _i108.City.t;
+      case _i109.Organization:
+        return _i109.Organization.t;
+      case _i110.Person:
+        return _i110.Person.t;
+      case _i111.Course:
+        return _i111.Course.t;
+      case _i112.Enrollment:
+        return _i112.Enrollment.t;
+      case _i113.Student:
+        return _i113.Student.t;
+      case _i114.ObjectUser:
+        return _i114.ObjectUser.t;
+      case _i115.ParentUser:
+        return _i115.ParentUser.t;
+      case _i116.Arena:
+        return _i116.Arena.t;
+      case _i117.Player:
+        return _i117.Player.t;
+      case _i118.Team:
+        return _i118.Team.t;
+      case _i119.Comment:
+        return _i119.Comment.t;
+      case _i120.Customer:
+        return _i120.Customer.t;
+      case _i121.Book:
+        return _i121.Book.t;
+      case _i122.Chapter:
+        return _i122.Chapter.t;
+      case _i123.Order:
+        return _i123.Order.t;
+      case _i124.Address:
+        return _i124.Address.t;
+      case _i125.Citizen:
+        return _i125.Citizen.t;
+      case _i126.Company:
+        return _i126.Company.t;
+      case _i127.Town:
+        return _i127.Town.t;
+      case _i128.Blocking:
+        return _i128.Blocking.t;
+      case _i129.Member:
+        return _i129.Member.t;
+      case _i130.Cat:
+        return _i130.Cat.t;
+      case _i131.Post:
+        return _i131.Post.t;
+      case _i135.ObjectFieldPersist:
+        return _i135.ObjectFieldPersist.t;
+      case _i136.ObjectFieldScopes:
+        return _i136.ObjectFieldScopes.t;
+      case _i137.ObjectWithBit:
+        return _i137.ObjectWithBit.t;
+      case _i138.ObjectWithByteData:
+        return _i138.ObjectWithByteData.t;
+      case _i140.ObjectWithDuration:
+        return _i140.ObjectWithDuration.t;
+      case _i141.ObjectWithEnum:
+        return _i141.ObjectWithEnum.t;
+      case _i142.ObjectWithHalfVector:
+        return _i142.ObjectWithHalfVector.t;
+      case _i143.ObjectWithIndex:
+        return _i143.ObjectWithIndex.t;
+      case _i144.ObjectWithJsonb:
+        return _i144.ObjectWithJsonb.t;
+      case _i145.ObjectWithJsonbClassLevel:
+        return _i145.ObjectWithJsonbClassLevel.t;
+      case _i148.ObjectWithObject:
+        return _i148.ObjectWithObject.t;
+      case _i149.ObjectWithParent:
+        return _i149.ObjectWithParent.t;
+      case _i150.ObjectWithSelfParent:
+        return _i150.ObjectWithSelfParent.t;
+      case _i151.ObjectWithSparseVector:
+        return _i151.ObjectWithSparseVector.t;
+      case _i152.ObjectWithUuid:
+        return _i152.ObjectWithUuid.t;
+      case _i153.ObjectWithVector:
+        return _i153.ObjectWithVector.t;
+      case _i155.RelatedUniqueData:
+        return _i155.RelatedUniqueData.t;
+      case _i157.ModelWithRequiredField:
+        return _i157.ModelWithRequiredField.t;
+      case _i158.ScopeNoneFields:
+        return _i158.ScopeNoneFields.t;
+      case _i170.SimpleData:
+        return _i170.SimpleData.t;
+      case _i174.SimpleDateTime:
+        return _i174.SimpleDateTime.t;
+      case _i179.Types:
+        return _i179.Types.t;
+      case _i185.UniqueData:
+        return _i185.UniqueData.t;
     }
     return null;
   }
@@ -11748,7 +12257,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (int, _i166.SimpleData)) {
+  if (record is (int, _i188.SimpleData)) {
     return {
       "p": [
         record.$1,
@@ -11778,7 +12287,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is ({_i166.SimpleData data, int number})) {
+  if (record is ({_i188.SimpleData data, int number})) {
     return {
       "n": {
         "data": record.data,
@@ -11786,7 +12295,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is ({_i166.SimpleData? data, int? number})) {
+  if (record is ({_i188.SimpleData? data, int? number})) {
     return {
       "n": {
         "data": record.data,
@@ -11822,7 +12331,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (int, {_i166.SimpleData data})) {
+  if (record is (int, {_i188.SimpleData data})) {
     return {
       "p": [
         record.$1,
@@ -11840,14 +12349,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is ({(_i166.SimpleData, double) namedSubRecord})) {
+  if (record is ({(_i188.SimpleData, double) namedSubRecord})) {
     return {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
     };
   }
-  if (record is (_i166.SimpleData, double)) {
+  if (record is (_i188.SimpleData, double)) {
     return {
       "p": [
         record.$1,
@@ -11855,14 +12364,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is ({(_i166.SimpleData, double)? namedSubRecord})) {
+  if (record is ({(_i188.SimpleData, double)? namedSubRecord})) {
     return {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
     };
   }
-  if (record is ((int, String), {(_i166.SimpleData, double) namedSubRecord})) {
+  if (record is ((int, String), {(_i188.SimpleData, double) namedSubRecord})) {
     return {
       "p": [
         mapRecordToJson(record.$1),
@@ -11890,7 +12399,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   }
   if (record is (
     String,
-    (Map<String, int>, {bool flag, _i166.SimpleData simpleData})
+    (Map<String, int>, {bool flag, _i188.SimpleData simpleData})
   )) {
     return {
       "p": [
@@ -11899,7 +12408,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (Map<String, int>, {bool flag, _i166.SimpleData simpleData})) {
+  if (record is (Map<String, int>, {bool flag, _i188.SimpleData simpleData})) {
     return {
       "p": [
         record.$1,
@@ -11908,6 +12417,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
         "flag": record.flag,
         "simpleData": record.simpleData,
       },
+    };
+  }
+  if (record is (int, String)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2,
+      ],
     };
   }
   if (record is (_i4.ModuleClass,)) {
@@ -11924,21 +12441,21 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (_i155.TestEnumStringified,)) {
+  if (record is (_i178.TestEnumStringified,)) {
     return {
       "p": [
         record.$1,
       ],
     };
   }
-  if (record is (_i113.Nullability,)) {
+  if (record is (_i134.Nullability,)) {
     return {
       "p": [
         record.$1,
       ],
     };
   }
-  if (record is ({_i155.TestEnumStringified value})) {
+  if (record is ({_i178.TestEnumStringified value})) {
     return {
       "n": {
         "value": record.value,
@@ -11952,7 +12469,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is ({_i113.Nullability value})) {
+  if (record is ({_i134.Nullability value})) {
     return {
       "n": {
         "value": record.value,
@@ -11969,7 +12486,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is (_i154.TestEnum,)) {
+  if (record is (_i176.TestEnum,)) {
     return {
       "p": [
         record.$1,
@@ -11997,7 +12514,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (_i164.ByteData,)) {
+  if (record is (_i186.ByteData,)) {
     return {
       "p": [
         record.$1,
@@ -12053,21 +12570,21 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
-  if (record is (_i148.SimpleData,)) {
+  if (record is (_i170.SimpleData,)) {
     return {
       "p": [
         record.$1,
       ],
     };
   }
-  if (record is ({_i148.SimpleData namedModel})) {
+  if (record is ({_i170.SimpleData namedModel})) {
     return {
       "n": {
         "namedModel": record.namedModel,
       },
     };
   }
-  if (record is (_i148.SimpleData, {_i148.SimpleData namedModel})) {
+  if (record is (_i170.SimpleData, {_i170.SimpleData namedModel})) {
     return {
       "p": [
         record.$1,
@@ -12087,17 +12604,9 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is (int, String)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2,
-      ],
-    };
-  }
   if (record is (
-    (List<(_i148.SimpleData,)>,), {
-    (_i148.SimpleData, Map<String, _i148.SimpleData>) namedNestedRecord
+    (List<(_i170.SimpleData,)>,), {
+    (_i170.SimpleData, Map<String, _i170.SimpleData>) namedNestedRecord
   })) {
     return {
       "p": [
@@ -12108,14 +12617,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       },
     };
   }
-  if (record is (List<(_i148.SimpleData,)>,)) {
+  if (record is (List<(_i170.SimpleData,)>,)) {
     return {
       "p": [
         mapContainerToJson(record.$1),
       ],
     };
   }
-  if (record is (_i148.SimpleData, Map<String, _i148.SimpleData>)) {
+  if (record is (_i170.SimpleData, Map<String, _i170.SimpleData>)) {
     return {
       "p": [
         record.$1,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
@@ -56,7 +58,7 @@ abstract class EndpointDispatch {
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodStreamConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodStreamCallContext> getMethodStreamCallContext({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -74,7 +76,7 @@ abstract class EndpointDispatch {
     );
 
     if (methodConnector is! MethodStreamConnector) {
-      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+      throw InvalidEndpointMethodTypeException();
     }
 
     List<StreamParameterDescription> inputStreams = parseRequestedInputStreams(
@@ -108,7 +110,7 @@ abstract class EndpointDispatch {
   /// If the input parameters are invalid, an [InvalidParametersException] is thrown.
   /// If the found method is not a [MethodConnector], an [InvalidEndpointMethodTypeException] is thrown.
   Future<MethodCallContext> getMethodCallContext({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -125,7 +127,7 @@ abstract class EndpointDispatch {
     );
 
     if (methodConnector is! MethodConnector) {
-      throw InvalidEndpointMethodTypeException(methodName, endpointPath);
+      throw InvalidEndpointMethodTypeException();
     }
 
     return MethodCallContext(
@@ -137,7 +139,7 @@ abstract class EndpointDispatch {
 
   Future<(EndpointMethodConnector, Endpoint, Map<String, dynamic>)>
       _getEndpointMethodConnector({
-    required Session Function(EndpointConnector connector)
+    required FutureOr<Session> Function(EndpointConnector connector)
         createSessionCallback,
     required String endpointPath,
     required String methodName,
@@ -149,8 +151,7 @@ abstract class EndpointDispatch {
 
     var methodConnector = endpointConnector.methodConnectors[methodName];
     if (methodConnector == null) {
-      throw MethodNotFoundException(
-          'Method "$methodName" not found in endpoint: $endpointPath');
+      throw MethodNotFoundException('Method not found in endpoint');
     }
 
     var parsedArguments = parseParameters(
@@ -164,22 +165,22 @@ abstract class EndpointDispatch {
 
   Future<EndpointConnector> _getEndpointConnector(
       String endpointPath,
-      Session Function(EndpointConnector connector)
+      FutureOr<Session> Function(EndpointConnector connector)
           createSessionCallback) async {
     var connector = getConnectorByName(endpointPath);
     if (connector == null) {
-      throw EndpointNotFoundException('Endpoint $endpointPath not found');
+      throw EndpointNotFoundException('Endpoint not found');
     }
 
-    var session = createSessionCallback(connector);
+    var session = await createSessionCallback(connector);
 
-    var authenticationFailedResult = await canUserAccessEndpoint(
-      () => session.authenticated,
+    var authenticationFailureReason = canUserAccessEndpoint(
+      session.authenticated,
       connector.endpoint.requireLogin,
       connector.endpoint.requiredScopes,
     );
-    if (authenticationFailedResult != null) {
-      throw NotAuthorizedException(authenticationFailedResult);
+    if (authenticationFailureReason != null) {
+      throw NotAuthorizedException(reason: authenticationFailureReason);
     }
     return connector;
   }
@@ -190,32 +191,28 @@ abstract class EndpointDispatch {
   }
 
   /// Checks if a user can access an [Endpoint]. If access is granted null is
-  /// returned, otherwise a [ResultAuthenticationFailed] describing the issue is
+  /// returned, otherwise an [AuthenticationFailureReason] describing the issue is
   /// returned.
-  static Future<ResultAuthenticationFailed?> canUserAccessEndpoint(
-    Future<AuthenticationInfo?> Function() authInfoProvider,
+  static AuthenticationFailureReason? canUserAccessEndpoint(
+    AuthenticationInfo? authInfo,
     bool requiresLogin,
     Set<Scope> requiredScopes,
-  ) async {
+  ) {
     var authenticationRequired = requiresLogin || requiredScopes.isNotEmpty;
 
     if (!authenticationRequired) {
       return null;
     }
 
-    var info = await authInfoProvider();
-    if (info == null) {
-      return ResultAuthenticationFailed.unauthenticated(
-        'No valid authentication provided',
-      );
+    if (authInfo == null) {
+      return AuthenticationFailureReason.unauthenticated;
     }
 
-    var missingUserScopes = Set.from(requiredScopes)..removeAll(info.scopes);
+    var missingUserScopes = Set.from(requiredScopes)
+      ..removeAll(authInfo.scopes);
 
     if (missingUserScopes.isNotEmpty) {
-      return ResultAuthenticationFailed.insufficientAccess(
-        'User is missing required scope${missingUserScopes.length > 1 ? 's' : ''}: $missingUserScopes',
-      );
+      return AuthenticationFailureReason.insufficientAccess;
     }
 
     return null;
@@ -421,55 +418,9 @@ class StreamParameterDescription<T> {
   StreamParameterDescription({required this.name, required this.nullable});
 }
 
-/// The [Result] of an [Endpoint] method call.
-sealed class Result {}
-
-/// A successful result from an [Endpoint] method call containing the return
-/// value of the call.
-final class ResultSuccess extends Result {
-  /// The returned value of a successful [Endpoint] method call.
-  final dynamic returnValue;
-
-  /// True if [returnValue] should not be embedded in API serialization.
-  final bool sendAsRaw;
-
-  /// Creates a new successful result with a value.
-  ResultSuccess(this.returnValue, {this.sendAsRaw = false});
-}
-
-/// The result of a failed [Endpoint] method call where the parameters where not
-/// valid.
-final class ResultInvalidParams extends Result {
-  /// Description of the error.
-  final String errorDescription;
-
-  /// Creates a new [ResultInvalidParams] object.
-  ResultInvalidParams(this.errorDescription);
-
-  @override
-  String toString() {
-    return errorDescription;
-  }
-}
-
-/// The result of a failed [Endpoint] method call where the
-/// endpoint was not found.
-final class ResultNoSuchEndpoint extends Result {
-  /// Description of the error.
-  final String errorDescription;
-
-  /// Creates a new [ResultNoSuchEndpoint] object.
-  ResultNoSuchEndpoint(this.errorDescription);
-
-  @override
-  String toString() {
-    return errorDescription;
-  }
-}
-
 /// The result of a failed [EndpointDispatch.getMethodStreamCallContext],
 /// [EndpointDispatch.getMethodCallContext] or [EndpointDispatch.getEndpointConnector] call.
-abstract class EndpointDispatchException implements Exception {
+sealed class EndpointDispatchException implements Exception {
   /// Description of the error.
   String get message;
 
@@ -484,12 +435,14 @@ class NotAuthorizedException extends EndpointDispatchException {
   @override
   String message;
 
-  /// The result of the failed authentication.
-  ResultAuthenticationFailed authenticationFailedResult;
+  /// The reason why the authentication failed.
+  final AuthenticationFailureReason reason;
 
   /// Creates a new [NotAuthorizedException].
-  NotAuthorizedException(this.authenticationFailedResult,
-      {this.message = 'Not authorized'});
+  NotAuthorizedException({
+    required this.reason,
+    this.message = 'Not authorized',
+  });
 }
 
 /// The endpoint was not found.
@@ -513,15 +466,10 @@ class MethodNotFoundException extends EndpointDispatchException {
 /// The found endpoint method was not of the expected type.
 class InvalidEndpointMethodTypeException extends EndpointDispatchException {
   @override
-  String get message =>
-      'Endpoint method $_methodName in $_endpointPath is not of the expected type.';
-
-  final String _methodName;
-  final String _endpointPath;
+  String get message => 'Endpoint method is not of the expected type';
 
   /// Creates a new [InvalidEndpointMethodTypeException].
-
-  InvalidEndpointMethodTypeException(this._methodName, this._endpointPath);
+  InvalidEndpointMethodTypeException();
 }
 
 /// The input parameters were invalid.
@@ -540,90 +488,4 @@ enum AuthenticationFailureReason {
 
   /// The authentication key provided did not have sufficient access.
   insufficientAccess,
-}
-
-/// The result of a failed [Endpoint] method call where authentication failed.
-final class ResultAuthenticationFailed extends Result {
-  /// Description of the error.
-  final String errorDescription;
-
-  /// The reason why the authentication failed.
-  final AuthenticationFailureReason reason;
-
-  /// Creates a new [ResultAuthenticationFailed] object.
-  ResultAuthenticationFailed._(this.errorDescription, this.reason);
-
-  /// Creates a new [ResultAuthenticationFailed] object when the user failed to
-  /// provide a valid authentication key.
-  factory ResultAuthenticationFailed.unauthenticated(String message) =>
-      ResultAuthenticationFailed._(
-        message,
-        AuthenticationFailureReason.unauthenticated,
-      );
-
-  /// Creates a new [ResultAuthenticationFailed] object when the user provided
-  /// an authentication key that did not have sufficient access.
-  factory ResultAuthenticationFailed.insufficientAccess(String message) =>
-      ResultAuthenticationFailed._(
-        message,
-        AuthenticationFailureReason.insufficientAccess,
-      );
-
-  @override
-  String toString() {
-    return errorDescription;
-  }
-}
-
-/// The result of a failed [Endpoint] method call where an [Exception] was
-/// thrown during execution of the method.
-final class ResultInternalServerError extends Result {
-  /// The Exception that was thrown.
-  final String exception;
-
-  /// Stack trace when the exception occurred.
-  final StackTrace stackTrace;
-
-  /// The session log id.
-  final int? sessionLogId;
-
-  /// Creates a new [ResultInternalServerError].
-  ResultInternalServerError(this.exception, this.stackTrace, this.sessionLogId);
-
-  @override
-  String toString() {
-    return '$exception\n$stackTrace';
-  }
-}
-
-/// The result of a failed [Endpoint] method call, with a custom status code,
-/// and an optional message.
-final class ResultStatusCode extends Result {
-  /// The status code to be returned to the client.
-  final int statusCode;
-
-  /// Message / description of the error.
-  final String? message;
-
-  /// Creates a new [ResultStatusCode].
-  ResultStatusCode(this.statusCode, [this.message]);
-
-  @override
-  String toString() {
-    return 'Status Code: $statusCode${message != null ? ': $message' : ''}';
-  }
-}
-
-/// The result of a failed [Endpoint] method call, with a custom exception.
-final class ExceptionResult<T extends SerializableException> extends Result {
-  /// The exception to be returned to the client.
-  final T model;
-
-  /// Creates a new [ExceptionResult].
-  ExceptionResult({
-    required this.model,
-  });
-
-  @override
-  String toString() => 'ExceptionResult(entity: $model)';
 }

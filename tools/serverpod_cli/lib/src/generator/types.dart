@@ -139,6 +139,8 @@ class TypeDefinition {
 
   bool get isMapType => className == MapKeyword.className;
 
+  bool get isCollectionType => isListType || isSetType || isMapType;
+
   static List<String> get vectorClassNames =>
       ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
 
@@ -322,6 +324,12 @@ class TypeDefinition {
               serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
+            (className == 'UuidValue' &&
+                [
+                  'serverpod',
+                  'package:uuid/uuid_value.dart',
+                  'package:uuid/uuid.dart'
+                ].contains(url)) ||
             (url == null &&
                 (['UuidValue', ...vectorClassNames]).contains(className))) {
           // serverpod: reference
@@ -382,7 +390,6 @@ class TypeDefinition {
 
   /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all supported types here
     var enumSerialization = enumDefinition?.serialized;
     if (enumSerialization != null && isEnumType) {
       switch (enumSerialization) {

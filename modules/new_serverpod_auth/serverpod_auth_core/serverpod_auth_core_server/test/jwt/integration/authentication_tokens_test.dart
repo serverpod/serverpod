@@ -2,39 +2,36 @@ import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
-import 'package:serverpod_auth_core_server/src/jwt/business/jwt_util.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../utils/authentication_token_secrets_mock.dart';
+import '../../test_tags.dart';
 
 void main() {
+  final authenticationTokens = AuthenticationTokens(
+    config: AuthenticationTokenConfig(
+      algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+        key: SecretKey('test-private-key-for-HS512'),
+      ),
+      refreshTokenHashPepper: 'test-pepper',
+    ),
+  );
+
   withServerpod('Given an existing `AuthUser`,',
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-    late final secretsWithHmac = AuthenticationTokenSecretsMock()
-      ..setHs512Algorithm()
-      ..refreshTokenHashPepper = 'pepper123';
-
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
-    });
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
-    });
-
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test('when requesting a new token pair, then one is returned.', () async {
       expect(
-        await AuthenticationTokens.createTokens(
+        await authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -50,7 +47,7 @@ void main() {
       late AuthSuccess authSuccess;
 
       await withClock(Clock.fixed(now), () async {
-        authSuccess = await AuthenticationTokens.createTokens(
+        authSuccess = await authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -60,7 +57,7 @@ void main() {
 
       final expirationExpected = now
           .toUtc()
-          .add(AuthenticationTokens.config.accessTokenLifetime)
+          .add(authenticationTokens.config.accessTokenLifetime)
           .truncatedToSecond();
 
       expect(authSuccess.tokenExpiresAt, isA<DateTime>());
@@ -70,14 +67,14 @@ void main() {
     test(
         'when requesting a new token pair with scopes, then those are visible on the initial access token.',
         () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
+      final authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
         method: 'test',
       );
 
-      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+      final decodedToken = authenticationTokens.jwtUtil.verifyJwt(
         authSuccess.token,
       );
       expect(decodedToken.scopes, hasLength(1));
@@ -87,7 +84,7 @@ void main() {
     test(
         'when requesting a new token pair with extra claims, then those are visible on the initial access token.',
         () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
+      final authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -104,7 +101,7 @@ void main() {
         'when requesting a new token pair with extra claims that conflict with registered claims, then it will throw.',
         () async {
       expect(
-        () => AuthenticationTokens.createTokens(
+        () => authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -118,30 +115,25 @@ void main() {
 
   withServerpod(
       'Given a valid `TokenPair` for a refresh token with scopes and extra claims,',
-      (
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags, (
     final sessionBuilder,
     final endpoints,
   ) {
     const String scopeName = 'test scope';
-    late AuthenticationTokenSecretsMock secrets;
     late Session session;
     late UuidValue authUserId;
     late AuthSuccess authSuccess;
 
     setUp(() async {
-      secrets = AuthenticationTokenSecretsMock()
-        ..setHs512Algorithm()
-        ..refreshTokenHashPepper = 'pepper123';
-      AuthenticationTokens.secretsTestOverride = secrets;
-
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(
+      final authUser = await authenticationTokens.authUsers.create(
         session,
       );
       authUserId = authUser.id;
 
-      authSuccess = await AuthenticationTokens.createTokens(
+      authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {const Scope(scopeName)},
@@ -150,14 +142,10 @@ void main() {
       );
     });
 
-    tearDown(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test(
         'when rotating the tokens, then a new refresh and access token is returned.',
         () async {
-      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+      final newTokenPair = await authenticationTokens.rotateRefreshToken(
         session,
         refreshToken: authSuccess.refreshToken!,
       );
@@ -174,7 +162,7 @@ void main() {
           () => Future.wait(
                 List.generate(
                   3,
-                  (final _) => AuthenticationTokens.rotateRefreshToken(
+                  (final _) => authenticationTokens.rotateRefreshToken(
                     session,
                     refreshToken: authSuccess.refreshToken!,
                   ),
@@ -194,7 +182,7 @@ void main() {
     test(
         'when rotating the tokens, then the new access token refers to the same refresh token ID.',
         () async {
-      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+      final newTokenPair = await authenticationTokens.rotateRefreshToken(
         session,
         refreshToken: authSuccess.refreshToken!,
       );
@@ -208,7 +196,7 @@ void main() {
     test(
         'when rotating the tokens, then the new access token has a different `jwtId`.',
         () async {
-      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+      final newTokenPair = await authenticationTokens.rotateRefreshToken(
         session,
         refreshToken: authSuccess.refreshToken!,
       );
@@ -223,7 +211,7 @@ void main() {
     test(
         'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
         () async {
-      final newTokenPair = await AuthenticationTokens.rotateRefreshToken(
+      final newTokenPair = await authenticationTokens.rotateRefreshToken(
         session,
         refreshToken: authSuccess.refreshToken!,
       );
@@ -237,7 +225,7 @@ void main() {
     test(
         'when refreshing the tokens, then a new AuthSuccess is returned with new tokens, but same auth info.',
         () async {
-      final newAuthSuccess = await AuthenticationTokens.refreshAccessToken(
+      final newAuthSuccess = await authenticationTokens.refreshAccessToken(
         session,
         refreshToken: authSuccess.refreshToken!,
       );
@@ -252,7 +240,7 @@ void main() {
     test(
         'when calling `destroyRefreshToken` with a valid refresh token ID, then it returns true.',
         () async {
-      final deleted = await AuthenticationTokens.destroyRefreshToken(
+      final deleted = await authenticationTokens.destroyRefreshToken(
         session,
         refreshTokenId: _extractRefreshTokenId(authSuccess.token),
       );
@@ -263,7 +251,7 @@ void main() {
     test(
         'when calling `destroyRefreshToken` with an invalid refresh token ID, then it returns false.',
         () async {
-      final deleted = await AuthenticationTokens.destroyRefreshToken(
+      final deleted = await authenticationTokens.destroyRefreshToken(
         session,
         refreshTokenId: const Uuid().v4obj(),
       );
@@ -276,14 +264,14 @@ void main() {
         () async {
       final newAuthSuccesses = await List.generate(
         3,
-        (final _) async => AuthenticationTokens.createTokens(
+        (final _) async => authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           method: 'test',
         ),
       ).wait;
 
-      final deletedIds = await AuthenticationTokens.destroyAllRefreshTokens(
+      final deletedIds = await authenticationTokens.destroyAllRefreshTokens(
         session,
         authUserId: authUserId,
       );
@@ -298,13 +286,13 @@ void main() {
     test(
         'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
         () async {
-      await AuthenticationTokens.destroyAllRefreshTokens(
+      await authenticationTokens.destroyAllRefreshTokens(
         session,
         authUserId: authUserId,
       );
 
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => authenticationTokens.rotateRefreshToken(
           session,
           refreshToken: authSuccess.refreshToken!,
         ),
@@ -315,10 +303,16 @@ void main() {
     test(
         'when changing the configured pepper, then attempting to rotate the token throws an error.',
         () async {
-      secrets.refreshTokenHashPepper = 'another pepper';
+      final differentPepperAuthenticationTokens = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: authenticationTokens.config.algorithm,
+          refreshTokenHashPepper:
+              '${authenticationTokens.config.refreshTokenHashPepper}-addition',
+        ),
+      );
 
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => differentPepperAuthenticationTokens.rotateRefreshToken(
           session,
           refreshToken: authSuccess.refreshToken!,
         ),
@@ -335,7 +329,7 @@ void main() {
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
 
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => authenticationTokens.rotateRefreshToken(
           session,
           refreshToken: tokenWithUpdatedFixedSecret,
         ),
@@ -352,7 +346,7 @@ void main() {
       final tokenWithUpdatedFixedSecret = tokenParts.join(':');
 
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => authenticationTokens.rotateRefreshToken(
           session,
           refreshToken: tokenWithUpdatedFixedSecret,
         ),
@@ -364,7 +358,7 @@ void main() {
         'when looking at the auth token via `listAuthenticationTokens`, then the extra claims can be read as a Map.',
         () async {
       final authTokensForUser =
-          await AuthenticationTokens.listAuthenticationTokens(
+          await authenticationTokens.listAuthenticationTokens(
         session,
         authUserId: authUserId,
       );
@@ -385,37 +379,28 @@ void main() {
     late TokenPair refreshedTokenPair;
 
     setUp(() async {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
 
-      initialAuthSuccess = await AuthenticationTokens.createTokens(
+      initialAuthSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUser.id,
         scopes: {},
         method: 'test',
       );
 
-      refreshedTokenPair = await AuthenticationTokens.rotateRefreshToken(
+      refreshedTokenPair = await authenticationTokens.rotateRefreshToken(
         session,
         refreshToken: initialAuthSuccess.refreshToken!,
       );
-    });
-
-    tearDown(() {
-      AuthenticationTokens.secretsTestOverride = null;
     });
 
     test(
         'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
         () async {
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => authenticationTokens.rotateRefreshToken(
           session,
           refreshToken: initialAuthSuccess.refreshToken!,
         ),
@@ -423,7 +408,7 @@ void main() {
       );
 
       await expectLater(
-        () => AuthenticationTokens.rotateRefreshToken(
+        () => authenticationTokens.rotateRefreshToken(
           session,
           refreshToken: refreshedTokenPair.refreshToken,
         ),
@@ -437,20 +422,13 @@ void main() {
     late Session session;
     late UuidValue authUserId;
 
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-    });
-
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
-      await AuthenticationTokens.createTokens(
+      await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -458,13 +436,9 @@ void main() {
       );
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test('when listing the tokens for that user, then it is returned.',
         () async {
-      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+      final tokenInfos = await authenticationTokens.listAuthenticationTokens(
         session,
         authUserId: authUserId,
       );
@@ -479,30 +453,23 @@ void main() {
     late UuidValue authUserId1;
     late UuidValue authUserId2;
 
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride =
-          AuthenticationTokenSecretsMock()
-            ..setHs512Algorithm()
-            ..refreshTokenHashPepper = 'pepper123';
-    });
-
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser1 = await AuthUsers.create(session);
+      final authUser1 = await authenticationTokens.authUsers.create(session);
       authUserId1 = authUser1.id;
 
-      await AuthenticationTokens.createTokens(
+      await authenticationTokens.createTokens(
         session,
         authUserId: authUserId1,
         scopes: {},
         method: 'test',
       );
 
-      final authUser2 = await AuthUsers.create(session);
+      final authUser2 = await authenticationTokens.authUsers.create(session);
       authUserId2 = authUser2.id;
 
-      await AuthenticationTokens.createTokens(
+      await authenticationTokens.createTokens(
         session,
         authUserId: authUserId2,
         scopes: {},
@@ -510,14 +477,10 @@ void main() {
       );
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test(
         'when listing the tokens for one user, then only their tokens are returned.',
         () async {
-      final tokenInfos = await AuthenticationTokens.listAuthenticationTokens(
+      final tokenInfos = await authenticationTokens.listAuthenticationTokens(
         session,
         authUserId: authUserId1,
       );
@@ -530,38 +493,27 @@ void main() {
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-    late final secretsWithHmac = AuthenticationTokenSecretsMock()
-      ..setHs512Algorithm()
-      ..refreshTokenHashPepper = 'pepper123';
-
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
-    });
 
     setUp(() async {
       session = sessionBuilder.build();
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
       // Assign scopes to the user using update
-      await AuthUsers.update(
+      await authenticationTokens.authUsers.update(
         session,
         authUserId: authUserId,
         scopes: {const Scope('user-scope')},
       );
     });
 
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
-    });
-
     test('when no scopes are provided, the users scopes should be used.',
         () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
+      final authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         method: 'test',
       );
-      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+      final decodedToken = authenticationTokens.jwtUtil.verifyJwt(
         authSuccess.token,
       );
       expect(decodedToken.scopes, hasLength(1));
@@ -569,7 +521,7 @@ void main() {
     });
 
     test('when scopes are provided, the provided scopes are used.', () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
+      final authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {
@@ -577,7 +529,7 @@ void main() {
         },
         method: 'test',
       );
-      final decodedToken = JwtUtil(secrets: secretsWithHmac).verifyJwt(
+      final decodedToken = authenticationTokens.jwtUtil.verifyJwt(
         authSuccess.token,
       );
       expect(decodedToken.scopes, hasLength(1));
@@ -589,30 +541,20 @@ void main() {
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
-    late final secretsWithHmac = AuthenticationTokenSecretsMock()
-      ..setHs512Algorithm()
-      ..refreshTokenHashPepper = 'pepper123';
-
-    setUpAll(() {
-      AuthenticationTokens.secretsTestOverride = secretsWithHmac;
-    });
 
     setUp(() async {
       session = sessionBuilder.build();
-      final authUser = await AuthUsers.create(session);
+      final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
       // Block the user using update
-      await AuthUsers.update(session, authUserId: authUserId, blocked: true);
-    });
-
-    tearDownAll(() {
-      AuthenticationTokens.secretsTestOverride = null;
+      await authenticationTokens.authUsers
+          .update(session, authUserId: authUserId, blocked: true);
     });
 
     test('when creating tokens, an AuthUserBlockedException should be thrown.',
         () async {
       await expectLater(
-        () => AuthenticationTokens.createTokens(
+        () => authenticationTokens.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -625,7 +567,7 @@ void main() {
     test(
         'when creating token with skipUserBlockedChecked as true, then the token should be created successfully.',
         () async {
-      final authSuccess = await AuthenticationTokens.createTokens(
+      final authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -633,6 +575,222 @@ void main() {
         skipUserBlockedChecked: true,
       );
       expect(authSuccess, isNotNull);
+    });
+  });
+
+  withServerpod('Given an AuthenticationTokenConfig with extraClaimsProvider,',
+      (final sessionBuilder, final endpoints) {
+    late Session session;
+    late UuidValue authUserId;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      const authUsers = AuthUsers();
+      final authUser = await authUsers.create(session);
+      authUserId = authUser.id;
+    });
+
+    test(
+        'when requesting a new token pair with the provider configured, then provider claims are included in the access token.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return {'hookClaim': 'hookValue', 'userRole': 'admin'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'hookValue');
+      expect(payload['userRole'], 'admin');
+    });
+
+    test(
+        'when requesting a new token pair with both provider and extraClaims, then provider can control how claims are merged.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can decide how to merge extraClaims
+            return {
+              ...?context.extraClaims,
+              'providerClaim': 'fromProvider',
+              'conflictKey': 'providerWins'
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        extraClaims: {'paramClaim': 'fromParam', 'conflictKey': 'paramLoses'},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['providerClaim'], 'fromProvider');
+      expect(payload['paramClaim'], 'fromParam');
+      expect(payload['conflictKey'], 'providerWins');
+    });
+
+    test(
+        'when rotating tokens created with a provider, then provider claims are preserved.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return {'hookClaim': 'persistsAcrossRotation'};
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final rotatedTokenPair =
+          await authenticationTokensWithHook.rotateRefreshToken(
+        session,
+        refreshToken: authSuccess.refreshToken!,
+      );
+
+      final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['hookClaim'], 'persistsAcrossRotation');
+    });
+
+    test(
+        'when provider returns null, then no extra claims are added from the provider.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            return null;
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      // Should only contain standard claims, no custom ones
+      expect(payload.containsKey('hookClaim'), isFalse);
+    });
+
+    test(
+        'when provider accesses session context, then it can fetch additional data.',
+        () async {
+      const authUsers = AuthUsers();
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can fetch additional data from database using session
+            final authUser = await authUsers.get(
+              session,
+              authUserId: context.authUserId,
+            );
+            return {
+              'userId': authUser.id.toString(),
+              'userExists': true,
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {},
+        method: 'test',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['userId'], authUserId.toString());
+      expect(payload['userExists'], isTrue);
+    });
+
+    test(
+        'when provider uses method and scopes parameters, then it can customize claims based on them.',
+        () async {
+      final authenticationTokensWithHook = AuthenticationTokens(
+        config: AuthenticationTokenConfig(
+          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+            key: SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: 'test-pepper',
+          extraClaimsProvider: (final session, final context) async {
+            // Provider can use method and scopes to customize claims
+            return {
+              'authMethod': context.method,
+              'scopeCount': context.scopes.length,
+              'hasAdminScope':
+                  context.scopes.any((final s) => s.name == 'admin'),
+            };
+          },
+        ),
+      );
+
+      final authSuccess = await authenticationTokensWithHook.createTokens(
+        session,
+        authUserId: authUserId,
+        scopes: {const Scope('admin'), const Scope('user')},
+        method: 'email',
+      );
+
+      final decodedToken = JWT.decode(authSuccess.token);
+      final payload = decodedToken.payload as Map;
+
+      expect(payload['authMethod'], 'email');
+      expect(payload['scopeCount'], 2);
+      expect(payload['hasAdminScope'], isTrue);
     });
   });
 }

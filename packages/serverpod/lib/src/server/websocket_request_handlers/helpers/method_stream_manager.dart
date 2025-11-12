@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
@@ -45,7 +44,7 @@ class _RevokedAuthenticationHandler {
       return null;
     }
 
-    var authenticationInfo = await session.authenticated;
+    var authenticationInfo = session.authenticated;
     if (authenticationInfo == null) {
       throw StateError(
         'Authentication was required but no authentication info could be retrieved.',

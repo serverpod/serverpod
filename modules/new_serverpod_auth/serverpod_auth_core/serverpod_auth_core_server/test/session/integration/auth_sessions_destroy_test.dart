@@ -1,15 +1,20 @@
-import 'dart:convert';
-
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_core_server/src/session/business/session_key.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
-import '../test_utils.dart';
+import '../../test_tags.dart';
 
 void main() {
+  final authSessions = AuthSessions(
+    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  );
+
   withServerpod('Given an auth sessions for a user,',
+      rollbackDatabase: RollbackDatabase.disabled,
+      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
       (final sessionBuilder, final endpoints) {
     late Session session;
     late UuidValue authUserId;
@@ -18,9 +23,9 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
-      sessionKey = (await AuthSessions.createSession(
+      sessionKey = (await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -29,12 +34,19 @@ void main() {
           .token;
     });
 
+    tearDown(() async {
+      await AuthSession.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      );
+    });
+
     test(
         'when calling `destroySession` with a valid `authSessionId`, then it returns true.',
         () async {
-      final deleted = await AuthSessions.destroySession(
+      final deleted = await authSessions.destroySession(
         session,
-        authSessionId: _extractAuthSessionId(sessionKey),
+        authSessionId: _extractAuthSessionId(session, sessionKey),
       );
 
       expect(deleted, isTrue);
@@ -43,7 +55,7 @@ void main() {
     test(
         'when calling `destroySession` with an invalid `authSessionId`, then it returns false.',
         () async {
-      final deleted = await AuthSessions.destroySession(
+      final deleted = await authSessions.destroySession(
         session,
         authSessionId: const Uuid().v4obj(),
       );
@@ -56,22 +68,22 @@ void main() {
         () async {
       final newAuthSuccesses = await List.generate(
         3,
-        (final _) async => AuthSessions.createSession(
+        (final _) async => authSessions.createSession(
           session,
           authUserId: authUserId,
           method: 'test',
         ),
       ).wait;
 
-      final deletedIds = await AuthSessions.destroyAllSessions(
+      final deletedIds = await authSessions.destroyAllSessions(
         session,
         authUserId: authUserId,
       );
 
       expect(deletedIds.toSet(), {
-        _extractAuthSessionId(sessionKey),
+        _extractAuthSessionId(session, sessionKey),
         for (final authSuccess in newAuthSuccesses)
-          _extractAuthSessionId(authSuccess.token),
+          _extractAuthSessionId(session, authSuccess.token),
       });
     });
 
@@ -79,7 +91,7 @@ void main() {
       'when destroying the auth session, then a message for it is broadcast.',
       () async {
         final authInfoABeforeRevocation =
-            await AuthSessions.authenticationHandler(
+            await authSessions.authenticationHandler(
           session,
           sessionKey,
         );
@@ -95,7 +107,7 @@ void main() {
           revocationMessages.add,
         );
 
-        await AuthSessions.destroySession(
+        await authSessions.destroySession(
           session,
           authSessionId: authInfoABeforeRevocation.authSessionId,
         );
@@ -129,7 +141,7 @@ void main() {
           revocationMessages.add,
         );
 
-        await AuthSessions.destroyAllSessions(
+        await authSessions.destroyAllSessions(
           session,
           authUserId: authUserId,
         );
@@ -155,16 +167,16 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
-      destroyedSessionKey = (await AuthSessions.createSession(
+      destroyedSessionKey = (await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       ))
           .token;
-      retainedSessionKey = (await AuthSessions.createSession(
+      retainedSessionKey = (await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -172,9 +184,9 @@ void main() {
       ))
           .token;
 
-      final sessionToDestroy = UuidValue.fromByteList(
-          base64Decode(destroyedSessionKey.split(':')[1]));
-      await AuthSessions.destroySession(
+      final sessionToDestroy =
+          _extractAuthSessionId(session, destroyedSessionKey);
+      await authSessions.destroySession(
         session,
         authSessionId: sessionToDestroy,
       );
@@ -183,7 +195,7 @@ void main() {
     test(
       'when calling `authenticationHandler` with the destroyed session key, then it returns `null`.',
       () async {
-        final authInfo = await AuthSessions.authenticationHandler(
+        final authInfo = await authSessions.authenticationHandler(
           session,
           destroyedSessionKey,
         );
@@ -198,7 +210,7 @@ void main() {
     test(
       'when calling `authenticationHandler` with the retained session key, then it returns the auth info.',
       () async {
-        final authInfo = await AuthSessions.authenticationHandler(
+        final authInfo = await authSessions.authenticationHandler(
           session,
           retainedSessionKey,
         );
@@ -222,16 +234,16 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = await createAuthUser(session);
+      authUserId = (await authSessions.authUsers.create(session)).id;
 
-      sessionKey1 = (await AuthSessions.createSession(
+      sessionKey1 = (await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       ))
           .token;
-      sessionKey2 = (await AuthSessions.createSession(
+      sessionKey2 = (await authSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -239,7 +251,7 @@ void main() {
       ))
           .token;
 
-      await AuthSessions.destroyAllSessions(
+      await authSessions.destroyAllSessions(
         session,
         authUserId: authUserId,
       );
@@ -248,7 +260,7 @@ void main() {
     test(
       'when calling the `authenticationHandler` with the first session key, then it returns `null`.',
       () async {
-        final authInfo = await AuthSessions.authenticationHandler(
+        final authInfo = await authSessions.authenticationHandler(
           session,
           sessionKey1,
         );
@@ -263,7 +275,7 @@ void main() {
     test(
       'when calling the `authenticationHandler` with the  second session key, then it returns `null`.',
       () async {
-        final authInfo = await AuthSessions.authenticationHandler(
+        final authInfo = await authSessions.authenticationHandler(
           session,
           sessionKey2,
         );
@@ -277,7 +289,7 @@ void main() {
   });
 }
 
-UuidValue _extractAuthSessionId(final String sessionKey) {
-  final parts = sessionKey.split(':');
-  return UuidValue.fromByteList(base64Url.decode(parts[1]));
+UuidValue _extractAuthSessionId(
+    final Session session, final String sessionKey) {
+  return tryParseSessionKey(session, sessionKey)!.authSessionId;
 }

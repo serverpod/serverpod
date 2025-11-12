@@ -204,7 +204,7 @@ void main() {
       customJwtProvider = JwtAuthKeyProvider(
         getAuthInfo: () async => jwtAuthSuccess,
         onRefreshAuthInfo: (authSuccess) async {},
-        refreshEndpoint: client.modules.serverpod_auth_core.refreshJwtTokens,
+        refreshEndpoint: client.jwtRefresh,
       );
 
       customSasProvider = SasAuthKeyProvider(

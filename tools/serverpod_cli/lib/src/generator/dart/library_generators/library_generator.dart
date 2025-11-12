@@ -6,6 +6,8 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -30,9 +32,13 @@ class LibraryGenerator {
   Library generateProtocol() {
     var library = LibraryBuilder();
 
-    var allModels = protocolDefinition.models
-        .where((model) => serverCode || !model.serverOnly)
-        .toList();
+    // Models will be sorted by file path and then topologically, to ensure a
+    // stable order and that children gets generated before parents.
+    var allModels = (protocolDefinition.models
+            .where((model) => serverCode || !model.serverOnly)
+            .toList()
+          ..sort((a, b) => a.filePath.compareTo(b.filePath)))
+        .topologicalSort();
 
     var topLevelModels = allModels.where((model) {
       if (model is! ModelClassDefinition) return true;
@@ -46,8 +52,7 @@ class LibraryGenerator {
 
     var unsealedModels = allModels
         .where((model) => !(model is ModelClassDefinition && model.isSealed))
-        .toList()
-      ..sort(_byChildClassesBeforeParents);
+        .toList();
 
     // exports
     library.directives.addAll([
@@ -421,7 +426,9 @@ class LibraryGenerator {
                   ..name = 'server'
                   ..type = refer('Server', serverpodUrl(true)))))
                 ..body = Block.of([
-                  if (protocolDefinition.endpoints.isNotEmpty) ...[
+                  if (protocolDefinition.endpoints.isNotEmpty &&
+                      !protocolDefinition.endpoints
+                          .every((endpoint) => endpoint.isAbstract)) ...[
                     _buildEndpointLookupMap(protocolDefinition.endpoints),
                     _buildEndpointConnectors(protocolDefinition.endpoints),
                   ],
@@ -454,6 +461,22 @@ class LibraryGenerator {
       return 'Endpoint${ReCase(endpointName).pascalCase}';
     }
 
+    /// Returns a reference to the parent endpoint class if it exists, otherwise
+    /// returns a reference to EndpointRef.
+    Reference getParentReference(EndpointDefinition endpointDef) {
+      var parentClass = endpointDef.extendsClass;
+      if (parentClass == null) return refer('EndpointRef', serverpodUrl(false));
+
+      var parentClassName = getEndpointClassName(parentClass.name);
+      var parentClassPackage = parentClass.packageName;
+      var parentImportPath = parentClassPackage != null &&
+              parentClassPackage != config.serverPackage
+          ? _getClientPathFromServer(parentClassPackage)
+          : null;
+
+      return refer(parentClassName, parentImportPath);
+    }
+
     var library = LibraryBuilder();
 
     var hasModules =
@@ -471,14 +494,17 @@ class LibraryGenerator {
             ..docs.add(endpointDef.documentationComment ?? '')
             ..docs.add('/// {@category Endpoint}')
             ..name = endpointClassName
-            ..extend = refer('EndpointRef', serverpodUrl(false));
+            ..extend = getParentReference(endpointDef)
+            ..abstract = endpointDef.isAbstract;
 
-          endpoint.methods.add(Method((m) => m
-            ..annotations.add(refer('override'))
-            ..name = 'name'
-            ..type = MethodType.getter
-            ..returns = refer('String')
-            ..body = literalString('$modulePrefix${endpointDef.name}').code));
+          if (!endpointDef.isAbstract) {
+            endpoint.methods.add(Method((m) => m
+              ..annotations.add(refer('override'))
+              ..name = 'name'
+              ..type = MethodType.getter
+              ..returns = refer('String')
+              ..body = literalString('$modulePrefix${endpointDef.name}').code));
+          }
 
           endpoint.constructors.add(Constructor((c) => c
             ..requiredParameters.add(Parameter((p) => p
@@ -497,7 +523,9 @@ class LibraryGenerator {
               Method(
                 (m) => m
                   ..docs.add(methodDef.documentationComment ?? '')
-                  ..annotations.addAll(_buildEndpointCallAnnotations(methodDef))
+                  ..annotations.addAll(buildEndpointCallAnnotations(methodDef))
+                  ..annotations.addAll(
+                      _buildInheritanceAnnotations(endpointDef, methodDef))
                   ..returns = returnType.reference(false, config: config)
                   ..name = methodDef.name
                   ..requiredParameters.addAll([
@@ -522,28 +550,31 @@ class LibraryGenerator {
                         ..type =
                             parameterDef.type.reference(false, config: config))
                   ])
-                  ..body = switch (methodDef) {
-                    MethodCallDefinition methodDef => _buildCallServerEndpoint(
-                        modulePrefix,
-                        endpointDef,
-                        methodDef,
-                        requiredParams,
-                        optionalParams,
-                        namedParameters,
-                      ),
-                    MethodStreamDefinition methodDef =>
-                      _buildCallStreamingServerEndpoint(
-                        modulePrefix,
-                        endpointDef,
-                        methodDef,
-                        requiredParams,
-                        optionalParams,
-                        namedParameters,
-                      ),
-                    _ => throw Exception(
-                        'Unknown method definition type: $methodDef',
-                      ),
-                  },
+                  ..body = endpointDef.isAbstract
+                      ? null
+                      : switch (methodDef) {
+                          MethodCallDefinition methodDef =>
+                            _buildCallServerEndpoint(
+                              modulePrefix,
+                              endpointDef,
+                              methodDef,
+                              requiredParams,
+                              optionalParams,
+                              namedParameters,
+                            ),
+                          MethodStreamDefinition methodDef =>
+                            _buildCallStreamingServerEndpoint(
+                              modulePrefix,
+                              endpointDef,
+                              methodDef,
+                              requiredParams,
+                              optionalParams,
+                              namedParameters,
+                            ),
+                          _ => throw Exception(
+                              'Unknown method definition type: $methodDef',
+                            ),
+                        },
               ),
             );
           }
@@ -588,11 +619,12 @@ class LibraryGenerator {
               : refer('ModuleEndpointCaller', serverpodUrl(false))
           ..fields.addAll([
             for (var endpointDef in protocolDefinition.endpoints)
-              Field((f) => f
-                ..late = true
-                ..modifier = FieldModifier.final$
-                ..name = endpointDef.name
-                ..type = refer(getEndpointClassName(endpointDef.name))),
+              if (!endpointDef.isAbstract)
+                Field((f) => f
+                  ..late = true
+                  ..modifier = FieldModifier.final$
+                  ..name = endpointDef.name
+                  ..type = refer(getEndpointClassName(endpointDef.name))),
             if (hasModules)
               Field((f) => f
                 ..late = true
@@ -698,10 +730,11 @@ class LibraryGenerator {
               }
               c.body = Block.of([
                 for (var endpointDef in protocolDefinition.endpoints)
-                  refer(endpointDef.name)
-                      .assign(refer(getEndpointClassName(endpointDef.name))
-                          .call([refer('this')]))
-                      .statement,
+                  if (!endpointDef.isAbstract)
+                    refer(endpointDef.name)
+                        .assign(refer(getEndpointClassName(endpointDef.name))
+                            .call([refer('this')]))
+                        .statement,
                 if (hasModules)
                   refer('modules')
                       .assign(refer('Modules').call([refer('this')]))
@@ -724,8 +757,9 @@ class LibraryGenerator {
                     ]))
                   ..body = literalMap({
                     for (var endpointDef in protocolDefinition.endpoints)
-                      '$modulePrefix${endpointDef.name}':
-                          refer(endpointDef.name)
+                      if (!endpointDef.isAbstract)
+                        '$modulePrefix${endpointDef.name}':
+                            refer(endpointDef.name)
                   }).code,
               ),
               if (config.type != PackageType.module)
@@ -754,16 +788,10 @@ class LibraryGenerator {
     return library.build();
   }
 
-  Iterable<Expression> _buildEndpointCallAnnotations(
-      MethodDefinition methodDef) {
-    return methodDef.annotations
-        .where((e) => e.name != 'unauthenticatedClientCall')
-        .map((annotation) {
-      var args = annotation.arguments;
-      return refer(args != null
-          ? '${annotation.name}(${args.join(',')})'
-          : annotation.name);
-    });
+  String _getClientPathFromServer(String packageName) {
+    return config.modulesDependent
+        .firstWhere((m) => m.serverPackage == packageName)
+        .dartImportUrl(false);
   }
 
   Code _buildCallServerEndpoint(
@@ -874,6 +902,9 @@ class LibraryGenerator {
       p.joinAll([...config.generatedServeModelPathParts]);
 
   String _endpointPath(EndpointDefinition endpoint) {
+    // For endpoints defined in other packages, the filePath is the library uri.
+    if (endpoint.filePath.startsWith('package:')) return endpoint.filePath;
+
     var relativePath = p.relative(
       endpoint.filePath,
       from: _buildGeneratedDirectoryPath(),
@@ -887,16 +918,17 @@ class LibraryGenerator {
     return refer('var endpoints')
         .assign(literalMap({
           for (var endpoint in endpoints)
-            endpoint.name: refer(endpoint.className, _endpointPath(endpoint))
-                .call([])
-                .cascade('initialize')
-                .call([
-                  refer('server'),
-                  literalString(endpoint.name),
-                  config.type != PackageType.module
-                      ? refer('null')
-                      : literalString(config.name)
-                ])
+            if (!endpoint.isAbstract)
+              endpoint.name: refer(endpoint.className, _endpointPath(endpoint))
+                  .call([])
+                  .cascade('initialize')
+                  .call([
+                    refer('server'),
+                    literalString(endpoint.name),
+                    config.type != PackageType.module
+                        ? refer('null')
+                        : literalString(config.name)
+                  ])
         }, refer('String'), refer('Endpoint', serverpodUrl(true))))
         .statement;
   }
@@ -904,27 +936,28 @@ class LibraryGenerator {
   Code _buildEndpointConnectors(List<EndpointDefinition> endpoints) {
     return Block.of([
       for (var endpoint in endpoints)
-        refer('connectors')
-            .index(literalString(endpoint.name))
-            .assign(refer('EndpointConnector', serverpodUrl(true)).call([], {
-              'name': literalString(endpoint.name),
-              'endpoint': refer('endpoints')
-                  .index(literalString(endpoint.name))
-                  .nullChecked,
-              'methodConnectors': literalMap(
-                {
-                  ..._buildMethodConnectors(
-                    endpoint,
-                    endpoint.methods.whereType<MethodCallDefinition>(),
-                  ),
-                  ..._buildMethodStreamConnectors(
-                    endpoint,
-                    endpoint.methods.whereType<MethodStreamDefinition>(),
-                  )
-                },
-              )
-            }))
-            .statement
+        if (!endpoint.isAbstract)
+          refer('connectors')
+              .index(literalString(endpoint.name))
+              .assign(refer('EndpointConnector', serverpodUrl(true)).call([], {
+                'name': literalString(endpoint.name),
+                'endpoint': refer('endpoints')
+                    .index(literalString(endpoint.name))
+                    .nullChecked,
+                'methodConnectors': literalMap(
+                  {
+                    ..._buildMethodConnectors(
+                      endpoint,
+                      endpoint.methods.whereType<MethodCallDefinition>(),
+                    ),
+                    ..._buildMethodStreamConnectors(
+                      endpoint,
+                      endpoint.methods.whereType<MethodStreamDefinition>(),
+                    )
+                  },
+                )
+              }))
+              .statement
     ]);
   }
 
@@ -1675,32 +1708,62 @@ extension on DatabaseDefinition {
   }
 }
 
-/// Sorts child classes before their parents, such that serialization order is stable.
-int _byChildClassesBeforeParents(
-  SerializableModelDefinition a,
-  SerializableModelDefinition b,
+extension on ModelClassDefinition {
+  /// Get all child classes and their children, ensuring children before parents.
+  List<ModelClassDefinition> get sortedChildClasses => childClasses
+      .whereType<ResolvedInheritanceDefinition>()
+      .map((e) => [
+            ...e.classDefinition.sortedChildClasses,
+            e.classDefinition,
+          ])
+      .expand((e) => e)
+      .toList();
+}
+
+extension on List<SerializableModelDefinition> {
+  /// Sorts the models topologically, ensuring children before parents.
+  List<SerializableModelDefinition> topologicalSort() {
+    var sorted = <SerializableModelDefinition>[];
+
+    for (var model in this) {
+      if (model is ModelClassDefinition) {
+        for (var subClass in model.sortedChildClasses) {
+          if (contains(subClass) && !sorted.contains(subClass)) {
+            sorted.add(subClass);
+          }
+        }
+      }
+
+      if (contains(model) && !sorted.contains(model)) {
+        sorted.add(model);
+      }
+    }
+
+    return sorted;
+  }
+}
+
+/// Builds inheritance-related annotations for endpoint methods.
+///
+/// Adds @override annotation for methods that override parent methods.
+List<Expression> _buildInheritanceAnnotations(
+  EndpointDefinition endpointDef,
+  MethodDefinition methodDef,
 ) {
-  if (a is! ModelClassDefinition || b is! ModelClassDefinition) {
-    return 0;
+  var annotations = <Expression>[];
+  if (_isMethodInherited(endpointDef.extendsClass, methodDef)) {
+    annotations.add(refer('override'));
   }
+  return annotations;
+}
 
-  if (a.extendsClass != null && b.extendsClass == null) {
-    return -1;
+/// Checks if a method is inherited from a parent endpoint.
+bool _isMethodInherited(EndpointDefinition? parent, MethodDefinition method) {
+  if (parent == null) return false;
+  for (var parentMethod in parent.methods) {
+    if (parentMethod.name == method.name) {
+      return true;
+    }
   }
-
-  if (a.extendsClass == null && b.extendsClass != null) {
-    return 1;
-  }
-
-  if (a.extendsClass is ResolvedInheritanceDefinition &&
-      (a.extendsClass as ResolvedInheritanceDefinition).classDefinition == b) {
-    return -1;
-  }
-
-  if (b.extendsClass is ResolvedInheritanceDefinition &&
-      (b.extendsClass as ResolvedInheritanceDefinition).classDefinition == a) {
-    return 1;
-  }
-
-  return 0;
+  return _isMethodInherited(parent.extendsClass, method);
 }

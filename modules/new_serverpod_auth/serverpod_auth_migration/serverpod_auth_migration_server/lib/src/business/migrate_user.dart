@@ -17,6 +17,8 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   final Session session,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
+  required final auth_next.EmailIDP newEmailIDP,
+  final new_auth_user.AuthUsers authUsers = const new_auth_user.AuthUsers(),
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
     session,
@@ -33,7 +35,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     return (migratedUser, false);
   }
 
-  final authUser = await new_auth_user.AuthUsers.create(
+  final authUser = await authUsers.create(
     session,
     blocked: userInfo.blocked,
     scopes: userInfo.scopes,
@@ -45,6 +47,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     oldUserId: userInfo.id!,
     newAuthUserId: authUser.id,
     transaction: transaction,
+    newEmailIDP: newEmailIDP,
   );
 
   await _importUserIdentifier(
@@ -86,6 +89,7 @@ Future<void> _importEmailAccounts(
   required final int oldUserId,
   required final UuidValue newAuthUserId,
   required final Transaction transaction,
+  required final auth_next.EmailIDP newEmailIDP,
 }) async {
   final emailAuths = await legacy_auth.EmailAuth.db.find(
     session,
@@ -93,8 +97,7 @@ Future<void> _importEmailAccounts(
     transaction: transaction,
   );
   for (final emailAuth in emailAuths) {
-    final newEmailAccountId =
-        await auth_next.EmailAccounts.admin.createEmailAuthentication(
+    final newEmailAccountId = await newEmailIDP.admin.createEmailAuthentication(
       session,
       authUserId: newAuthUserId,
       email: emailAuth.email,
@@ -158,8 +161,10 @@ Future<void> _importProfile(
   final UuidValue authUserId,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
+  final new_profile.UserProfiles userProfiles =
+      const new_profile.UserProfiles(),
 }) async {
-  await new_profile.UserProfiles.createUserProfile(
+  await userProfiles.createUserProfile(
     session,
     authUserId,
     new_profile.UserProfileData(
@@ -174,7 +179,7 @@ Future<void> _importProfile(
       userInfo.imageUrl != null ? Uri.tryParse(userInfo.imageUrl!) : null;
   if (profileImageUrl != null) {
     try {
-      await new_profile.UserProfiles.setUserImageFromUrl(
+      await userProfiles.setUserImageFromUrl(
         session,
         authUserId,
         profileImageUrl,

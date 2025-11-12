@@ -23,6 +23,7 @@ class ModelClassDefinitionBuilder {
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
   bool _isSealed;
+  bool _isImmutable;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
 
@@ -38,7 +39,8 @@ class ModelClassDefinitionBuilder {
         _serverOnly = false,
         _indexes = [],
         _childClasses = [],
-        _isSealed = false;
+        _isSealed = false,
+        _isImmutable = false;
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -46,7 +48,9 @@ class ModelClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withPrimaryKey(type: _idType, isNullable: _idTypeNullable)
-            .withScope(ModelFieldScopeDefinition.all)
+            .withScope(_serverOnly
+                ? ModelFieldScopeDefinition.serverOnly
+                : ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
       );
@@ -66,6 +70,7 @@ class ModelClassDefinitionBuilder {
       childClasses: _childClasses,
       extendsClass: _extendsClass,
       isSealed: _isSealed,
+      isImmutable: _isImmutable,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
   }
@@ -396,6 +401,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withIsSealed(bool isSealed) {
     _isSealed = isSealed;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withIsImmutable(bool isImmutable) {
+    _isImmutable = isImmutable;
     return this;
   }
 }

@@ -22,6 +22,8 @@ class ModelParser {
   ) {
     var isSealed = _parseIsSealed(documentContents);
 
+    var isImmutable = _parseIsImmutable(documentContents);
+
     var extendsClass = _parseExtendsClass(documentContents);
 
     var migrationValue =
@@ -51,6 +53,7 @@ class ModelParser {
           return ModelClassDefinition(
             className: className,
             isSealed: isSealed,
+            isImmutable: isImmutable,
             extendsClass: extendsClass,
             sourceFileName: protocolSource.yamlSourceUri.path,
             tableName: tableName,
@@ -150,13 +153,11 @@ class ModelParser {
     var modelSerializationDataType =
         _parseSerializationDataType(documentContents);
 
-    var tableName = _parseTableName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
       docsExtractor,
       modelSerializationDataType,
-      tableName != null,
       config,
       serverOnly,
     );
@@ -216,6 +217,13 @@ class ModelParser {
     return isSealed;
   }
 
+  static bool _parseIsImmutable(YamlMap documentContents) {
+    var isImmutable = documentContents.nodes[Keyword.isImmutable]?.value;
+    if (isImmutable is! bool) return false;
+
+    return isImmutable;
+  }
+
   static UnresolvedInheritanceDefinition? _parseExtendsClass(
     YamlMap documentContents,
   ) {
@@ -252,7 +260,7 @@ class ModelParser {
 
     return convertToEnum<EnumSerialization>(
       value: serializedAs,
-      enumDefault: EnumSerialization.byIndex,
+      enumDefault: EnumSerialization.byName,
       enumValues: EnumSerialization.values,
     );
   }
@@ -268,7 +276,6 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     SerializationDataType? modelSerializationDataType,
-    bool hasTable,
     GeneratorConfig config,
     bool serverOnlyClass,
   ) {
@@ -286,50 +293,6 @@ class ModelParser {
           serverOnlyClass,
         );
       }).toList());
-    }
-
-    if (hasTable) {
-      final defaultIdType = SupportedIdType.int;
-
-      var maybeIdField =
-          fields.where((f) => f.name == defaultPrimaryKeyName).firstOrNull;
-
-      var idFieldType = maybeIdField?.type ?? defaultIdType.type.asNullable;
-
-      var defaultPersistValue = (maybeIdField != null)
-          ? maybeIdField.defaultPersistValue
-          : defaultIdType.defaultValue;
-
-      // The 'int' id type can be specified without a default value.
-      if (maybeIdField?.type.className == 'int') {
-        defaultPersistValue ??= SupportedIdType.int.defaultValue;
-      }
-
-      var defaultModelValue = maybeIdField?.defaultModelValue;
-      if (maybeIdField == null && defaultIdType.type.className != 'int') {
-        defaultModelValue ??= defaultIdType.defaultValue;
-      }
-
-      var defaultIdFieldDoc = [
-        '/// The database id, set if the object has been inserted into the',
-        '/// database or if it has been fetched from the database. Otherwise,',
-        '/// the id will be null.',
-      ];
-
-      fields.removeWhere((f) => f.name == defaultPrimaryKeyName);
-      fields.insert(
-        0,
-        SerializableModelFieldDefinition(
-          name: defaultPrimaryKeyName,
-          type: idFieldType,
-          scope: ModelFieldScopeDefinition.all,
-          defaultModelValue: defaultModelValue,
-          defaultPersistValue: defaultPersistValue ?? defaultModelValue,
-          shouldPersist: true,
-          documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
-          isRequired: false, // ID fields are typically optional
-        ),
-      );
     }
 
     return fields;

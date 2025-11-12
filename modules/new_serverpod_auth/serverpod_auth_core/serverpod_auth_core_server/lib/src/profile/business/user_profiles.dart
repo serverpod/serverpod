@@ -6,7 +6,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
-import '../util/default_image_generator.dart';
 import '../util/user_profile_extension.dart';
 import 'exceptions.dart';
 import 'user_profile_config.dart';
@@ -14,23 +13,31 @@ import 'user_profile_config.dart';
 part 'user_profiles_admin.dart';
 
 /// Business logic for handling user profiles
-abstract final class UserProfiles {
+final class UserProfiles {
   /// Collection of admin-related functions.
-  static final UserProfilesAdmin admin = UserProfilesAdmin._();
+  final UserProfilesAdmin admin = const UserProfilesAdmin._();
+
+  /// The user profile configuration.
+  final UserProfileConfig config;
+
+  /// Creates a new [UserProfiles] instance.
+  const UserProfiles({
+    this.config = const UserProfileConfig(),
+  });
 
   /// Creates a new user profile and stores it in the database.
-  static Future<UserProfileModel> createUserProfile(
+  Future<UserProfileModel> createUserProfile(
     final Session session,
     final UuidValue authUserId,
     UserProfileData userProfile, {
     final Transaction? transaction,
+    final UserImageSource? imageSource,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
-        final onBeforeUserProfileCreated =
-            UserProfileConfig.current.onBeforeUserProfileCreated;
+        final onBeforeUserProfileCreated = config.onBeforeUserProfileCreated;
         if (onBeforeUserProfileCreated != null) {
           userProfile = await onBeforeUserProfileCreated(
             session,
@@ -55,9 +62,17 @@ abstract final class UserProfiles {
           transaction: transaction,
         );
 
-        final createdProfileModel = createdProfile.toModel();
+        final createdProfileModel = switch (imageSource) {
+          null => createdProfile.toModel(),
+          _ => await _setUserImage(
+              session,
+              authUserId,
+              imageSource,
+              transaction: transaction,
+            ),
+        };
 
-        await UserProfileConfig.current.onAfterUserProfileCreated?.call(
+        await config.onAfterUserProfileCreated?.call(
           session,
           createdProfileModel,
           transaction: transaction,
@@ -71,7 +86,7 @@ abstract final class UserProfiles {
   /// Find a user profile by the `AuthUser`'s ID.
   ///
   /// Throws a [UserProfileNotFoundException] in case no profile exists for the given [authUserId].
-  static Future<UserProfileModel> findUserProfileByUserId(
+  Future<UserProfileModel> findUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
@@ -90,7 +105,7 @@ abstract final class UserProfiles {
   }
 
   /// Looks for a user profile by the `AuthUser`'s ID.
-  static Future<UserProfileModel?> maybeFindUserProfileByUserId(
+  Future<UserProfileModel?> maybeFindUserProfileByUserId(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
@@ -105,7 +120,7 @@ abstract final class UserProfiles {
   }
 
   /// Updates a profiles's user name.
-  static Future<UserProfileModel> changeUserName(
+  Future<UserProfileModel> changeUserName(
     final Session session,
     final UuidValue authUserId,
     final String? newUserName, {
@@ -135,7 +150,7 @@ abstract final class UserProfiles {
   }
 
   /// Updates a profile's full name.
-  static Future<UserProfileModel> changeFullName(
+  Future<UserProfileModel> changeFullName(
     final Session session,
     final UuidValue authUserId,
     final String? newFullName, {
@@ -173,7 +188,7 @@ abstract final class UserProfiles {
   ///
   /// In case the `transaction` is later rolled back, the deleted images will
   /// still be missing from the storage.
-  static Future<void> deleteProfileForUser(
+  Future<void> deleteProfileForUser(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
@@ -226,38 +241,35 @@ abstract final class UserProfiles {
 
 // #region Profile images
 
-  static Future<UserProfileImage> _createImageFromUrl(
+  Future<UserProfileImage> _createImageFromUrl(
     final Session session,
     final UuidValue authUserId,
     final Uri url, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
-    final bytes = await UserProfileConfig.current.imageFetchFunc(url);
+    final bytes = await config.imageFetchFunc(url);
 
     return _createImageFromBytes(
       session,
       authUserId,
       bytes,
       transaction: transaction,
+      userProfile: userProfile,
     );
   }
 
-  static Future<UserProfileImage> _createImageFromBytes(
+  Future<UserProfileImage> _createImageFromBytes(
     final Session session,
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     required final Transaction transaction,
+    required final UserProfile userProfile,
   }) async {
-    final userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
-    );
-
     final reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes)!;
 
-      final imageSize = UserProfileConfig.current.userImageSize;
+      final imageSize = config.userImageSize;
       if (image.width != imageSize || image.height != imageSize) {
         image = copyResizeCropSquare(
           image,
@@ -272,7 +284,7 @@ abstract final class UserProfiles {
     final imageId = generateRandomString(6);
 
     String pathExtension;
-    if (UserProfileConfig.current.userImageFormat == UserProfileImageType.jpg) {
+    if (config.userImageFormat == UserProfileImageType.jpg) {
       pathExtension = '.jpg';
     } else {
       pathExtension = '.png';
@@ -307,65 +319,37 @@ abstract final class UserProfiles {
   /// Sets a user's image from the provided [url].
   ///
   /// The image is downloaded, stored in the cloud and associated with the user.
-  static Future<UserProfileModel> setUserImageFromUrl(
+  Future<UserProfileModel> setUserImageFromUrl(
     final Session session,
     final UuidValue authUserId,
     final Uri url, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final image = await _createImageFromUrl(
-          session,
-          authUserId,
-          url,
-          transaction: transaction,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromUrl(url),
+        transaction: transaction,
+      );
 
   /// Sets a user's image from image data.
   ///
   /// The image is resized before being stored in the cloud and associated with the user.
-  static Future<UserProfileModel> setUserImageFromBytes(
+  Future<UserProfileModel> setUserImageFromBytes(
     final Session session,
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     final Transaction? transaction,
-  }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) async {
-        final image = await _createImageFromBytes(
-          session,
-          authUserId,
-          imageBytes,
-          transaction: transaction,
-        );
-
-        return _setUserImage(
-          session,
-          authUserId,
-          image,
-          transaction: transaction,
-        );
-      },
-    );
-  }
+  }) async =>
+      _setUserImage(
+        session,
+        authUserId,
+        UserImageFromBytes(imageBytes),
+        transaction: transaction,
+      );
 
   /// Sets a user's image to the default image for that user.
-  static Future<UserProfileModel> setDefaultUserImage(
+  Future<UserProfileModel> setDefaultUserImage(
     final Session session,
     final UuidValue authUserId, {
     final Transaction? transaction,
@@ -374,13 +358,14 @@ abstract final class UserProfiles {
       session.db,
       transaction,
       (final transaction) async {
-        final userProfile = await UserProfiles.findUserProfileByUserId(
+        final userProfile = await findUserProfileByUserId(
           session,
           authUserId,
           transaction: transaction,
         );
 
-        final image = await defaultUserImageGenerator(userProfile);
+        final image =
+            await config.userImageGenerator(userProfile, config.userImageSize);
 
         final imageBytes = await _encodeImage(image);
 
@@ -394,33 +379,117 @@ abstract final class UserProfiles {
     );
   }
 
-  static Future<UserProfileModel> _setUserImage(
+  /// Removes a user's image, setting it to null.
+  ///
+  /// If the user had an existing image, it is deleted from storage.
+  /// The user profile will have no image URL after this operation.
+  Future<UserProfileModel> removeUserImage(
+    final Session session,
+    final UuidValue authUserId, {
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
+        // Store the old image for deletion
+        final oldImage = userProfile.image;
+
+        // Clear the image reference
+        userProfile.imageId = null;
+        userProfile.image = null;
+
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
+
+        // Delete the old image from storage if it existed
+        if (oldImage != null) {
+          try {
+            await session.storage.deleteFile(
+              storageId: oldImage.storageId,
+              path: oldImage.path,
+            );
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to delete user image from storage',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+
+          // Delete the image record from the database
+          await UserProfileImage.db.deleteRow(
+            session,
+            oldImage,
+            transaction: transaction,
+          );
+        }
+
+        return updatedProfile.toModel();
+      },
+    );
+  }
+
+  Future<UserProfileModel> _setUserImage(
     final Session session,
     final UuidValue authUserId,
-    final UserProfileImage image, {
-    required final Transaction transaction,
+    final UserImageSource imageSource, {
+    final Transaction? transaction,
   }) async {
-    var userProfile = await _findUserProfile(
-      session,
-      authUserId,
-      transaction: transaction,
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final userProfile = await _findUserProfile(
+          session,
+          authUserId,
+          transaction: transaction,
+        );
+
+        final image = switch (imageSource) {
+          UserImageFromUrl() => await _createImageFromUrl(
+              session,
+              authUserId,
+              imageSource.url,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+          UserImageFromBytes() => await _createImageFromBytes(
+              session,
+              authUserId,
+              imageSource.bytes,
+              transaction: transaction,
+              userProfile: userProfile,
+            ),
+        };
+
+        userProfile.imageId = image.id!;
+        userProfile.image = image;
+
+        final updatedProfile = await _updateProfile(
+          session,
+          userProfile,
+          transaction: transaction,
+        );
+
+        return updatedProfile.toModel();
+      },
     );
-
-    userProfile.imageId = image.id!;
-    userProfile.image = image;
-
-    userProfile = await _updateProfile(
-      session,
-      userProfile,
-      transaction: transaction,
-    );
-
-    return userProfile.toModel();
   }
 
 // #endregion
 
-  static Future<UserProfile> _updateProfile(
+  Future<UserProfile> _updateProfile(
     final Session session,
     UserProfile userProfile, {
     required final Transaction transaction,
@@ -441,8 +510,7 @@ abstract final class UserProfiles {
       );
     }
 
-    final modifiedProfile =
-        await UserProfileConfig.current.onBeforeUserProfileUpdated?.call(
+    final modifiedProfile = await config.onBeforeUserProfileUpdated?.call(
       session,
       userProfile.authUserId,
       userProfile.toProfileData(),
@@ -463,7 +531,7 @@ abstract final class UserProfiles {
       transaction: transaction,
     );
 
-    await UserProfileConfig.current.onAfterUserProfileUpdated?.call(
+    await config.onAfterUserProfileUpdated?.call(
       session,
       userProfile.toModel(),
       transaction: transaction,
@@ -472,7 +540,7 @@ abstract final class UserProfiles {
     return userProfile;
   }
 
-  static Future<UserProfile?> _maybeFindUserProfile(
+  Future<UserProfile?> _maybeFindUserProfile(
     final Session session,
     final UuidValue authUserId, {
     required final Transaction? transaction,
@@ -489,7 +557,7 @@ abstract final class UserProfiles {
     return userProfile;
   }
 
-  static Future<UserProfile> _findUserProfile(
+  Future<UserProfile> _findUserProfile(
     final Session session,
     final UuidValue authUserId, {
     required final Transaction transaction,
@@ -507,15 +575,43 @@ abstract final class UserProfiles {
     return userProfile;
   }
 
-  static Future<Uint8List> _encodeImage(final Image image) {
+  Future<Uint8List> _encodeImage(final Image image) {
     return Isolate.run(
-      () => switch (UserProfileConfig.current.userImageFormat) {
+      () => switch (config.userImageFormat) {
         UserProfileImageType.jpg => encodeJpg(
             image,
-            quality: UserProfileConfig.current.userImageQuality,
+            quality: config.userImageQuality,
           ),
         UserProfileImageType.png => encodePng(image),
       },
     );
   }
+}
+
+/// Source of a user image.
+///
+/// Can either be a [UserImageFromUrl] or [UserImageFromBytes].
+sealed class UserImageSource {}
+
+/// User image source from a URL.
+final class UserImageFromUrl extends UserImageSource {
+  /// The URL to fetch the image from.
+  final Uri url;
+
+  /// Creates a new [UserImageFromUrl] instance.
+  UserImageFromUrl(this.url);
+
+  /// Creates a new [UserImageFromUrl] instance by parsing the given [url] string.
+  factory UserImageFromUrl.parse(final String url) {
+    return UserImageFromUrl(Uri.parse(url));
+  }
+}
+
+/// User image source from raw bytes.
+final class UserImageFromBytes extends UserImageSource {
+  /// The image bytes.
+  final Uint8List bytes;
+
+  /// Creates a new [UserImageFromBytes] instance.
+  UserImageFromBytes(this.bytes);
 }

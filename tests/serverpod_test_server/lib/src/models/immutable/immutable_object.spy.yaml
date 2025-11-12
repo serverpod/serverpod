@@ -1,0 +1,4 @@
+class: ImmutableObject
+immutable: true
+fields:
+  variable: String
