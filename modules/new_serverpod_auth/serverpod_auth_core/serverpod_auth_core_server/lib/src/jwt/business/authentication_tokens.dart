@@ -245,6 +245,10 @@ final class AuthenticationTokens {
   /// Returns the list of IDs of the deleted tokens.
   ///
   /// Active access tokens will continue to work until their expiration time is reached.
+  ///
+  /// Automatically registers authentication revocation via
+  /// [session.messages.authenticationRevoked] when tokens are deleted. If this
+  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens] instead.
   Future<List<UuidValue>> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
@@ -273,6 +277,11 @@ final class AuthenticationTokens {
   ///
   /// Any access tokens associated with this refresh token will continue to work
   /// until they expire.
+  ///
+  /// Automatically registers authentication revocation via
+  /// [session.messages.authenticationRevoked] when the token is deleted. If this
+  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens]
+  /// instead.
   Future<bool> destroyRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,

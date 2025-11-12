@@ -242,6 +242,10 @@ final class AuthSessions {
   ///
   /// Note: The method will not do anything if no authentication information is
   /// found for the user.
+  ///
+  /// Automatically registers authentication revocation via
+  /// [session.messages.authenticationRevoked] when sessions are deleted. If this
+  /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<List<UuidValue>> destroyAllSessions(
     final Session session, {
     required final UuidValue authUserId,
@@ -274,6 +278,10 @@ final class AuthSessions {
   /// if the token was found and deleted, `false` otherwise.
   ///
   /// If the session does not exist, this method will have no effect.
+  ///
+  /// Automatically registers authentication revocation via
+  /// [session.messages.authenticationRevoked] when the session is deleted. If this
+  /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<bool> destroySession(
     final Session session, {
     required final UuidValue authSessionId,
