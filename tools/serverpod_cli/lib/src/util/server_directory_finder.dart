@@ -5,134 +5,105 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
-/// The status of a server directory search.
-enum SearchStatus {
-  found,
-  multipleFound,
-  notFound,
+/// A function that finds a directory based on a starting point.
+typedef DirectoryFinder<T> = Directory? Function(T arg);
+
+/// A callback to validate directory contents.
+typedef DirectoryContentCondition = bool Function(Directory directory);
+
+/// Exception thrown when multiple matching directories are found.
+class AmbiguousSearchException implements Exception {
+  final List<Directory> matches;
+
+  AmbiguousSearchException(this.matches);
+
+  String get message =>
+      'Ambiguous search, multiple candidates found:\n${matches.map((d) => '  - ${d.path}').join('\n')}';
+
+  @override
+  String toString() => message;
 }
 
-/// The result of searching for a Serverpod server directory.
-class SearchResult {
-  /// The found server directory, if exactly one was found.
-  final Directory? directory;
+/// Returns a [DirectoryFinder] function that implements the algorithm
+/// for finding Serverpod server directories.
+///
+/// If [startingDirectory] is not provided or returns null,
+/// the current directory is used as starting directory.
+///
+/// If [directoryContentCondition] is provided, it is called with each
+/// directory found. If it returns false, the directory is not considered a match.
+///
+/// The search strategy:
+/// 1. Checks the current directory
+/// 2. Searches child directories (depth 2)
+/// 3. Checks for sibling directories with standard naming patterns (only if not at boundary)
+/// 4. Searches upward through parent directories (max 5 levels or until boundary)
+/// 5. At each parent level, checks its children for server directories
+///
+/// The search stops at repository boundaries (e.g., .git directory) to avoid
+/// escaping the project and triggering permission checks on system directories.
+///
+/// If multiple matching directories are found then an
+/// [AmbiguousSearchException] is thrown.
+///
+/// If a single matching directory is found then it is returned, otherwise null.
+DirectoryFinder<T> serverpodDirectoryFinder<T>({
+  Directory? Function(T arg)? startingDirectory,
+  DirectoryContentCondition? directoryContentCondition,
+}) {
+  return (T arg) {
+    final start = startingDirectory?.call(arg) ?? Directory.current;
+    final condition = directoryContentCondition ?? isServerDirectory;
 
-  /// All candidate server directories found during the search.
-  final List<Directory> candidates;
-
-  final SearchStatus status;
-
-  const SearchResult._({
-    this.directory,
-    required this.candidates,
-    required this.status,
-  });
-
-  factory SearchResult.single(Directory directory) {
-    return SearchResult._(
-      directory: directory,
-      candidates: [directory],
-      status: SearchStatus.found,
-    );
-  }
-
-  factory SearchResult.multiple(List<Directory> candidates) {
-    return SearchResult._(
-      candidates: candidates,
-      status: SearchStatus.multipleFound,
-    );
-  }
-
-  factory SearchResult.notFound() {
-    return const SearchResult._(
-      candidates: [],
-      status: SearchStatus.notFound,
-    );
-  }
-}
-
-/// Finds Serverpod server directories from anywhere within a project structure.
-class ServerDirectoryFinder {
-  /// Finds a server directory, prompting the user if multiple are found.
-  ///
-  /// Throws [ServerpodProjectNotFoundException] if no server directory is found
-  /// or if multiple are found and [interactive] is false.
-  static Future<Directory> findOrPrompt({
-    Directory? startDir,
-    // Optional interactive property in case someone wanted to run these CLI commands in a CI/CD environment.
-    bool interactive = true,
-  }) async {
-    var result = search(startDir ?? Directory.current);
-
-    switch (result.status) {
-      case SearchStatus.found:
-        log.debug('Found server directory: ${result.directory!.path}');
-        return result.directory!;
-
-      case SearchStatus.multipleFound:
-        if (!interactive) {
-          throw ServerpodProjectNotFoundException(
-            'Multiple Serverpod projects detected:\n'
-            '${result.candidates.map((d) => '  - ${d.path}').join('\n')}\n'
-            'Please navigate to one of these directories or use the --directory flag.',
-          );
-        }
-        return await _promptUserSelection(result.candidates);
-
-      case SearchStatus.notFound:
-        var startPath = startDir?.path ?? Directory.current.path;
-        throw ServerpodProjectNotFoundException(
-          'No Serverpod server project detected in or near $startPath.\n'
-          'Make sure you are in a Serverpod project directory.',
-        );
-    }
-  }
-
-  /// Searches for Serverpod server directories from the given starting point.
-  ///
-  /// The search strategy:
-  /// 1. Checks the current directory
-  /// 2. Searches child directories (depth 2)
-  /// 3. Checks for sibling directories with standard naming patterns (only if not at boundary)
-  /// 4. Searches upward through parent directories (max 5 levels or until boundary)
-  /// 5. At each parent level, checks its children for server directories
-  ///
-  /// The search stops at repository boundaries (e.g., .git directory) to avoid
-  /// escaping the project and triggering permission checks on system directories.
-  static SearchResult search(Directory start) {
     var candidates = <Directory>[];
     var visited = <String>{};
 
-    if (isServerDirectory(start)) {
-      return SearchResult.single(start);
+    // 1. Check current directory first (fast path)
+    if (condition(start)) {
+      return start;
     }
 
+    // 2. Search child directories (depth 2)
     candidates.addAll(
-      _searchChildrenRecursive(start, maxDepth: 2, visited: visited),
+      ServerDirectoryFinder._searchChildrenRecursive(
+        start,
+        maxDepth: 2,
+        visited: visited,
+        condition: condition,
+      ),
     );
 
-    var atBoundary = _isRepositoryBoundary(start);
+    // Determine if we should search upward/outward
+    var atBoundary = ServerDirectoryFinder._isRepositoryBoundary(start);
 
     if (!atBoundary) {
-      var siblingServer = _findSiblingServer(start);
+      // 3. Check for standard naming pattern siblings
+      var siblingServer =
+          ServerDirectoryFinder._findSiblingServer(start, condition);
       if (siblingServer != null) {
         candidates.add(siblingServer);
       }
 
+      // 4. Search upward through parent directories
       var current = start.parent;
       for (var i = 0; i < 5; i++) {
         if (current.path == current.parent.path) break;
 
-        if (isServerDirectory(current)) {
+        if (condition(current)) {
           candidates.add(current);
         }
 
-        var isAtBoundary = _isRepositoryBoundary(current);
+        var isAtBoundary = ServerDirectoryFinder._isRepositoryBoundary(current);
 
+        // At boundaries (like .git), search deeper to find nested servers
         var searchDepth = isAtBoundary ? 2 : 1;
         candidates.addAll(
-          _searchChildrenRecursive(current,
-              maxDepth: searchDepth, visited: visited),
+          ServerDirectoryFinder._searchChildrenRecursive(
+            current,
+            maxDepth: searchDepth,
+            visited: visited,
+            condition: condition,
+          ),
         );
 
         if (isAtBoundary) break;
@@ -141,7 +112,7 @@ class ServerDirectoryFinder {
       }
     }
 
-    // Remove duplicates by path
+    // Remove duplicates by normalized path
     var uniquePaths = <String>{};
     candidates = candidates.where((dir) {
       var normalized = p.normalize(dir.path);
@@ -153,16 +124,72 @@ class ServerDirectoryFinder {
     }).toList();
 
     if (candidates.isEmpty) {
-      return SearchResult.notFound();
+      return null;
     } else if (candidates.length == 1) {
-      return SearchResult.single(candidates.first);
+      return candidates.first;
     } else {
-      return SearchResult.multiple(candidates);
+      throw AmbiguousSearchException(candidates);
+    }
+  };
+}
+
+/// Finds Serverpod server directories from anywhere within a project structure.
+class ServerDirectoryFinder {
+  /// The directory finder function configured for Serverpod server directories.
+  static final DirectoryFinder<Directory?> _finder =
+      serverpodDirectoryFinder<Directory?>(
+    startingDirectory: (arg) => arg,
+    directoryContentCondition: isServerDirectory,
+  );
+
+  /// Finds a server directory, prompting the user if multiple are found.
+  ///
+  /// Throws [ServerpodProjectNotFoundException] if no server directory is found
+  /// or if multiple are found and [interactive] is false.
+  static Future<Directory> findOrPrompt({
+    Directory? startDir,
+    // Optional interactive property in case someone wanted to run these CLI commands in a CI/CD environment.
+    bool interactive = true,
+  }) async {
+    try {
+      var result = _finder(startDir);
+      if (result != null) {
+        log.debug('Found server directory: ${result.path}');
+        return result;
+      }
+
+      // No server directory found
+      var startPath = startDir?.path ?? Directory.current.path;
+      throw ServerpodProjectNotFoundException(
+        'No Serverpod server project detected in or near $startPath.\n'
+        'Make sure you are in a Serverpod project directory.',
+      );
+    } on AmbiguousSearchException catch (e) {
+      // Multiple server directories found
+      if (!interactive) {
+        throw ServerpodProjectNotFoundException(
+          'Multiple Serverpod projects detected:\n'
+          '${e.matches.map((d) => '  - ${d.path}').join('\n')}\n'
+          'Please navigate to one of these directories or use the --directory flag.',
+        );
+      }
+      return await _promptUserSelection(e.matches);
     }
   }
 
+  /// Searches for Serverpod server directories from the given starting point.
+  ///
+  /// Returns the found directory, or null if none found.
+  /// Throws [AmbiguousSearchException] if multiple directories are found.
+  static Directory? search(Directory start) {
+    return _finder(start);
+  }
+
   /// Attempts to find a sibling server directory based on naming conventions.
-  static Directory? _findSiblingServer(Directory dir) {
+  static Directory? _findSiblingServer(
+    Directory dir,
+    DirectoryContentCondition condition,
+  ) {
     var dirName = p.basename(dir.path);
     var parent = dir.parent;
 
@@ -177,7 +204,7 @@ class ServerDirectoryFinder {
 
     if (baseName != null) {
       var serverDir = Directory(p.join(parent.path, '${baseName}_server'));
-      if (serverDir.existsSync() && isServerDirectory(serverDir)) {
+      if (serverDir.existsSync() && condition(serverDir)) {
         return serverDir;
       }
     }
@@ -193,6 +220,7 @@ class ServerDirectoryFinder {
     Directory dir, {
     required int maxDepth,
     required Set<String> visited,
+    required DirectoryContentCondition condition,
   }) {
     if (maxDepth < 0) return [];
 
@@ -207,7 +235,7 @@ class ServerDirectoryFinder {
       for (var entity in children) {
         if (entity is! Directory) continue;
 
-        if (isServerDirectory(entity)) {
+        if (condition(entity)) {
           results.add(entity);
         } else if (maxDepth > 0) {
           results.addAll(
@@ -215,11 +243,14 @@ class ServerDirectoryFinder {
               entity,
               maxDepth: maxDepth - 1,
               visited: visited,
+              condition: condition,
             ),
           );
         }
       }
-    } catch (_) {}
+    } on FileSystemException catch (_) {
+      // skip directories that cannot be accessed
+    }
 
     return results;
   }
@@ -266,7 +297,9 @@ class ServerDirectoryFinder {
         try {
           var content = pubspecFile.readAsStringSync();
           if (content.contains('workspace:')) return true;
-        } catch (_) {}
+        } on FileSystemException catch (_) {
+          // skip files that cannot be read
+        }
       }
       var homeDir =
           Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
@@ -274,7 +307,7 @@ class ServerDirectoryFinder {
         return true;
       }
       return false;
-    } catch (_) {
+    } on FileSystemException catch (_) {
       return true;
     }
   }
