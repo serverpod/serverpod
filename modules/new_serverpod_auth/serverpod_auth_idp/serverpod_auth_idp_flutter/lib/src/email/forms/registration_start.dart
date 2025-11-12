@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../common/widgets/buttons/action_button.dart';
@@ -69,7 +71,7 @@ class StartRegistrationForm extends StatelessWidget {
                 controller.state == EmailAuthState.idle &&
                 (!hasTermsAndConditions ||
                     controller.legalNoticeAcceptedNotifier.value)
-            ? () => controller.startRegistration()
+            ? () => unawaited(controller.startRegistration())
             : null,
         label: 'Continue',
         isLoading: controller.isLoading,
