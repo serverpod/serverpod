@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
@@ -49,6 +52,15 @@ class SignInWidget extends StatefulWidget {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// Whether to disable the email sign-in widget if it is available.
+  final bool disableEmailSignInWidget;
+
+  /// Whether to disable the Google sign-in widget if it is available.
+  final bool disableGoogleSignInWidget;
+
+  /// Whether to disable the Apple sign-in widget if it is available.
+  final bool disableAppleSignInWidget;
+
   /// Customized widget to use for email sign-in.
   final EmailSignInWidget? emailSignInWidget;
 
@@ -63,6 +75,9 @@ class SignInWidget extends StatefulWidget {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.disableEmailSignInWidget = false,
+    this.disableGoogleSignInWidget = false,
+    this.disableAppleSignInWidget = false,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
@@ -75,6 +90,10 @@ class SignInWidget extends StatefulWidget {
 
 class _SignInWidgetState extends State<SignInWidget> {
   ClientAuthSessionManager get auth => widget.client.auth;
+
+  bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
+  bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
+  bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -89,32 +108,45 @@ class _SignInWidgetState extends State<SignInWidget> {
       );
     }
 
+    final socialProviders = <Widget>[
+      if (hasGoogle)
+        widget.googleSignInWidget ??
+            GoogleSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
+    ];
+
+    if (hasApple) {
+      final appleSignInWidget = widget.appleSignInWidget ??
+          AppleSignInWidget(
+            client: widget.client,
+            onAuthenticated: widget.onAuthenticated,
+            onError: widget.onError,
+          );
+
+      // On Apple platforms, display the Apple sign-in widget first.
+      if (!kIsWeb && (Platform.isIOS || Platform.isMacOS)) {
+        socialProviders.insert(0, appleSignInWidget);
+      } else {
+        socialProviders.add(appleSignInWidget);
+      }
+    }
+
     // TODO: Make this adaptative.
     return SignInWidgetsColumn(
-      spacing: 8,
+      spacing: 12,
       children: [
-        if (auth.idp.hasEmail)
+        if (hasEmail)
           widget.emailSignInWidget ??
               EmailSignInWidget(
                 client: widget.client,
                 onAuthenticated: widget.onAuthenticated,
                 onError: widget.onError,
               ),
-        if (auth.idp.count > 1 && auth.idp.hasEmail) const _SignInSeparator(),
-        if (auth.idp.hasGoogle)
-          widget.googleSignInWidget ??
-              GoogleSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
-        if (auth.idp.hasApple)
-          widget.appleSignInWidget ??
-              AppleSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
+        if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
+        ...socialProviders,
       ],
     );
   }
@@ -127,7 +159,7 @@ class _SignInSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        smallGap,
+        tinyGap,
         Row(
           children: [
             const ExpandedDivider(),
