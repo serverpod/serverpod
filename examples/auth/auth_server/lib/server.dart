@@ -96,10 +96,15 @@ void run(List<String> args) async {
 
   pod.authenticationHandler = authServices.authenticationHandler;
 
-  pod.webServer.addRoute(
-    AuthServices.instance.appleIDP.revokedNotificationRoute(),
-    '/hooks/apple-notification',
-  );
+  pod.webServer
+    ..addRoute(
+      AuthServices.instance.appleIDP.revokedNotificationRoute(),
+      '/hooks/apple-notification', // must match path configured on apple
+    )
+    ..addRoute(
+      AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
+      '/auth/callback', // must match path configured on apple
+    );
 
   // Start the server.
   await pod.start();

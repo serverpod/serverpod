@@ -3,10 +3,12 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';
+import 'apple_idp.dart';
 
 /// Details of the Apple account.
 typedef AppleAccountDetails = ({
@@ -36,14 +38,17 @@ typedef AppleAuthSuccess = ({
 /// But for most cases, the methods exposed by [AppleIDP] and [AppleIDPAdmin] should
 /// be sufficient.
 class AppleIDPUtils {
+  final TokenManager _tokenManager;
   final SignInWithApple _signInWithApple;
   final AuthUsers _authUsers;
 
   /// Creates a new instance of [AppleIDPUtils].
   AppleIDPUtils({
+    required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
-  })  : _signInWithApple = signInWithApple,
+  })  : _tokenManager = tokenManager,
+        _signInWithApple = signInWithApple,
         _authUsers = authUsers;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
@@ -167,29 +172,6 @@ class AppleIDPUtils {
   /// Handler for revoking sessions based on server-to-server notifications
   /// coming from Apple.
   ///
-  /// If the notification is of type [AppleServerNotificationConsentRevoked] or
-  /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
-  /// authentication for that account will be revoked.
-  Handler revokedNotificationHandler() {
-    return serverNotificationHandler((final notification) async {
-      final revokeSessions =
-          (notification is AppleServerNotificationConsentRevoked ||
-              notification is AppleServerNotificationAccountDelete);
-
-      if (!revokeSessions) {
-        // For other notification types, we do not need to take any action.
-        return;
-      }
-
-      /// TODO(https://github.com/serverpod/serverpod/issues/4105):
-      /// Implement session revocation based on the notification for all
-      /// the sessions associated with the Apple account.
-      return;
-    });
-  }
-
-  /// Handler for server-to-server notifications coming from Apple.
-  ///
   /// To be mounted as a `POST` handler under the URL configured in Apple's
   /// developer portal, for example:
   ///
@@ -200,23 +182,49 @@ class AppleIDPUtils {
   ///   );
   /// ```
   ///
-  /// The [handler] function is invoked with the decoded [AppleServerNotification].
-  /// The function can then take appropriate actions based on the notification type.
-  Handler serverNotificationHandler(
-    final FutureOr<void> Function(AppleServerNotification notification) handler,
-  ) {
-    return (final Request req) async {
-      final body = await utf8.decodeStream(req.body.read());
+  /// If the notification is of type [AppleServerNotificationConsentRevoked] or
+  /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
+  /// authentication for that account will be revoked.
+  Future<Result> serverNotificationHandler(
+    final Session session,
+    final Request req,
+  ) async {
+    final body = await utf8.decodeStream(req.body.read());
+    final payload = (jsonDecode(body) as Map)['payload'] as String;
 
-      final payload = (jsonDecode(body) as Map)['payload'] as String;
+    final notification =
+        await _signInWithApple.decodeAppleServerNotification(payload);
 
-      final notification = await _signInWithApple.decodeAppleServerNotification(
-        payload,
+    final userIdentifier = switch (notification) {
+      AppleServerNotificationConsentRevoked() => notification.userIdentifier,
+      AppleServerNotificationAccountDelete() => notification.userIdentifier,
+      _ => null,
+    };
+
+    if (userIdentifier != null) {
+      final appleAccount = await AppleAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.userIdentifier.equals(userIdentifier),
       );
 
-      await handler(notification);
+      if (appleAccount != null) {
+        await _signInWithApple.revokeAuthorization(
+          refreshToken: appleAccount.refreshToken,
+          useBundleIdentifier:
+              appleAccount.refreshTokenRequestedWithBundleIdentifier,
+        );
 
-      return Response.ok();
-    };
+        await _tokenManager.revokeAllTokens(
+          session,
+          authUserId: appleAccount.authUserId,
+          method: AppleIDP.method,
+        );
+
+        if (notification is AppleServerNotificationAccountDelete) {
+          await AppleAccount.db.deleteRow(session, appleAccount);
+        }
+      }
+    }
+    return Response.ok();
   }
 }
