@@ -66,7 +66,8 @@ void main() {
     });
   });
 
-  test('Given a JwtAuthKeyProvider with valid auth info available '
+  test(
+      'Given a JwtAuthKeyProvider with valid auth info available '
       'when getting auth header value '
       'then it returns Bearer token format.', () async {
     storedAuthInfo = jwtAuthSuccess;
@@ -76,7 +77,8 @@ void main() {
     expect(result, 'Bearer ${jwtAuthSuccess.token}');
   });
 
-  group('Given a JwtAuthKeyProvider with auth info that has no expiration time '
+  group(
+      'Given a JwtAuthKeyProvider with auth info that has no expiration time '
       'when refreshing auth key ', () {
     setUp(() async {
       storedAuthInfo = jwtAuthSuccess.copyWith()..tokenExpiresAt = null;
@@ -142,7 +144,8 @@ void main() {
     },
   );
 
-  group('Given a JwtAuthKeyProvider with auth info that is about to expire '
+  group(
+      'Given a JwtAuthKeyProvider with auth info that is about to expire '
       'when refreshing auth key', () {
     setUp(() async {
       storedAuthInfo = jwtAuthSuccess.expiringIn(const Duration(seconds: 15));
@@ -267,7 +270,10 @@ void main() {
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiring;
-        refreshEndpoint.simulateException = RefreshTokenExpiredException();
+        refreshEndpoint.simulateException = RefreshTokenExpiredException(
+          authUserId: const Uuid().v4obj(),
+          refreshTokenId: const Uuid().v4obj(),
+        );
 
         result = await provider.refreshAuthKey();
       });
