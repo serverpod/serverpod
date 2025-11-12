@@ -78,6 +78,10 @@ final class ModelClassDefinition extends ClassDefinition {
   /// If set to true the class is immutable.
   final bool isImmutable;
 
+  /// If set, the default data type used for serialization of the JSON columns in this class.
+  /// It can be overridden for each field.
+  final SerializationDataType? serializationDataType;
+
   /// If set to a List of [InheritanceDefinitions] the class is a parent class and stores the child classes.
   List<InheritanceDefinition> childClasses;
 
@@ -100,6 +104,7 @@ final class ModelClassDefinition extends ClassDefinition {
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
+    this.serializationDataType,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
@@ -346,6 +351,9 @@ class SerializableModelIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
+  /// The gin index operator class, if it is a gin index.
+  final GinOperatorClass? ginOperatorClass;
+
   /// The vector index distance function, if it is a vector index.
   final VectorDistanceFunction? vectorDistanceFunction;
 
@@ -358,9 +366,13 @@ class SerializableModelIndexDefinition {
     required this.type,
     required this.unique,
     required this.fields,
+    this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.parameters,
   });
+
+  /// Whether the index is of GIN type.
+  bool get isGinIndex => type == 'gin';
 
   /// Whether the index is of vector type.
   bool get isVectorIndex => VectorIndexType.values.any((e) => e.name == type);

@@ -52,10 +52,14 @@ class ColumnByteData extends Column<ByteData> {
 /// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable<T> extends Column<T> {
+  /// Column serialization type.
+  final SerializationDataType? serializationDataType;
+
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnSerializable(
     super.columnName,
     super.table, {
+    this.serializationDataType,
     super.hasDefault,
   });
 }

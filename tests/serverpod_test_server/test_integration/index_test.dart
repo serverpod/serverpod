@@ -316,4 +316,91 @@ void main() async {
       expect(index.parameters, {'lists': '300'});
     });
   });
+
+  group('Given declared ObjectWithJsonb class when analyzing database schema',
+      () {
+    late List<IndexDefinition> indexes;
+
+    setUpAll(() async {
+      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+      var table = databaseDefinition.tables.firstWhere(
+        (table) => table.name == 'object_with_jsonb',
+      );
+
+      indexes = table.indexes;
+    });
+
+    test(
+        'then the implicitly declared gin index exists with default jsonb operator class.',
+        () {
+      final index = indexes.firstWhere(
+        (idx) => idx.indexName == 'jsonb_index_gin',
+      );
+
+      expect(index.type, 'gin');
+      expect(index.ginOperatorClass, GinOperatorClass.jsonb);
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed2');
+    });
+
+    test('then the explicitly declared gin index with operator class exists.',
+        () {
+      final index = indexes.firstWhere(
+        (idx) => idx.indexName == 'jsonb_index_gin_with_operator_class',
+      );
+
+      expect(index.type, 'gin');
+      expect(index.ginOperatorClass, GinOperatorClass.jsonbPath);
+      expect(index.elements.length, 1);
+      expect(index.elements.first.type, IndexElementDefinitionType.column);
+      expect(index.elements.first.definition, 'indexed3');
+    });
+  });
+
+  group(
+      'Given declared ObjectWithJsonbClassLevel class with `serializationDataType` set to jsonb when analyzing database schema',
+      () {
+    late List<ColumnDefinition> columns;
+
+    setUpAll(() async {
+      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+      var table = databaseDefinition.tables.firstWhere(
+        (table) => table.name == 'object_with_jsonb_class_level',
+      );
+
+      columns = table.columns;
+    });
+
+    test('then the column without `serializationDataType` set has type jsonb.',
+        () {
+      final column = columns.firstWhere(
+        (idx) => idx.name == 'jsonb1',
+      );
+
+      expect(column.columnType, ColumnType.jsonb);
+    });
+
+    test(
+        'then the column with `serializationDataType` set to jsonb has type jsonb.',
+        () {
+      final column = columns.firstWhere(
+        (idx) => idx.name == 'jsonb2',
+      );
+
+      expect(column.columnType, ColumnType.jsonb);
+    });
+
+    test(
+        'then the column with `serializationDataType` set to json has type json.',
+        () {
+      final column = columns.firstWhere(
+        (idx) => idx.name == 'json',
+      );
+
+      expect(column.columnType, ColumnType.json);
+    });
+  });
 }

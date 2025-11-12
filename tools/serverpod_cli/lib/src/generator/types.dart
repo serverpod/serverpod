@@ -58,6 +58,9 @@ class TypeDefinition {
   /// Only populated for Vector types.
   final d.int? vectorDimension;
 
+  /// If set, the data type of the database JSON column this type definition should use for serialization.
+  SerializationDataType? serializationDataType;
+
   EnumDefinition? enumDefinition;
 
   /// Creates an [TypeDefinition] from a given [DartType].
@@ -116,6 +119,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
+    this.serializationDataType,
     this.enumDefinition,
     this.projectModelDefinition,
     this.recordFieldName,
@@ -217,6 +221,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serializationDataType: serializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -231,6 +236,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serializationDataType: serializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -245,6 +251,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
+        serializationDataType: serializationDataType,
         enumDefinition: enumDefinition,
         projectModelDefinition: projectModelDefinition,
         recordFieldName: recordFieldName,
@@ -407,6 +414,10 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
 
+    if (isColumnSerializable &&
+        serializationDataType == SerializationDataType.jsonb) {
+      return 'jsonb';
+    }
     return 'json';
   }
 
@@ -648,6 +659,7 @@ class TypeDefinition {
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),
+      serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
       url: isProjectModel ? defaultModuleAlias : url,
       recordFieldName: recordFieldName,

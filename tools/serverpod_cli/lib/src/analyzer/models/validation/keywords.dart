@@ -3,6 +3,7 @@ class Keyword {
   static const String exceptionType = 'exception';
   static const String enumType = 'enum';
 
+  static const String serializationDataType = 'serializationDataType';
   static const String serialized = 'serialized';
 
   static const String isSealed = 'sealed';
@@ -18,6 +19,7 @@ class Keyword {
 
   static const String type = 'type';
   static const String unique = 'unique';
+  static const String operatorClass = 'operatorClass';
   static const String distanceFunction = 'distanceFunction';
   static const String parameters = 'parameters';
   static const String parent = 'parent';

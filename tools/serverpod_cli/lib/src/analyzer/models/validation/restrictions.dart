@@ -780,6 +780,29 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateIndexOperatorClassKey(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var index =
+        definition.indexes.firstWhere((index) => index.name == parentNodeName);
+
+    if (!index.isGinIndex) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.operatorClass}" property can only be used with gin indexes.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateIndexDistanceFunctionKey(
     String parentNodeName,
     dynamic content,
@@ -1588,6 +1611,28 @@ class Restrictions {
         span,
         severity: SourceSpanSeverity.hint,
         tags: [SourceSpanTag.unnecessary],
+      ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateFieldSerializationDataTypeKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if ((definition is ModelClassDefinition) &&
+        (definition.tableName != null) &&
+        (parentNodeName == defaultPrimaryKeyName)) {
+      errors.add(SourceSpanSeverityException(
+        'The "${Keyword.serializationDataType}" key is not allowed on the "id" field.',
+        span,
       ));
     }
 
