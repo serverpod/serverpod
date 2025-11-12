@@ -14,6 +14,7 @@ class StreamingEndpoint extends Endpoint {
       StreamingSession session, SerializableModel message) async {
     if (message is SimpleData) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
+        // ignore: deprecated_member_use
         await sendStreamMessage(session, message);
       }));
     }

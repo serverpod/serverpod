@@ -88,6 +88,7 @@ class CustomTypesEndpoint extends Endpoint {
     SerializableModel message,
   ) async {
     if (message is CustomClass) {
+      // ignore: deprecated_member_use
       await sendStreamMessage(
           session, CustomClass('${message.value}${message.value}'));
     }

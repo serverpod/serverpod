@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -96,7 +98,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     return methodStreamManager;
   }
 
-  // StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   late bool _disconnectWebSocketStreamOnLostInternetConnection;
   late bool _disconnectMethodStreamsOnLostInternetConnection;
 
@@ -318,6 +319,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Open a streaming connection to the server.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in future versions. '
+      'Use endpoints with stream parameters or return type to open a streaming connection directly.')
   Future<void> openStreamingConnection({
     bool disconnectOnLostInternetConnection = true,
   }) async {
@@ -381,6 +385,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Closes the streaming connection if it is open.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in future versions. '
+      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
   Future<void> closeStreamingConnection() async {
     await _webSocket?.sink.close();
     _webSocket = null;
@@ -418,11 +425,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Adds a callback for when the [streamingConnectionStatus] property is
   /// changed.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in future versions. '
+      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
   void addStreamingConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.add(listener);
   }
 
   /// Removes a connection status listener.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in future versions. '
+      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
   void removeStreamingConnectionStatusListener(VoidCallback listener) {
     _websocketConnectionStatusListeners.remove(listener);
   }
@@ -447,6 +460,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// connected, connecting, or disconnected. Use the
   /// [StreamingConnectionHandler] if you want to automatically reconnect if
   /// the connection is lost.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in future versions. '
+      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
   StreamingConnectionStatus get streamingConnectionStatus {
     if (_webSocket != null && _firstMessageReceived) {
       return StreamingConnectionStatus.connected;
@@ -460,6 +476,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Updates the authentication key if the streaming connection is open.
   /// Note, the provided key will be converted/wrapped as a proper authentication header value
   /// when sent to the server.
+  @Deprecated(
+      'This method was used in the old streaming API and will be removed in a future version. '
+      'Use streams as parameters or return type of an endpoint to resolve the authenticated user directly.')
   Future<void> updateStreamingConnectionAuthenticationKey() async {
     if (streamingConnectionStatus == StreamingConnectionStatus.disconnected) {
       return;
