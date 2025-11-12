@@ -16,7 +16,7 @@ late final Client client;
 
 late String serverUrl;
 
-void main() async {
+void main() {
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
@@ -30,7 +30,7 @@ void main() async {
     ..connectivityMonitor = FlutterConnectivityMonitor()
     ..authSessionManager = ClientAuthSessionManager();
 
-  await client.auth.initialize();
+  client.auth.initialize();
 
   runApp(const ExampleApp());
 }
