@@ -90,11 +90,13 @@ class TextWithLinksState extends State<TextWithLinks> {
         };
       _recognizers.add(recognizer);
 
-      segments.add(TextSpan(
-        text: text.substring(m.start, m.end),
-        style: TextStyle(color: widget.linkColor),
-        recognizer: recognizer,
-      ));
+      segments.add(
+        TextSpan(
+          text: text.substring(m.start, m.end),
+          style: TextStyle(color: widget.linkColor),
+          recognizer: recognizer,
+        ),
+      );
 
       lastPos = m.end;
     }

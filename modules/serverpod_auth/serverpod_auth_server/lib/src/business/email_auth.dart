@@ -29,13 +29,12 @@ Future<PasswordValidationResult> defaultValidatePasswordHash({
   required String password,
   required String email,
   required String hash,
-}) async =>
-    await PasswordHash(
-      hash,
-      legacySalt: EmailSecrets.legacySalt,
-      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-      pepper: EmailSecrets.pepper,
-    ).validate(password);
+}) async => await PasswordHash(
+  hash,
+  legacySalt: EmailSecrets.legacySalt,
+  legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+  pepper: EmailSecrets.pepper,
+).validate(password);
 
 /// Collection of utility methods when working with email authentication.
 class Emails {
@@ -52,9 +51,12 @@ class Emails {
     session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
 
     // Fetch password entry
-    var entry = await EmailAuth.db.findFirstRow(session, where: (t) {
-      return t.email.equals(email);
-    });
+    var entry = await EmailAuth.db.findFirstRow(
+      session,
+      where: (t) {
+        return t.email.equals(email);
+      },
+    );
 
     if (entry == null) {
       return AuthenticationResponse(
@@ -103,8 +105,10 @@ class Emails {
       );
     }
 
-    session.log(' - password is correct, userId: ${entry.userId})',
-        level: LogLevel.debug);
+    session.log(
+      ' - password is correct, userId: ${entry.userId})',
+      level: LogLevel.debug,
+    );
 
     if (AuthConfig.current.passwordHashGenerator.hashCode ==
             defaultGeneratePasswordHash.hashCode &&
@@ -172,8 +176,10 @@ class Emails {
   /// - session: The current [Session], used for logging validation details.
   ///
   /// Returns `true` if the password length is within bounds, otherwise `false`.
-  static bool _isValidPasswordLength(
-      {required String password, Session? session}) {
+  static bool _isValidPasswordLength({
+    required String password,
+    Session? session,
+  }) {
     if (password.length < AuthConfig.current.minPasswordLength ||
         password.length > AuthConfig.current.maxPasswordLength) {
       session?.log(
@@ -461,7 +467,8 @@ class Emails {
         AuthConfig.current.passwordHashValidator.hashCode !=
             defaultValidatePasswordHash.hashCode) {
       throw Exception(
-          'Legacy password hash migration not supported when using custom password hash algorithm.');
+        'Legacy password hash migration not supported when using custom password hash algorithm.',
+      );
     }
     var updatedEntries = 0;
     int lastEntryId = 0;
@@ -492,29 +499,34 @@ class Emails {
 
       lastEntryId = entries.last.id!;
 
-      var migratedEntries = await Future.wait(entries.where((entry) {
-        try {
-          return PasswordHash(
-            entry.hash,
-            legacySalt: EmailSecrets.legacySalt,
-          ).isLegacyHash();
-        } catch (e) {
-          session.log(
-            'Error when checking if hash is legacy: $e',
-            level: LogLevel.error,
-          );
-          return false;
-        }
-      }).map((entry) async {
-        return entry.copyWith(
-          hash: await PasswordHash.migratedLegacyToArgon2idHash(
-            entry.hash,
-            legacySalt: EmailSecrets.legacySalt,
-            pepper: EmailSecrets.pepper,
-            allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
-          ),
-        );
-      }).toList());
+      var migratedEntries = await Future.wait(
+        entries
+            .where((entry) {
+              try {
+                return PasswordHash(
+                  entry.hash,
+                  legacySalt: EmailSecrets.legacySalt,
+                ).isLegacyHash();
+              } catch (e) {
+                session.log(
+                  'Error when checking if hash is legacy: $e',
+                  level: LogLevel.error,
+                );
+                return false;
+              }
+            })
+            .map((entry) async {
+              return entry.copyWith(
+                hash: await PasswordHash.migratedLegacyToArgon2idHash(
+                  entry.hash,
+                  legacySalt: EmailSecrets.legacySalt,
+                  pepper: EmailSecrets.pepper,
+                  allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
+                ),
+              );
+            })
+            .toList(),
+      );
 
       try {
         await EmailAuth.db.update(session, migratedEntries);
@@ -561,9 +573,12 @@ class Emails {
       return false;
     }
 
-    var emailAuth = await EmailAuth.db.findFirstRow(session, where: (t) {
-      return t.userId.equals(passwordReset.userId);
-    });
+    var emailAuth = await EmailAuth.db.findFirstRow(
+      session,
+      where: (t) {
+        return t.userId.equals(passwordReset.userId);
+      },
+    );
 
     if (emailAuth == null) {
       session.log(
@@ -618,8 +633,10 @@ class Emails {
     required String password,
     required EmailAuth entry,
   }) async {
-    if (!PasswordHash(entry.hash, legacySalt: EmailSecrets.legacySalt)
-        .shouldUpdateHash()) {
+    if (!PasswordHash(
+      entry.hash,
+      legacySalt: EmailSecrets.legacySalt,
+    ).shouldUpdateHash()) {
       return null;
     }
 
@@ -645,12 +662,11 @@ class Emails {
     String password,
     String email,
     String hash,
-  ) =>
-      AuthConfig.current.passwordHashValidator(
-        password: password,
-        email: email,
-        hash: hash,
-      );
+  ) => AuthConfig.current.passwordHashValidator(
+    password: password,
+    email: email,
+    hash: hash,
+  );
 
   static String _generateVerificationCode() {
     return Random().nextString(
@@ -659,15 +675,17 @@ class Emails {
   }
 
   static Future<bool> _hasTooManyFailedSignIns(
-      Session session, String email) async {
+    Session session,
+    String email,
+  ) async {
     var numFailedSignIns = await EmailFailedSignIn.db.count(
       session,
       where: (t) =>
           t.email.equals(email) &
           (t.time >
-              DateTime.now()
-                  .toUtc()
-                  .subtract(AuthConfig.current.emailSignInFailureResetTime)),
+              DateTime.now().toUtc().subtract(
+                AuthConfig.current.emailSignInFailureResetTime,
+              )),
     );
     return numFailedSignIns >= AuthConfig.current.maxAllowedEmailSignInAttempts;
   }

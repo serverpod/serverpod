@@ -124,12 +124,13 @@ class GoogleIdTokenVerifier {
     if (response.statusCode != 200) {
       if (_cachedKeySet.postponeExpiration()) return;
       throw GoogleIdTokenValidationServerException(
-          'Failed to fetch certificates');
+        'Failed to fetch certificates',
+      );
     }
 
     final jwksJson = jsonDecode(response.body) as Map<String, dynamic>;
-    final jwksList =
-        (jwksJson['keys'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final jwksList = (jwksJson['keys'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
 
     final keys = <JWTKey>[];
     for (final jwk in jwksList) {
@@ -170,8 +171,10 @@ class GoogleIdTokenVerifier {
     if (iat == null) {
       throw GoogleIdTokenValidationServerException('Missing issued at claim');
     }
-    final issuedAt =
-        DateTime.fromMillisecondsSinceEpoch(iat * 1000, isUtc: true);
+    final issuedAt = DateTime.fromMillisecondsSinceEpoch(
+      iat * 1000,
+      isUtc: true,
+    );
     if (issuedAt.isAfter(now)) {
       throw GoogleIdTokenValidationServerException('Invalid issued at time');
     }

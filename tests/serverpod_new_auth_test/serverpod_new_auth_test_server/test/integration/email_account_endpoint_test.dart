@@ -47,16 +47,17 @@ void main() {
         setUp(() async {
           final config = EmailIDPConfig(
             secretHashPepper: 'test',
-            sendRegistrationVerificationCode: (
-              final session, {
-              required final accountRequestId,
-              required final email,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedVerificationCode = verificationCode;
-              receivedAccountRequestId = accountRequestId;
-            },
+            sendRegistrationVerificationCode:
+                (
+                  final session, {
+                  required final accountRequestId,
+                  required final email,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedVerificationCode = verificationCode;
+                  receivedAccountRequestId = accountRequestId;
+                },
           );
           AuthServices.set(
             identityProviders: [
@@ -65,11 +66,11 @@ void main() {
             primaryTokenManager: tokenManagerFactory,
           );
 
-          clientReceivedRequestId =
-              await endpoints.emailAccount.startRegistration(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-          );
+          clientReceivedRequestId = await endpoints.emailAccount
+              .startRegistration(
+                sessionBuilder,
+                email: 'test@serverpod.dev',
+              );
         });
 
         test('then the verification information is sent out.', () async {
@@ -83,24 +84,25 @@ void main() {
       });
 
       test(
-          'when calling `login` with unknown credentials, '
-          'then it throws an error with reason `invalidCredentials`.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.login(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-            password: 'Password!',
-          ),
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
+        'when calling `login` with unknown credentials, '
+        'then it throws an error with reason `invalidCredentials`.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.login(
+              sessionBuilder,
+              email: 'test@serverpod.dev',
+              password: 'Password!',
             ),
-          ),
-        );
-      });
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.invalidCredentials,
+              ),
+            ),
+          );
+        },
+      );
 
       group('when calling `startPasswordReset` for a non existing email', () {
         UuidValue? receivedPasswordResetRequestId;
@@ -114,16 +116,17 @@ void main() {
               timeframe: Duration(seconds: 1),
               maxAttempts: 100,
             ),
-            sendPasswordResetVerificationCode: (
-              final session, {
-              required final email,
-              required final passwordResetRequestId,
-              required final transaction,
-              required final verificationCode,
-            }) {
-              receivedVerificationCode = verificationCode;
-              receivedPasswordResetRequestId = passwordResetRequestId;
-            },
+            sendPasswordResetVerificationCode:
+                (
+                  final session, {
+                  required final email,
+                  required final passwordResetRequestId,
+                  required final transaction,
+                  required final verificationCode,
+                }) {
+                  receivedVerificationCode = verificationCode;
+                  receivedPasswordResetRequestId = passwordResetRequestId;
+                },
           );
           AuthServices.set(
             identityProviders: [
@@ -132,11 +135,11 @@ void main() {
             primaryTokenManager: tokenManagerFactory,
           );
 
-          clientReceivedRequestId =
-              await endpoints.emailAccount.startPasswordReset(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-          );
+          clientReceivedRequestId = await endpoints.emailAccount
+              .startPasswordReset(
+                sessionBuilder,
+                email: 'test@serverpod.dev',
+              );
         });
 
         test('then no verification information is sent out.', () async {
@@ -175,16 +178,17 @@ void main() {
       setUp(() async {
         final config = EmailIDPConfig(
           secretHashPepper: 'test',
-          sendRegistrationVerificationCode: (
-            final session, {
-            required final accountRequestId,
-            required final email,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedAccountRequestId = accountRequestId;
-            receivedVerificationCode = verificationCode;
-          },
+          sendRegistrationVerificationCode:
+              (
+                final session, {
+                required final accountRequestId,
+                required final email,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedAccountRequestId = accountRequestId;
+                receivedVerificationCode = verificationCode;
+              },
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
         AuthServices.set(
@@ -205,99 +209,114 @@ void main() {
       });
 
       group(
-          'when calling `verifyRegistrationCode` with the correct verification code, ',
-          () {
-        late Future<String> verificationToken;
+        'when calling `verifyRegistrationCode` with the correct verification code, ',
+        () {
+          late Future<String> verificationToken;
 
-        setUp(() async {
-          verificationToken = endpoints.emailAccount.verifyRegistrationCode(
-            sessionBuilder,
-            accountRequestId: receivedAccountRequestId,
-            verificationCode: receivedVerificationCode,
-          );
-        });
-
-        test('then it succeeds returning a valid verification token.',
-            () async {
-          await expectLater(
-            verificationToken,
-            completion(isA<String>()),
-          );
-        });
-
-        test(
-            'then the returned verification token can be used to complete the account request.',
-            () async {
-          final authSuccess = endpoints.emailAccount.finishRegistration(
-            sessionBuilder,
-            registrationToken: await verificationToken,
-            password: 'Foobar123!',
-          );
-
-          await expectLater(
-            authSuccess,
-            completion(isA<AuthSuccess>()),
-          );
-        });
-      });
-
-      test(
-          'when calling `verifyRegistrationCode` with the correct verification code after the account request has expired, '
-          'then it fails with reason `expired`.', () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.verifyRegistrationCode(
+          setUp(() async {
+            verificationToken = endpoints.emailAccount.verifyRegistrationCode(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
               verificationCode: receivedVerificationCode,
+            );
+          });
+
+          test(
+            'then it succeeds returning a valid verification token.',
+            () async {
+              await expectLater(
+                verificationToken,
+                completion(isA<String>()),
+              );
+            },
+          );
+
+          test(
+            'then the returned verification token can be used to complete the account request.',
+            () async {
+              final authSuccess = endpoints.emailAccount.finishRegistration(
+                sessionBuilder,
+                registrationToken: await verificationToken,
+                password: 'Foobar123!',
+              );
+
+              await expectLater(
+                authSuccess,
+                completion(isA<AuthSuccess>()),
+              );
+            },
+          );
+        },
+      );
+
+      test(
+        'when calling `verifyRegistrationCode` with the correct verification code after the account request has expired, '
+        'then it fails with reason `expired`.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.verifyRegistrationCode(
+                sessionBuilder,
+                accountRequestId: receivedAccountRequestId,
+                verificationCode: receivedVerificationCode,
+              ),
             ),
-          ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.expired,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountRequestExceptionReason.expired,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `verifyRegistrationCode` with the wrong verification code, '
-          'then it fails with reason `invalid`.', () async {
-        await expectLater(
-          () async => await endpoints.emailAccount.verifyRegistrationCode(
-            sessionBuilder,
-            accountRequestId: receivedAccountRequestId,
-            verificationCode: 'wrong',
-          ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.invalid,
-          )),
-        );
-      });
-
-      test(
-          'when calling `verifyRegistrationCode` with the wrong verification code after the account request has expired, '
-          'then it fails with reason `invalid` to not leak that the request exists.',
-          () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.verifyRegistrationCode(
+        'when calling `verifyRegistrationCode` with the wrong verification code, '
+        'then it fails with reason `invalid`.',
+        () async {
+          await expectLater(
+            () async => await endpoints.emailAccount.verifyRegistrationCode(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
               verificationCode: 'wrong',
             ),
-          ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.invalid,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `verifyRegistrationCode` with the wrong verification code after the account request has expired, '
+        'then it fails with reason `invalid` to not leak that the request exists.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.verifyRegistrationCode(
+                sessionBuilder,
+                accountRequestId: receivedAccountRequestId,
+                verificationCode: 'wrong',
+              ),
+            ),
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -311,22 +330,25 @@ void main() {
       });
 
       test(
-          'when calling `verifyRegistrationCode`, '
-          'then it throws generic invalid error that does not leak that the email is not registered.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.verifyRegistrationCode(
-            sessionBuilder,
-            accountRequestId: const Uuid().v4obj(),
-            verificationCode: '123456',
-          ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountRequestExceptionReason.invalid,
-          )),
-        );
-      });
+        'when calling `verifyRegistrationCode`, '
+        'then it throws generic invalid error that does not leak that the email is not registered.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.verifyRegistrationCode(
+              sessionBuilder,
+              accountRequestId: const Uuid().v4obj(),
+              verificationCode: '123456',
+            ),
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -348,24 +370,26 @@ void main() {
         );
         final config = EmailIDPConfig(
           secretHashPepper: 'test',
-          sendRegistrationVerificationCode: (
-            final session, {
-            required final accountRequestId,
-            required final email,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedVerificationCode = verificationCode;
-          },
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedPasswordResetCode = verificationCode;
-          },
+          sendRegistrationVerificationCode:
+              (
+                final session, {
+                required final accountRequestId,
+                required final email,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedVerificationCode = verificationCode;
+              },
+          sendPasswordResetVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final passwordResetRequestId,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedPasswordResetCode = verificationCode;
+              },
         );
         AuthServices.set(
           identityProviders: [
@@ -380,52 +404,54 @@ void main() {
       });
 
       test(
-          'when calling `login` with the correct credentials, then it succeeds returning a valid session key.',
-          () async {
-        final authSuccess = await endpoints.emailAccount.login(
-          sessionBuilder,
-          email: email,
-          password: password,
-        );
-
-        expect(
-          await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            authSuccess.token,
-          ),
-          isNotNull,
-        );
-      });
-
-      test(
-          'when calling `login` with the wrong password, then it throws an error with `invalidCredentials`.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.login(
+        'when calling `login` with the correct credentials, then it succeeds returning a valid session key.',
+        () async {
+          final authSuccess = await endpoints.emailAccount.login(
             sessionBuilder,
             email: email,
-            password: 'some other password',
-          ),
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
+            password: password,
+          );
+
+          expect(
+            await AuthServices.instance.tokenManager.validateToken(
+              sessionBuilder.build(),
+              authSuccess.token,
             ),
-          ),
-        );
-      });
+            isNotNull,
+          );
+        },
+      );
+
+      test(
+        'when calling `login` with the wrong password, then it throws an error with `invalidCredentials`.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.login(
+              sessionBuilder,
+              email: email,
+              password: 'some other password',
+            ),
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.invalidCredentials,
+              ),
+            ),
+          );
+        },
+      );
 
       group('when calling `startRegistration`', () {
         UuidValue? receivedAccountRequestId;
         UuidValue? clientReceivedRequestId;
 
         setUp(() async {
-          clientReceivedRequestId =
-              await endpoints.emailAccount.startRegistration(
-            sessionBuilder,
-            email: email,
-          );
+          clientReceivedRequestId = await endpoints.emailAccount
+              .startRegistration(
+                sessionBuilder,
+                email: email,
+              );
         });
 
         test('then no verification information is sent out.', () async {
@@ -449,15 +475,16 @@ void main() {
       });
 
       test(
-          'when calling `startPasswordReset`, then the verification code is sent out.',
-          () async {
-        await endpoints.emailAccount.startPasswordReset(
-          sessionBuilder,
-          email: email,
-        );
+        'when calling `startPasswordReset`, then the verification code is sent out.',
+        () async {
+          await endpoints.emailAccount.startPasswordReset(
+            sessionBuilder,
+            email: email,
+          );
 
-        expect(receivedPasswordResetCode, isNotNull);
-      });
+          expect(receivedPasswordResetCode, isNotNull);
+        },
+      );
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
@@ -491,17 +518,18 @@ void main() {
       });
 
       test(
-          'when calling `login`, then it throws an `AuthUserBlockedException`.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.login(
-            sessionBuilder,
-            email: email,
-            password: password,
-          ),
-          throwsA(isA<AuthUserBlockedException>()),
-        );
-      });
+        'when calling `login`, then it throws an `AuthUserBlockedException`.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.login(
+              sessionBuilder,
+              email: email,
+              password: password,
+            ),
+            throwsA(isA<AuthUserBlockedException>()),
+          );
+        },
+      );
     },
   );
 
@@ -560,102 +588,120 @@ void main() {
       );
 
       test(
-          'when calling `verifyPasswordResetCode` with the correct verification code after the password reset request has expired, '
-          'then it fails with reason `expired`.', () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+        'when calling `verifyPasswordResetCode` with the correct verification code after the password reset request has expired, '
+        'then it fails with reason `expired`.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: verificationCode,
+              ),
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.expired,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `verifyPasswordResetCode` the correct verification code after the email account being deleted, '
+        'then an error is thrown with reason `invalid`.',
+        () async {
+          await EmailAccount.db.deleteWhere(
+            sessionBuilder.build(),
+            where: (final t) => t.authUserId.equals(authUserId),
+          );
+
+          await expectLater(
             () => endpoints.emailAccount.verifyPasswordResetCode(
               sessionBuilder,
               passwordResetRequestId: passwordResetRequestId,
               verificationCode: verificationCode,
             ),
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.expired,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `verifyPasswordResetCode` the correct verification code after the email account being deleted, '
-          'then an error is thrown with reason `invalid`.', () async {
-        await EmailAccount.db.deleteWhere(
-          sessionBuilder.build(),
-          where: (final t) => t.authUserId.equals(authUserId),
-        );
-
-        await expectLater(
-          () => endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
-
-      test(
-          'when calling `verifyPasswordResetCode` with the wrong verification code, '
-          'then it fails with reason `invalid`.', () async {
-        await expectLater(
-          () async => await endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: 'wrong',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
-
-      test(
-          'when calling `verifyPasswordResetCode` with the wrong verification code after the password reset request has expired, '
-          'then it fails with reason `invalid` to not leak that the request exists.',
-          () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.verifyPasswordResetCode(
+        'when calling `verifyPasswordResetCode` with the wrong verification code, '
+        'then it fails with reason `invalid`.',
+        () async {
+          await expectLater(
+            () async => await endpoints.emailAccount.verifyPasswordResetCode(
               sessionBuilder,
               passwordResetRequestId: passwordResetRequestId,
               verificationCode: 'wrong',
             ),
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `finishPasswordReset` with a short password, '
-          'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.finishPasswordReset(
-            sessionBuilder,
-            finishPasswordResetToken: const Uuid().v4(),
-            newPassword: 'short',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.policyViolation,
-          )),
-        );
-      });
+        'when calling `verifyPasswordResetCode` with the wrong verification code after the password reset request has expired, '
+        'then it fails with reason `invalid` to not leak that the request exists.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: 'wrong',
+              ),
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `finishPasswordReset` with a short password, '
+        'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.finishPasswordReset(
+              sessionBuilder,
+              finishPasswordResetToken: const Uuid().v4(),
+              newPassword: 'short',
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.policyViolation,
+              ),
+            ),
+          );
+        },
+      );
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
@@ -696,12 +742,12 @@ void main() {
         passwordResetRequestId = passwordReset.passwordResetRequestId;
         final passwordResetVerificationCode = passwordReset.verificationCode;
 
-        finishPasswordResetToken =
-            await endpoints.emailAccount.verifyPasswordResetCode(
-          sessionBuilder,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: passwordResetVerificationCode,
-        );
+        finishPasswordResetToken = await endpoints.emailAccount
+            .verifyPasswordResetCode(
+              sessionBuilder,
+              passwordResetRequestId: passwordResetRequestId,
+              verificationCode: passwordResetVerificationCode,
+            );
       });
 
       tearDown(() async {
@@ -723,101 +769,120 @@ void main() {
       );
 
       test(
-          'when calling `finishPasswordReset` with the correct finish password reset token after the password reset request has expired, '
-          'then it fails with reason `expired`.', () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+        'when calling `finishPasswordReset` with the correct finish password reset token after the password reset request has expired, '
+        'then it fails with reason `expired`.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.finishPasswordReset(
+                sessionBuilder,
+                finishPasswordResetToken: finishPasswordResetToken,
+                newPassword: 'NewPassword123!',
+              ),
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.expired,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `finishPasswordReset` the correct finish password reset token after the email account being deleted, '
+        'then an error is thrown with reason `invalid`.',
+        () async {
+          await EmailAccount.db.deleteWhere(
+            sessionBuilder.build(),
+            where: (final t) => t.authUserId.equals(authUserId),
+          );
+
+          await expectLater(
             () => endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
               finishPasswordResetToken: finishPasswordResetToken,
               newPassword: 'NewPassword123!',
             ),
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.expired,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `finishPasswordReset` the correct finish password reset token after the email account being deleted, '
-          'then an error is thrown with reason `invalid`.', () async {
-        await EmailAccount.db.deleteWhere(
-          sessionBuilder.build(),
-          where: (final t) => t.authUserId.equals(authUserId),
-        );
-
-        await expectLater(
-          () => endpoints.emailAccount.finishPasswordReset(
-            sessionBuilder,
-            finishPasswordResetToken: finishPasswordResetToken,
-            newPassword: 'NewPassword123!',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
-
-      test(
-          'when calling `finishPasswordReset` with the wrong finish password reset token, '
-          'then it fails with reason `invalid`.', () async {
-        await expectLater(
-          () async => await endpoints.emailAccount.finishPasswordReset(
-            sessionBuilder,
-            finishPasswordResetToken: const Uuid().v4(),
-            newPassword: 'NewPassword123!',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
-
-      test(
-          'when calling `finishPasswordReset` with the wrong finish password reset token after the password reset request has expired, '
-          'then it fails with reason `expired`.', () async {
-        await expectLater(
-          () => withClock(
-            Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.finishPasswordReset(
+        'when calling `finishPasswordReset` with the wrong finish password reset token, '
+        'then it fails with reason `invalid`.',
+        () async {
+          await expectLater(
+            () async => await endpoints.emailAccount.finishPasswordReset(
               sessionBuilder,
-              finishPasswordResetToken: finishPasswordResetToken,
+              finishPasswordResetToken: const Uuid().v4(),
               newPassword: 'NewPassword123!',
             ),
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.expired,
-          )),
-        );
-      });
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `finishPasswordReset` with a short password and wrong finish password reset token, '
-          'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.finishPasswordReset(
-            sessionBuilder,
-            finishPasswordResetToken: const Uuid().v4(),
-            newPassword: 'short',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountPasswordResetExceptionReason.policyViolation,
-          )),
-        );
-      });
+        'when calling `finishPasswordReset` with the wrong finish password reset token after the password reset request has expired, '
+        'then it fails with reason `expired`.',
+        () async {
+          await expectLater(
+            () => withClock(
+              Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
+              () => endpoints.emailAccount.finishPasswordReset(
+                sessionBuilder,
+                finishPasswordResetToken: finishPasswordResetToken,
+                newPassword: 'NewPassword123!',
+              ),
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.expired,
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `finishPasswordReset` with a short password and wrong finish password reset token, '
+        'then an error is thrown with reason `policyViolation` regardless of the finish password reset token.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.finishPasswordReset(
+              sessionBuilder,
+              finishPasswordResetToken: const Uuid().v4(),
+              newPassword: 'short',
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final exception) => exception.reason,
+                'Reason',
+                EmailAccountPasswordResetExceptionReason.policyViolation,
+              ),
+            ),
+          );
+        },
+      );
     },
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
@@ -833,40 +898,46 @@ void main() {
       });
 
       test(
-          'when calling `verifyPasswordResetCode`, '
-          'then it throws generic invalid error that does not leak that the email is not registered.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: const Uuid().v4obj(),
-            verificationCode: '123456',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
+        'when calling `verifyPasswordResetCode`, '
+        'then it throws generic invalid error that does not leak that the email is not registered.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.verifyPasswordResetCode(
+              sessionBuilder,
+              passwordResetRequestId: const Uuid().v4obj(),
+              verificationCode: '123456',
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
-          'when calling `finishPasswordReset`, '
-          'then it throws generic invalid error that does not leak that the email is not registered.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.finishPasswordReset(
-            sessionBuilder,
-            finishPasswordResetToken: const Uuid().v4(),
-            newPassword: 'NewPassword123!',
-          ),
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountPasswordResetExceptionReason.invalid,
-          )),
-        );
-      });
+        'when calling `finishPasswordReset`, '
+        'then it throws generic invalid error that does not leak that the email is not registered.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.finishPasswordReset(
+              sessionBuilder,
+              finishPasswordResetToken: const Uuid().v4(),
+              newPassword: 'NewPassword123!',
+            ),
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.invalid,
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -910,23 +981,24 @@ void main() {
       });
 
       test(
-          'when calling `login` with the old credentials, then it throws an error with reason `invalidCredentials`.',
-          () async {
-        await expectLater(
-          () => endpoints.emailAccount.login(
-            sessionBuilder,
-            email: email,
-            password: oldPassword,
-          ),
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
+        'when calling `login` with the old credentials, then it throws an error with reason `invalidCredentials`.',
+        () async {
+          await expectLater(
+            () => endpoints.emailAccount.login(
+              sessionBuilder,
+              email: email,
+              password: oldPassword,
             ),
-          ),
-        );
-      });
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.invalidCredentials,
+              ),
+            ),
+          );
+        },
+      );
 
       test(
         'when calling `login` with the new credentials, then it succeeds returning a valid session key.',
@@ -979,16 +1051,17 @@ extension on TestEndpoints {
         timeframe: Duration(seconds: 1),
         maxAttempts: 100,
       ),
-      sendRegistrationVerificationCode: (
-        final session, {
-        required final accountRequestId,
-        required final email,
-        required final transaction,
-        required final verificationCode,
-      }) {
-        receivedAccountRequestId = accountRequestId;
-        receivedVerificationCode = verificationCode;
-      },
+      sendRegistrationVerificationCode:
+          (
+            final session, {
+            required final accountRequestId,
+            required final email,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedAccountRequestId = accountRequestId;
+            receivedVerificationCode = verificationCode;
+          },
     );
 
     AuthServices.set(
@@ -1023,11 +1096,8 @@ extension on TestEndpoints {
     return (sessionKey: authSuccess.token, authUserId: authInfo!.authUserId);
   }
 
-  Future<
-      ({
-        UuidValue passwordResetRequestId,
-        String verificationCode,
-      })> _startPasswordReset(
+  Future<({UuidValue passwordResetRequestId, String verificationCode})>
+  _startPasswordReset(
     final TestSessionBuilder sessionBuilder, {
     required final String email,
   }) async {
@@ -1035,16 +1105,17 @@ extension on TestEndpoints {
     late String receivedVerificationCode;
     final config = EmailIDPConfig(
       secretHashPepper: 'test',
-      sendPasswordResetVerificationCode: (
-        final session, {
-        required final email,
-        required final passwordResetRequestId,
-        required final transaction,
-        required final verificationCode,
-      }) {
-        receivedPasswordResetRequestId = passwordResetRequestId;
-        receivedVerificationCode = verificationCode;
-      },
+      sendPasswordResetVerificationCode:
+          (
+            final session, {
+            required final email,
+            required final passwordResetRequestId,
+            required final transaction,
+            required final verificationCode,
+          }) {
+            receivedPasswordResetRequestId = passwordResetRequestId;
+            receivedVerificationCode = verificationCode;
+          },
     );
     AuthServices.set(
       identityProviders: [
@@ -1070,8 +1141,10 @@ extension on TestEndpoints {
     required final String email,
     required final String password,
   }) async {
-    final passwordReset =
-        await _startPasswordReset(sessionBuilder, email: email);
+    final passwordReset = await _startPasswordReset(
+      sessionBuilder,
+      email: email,
+    );
 
     final finishPasswordResetToken = await emailAccount.verifyPasswordResetCode(
       sessionBuilder,

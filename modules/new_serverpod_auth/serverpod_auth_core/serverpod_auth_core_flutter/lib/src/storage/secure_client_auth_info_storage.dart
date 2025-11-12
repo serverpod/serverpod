@@ -17,11 +17,11 @@ class SecureClientAuthInfoStorage extends CachedClientAuthInfoStorage {
     /// Override the default key name to store the auth info on the storage.
     String? authSuccessStorageKey,
   }) : super(
-          delegate: KeyValueClientAuthInfoStorage(
-            keyValueStorage: FlutterSecureKeyValueStorage(secureStorage),
-            authSuccessStorageKey: authSuccessStorageKey,
-          ),
-        );
+         delegate: KeyValueClientAuthInfoStorage(
+           keyValueStorage: FlutterSecureKeyValueStorage(secureStorage),
+           authSuccessStorageKey: authSuccessStorageKey,
+         ),
+       );
 }
 
 /// A [KeyValueStorage] wrapper for [FlutterSecureStorage].
@@ -30,7 +30,7 @@ class FlutterSecureKeyValueStorage implements KeyValueStorage {
 
   /// Creates a new [FlutterSecureKeyValueStorage].
   FlutterSecureKeyValueStorage(FlutterSecureStorage? storage)
-      : _storage = storage ?? _defaultSecureStorage();
+    : _storage = storage ?? _defaultSecureStorage();
 
   static FlutterSecureStorage _defaultSecureStorage() =>
       const FlutterSecureStorage(

@@ -34,11 +34,11 @@ void main() {
             UserProfileData(userName: 'test_user'),
           );
 
-          final foundUserProfile =
-              await userProfiles.maybeFindUserProfileByUserId(
-            session,
-            authUserId,
-          );
+          final foundUserProfile = await userProfiles
+              .maybeFindUserProfileByUserId(
+                session,
+                authUserId,
+              );
 
           expect(foundUserProfile?.authUserId, authUserId);
           expect(foundUserProfile?.userName, 'test_user');
@@ -50,13 +50,13 @@ void main() {
         () async {
           userProfiles = UserProfiles(
             config: UserProfileConfig(
-              onBeforeUserProfileCreated: (
-                final session,
-                final authUserId,
-                final userProfile, {
-                required final transaction,
-              }) =>
-                  userProfile.copyWith(fullName: 'overwritten full name'),
+              onBeforeUserProfileCreated:
+                  (
+                    final session,
+                    final authUserId,
+                    final userProfile, {
+                    required final transaction,
+                  }) => userProfile.copyWith(fullName: 'overwritten full name'),
             ),
           );
 
@@ -78,13 +78,16 @@ void main() {
         () async {
           UserProfileModel? createdProfileFromCallback;
           userProfiles = UserProfiles(
-            config: UserProfileConfig(onAfterUserProfileCreated: (
-              final session,
-              final userProfile, {
-              required final transaction,
-            }) {
-              createdProfileFromCallback = userProfile;
-            }),
+            config: UserProfileConfig(
+              onAfterUserProfileCreated:
+                  (
+                    final session,
+                    final userProfile, {
+                    required final transaction,
+                  }) {
+                    createdProfileFromCallback = userProfile;
+                  },
+            ),
           );
 
           final createdUserProfile = await userProfiles.createUserProfile(
@@ -104,14 +107,17 @@ void main() {
         'when `onBeforeUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
         () async {
           final userProfiles = UserProfiles(
-            config: UserProfileConfig(onBeforeUserProfileCreated: (
-              final session,
-              final authUserId,
-              final userProfile, {
-              required final transaction,
-            }) {
-              throw UnimplementedError();
-            }),
+            config: UserProfileConfig(
+              onBeforeUserProfileCreated:
+                  (
+                    final session,
+                    final authUserId,
+                    final userProfile, {
+                    required final transaction,
+                  }) {
+                    throw UnimplementedError();
+                  },
+            ),
           );
 
           await expectLater(
@@ -131,13 +137,16 @@ void main() {
         'when `onAfterUserProfileCreated` throws during the creation of a new user profile, then the profile is not stored in the database and the error forwarded.',
         () async {
           final userProfiles = UserProfiles(
-            config: UserProfileConfig(onAfterUserProfileCreated: (
-              final session,
-              final userProfile, {
-              required final transaction,
-            }) {
-              throw UnimplementedError();
-            }),
+            config: UserProfileConfig(
+              onAfterUserProfileCreated:
+                  (
+                    final session,
+                    final userProfile, {
+                    required final transaction,
+                  }) {
+                    throw UnimplementedError();
+                  },
+            ),
           );
 
           await expectLater(
@@ -198,7 +207,8 @@ void main() {
               authUserId,
               UserProfileData(userName: 'test_user'),
               imageSource: UserImageFromUrl.parse(
-                  'https://serverpod.dev/external-profile-image.png'),
+                'https://serverpod.dev/external-profile-image.png',
+              ),
             );
           });
 
@@ -260,8 +270,10 @@ void main() {
     },
   );
 
-  withServerpod('Given an `AuthUser` with an empty profile,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an `AuthUser` with an empty profile,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
 
@@ -307,17 +319,20 @@ void main() {
       () async {
         UserProfileData? updatedProfileFromCallback;
         final userProfiles = UserProfiles(
-          config: UserProfileConfig(onBeforeUserProfileUpdated: (
-            final session,
-            final authUserId,
-            final userProfile, {
-            required final transaction,
-          }) {
-            updatedProfileFromCallback = userProfile;
-            return userProfile.copyWith(
-              userName: 'username from onBeforeUserProfileUpdated hook',
-            );
-          }),
+          config: UserProfileConfig(
+            onBeforeUserProfileUpdated:
+                (
+                  final session,
+                  final authUserId,
+                  final userProfile, {
+                  required final transaction,
+                }) {
+                  updatedProfileFromCallback = userProfile;
+                  return userProfile.copyWith(
+                    userName: 'username from onBeforeUserProfileUpdated hook',
+                  );
+                },
+          ),
         );
 
         final updatedUserProfile = await userProfiles.changeFullName(
@@ -341,14 +356,17 @@ void main() {
       'when `onBeforeUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
       () async {
         final userProfiles = UserProfiles(
-          config: UserProfileConfig(onBeforeUserProfileUpdated: (
-            final session,
-            final authUserId,
-            final userProfile, {
-            required final transaction,
-          }) {
-            throw UnimplementedError();
-          }),
+          config: UserProfileConfig(
+            onBeforeUserProfileUpdated:
+                (
+                  final session,
+                  final authUserId,
+                  final userProfile, {
+                  required final transaction,
+                }) {
+                  throw UnimplementedError();
+                },
+          ),
         );
 
         await expectLater(
@@ -374,14 +392,18 @@ void main() {
     test(
       'when `onAfterUserProfileUpdated` throws during the update of a user profile, then the update is not visible in the database.',
       () async {
-        final userProfiles =
-            UserProfiles(config: UserProfileConfig(onAfterUserProfileUpdated: (
-          final session,
-          final userProfile, {
-          required final transaction,
-        }) {
-          throw UnimplementedError();
-        }));
+        final userProfiles = UserProfiles(
+          config: UserProfileConfig(
+            onAfterUserProfileUpdated:
+                (
+                  final session,
+                  final userProfile, {
+                  required final transaction,
+                }) {
+                  throw UnimplementedError();
+                },
+          ),
+        );
 
         await expectLater(
           () => userProfiles.changeFullName(
@@ -408,13 +430,16 @@ void main() {
       () async {
         UserProfileModel? updatedProfileFromCallback;
         final userProfiles = UserProfiles(
-          config: UserProfileConfig(onAfterUserProfileUpdated: (
-            final session,
-            final userProfile, {
-            required final transaction,
-          }) {
-            updatedProfileFromCallback = userProfile;
-          }),
+          config: UserProfileConfig(
+            onAfterUserProfileUpdated:
+                (
+                  final session,
+                  final userProfile, {
+                  required final transaction,
+                }) {
+                  updatedProfileFromCallback = userProfile;
+                },
+          ),
         );
 
         await userProfiles.changeFullName(
@@ -529,35 +554,38 @@ void main() {
     );
 
     test(
-        'when removing the user image then no default image is added and imageUrl remains null.',
-        () async {
-      const userProfiles = UserProfiles();
-      final profileBefore = await userProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(profileBefore.imageUrl, isNull);
+      'when removing the user image then no default image is added and imageUrl remains null.',
+      () async {
+        const userProfiles = UserProfiles();
+        final profileBefore = await userProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBefore.imageUrl, isNull);
 
-      final updatedProfile = await userProfiles.removeUserImage(
-        session,
-        authUserId,
-      );
+        final updatedProfile = await userProfiles.removeUserImage(
+          session,
+          authUserId,
+        );
 
-      expect(updatedProfile.imageUrl, isNull);
+        expect(updatedProfile.imageUrl, isNull);
 
-      final profileAfter = await userProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(profileAfter.imageUrl, isNull);
+        final profileAfter = await userProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileAfter.imageUrl, isNull);
 
-      final images = await UserProfileImage.db.find(session);
-      expect(images, isEmpty);
-    });
+        final images = await UserProfileImage.db.find(session);
+        expect(images, isEmpty);
+      },
+    );
   });
 
-  withServerpod('Given an `AuthUser` with a profile with an image,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an `AuthUser` with a profile with an image,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
 
@@ -580,153 +608,161 @@ void main() {
       );
     });
 
-    test('when deleting the user profile, then the auth user is unaffected.',
-        () async {
-      const userProfiles = UserProfiles();
-      final userProfile = await userProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(userProfile, isNotNull);
-      expect(userProfile?.imageUrl, isNotNull);
+    test(
+      'when deleting the user profile, then the auth user is unaffected.',
+      () async {
+        const userProfiles = UserProfiles();
+        final userProfile = await userProfiles.maybeFindUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(userProfile, isNotNull);
+        expect(userProfile?.imageUrl, isNotNull);
 
-      await userProfiles.deleteProfileForUser(session, authUserId);
+        await userProfiles.deleteProfileForUser(session, authUserId);
 
-      final profileAfterDelete =
-          await userProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
+        final profileAfterDelete = await userProfiles
+            .maybeFindUserProfileByUserId(
+              session,
+              authUserId,
+            );
+        final authUserAfterDelete = await AuthUser.db.findById(
+          session,
+          authUserId,
+        );
+        final profileImagesAfterDelete = await UserProfileImage.db.find(
+          session,
+        );
 
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        authUserAfterDelete,
-        isNotNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
-      );
-    });
+        expect(
+          profileAfterDelete,
+          isNull,
+        );
+        expect(
+          authUserAfterDelete,
+          isNotNull,
+        );
+        expect(
+          profileImagesAfterDelete,
+          isEmpty,
+        );
+      },
+    );
 
     test(
-        'when deleting the user profile, then the images are deleted from storage as well.',
-        () async {
-      const userProfiles = UserProfiles();
-      final userProfile = await userProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(userProfile, isNotNull);
-      expect(userProfile?.imageUrl, isNotNull);
+      'when deleting the user profile, then the images are deleted from storage as well.',
+      () async {
+        const userProfiles = UserProfiles();
+        final userProfile = await userProfiles.maybeFindUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(userProfile, isNotNull);
+        expect(userProfile?.imageUrl, isNotNull);
 
-      final imageBeforeDelete =
-          (await UserProfileImage.db.find(session)).single;
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeDelete.storageId,
-          path: imageBeforeDelete.path,
-        ),
-        isTrue,
-      );
+        final imageBeforeDelete = (await UserProfileImage.db.find(
+          session,
+        )).single;
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeDelete.storageId,
+            path: imageBeforeDelete.path,
+          ),
+          isTrue,
+        );
 
-      await userProfiles.deleteProfileForUser(session, authUserId);
+        await userProfiles.deleteProfileForUser(session, authUserId);
 
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeDelete.storageId,
-          path: imageBeforeDelete.path,
-        ),
-        isFalse,
-      );
-    });
-
-    test('when deleting the auth user, then the profile is cleaned up as well.',
-        () async {
-      const userProfiles = UserProfiles();
-      await authUsers.delete(session, authUserId: authUserId);
-
-      final authUserAfterDelete = await AuthUser.db.findById(
-        session,
-        authUserId,
-      );
-      final profileAfterDelete =
-          await userProfiles.maybeFindUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      final profileImagesAfterDelete = await UserProfileImage.db.find(
-        session,
-      );
-
-      expect(
-        authUserAfterDelete,
-        isNull,
-      );
-      expect(
-        profileAfterDelete,
-        isNull,
-      );
-      expect(
-        profileImagesAfterDelete,
-        isEmpty,
-      );
-    });
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeDelete.storageId,
+            path: imageBeforeDelete.path,
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test(
-        'Given a user profile with an image when removing the user image then the image is deleted and imageUrl is null.',
-        () async {
-      const userProfiles = UserProfiles();
-      final profileBeforeRemove = await userProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(profileBeforeRemove.imageUrl, isNotNull);
+      'when deleting the auth user, then the profile is cleaned up as well.',
+      () async {
+        const userProfiles = UserProfiles();
+        await authUsers.delete(session, authUserId: authUserId);
 
-      final imageBeforeRemove =
-          (await UserProfileImage.db.find(session)).single;
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeRemove.storageId,
-          path: imageBeforeRemove.path,
-        ),
-        isTrue,
-      );
+        final authUserAfterDelete = await AuthUser.db.findById(
+          session,
+          authUserId,
+        );
+        final profileAfterDelete = await userProfiles
+            .maybeFindUserProfileByUserId(
+              session,
+              authUserId,
+            );
+        final profileImagesAfterDelete = await UserProfileImage.db.find(
+          session,
+        );
 
-      final updatedProfile = await userProfiles.removeUserImage(
-        session,
-        authUserId,
-      );
+        expect(
+          authUserAfterDelete,
+          isNull,
+        );
+        expect(
+          profileAfterDelete,
+          isNull,
+        );
+        expect(
+          profileImagesAfterDelete,
+          isEmpty,
+        );
+      },
+    );
 
-      expect(updatedProfile.imageUrl, isNull);
+    test(
+      'Given a user profile with an image when removing the user image then the image is deleted and imageUrl is null.',
+      () async {
+        const userProfiles = UserProfiles();
+        final profileBeforeRemove = await userProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileBeforeRemove.imageUrl, isNotNull);
 
-      final profileAfterRemove = await userProfiles.findUserProfileByUserId(
-        session,
-        authUserId,
-      );
-      expect(profileAfterRemove.imageUrl, isNull);
+        final imageBeforeRemove = (await UserProfileImage.db.find(
+          session,
+        )).single;
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeRemove.storageId,
+            path: imageBeforeRemove.path,
+          ),
+          isTrue,
+        );
 
-      final imagesAfterRemove = await UserProfileImage.db.find(session);
-      expect(imagesAfterRemove, isEmpty);
+        final updatedProfile = await userProfiles.removeUserImage(
+          session,
+          authUserId,
+        );
 
-      expect(
-        await session.storage.fileExists(
-          storageId: imageBeforeRemove.storageId,
-          path: imageBeforeRemove.path,
-        ),
-        isFalse,
-      );
-    });
+        expect(updatedProfile.imageUrl, isNull);
+
+        final profileAfterRemove = await userProfiles.findUserProfileByUserId(
+          session,
+          authUserId,
+        );
+        expect(profileAfterRemove.imageUrl, isNull);
+
+        final imagesAfterRemove = await UserProfileImage.db.find(session);
+        expect(imagesAfterRemove, isEmpty);
+
+        expect(
+          await session.storage.fileExists(
+            storageId: imageBeforeRemove.storageId,
+            path: imageBeforeRemove.path,
+          ),
+          isFalse,
+        );
+      },
+    );
   });
 
   withServerpod(
@@ -748,52 +784,56 @@ void main() {
       });
 
       test(
-          'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
-          () async {
-        expect(session.transaction, isNull);
+        'when creating a profile and its associated image in a transaction, then there are visible in that transaction but not after a rollback.',
+        () async {
+          expect(session.transaction, isNull);
 
-        await session.db.transaction<void>((final transaction) async {
-          const userProfiles = UserProfiles();
-          await userProfiles.createUserProfile(
-            session,
-            authUserId,
-            UserProfileData(),
-            transaction: transaction,
-          );
-
-          expect(await UserProfile.db.count(session), 0);
-          expect(
-            await UserProfile.db.count(session, transaction: transaction),
-            1,
-          );
-
-          await userProfiles.setUserImageFromBytes(
-            session,
-            authUserId,
-            onePixelPng,
-            transaction: transaction,
-          );
-
-          expect(await UserProfileImage.db.count(session), 0);
-          expect(
-            await UserProfileImage.db.count(session, transaction: transaction),
-            1,
-          );
-
-          await expectLater(
-            () => userProfiles.changeUserName(
+          await session.db.transaction<void>((final transaction) async {
+            const userProfiles = UserProfiles();
+            await userProfiles.createUserProfile(
               session,
               authUserId,
-              'updated',
-            ),
-            throwsA(isA<UserProfileNotFoundException>()),
-          );
+              UserProfileData(),
+              transaction: transaction,
+            );
 
-          await transaction.cancel();
-        });
+            expect(await UserProfile.db.count(session), 0);
+            expect(
+              await UserProfile.db.count(session, transaction: transaction),
+              1,
+            );
 
-        expect(await UserProfile.db.count(session), 0);
-      });
+            await userProfiles.setUserImageFromBytes(
+              session,
+              authUserId,
+              onePixelPng,
+              transaction: transaction,
+            );
+
+            expect(await UserProfileImage.db.count(session), 0);
+            expect(
+              await UserProfileImage.db.count(
+                session,
+                transaction: transaction,
+              ),
+              1,
+            );
+
+            await expectLater(
+              () => userProfiles.changeUserName(
+                session,
+                authUserId,
+                'updated',
+              ),
+              throwsA(isA<UserProfileNotFoundException>()),
+            );
+
+            await transaction.cancel();
+          });
+
+          expect(await UserProfile.db.count(session), 0);
+        },
+      );
     },
     rollbackDatabase: RollbackDatabase.disabled,
   );

@@ -10,11 +10,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-      'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('post').withYaml(
-        '''
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('post').withYaml(
+          '''
         class: Post
         table: post
         fields:
@@ -27,132 +27,142 @@ void main() {
             fields: nextId
             unique: true
         ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    var errors = collector.errors;
+      var errors = collector.errors;
 
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
-
-    var postDefinition = definitions.firstOrNull as ClassDefinition?;
-
-    group('then the successor field relation', () {
-      var field = postDefinition?.findField('next');
-      var relation = field?.relation;
-
-      test('name is null.', () {
-        expect(relation?.name, isNull);
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
       });
 
-      test('is foreign key origin.', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
-      });
+      var postDefinition = definitions.firstOrNull as ClassDefinition?;
 
-      test('is of type ObjectRelationDefinition.', () {
-        expect(relation.runtimeType, ObjectRelationDefinition);
-      });
+      group('then the successor field relation', () {
+        var field = postDefinition?.findField('next');
+        var relation = field?.relation;
 
-      test('has the parent table set to it self.', () {
-        relation as ObjectRelationDefinition;
+        test('name is null.', () {
+          expect(relation?.name, isNull);
+        });
 
-        expect(relation.parentTable, 'post');
-      });
+        test('is foreign key origin.', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
 
-      test(
+        test('is of type ObjectRelationDefinition.', () {
+          expect(relation.runtimeType, ObjectRelationDefinition);
+        });
+
+        test('has the parent table set to it self.', () {
+          relation as ObjectRelationDefinition;
+
+          expect(relation.parentTable, 'post');
+        });
+
+        test(
           'has the local foreign key holder set to the manually defined value.',
           () {
-        relation as ObjectRelationDefinition;
+            relation as ObjectRelationDefinition;
 
-        expect(relation.fieldName, 'nextId');
-      });
+            expect(relation.fieldName, 'nextId');
+          },
+        );
 
-      test('has the foreign key field set to the id.', () {
-        relation as ObjectRelationDefinition;
+        test('has the foreign key field set to the id.', () {
+          relation as ObjectRelationDefinition;
 
-        expect(relation.foreignFieldName, 'id');
-      });
-    }, skip: errors.isNotEmpty);
+          expect(relation.foreignFieldName, 'id');
+        });
+      }, skip: errors.isNotEmpty);
 
-    group('then the predecessor field relation', () {
-      var field = postDefinition?.findField('previous');
-      var relation = field?.relation;
+      group('then the predecessor field relation', () {
+        var field = postDefinition?.findField('previous');
+        var relation = field?.relation;
 
-      test('name is defined', () {
-        expect(relation?.name, 'next_previous_post');
-      });
+        test('name is defined', () {
+          expect(relation?.name, 'next_previous_post');
+        });
 
-      test('is not foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isFalse);
-      });
+        test('is not foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isFalse);
+        });
 
-      test('is of type ObjectRelationDefinition', () {
-        expect(relation.runtimeType, ObjectRelationDefinition);
-      });
+        test('is of type ObjectRelationDefinition', () {
+          expect(relation.runtimeType, ObjectRelationDefinition);
+        });
 
-      test('has the parent table set to it self.', () {
-        relation as ObjectRelationDefinition;
+        test('has the parent table set to it self.', () {
+          relation as ObjectRelationDefinition;
 
-        expect(relation.parentTable, 'post');
-      });
+          expect(relation.parentTable, 'post');
+        });
 
-      test('has the local foreign key holder set to local id.', () {
-        relation as ObjectRelationDefinition;
+        test(
+          'has the local foreign key holder set to local id.',
+          () {
+            relation as ObjectRelationDefinition;
 
-        expect(relation.fieldName, 'id');
-      }, skip: definitions.isEmpty);
+            expect(relation.fieldName, 'id');
+          },
+          skip: definitions.isEmpty,
+        );
 
-      test(
+        test(
           'has the foreign key field set to manually defined foreign key on the other side.',
           () {
-        relation as ObjectRelationDefinition;
+            relation as ObjectRelationDefinition;
 
-        expect(relation.foreignFieldName, 'nextId');
-      });
-    }, skip: errors.isNotEmpty);
+            expect(relation.foreignFieldName, 'nextId');
+          },
+        );
+      }, skip: errors.isNotEmpty);
 
-    group('then the successorId field relation', () {
-      var field = postDefinition?.findField('nextId');
-      var relation = field?.relation;
+      group('then the successorId field relation', () {
+        var field = postDefinition?.findField('nextId');
+        var relation = field?.relation;
 
-      test('name is defined', () {
-        expect(relation?.name, 'next_previous_post');
-      });
+        test('name is defined', () {
+          expect(relation?.name, 'next_previous_post');
+        });
 
-      test('is not foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
-      });
+        test('is not foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
 
-      test('is of type ForeignRelationDefinition', () {
-        expect(relation.runtimeType, ForeignRelationDefinition);
-      });
+        test('is of type ForeignRelationDefinition', () {
+          expect(relation.runtimeType, ForeignRelationDefinition);
+        });
 
-      test('has the parent table set to it self.', () {
-        relation as ForeignRelationDefinition;
+        test('has the parent table set to it self.', () {
+          relation as ForeignRelationDefinition;
 
-        expect(relation.parentTable, 'post');
-      });
+          expect(relation.parentTable, 'post');
+        });
 
-      test('has the foreign key field set to the id.', () {
-        relation as ForeignRelationDefinition;
+        test('has the foreign key field set to the id.', () {
+          relation as ForeignRelationDefinition;
 
-        expect(relation.foreignFieldName, 'id');
-      });
-    }, skip: errors.isNotEmpty);
-  });
+          expect(relation.foreignFieldName, 'id');
+        });
+      }, skip: errors.isNotEmpty);
+    },
+  );
 
   group(
-      'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('user').withYaml(
-        '''
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('user').withYaml(
+          '''
         class: User
         table: user
         fields:
@@ -165,132 +175,138 @@ void main() {
             fields: successorId
             unique: true
         ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    var errors = collector.errors;
+      var errors = collector.errors;
 
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
-
-    var userDefinition = definitions.firstOrNull as ClassDefinition?;
-
-    group('then the successor field relation', () {
-      var field = userDefinition?.findField('successor');
-      var relation = field?.relation;
-
-      test('name is null', () {
-        expect(relation?.name, isNull);
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
       });
 
-      test('is foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
-      });
+      var userDefinition = definitions.firstOrNull as ClassDefinition?;
 
-      test('is of type ObjectRelationDefinition', () {
-        expect(relation.runtimeType, ObjectRelationDefinition);
-      });
+      group('then the successor field relation', () {
+        var field = userDefinition?.findField('successor');
+        var relation = field?.relation;
 
-      test('has the parent table set to it self.', () {
-        relation as ObjectRelationDefinition;
+        test('name is null', () {
+          expect(relation?.name, isNull);
+        });
 
-        expect(relation.parentTable, 'user');
-      });
+        test('is foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
 
-      test(
+        test('is of type ObjectRelationDefinition', () {
+          expect(relation.runtimeType, ObjectRelationDefinition);
+        });
+
+        test('has the parent table set to it self.', () {
+          relation as ObjectRelationDefinition;
+
+          expect(relation.parentTable, 'user');
+        });
+
+        test(
           'has the local foreign key holder set to the manually defined value.',
           () {
-        relation as ObjectRelationDefinition;
+            relation as ObjectRelationDefinition;
 
-        expect(relation.fieldName, 'successorId');
-      });
+            expect(relation.fieldName, 'successorId');
+          },
+        );
 
-      test('has the foreign key field set to the id.', () {
-        relation as ObjectRelationDefinition;
+        test('has the foreign key field set to the id.', () {
+          relation as ObjectRelationDefinition;
 
-        expect(relation.foreignFieldName, 'id');
-      });
-    }, skip: errors.isNotEmpty);
+          expect(relation.foreignFieldName, 'id');
+        });
+      }, skip: errors.isNotEmpty);
 
-    group('then the predecessor field relation', () {
-      var field = userDefinition?.findField('predecessor');
-      var relation = field?.relation;
+      group('then the predecessor field relation', () {
+        var field = userDefinition?.findField('predecessor');
+        var relation = field?.relation;
 
-      test('name is defined', () {
-        expect(relation?.name, 'user_predecessor');
-      });
+        test('name is defined', () {
+          expect(relation?.name, 'user_predecessor');
+        });
 
-      test('is not foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isFalse);
-      });
+        test('is not foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isFalse);
+        });
 
-      test('is of type ObjectRelationDefinition', () {
-        expect(relation.runtimeType, ObjectRelationDefinition);
-      });
+        test('is of type ObjectRelationDefinition', () {
+          expect(relation.runtimeType, ObjectRelationDefinition);
+        });
 
-      test('has the parent table set to it self.', () {
-        relation as ObjectRelationDefinition;
+        test('has the parent table set to it self.', () {
+          relation as ObjectRelationDefinition;
 
-        expect(relation.parentTable, 'user');
-      });
+          expect(relation.parentTable, 'user');
+        });
 
-      test('has the local foreign key holder set to local id.', () {
-        relation as ObjectRelationDefinition;
+        test('has the local foreign key holder set to local id.', () {
+          relation as ObjectRelationDefinition;
 
-        expect(relation.fieldName, 'id');
-      });
+          expect(relation.fieldName, 'id');
+        });
 
-      test(
+        test(
           'has the foreign key field set to manually defined foreign key on the other side.',
           () {
-        relation as ObjectRelationDefinition;
+            relation as ObjectRelationDefinition;
 
-        expect(relation.foreignFieldName, 'successorId');
-      });
-    }, skip: errors.isNotEmpty);
+            expect(relation.foreignFieldName, 'successorId');
+          },
+        );
+      }, skip: errors.isNotEmpty);
 
-    group('then the successorId field relation', () {
-      var field = userDefinition?.findField('successorId');
-      var relation = field?.relation;
+      group('then the successorId field relation', () {
+        var field = userDefinition?.findField('successorId');
+        var relation = field?.relation;
 
-      test('name is defined', () {
-        expect(relation?.name, 'user_predecessor');
-      });
+        test('name is defined', () {
+          expect(relation?.name, 'user_predecessor');
+        });
 
-      test('is foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
-      });
+        test('is foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
 
-      test('is of type ForeignRelationDefinition', () {
-        expect(relation.runtimeType, ForeignRelationDefinition);
-      });
+        test('is of type ForeignRelationDefinition', () {
+          expect(relation.runtimeType, ForeignRelationDefinition);
+        });
 
-      test('has the parent table set to it self.', () {
-        relation as ForeignRelationDefinition;
+        test('has the parent table set to it self.', () {
+          relation as ForeignRelationDefinition;
 
-        expect(relation.parentTable, 'user');
-      });
+          expect(relation.parentTable, 'user');
+        });
 
-      test('has the foreign key field set to the id.', () {
-        relation as ForeignRelationDefinition;
+        test('has the foreign key field set to the id.', () {
+          relation as ForeignRelationDefinition;
 
-        expect(relation.foreignFieldName, 'id');
-      });
-    }, skip: errors.isNotEmpty);
-  });
+          expect(relation.foreignFieldName, 'id');
+        });
+      }, skip: errors.isNotEmpty);
+    },
+  );
 
   group(
-      'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('user').withYaml(
-        '''
+    'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('user').withYaml(
+          '''
         class: User
         table: user
         fields:
@@ -298,110 +314,117 @@ void main() {
           parent: User?, relation(name=parent_child, optional)
           children: List<User>?, relation(name=parent_child)
         ''',
-      ).build(),
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    var userDefinition = definitions.first as ClassDefinition;
+      var userDefinition = definitions.first as ClassDefinition;
 
-    var errors = collector.errors;
+      var errors = collector.errors;
 
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
-
-    group('then the parent field relation', () {
-      var field = userDefinition.findField('parent');
-      var relation = field?.relation;
-
-      test('name is null', () {
-        expect(relation?.name, isNull);
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
       });
 
-      test('is foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
-      });
+      group('then the parent field relation', () {
+        var field = userDefinition.findField('parent');
+        var relation = field?.relation;
 
-      test('is of type ObjectRelationDefinition', () {
-        expect(relation.runtimeType, ObjectRelationDefinition);
-      });
+        test('name is null', () {
+          expect(relation?.name, isNull);
+        });
 
-      test('has the parent table set to it self.', () {
-        relation as ObjectRelationDefinition;
+        test('is foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
 
-        expect(relation.parentTable, 'user');
-      });
+        test('is of type ObjectRelationDefinition', () {
+          expect(relation.runtimeType, ObjectRelationDefinition);
+        });
 
-      test(
+        test('has the parent table set to it self.', () {
+          relation as ObjectRelationDefinition;
+
+          expect(relation.parentTable, 'user');
+        });
+
+        test(
           'has the local foreign key holder set to the manually defined value.',
           () {
-        relation as ObjectRelationDefinition;
+            relation as ObjectRelationDefinition;
 
-        expect(relation.fieldName, 'parentId');
+            expect(relation.fieldName, 'parentId');
+          },
+        );
+
+        test('has the foreign key field set to the id.', () {
+          relation as ObjectRelationDefinition;
+
+          expect(relation.foreignFieldName, 'id');
+        });
       });
 
-      test('has the foreign key field set to the id.', () {
-        relation as ObjectRelationDefinition;
+      group('then the predecessor field relation', () {
+        var field = userDefinition.findField('children');
+        var relation = field?.relation;
 
-        expect(relation.foreignFieldName, 'id');
-      });
-    });
+        test('name is defined', () {
+          expect(relation?.name, 'parent_child');
+        });
 
-    group('then the predecessor field relation', () {
-      var field = userDefinition.findField('children');
-      var relation = field?.relation;
+        test('is not foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isFalse);
+        });
 
-      test('name is defined', () {
-        expect(relation?.name, 'parent_child');
-      });
+        test('is of type ObjectRelationDefinition', () {
+          expect(relation.runtimeType, ListRelationDefinition);
+        });
 
-      test('is not foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isFalse);
-      });
-
-      test('is of type ObjectRelationDefinition', () {
-        expect(relation.runtimeType, ListRelationDefinition);
-      });
-
-      test('has the foreign key field set to the foreign key field holder.',
+        test(
+          'has the foreign key field set to the foreign key field holder.',
           () {
-        relation as ListRelationDefinition;
+            relation as ListRelationDefinition;
 
-        expect(relation.foreignFieldName, 'parentId');
-      });
-    });
-
-    group('then the successorId field relation', () {
-      var field = userDefinition.findField('parentId');
-      var relation = field?.relation;
-
-      test('name is defined', () {
-        expect(relation?.name, 'parent_child');
+            expect(relation.foreignFieldName, 'parentId');
+          },
+        );
       });
 
-      test('is foreign key origin', () {
-        expect(relation?.isForeignKeyOrigin, isTrue);
+      group('then the successorId field relation', () {
+        var field = userDefinition.findField('parentId');
+        var relation = field?.relation;
+
+        test('name is defined', () {
+          expect(relation?.name, 'parent_child');
+        });
+
+        test('is foreign key origin', () {
+          expect(relation?.isForeignKeyOrigin, isTrue);
+        });
+
+        test('is of type ForeignRelationDefinition', () {
+          expect(relation.runtimeType, ForeignRelationDefinition);
+        });
+
+        test('has the parent table set to it self.', () {
+          relation as ForeignRelationDefinition;
+
+          expect(relation.parentTable, 'user');
+        });
+
+        test('has the foreign key field set to the id.', () {
+          relation as ForeignRelationDefinition;
+
+          expect(relation.foreignFieldName, 'id');
+        });
       });
-
-      test('is of type ForeignRelationDefinition', () {
-        expect(relation.runtimeType, ForeignRelationDefinition);
-      });
-
-      test('has the parent table set to it self.', () {
-        relation as ForeignRelationDefinition;
-
-        expect(relation.parentTable, 'user');
-      });
-
-      test('has the foreign key field set to the id.', () {
-        relation as ForeignRelationDefinition;
-
-        expect(relation.foreignFieldName, 'id');
-      });
-    });
-  });
+    },
+  );
 }

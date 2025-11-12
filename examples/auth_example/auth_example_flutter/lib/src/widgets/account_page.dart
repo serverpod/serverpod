@@ -11,8 +11,10 @@ class AccountPage extends StatelessWidget {
     return ListView(
       children: [
         ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 16,
+          ),
           leading: CircularUserImage(
             userInfo: sessionManager.signedInUser,
             size: 42,

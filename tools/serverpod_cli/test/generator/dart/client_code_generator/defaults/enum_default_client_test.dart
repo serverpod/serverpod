@@ -20,169 +20,184 @@ void main() {
       .withClassName('ByNameEnum')
       .withFileName('by_name_enum')
       .withValues([
-    ProtocolEnumValueDefinition('byName1'),
-    ProtocolEnumValueDefinition('byName2'),
-  ]).build();
+        ProtocolEnumValueDefinition('byName1'),
+        ProtocolEnumValueDefinition('byName2'),
+      ])
+      .build();
 
   group(
-      'Given a class named EnumDefault with enum fields having defaultModelValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named EnumDefault with enum fields having defaultModelValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'EnumDefault';
-      var testClassFileName = 'enum_default';
-      var expectedFilePath = path.join(
-        '..',
-        'example_project_client',
-        'lib',
-        'src',
-        'protocol',
-        '$testClassFileName.dart',
-      );
+      setUpAll(() {
+        var testClassName = 'EnumDefault';
+        var testClassFileName = 'enum_default';
+        var expectedFilePath = path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('byNameEnumDefault')
-            .withEnumDefinition(enumDefinition, false)
-            .withDefaults(defaultModelValue: 'byName1')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('byNameEnumDefaultNull')
-            .withEnumDefinition(enumDefinition, true)
-            .withDefaults(defaultModelValue: 'byName2')
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('byNameEnumDefault')
+              .withEnumDefinition(enumDefinition, false)
+              .withDefaults(defaultModelValue: 'byName1')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('byNameEnumDefaultNull')
+              .withEnumDefinition(enumDefinition, true)
+              .withDefaults(defaultModelValue: 'byName2')
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the EnumDefault has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(
-            privateConstructor?.parameters.toSource(),
-            '({ByNameEnum? byNameEnumDefault, ByNameEnum? byNameEnumDefaultNull})',
-          );
-        },
-      );
+      group('then the EnumDefault has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
 
-      test(
-        'with byNameEnumDefault default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('byNameEnumDefault'));
-          expect(initializer?.toSource(),
-              'byNameEnumDefault = byNameEnumDefault ?? ByNameEnum.byName1');
-        },
-      );
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource(),
+              '({ByNameEnum? byNameEnumDefault, ByNameEnum? byNameEnumDefaultNull})',
+            );
+          },
+        );
 
-      test(
-        'with byNameEnumDefaultNull default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers.firstWhere(
-              (e) => e.toSource().contains('byNameEnumDefaultNull'));
-          expect(initializer?.toSource(),
-              'byNameEnumDefaultNull = byNameEnumDefaultNull ?? ByNameEnum.byName2');
-        },
-      );
-    });
-  });
+        test(
+          'with byNameEnumDefault default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('byNameEnumDefault'),
+            );
+            expect(
+              initializer?.toSource(),
+              'byNameEnumDefault = byNameEnumDefault ?? ByNameEnum.byName1',
+            );
+          },
+        );
+
+        test(
+          'with byNameEnumDefaultNull default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('byNameEnumDefaultNull'),
+            );
+            expect(
+              initializer?.toSource(),
+              'byNameEnumDefaultNull = byNameEnumDefaultNull ?? ByNameEnum.byName2',
+            );
+          },
+        );
+      });
+    },
+  );
 
   group(
-      'Given a class named EnumDefaultPersist with enum fields having defaultPersistValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named EnumDefaultPersist with enum fields having defaultPersistValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'EnumDefaultPersist';
-      var testClassFileName = 'enum_default_persist';
-      var expectedFilePath = path.join(
-        '..',
-        'example_project_client',
-        'lib',
-        'src',
-        'protocol',
-        '$testClassFileName.dart',
-      );
+      setUpAll(() {
+        var testClassName = 'EnumDefaultPersist';
+        var testClassFileName = 'enum_default_persist';
+        var expectedFilePath = path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('byNameEnumDefaultPersist')
-            .withEnumDefinition(enumDefinition, true)
-            .withDefaults(defaultPersistValue: 'byName1')
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('byNameEnumDefaultPersist')
+              .withEnumDefinition(enumDefinition, true)
+              .withDefaults(defaultPersistValue: 'byName1')
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the EnumDefaultPersist has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(privateConstructor?.parameters.toSource(),
-              '({this.byNameEnumDefaultPersist})');
-        },
-      );
-    });
-  });
+      group('then the EnumDefaultPersist has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
+
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource(),
+              '({this.byNameEnumDefaultPersist})',
+            );
+          },
+        );
+      });
+    },
+  );
 }

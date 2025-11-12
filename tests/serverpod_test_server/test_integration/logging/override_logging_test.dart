@@ -25,89 +25,93 @@ void main() {
   });
 
   test(
-      'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling a method then a log is written.',
-      () async {
-    var settings = RuntimeSettingsBuilder()
-        .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
-        .withLogSettingsOverride(
-          endpoint: 'logging',
-          logSettings: LogSettingsBuilder().build(),
-        )
-        .build();
+    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling a method then a log is written.',
+    () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
+          .withLogSettingsOverride(
+            endpoint: 'logging',
+            logSettings: LogSettingsBuilder().build(),
+          )
+          .build();
 
-    await server.updateRuntimeSettings(settings);
+      await server.updateRuntimeSettings(settings);
 
-    await client.logging.emptyMethod();
+      await client.logging.emptyMethod();
 
-    var logs = await LoggingUtil.findAllLogs(session);
+      var logs = await LoggingUtil.findAllLogs(session);
 
-    expect(logs, hasLength(1));
+      expect(logs, hasLength(1));
 
-    expect(logs.first.sessionLogEntry.endpoint, 'logging');
-  });
-
-  test(
-      'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling another endpoint then no log is written.',
-      () async {
-    var settings = RuntimeSettingsBuilder()
-        .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
-        .withLogSettingsOverride(
-          endpoint: 'authentication',
-          logSettings: LogSettingsBuilder().build(),
-        )
-        .build();
-
-    await server.updateRuntimeSettings(settings);
-
-    await client.logging.emptyMethod();
-
-    var logs = await LoggingUtil.findAllLogs(session);
-
-    expect(logs, isEmpty);
-  });
+      expect(logs.first.sessionLogEntry.endpoint, 'logging');
+    },
+  );
 
   test(
-      'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling a method then a log is written.',
-      () async {
-    var settings = RuntimeSettingsBuilder()
-        .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
-        .withLogSettingsOverride(
-          endpoint: 'logging',
-          method: 'emptyMethod',
-          logSettings: LogSettingsBuilder().build(),
-        )
-        .build();
+    'Given that the log settings are turned down but there is an override for the endpoint to allow all logging when calling another endpoint then no log is written.',
+    () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
+          .withLogSettingsOverride(
+            endpoint: 'authentication',
+            logSettings: LogSettingsBuilder().build(),
+          )
+          .build();
 
-    await server.updateRuntimeSettings(settings);
+      await server.updateRuntimeSettings(settings);
 
-    await client.logging.emptyMethod();
+      await client.logging.emptyMethod();
 
-    var logs = await LoggingUtil.findAllLogs(session);
+      var logs = await LoggingUtil.findAllLogs(session);
 
-    expect(logs, hasLength(1));
-
-    expect(logs.first.sessionLogEntry.endpoint, 'logging');
-    expect(logs.first.sessionLogEntry.method, 'emptyMethod');
-  });
+      expect(logs, isEmpty);
+    },
+  );
 
   test(
-      'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling another method then not log is written.',
-      () async {
-    var settings = RuntimeSettingsBuilder()
-        .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
-        .withLogSettingsOverride(
-          endpoint: 'logging',
-          method: 'slowMethod',
-          logSettings: LogSettingsBuilder().build(),
-        )
-        .build();
+    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling a method then a log is written.',
+    () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
+          .withLogSettingsOverride(
+            endpoint: 'logging',
+            method: 'emptyMethod',
+            logSettings: LogSettingsBuilder().build(),
+          )
+          .build();
 
-    await server.updateRuntimeSettings(settings);
+      await server.updateRuntimeSettings(settings);
 
-    await client.logging.emptyMethod();
+      await client.logging.emptyMethod();
 
-    var logs = await LoggingUtil.findAllLogs(session);
+      var logs = await LoggingUtil.findAllLogs(session);
 
-    expect(logs, isEmpty);
-  });
+      expect(logs, hasLength(1));
+
+      expect(logs.first.sessionLogEntry.endpoint, 'logging');
+      expect(logs.first.sessionLogEntry.method, 'emptyMethod');
+    },
+  );
+
+  test(
+    'Given that the log settings are turned down but there is an override for the endpoint and method to allow all logging when calling another method then not log is written.',
+    () async {
+      var settings = RuntimeSettingsBuilder()
+          .withLogSettings(LogSettingsBuilder().withLoggingTurnedDown().build())
+          .withLogSettingsOverride(
+            endpoint: 'logging',
+            method: 'slowMethod',
+            logSettings: LogSettingsBuilder().build(),
+          )
+          .build();
+
+      await server.updateRuntimeSettings(settings);
+
+      await client.logging.emptyMethod();
+
+      var logs = await LoggingUtil.findAllLogs(session);
+
+      expect(logs, isEmpty);
+    },
+  );
 }

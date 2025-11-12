@@ -40,16 +40,15 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInWebButton(
-        theme: theme,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsFilled,
-      );
+  }) => GoogleSignInWebButton(
+    theme: theme,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsFilled,
+  );
 
   /// Builds Google Sign-In button compatible with Material's outline button.
   factory GoogleSignInWebButton.outlined({
@@ -58,16 +57,15 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInWebButton(
-        theme: GSIButtonTheme.outline,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsOutline,
-      );
+  }) => GoogleSignInWebButton(
+    theme: GSIButtonTheme.outline,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsOutline,
+  );
 
   /// Builds Google Sign-In button compatible with Material's elevated button.
   factory GoogleSignInWebButton.elevated({
@@ -77,30 +75,29 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInWebButton(
-        theme: theme,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsElevated,
-      );
+  }) => GoogleSignInWebButton(
+    theme: theme,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsElevated,
+  );
 
   /// Render the button with the actual width.
   Widget _renderButton({double? width}) => renderButton(
-        configuration: GSIButtonConfiguration(
-          type: type,
-          theme: theme,
-          size: size,
-          text: text,
-          shape: shape,
-          logoAlignment: logoAlignment,
-          minimumWidth: width ?? minimumWidth,
-          locale: locale,
-        ),
-      );
+    configuration: GSIButtonConfiguration(
+      type: type,
+      theme: theme,
+      size: size,
+      text: text,
+      shape: shape,
+      logoAlignment: logoAlignment,
+      minimumWidth: width ?? minimumWidth,
+      locale: locale,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -108,26 +105,29 @@ class GoogleSignInWebButton extends GoogleSignInBaseButton {
       return _renderButton();
     }
 
-    return LayoutBuilder(builder: (context, constraints) {
-      final width = constraints.maxWidth.clamp(minimumWidth, 400).toDouble();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth.clamp(minimumWidth, 400).toDouble();
 
-      final buttonStyle = GoogleSignInStyle.fromConfiguration(
-        theme: theme,
-        shape: shape,
-        size: size,
-        width: width,
-      );
+        final buttonStyle = GoogleSignInStyle.fromConfiguration(
+          theme: theme,
+          shape: shape,
+          size: size,
+          width: width,
+        );
 
-      final button = _renderButton(width: width);
-      return SizedBox(
-        height: buttonStyle.size.height,
-        child: buttonWrapper?.call(
-              style: buttonStyle,
-              onPressed: () {},
-              child: button,
-            ) ??
-            button,
-      );
-    });
+        final button = _renderButton(width: width);
+        return SizedBox(
+          height: buttonStyle.size.height,
+          child:
+              buttonWrapper?.call(
+                style: buttonStyle,
+                onPressed: () {},
+                child: button,
+              ) ??
+              button,
+        );
+      },
+    );
   }
 }

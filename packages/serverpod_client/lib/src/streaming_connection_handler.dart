@@ -24,8 +24,9 @@ class StreamingConnectionHandlerState {
 /// reconnection attempts is specified with [retryEverySeconds], default is 5
 /// seconds.
 @Deprecated(
-    'This class was used in the old streaming API and will be removed in a future version. '
-    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
+  'This class was used in the old streaming API and will be removed in a future version. '
+  'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
+)
 class StreamingConnectionHandler {
   /// The Serverpod client this StreamingConnectionHandler is managing.
   final ServerpodClientShared client;
@@ -44,14 +45,16 @@ class StreamingConnectionHandler {
   /// Creates a new connection handler with the specified listener and interval
   /// for reconnecting to the server.
   @Deprecated(
-      'This constructor was used in the old streaming API and will be removed in a future version. '
-      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
+    'This constructor was used in the old streaming API and will be removed in a future version. '
+    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.',
+  )
   StreamingConnectionHandler({
     required this.client,
     required this.listener,
     this.retryEverySeconds = 5,
   }) {
-    _keepAlive = client.streamingConnectionStatus !=
+    _keepAlive =
+        client.streamingConnectionStatus !=
         StreamingConnectionStatus.disconnected;
     client.addStreamingConnectionStatusListener(_onConnectionStatusChanged);
   }
@@ -83,24 +86,30 @@ class StreamingConnectionHandler {
         StreamingConnectionStatus.connected) {
       _countdown = 0;
       _countdownTimer?.cancel();
-      listener(StreamingConnectionHandlerState._(
-        status: StreamingConnectionStatus.connected,
-        retryInSeconds: null,
-      ));
+      listener(
+        StreamingConnectionHandlerState._(
+          status: StreamingConnectionStatus.connected,
+          retryInSeconds: null,
+        ),
+      );
     } else if (client.streamingConnectionStatus ==
         StreamingConnectionStatus.connecting) {
       _countdown = 0;
-      listener(StreamingConnectionHandlerState._(
-        status: StreamingConnectionStatus.connecting,
-        retryInSeconds: null,
-      ));
+      listener(
+        StreamingConnectionHandlerState._(
+          status: StreamingConnectionStatus.connecting,
+          retryInSeconds: null,
+        ),
+      );
     } else {
       if (_keepAlive) {
         _countdown = retryEverySeconds;
-        listener(StreamingConnectionHandlerState._(
-          status: StreamingConnectionStatus.waitingToRetry,
-          retryInSeconds: _countdown,
-        ));
+        listener(
+          StreamingConnectionHandlerState._(
+            status: StreamingConnectionStatus.waitingToRetry,
+            retryInSeconds: _countdown,
+          ),
+        );
         // Make sure we're only running one timer.
         _countdownTimer?.cancel();
         _countdownTimer = null;
@@ -111,10 +120,12 @@ class StreamingConnectionHandler {
         );
       } else {
         _countdown = 0;
-        listener(StreamingConnectionHandlerState._(
-          status: StreamingConnectionStatus.disconnected,
-          retryInSeconds: null,
-        ));
+        listener(
+          StreamingConnectionHandlerState._(
+            status: StreamingConnectionStatus.disconnected,
+            retryInSeconds: null,
+          ),
+        );
       }
     }
   }
@@ -123,10 +134,12 @@ class StreamingConnectionHandler {
     _countdown -= 1;
     if (_countdown > 0) {
       // Countdown.
-      listener(StreamingConnectionHandlerState._(
-        status: StreamingConnectionStatus.waitingToRetry,
-        retryInSeconds: _countdown,
-      ));
+      listener(
+        StreamingConnectionHandlerState._(
+          status: StreamingConnectionStatus.waitingToRetry,
+          retryInSeconds: _countdown,
+        ),
+      );
     } else {
       // Try to reconnect.
       client.openStreamingConnection();

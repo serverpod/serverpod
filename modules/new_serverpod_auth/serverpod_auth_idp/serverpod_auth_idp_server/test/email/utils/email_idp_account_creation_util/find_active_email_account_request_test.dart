@@ -37,21 +37,22 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns the account request',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns the account request',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNotNull);
-        expect(request!.id, equals(accountRequestId));
-        expect(request.email, equals(email));
-      });
+          expect(request, isNotNull);
+          expect(request!.id, equals(accountRequestId));
+          expect(request.email, equals(email));
+        },
+      );
     },
   );
 
@@ -86,10 +87,10 @@ void main() {
           () => session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.startRegistration(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
           ),
         );
       });
@@ -99,19 +100,20 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns null',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns null',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNull);
-      });
+          expect(request, isNull);
+        },
+      );
     },
   );
 
@@ -134,19 +136,20 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns null',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns null',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNull);
-      });
+          expect(request, isNull);
+        },
+      );
     },
   );
 }

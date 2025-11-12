@@ -43,8 +43,9 @@ final class PasskeyIDP {
   }) {
     final utils = PasskeyIDPUtils(
       challengeLifetime: config.challengeLifetime,
-      passkeys:
-          Passkeys(config: PasskeysConfig(relyingPartyId: config.hostname)),
+      passkeys: Passkeys(
+        config: PasskeysConfig(relyingPartyId: config.hostname),
+      ),
     );
 
     return PasskeyIDP._(
@@ -68,8 +69,10 @@ final class PasskeyIDP {
       session.db,
       transaction,
       (final transaction) async {
-        final challenge =
-            await utils.createChallenge(session, transaction: transaction);
+        final challenge = await utils.createChallenge(
+          session,
+          transaction: transaction,
+        );
 
         return (id: challenge.id!, challenge: challenge.challenge);
       },
@@ -83,8 +86,9 @@ final class PasskeyIDP {
     required final PasskeyRegistrationRequest request,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       await utils.registerPasskey(
         session,
         authUserId: authUserId,
@@ -102,8 +106,9 @@ final class PasskeyIDP {
     required final PasskeyLoginRequest request,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       final authUserId = await utils.authenticate(
         session,
         request: request,
@@ -132,7 +137,4 @@ final class PasskeyIDP {
 }
 
 /// A challenge to be used for a passkey registration or login.
-typedef PasskeyChallengeResponse = ({
-  UuidValue id,
-  ByteData challenge,
-});
+typedef PasskeyChallengeResponse = ({UuidValue id, ByteData challenge});

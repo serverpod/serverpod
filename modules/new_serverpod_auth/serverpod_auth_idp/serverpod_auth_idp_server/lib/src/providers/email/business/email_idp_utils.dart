@@ -42,11 +42,11 @@ class EmailIDPUtils {
   EmailIDPUtils({
     required final EmailIDPConfig config,
     required final AuthUsers authUsers,
-  })  : hashUtil = SecretHashUtil(
-          hashPepper: config.secretHashPepper,
-          hashSaltLength: config.secretHashSaltLength,
-        ),
-        account = EmailIDPAccountUtils() {
+  }) : hashUtil = SecretHashUtil(
+         hashPepper: config.secretHashPepper,
+         hashSaltLength: config.secretHashSaltLength,
+       ),
+       account = EmailIDPAccountUtils() {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
       passwordHashUtils: hashUtil,
@@ -65,7 +65,8 @@ class EmailIDPUtils {
   /// Replaces server-side exceptions by client-side exceptions, hiding details
   /// that could leak account information.
   static Future<T> withReplacedServerEmailException<T>(
-      final Future<T> Function() fn) async {
+    final Future<T> Function() fn,
+  ) async {
     try {
       return await fn();
     } on EmailServerException catch (e) {

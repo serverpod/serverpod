@@ -45,13 +45,12 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     required VoidCallback? onPressed,
     required bool isLoading,
     required bool isDisabled,
-  }) =>
-      GoogleSignInNativeButton(
-        onPressed: onPressed,
-        isLoading: isLoading,
-        isDisabled: isDisabled,
-        type: GSIButtonType.icon,
-      );
+  }) => GoogleSignInNativeButton(
+    onPressed: onPressed,
+    isLoading: isLoading,
+    isDisabled: isDisabled,
+    type: GSIButtonType.icon,
+  );
 
   /// Builds Google Sign-In button compatible with Material's filled button.
   factory GoogleSignInNativeButton.filled({
@@ -64,19 +63,18 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInNativeButton(
-        onPressed: onPressed,
-        isLoading: isLoading,
-        isDisabled: isDisabled,
-        theme: theme,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsFilled,
-      );
+  }) => GoogleSignInNativeButton(
+    onPressed: onPressed,
+    isLoading: isLoading,
+    isDisabled: isDisabled,
+    theme: theme,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsFilled,
+  );
 
   /// Builds Google Sign-In button compatible with Material's outline button.
   factory GoogleSignInNativeButton.outlined({
@@ -88,19 +86,18 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInNativeButton(
-        onPressed: onPressed,
-        isLoading: isLoading,
-        isDisabled: isDisabled,
-        theme: GSIButtonTheme.outline,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsOutline,
-      );
+  }) => GoogleSignInNativeButton(
+    onPressed: onPressed,
+    isLoading: isLoading,
+    isDisabled: isDisabled,
+    theme: GSIButtonTheme.outline,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsOutline,
+  );
 
   /// Builds Google Sign-In button compatible with Material's elevated button.
   factory GoogleSignInNativeButton.elevated({
@@ -113,19 +110,18 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     GSIButtonShape shape = GSIButtonShape.pill,
     GSIButtonLogoAlignment logoAlignment = GSIButtonLogoAlignment.left,
     double minimumWidth = 240,
-  }) =>
-      GoogleSignInNativeButton(
-        onPressed: onPressed,
-        isLoading: isLoading,
-        isDisabled: isDisabled,
-        theme: theme,
-        size: size,
-        text: text,
-        shape: shape,
-        logoAlignment: logoAlignment,
-        minimumWidth: minimumWidth,
-        buttonWrapper: GoogleSignInBaseButton.wrapAsElevated,
-      );
+  }) => GoogleSignInNativeButton(
+    onPressed: onPressed,
+    isLoading: isLoading,
+    isDisabled: isDisabled,
+    theme: theme,
+    size: size,
+    text: text,
+    shape: shape,
+    logoAlignment: logoAlignment,
+    minimumWidth: minimumWidth,
+    buttonWrapper: GoogleSignInBaseButton.wrapAsElevated,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +158,9 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         isDisabled: isDisabled,
         isCentered: logoAlignment == GSIButtonLogoAlignment.center,
         size: size,
-        borderRadius:
-            theme == GSIButtonTheme.outline ? null : buttonStyle.borderRadius,
+        borderRadius: theme == GSIButtonTheme.outline
+            ? null
+            : buttonStyle.borderRadius,
         backgroundColor: theme == GSIButtonTheme.outline ? null : Colors.white,
       ),
     );
@@ -213,7 +210,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
                   ),
                   Center(
                     child: text,
-                  )
+                  ),
                 ],
               ),
             ],
@@ -226,7 +223,8 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         minHeight: buttonStyle.size.height,
         maxHeight: buttonStyle.size.height,
       ),
-      child: buttonWrapper?.call(
+      child:
+          buttonWrapper?.call(
             style: buttonStyle,
             child: buttonContents,
             onPressed: isDisabled ? null : onPressed,

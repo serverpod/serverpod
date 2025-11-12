@@ -37,14 +37,27 @@ class AwsS3Uploader {
 
     final uri = Uri.parse(endpoint);
     final req = http.MultipartRequest("POST", uri);
-    final multipartFile = http.MultipartFile('file', stream, length,
-        filename: path.basename(file.path));
+    final multipartFile = http.MultipartFile(
+      'file',
+      stream,
+      length,
+      filename: path.basename(file.path),
+    );
 
     final policy = Policy.fromS3PresignedPost(
-        uploadDst, bucket, accessKey, 15, length,
-        region: region);
-    final key =
-        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+      uploadDst,
+      bucket,
+      accessKey,
+      15,
+      length,
+      region: region,
+    );
+    final key = SigV4.calculateSigningKey(
+      secretKey,
+      policy.datetime,
+      region,
+      's3',
+    );
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     req.files.add(multipartFile);
@@ -108,14 +121,28 @@ class AwsS3Uploader {
 
     final uri = Uri.parse(endpoint);
     final req = http.MultipartRequest("POST", uri);
-    final multipartFile = http.MultipartFile('file', stream, length,
-        filename: path.basename(uploadDst));
+    final multipartFile = http.MultipartFile(
+      'file',
+      stream,
+      length,
+      filename: path.basename(uploadDst),
+    );
 
     final policy = Policy.fromS3PresignedPost(
-        uploadDst, bucket, accessKey, 15, length,
-        region: region, public: public);
-    final key =
-        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+      uploadDst,
+      bucket,
+      accessKey,
+      15,
+      length,
+      region: region,
+      public: public,
+    );
+    final key = SigV4.calculateSigningKey(
+      secretKey,
+      policy.datetime,
+      region,
+      's3',
+    );
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     req.files.add(multipartFile);
@@ -132,7 +159,8 @@ class AwsS3Uploader {
 
       if (res.statusCode >= 400 && res.statusCode < 500) {
         stderr.writeln(
-            'Failed to upload to AWS, with reason: ${res.reasonPhrase}');
+          'Failed to upload to AWS, with reason: ${res.reasonPhrase}',
+        );
       }
 
       if (res.statusCode == 204) return '$endpoint/$uploadDst';
@@ -180,8 +208,12 @@ class AwsS3Uploader {
       region: region,
       public: public,
     );
-    final key =
-        SigV4.calculateSigningKey(secretKey, policy.datetime, region, 's3');
+    final key = SigV4.calculateSigningKey(
+      secretKey,
+      policy.datetime,
+      region,
+      's3',
+    );
     final signature = SigV4.calculateSignature(key, policy.encode());
 
     var uploadDescriptionData = {

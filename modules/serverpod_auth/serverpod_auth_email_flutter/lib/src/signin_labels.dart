@@ -156,10 +156,12 @@ class SignInWithEmailDialogLabels {
       buttonTitleResetPassword: buttonTitleResetPassword ?? 'Reset Password',
       inputHintNewPassword: inputHintNewPassword ?? 'New password',
       buttonTitleBack: buttonTitleBack ?? 'Back',
-      messageEmailVerificationSent: messageEmailVerificationSent ??
+      messageEmailVerificationSent:
+          messageEmailVerificationSent ??
           'Please check your email. We have sent you a code to verify your address.',
       inputHintValidationCode: inputHintValidationCode ?? 'Validation code',
-      messagePasswordResetSent: messagePasswordResetSent ??
+      messagePasswordResetSent:
+          messagePasswordResetSent ??
           'Please check your email. We have sent you a code to verify your account.',
       errorMessageUserNameRequired:
           errorMessageUserNameRequired ?? 'Please enter a user name',

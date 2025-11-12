@@ -99,8 +99,8 @@ class AppleAuthController extends ChangeNotifier {
     _setState(AppleAuthState.loading);
 
     try {
-      final webAuthOptions =
-          await AppleSignInService.instance.webAuthenticationOptions();
+      final webAuthOptions = await AppleSignInService.instance
+          .webAuthenticationOptions();
 
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: scopes,
@@ -117,7 +117,8 @@ class AppleAuthController extends ChangeNotifier {
 
   /// Handles the server-side sign-in process with the Apple credentials.
   Future<void> _handleServerSideSignIn(
-      AuthorizationCredentialAppleID credential) async {
+    AuthorizationCredentialAppleID credential,
+  ) async {
     try {
       final identityToken = credential.identityToken;
       final authorizationCode = credential.authorizationCode;

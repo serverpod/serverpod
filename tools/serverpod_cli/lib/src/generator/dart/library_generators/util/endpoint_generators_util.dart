@@ -10,9 +10,11 @@ Iterable<Expression> buildEndpointCallAnnotations(MethodDefinition methodDef) {
   return methodDef.annotations
       .where((e) => e.name != 'unauthenticatedClientCall')
       .map((annotation) {
-    var args = annotation.arguments;
-    return refer(args != null
-        ? '${annotation.name}(${args.join(',')})'
-        : annotation.name);
-  });
+        var args = annotation.arguments;
+        return refer(
+          args != null
+              ? '${annotation.name}(${args.join(',')})'
+              : annotation.name,
+        );
+      });
 }

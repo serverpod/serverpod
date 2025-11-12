@@ -21,7 +21,10 @@ class EmailEndpoint extends Endpoint {
 
   /// Changes a users password.
   Future<bool> changePassword(
-      Session session, String oldPassword, String newPassword) async {
+    Session session,
+    String oldPassword,
+    String newPassword,
+  ) async {
     var userId = session.authenticated?.userId;
     if (userId == null) return false;
 
@@ -36,7 +39,10 @@ class EmailEndpoint extends Endpoint {
 
   /// Resets a users password using the reset code.
   Future<bool> resetPassword(
-      Session session, String verificationCode, String password) {
+    Session session,
+    String verificationCode,
+    String password,
+  ) {
     return Emails.resetPassword(session, verificationCode, password);
   }
 

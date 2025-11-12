@@ -15,8 +15,8 @@ void main() {
           .build();
 
       expect(
-          query,
-          '''
+        query,
+        '''
 SELECT
  "citizen"."id" AS "citizen.id",
  "citizen"."name" AS "citizen.name",
@@ -28,7 +28,8 @@ SELECT
 FROM "citizen" 
 LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id"
 '''
-              .replaceAll("\n", ""));
+            .replaceAll("\n", ""),
+      );
     });
   });
 }

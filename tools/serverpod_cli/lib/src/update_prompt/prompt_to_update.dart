@@ -8,8 +8,8 @@ Future<void> promptToUpdateIfNeeded(Version currentVersion) async {
   var latestVersion = await PackageVersion.fetchLatestPackageVersion(
     storePackageVersionData: (PackageVersionData versionArtefact) =>
         resourceManager.storeLatestCliVersion(
-      versionArtefact,
-    ),
+          versionArtefact,
+        ),
     loadPackageVersionData: () => resourceManager.tryFetchLatestCliVersion(),
     fetchLatestPackageVersion: () async {
       var pubClient = PubApiClient();

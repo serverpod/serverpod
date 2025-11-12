@@ -6,23 +6,29 @@ import 'package:test/test.dart';
 
 void main() {
   var testAssetsPath = Directory(
-      p.join('test', 'integration', 'util', 'test_assets', 'pubspec_helpers'));
+    p.join('test', 'integration', 'util', 'test_assets', 'pubspec_helpers'),
+  );
   group('findPubspecFiles', () {
-    test('.findPubspecFiles() recursively find pubspec file in test assets',
-        () {
-      var files = findPubspecsFiles(testAssetsPath);
+    test(
+      '.findPubspecFiles() recursively find pubspec file in test assets',
+      () {
+        var files = findPubspecsFiles(testAssetsPath);
 
-      expect(files.length, equals(2));
-    });
+        expect(files.length, equals(2));
+      },
+    );
 
     test(
-        '.findPubspecFiles() recursively tries to find pubspec file placed in ignored folder',
-        () {
-      var files = findPubspecsFiles(testAssetsPath,
-          ignorePaths: ['conditionally_ignored', 'pubspec_parse']);
+      '.findPubspecFiles() recursively tries to find pubspec file placed in ignored folder',
+      () {
+        var files = findPubspecsFiles(
+          testAssetsPath,
+          ignorePaths: ['conditionally_ignored', 'pubspec_parse'],
+        );
 
-      expect(files.length, equals(0));
-    });
+        expect(files.length, equals(0));
+      },
+    );
   });
 
   group('shouldBeIgnored', () {
@@ -35,15 +41,17 @@ void main() {
       expect(result, isTrue);
     });
 
-    test('should return true when folder is within an ignorePath but not root',
-        () {
-      var ignorePaths = ['path'];
-      var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
+    test(
+      'should return true when folder is within an ignorePath but not root',
+      () {
+        var ignorePaths = ['path'];
+        var path = p.join('ignore', 'path', 'subdirectory', 'file.txt');
 
-      var result = shouldBeIgnored(path, ignorePaths);
+        var result = shouldBeIgnored(path, ignorePaths);
 
-      expect(result, isTrue);
-    });
+        expect(result, isTrue);
+      },
+    );
 
     test('should return false when path is not within any ignorePath', () {
       var ignorePaths = [p.join('ignore', 'path')];
@@ -63,27 +71,31 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('should return false when ignorePaths is part of folder name in path',
-        () {
-      List<String> ignorePaths = ['part'];
-      var path = p.join('any', 'path', 'part_of', 'subdirectory', 'file.txt');
+    test(
+      'should return false when ignorePaths is part of folder name in path',
+      () {
+        List<String> ignorePaths = ['part'];
+        var path = p.join('any', 'path', 'part_of', 'subdirectory', 'file.txt');
 
-      var result = shouldBeIgnored(path, ignorePaths);
+        var result = shouldBeIgnored(path, ignorePaths);
 
-      expect(result, isFalse);
-    });
+        expect(result, isFalse);
+      },
+    );
   });
 
   group('parsePubspec', () {
     test('success when parsing valid pubspec file', () {
-      var file =
-          File(p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec.yaml'));
+      var file = File(
+        p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec.yaml'),
+      );
       expect(() => parsePubspec(file), returnsNormally);
     });
 
     test('throw exception when parsing invalid pubspec file', () {
       var file = File(
-          p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec_invalid.yaml'));
+        p.join(testAssetsPath.path, 'pubspec_parse', 'pubspec_invalid.yaml'),
+      );
       expect(() => parsePubspec(file), throwsException);
     });
   });

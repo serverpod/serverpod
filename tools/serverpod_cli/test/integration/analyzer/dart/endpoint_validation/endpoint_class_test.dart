@@ -10,14 +10,16 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(path.joinAll([
-  'test',
-  'integration',
-  'analyzer',
-  'dart',
-  'endpoint_validation',
-  const Uuid().v4(),
-]));
+var testProjectDirectory = Directory(
+  path.joinAll([
+    'test',
+    'integration',
+    'analyzer',
+    'dart',
+    'endpoint_validation',
+    const Uuid().v4(),
+  ]),
+);
 
 void main() {
   setUpAll(() async {
@@ -30,8 +32,9 @@ void main() {
 
   group('Given a valid endpoint class when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
@@ -84,20 +87,22 @@ class ExampleEndpoint extends Endpoint {
       test('has expected filePath.', () {
         var filePath = endpointDefinitions.firstOrNull?.filePath;
         expect(
-            filePath,
-            path.join(
-              Directory.current.path,
-              testDirectory.path,
-              'endpoint.dart',
-            ));
+          filePath,
+          path.join(
+            Directory.current.path,
+            testDirectory.path,
+            'endpoint.dart',
+          ),
+        );
       });
     });
   });
 
   group('Given a valid endpoint with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
@@ -132,18 +137,20 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given a dart class that does not inherit from Endpoint when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+  group(
+    'Given a dart class that does not inherit from Endpoint when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint {
@@ -152,30 +159,32 @@ class ExampleEndpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
 
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then no endpoint definition are created.', () {
-      expect(endpointDefinitions, isEmpty);
-    });
-  });
+      test('then no endpoint definition are created.', () {
+        expect(endpointDefinitions, isEmpty);
+      });
+    },
+  );
 
-  group('Given same endpoint class definition in multiple files when analyzed',
-      () {
+  group('Given same endpoint class definition in multiple files when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
-      var firstEndpointFile =
-          File(path.join(testDirectory.path, 'endpoint.dart'));
+      var firstEndpointFile = File(
+        path.join(testDirectory.path, 'endpoint.dart'),
+      );
       firstEndpointFile.createSync(recursive: true);
       firstEndpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -186,8 +195,9 @@ class ExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      var secondEndpointFile =
-          File(path.join(testDirectory.path, 'endpoint2.dart'));
+      var secondEndpointFile = File(
+        path.join(testDirectory.path, 'endpoint2.dart'),
+      );
       secondEndpointFile.createSync(recursive: true);
       secondEndpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -207,11 +217,14 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test(
-        'then validation error explains that multiple endpoint definitions exist.',
-        () {
-      expect(collector.errors.firstOrNull?.message,
-          'Multiple endpoint definitions for ExampleEndpoint exists. Please provide a unique name for each endpoint class.');
-    });
+      'then validation error explains that multiple endpoint definitions exist.',
+      () {
+        expect(
+          collector.errors.firstOrNull?.message,
+          'Multiple endpoint definitions for ExampleEndpoint exists. Please provide a unique name for each endpoint class.',
+        );
+      },
+    );
 
     test('then no endpoint definition are created.', () {
       expect(endpointDefinitions, isEmpty);

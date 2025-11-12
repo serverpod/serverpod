@@ -20,8 +20,9 @@ extension EndpointParametersExtension on List<FormalParameterElement> {
 
   /// Returns a list of parameters without the session parameter.
   List<FormalParameterElement> get withoutSessionParameter {
-    return where((parameter) =>
-            parameter.type.element?.displayName != Keyword.sessionClassName)
-        .toList();
+    return where(
+      (parameter) =>
+          parameter.type.element?.displayName != Keyword.sessionClassName,
+    ).toList();
   }
 }

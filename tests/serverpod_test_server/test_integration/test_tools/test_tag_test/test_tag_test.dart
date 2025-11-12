@@ -6,45 +6,53 @@ import 'package:test/test.dart';
 enum TestTag { include, exclude }
 
 void main() async {
-  test(
-      'Given custom tag '
+  test('Given custom tag '
       'when including test tag '
       'then test is run', () async {
-    final result =
-        await runTest(TestTag.include, 'customTag', 'dummy_custom_tag.dart');
+    final result = await runTest(
+      TestTag.include,
+      'customTag',
+      'dummy_custom_tag.dart',
+    );
 
     expect(result.exitCode, 0);
     expect(result.stdout, contains('All tests passed!'));
   });
 
-  test(
-      'Given custom tag '
+  test('Given custom tag '
       'when excluding test tag '
       'then test is not run', () async {
-    final result =
-        await runTest(TestTag.exclude, 'customTag', 'dummy_custom_tag.dart');
+    final result = await runTest(
+      TestTag.exclude,
+      'customTag',
+      'dummy_custom_tag.dart',
+    );
 
     expect(result.exitCode, isNot(equals(0)));
     expect(result.stdout, contains('No tests ran'));
   });
 
-  test(
-      'Given default tag '
+  test('Given default tag '
       'when including test tag '
       'then test is run', () async {
-    final result =
-        await runTest(TestTag.include, 'integration', 'dummy_default_tag.dart');
+    final result = await runTest(
+      TestTag.include,
+      'integration',
+      'dummy_default_tag.dart',
+    );
 
     expect(result.exitCode, 0);
     expect(result.stdout, contains('All tests passed!'));
   });
 
-  test(
-      'Given default tag '
+  test('Given default tag '
       'when excluding test tag '
       'then test is not run', () async {
-    final result =
-        await runTest(TestTag.exclude, 'integration', 'dummy_default_tag.dart');
+    final result = await runTest(
+      TestTag.exclude,
+      'integration',
+      'dummy_default_tag.dart',
+    );
 
     expect(result.exitCode, isNot(equals(0)));
     expect(result.stdout, contains('No tests ran'));

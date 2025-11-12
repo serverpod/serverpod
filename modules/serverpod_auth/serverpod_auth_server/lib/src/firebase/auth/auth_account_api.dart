@@ -15,9 +15,9 @@ class AuthRequestApi {
     required String projectId,
     required ServiceAccountCredentials credentials,
     http.Client? httClient,
-  })  : _projectId = projectId,
-        _credentials = credentials,
-        _httpClient = httClient;
+  }) : _projectId = projectId,
+       _credentials = credentials,
+       _httpClient = httClient;
 
   /// Get UserRecord by user [uiid/localId]
   Future<GoogleCloudIdentitytoolkitV1UserInfo> getUserByUiid(

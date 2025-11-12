@@ -63,10 +63,11 @@ enum TestServerOutputMode {
 }
 
 /// The test closure that is called by the `withServerpod` test helper.
-typedef TestClosure<T> = void Function(
-  TestSessionBuilder testSession,
-  T endpoints,
-);
+typedef TestClosure<T> =
+    void Function(
+      TestSessionBuilder testSession,
+      T endpoints,
+    );
 
 /// The default integration test tag used by `withServerpod`.
 const String defaultIntegrationTestTag = 'integration';
@@ -75,7 +76,7 @@ const String defaultIntegrationTestTag = 'integration';
 /// Used by the generated code.
 /// Note: The [testGroupName] parameter is needed to enable IDE support.
 void Function(TestClosure<T>)
-    buildWithServerpod<T extends InternalTestEndpoints>(
+buildWithServerpod<T extends InternalTestEndpoints>(
   String testGroupName,
   TestServerpod<T> testServerpod, {
   required RollbackDatabase? maybeRollbackDatabase,
@@ -124,11 +125,11 @@ void Function(TestClosure<T>)
 
   InternalTestSessionBuilder mainTestSessionBuilder =
       InternalTestSessionBuilder(
-    testServerpod,
-    allTestSessions: allTestSessions,
-    enableLogging: maybeEnableSessionLogging ?? false,
-    mainServerpodSession: mainServerpodSession,
-  );
+        testServerpod,
+        allTestSessions: allTestSessions,
+        enableLogging: maybeEnableSessionLogging ?? false,
+        mainServerpodSession: mainServerpodSession,
+      );
 
   bool startServerpodFailed = false;
 
@@ -140,13 +141,16 @@ void Function(TestClosure<T>)
       () {
         setUpAll(() async {
           try {
-            await testServerpod.start().timeout(startTimeout, onTimeout: () {
-              throw InitializationException(
-                'Serverpod did not start within the timeout of $startTimeout. '
-                'This might indicate that Serverpod cannot connect to the database. '
-                'Ensure that you have run `docker compose up` and check the logs for more information.',
-              );
-            });
+            await testServerpod.start().timeout(
+              startTimeout,
+              onTimeout: () {
+                throw InitializationException(
+                  'Serverpod did not start within the timeout of $startTimeout. '
+                  'This might indicate that Serverpod cannot connect to the database. '
+                  'Ensure that you have run `docker compose up` and check the logs for more information.',
+                );
+              },
+            );
           } catch (_) {
             startServerpodFailed = true;
             rethrow;

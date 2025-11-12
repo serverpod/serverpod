@@ -20,7 +20,10 @@ Future<void> _createTestDatabase(Session session) async {
 
   // Citizens
   var alex = Citizen(
-      name: 'Alex', companyId: serverpod.id!, oldCompanyId: systemair.id!);
+    name: 'Alex',
+    companyId: serverpod.id!,
+    oldCompanyId: systemair.id!,
+  );
   var isak = Citizen(name: 'Isak', companyId: serverpod.id!);
   var lina = Citizen(name: 'Lina', companyId: systemair.id!);
   var joanna = Citizen(name: 'Joanna', companyId: systemair.id!);
@@ -49,17 +52,27 @@ Future<void> _createTestDatabase(Session session) async {
 }
 
 Future<int> deleteAll(Session session) async {
-  var addressDeletions =
-      await Address.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var citizenDeletions =
-      await Citizen.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var companyDeletions =
-      await Company.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var townDeletions =
-      await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var addressDeletions = await Address.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var citizenDeletions = await Citizen.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var companyDeletions = await Company.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var townDeletions = await Town.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
-  var postDeletions =
-      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var postDeletions = await Post.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
   return townDeletions.length +
       companyDeletions.length +
@@ -86,19 +99,20 @@ void main() async {
   });
 
   group(
-      'Given models with nested relation when counting on nested relation attributes',
-      () {
-    setUp(() async => await _createTestDatabase(session));
+    'Given models with nested relation when counting on nested relation attributes',
+    () {
+      setUp(() async => await _createTestDatabase(session));
 
-    tearDown(() async => await deleteAll(session));
+      tearDown(() async => await deleteAll(session));
 
-    test('then expected number of models are found.', () async {
-      var modelsFound = await Citizen.db.count(
-        session,
-        where: (t) => t.company.town.name.equals('Stockholm'),
-      );
+      test('then expected number of models are found.', () async {
+        var modelsFound = await Citizen.db.count(
+          session,
+          where: (t) => t.company.town.name.equals('Stockholm'),
+        );
 
-      expect(modelsFound, 4);
-    });
-  });
+        expect(modelsFound, 4);
+      });
+    },
+  );
 }

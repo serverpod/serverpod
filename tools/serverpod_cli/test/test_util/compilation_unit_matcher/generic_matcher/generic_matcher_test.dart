@@ -11,28 +11,30 @@ void main() {
     );
 
     test(
-        'when negate matching with non-existent generic on the extended class then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').thatExtends('Parent').withGeneric('T')),
-      );
-    });
+      'when negate matching with non-existent generic on the extended class then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').thatExtends('Parent').withGeneric('T')),
+        );
+      },
+    );
 
     test(
-        'when matching with non-existent generic on the extended class then mismatch description is correct',
-        () {
-      final matcher = containsClass('User')
-          .thatExtends('Parent')
-          .withGeneric('T') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching with non-existent generic on the extended class then mismatch description is correct',
+      () {
+        final matcher =
+            containsClass('User').thatExtends('Parent').withGeneric('T')
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals('does not have any generics'),
-      );
-    });
+        expect(
+          description.toString(),
+          equals('does not have any generics'),
+        );
+      },
+    );
   });
 
   group('Given a class with an extends clause that has generics', () {
@@ -50,30 +52,32 @@ void main() {
     });
 
     test(
-        'when negate matching non-existent generic on the extended class then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').thatExtends('Parent').withGeneric('X')),
-      );
-    });
+      'when negate matching non-existent generic on the extended class then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').thatExtends('Parent').withGeneric('X')),
+        );
+      },
+    );
 
     test(
-        'when matching incorrect generic on the extended class then test fails',
-        () {
-      final matcher = containsClass('User')
-          .thatExtends('Parent')
-          .withGeneric('X') as Matcher;
-      final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      'when matching incorrect generic on the extended class then test fails',
+      () {
+        final matcher =
+            containsClass('User').thatExtends('Parent').withGeneric('X')
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
 
-      expect(
-        description.toString(),
-        equals(
-          'does not have the generic "X". Found generics: [T]',
-        ),
-      );
-    });
+        expect(
+          description.toString(),
+          equals(
+            'does not have the generic "X". Found generics: [T]',
+          ),
+        );
+      },
+    );
   });
 
   group('Given a class with an extends clause that with multiple generics', () {
@@ -91,44 +95,49 @@ void main() {
     });
 
     test(
-        'when negate matching non-existent generic on the extended class then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').thatExtends('Parent').withGeneric('X')),
-      );
-    });
+      'when negate matching non-existent generic on the extended class then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').thatExtends('Parent').withGeneric('X')),
+        );
+      },
+    );
 
     test(
-        'when matching incorrect generic on the extended class then test fails',
-        () {
-      final matcher = containsClass('User')
-          .thatExtends('Parent')
-          .withGeneric('X') as Matcher;
+      'when matching incorrect generic on the extended class then test fails',
+      () {
+        final matcher =
+            containsClass('User').thatExtends('Parent').withGeneric('X')
+                as Matcher;
+        final description = StringDescription();
+        matcher.describeMismatch(compilationUnit, description, {}, false);
+
+        expect(
+          description.toString(),
+          equals(
+            'does not have the generic "X". Found generics: [T, V]',
+          ),
+        );
+      },
+    );
+  });
+
+  test(
+    'Given generics matcher with when describing matcher then description is correct',
+    () {
+      final matcher =
+          containsClass('User').thatExtends('Parent').withGeneric('T')
+              as Matcher;
       final description = StringDescription();
-      matcher.describeMismatch(compilationUnit, description, {}, false);
+      matcher.describe(description);
 
       expect(
         description.toString(),
         equals(
-          'does not have the generic "X". Found generics: [T, V]',
+          'a CompilationUnit containing class "User" that extends "Parent" with generic "T"',
         ),
       );
-    });
-  });
-
-  test(
-      'Given generics matcher with when describing matcher then description is correct',
-      () {
-    final matcher =
-        containsClass('User').thatExtends('Parent').withGeneric('T') as Matcher;
-    final description = StringDescription();
-    matcher.describe(description);
-
-    expect(
-      description.toString(),
-      equals(
-          'a CompilationUnit containing class "User" that extends "Parent" with generic "T"'),
-    );
-  });
+    },
+  );
 }

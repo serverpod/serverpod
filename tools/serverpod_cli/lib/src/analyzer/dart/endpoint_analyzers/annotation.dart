@@ -15,8 +15,9 @@ abstract class AnnotationAnalyzer {
 
   /// Parses annotations directly from an element's metadata.
   static List<AnnotationDefinition> _parseElementAnnotations(Element element) {
-    return element.metadata.annotations
-        .expand<AnnotationDefinition>((annotation) {
+    return element.metadata.annotations.expand<AnnotationDefinition>((
+      annotation,
+    ) {
       var annotationElement = annotation.element;
       var annotationName = annotationElement is ConstructorElement
           ? annotationElement.enclosingElement.name
@@ -24,13 +25,13 @@ abstract class AnnotationAnalyzer {
       if (annotationName == null) return [];
       return switch (annotationName) {
         'Deprecated' => [
-            AnnotationDefinition(
-              name: annotationName,
-              arguments: _parseAnnotationStringArgument(annotation, 'message'),
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            ),
-          ],
+          AnnotationDefinition(
+            name: annotationName,
+            arguments: _parseAnnotationStringArgument(annotation, 'message'),
+            methodCallAnalyzerIgnoreRule:
+                'deprecated_member_use_from_same_package',
+          ),
+        ],
         'deprecated' =>
           // @deprecated is a shorthand for @Deprecated(..)
           // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
@@ -43,20 +44,20 @@ abstract class AnnotationAnalyzer {
           ],
         // @ignoreEndpoint is deprecated in favor of @doNotGenerate
         'ignoreEndpoint' => [
-            const AnnotationDefinition(
-              name: 'doNotGenerate',
-            ),
-          ],
+          const AnnotationDefinition(
+            name: 'doNotGenerate',
+          ),
+        ],
         'doNotGenerate' => [
-            AnnotationDefinition(
-              name: annotationName,
-            ),
-          ],
+          AnnotationDefinition(
+            name: annotationName,
+          ),
+        ],
         'unauthenticatedClientCall' => [
-            AnnotationDefinition(
-              name: annotationName,
-            ),
-          ],
+          AnnotationDefinition(
+            name: annotationName,
+          ),
+        ],
         _ => [],
       };
     }).toList();
@@ -84,8 +85,10 @@ abstract class AnnotationAnalyzer {
     ElementAnnotation annotation,
     String fieldName,
   ) {
-    var argument =
-        annotation.computeConstantValue()?.getField(fieldName)?.toStringValue();
+    var argument = annotation
+        .computeConstantValue()
+        ?.getField(fieldName)
+        ?.toStringValue();
     return argument != null ? ["'$argument'"] : null;
   }
 }
@@ -94,6 +97,7 @@ extension AnnotationExtensions on Element {
   bool get markedAsIgnored =>
       AnnotationAnalyzer.parseAnnotations(this).has('doNotGenerate');
 
-  bool get markedAsUnauthenticated => AnnotationAnalyzer.parseAnnotations(this)
-      .has('unauthenticatedClientCall');
+  bool get markedAsUnauthenticated => AnnotationAnalyzer.parseAnnotations(
+    this,
+  ).has('unauthenticatedClientCall');
 }

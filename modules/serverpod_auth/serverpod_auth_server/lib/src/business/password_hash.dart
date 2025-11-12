@@ -111,12 +111,15 @@ class PasswordHash {
   /// If the password does not match the hash, the [onValidationFailure] function
   /// will be called with the hash and the password hash as arguments.
   Future<PasswordValidationResult> validate(String password) async {
-    var passwordHash =
-        await Isolate.run(() => _hashGenerator.generateHash(password));
+    var passwordHash = await Isolate.run(
+      () => _hashGenerator.generateHash(password),
+    );
 
     if (_hash != passwordHash) {
       return PasswordValidationFailed(
-          passwordHash: passwordHash, storedHash: _hash);
+        passwordHash: passwordHash,
+        storedHash: _hash,
+      );
     }
 
     return const PasswordValidationSuccess();
@@ -130,9 +133,12 @@ class PasswordHash {
     String password,
     String salt, {
     String? email,
-  }) async =>
-      Isolate.run(() => _LegacyPasswordHashGenerator(salt: salt, email: email)
-          .generatePasswordHash(password));
+  }) async => Isolate.run(
+    () => _LegacyPasswordHashGenerator(
+      salt: salt,
+      email: email,
+    ).generatePasswordHash(password),
+  );
 
   /// Creates an Argon2id password hash expecting the passed in password hash to
   /// be a legacy password hash.
@@ -155,19 +161,18 @@ class PasswordHash {
     String? salt,
     String? pepper,
     bool allowUnsecureRandom = false,
-  }) async =>
-      Isolate.run(() {
-        var encodedSalt = _generateSalt(
-          salt: salt,
-          allowUnsecureRandom: allowUnsecureRandom,
-        );
+  }) async => Isolate.run(() {
+    var encodedSalt = _generateSalt(
+      salt: salt,
+      allowUnsecureRandom: allowUnsecureRandom,
+    );
 
-        return _LegacyToArgon2idPasswordHash(
-          legacySalt: legacySalt,
-          salt: encodedSalt,
-          pepper: pepper,
-        ).generatePasswordHash(legacyHash);
-      });
+    return _LegacyToArgon2idPasswordHash(
+      legacySalt: legacySalt,
+      salt: encodedSalt,
+      pepper: pepper,
+    ).generatePasswordHash(legacyHash);
+  });
 
   /// Creates a new password hash using the Argon2id algorithm.
   ///
@@ -183,18 +188,17 @@ class PasswordHash {
     String? salt,
     String? pepper,
     bool allowUnsecureRandom = false,
-  }) async =>
-      Isolate.run(() {
-        var encodedSalt = _generateSalt(
-          salt: salt,
-          allowUnsecureRandom: allowUnsecureRandom,
-        );
+  }) async => Isolate.run(() {
+    var encodedSalt = _generateSalt(
+      salt: salt,
+      allowUnsecureRandom: allowUnsecureRandom,
+    );
 
-        return _Argon2idPasswordHashGenerator(
-          salt: encodedSalt,
-          pepper: pepper,
-        ).generatePasswordHash(password);
-      });
+    return _Argon2idPasswordHashGenerator(
+      salt: encodedSalt,
+      pepper: pepper,
+    ).generatePasswordHash(password);
+  });
 
   static String _generateSalt({
     required bool allowUnsecureRandom,
@@ -233,8 +237,8 @@ class _LegacyPasswordHashGenerator implements _PasswordHashGenerator {
   final String? _email;
 
   _LegacyPasswordHashGenerator({required String salt, String? email})
-      : _salt = salt,
-        _email = email;
+    : _salt = salt,
+      _email = email;
 
   String generatePasswordHash(String password) {
     return generateHash(password);
@@ -259,8 +263,8 @@ class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
   final String? _pepper;
 
   _Argon2idPasswordHashGenerator({required String salt, String? pepper})
-      : _salt = salt,
-        _pepper = pepper;
+    : _salt = salt,
+      _pepper = pepper;
 
   String generatePasswordHash(String password) {
     var hash = generateHash(password);
@@ -302,10 +306,10 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
     required String salt,
     String? email,
     String? pepper,
-  })  : _legacySalt = legacySalt,
-        _salt = salt,
-        _email = email,
-        _pepper = pepper;
+  }) : _legacySalt = legacySalt,
+       _salt = salt,
+       _email = email,
+       _pepper = pepper;
 
   String generatePasswordHash(String legacyHash) {
     var hash = _Argon2idPasswordHashGenerator(
@@ -317,9 +321,10 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
 
   @override
   String generateHash(String password) {
-    var legacyHash =
-        _LegacyPasswordHashGenerator(salt: _legacySalt, email: _email)
-            .generateHash(password);
+    var legacyHash = _LegacyPasswordHashGenerator(
+      salt: _legacySalt,
+      email: _email,
+    ).generateHash(password);
     return _Argon2idPasswordHashGenerator(
       salt: _salt,
       pepper: _pepper,

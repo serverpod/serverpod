@@ -7,29 +7,31 @@ import 'test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod('Given no users,', (final sessionBuilder, final endpoints) {
     test(
-        'when calling `UserProfile.get` with an unauthenticated user, then an error is thrown.',
-        () async {
-      await expectLater(
-        () => endpoints.userProfile.get(sessionBuilder),
-        throwsA(isA<ServerpodUnauthenticatedException>()),
-      );
-    });
+      'when calling `UserProfile.get` with an unauthenticated user, then an error is thrown.',
+      () async {
+        await expectLater(
+          () => endpoints.userProfile.get(sessionBuilder),
+          throwsA(isA<ServerpodUnauthenticatedException>()),
+        );
+      },
+    );
 
     test(
-        'when calling `UserProfile.get` for a non-existent "auth user", then an error is thrown.',
-        () async {
-      final session = sessionBuilder.copyWith(
-        authentication: AuthenticationOverride.authenticationInfo(
-          const Uuid().v4obj().uuid,
-          {},
-        ),
-      );
+      'when calling `UserProfile.get` for a non-existent "auth user", then an error is thrown.',
+      () async {
+        final session = sessionBuilder.copyWith(
+          authentication: AuthenticationOverride.authenticationInfo(
+            const Uuid().v4obj().uuid,
+            {},
+          ),
+        );
 
-      await expectLater(
-        () => endpoints.userProfile.get(session),
-        throwsA(isA<UserProfileNotFoundException>()),
-      );
-    });
+        await expectLater(
+          () => endpoints.userProfile.get(session),
+          throwsA(isA<UserProfileNotFoundException>()),
+        );
+      },
+    );
   });
 
   withServerpod(
@@ -51,13 +53,14 @@ void main() {
       });
 
       test(
-          'when calling `UserProfile.get` for that user, then an error is thrown.',
-          () async {
-        await expectLater(
-          () => endpoints.userProfile.get(session),
-          throwsA(isA<UserProfileNotFoundException>()),
-        );
-      });
+        'when calling `UserProfile.get` for that user, then an error is thrown.',
+        () async {
+          await expectLater(
+            () => endpoints.userProfile.get(session),
+            throwsA(isA<UserProfileNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -91,50 +94,55 @@ void main() {
       });
 
       test(
-          'when calling `UserProfile.get` for that user, then the profile is returned containing the user name.',
-          () async {
-        final profile = await endpoints.userProfile.get(session);
+        'when calling `UserProfile.get` for that user, then the profile is returned containing the user name.',
+        () async {
+          final profile = await endpoints.userProfile.get(session);
 
-        expect(profile.userName, 'user name');
-      });
-
-      test(
-          'when calling `UserProfile.get` for that user, then the profile is returned containing the full name.',
-          () async {
-        final profile = await endpoints.userProfile.get(session);
-
-        expect(profile.fullName, 'Full Name');
-      });
+          expect(profile.userName, 'user name');
+        },
+      );
 
       test(
-          'when calling `UserProfile.get` for that user, then the profile is returned containing the email in lower-case.',
-          () async {
-        final profile = await endpoints.userProfile.get(session);
+        'when calling `UserProfile.get` for that user, then the profile is returned containing the full name.',
+        () async {
+          final profile = await endpoints.userProfile.get(session);
 
-        expect(profile.email, 'foo@serverpod.dev');
-      });
-
-      test(
-          'when calling `UserProfile.changeUserName`, the profile with the new user name is returned.',
-          () async {
-        final profile = await endpoints.userProfile.changeUserName(
-          session,
-          'new user name',
-        );
-
-        expect(profile.userName, 'new user name');
-      });
+          expect(profile.fullName, 'Full Name');
+        },
+      );
 
       test(
-          'when calling `UserProfile.changeFullName`, the profile with the new full name is returned.',
-          () async {
-        final profile = await endpoints.userProfile.changeFullName(
-          session,
-          'New Full Name',
-        );
+        'when calling `UserProfile.get` for that user, then the profile is returned containing the email in lower-case.',
+        () async {
+          final profile = await endpoints.userProfile.get(session);
 
-        expect(profile.fullName, 'New Full Name');
-      });
+          expect(profile.email, 'foo@serverpod.dev');
+        },
+      );
+
+      test(
+        'when calling `UserProfile.changeUserName`, the profile with the new user name is returned.',
+        () async {
+          final profile = await endpoints.userProfile.changeUserName(
+            session,
+            'new user name',
+          );
+
+          expect(profile.userName, 'new user name');
+        },
+      );
+
+      test(
+        'when calling `UserProfile.changeFullName`, the profile with the new full name is returned.',
+        () async {
+          final profile = await endpoints.userProfile.changeFullName(
+            session,
+            'New Full Name',
+          );
+
+          expect(profile.fullName, 'New Full Name');
+        },
+      );
     },
   );
 
@@ -169,19 +177,21 @@ void main() {
       });
 
       test(
-          'when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
-          () async {
-        final profileBefore = await endpoints.userProfile.get(session);
-        expect(profileBefore.imageUrl, isNotNull);
+        'when calling `UserProfile.removeUserImage` then the image is removed and imageUrl is null.',
+        () async {
+          final profileBefore = await endpoints.userProfile.get(session);
+          expect(profileBefore.imageUrl, isNotNull);
 
-        final updatedProfile =
-            await endpoints.userProfile.removeUserImage(session);
+          final updatedProfile = await endpoints.userProfile.removeUserImage(
+            session,
+          );
 
-        expect(updatedProfile.imageUrl, isNull);
+          expect(updatedProfile.imageUrl, isNull);
 
-        final profileAfter = await endpoints.userProfile.get(session);
-        expect(profileAfter.imageUrl, isNull);
-      });
+          final profileAfter = await endpoints.userProfile.get(session);
+          expect(profileAfter.imageUrl, isNull);
+        },
+      );
     },
   );
 }

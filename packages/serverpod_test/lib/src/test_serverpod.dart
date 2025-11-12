@@ -25,7 +25,8 @@ class InternalServerpodSession extends Session {
     var localTransactionManager = transactionManager;
     if (localTransactionManager == null) {
       throw StateError(
-          'Database is not enabled for this project, but transaction was accessed.');
+        'Database is not enabled for this project, but transaction was accessed.',
+      );
     }
     return localTransactionManager.currentTransaction;
   }
@@ -35,7 +36,8 @@ class InternalServerpodSession extends Session {
     var localDbProxy = _dbProxy;
     if (localDbProxy == null) {
       throw StateError(
-          'Database is not enabled for this project, but db was accessed.');
+        'Database is not enabled for this project, but db was accessed.',
+      );
     }
     return localDbProxy;
   }
@@ -82,14 +84,13 @@ List<String> _getServerpodStartUpArgs({
   String? runMode,
   bool? applyMigrations,
   ServerpodLoggingMode? loggingMode,
-}) =>
-    [
-      '-m',
-      runMode ?? ServerpodRunMode.test,
-      if (applyMigrations ?? true) '--apply-migrations',
-      '--logging',
-      loggingMode?.name ?? ServerpodLoggingMode.normal.name,
-    ];
+}) => [
+  '-m',
+  runMode ?? ServerpodRunMode.test,
+  if (applyMigrations ?? true) '--apply-migrations',
+  '--logging',
+  loggingMode?.name ?? ServerpodLoggingMode.normal.name,
+];
 
 /// A facade for the real Serverpod instance.
 class TestServerpod<T extends InternalTestEndpoints> {
@@ -122,29 +123,29 @@ class TestServerpod<T extends InternalTestEndpoints> {
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) : testServerOutputMode =
-            testServerOutputMode ?? TestServerOutputMode.normal {
+           testServerOutputMode ?? TestServerOutputMode.normal {
     // Ignore output from the Serverpod constructor to avoid spamming the console.
     // Should be changed when a proper logger is implemented.
     // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
     _buildServerpodAndInitializeEndpoints = () => IOOverrides.runZoned(
-          () {
-            var serverpod = Serverpod(
-              _getServerpodStartUpArgs(
-                runMode: runMode,
-                applyMigrations: applyMigrations,
-                loggingMode: serverpodLoggingMode,
-              ),
-              serializationManager,
-              endpoints,
-              experimentalFeatures: experimentalFeatures,
-              runtimeParametersBuilder: runtimeParametersBuilder,
-            );
-            endpoints.initializeEndpoints(serverpod.server);
-            return serverpod;
-          },
-          stdout: () => NullStdOut(),
-          stderr: () => NullStdOut(),
+      () {
+        var serverpod = Serverpod(
+          _getServerpodStartUpArgs(
+            runMode: runMode,
+            applyMigrations: applyMigrations,
+            loggingMode: serverpodLoggingMode,
+          ),
+          serializationManager,
+          endpoints,
+          experimentalFeatures: experimentalFeatures,
+          runtimeParametersBuilder: runtimeParametersBuilder,
         );
+        endpoints.initializeEndpoints(serverpod.server);
+        return serverpod;
+      },
+      stdout: () => NullStdOut(),
+      stderr: () => NullStdOut(),
+    );
     testEndpoints.initialize(serializationManager, endpoints);
   }
 

@@ -14,9 +14,9 @@ class MockServerpodClient extends TestServerpodClient {
   int openConnectionCallCount = 0;
 
   MockServerpodClient()
-      : super(
-          host: Uri.parse('http://localhost:8080'),
-        );
+    : super(
+        host: Uri.parse('http://localhost:8080'),
+      );
 
   @override
   StreamingConnectionStatus get streamingConnectionStatus => _status;
@@ -72,8 +72,7 @@ void main() {
     handler.dispose();
   });
 
-  test(
-      'Given StreamingConnectionHandler '
+  test('Given StreamingConnectionHandler '
       'when transitioning to connected status during countdown '
       'then timer is cancelled and old timer does not fire', () async {
     handler = StreamingConnectionHandler(
@@ -87,14 +86,16 @@ void main() {
     client.simulateConnectionStatusChange(StreamingConnectionStatus.connected);
     await Future.delayed(const Duration(milliseconds: 100));
 
-    client
-        .simulateConnectionStatusChange(StreamingConnectionStatus.disconnected);
+    client.simulateConnectionStatusChange(
+      StreamingConnectionStatus.disconnected,
+    );
     await Future.delayed(const Duration(milliseconds: 100));
 
     // Verify countdown started
     expect(
-      receivedStates
-          .any((s) => s.status == StreamingConnectionStatus.waitingToRetry),
+      receivedStates.any(
+        (s) => s.status == StreamingConnectionStatus.waitingToRetry,
+      ),
       isTrue,
     );
 

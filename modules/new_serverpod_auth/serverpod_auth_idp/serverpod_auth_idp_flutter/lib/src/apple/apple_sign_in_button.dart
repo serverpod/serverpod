@@ -56,9 +56,9 @@ class AppleSignInButton extends StatelessWidget {
     this.minimumWidth = 240,
     super.key,
   }) : assert(
-          minimumWidth > 0 && minimumWidth <= 400,
-          'Invalid minimumWidth. Must be between 0 and 400.',
-        );
+         minimumWidth > 0 && minimumWidth <= 400,
+         'Invalid minimumWidth. Must be between 0 and 400.',
+       );
 
   @override
   Widget build(BuildContext context) {

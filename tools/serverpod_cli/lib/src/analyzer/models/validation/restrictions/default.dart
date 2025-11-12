@@ -434,7 +434,8 @@ class DefaultValueRestriction extends ValueRestriction {
       ];
     }
 
-    bool invalidDefaultValue = value != defaultUuidValueRandom &&
+    bool invalidDefaultValue =
+        value != defaultUuidValueRandom &&
         !value.startsWith("'") &&
         !value.startsWith('"');
 

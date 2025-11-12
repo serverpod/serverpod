@@ -38,35 +38,40 @@ class TestStreamManager<OutputStreamType> {
 
   /// Creates a new [TestStreamManager].
   TestStreamManager()
-      : outputStreamController = StreamController<OutputStreamType>() {
+    : outputStreamController = StreamController<OutputStreamType>() {
     _streamManager = MethodStreamManager(
       request: null,
-      onOutputStreamClosed: (
-        UuidValue methodStreamId,
-        CloseReason? closeReason,
-        MethodStreamCallContext context,
-      ) {
-        if (closeReason == CloseReason.error) {
-          outputStreamController.addError(const ConnectionClosedException());
-        }
+      onOutputStreamClosed:
+          (
+            UuidValue methodStreamId,
+            CloseReason? closeReason,
+            MethodStreamCallContext context,
+          ) {
+            if (closeReason == CloseReason.error) {
+              outputStreamController.addError(
+                const ConnectionClosedException(),
+              );
+            }
 
-        outputStreamController.close();
-      },
-      onOutputStreamError: (
-        UuidValue methodStreamId,
-        Object error,
-        StackTrace stackTrace,
-        MethodStreamCallContext context,
-      ) {
-        outputStreamController.addError(error, stackTrace);
-      },
-      onOutputStreamValue: (
-        UuidValue methodStreamId,
-        Object? value,
-        MethodStreamCallContext context,
-      ) {
-        outputStreamController.add(value as OutputStreamType);
-      },
+            outputStreamController.close();
+          },
+      onOutputStreamError:
+          (
+            UuidValue methodStreamId,
+            Object error,
+            StackTrace stackTrace,
+            MethodStreamCallContext context,
+          ) {
+            outputStreamController.addError(error, stackTrace);
+          },
+      onOutputStreamValue:
+          (
+            UuidValue methodStreamId,
+            Object? value,
+            MethodStreamCallContext context,
+          ) {
+            outputStreamController.add(value as OutputStreamType);
+          },
     );
 
     GlobalStreamManager.add(_streamManager);

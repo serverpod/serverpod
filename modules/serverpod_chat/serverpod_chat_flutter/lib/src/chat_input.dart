@@ -106,7 +106,8 @@ class ChatInputState extends State<ChatInput> {
     }
 
     return Container(
-      decoration: widget.boxDecoration ??
+      decoration:
+          widget.boxDecoration ??
           BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: const BorderRadius.all(Radius.circular(6)),
@@ -120,7 +121,8 @@ class ChatInputState extends State<ChatInput> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: widget.padding ??
+                    padding:
+                        widget.padding ??
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: TextField(
                       autofocus: true,
@@ -129,7 +131,8 @@ class ChatInputState extends State<ChatInput> {
                       maxLines: 10,
                       controller: _textController,
                       focusNode: _focusNode,
-                      decoration: widget.inputDecoration ??
+                      decoration:
+                          widget.inputDecoration ??
                           const InputDecoration(
                             hintText: 'Send a message...',
                             isDense: false,

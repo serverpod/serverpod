@@ -9,10 +9,11 @@ void main() {
     var column = ColumnByteData(columnName, Table<int?>(tableName: 'test'));
 
     test(
-        'when toString is called then column name withing double quotes is returned.',
-        () {
-      expect(column.toString(), '"test"."$columnName"');
-    });
+      'when toString is called then column name withing double quotes is returned.',
+      () {
+        expect(column.toString(), '"test"."$columnName"');
+      },
+    );
 
     test('when columnName getter is called then column name is returned.', () {
       expect(column.columnName, columnName);

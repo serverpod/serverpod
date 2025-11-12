@@ -18,13 +18,13 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// Tolerance to add to the token expiration time before refreshing.
     Duration refreshJwtTokenBefore = const Duration(seconds: 30),
   }) : super(
-          _JwtAuthKeyProviderDelegate(
-            getAuthInfo: getAuthInfo,
-            onRefreshAuthInfo: onRefreshAuthInfo,
-            refreshEndpoint: refreshEndpoint,
-            refreshJwtTokenBefore: refreshJwtTokenBefore,
-          ),
-        );
+         _JwtAuthKeyProviderDelegate(
+           getAuthInfo: getAuthInfo,
+           onRefreshAuthInfo: onRefreshAuthInfo,
+           refreshEndpoint: refreshEndpoint,
+           refreshJwtTokenBefore: refreshJwtTokenBefore,
+         ),
+       );
 }
 
 class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
@@ -61,8 +61,9 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
     }
 
     try {
-      final authSuccess =
-          await refreshEndpoint.refreshAccessToken(refreshToken: refreshToken);
+      final authSuccess = await refreshEndpoint.refreshAccessToken(
+        refreshToken: refreshToken,
+      );
       await onRefreshAuthInfo(authSuccess);
       return RefreshAuthKeyResult.success;
     } catch (e) {

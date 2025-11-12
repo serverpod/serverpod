@@ -23,8 +23,10 @@ class GenerateFiles {
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
     bool hasErrors = false;
-    final modelAnalyzer =
-        StatefulAnalyzer(config, yamlModels, (uri, collector) {
+    final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (
+      uri,
+      collector,
+    ) {
       collector.printErrors();
       if (collector.errors.isNotEmpty) {
         hasErrors = true;
@@ -33,7 +35,8 @@ class GenerateFiles {
 
     if (hasErrors) {
       log.error(
-          'There were errors parsing the models. Please fix them and try again.');
+        'There were errors parsing the models. Please fix them and try again.',
+      );
       return false;
     }
 

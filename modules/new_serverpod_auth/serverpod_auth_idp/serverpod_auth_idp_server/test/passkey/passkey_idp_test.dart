@@ -58,51 +58,53 @@ void main() {
       });
 
       test(
-          "when calling `PasskeyAccounts.registerPasskey` before challenge expires, then the passkey is registered for the session's user.",
-          () async {
-        await passKeyIDP.register(
-          session,
-          authUserId: user.id,
-          request: PasskeyRegistrationRequest(
-            challengeId: challengeId,
-            keyId: _keyId,
-            clientDataJSON: _registrationClientDataJSON,
-            attestationObject: _attestationObject,
-          ),
-        );
+        "when calling `PasskeyAccounts.registerPasskey` before challenge expires, then the passkey is registered for the session's user.",
+        () async {
+          await passKeyIDP.register(
+            session,
+            authUserId: user.id,
+            request: PasskeyRegistrationRequest(
+              challengeId: challengeId,
+              keyId: _keyId,
+              clientDataJSON: _registrationClientDataJSON,
+              attestationObject: _attestationObject,
+            ),
+          );
 
-        final passkeyAccount = (await PasskeyAccount.db.find(session)).single;
+          final passkeyAccount = (await PasskeyAccount.db.find(session)).single;
 
-        expect(passkeyAccount.authUserId, user.id);
-      });
+          expect(passkeyAccount.authUserId, user.id);
+        },
+      );
 
       test(
-          'when calling `PasskeyAccounts.registerPasskey` after challenge expired, then a `PasskeyChallengeExpiredException` is thrown.',
-          () async {
-        await expectLater(
-          withClock(
-            Clock.fixed(
-              DateTime.now().add(passKeyIDP.config.challengeLifetime),
-            ),
-            () => passKeyIDP.register(
-              session,
-              authUserId: user.id,
-              request: PasskeyRegistrationRequest(
-                challengeId: challengeId,
-                keyId: _keyId,
-                clientDataJSON: _registrationClientDataJSON,
-                attestationObject: _attestationObject,
+        'when calling `PasskeyAccounts.registerPasskey` after challenge expired, then a `PasskeyChallengeExpiredException` is thrown.',
+        () async {
+          await expectLater(
+            withClock(
+              Clock.fixed(
+                DateTime.now().add(passKeyIDP.config.challengeLifetime),
+              ),
+              () => passKeyIDP.register(
+                session,
+                authUserId: user.id,
+                request: PasskeyRegistrationRequest(
+                  challengeId: challengeId,
+                  keyId: _keyId,
+                  clientDataJSON: _registrationClientDataJSON,
+                  attestationObject: _attestationObject,
+                ),
               ),
             ),
-          ),
-          throwsA(isA<PasskeyChallengeExpiredException>()),
-        );
+            throwsA(isA<PasskeyChallengeExpiredException>()),
+          );
 
-        expect(
-          await PasskeyAccount.db.find(session),
-          isEmpty,
-        );
-      });
+          expect(
+            await PasskeyAccount.db.find(session),
+            isEmpty,
+          );
+        },
+      );
     },
   );
 
@@ -157,126 +159,148 @@ void main() {
       });
 
       test(
-          "when calling `PasskeyAccounts.login` with valid login request data, then the user's ID is returned.",
-          () async {
-        final authSuccess = await passKeyIDP.login(
-          session,
-          request: PasskeyLoginRequest(
-            challengeId: loginChallengeId,
-            keyId: _keyId,
-            authenticatorData: _loginAuthenticatorData,
-            clientDataJSON: _loginClientDataJSON,
-            signature: _signature,
-          ),
-        );
-
-        expect(authSuccess.authUserId, user.id);
-      });
-
-      test(
-          'when calling `PasskeyAccounts.login` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
-          () async {
-        await expectLater(
-          () => passKeyIDP.login(
-            session,
-            request: PasskeyLoginRequest(
-              challengeId: const Uuid().v4obj(),
-              keyId: _keyId,
-              authenticatorData: _loginAuthenticatorData,
-              clientDataJSON: _loginClientDataJSON,
-              signature: _signature,
-            ),
-          ),
-          throwsA(isA<PasskeyChallengeNotFoundException>()),
-        );
-      });
-
-      test(
-          'when calling `PasskeyAccounts.login` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
-          () async {
-        await expectLater(
-          () => passKeyIDP.login(
-            session,
-            request: PasskeyLoginRequest(
-              challengeId: loginChallengeId,
-              keyId: ByteData(10),
-              authenticatorData: _loginAuthenticatorData,
-              clientDataJSON: _loginClientDataJSON,
-              signature: _signature,
-            ),
-          ),
-          throwsA(isA<PasskeyPublicKeyNotFoundException>()),
-        );
-      });
-
-      test(
-          'when calling `PasskeyAccounts.login` with an invalid authenticator data, then an exception is thrown.',
-          () async {
-        final brokenAuthenticatorData = _loginAuthenticatorData.clone();
-        brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
-
-        await expectLater(
-          () => passKeyIDP.login(
-            session,
-            request: PasskeyLoginRequest(
-              challengeId: loginChallengeId,
-              keyId: _keyId,
-              authenticatorData: brokenAuthenticatorData,
-              clientDataJSON: _loginClientDataJSON,
-              signature: _signature,
-            ),
-          ),
-          throwsA(isA<Exception>().having((final e) => e.toString(), 'message',
-              contains('Invalid signature'))),
-        );
-      });
-
-      test(
-          'when calling `PasskeyAccounts.login` with an invalid client data JSON, then an exception is thrown.',
-          () async {
-        final brokenClientDataJsonMap =
-            jsonDecode(utf8.decode(_loginClientDataJSON.asUint8List)) as Map;
-        brokenClientDataJsonMap['challenge'] =
-            '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=';
-
-        await expectLater(
-          () => passKeyIDP.login(
-            session,
-            request: PasskeyLoginRequest(
-              challengeId: loginChallengeId,
-              keyId: _keyId,
-              authenticatorData: _loginAuthenticatorData,
-              clientDataJSON:
-                  (utf8.encode(jsonEncode(brokenClientDataJsonMap))).asByteData,
-              signature: _signature,
-            ),
-          ),
-          throwsA(isA<Exception>().having((final e) => e.toString(), 'message',
-              contains('wrong challenge'))),
-        );
-      });
-
-      test(
-          'when calling `PasskeyAccounts.login` with an invalid signature, then an exception is thrown.',
-          () async {
-        final brokenSignature = _signature.clone();
-        brokenSignature.asUint8List[10] = 0;
-
-        await expectLater(
-          () => passKeyIDP.login(
+        "when calling `PasskeyAccounts.login` with valid login request data, then the user's ID is returned.",
+        () async {
+          final authSuccess = await passKeyIDP.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
               keyId: _keyId,
               authenticatorData: _loginAuthenticatorData,
               clientDataJSON: _loginClientDataJSON,
-              signature: brokenSignature,
+              signature: _signature,
             ),
-          ),
-          throwsA(isA<Exception>().having((final e) => e.toString(), 'message',
-              contains('Invalid signature'))),
-        );
-      });
+          );
+
+          expect(authSuccess.authUserId, user.id);
+        },
+      );
+
+      test(
+        'when calling `PasskeyAccounts.login` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
+        () async {
+          await expectLater(
+            () => passKeyIDP.login(
+              session,
+              request: PasskeyLoginRequest(
+                challengeId: const Uuid().v4obj(),
+                keyId: _keyId,
+                authenticatorData: _loginAuthenticatorData,
+                clientDataJSON: _loginClientDataJSON,
+                signature: _signature,
+              ),
+            ),
+            throwsA(isA<PasskeyChallengeNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when calling `PasskeyAccounts.login` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
+        () async {
+          await expectLater(
+            () => passKeyIDP.login(
+              session,
+              request: PasskeyLoginRequest(
+                challengeId: loginChallengeId,
+                keyId: ByteData(10),
+                authenticatorData: _loginAuthenticatorData,
+                clientDataJSON: _loginClientDataJSON,
+                signature: _signature,
+              ),
+            ),
+            throwsA(isA<PasskeyPublicKeyNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when calling `PasskeyAccounts.login` with an invalid authenticator data, then an exception is thrown.',
+        () async {
+          final brokenAuthenticatorData = _loginAuthenticatorData.clone();
+          brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
+
+          await expectLater(
+            () => passKeyIDP.login(
+              session,
+              request: PasskeyLoginRequest(
+                challengeId: loginChallengeId,
+                keyId: _keyId,
+                authenticatorData: brokenAuthenticatorData,
+                clientDataJSON: _loginClientDataJSON,
+                signature: _signature,
+              ),
+            ),
+            throwsA(
+              isA<Exception>().having(
+                (final e) => e.toString(),
+                'message',
+                contains('Invalid signature'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `PasskeyAccounts.login` with an invalid client data JSON, then an exception is thrown.',
+        () async {
+          final brokenClientDataJsonMap =
+              jsonDecode(utf8.decode(_loginClientDataJSON.asUint8List)) as Map;
+          brokenClientDataJsonMap['challenge'] =
+              '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=';
+
+          await expectLater(
+            () => passKeyIDP.login(
+              session,
+              request: PasskeyLoginRequest(
+                challengeId: loginChallengeId,
+                keyId: _keyId,
+                authenticatorData: _loginAuthenticatorData,
+                clientDataJSON: (utf8.encode(
+                  jsonEncode(brokenClientDataJsonMap),
+                )).asByteData,
+                signature: _signature,
+              ),
+            ),
+            throwsA(
+              isA<Exception>().having(
+                (final e) => e.toString(),
+                'message',
+                contains('wrong challenge'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling `PasskeyAccounts.login` with an invalid signature, then an exception is thrown.',
+        () async {
+          final brokenSignature = _signature.clone();
+          brokenSignature.asUint8List[10] = 0;
+
+          await expectLater(
+            () => passKeyIDP.login(
+              session,
+              request: PasskeyLoginRequest(
+                challengeId: loginChallengeId,
+                keyId: _keyId,
+                authenticatorData: _loginAuthenticatorData,
+                clientDataJSON: _loginClientDataJSON,
+                signature: brokenSignature,
+              ),
+            ),
+            throwsA(
+              isA<Exception>().having(
+                (final e) => e.toString(),
+                'message',
+                contains('Invalid signature'),
+              ),
+            ),
+          );
+        },
+      );
     },
   );
 }

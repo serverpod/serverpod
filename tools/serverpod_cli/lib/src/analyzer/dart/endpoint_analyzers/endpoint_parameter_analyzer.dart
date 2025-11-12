@@ -69,51 +69,53 @@ abstract class EndpointParameterAnalyzer {
       );
     }
 
-    exceptions.addAll(parameters.map((parameter) {
-      var type = parameter.type;
-      if (type.isDartAsyncFuture) {
-        return SourceSpanSeverityException(
-          'The type "Future" is not a supported endpoint parameter type.',
-          parameter.span,
-        );
-      }
-
-      if (type.isDartAsyncStream && type is ParameterizedType) {
-        if (type.nullabilitySuffix != NullabilitySuffix.none) {
+    exceptions.addAll(
+      parameters.map((parameter) {
+        var type = parameter.type;
+        if (type.isDartAsyncFuture) {
           return SourceSpanSeverityException(
-            'Nullable parameters of the type "Stream" are not supported.',
+            'The type "Future" is not a supported endpoint parameter type.',
             parameter.span,
           );
         }
 
-        var typeArguments = type.typeArguments;
-        if (typeArguments.length != 1) {
-          // Streams only allow a single generic so this case is only here for safety.
+        if (type.isDartAsyncStream && type is ParameterizedType) {
+          if (type.nullabilitySuffix != NullabilitySuffix.none) {
+            return SourceSpanSeverityException(
+              'Nullable parameters of the type "Stream" are not supported.',
+              parameter.span,
+            );
+          }
+
+          var typeArguments = type.typeArguments;
+          if (typeArguments.length != 1) {
+            // Streams only allow a single generic so this case is only here for safety.
+            return SourceSpanSeverityException(
+              'The type "Stream" must have exactly one type argument. E.g. Stream<String>.',
+              parameter.span,
+            );
+          }
+          var innerType = typeArguments[0];
+          if (innerType is VoidType) {
+            return SourceSpanSeverityException(
+              'The type "Stream" does not support void generic type.',
+              parameter.span,
+            );
+          }
+        }
+
+        try {
+          TypeDefinition.fromDartType(parameter.type);
+        } on FromDartTypeClassNameException catch (e) {
           return SourceSpanSeverityException(
-            'The type "Stream" must have exactly one type argument. E.g. Stream<String>.',
+            'The type "${e.type}" is not a supported endpoint parameter type.',
             parameter.span,
           );
         }
-        var innerType = typeArguments[0];
-        if (innerType is VoidType) {
-          return SourceSpanSeverityException(
-            'The type "Stream" does not support void generic type.',
-            parameter.span,
-          );
-        }
-      }
 
-      try {
-        TypeDefinition.fromDartType(parameter.type);
-      } on FromDartTypeClassNameException catch (e) {
-        return SourceSpanSeverityException(
-          'The type "${e.type}" is not a supported endpoint parameter type.',
-          parameter.span,
-        );
-      }
-
-      return null;
-    }).whereType<SourceSpanSeverityException>());
+        return null;
+      }).whereType<SourceSpanSeverityException>(),
+    );
 
     return exceptions;
   }

@@ -9,7 +9,7 @@ class CachedClientAuthInfoStorage implements ClientAuthInfoStorage {
 
   /// Creates a new [CachedClientAuthInfoStorage].
   CachedClientAuthInfoStorage({required ClientAuthInfoStorage delegate})
-      : _delegate = delegate;
+    : _delegate = delegate;
 
   /// Control whether the value can be recovered from the internal cache on
   /// [get] method. Will be false only before the first method call.

@@ -32,90 +32,105 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.equals(TestEnumStringified.one),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.equals(TestEnumStringified.one),
+        );
 
-      expect(result.first.aStringifiedEnum, TestEnumStringified.one);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.equals(null),
-      );
-
-      expect(result.first.aStringifiedEnum, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.notEquals(TestEnumStringified.one),
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aStringifiedEnum, TestEnumStringified.one);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.equals(null),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.first.aStringifiedEnum, isNull);
+      },
+    );
 
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.inSet({
-          TestEnumStringified.one,
-          TestEnumStringified.two,
-        }),
-      );
+    test(
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.notEquals(TestEnumStringified.one),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.inSet({}),
-      );
+    test(
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.notEquals(null),
+        );
 
-      expect(result, isEmpty);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.notInSet({
-          TestEnumStringified.one,
-        }),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.inSet({
+            TestEnumStringified.one,
+            TestEnumStringified.two,
+          }),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty notInSet then all rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aStringifiedEnum.notInSet({}),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.inSet({}),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.notInSet({
+            TestEnumStringified.one,
+          }),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then all rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aStringifiedEnum.notInSet({}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
   });
 }

@@ -18,23 +18,25 @@ void main() {
     });
 
     test(
-        'when calling get multiple times then null data is only retrieved from storage once.',
-        () async {
-      await storage.get();
-      await storage.get();
+      'when calling get multiple times then null data is only retrieved from storage once.',
+      () async {
+        await storage.get();
+        await storage.get();
 
-      expect(storage.delegate.storageGetHitCount, 1);
-    });
+        expect(storage.delegate.storageGetHitCount, 1);
+      },
+    );
 
     test(
-        'when calling set with AuthSuccess data then stored data matches set data.',
-        () async {
-      await storage.set(_authSuccess);
+      'when calling set with AuthSuccess data then stored data matches set data.',
+      () async {
+        await storage.set(_authSuccess);
 
-      final cached = await storage.get();
+        final cached = await storage.get();
 
-      expect(cached.toString(), _authSuccess.toString());
-    });
+        expect(cached.toString(), _authSuccess.toString());
+      },
+    );
   });
 
   group('Given a CachedClientAuthInfoStorage with data in storage', () {
@@ -51,25 +53,27 @@ void main() {
     });
 
     test(
-        'when calling get multiple times then data is only retrieved from storage once.',
-        () async {
-      final result = await storage.get();
-      final resultCached = await storage.get();
+      'when calling get multiple times then data is only retrieved from storage once.',
+      () async {
+        final result = await storage.get();
+        final resultCached = await storage.get();
 
-      expect(identical(result, resultCached), isTrue);
-      expect(storage.delegate.storageGetHitCount, 1);
-    });
+        expect(identical(result, resultCached), isTrue);
+        expect(storage.delegate.storageGetHitCount, 1);
+      },
+    );
 
     test(
-        'when calling clearCache before get then subsequent get retrieves from delegate storage.',
-        () async {
-      await storage.get();
+      'when calling clearCache before get then subsequent get retrieves from delegate storage.',
+      () async {
+        await storage.get();
 
-      await storage.clearCache();
-      await storage.get();
+        await storage.clearCache();
+        await storage.get();
 
-      expect(storage.delegate.storageGetHitCount, 2);
-    });
+        expect(storage.delegate.storageGetHitCount, 2);
+      },
+    );
 
     group('when calling set with a new AuthSuccess data', () {
       final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
@@ -110,11 +114,13 @@ void main() {
 
       await expectLater(
         () => storage.set(_authSuccess),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Error on set'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Error on set'),
+          ),
+        ),
       );
     });
 
@@ -123,11 +129,13 @@ void main() {
 
       await expectLater(
         () => storage.get(),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Error on get'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Error on get'),
+          ),
+        ),
       );
     });
   });

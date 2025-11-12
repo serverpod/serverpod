@@ -21,40 +21,40 @@ Exception? convertToUserFacingException(Object error) {
           originalException: error,
         ),
       EmailAccountLoginExceptionReason.tooManyAttempts => UserFacingException(
-          'Too many failed login attempts. Please try again later.',
-          originalException: error,
-        ),
+        'Too many failed login attempts. Please try again later.',
+        originalException: error,
+      ),
       EmailAccountLoginExceptionReason.unknown => UserFacingException(
-          'An error occurred during login. Please try again.',
-          originalException: error,
-        ),
+        'An error occurred during login. Please try again.',
+        originalException: error,
+      ),
     };
   }
 
   if (error is EmailAccountRequestException) {
     return switch (error.reason) {
       EmailAccountRequestExceptionReason.tooManyAttempts => UserFacingException(
-          'Too many failed registration attempts. Please try again later.',
-          originalException: error,
-        ),
+        'Too many failed registration attempts. Please try again later.',
+        originalException: error,
+      ),
       EmailAccountRequestExceptionReason.expired => UserFacingException(
-          'The verification code has expired. Please request a new one.',
-          originalException: error,
-        ),
+        'The verification code has expired. Please request a new one.',
+        originalException: error,
+      ),
       EmailAccountRequestExceptionReason.invalid => UserFacingException(
-          'Invalid verification code. Please check and try again.',
-          originalException: error,
-        ),
+        'Invalid verification code. Please check and try again.',
+        originalException: error,
+      ),
       EmailAccountRequestExceptionReason.policyViolation => UserFacingException(
-          'The password does not meet the requirements. Please choose a '
-          'different password.',
-          originalException: error,
-        ),
+        'The password does not meet the requirements. Please choose a '
+        'different password.',
+        originalException: error,
+      ),
       EmailAccountRequestExceptionReason.unknown => UserFacingException(
-          'An error occurred during registration. Please try again later. '
-          'If the problem persists, please contact support.',
-          originalException: error,
-        ),
+        'An error occurred during registration. Please try again later. '
+        'If the problem persists, please contact support.',
+        originalException: error,
+      ),
     };
   }
 
@@ -66,13 +66,13 @@ Exception? convertToUserFacingException(Object error) {
           originalException: error,
         ),
       EmailAccountPasswordResetExceptionReason.expired => UserFacingException(
-          'The password reset code has expired. Please request a new one.',
-          originalException: error,
-        ),
+        'The password reset code has expired. Please request a new one.',
+        originalException: error,
+      ),
       EmailAccountPasswordResetExceptionReason.invalid => UserFacingException(
-          'Invalid verification code. Please check and try again.',
-          originalException: error,
-        ),
+        'Invalid verification code. Please check and try again.',
+        originalException: error,
+      ),
       EmailAccountPasswordResetExceptionReason.policyViolation =>
         UserFacingException(
           'The password does not meet the requirements. Please choose a '
@@ -80,10 +80,10 @@ Exception? convertToUserFacingException(Object error) {
           originalException: error,
         ),
       EmailAccountPasswordResetExceptionReason.unknown => UserFacingException(
-          'An error occurred during password reset. Please try again later. '
-          'If the problem persists, please contact support.',
-          originalException: error,
-        ),
+        'An error occurred during password reset. Please try again later. '
+        'If the problem persists, please contact support.',
+        originalException: error,
+      ),
     };
   }
 

@@ -14,7 +14,10 @@ class UserImages {
   /// Sets a user's image from the provided [url]. Image is downloaded, stored
   /// in the cloud and associated with the user.
   static Future<bool> setUserImageFromUrl(
-      Session session, int userId, Uri url) async {
+    Session session,
+    int userId,
+    Uri url,
+  ) async {
     var result = await http.get(url);
     var bytes = result.bodyBytes;
     return await setUserImageFromBytes(session, userId, bytes);
@@ -58,8 +61,8 @@ class UserImages {
 
   static Uint8List _encodeImage(Image image) =>
       AuthConfig.current.userImageFormat == UserImageType.jpg
-          ? encodeJpg(image, quality: AuthConfig.current.userImageQuality)
-          : encodePng(image);
+      ? encodeJpg(image, quality: AuthConfig.current.userImageQuality)
+      : encodePng(image);
 
   static Future<bool> _setUserImage(
     Session session,
@@ -91,18 +94,26 @@ class UserImages {
       path: path,
       byteData: ByteData.view(imageBytes.buffer),
     );
-    var publicUrl =
-        await session.storage.getPublicUrl(storageId: 'public', path: path);
+    var publicUrl = await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: path,
+    );
     if (publicUrl == null) return false;
 
     // Store the path to the image.
-    var imageRef =
-        UserImage(userId: userId, version: version, url: publicUrl.toString());
+    var imageRef = UserImage(
+      userId: userId,
+      version: version,
+      url: publicUrl.toString(),
+    );
     await UserImage.db.insertRow(session, imageRef);
 
     // Update the UserInfo with the new image path.
-    var userInfo =
-        await Users.findUserByUserId(session, userId, useCache: false);
+    var userInfo = await Users.findUserByUserId(
+      session,
+      userId,
+      useCache: false,
+    );
     if (userInfo == null) return false;
     userInfo.imageUrl = publicUrl.toString();
     await UserInfo.db.updateRow(session, userInfo);
@@ -152,44 +163,49 @@ int _colorFromHexStr(String hexStr) {
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(UserInfo userInfo) => Isolate.run(() {
-      var imageSize = AuthConfig.current.userImageSize;
-      var image = Image(width: 256, height: 256);
+  var imageSize = AuthConfig.current.userImageSize;
+  var image = Image(width: 256, height: 256);
 
-      var font = roboto_138;
+  var font = roboto_138;
 
-      // Get first letter of the user name (or * if not found in bitmap font).
-      var name = userInfo.userName ?? '';
-      var charCode =
-          (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*')
-              .codeUnits[0];
-      if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
+  // Get first letter of the user name (or * if not found in bitmap font).
+  var name = userInfo.userName ?? '';
+  var charCode =
+      (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
+  if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
 
-      // Draw the image.
-      var chWidth = font.characters[charCode]!.width;
-      var chHeight = font.characters[charCode]!.height;
-      var chOffsetY = font.characters[charCode]!.yOffset;
-      var chOffsetX = font.characters[charCode]!.xOffset;
-      var xPos = 128 - chWidth ~/ 2;
-      var yPos = 128 - chHeight ~/ 2;
+  // Draw the image.
+  var chWidth = font.characters[charCode]!.width;
+  var chHeight = font.characters[charCode]!.height;
+  var chOffsetY = font.characters[charCode]!.yOffset;
+  var chOffsetX = font.characters[charCode]!.xOffset;
+  var xPos = 128 - chWidth ~/ 2;
+  var yPos = 128 - chHeight ~/ 2;
 
-      // Pick color based on user id from the default colors (from material design).
-      var color = _defaultUserImageColors[
-          userInfo.id! % _defaultUserImageColors.length];
-      fill(image,
-          color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
-              color & 0xff, (color >> 24) & 0xff));
+  // Pick color based on user id from the default colors (from material design).
+  var color =
+      _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length];
+  fill(
+    image,
+    color: ColorUint8.rgba(
+      (color >> 16) & 0xff,
+      (color >> 16) & 0xff,
+      color & 0xff,
+      (color >> 24) & 0xff,
+    ),
+  );
 
-      // Draw the character on top of the solid filled image.
-      drawString(
-        image,
-        String.fromCharCode(charCode),
-        font: font,
-        x: xPos - chOffsetX,
-        y: yPos - chOffsetY,
-      );
+  // Draw the character on top of the solid filled image.
+  drawString(
+    image,
+    String.fromCharCode(charCode),
+    font: font,
+    x: xPos - chOffsetX,
+    y: yPos - chOffsetY,
+  );
 
-      // Resize image if it's not the preferred size.
-      return imageSize == 256
-          ? image
-          : copyResizeCropSquare(image, size: imageSize);
-    });
+  // Resize image if it's not the preferred size.
+  return imageSize == 256
+      ? image
+      : copyResizeCropSquare(image, size: imageSize);
+});

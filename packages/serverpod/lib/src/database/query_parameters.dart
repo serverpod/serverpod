@@ -42,7 +42,7 @@ class QueryParametersNamed implements QueryParameters {
   ///     }));
   /// ```
   QueryParametersNamed(Map<String, Object?> parameters)
-      : _parameters = parameters;
+    : _parameters = parameters;
 
   final Map<String, Object?> _parameters;
 
@@ -61,7 +61,7 @@ class QueryParametersPositional implements QueryParameters {
   ///     QueryParametersPositional(['green', 'XL']));
   /// ```
   QueryParametersPositional(List<Object?> parameters)
-      : _parameters = parameters;
+    : _parameters = parameters;
 
   final List<Object?> _parameters;
 

@@ -105,6 +105,6 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
         onTermsAndConditionsPressed: showTermsAndPrivacyPolicy ? () {} : null,
         onPrivacyPolicyPressed: showTermsAndPrivacyPolicy ? () {} : null,
       ),
-    )
+    ),
   ], width: width.toDouble());
 }

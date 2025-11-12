@@ -20,13 +20,15 @@ void main() {
           fields:
             serverOnlyField: int?, scope=serverOnly, default=-1
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -52,13 +54,15 @@ void main() {
           fields:
             serverMessage: String?, scope=serverOnly, default='Server only message'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -82,13 +86,15 @@ void main() {
             serverOnlyField: int?, scope=serverOnly, default=42
             allScopeField: bool?, scope=all, default=true
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -102,7 +108,9 @@ void main() {
         // Check serverOnly field
         expect(definition.fields[1].defaultModelValue, '42');
         expect(
-            definition.fields[1].scope, ModelFieldScopeDefinition.serverOnly);
+          definition.fields[1].scope,
+          ModelFieldScopeDefinition.serverOnly,
+        );
 
         // Check all scope field
         expect(definition.fields[2].defaultModelValue, 'true');

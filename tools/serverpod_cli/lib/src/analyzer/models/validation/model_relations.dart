@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/util/model_helper.dart';
 
 typedef ModelWithDocumentPath = ({
   String documentPath,
-  SerializableModelDefinition model
+  SerializableModelDefinition model,
 });
 
 /// A collection of all parsed models, and their potential collisions.
@@ -18,7 +18,7 @@ class ParsedModelsCollection {
 
   ParsedModelsCollection(
     List<({String documentPath, SerializableModelDefinition model})>
-        modelWithPath,
+    modelWithPath,
   ) {
     var models = modelWithPath.map((e) => e.model).toList();
     modules = models.map((e) => e.type.moduleAlias).nonNulls.toSet();
@@ -92,8 +92,9 @@ class ParsedModelsCollection {
     List<ModelWithDocumentPath> models,
   ) {
     Map<String, List<ModelWithDocumentPath>> filePaths = {};
-    for (var (:documentPath, :model) in models
-        .where((e) => e.model.type.moduleAlias == defaultModuleAlias)) {
+    for (var (:documentPath, :model) in models.where(
+      (e) => e.model.type.moduleAlias == defaultModuleAlias,
+    )) {
       filePaths.update(
         _buildGeneratedFilePath(model),
         (value) => value..add((documentPath: documentPath, model: model)),

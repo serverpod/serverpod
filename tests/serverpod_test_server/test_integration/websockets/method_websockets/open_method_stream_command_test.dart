@@ -25,367 +25,416 @@ void main() {
     });
 
     test(
-        'when a open method stream command with an invalid endpoint is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'this is not an existing endpoint',
-        method: 'method',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a open method stream command with an invalid endpoint is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'this is not an existing endpoint',
+            method: 'method',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.endpointNotFound,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'this is not an existing method',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a open method stream command with an invalid endpoint method is sent then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'this is not an existing method',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.endpointNotFound,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent to a method call endpoint then OpenMethodStreamResponse type "endpointNotFound" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'methodCallEndpoint',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a open method stream command is sent to a method call endpoint then OpenMethodStreamResponse type "endpointNotFound" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'methodCallEndpoint',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.endpointNotFound,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a valid open method stream command is sent then OpenMethodStreamResponse type "success" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'simpleStream',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a valid open method stream command is sent then OpenMethodStreamResponse type "success" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'simpleStream',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.success,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent without required argument then OpenMethodStreamResponse type "invalidArguments" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'simpleStreamWithParameter',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a open method stream command is sent without required argument then OpenMethodStreamResponse type "invalidArguments" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'simpleStreamWithParameter',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.invalidArguments,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'intEchoStream',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when an open method stream command is sent without required input stream then OpenMethodStreamResponse type "invalidArguments" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'intEchoStream',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.invalidArguments,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent with required argument then OpenMethodStreamResponse type "success" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'simpleStreamWithParameter',
-        args: {'value': 42},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-      ));
+      'when a open method stream command is sent with required argument then OpenMethodStreamResponse type "success" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'simpleStreamWithParameter',
+            args: {'value': 42},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.success,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent to a method with a streaming argument then OpenMethodStreamResponse type "success" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'methodStreaming',
-        method: 'simpleInputReturnStream',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: ['stream'],
-      ));
+      'when a open method stream command is sent to a method with a streaming argument then OpenMethodStreamResponse type "success" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'methodStreaming',
+            method: 'simpleInputReturnStream',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: ['stream'],
+          ),
+        );
 
-      var response = webSocket.textEvents.first;
-      await expectLater(
-        response.timeout(Duration(seconds: 5)),
-        completion(isA<String>()),
-        reason: 'Expected a response from the server.',
-      );
+        var response = webSocket.textEvents.first;
+        await expectLater(
+          response.timeout(Duration(seconds: 5)),
+          completion(isA<String>()),
+          reason: 'Expected a response from the server.',
+        );
 
-      var message = WebSocketMessage.fromJsonString(
-        await response,
-        server.serializationManager,
-      );
-      expect(
+        var message = WebSocketMessage.fromJsonString(
+          await response,
+          server.serializationManager,
+        );
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.success,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent to an authenticated endpoint without an authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'authenticatedMethodStreaming',
-        method: 'simpleStream',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-        // No authentication token is provided
-      ));
+      'when a open method stream command is sent to an authenticated endpoint without an authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'authenticatedMethodStreaming',
+            method: 'simpleStream',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+            // No authentication token is provided
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.authenticationFailed,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     test(
-        'when a open method stream command is sent to an authenticated endpoint with an invalid authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
-        () async {
-      webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-        endpoint: 'authenticatedMethodStreaming',
-        method: 'simpleStream',
-        args: {},
-        connectionId: const Uuid().v4obj(),
-        inputStreams: [],
-        authentication: 'invalid token',
-      ));
+      'when a open method stream command is sent to an authenticated endpoint with an invalid authentication token then OpenMethodStreamResponse type "authenticationFailed" is received.',
+      () async {
+        webSocket.sendText(
+          OpenMethodStreamCommand.buildMessage(
+            endpoint: 'authenticatedMethodStreaming',
+            method: 'simpleStream',
+            args: {},
+            connectionId: const Uuid().v4obj(),
+            inputStreams: [],
+            authentication: 'invalid token',
+          ),
+        );
 
-      var response = await webSocket.textEvents.first;
-      var message = WebSocketMessage.fromJsonString(
-        response,
-        server.serializationManager,
-      );
+        var response = await webSocket.textEvents.first;
+        var message = WebSocketMessage.fromJsonString(
+          response,
+          server.serializationManager,
+        );
 
-      expect(
+        expect(
           message,
           isA<OpenMethodStreamResponse>().having(
             (m) => m.responseType,
             'responseType',
             OpenMethodStreamResponseType.authenticationFailed,
-          ));
-    });
+          ),
+        );
+      },
+    );
 
     group(
-        'when an authenticated open method stream command is sent to an authenticated endpoint with insufficient scopes',
-        () {
-      late String token;
-      setUp(() async {
-        var session = await server.createSession();
-        // Missing required "Admin" scope
-        var authKey = await UserAuthentication.signInUser(session, 1, 'test');
-        session.close();
-        token = '${authKey.id}:${authKey.key}';
-      });
+      'when an authenticated open method stream command is sent to an authenticated endpoint with insufficient scopes',
+      () {
+        late String token;
+        setUp(() async {
+          var session = await server.createSession();
+          // Missing required "Admin" scope
+          var authKey = await UserAuthentication.signInUser(session, 1, 'test');
+          session.close();
+          token = '${authKey.id}:${authKey.key}';
+        });
 
-      tearDown(() async {
-        var session = await server.createSession();
-        AuthKey.db.deleteWhere(session, where: (_) => Constant.bool(true));
-        session.close();
-      });
+        tearDown(() async {
+          var session = await server.createSession();
+          AuthKey.db.deleteWhere(session, where: (_) => Constant.bool(true));
+          session.close();
+        });
 
-      test(
+        test(
           'then OpenMethodStreamResponse type "authorizationDeclined" is received.',
           () async {
-        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-          endpoint: 'authenticatedMethodStreaming',
-          method: 'simpleStream',
-          args: {},
-          connectionId: const Uuid().v4obj(),
-          authentication: token,
-          inputStreams: [],
-        ));
+            webSocket.sendText(
+              OpenMethodStreamCommand.buildMessage(
+                endpoint: 'authenticatedMethodStreaming',
+                method: 'simpleStream',
+                args: {},
+                connectionId: const Uuid().v4obj(),
+                authentication: token,
+                inputStreams: [],
+              ),
+            );
 
-        var response = await webSocket.textEvents.first;
-        var message = WebSocketMessage.fromJsonString(
-          response,
-          server.serializationManager,
-        );
+            var response = await webSocket.textEvents.first;
+            var message = WebSocketMessage.fromJsonString(
+              response,
+              server.serializationManager,
+            );
 
-        expect(
-          message,
-          isA<OpenMethodStreamResponse>().having(
-            (m) => m.responseType,
-            'responseType',
-            OpenMethodStreamResponseType.authorizationDeclined,
-          ),
+            expect(
+              message,
+              isA<OpenMethodStreamResponse>().having(
+                (m) => m.responseType,
+                'responseType',
+                OpenMethodStreamResponseType.authorizationDeclined,
+              ),
+            );
+          },
         );
-      });
-    });
+      },
+    );
 
     group(
-        'when an authenticated open method stream command with sufficient privilege is sent to an authenticated endpoint',
-        () {
-      late String token;
-      setUp(() async {
-        var session = await server.createSession();
-        var authKey = await UserAuthentication.signInUser(
-          session,
-          1,
-          'test',
-          scopes: {Scope.admin}, // Scope required by the endpoint
-        );
-        session.close();
-        token = '${authKey.id}:${authKey.key}';
-      });
+      'when an authenticated open method stream command with sufficient privilege is sent to an authenticated endpoint',
+      () {
+        late String token;
+        setUp(() async {
+          var session = await server.createSession();
+          var authKey = await UserAuthentication.signInUser(
+            session,
+            1,
+            'test',
+            scopes: {Scope.admin}, // Scope required by the endpoint
+          );
+          session.close();
+          token = '${authKey.id}:${authKey.key}';
+        });
 
-      tearDown(() async {
-        var session = await server.createSession();
-        AuthKey.db.deleteWhere(session, where: (_) => Constant.bool(true));
-        session.close();
-      });
+        tearDown(() async {
+          var session = await server.createSession();
+          AuthKey.db.deleteWhere(session, where: (_) => Constant.bool(true));
+          session.close();
+        });
 
-      test('then OpenMethodStreamResponse type "success" is received.',
+        test(
+          'then OpenMethodStreamResponse type "success" is received.',
           () async {
-        webSocket.sendText(OpenMethodStreamCommand.buildMessage(
-          endpoint: 'authenticatedMethodStreaming',
-          method: 'simpleStream',
-          args: {},
-          connectionId: const Uuid().v4obj(),
-          authentication: token,
-          inputStreams: [],
-        ));
+            webSocket.sendText(
+              OpenMethodStreamCommand.buildMessage(
+                endpoint: 'authenticatedMethodStreaming',
+                method: 'simpleStream',
+                args: {},
+                connectionId: const Uuid().v4obj(),
+                authentication: token,
+                inputStreams: [],
+              ),
+            );
 
-        var response = await webSocket.textEvents.first;
-        var message = WebSocketMessage.fromJsonString(
-          response,
-          server.serializationManager,
-        );
+            var response = await webSocket.textEvents.first;
+            var message = WebSocketMessage.fromJsonString(
+              response,
+              server.serializationManager,
+            );
 
-        expect(
-          message,
-          isA<OpenMethodStreamResponse>().having(
-            (m) => m.responseType,
-            'responseType',
-            OpenMethodStreamResponseType.success,
-          ),
+            expect(
+              message,
+              isA<OpenMethodStreamResponse>().having(
+                (m) => m.responseType,
+                'responseType',
+                OpenMethodStreamResponseType.success,
+              ),
+            );
+          },
         );
-      });
-    });
+      },
+    );
   });
 }

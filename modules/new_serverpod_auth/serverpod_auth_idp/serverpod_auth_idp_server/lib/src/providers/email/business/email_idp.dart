@@ -77,20 +77,20 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final authUserId = await utils.passwordReset.completePasswordReset(
-          session,
-          completePasswordResetToken: finishPasswordResetToken,
-          newPassword: newPassword,
-          transaction: transaction,
-        );
+            final authUserId = await utils.passwordReset.completePasswordReset(
+              session,
+              completePasswordResetToken: finishPasswordResetToken,
+              newPassword: newPassword,
+              transaction: transaction,
+            );
 
-        await _tokenManager.revokeAllTokens(
-          session,
-          authUserId: authUserId,
-          method: method,
-          transaction: transaction,
-        );
-      }),
+            await _tokenManager.revokeAllTokens(
+              session,
+              authUserId: authUserId,
+              method: method,
+              transaction: transaction,
+            );
+          }),
     );
   }
 
@@ -106,30 +106,30 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final result = await utils.accountCreation.completeAccountCreation(
-          session,
-          completeAccountCreationToken: registrationToken,
-          password: password,
-          transaction: transaction,
-        );
+            final result = await utils.accountCreation.completeAccountCreation(
+              session,
+              completeAccountCreationToken: registrationToken,
+              password: password,
+              transaction: transaction,
+            );
 
-        await _userProfiles.createUserProfile(
-          session,
-          result.authUserId,
-          UserProfileData(
-            email: result.email,
-          ),
-          transaction: transaction,
-        );
+            await _userProfiles.createUserProfile(
+              session,
+              result.authUserId,
+              UserProfileData(
+                email: result.email,
+              ),
+              transaction: transaction,
+            );
 
-        return _tokenManager.issueToken(
-          session,
-          authUserId: result.authUserId,
-          method: method,
-          scopes: result.scopes,
-          transaction: transaction,
-        );
-      }),
+            return _tokenManager.issueToken(
+              session,
+              authUserId: result.authUserId,
+              method: method,
+              scopes: result.scopes,
+              transaction: transaction,
+            );
+          }),
     );
   }
 
@@ -145,27 +145,27 @@ final class EmailIDP {
       transaction,
       (final transaction) =>
           EmailIDPUtils.withReplacedServerEmailException(() async {
-        final authUserId = await utils.authentication.authenticate(
-          session,
-          email: email,
-          password: password,
-          transaction: transaction,
-        );
+            final authUserId = await utils.authentication.authenticate(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            );
 
-        final authUser = await _authUsers.get(
-          session,
-          authUserId: authUserId,
-          transaction: transaction,
-        );
+            final authUser = await _authUsers.get(
+              session,
+              authUserId: authUserId,
+              transaction: transaction,
+            );
 
-        return _tokenManager.issueToken(
-          session,
-          authUserId: authUserId,
-          method: method,
-          scopes: authUser.scopes,
-          transaction: transaction,
-        );
-      }),
+            return _tokenManager.issueToken(
+              session,
+              authUserId: authUserId,
+              method: method,
+              scopes: authUser.scopes,
+              transaction: transaction,
+            );
+          }),
     );
   }
 

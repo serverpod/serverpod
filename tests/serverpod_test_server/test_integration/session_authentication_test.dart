@@ -60,30 +60,34 @@ void main() {
         });
 
         test(
-            'then getAuthenticationInfo returns session.authenticated initialized',
-            () async {
-          final result =
-              await client.sessionAuthentication.getAuthenticationInfo();
+          'then getAuthenticationInfo returns session.authenticated initialized',
+          () async {
+            final result = await client.sessionAuthentication
+                .getAuthenticationInfo();
 
-          expect(result.isAuthenticated, isTrue);
-        });
+            expect(result.isAuthenticated, isTrue);
+          },
+        );
 
         test(
-            'then getAuthenticatedUserId returns authenticated user identifier',
-            () async {
-          final userId =
-              await client.sessionAuthentication.getAuthenticatedUserId();
+          'then getAuthenticatedUserId returns authenticated user identifier',
+          () async {
+            final userId = await client.sessionAuthentication
+                .getAuthenticatedUserId();
 
-          expect(userId, equals(testUserId));
-        });
+            expect(userId, equals(testUserId));
+          },
+        );
 
-        test('then getAuthenticatedScopes returns authenticated scopes',
-            () async {
-          final scopes =
-              await client.sessionAuthentication.getAuthenticatedScopes();
+        test(
+          'then getAuthenticatedScopes returns authenticated scopes',
+          () async {
+            final scopes = await client.sessionAuthentication
+                .getAuthenticatedScopes();
 
-          expect(scopes, containsAll(testScopes.map((s) => s.name)));
-        });
+            expect(scopes, containsAll(testScopes.map((s) => s.name)));
+          },
+        );
       },
     );
 
@@ -106,24 +110,25 @@ void main() {
         });
 
         test(
-            'then getAuthenticationInfo returns session.authenticated as false',
-            () async {
-          final result =
-              await client.sessionAuthentication.getAuthenticationInfo();
+          'then getAuthenticationInfo returns session.authenticated as false',
+          () async {
+            final result = await client.sessionAuthentication
+                .getAuthenticationInfo();
 
-          expect(result.isAuthenticated, isFalse);
-        });
+            expect(result.isAuthenticated, isFalse);
+          },
+        );
 
         test('then getAuthenticatedUserId returns null', () async {
-          final userId =
-              await client.sessionAuthentication.getAuthenticatedUserId();
+          final userId = await client.sessionAuthentication
+              .getAuthenticatedUserId();
 
           expect(userId, isNull);
         });
 
         test('then getAuthenticatedScopes returns empty list', () async {
-          final scopes =
-              await client.sessionAuthentication.getAuthenticatedScopes();
+          final scopes = await client.sessionAuthentication
+              .getAuthenticatedScopes();
 
           expect(scopes, isEmpty);
         });
@@ -149,23 +154,25 @@ void main() {
         });
 
         test(
-            'then streamIsAuthenticated returns session.authenticated initialized',
-            () async {
-          final stream = client.sessionAuthentication.streamIsAuthenticated();
+          'then streamIsAuthenticated returns session.authenticated initialized',
+          () async {
+            final stream = client.sessionAuthentication.streamIsAuthenticated();
 
-          final isAuthenticated = await stream.first;
-          expect(isAuthenticated, isTrue);
-        });
+            final isAuthenticated = await stream.first;
+            expect(isAuthenticated, isTrue);
+          },
+        );
 
         test(
-            'then streamAuthenticatedUserId returns authenticated user identifier',
-            () async {
-          final stream =
-              client.sessionAuthentication.streamAuthenticatedUserId();
+          'then streamAuthenticatedUserId returns authenticated user identifier',
+          () async {
+            final stream = client.sessionAuthentication
+                .streamAuthenticatedUserId();
 
-          final userId = await stream.first;
-          expect(userId, equals(testUserId));
-        });
+            final userId = await stream.first;
+            expect(userId, equals(testUserId));
+          },
+        );
       },
     );
 
@@ -195,8 +202,8 @@ void main() {
         });
 
         test('then streamAuthenticatedUserId yields null', () async {
-          final stream =
-              client.sessionAuthentication.streamAuthenticatedUserId();
+          final stream = client.sessionAuthentication
+              .streamAuthenticatedUserId();
 
           final userId = await stream.first;
           expect(userId, isNull);
@@ -271,8 +278,9 @@ void main() {
         );
 
         try {
-          final message = await client
-              .sessionAuthenticationStreaming.stream.first as SimpleData;
+          final message =
+              await client.sessionAuthenticationStreaming.stream.first
+                  as SimpleData;
 
           expect(message.num, equals(1));
         } finally {
@@ -297,8 +305,9 @@ void main() {
         );
 
         try {
-          final message = await client
-              .sessionAuthenticationStreaming.stream.first as SimpleData;
+          final message =
+              await client.sessionAuthenticationStreaming.stream.first
+                  as SimpleData;
 
           expect(message.num, equals(0));
         } finally {
@@ -324,13 +333,14 @@ void main() {
         );
 
         try {
-          client.sessionAuthenticationStreaming
-              .sendStreamMessage(SimpleData(num: 999));
+          client.sessionAuthenticationStreaming.sendStreamMessage(
+            SimpleData(num: 999),
+          );
 
           // Skip the first message from streamOpened
-          final message = await client.sessionAuthenticationStreaming.stream
-              .skip(1)
-              .first as SimpleData;
+          final message =
+              await client.sessionAuthenticationStreaming.stream.skip(1).first
+                  as SimpleData;
 
           expect(message.num, equals(1));
         } finally {
@@ -356,13 +366,14 @@ void main() {
         );
 
         try {
-          client.sessionAuthenticationStreaming
-              .sendStreamMessage(SimpleData(num: 999));
+          client.sessionAuthenticationStreaming.sendStreamMessage(
+            SimpleData(num: 999),
+          );
 
           // Skip the first message from streamOpened
-          final message = await client.sessionAuthenticationStreaming.stream
-              .skip(1)
-              .first as SimpleData;
+          final message =
+              await client.sessionAuthenticationStreaming.stream.skip(1).first
+                  as SimpleData;
 
           expect(message.num, equals(0));
         } finally {
@@ -406,15 +417,15 @@ void main() {
         });
 
         test('then getAuthenticatedUserId returns null', () async {
-          final userId =
-              await client.sessionAuthentication.getAuthenticatedUserId();
+          final userId = await client.sessionAuthentication
+              .getAuthenticatedUserId();
 
           expect(userId, isNull);
         });
 
         test('then isAuthenticated returns false', () async {
-          final isAuthenticated =
-              await client.sessionAuthentication.isAuthenticated();
+          final isAuthenticated = await client.sessionAuthentication
+              .isAuthenticated();
 
           expect(isAuthenticated, isFalse);
         });
@@ -435,8 +446,8 @@ void main() {
         });
 
         test('then streamAuthenticatedUserId yields null', () async {
-          final stream =
-              client.sessionAuthentication.streamAuthenticatedUserId();
+          final stream = client.sessionAuthentication
+              .streamAuthenticatedUserId();
 
           final userId = await stream.first;
           expect(userId, isNull);
@@ -477,8 +488,9 @@ void main() {
         );
 
         try {
-          final message = await client
-              .sessionAuthenticationStreaming.stream.first as SimpleData;
+          final message =
+              await client.sessionAuthenticationStreaming.stream.first
+                  as SimpleData;
 
           expect(message.num, equals(0));
         } finally {

@@ -1,3 +1,1 @@
-enum ServerpodFeature {
-  database;
-}
+enum ServerpodFeature { database }

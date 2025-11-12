@@ -15,10 +15,10 @@ class JwtUtil {
     required final String? issuer,
     required final AuthenticationTokenAlgorithm algorithm,
     required final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm,
-  })  : _accessTokenLifetime = accessTokenLifetime,
-        _issuer = issuer,
-        _algorithm = algorithm,
-        _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
+  }) : _accessTokenLifetime = accessTokenLifetime,
+       _issuer = issuer,
+       _algorithm = algorithm,
+       _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
 
   final AuthenticationTokenAlgorithm _algorithm;
   final AuthenticationTokenAlgorithm? _fallbackVerificationAlgorithm;
@@ -69,11 +69,11 @@ class JwtUtil {
 
     final (JWTKey key, JWTAlgorithm algorithm) = switch (_algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
-          key,
-          JWTAlgorithm.HS512
-        ),
+        key,
+        JWTAlgorithm.HS512,
+      ),
       EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
-        (privateKey, JWTAlgorithm.ES512)
+        (privateKey, JWTAlgorithm.ES512),
     };
 
     return jwt.sign(
@@ -130,10 +130,12 @@ class JwtUtil {
     }
 
     final extraClaims = Map.fromEntries(
-      allClaims.entries.where((final e) =>
-          !_registeredClaims.contains(e.key) &&
-          e.key != _serverpodScopeNamesClaimKey &&
-          e.key != _serverpodRefreshTokenIdClaimKey),
+      allClaims.entries.where(
+        (final e) =>
+            !_registeredClaims.contains(e.key) &&
+            e.key != _serverpodScopeNamesClaimKey &&
+            e.key != _serverpodRefreshTokenIdClaimKey,
+      ),
     );
 
     return (

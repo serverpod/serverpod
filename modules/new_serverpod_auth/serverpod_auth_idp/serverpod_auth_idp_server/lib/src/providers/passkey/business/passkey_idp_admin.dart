@@ -13,8 +13,8 @@ final class PasskeyIDPAdmin {
   PasskeyIDPAdmin({
     required final Duration challengeLifetime,
     required final PasskeyIDPUtils utils,
-  })  : _challengeLifetime = challengeLifetime,
-        _utils = utils;
+  }) : _challengeLifetime = challengeLifetime,
+       _utils = utils;
 
   /// Removes all challenges from the database which are older than the
   /// challenge lifetime.

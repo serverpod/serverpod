@@ -21,12 +21,14 @@ class RuntimeSettingsBuilder {
     String? method,
     required LogSettings logSettings,
   }) {
-    _logSettingsOverrides.add(LogSettingsOverride(
-      module: module,
-      endpoint: endpoint,
-      method: method,
-      logSettings: logSettings,
-    ));
+    _logSettingsOverrides.add(
+      LogSettingsOverride(
+        module: module,
+        endpoint: endpoint,
+        method: method,
+        logSettings: logSettings,
+      ),
+    );
     return this;
   }
 

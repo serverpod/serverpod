@@ -10,11 +10,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given a class with an index with undefined parameters, then return a definition where parameters is set to null.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index with undefined parameters, then return a definition where parameters is set to null.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -23,24 +23,28 @@ void main() {
           example_index:
             fields: embedding
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
-    var definition = definitions.first as ModelClassDefinition;
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ModelClassDefinition;
 
-    var index = definition.indexes.first;
-    expect(index.parameters, isNull);
-  });
+      var index = definition.indexes.first;
+      expect(index.parameters, isNull);
+    },
+  );
   test(
-      'Given a class with an index with empty parameters, then return a definition where parameters is set to null.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index with empty parameters, then return a definition where parameters is set to null.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -50,25 +54,29 @@ void main() {
             fields: embedding
             parameters: {}
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
-    var definition = definitions.first as ModelClassDefinition;
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ModelClassDefinition;
 
-    var index = definition.indexes.first;
-    expect(index.parameters, isNull);
-  });
+      var index = definition.indexes.first;
+      expect(index.parameters, isNull);
+    },
+  );
 
   test(
-      'Given a class with an index with invalid parameters (not a map), then collect an error that the parameters must be a map.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index with invalid parameters (not a map), then collect an error that the parameters must be a map.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -78,30 +86,34 @@ void main() {
             fields: embedding
             parameters: InvalidValue
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(error.message, 'The "parameters" property must be a map.');
-  });
+      var error = collector.errors.first;
+      expect(error.message, 'The "parameters" property must be a map.');
+    },
+  );
 
   test(
-      'Given a class with a non-vector field and parameters, then collect an error that parameters can only be used with vector indexes.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a non-vector field and parameters, then collect an error that parameters can only be used with vector indexes.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -113,33 +125,37 @@ void main() {
               parameters:
                 m: 16
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "parameters" property can only be used with vector indexes of type "hnsw, ivfflat".',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "parameters" property can only be used with vector indexes of type "hnsw, ivfflat".',
+      );
+    },
+  );
 
   test(
-      'Given a class with a vector field and hnsw index with valid parameters, then return a definition where parameters are correctly set.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a vector field and hnsw index with valid parameters, then return a definition where parameters are correctly set.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -152,34 +168,38 @@ void main() {
                 m: 16
                 ef_construction: 64
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
 
-    var definition = definitions.first as ModelClassDefinition;
-    var parameters = definition.indexes.first.parameters;
+      var definition = definitions.first as ModelClassDefinition;
+      var parameters = definition.indexes.first.parameters;
 
-    expect(parameters, isNotNull);
-    expect(parameters!['m'], '16');
-    expect(parameters['ef_construction'], '64');
-  });
+      expect(parameters, isNotNull);
+      expect(parameters!['m'], '16');
+      expect(parameters['ef_construction'], '64');
+    },
+  );
 
   test(
-      'Given a class with a vector field and hnsw index with invalid parameter name, then collect an error about unknown parameters.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a vector field and hnsw index with invalid parameter name, then collect an error about unknown parameters.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -191,34 +211,38 @@ void main() {
               parameters:
                 invalid_param: 16
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'Unknown parameters for hnsw index: "invalid_param". Allowed parameters '
-      'are: "m", "ef_construction".',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'Unknown parameters for hnsw index: "invalid_param". Allowed parameters '
+        'are: "m", "ef_construction".',
+      );
+    },
+  );
 
   test(
-      'Given a class with a vector field and ivfflat index with valid parameters, then no errors should be collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a vector field and ivfflat index with valid parameters, then no errors should be collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -230,33 +254,37 @@ void main() {
               parameters:
                 lists: 100
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
 
-    var definition = definitions.first as ModelClassDefinition;
-    var parameters = definition.indexes.first.parameters;
+      var definition = definitions.first as ModelClassDefinition;
+      var parameters = definition.indexes.first.parameters;
 
-    expect(parameters, isNotNull);
-    expect(parameters!['lists'], '100');
-  });
+      expect(parameters, isNotNull);
+      expect(parameters!['lists'], '100');
+    },
+  );
 
   test(
-      'Given a class with a vector field and ivfflat index with invalid parameter name, then collect an error about unknown parameters.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a vector field and ivfflat index with invalid parameter name, then collect an error about unknown parameters.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -268,34 +296,38 @@ void main() {
               parameters:
                 ef_construction: 64
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'Unknown parameters for ivfflat index: "ef_construction". Allowed '
-      'parameters are: "lists".',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'Unknown parameters for ivfflat index: "ef_construction". Allowed '
+        'parameters are: "lists".',
+      );
+    },
+  );
 
   test(
-      'Given a class with a vector field and hnsw index with incorrect parameter type, then collect an error about parameter type.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a vector field and hnsw index with incorrect parameter type, then collect an error about parameter type.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -308,37 +340,41 @@ void main() {
                 m: "16"
                 ef_construction: true
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors.length,
-      equals(2),
-      reason: 'Expected two errors, but got ${collector.errors.length}.',
-    );
+      expect(
+        collector.errors.length,
+        equals(2),
+        reason: 'Expected two errors, but got ${collector.errors.length}.',
+      );
 
-    expect(
-      collector.errors[0].message,
-      'The "m" parameter must be a int.',
-    );
+      expect(
+        collector.errors[0].message,
+        'The "m" parameter must be a int.',
+      );
 
-    expect(
-      collector.errors[1].message,
-      'The "ef_construction" parameter must be a int.',
-    );
-  });
+      expect(
+        collector.errors[1].message,
+        'The "ef_construction" parameter must be a int.',
+      );
+    },
+  );
 
   test(
-      'Given a vector field with HNSW index where ef_construction < 2*m, then collect an error about the constraint.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a vector field with HNSW index where ef_construction < 2*m, then collect an error about the constraint.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -351,34 +387,38 @@ void main() {
                 m: 16
                 ef_construction: 30
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "ef_construction" parameter must be greater than or equal to 2 * m. '
-      'Set "m" <= 15 or increase "ef_construction" to a value >= 32.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "ef_construction" parameter must be greater than or equal to 2 * m. '
+        'Set "m" <= 15 or increase "ef_construction" to a value >= 32.',
+      );
+    },
+  );
 
   test(
-      'Given a vector field with HNSW index where ef_construction = 2*m, then no errors should be collected',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a vector field with HNSW index where ef_construction = 2*m, then no errors should be collected',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -391,27 +431,31 @@ void main() {
                 m: 16
                 ef_construction: 32
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+    },
+  );
 
   test(
-      'Given a vector field with HNSW index where ef_construction > 2*m, then no errors should be collected',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a vector field with HNSW index where ef_construction > 2*m, then no errors should be collected',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -424,27 +468,31 @@ void main() {
                 m: 16
                 ef_construction: 64
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors, but errors were collected.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but errors were collected.',
+      );
+    },
+  );
 
   test(
-      'Given a vector field with HNSW index with only m parameter where default ef_construction < 2*m, then collect an error with suggestion',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a vector field with HNSW index with only m parameter where default ef_construction < 2*m, then collect an error with suggestion',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -456,34 +504,38 @@ void main() {
               parameters:
                 m: 40
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "ef_construction" parameter must be greater than or equal to 2 * m. '
-      'Set "m" <= 32 or declare "ef_construction" with a value >= 80.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "ef_construction" parameter must be greater than or equal to 2 * m. '
+        'Set "m" <= 32 or declare "ef_construction" with a value >= 80.',
+      );
+    },
+  );
 
   test(
-      'Given a vector field with HNSW index with only ef_construction parameter where ef_construction < 2*default m, then collect an error with suggestion',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a vector field with HNSW index with only ef_construction parameter where ef_construction < 2*default m, then collect an error with suggestion',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
           class: Example
           table: example
           fields:
@@ -495,25 +547,29 @@ void main() {
               parameters:
                 ef_construction: 20
           ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error, but none was collected.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was collected.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "ef_construction" parameter must be greater than or equal to 2 * m. '
-      'Set "ef_construction" >= 32 or declare "m" with a value <= 10.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "ef_construction" parameter must be greater than or equal to 2 * m. '
+        'Set "ef_construction" >= 32 or declare "m" with a value <= 10.',
+      );
+    },
+  );
 }

@@ -30,8 +30,9 @@ void main() {
           found: 'text',
         );
 
-        var warning =
-            ColumnComparisonWarning(name: 'firstname').addSub(subWarning);
+        var warning = ColumnComparisonWarning(
+          name: 'firstname',
+        ).addSub(subWarning);
 
         expect(
           warning.toString(),
@@ -58,8 +59,9 @@ void main() {
           found: 'true',
         );
 
-        var warning = ColumnComparisonWarning(name: 'firstname')
-            .addSubs([subWarning1, subWarning2]);
+        var warning = ColumnComparisonWarning(
+          name: 'firstname',
+        ).addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),
@@ -99,8 +101,9 @@ void main() {
           found: 'cascade',
         );
 
-        var warning =
-            ForeignKeyComparisonWarning(name: 'fk_user').addSub(subWarning);
+        var warning = ForeignKeyComparisonWarning(
+          name: 'fk_user',
+        ).addSub(subWarning);
 
         expect(
           warning.toString(),
@@ -127,8 +130,9 @@ void main() {
           found: 'restrict',
         );
 
-        var warning = ForeignKeyComparisonWarning(name: 'fk_user')
-            .addSubs([subWarning1, subWarning2]);
+        var warning = ForeignKeyComparisonWarning(
+          name: 'fk_user',
+        ).addSubs([subWarning1, subWarning2]);
 
         expect(
           warning.toString(),

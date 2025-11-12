@@ -9,42 +9,43 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
-      () {
-    var models = [
-      ModelSourceBuilder().withFileName('post').withYaml(
-        '''
+    'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('post').withYaml(
+          '''
         class: Post
         table: post
         fields:
           title: String
           categories: List<Category>?, relation(name=post_category)
         ''',
-      ).build(),
-      ModelSourceBuilder().withFileName('category').withYaml(
-        '''
+        ).build(),
+        ModelSourceBuilder().withFileName('category').withYaml(
+          '''
         class: Category
         table: category
         fields:
           name: String
           posts: List<Post>?, relation(name=post_category)
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isNotEmpty);
-    expect(
-      errors.first.message,
-      contains('A named relation to another list field is not supported.'),
-    );
-  });
+      expect(errors, isNotEmpty);
+      expect(
+        errors.first.message,
+        contains('A named relation to another list field is not supported.'),
+      );
+    },
+  );
 }

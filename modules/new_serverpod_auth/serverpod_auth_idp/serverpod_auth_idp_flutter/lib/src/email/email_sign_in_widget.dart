@@ -111,17 +111,17 @@ class EmailSignInWidget extends StatefulWidget {
     this.onPrivacyPolicyPressed,
     this.resendCountdownDuration = const Duration(minutes: 1),
     super.key,
-  })  : assert(
-          (controller == null || client == null),
-          'Either controller or client must be provided, but not both. When '
-          'passing a controller, client, startScreen, onAuthenticated, and '
-          'onError parameters are ignored.',
-        ),
-        assert(
-          (onAuthenticated == null && onError == null) || controller == null,
-          'Provide onAuthenticated or onError when using a controller '
-          'as they are handled by the controller and will be ignored.',
-        );
+  }) : assert(
+         (controller == null || client == null),
+         'Either controller or client must be provided, but not both. When '
+         'passing a controller, client, startScreen, onAuthenticated, and '
+         'onError parameters are ignored.',
+       ),
+       assert(
+         (onAuthenticated == null && onError == null) || controller == null,
+         'Provide onAuthenticated or onError when using a controller '
+         'as they are handled by the controller and will be ignored.',
+       );
 
   @override
   State<EmailSignInWidget> createState() => _EmailSignInWidgetState();
@@ -133,7 +133,8 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ??
+    _controller =
+        widget.controller ??
         EmailAuthController(
           client: widget.client!,
           startScreen: widget.startScreen,
@@ -177,34 +178,34 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
   Widget _buildScreen() {
     return switch (_controller.currentScreen) {
       EmailFlowScreen.login => LoginForm(
-          controller: _controller,
-        ),
+        controller: _controller,
+      ),
       EmailFlowScreen.startRegistration => StartRegistrationForm(
-          controller: _controller,
-          onTermsAndConditionsPressed: widget.onTermsAndConditionsPressed,
-          onPrivacyPolicyPressed: widget.onPrivacyPolicyPressed,
-        ),
+        controller: _controller,
+        onTermsAndConditionsPressed: widget.onTermsAndConditionsPressed,
+        onPrivacyPolicyPressed: widget.onPrivacyPolicyPressed,
+      ),
       EmailFlowScreen.verifyRegistration => VerificationForm(
-          title: 'Verify account',
-          controller: _controller,
-          onCompleted: _controller.verifyRegistrationCode,
-          resendCountdownDuration: widget.resendCountdownDuration,
-        ),
+        title: 'Verify account',
+        controller: _controller,
+        onCompleted: _controller.verifyRegistrationCode,
+        resendCountdownDuration: widget.resendCountdownDuration,
+      ),
       EmailFlowScreen.completeRegistration => CompleteRegistrationForm(
-          controller: _controller,
-        ),
+        controller: _controller,
+      ),
       EmailFlowScreen.requestPasswordReset => RequestPasswordResetForm(
-          controller: _controller,
-        ),
+        controller: _controller,
+      ),
       EmailFlowScreen.verifyPasswordReset => VerificationForm(
-          title: 'Verify reset code',
-          controller: _controller,
-          onCompleted: _controller.verifyPasswordResetCode,
-          resendCountdownDuration: widget.resendCountdownDuration,
-        ),
+        title: 'Verify reset code',
+        controller: _controller,
+        onCompleted: _controller.verifyPasswordResetCode,
+        resendCountdownDuration: widget.resendCountdownDuration,
+      ),
       EmailFlowScreen.completePasswordReset => CompletePasswordResetForm(
-          controller: _controller,
-        ),
+        controller: _controller,
+      ),
     };
   }
 }

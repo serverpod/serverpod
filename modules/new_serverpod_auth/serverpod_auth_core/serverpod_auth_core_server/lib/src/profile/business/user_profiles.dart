@@ -65,11 +65,11 @@ final class UserProfiles {
         final createdProfileModel = switch (imageSource) {
           null => createdProfile.toModel(),
           _ => await _setUserImage(
-              session,
-              authUserId,
-              imageSource,
-              transaction: transaction,
-            ),
+            session,
+            authUserId,
+            imageSource,
+            transaction: transaction,
+          ),
         };
 
         await config.onAfterUserProfileCreated?.call(
@@ -239,7 +239,7 @@ final class UserProfiles {
     );
   }
 
-// #region Profile images
+  // #region Profile images
 
   Future<UserProfileImage> _createImageFromUrl(
     final Session session,
@@ -324,13 +324,12 @@ final class UserProfiles {
     final UuidValue authUserId,
     final Uri url, {
     final Transaction? transaction,
-  }) async =>
-      _setUserImage(
-        session,
-        authUserId,
-        UserImageFromUrl(url),
-        transaction: transaction,
-      );
+  }) async => _setUserImage(
+    session,
+    authUserId,
+    UserImageFromUrl(url),
+    transaction: transaction,
+  );
 
   /// Sets a user's image from image data.
   ///
@@ -340,13 +339,12 @@ final class UserProfiles {
     final UuidValue authUserId,
     final Uint8List imageBytes, {
     final Transaction? transaction,
-  }) async =>
-      _setUserImage(
-        session,
-        authUserId,
-        UserImageFromBytes(imageBytes),
-        transaction: transaction,
-      );
+  }) async => _setUserImage(
+    session,
+    authUserId,
+    UserImageFromBytes(imageBytes),
+    transaction: transaction,
+  );
 
   /// Sets a user's image to the default image for that user.
   Future<UserProfileModel> setDefaultUserImage(
@@ -364,8 +362,10 @@ final class UserProfiles {
           transaction: transaction,
         );
 
-        final image =
-            await config.userImageGenerator(userProfile, config.userImageSize);
+        final image = await config.userImageGenerator(
+          userProfile,
+          config.userImageSize,
+        );
 
         final imageBytes = await _encodeImage(image);
 
@@ -458,19 +458,19 @@ final class UserProfiles {
 
         final image = switch (imageSource) {
           UserImageFromUrl() => await _createImageFromUrl(
-              session,
-              authUserId,
-              imageSource.url,
-              transaction: transaction,
-              userProfile: userProfile,
-            ),
+            session,
+            authUserId,
+            imageSource.url,
+            transaction: transaction,
+            userProfile: userProfile,
+          ),
           UserImageFromBytes() => await _createImageFromBytes(
-              session,
-              authUserId,
-              imageSource.bytes,
-              transaction: transaction,
-              userProfile: userProfile,
-            ),
+            session,
+            authUserId,
+            imageSource.bytes,
+            transaction: transaction,
+            userProfile: userProfile,
+          ),
         };
 
         userProfile.imageId = image.id!;
@@ -487,7 +487,7 @@ final class UserProfiles {
     );
   }
 
-// #endregion
+  // #endregion
 
   Future<UserProfile> _updateProfile(
     final Session session,
@@ -579,9 +579,9 @@ final class UserProfiles {
     return Isolate.run(
       () => switch (config.userImageFormat) {
         UserProfileImageType.jpg => encodeJpg(
-            image,
-            quality: config.userImageQuality,
-          ),
+          image,
+          quality: config.userImageQuality,
+        ),
         UserProfileImageType.png => encodePng(image),
       },
     );

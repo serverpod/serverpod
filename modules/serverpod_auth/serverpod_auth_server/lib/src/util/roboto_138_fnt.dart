@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:image/image.dart';
 
 /// 48px Arial font for use with [drawString] and [drawChar].
-final BitmapFont roboto_138 =
-    BitmapFont.fromZip(base64Decode(_roboto_138_data));
+final BitmapFont roboto_138 = BitmapFont.fromZip(
+  base64Decode(_roboto_138_data),
+);
 
 // ignore: constant_identifier_names
 const _roboto_138_data =

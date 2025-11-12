@@ -91,8 +91,8 @@ void main() {
           .withName('uri')
           .withTypeDefinition('Uri', true)
           .withDefaults(
-              defaultPersistValue:
-                  "'https://serverpod.dev/defaultPersistValue'")
+            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -166,7 +166,8 @@ void main() {
           .withName('uri')
           .withTypeDefinition('Uri', false)
           .withDefaults(
-              defaultModelValue: "'https://serverpod.dev/defaultModelValue'")
+            defaultModelValue: "'https://serverpod.dev/defaultModelValue'",
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -195,7 +196,8 @@ void main() {
           .withName('uri')
           .withTypeDefinition('Uri', true)
           .withDefaults(
-              defaultModelValue: 'https://serverpod.dev/defaultModelValue')
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

@@ -3,10 +3,11 @@ import 'scope.dart';
 
 /// Returns authentication information for a given [Session] and [token] or null
 /// if the key is invalid.
-typedef AuthenticationHandler = Future<AuthenticationInfo?> Function(
-  Session session,
-  String token,
-);
+typedef AuthenticationHandler =
+    Future<AuthenticationInfo?> Function(
+      Session session,
+      String token,
+    );
 
 /// Holds the id for an authenticated user and which [scopes] it can access.
 /// Allowed scopes are defined for each [Endpoint].

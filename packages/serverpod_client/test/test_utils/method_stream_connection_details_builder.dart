@@ -12,12 +12,12 @@ class MethodStreamConnectionDetailsBuilder {
   ClientAuthKeyProvider? _authKeyProvider;
 
   MethodStreamConnectionDetailsBuilder()
-      : _endpoint = 'ExampleEndpoint',
-        _method = 'exampleMethod',
-        _args = {},
-        _parameterStreams = {},
-        _authKeyProvider = null,
-        _outputController = StreamController();
+    : _endpoint = 'ExampleEndpoint',
+      _method = 'exampleMethod',
+      _args = {},
+      _parameterStreams = {},
+      _authKeyProvider = null,
+      _outputController = StreamController();
 
   MethodStreamConnectionDetailsBuilder withEndpoint(String endpoint) {
     _endpoint = endpoint;

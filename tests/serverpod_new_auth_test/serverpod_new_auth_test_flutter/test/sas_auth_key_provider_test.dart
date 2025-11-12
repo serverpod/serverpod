@@ -11,8 +11,7 @@ void main() {
     );
   });
 
-  test(
-      'Given a SasAuthKeyProvider with no auth info available'
+  test('Given a SasAuthKeyProvider with no auth info available'
       'when getting auth header value '
       'then it returns null.', () async {
     getAuthInfoReturn = null;
@@ -22,8 +21,7 @@ void main() {
     expect(result, isNull);
   });
 
-  test(
-      'Given a SasAuthKeyProvider with valid auth info available '
+  test('Given a SasAuthKeyProvider with valid auth info available '
       'when getting auth header value '
       'then it returns Bearer token format.', () async {
     getAuthInfoReturn = _authSuccess;

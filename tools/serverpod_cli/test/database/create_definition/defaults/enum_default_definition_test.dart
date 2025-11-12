@@ -13,18 +13,20 @@ void main() {
       .withFileName('by_name_enum')
       .withSerialized(EnumSerialization.byName)
       .withValues([
-    ProtocolEnumValueDefinition('byName1'),
-    ProtocolEnumValueDefinition('byName2'),
-  ]).build();
+        ProtocolEnumValueDefinition('byName1'),
+        ProtocolEnumValueDefinition('byName2'),
+      ])
+      .build();
 
   var byIndexEnumDefinition = EnumDefinitionBuilder()
       .withClassName('ByIndexEnum')
       .withFileName('by_index_enum')
       .withSerialized(EnumSerialization.byIndex)
       .withValues([
-    ProtocolEnumValueDefinition('byIndex1'),
-    ProtocolEnumValueDefinition('byIndex2'),
-  ]).build();
+        ProtocolEnumValueDefinition('byIndex1'),
+        ProtocolEnumValueDefinition('byIndex2'),
+      ])
+      .build();
 
   group('Given a class definition with an enum field', () {
     group('when the enum is serialized by name', () {
@@ -60,14 +62,16 @@ void main() {
           );
         });
 
-        test('then the table should contain two columns: id and enumDefault',
-            () {
-          var table = databaseDefinition.tables.first;
-          expect(
-            table.columns,
-            hasLength(2),
-          );
-        });
+        test(
+          'then the table should contain two columns: id and enumDefault',
+          () {
+            var table = databaseDefinition.tables.first;
+            expect(
+              table.columns,
+              hasLength(2),
+            );
+          },
+        );
 
         test('then the enumDefault column should not have a default value', () {
           var table = databaseDefinition.tables.first;
@@ -112,25 +116,28 @@ void main() {
           );
         });
 
-        test('then the table should contain two columns: id and enumDefault',
-            () {
-          var table = databaseDefinition.tables.first;
-          expect(
-            table.columns,
-            hasLength(2),
-          );
-        });
+        test(
+          'then the table should contain two columns: id and enumDefault',
+          () {
+            var table = databaseDefinition.tables.first;
+            expect(
+              table.columns,
+              hasLength(2),
+            );
+          },
+        );
 
         test(
-            'then the enumDefault column should store the enum name as the default value',
-            () {
-          var table = databaseDefinition.tables.first;
-          var column = table.columns.last;
-          expect(
-            column.columnDefault,
-            "'byName2'::text",
-          );
-        });
+          'then the enumDefault column should store the enum name as the default value',
+          () {
+            var table = databaseDefinition.tables.first;
+            var column = table.columns.last;
+            expect(
+              column.columnDefault,
+              "'byName2'::text",
+            );
+          },
+        );
 
         test('then the enumDefault column should be nullable', () {
           var table = databaseDefinition.tables.first;
@@ -175,25 +182,28 @@ void main() {
           );
         });
 
-        test('then the table should contain two columns: id and enumDefault',
-            () {
-          var table = databaseDefinition.tables.first;
-          expect(
-            table.columns,
-            hasLength(2),
-          );
-        });
+        test(
+          'then the table should contain two columns: id and enumDefault',
+          () {
+            var table = databaseDefinition.tables.first;
+            expect(
+              table.columns,
+              hasLength(2),
+            );
+          },
+        );
 
         test(
-            'then the enumDefault column should not have a default value persisted in the database',
-            () {
-          var table = databaseDefinition.tables.first;
-          var column = table.columns.last;
-          expect(
-            column.columnDefault,
-            isNull,
-          );
-        });
+          'then the enumDefault column should not have a default value persisted in the database',
+          () {
+            var table = databaseDefinition.tables.first;
+            var column = table.columns.last;
+            expect(
+              column.columnDefault,
+              isNull,
+            );
+          },
+        );
 
         test('then the enumDefault column should be nullable', () {
           var table = databaseDefinition.tables.first;
@@ -240,25 +250,28 @@ void main() {
           );
         });
 
-        test('then the table should contain two columns: id and enumDefault',
-            () {
-          var table = databaseDefinition.tables.first;
-          expect(
-            table.columns,
-            hasLength(2),
-          );
-        });
+        test(
+          'then the table should contain two columns: id and enumDefault',
+          () {
+            var table = databaseDefinition.tables.first;
+            expect(
+              table.columns,
+              hasLength(2),
+            );
+          },
+        );
 
         test(
-            'then the enumDefault column should store the index of the enum value as the default',
-            () {
-          var table = databaseDefinition.tables.first;
-          var column = table.columns.last;
-          expect(
-            column.columnDefault,
-            '1',
-          );
-        });
+          'then the enumDefault column should store the index of the enum value as the default',
+          () {
+            var table = databaseDefinition.tables.first;
+            var column = table.columns.last;
+            expect(
+              column.columnDefault,
+              '1',
+            );
+          },
+        );
 
         test('then the enumDefault column should be nullable', () {
           var table = databaseDefinition.tables.first;

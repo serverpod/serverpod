@@ -19,51 +19,65 @@ class _$ListBucketResultSerializer
   final String wireName = 'ListBucketResult';
 
   @override
-  Iterable<Object?> serialize(Serializers serializers, ListBucketResult object,
-      {FullType specifiedType = FullType.unspecified}) {
+  Iterable<Object?> serialize(
+    Serializers serializers,
+    ListBucketResult object, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
     final result = <Object?>[
       'Name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
       'MaxKeys',
-      serializers.serialize(object.maxKeys,
-          specifiedType: const FullType(String)),
+      serializers.serialize(
+        object.maxKeys,
+        specifiedType: const FullType(String),
+      ),
     ];
     Object? value;
     value = object.prefix;
     if (value != null) {
       result
         ..add('Prefix')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.keyCount;
     if (value != null) {
       result
         ..add('KeyCount')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.isTruncated;
     if (value != null) {
       result
         ..add('IsTruncated')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.contents;
     if (value != null) {
       result
         ..add('Contents')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(BuiltList, [FullType(Contents)])));
+        ..add(
+          serializers.serialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(Contents)]),
+          ),
+        );
     }
     return result;
   }
 
   @override
   ListBucketResult deserialize(
-      Serializers serializers, Iterable<Object?> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
+    Serializers serializers,
+    Iterable<Object?> serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
     final result = ListBucketResultBuilder();
 
     final iterator = serialized.iterator;
@@ -73,30 +87,55 @@ class _$ListBucketResultSerializer
       final Object? value = iterator.current;
       switch (key) {
         case 'Name':
-          result.name = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.name =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'Prefix':
-          result.prefix = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.prefix =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'MaxKeys':
-          result.maxKeys = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.maxKeys =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'KeyCount':
-          result.keyCount = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.keyCount =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'IsTruncated':
-          result.isTruncated = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.isTruncated =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'Contents':
-          result.contents.replace(serializers.deserialize(value,
-                  specifiedType:
-                      const FullType(BuiltList, [FullType(Contents)]))!
-              as BuiltList<Object>);
+          result.contents.replace(
+            serializers.deserialize(
+                  value,
+                  specifiedType: const FullType(BuiltList, [
+                    FullType(Contents),
+                  ]),
+                )!
+                as BuiltList<Object>,
+          );
           break;
       }
     }
@@ -119,21 +158,24 @@ class _$ListBucketResult extends ListBucketResult {
   @override
   final BuiltList<Contents>? contents;
 
-  factory _$ListBucketResult(
-          [void Function(ListBucketResultBuilder)? updates]) =>
-      (ListBucketResultBuilder()..update(updates)).build();
+  factory _$ListBucketResult([
+    void Function(ListBucketResultBuilder)? updates,
+  ]) => (ListBucketResultBuilder()..update(updates)).build();
 
-  _$ListBucketResult._(
-      {required this.name,
-      this.prefix,
-      required this.maxKeys,
-      this.keyCount,
-      this.isTruncated,
-      this.contents})
-      : super._() {
+  _$ListBucketResult._({
+    required this.name,
+    this.prefix,
+    required this.maxKeys,
+    this.keyCount,
+    this.isTruncated,
+    this.contents,
+  }) : super._() {
     BuiltValueNullFieldError.checkNotNull(name, 'ListBucketResult', 'name');
     BuiltValueNullFieldError.checkNotNull(
-        maxKeys, 'ListBucketResult', 'maxKeys');
+      maxKeys,
+      'ListBucketResult',
+      'maxKeys',
+    );
   }
 
   @override
@@ -158,14 +200,18 @@ class _$ListBucketResult extends ListBucketResult {
 
   @override
   int get hashCode {
-    return $jf($jc(
+    return $jf(
+      $jc(
         $jc(
-            $jc(
-                $jc($jc($jc(0, name.hashCode), prefix.hashCode),
-                    maxKeys.hashCode),
-                keyCount.hashCode),
-            isTruncated.hashCode),
-        contents.hashCode));
+          $jc(
+            $jc($jc($jc(0, name.hashCode), prefix.hashCode), maxKeys.hashCode),
+            keyCount.hashCode,
+          ),
+          isTruncated.hashCode,
+        ),
+        contents.hashCode,
+      ),
+    );
   }
 
   @override
@@ -241,16 +287,24 @@ class ListBucketResultBuilder
   _$ListBucketResult build() {
     _$ListBucketResult _$result;
     try {
-      _$result = _$v ??
+      _$result =
+          _$v ??
           _$ListBucketResult._(
-              name: BuiltValueNullFieldError.checkNotNull(
-                  name, 'ListBucketResult', 'name'),
-              prefix: prefix,
-              maxKeys: BuiltValueNullFieldError.checkNotNull(
-                  maxKeys, 'ListBucketResult', 'maxKeys'),
-              keyCount: keyCount,
-              isTruncated: isTruncated,
-              contents: _contents?.build());
+            name: BuiltValueNullFieldError.checkNotNull(
+              name,
+              'ListBucketResult',
+              'name',
+            ),
+            prefix: prefix,
+            maxKeys: BuiltValueNullFieldError.checkNotNull(
+              maxKeys,
+              'ListBucketResult',
+              'maxKeys',
+            ),
+            keyCount: keyCount,
+            isTruncated: isTruncated,
+            contents: _contents?.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
@@ -258,7 +312,10 @@ class ListBucketResultBuilder
         _contents?.build();
       } catch (e) {
         throw BuiltValueNestedFieldError(
-            'ListBucketResult', _$failedField, e.toString());
+          'ListBucketResult',
+          _$failedField,
+          e.toString(),
+        );
       }
       rethrow;
     }

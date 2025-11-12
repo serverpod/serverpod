@@ -135,7 +135,8 @@ void main() async {
         var catCount = await Cat.db.count(
           session,
           where: (t) => t.kittens.any(
-              (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1'))),
+            (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1')),
+          ),
         );
 
         expect(catCount, 1);

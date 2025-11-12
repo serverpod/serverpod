@@ -179,8 +179,9 @@ class FormattedCompilationUnit {
 
   @override
   String toString() {
-    return DartFormatter(languageVersion: Version(3, 6, 0))
-        .format(compilationUnit.toSource());
+    return DartFormatter(
+      languageVersion: Version(3, 6, 0),
+    ).format(compilationUnit.toSource());
   }
 }
 

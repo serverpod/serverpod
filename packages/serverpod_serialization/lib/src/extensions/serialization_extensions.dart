@@ -110,8 +110,9 @@ extension MapJsonExtension<K, V> on Map<K, V> {
     if (_keyType != String) {
       return entries.map((e) {
         var serializedKey = keyToJson != null ? keyToJson(e.key) : e.key;
-        var serializedValue =
-            valueToJson != null ? valueToJson(e.value) : e.value;
+        var serializedValue = valueToJson != null
+            ? valueToJson(e.value)
+            : e.value;
         return {'k': serializedKey, 'v': serializedValue};
       }).toList();
     }
@@ -154,7 +155,8 @@ extension SetJsonExtension<T> on Set<T> {
 
     if (set != null && value!.length != set.length) {
       throw Exception(
-          'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).');
+        'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).',
+      );
     }
 
     return set;

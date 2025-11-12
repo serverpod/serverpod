@@ -16,15 +16,19 @@ void main() {
   );
 
   withServerpod(
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
-      'Given unapplied migration that errors if applied multiple times',
-      (sessionBuilder, _) async {
-    final migrationName = MigrationGenerator.createVersionName(null);
-    final migrationRegistryContents =
-        [...existingMigrations, migrationName].join('\n');
-    final testTableName = 'test_table_${const Uuid().v4().replaceAll('-', '')}';
-    final sqlThatThrowsIfAppliedMultipleTimes = '''
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+    'Given unapplied migration that errors if applied multiple times',
+    (sessionBuilder, _) async {
+      final migrationName = MigrationGenerator.createVersionName(null);
+      final migrationRegistryContents = [
+        ...existingMigrations,
+        migrationName,
+      ].join('\n');
+      final testTableName =
+          'test_table_${const Uuid().v4().replaceAll('-', '')}';
+      final sqlThatThrowsIfAppliedMultipleTimes =
+          '''
       BEGIN;
 
       CREATE TABLE ${testTableName} (
@@ -47,23 +51,23 @@ void main() {
       COMMIT;
     ''';
 
-    setUp(() async {
-      await d.dir('migrations', [
-        d.file('migration_registry.txt', migrationRegistryContents),
-        for (var version in existingMigrations) d.dir(version, []),
-        d.dir(migrationName, [
-          d.file('definition_project.json', ''),
-          d.file('definition.json', ''),
-          d.file('migration.json', ''),
-          d.file('migration.sql', sqlThatThrowsIfAppliedMultipleTimes),
-          d.file('definition.sql', sqlThatThrowsIfAppliedMultipleTimes),
-        ])
-      ]).create();
-    });
+      setUp(() async {
+        await d.dir('migrations', [
+          d.file('migration_registry.txt', migrationRegistryContents),
+          for (var version in existingMigrations) d.dir(version, []),
+          d.dir(migrationName, [
+            d.file('definition_project.json', ''),
+            d.file('definition.json', ''),
+            d.file('migration.json', ''),
+            d.file('migration.sql', sqlThatThrowsIfAppliedMultipleTimes),
+            d.file('definition.sql', sqlThatThrowsIfAppliedMultipleTimes),
+          ]),
+        ]).create();
+      });
 
-    tearDown(() async {
-      var session = sessionBuilder.build();
-      await session.db.unsafeExecute('''
+      tearDown(() async {
+        var session = sessionBuilder.build();
+        await session.db.unsafeExecute('''
         BEGIN; 
 
         DROP TABLE IF EXISTS ${testTableName};
@@ -78,21 +82,23 @@ void main() {
 
         COMMIT;
       ''');
-    });
+      });
 
-    test(
+      test(
         'when triggering multiple concurrent then migration is successfully applied once',
         () async {
-      var migrationManager = MigrationManager(
-        Directory(d.sandbox),
+          var migrationManager = MigrationManager(
+            Directory(d.sandbox),
+          );
+
+          var concurrentMigrations = Future.wait([
+            migrationManager.migrateToLatest(sessionBuilder.build()),
+            migrationManager.migrateToLatest(sessionBuilder.build()),
+          ]);
+
+          expect(concurrentMigrations, completes);
+        },
       );
-
-      var concurrentMigrations = Future.wait([
-        migrationManager.migrateToLatest(sessionBuilder.build()),
-        migrationManager.migrateToLatest(sessionBuilder.build()),
-      ]);
-
-      expect(concurrentMigrations, completes);
-    });
-  });
+    },
+  );
 }

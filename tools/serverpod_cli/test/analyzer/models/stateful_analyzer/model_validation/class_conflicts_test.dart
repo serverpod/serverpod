@@ -10,99 +10,113 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given two models with the same class name, then an error is collected that there is a collision in the class names.',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given two models with the same class name, then an error is collected that there is a collision in the class names.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         fields:
           name: String
         ''',
-      ).build(),
-      ModelSourceBuilder().withFileName('example2').withYaml(
-        '''
+        ).build(),
+        ModelSourceBuilder().withFileName('example2').withYaml(
+          '''
         class: Example
         fields:
           differentName: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The class name "Example" is already used by another model class.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "Example" is already used by another model class.',
+      );
+    },
+  );
 
   test(
-      'Given a model and a custom class with the same class name, then an error is collected that there is a collision in the class names.',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a model and a custom class with the same class name, then an error is collected that there is a collision in the class names.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: CustomClass
         fields:
           name: String
         ''',
-      ).build(),
-    ];
-    var extraClassDefinition = TypeDefinition(
+        ).build(),
+      ];
+      var extraClassDefinition = TypeDefinition(
         className: 'CustomClass',
         nullable: false,
-        url: 'package:my_app_shared/my_app_shared.dart');
-    var config = GeneratorConfigBuilder()
-        .withExtraClasses([extraClassDefinition]).build();
-    var collector = CodeGenerationCollector();
+        url: 'package:my_app_shared/my_app_shared.dart',
+      );
+      var config = GeneratorConfigBuilder().withExtraClasses([
+        extraClassDefinition,
+      ]).build();
+      var collector = CodeGenerationCollector();
 
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The class name "CustomClass" is already used by a custom class (package:my_app_shared/my_app_shared.dart).',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The class name "CustomClass" is already used by a custom class (package:my_app_shared/my_app_shared.dart).',
+      );
+    },
+  );
 
   test(
-      'Given a single valid model, then there is no error collected for the class name.',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a single valid model, then there is no error collected for the class name.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         fields:
           name: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors but some were generated.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
+    },
+  );
 }

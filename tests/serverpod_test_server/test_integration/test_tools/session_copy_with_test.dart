@@ -17,33 +17,34 @@ void main() {
         );
 
         test(
-            'then the first test gets the modifiedSessionBuilder according to the group assignment',
-            () {
-          expect(
-            modifiedSessionBuilder.build().authenticated,
-            isA<AuthenticationInfo>().having(
-              (a) => a.userId,
-              'userId',
-              123,
-            ),
-          );
-        });
+          'then the first test gets the modifiedSessionBuilder according to the group assignment',
+          () {
+            expect(
+              modifiedSessionBuilder.build().authenticated,
+              isA<AuthenticationInfo>().having(
+                (a) => a.userId,
+                'userId',
+                123,
+              ),
+            );
+          },
+        );
         test(
-            'then the second test gets the modifiedSessionBuilder according to the group assignment',
-            () {
-          expect(
-            modifiedSessionBuilder.build().authenticated,
-            isA<AuthenticationInfo>().having(
-              (a) => a.userId,
-              'userId',
-              123,
-            ),
-          );
-        });
+          'then the second test gets the modifiedSessionBuilder according to the group assignment',
+          () {
+            expect(
+              modifiedSessionBuilder.build().authenticated,
+              isA<AuthenticationInfo>().having(
+                (a) => a.userId,
+                'userId',
+                123,
+              ),
+            );
+          },
+        );
       });
 
-      group(
-          'when setting a new shared session builder on the group level '
+      group('when setting a new shared session builder on the group level '
           'and copying the session builder in the first test', () {
         TestSessionBuilder modifiedSessionBuilder = sessionBuilder.copyWith(
           authentication: AuthenticationOverride.unauthenticated(),
@@ -68,17 +69,18 @@ void main() {
         });
 
         test(
-            'then the second test gets the modifiedSessionBuilder according to the first test',
-            () {
-          expect(
-            modifiedSessionBuilder.build().authenticated,
-            isA<AuthenticationInfo>().having(
-              (a) => a.userId,
-              'userId',
-              123,
-            ),
-          );
-        });
+          'then the second test gets the modifiedSessionBuilder according to the first test',
+          () {
+            expect(
+              modifiedSessionBuilder.build().authenticated,
+              isA<AuthenticationInfo>().having(
+                (a) => a.userId,
+                'userId',
+                123,
+              ),
+            );
+          },
+        );
       });
     },
   );

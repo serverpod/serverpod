@@ -84,7 +84,8 @@ class _UserImageButtonState extends State<UserImageButton> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.all(
-                      Radius.circular(widget.compact ? 9 : 12)),
+                    Radius.circular(widget.compact ? 9 : 12),
+                  ),
                 ),
                 child: Center(
                   child: Icon(

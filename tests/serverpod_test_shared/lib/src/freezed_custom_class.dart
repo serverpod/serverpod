@@ -11,8 +11,6 @@ class FreezedCustomClass with _$FreezedCustomClass {
     required int age,
   }) = _FreezedCustomClass;
 
-  factory FreezedCustomClass.fromJson(
-    Map<String, Object?> json,
-  ) =>
+  factory FreezedCustomClass.fromJson(Map<String, Object?> json) =>
       _$FreezedCustomClassFromJson(json);
 }

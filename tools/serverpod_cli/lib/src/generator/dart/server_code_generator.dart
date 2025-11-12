@@ -26,10 +26,12 @@ class DartServerCodeGenerator extends CodeGenerator {
 
     return {
       for (var entry in modelAllocatorContext.entries)
-        entry.model.getFullFilePath(config, serverCode: true):
-            serverSideGenerator
-                .generateModelLibrary(entry.model)
-                .generateCode(allocator: entry.allocator),
+        entry.model.getFullFilePath(
+          config,
+          serverCode: true,
+        ): serverSideGenerator
+            .generateModelLibrary(entry.model)
+            .generateCode(allocator: entry.allocator),
     };
   }
 
@@ -62,8 +64,10 @@ class DartServerCodeGenerator extends CodeGenerator {
       codeMap.addAll({
         p.joinAll([
           ...generatedServerTestToolsPathParts,
-          'serverpod_test_tools.dart'
-        ]): testToolsGenerator.generateTestHelper().generateCode(),
+          'serverpod_test_tools.dart',
+        ]): testToolsGenerator
+            .generateTestHelper()
+            .generateCode(),
       });
     }
 

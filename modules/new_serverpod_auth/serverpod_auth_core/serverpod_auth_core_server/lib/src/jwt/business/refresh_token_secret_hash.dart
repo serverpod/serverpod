@@ -19,9 +19,9 @@ final class RefreshTokenSecretHash {
   RefreshTokenSecretHash({
     required final int refreshTokenRotatingSecretSaltLength,
     required final String refreshTokenHashPepper,
-  })  : _refreshTokenRotatingSecretSaltLength =
-            refreshTokenRotatingSecretSaltLength,
-        _refreshTokenHashPepper = refreshTokenHashPepper;
+  }) : _refreshTokenRotatingSecretSaltLength =
+           refreshTokenRotatingSecretSaltLength,
+       _refreshTokenHashPepper = refreshTokenHashPepper;
 
   /// Create the hash for the given refresh token secret.
   Future<({Uint8List hash, Uint8List salt})> createHash({

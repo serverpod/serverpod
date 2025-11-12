@@ -29,7 +29,8 @@ void main() {
         webServer: portZeroConfig,
       ),
       authenticationHandler: (session, token) => Future.value(
-          token == 'good' ? AuthenticationInfo('mario', {}) : null),
+        token == 'good' ? AuthenticationInfo('mario', {}) : null,
+      ),
     );
 
     pod.webServer.addMiddleware(_AuthMiddleware().call, '/api');
@@ -47,53 +48,55 @@ void main() {
   });
 
   group(
-      'Given a route that requires authentication is added to an authenticated path',
-      () {
-    test(
-        'when client requests the path without authorization, '
-        'then a 401 Unauthorized is returned', () async {
-      var response = await http.get(Uri.http('localhost:$port', '/api/foo'));
+    'Given a route that requires authentication is added to an authenticated path',
+    () {
+      test('when client requests the path without authorization, '
+          'then a 401 Unauthorized is returned', () async {
+        var response = await http.get(Uri.http('localhost:$port', '/api/foo'));
 
-      expect(response.statusCode, 401);
-    });
+        expect(response.statusCode, 401);
+      });
 
-    test(
-        'when client requests the path with invalid authorization, '
-        'then a 401 Unauthorized is returned', () async {
-      var response = await http.get(
-        Uri.http('localhost:$port', '/api/foo'),
-        headers: {
-          'Authorization': 'Bearer bad',
-        },
-      );
+      test('when client requests the path with invalid authorization, '
+          'then a 401 Unauthorized is returned', () async {
+        var response = await http.get(
+          Uri.http('localhost:$port', '/api/foo'),
+          headers: {
+            'Authorization': 'Bearer bad',
+          },
+        );
 
-      expect(response.statusCode, 401);
-    });
+        expect(response.statusCode, 401);
+      });
 
-    test(
-        'when client requests the path with valid authorization, '
-        'then a 200 OK is returned', () async {
-      var response = await http.get(
-        Uri.http('localhost:$port', '/api/foo'),
-        headers: {
-          'Authorization': 'Bearer good',
-        },
-      );
+      test('when client requests the path with valid authorization, '
+          'then a 200 OK is returned', () async {
+        var response = await http.get(
+          Uri.http('localhost:$port', '/api/foo'),
+          headers: {
+            'Authorization': 'Bearer good',
+          },
+        );
 
-      expect(response.statusCode, 200);
-      expect(response.body, 'mario');
-    });
-  });
+        expect(response.statusCode, 200);
+        expect(response.body, 'mario');
+      });
+    },
+  );
 
   test(
-      'Given a route that requires authentication is added to an unauthenticated path, '
-      'when a client request the path without authorization, '
-      'then a 500 Internal Error is returned', () async {
-    var response =
-        await http.get(Uri.http('localhost:$port', '/bar'), headers: {});
+    'Given a route that requires authentication is added to an unauthenticated path, '
+    'when a client request the path without authorization, '
+    'then a 500 Internal Error is returned',
+    () async {
+      var response = await http.get(
+        Uri.http('localhost:$port', '/bar'),
+        headers: {},
+      );
 
-    expect(response.statusCode, 500);
-  });
+      expect(response.statusCode, 500);
+    },
+  );
 }
 
 /// Test route that requires authentication (uses ctx.authInfo)

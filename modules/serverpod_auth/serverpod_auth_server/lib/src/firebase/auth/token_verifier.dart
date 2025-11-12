@@ -28,8 +28,8 @@ class TokenVerifier {
   TokenVerifier({
     required String projectId,
     http.Client? httpClient,
-  })  : _projectId = projectId,
-        _httpClient = httpClient;
+  }) : _projectId = projectId,
+       _httpClient = httpClient;
 
   /// Verifies the format and signature of a Firebase Auth JWT token.
   Future<IdToken> verifyJwt(String jwtToken) async {

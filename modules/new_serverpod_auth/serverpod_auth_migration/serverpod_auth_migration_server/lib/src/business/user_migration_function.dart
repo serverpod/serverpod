@@ -5,9 +5,10 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// This is called only once, even if multiple authentications are migrated for
 /// the user successively.
-typedef UserMigrationFunction = Future<void> Function(
-  Session session, {
-  required int oldUserId,
-  required UuidValue newAuthUserId,
-  Transaction? transaction,
-});
+typedef UserMigrationFunction =
+    Future<void> Function(
+      Session session, {
+      required int oldUserId,
+      required UuidValue newAuthUserId,
+      Transaction? transaction,
+    });

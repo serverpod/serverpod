@@ -5,8 +5,9 @@ import 'type_definition_builder.dart';
 
 class ParameterDefinitionBuilder {
   String _name = 'example';
-  TypeDefinition _type =
-      TypeDefinitionBuilder().withClassName('String').build();
+  TypeDefinition _type = TypeDefinitionBuilder()
+      .withClassName('String')
+      .build();
   bool _required = false;
 
   ParameterDefinitionBuilder withName(String name) {

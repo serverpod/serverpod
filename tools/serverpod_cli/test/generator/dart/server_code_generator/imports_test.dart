@@ -30,281 +30,305 @@ void main() {
       ]);
 
   group(
-      'Given a hierarchy with a sealed parent that has a model and a normal child, when generating code',
-      () {
-    var parent = ModelClassDefinitionBuilder()
-        .withSubDirParts(['subdir'])
-        .withClassName('Example')
-        .withFileName('example')
-        .withField(FieldDefinitionBuilder()
-            .withName('user')
-            .withType(
-              TypeDefinitionBuilder()
-                  .withClassName('User')
-                  .withUrl(defaultModuleAlias)
-                  .build(),
-            )
-            .build())
-        .withIsSealed(true)
-        .build();
+    'Given a hierarchy with a sealed parent that has a model and a normal child, when generating code',
+    () {
+      var parent = ModelClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('Example')
+          .withFileName('example')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('user')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('User')
+                      .withUrl(defaultModuleAlias)
+                      .build(),
+                )
+                .build(),
+          )
+          .withIsSealed(true)
+          .build();
 
-    var child = ModelClassDefinitionBuilder()
-        .withSubDirParts(['subdir'])
-        .withClassName('ExampleChild')
-        .withFileName('example_child')
-        .withSimpleField('age', 'int')
-        .withExtendsClass(parent)
-        .build();
+      var child = ModelClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('ExampleChild')
+          .withFileName('example_child')
+          .withSimpleField('age', 'int')
+          .withExtendsClass(parent)
+          .build();
 
-    var user = ModelClassDefinitionBuilder()
-        .withSubDirParts(['subdir'])
-        .withClassName('User')
-        .withFileName('user')
-        .withSimpleField('name', 'String')
-        .build();
+      var user = ModelClassDefinitionBuilder()
+          .withSubDirParts(['subdir'])
+          .withClassName('User')
+          .withFileName('user')
+          .withSimpleField('name', 'String')
+          .build();
 
-    parent.childClasses.add(ResolvedInheritanceDefinition(child));
+      parent.childClasses.add(ResolvedInheritanceDefinition(child));
 
-    var models = [
-      parent,
-      child,
-      user,
-    ];
+      var models = [
+        parent,
+        child,
+        user,
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    var parentCompilationUnit = parseString(
-      content: codeMap[getExpectedFilePath(
-        parent.fileName,
-        subDirParts: ['subdir'],
-      )]!,
-    ).unit;
+      var parentCompilationUnit = parseString(
+        content:
+            codeMap[getExpectedFilePath(
+              parent.fileName,
+              subDirParts: ['subdir'],
+            )]!,
+      ).unit;
 
-    test(
+      test(
         'then the ${parent.className} has a relative protocol import directive correctly generated',
         () {
-      var protocolImport = CompilationUnitHelpers.tryFindImportDirective(
-        parentCompilationUnit,
-        uri: '../protocol.dart',
-      );
+          var protocolImport = CompilationUnitHelpers.tryFindImportDirective(
+            parentCompilationUnit,
+            uri: '../protocol.dart',
+          );
 
-      expect(protocolImport, isNotNull);
-    });
-  });
+          expect(protocolImport, isNotNull);
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that has a UuidValue parameter imported from Serverpod when generating endpoints',
-      () {
-    var endpoint = EndpointDefinitionBuilder()
-        .withClassName('ExampleEndpoint')
-        .withName('example')
-        .withMethods([
-      MethodDefinitionBuilder().withName('getById').withParameters([
-        ParameterDefinitionBuilder()
-            .withName('id')
-            .withType(
-              TypeDefinitionBuilder()
-                  .withClassName('UuidValue')
-                  .withUrl('serverpod')
+    'Given an endpoint that has a UuidValue parameter imported from Serverpod when generating endpoints',
+    () {
+      var endpoint = EndpointDefinitionBuilder()
+          .withClassName('ExampleEndpoint')
+          .withName('example')
+          .withMethods([
+            MethodDefinitionBuilder().withName('getById').withParameters([
+              ParameterDefinitionBuilder()
+                  .withName('id')
+                  .withType(
+                    TypeDefinitionBuilder()
+                        .withClassName('UuidValue')
+                        .withUrl('serverpod')
+                        .build(),
+                  )
                   .build(),
-            )
-            .build(),
-      ]).buildMethodCallDefinition(),
-    ]).build();
+            ]).buildMethodCallDefinition(),
+          ])
+          .build();
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [endpoint],
-      models: [],
-    );
-
-    late var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    late var clientCompilationUnit =
-        parseString(content: codeMap[getExpectedFilePath('endpoints')]!).unit;
-
-    test(
-        'then the generated endpoints file has an import directive for serverpod_client',
-        () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:serverpod/serverpod.dart',
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [endpoint],
+        models: [],
       );
 
-      expect(import, isNotNull);
-    });
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
+      late var clientCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath('endpoints')]!,
+      ).unit;
+
+      test(
+        'then the generated endpoints file has an import directive for serverpod_client',
+        () {
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:serverpod/serverpod.dart',
+          );
+
+          expect(import, isNotNull);
+        },
+      );
+
+      test(
         'then the generated endpoints file does not have an import directive for UuidValue',
         () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:uuid/uuid.dart',
-      );
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:uuid/uuid.dart',
+          );
 
-      expect(import, isNull);
-    });
-  });
+          expect(import, isNull);
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid.dart when generating endpoints',
-      () {
-    var endpoint = EndpointDefinitionBuilder()
-        .withClassName('ExampleEndpoint')
-        .withName('example')
-        .withMethods([
-      MethodDefinitionBuilder().withName('getById').withParameters([
-        ParameterDefinitionBuilder()
-            .withName('id')
-            .withType(
-              TypeDefinitionBuilder()
-                  .withClassName('UuidValue')
-                  .withUrl('package:uuid/uuid.dart')
+    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid.dart when generating endpoints',
+    () {
+      var endpoint = EndpointDefinitionBuilder()
+          .withClassName('ExampleEndpoint')
+          .withName('example')
+          .withMethods([
+            MethodDefinitionBuilder().withName('getById').withParameters([
+              ParameterDefinitionBuilder()
+                  .withName('id')
+                  .withType(
+                    TypeDefinitionBuilder()
+                        .withClassName('UuidValue')
+                        .withUrl('package:uuid/uuid.dart')
+                        .build(),
+                  )
                   .build(),
-            )
-            .build(),
-      ]).buildMethodCallDefinition(),
-    ]).build();
+            ]).buildMethodCallDefinition(),
+          ])
+          .build();
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [endpoint],
-      models: [],
-    );
-
-    late var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    late var clientCompilationUnit =
-        parseString(content: codeMap[getExpectedFilePath('endpoints')]!).unit;
-
-    test(
-        'then the generated endpoints file has an import directive for serverpod_client',
-        () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:serverpod/serverpod.dart',
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [endpoint],
+        models: [],
       );
 
-      expect(import, isNotNull);
-    });
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
+      late var clientCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath('endpoints')]!,
+      ).unit;
+
+      test(
+        'then the generated endpoints file has an import directive for serverpod_client',
+        () {
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:serverpod/serverpod.dart',
+          );
+
+          expect(import, isNotNull);
+        },
+      );
+
+      test(
         'then the generated endpoints file does not have an import directive for uuid/uuid.dart',
         () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:uuid/uuid.dart',
-      );
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:uuid/uuid.dart',
+          );
 
-      expect(import, isNull);
-    });
-  });
+          expect(import, isNull);
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid_value.dart when generating endpoints',
-      () {
-    var endpoint = EndpointDefinitionBuilder()
-        .withClassName('ExampleEndpoint')
-        .withName('example')
-        .withMethods([
-      MethodDefinitionBuilder().withName('getById').withParameters([
-        ParameterDefinitionBuilder()
-            .withName('id')
-            .withType(
-              TypeDefinitionBuilder()
-                  .withClassName('UuidValue')
-                  .withUrl('package:uuid/uuid_value.dart')
+    'Given an endpoint that has a UuidValue parameter imported from package:uuid/uuid_value.dart when generating endpoints',
+    () {
+      var endpoint = EndpointDefinitionBuilder()
+          .withClassName('ExampleEndpoint')
+          .withName('example')
+          .withMethods([
+            MethodDefinitionBuilder().withName('getById').withParameters([
+              ParameterDefinitionBuilder()
+                  .withName('id')
+                  .withType(
+                    TypeDefinitionBuilder()
+                        .withClassName('UuidValue')
+                        .withUrl('package:uuid/uuid_value.dart')
+                        .build(),
+                  )
                   .build(),
-            )
-            .build(),
-      ]).buildMethodCallDefinition(),
-    ]).build();
+            ]).buildMethodCallDefinition(),
+          ])
+          .build();
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [endpoint],
-      models: [],
-    );
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [endpoint],
+        models: [],
+      );
 
-    late var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    late var clientCompilationUnit =
-        parseString(content: codeMap[getExpectedFilePath('endpoints')]!).unit;
+      late var clientCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath('endpoints')]!,
+      ).unit;
 
-    test(
+      test(
         'then the generated endpoints file has an import directive for serverpod_client',
         () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:serverpod/serverpod.dart',
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:serverpod/serverpod.dart',
+          );
+
+          expect(import, isNotNull);
+        },
       );
 
-      expect(import, isNotNull);
-    });
-
-    test(
+      test(
         'then the generated endpoints file does not have an import directive for uuid/uuid_value.dart',
         () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:uuid/uuid_value.dart',
-      );
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:uuid/uuid_value.dart',
+          );
 
-      expect(import, isNull);
-    });
-  });
+          expect(import, isNull);
+        },
+      );
+    },
+  );
 
   group(
-      'Given an endpoint that has a UuidValue parameter imported from unkown source when generating endpoints',
-      () {
-    var endpoint = EndpointDefinitionBuilder()
-        .withClassName('ExampleEndpoint')
-        .withName('example')
-        .withMethods([
-      MethodDefinitionBuilder().withName('getById').withParameters([
-        ParameterDefinitionBuilder()
-            .withName('id')
-            .withType(
-              TypeDefinitionBuilder()
-                  .withClassName('UuidValue')
-                  .withUrl('package:custom_uuid/uuid.dart')
+    'Given an endpoint that has a UuidValue parameter imported from unkown source when generating endpoints',
+    () {
+      var endpoint = EndpointDefinitionBuilder()
+          .withClassName('ExampleEndpoint')
+          .withName('example')
+          .withMethods([
+            MethodDefinitionBuilder().withName('getById').withParameters([
+              ParameterDefinitionBuilder()
+                  .withName('id')
+                  .withType(
+                    TypeDefinitionBuilder()
+                        .withClassName('UuidValue')
+                        .withUrl('package:custom_uuid/uuid.dart')
+                        .build(),
+                  )
                   .build(),
-            )
-            .build(),
-      ]).buildMethodCallDefinition(),
-    ]).build();
+            ]).buildMethodCallDefinition(),
+          ])
+          .build();
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [endpoint],
-      models: [],
-    );
-
-    late var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
-
-    late var clientCompilationUnit =
-        parseString(content: codeMap[getExpectedFilePath('endpoints')]!).unit;
-
-    test(
-        'then the generated endpoints file has an import directive for unknown source',
-        () {
-      var import = CompilationUnitHelpers.tryFindImportDirective(
-        clientCompilationUnit,
-        uri: 'package:custom_uuid/uuid.dart',
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [endpoint],
+        models: [],
       );
 
-      expect(import, isNotNull);
-    });
-  });
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var clientCompilationUnit = parseString(
+        content: codeMap[getExpectedFilePath('endpoints')]!,
+      ).unit;
+
+      test(
+        'then the generated endpoints file has an import directive for unknown source',
+        () {
+          var import = CompilationUnitHelpers.tryFindImportDirective(
+            clientCompilationUnit,
+            uri: 'package:custom_uuid/uuid.dart',
+          );
+
+          expect(import, isNotNull);
+        },
+      );
+    },
+  );
 }

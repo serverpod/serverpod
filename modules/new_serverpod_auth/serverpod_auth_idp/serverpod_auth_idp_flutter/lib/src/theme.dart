@@ -38,7 +38,8 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
     PinTheme? errorPinTheme,
     Widget? separator,
   }) {
-    defaultPinTheme = defaultPinTheme ??
+    defaultPinTheme =
+        defaultPinTheme ??
         PinTheme(
           decoration: BoxDecoration(
             color: const Color.fromRGBO(222, 231, 240, .57),
@@ -47,14 +48,16 @@ class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {
           ),
         );
 
-    focusedPinTheme = focusedPinTheme ??
+    focusedPinTheme =
+        focusedPinTheme ??
         defaultPinTheme.copyWith(
           decoration: defaultPinTheme.decoration!.copyWith(
             border: Border.all(color: borderColor ?? Colors.black, width: 1),
           ),
         );
 
-    errorPinTheme = errorPinTheme ??
+    errorPinTheme =
+        errorPinTheme ??
         defaultPinTheme.copyWith(
           decoration: BoxDecoration(
             color: const Color.fromRGBO(238, 74, 104, 1),

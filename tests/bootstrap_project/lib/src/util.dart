@@ -14,7 +14,7 @@ import 'package:uuid/uuid.dart';
 }
 
 ({String serverDir, String flutterDir, String clientDir})
-    createProjectFolderPaths(String projectName) {
+createProjectFolderPaths(String projectName) {
   final serverDir = path.join(projectName, '${projectName}_server');
   final flutterDir = path.join(projectName, '${projectName}_flutter');
   final clientDir = path.join(projectName, '${projectName}_client');

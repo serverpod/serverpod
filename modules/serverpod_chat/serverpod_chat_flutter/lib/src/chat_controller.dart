@@ -9,8 +9,8 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart' as auth;
 
 /// Callback for when a message is received from the server. If [addedByUser] is
 /// true, the message was added by the current user.
-typedef ChatControllerReceivedMessageCallback = void Function(
-    ChatMessage message, bool addedByUser);
+typedef ChatControllerReceivedMessageCallback =
+    void Function(ChatMessage message, bool addedByUser);
 
 /// Handles all interaction with a chat channel.
 class ChatController {
@@ -82,7 +82,6 @@ class ChatController {
   auth.UserInfo? _joinedAsUserInfo;
 
   @visibleForTesting
-
   /// True if we have received a [UserInfo] for the current user.
   bool get hasUserInfo => _joinedAsUserInfo != null;
 
@@ -273,8 +272,10 @@ class ChatController {
       return;
     }
 
-    var request =
-        ChatRequestMessageChunk(channel: channel, lastMessageId: messageId);
+    var request = ChatRequestMessageChunk(
+      channel: channel,
+      lastMessageId: messageId,
+    );
     dispatch.postRequestMessageChunk(request);
   }
 
@@ -282,13 +283,15 @@ class ChatController {
 
   /// Adds a listener for received messages.
   void addMessageReceivedListener(
-      ChatControllerReceivedMessageCallback listener) {
+    ChatControllerReceivedMessageCallback listener,
+  ) {
     _receivedMessageListeners.add(listener);
   }
 
   /// Removes a listener for received messages.
   void removeMessageReceivedListener(
-      ChatControllerReceivedMessageCallback listener) {
+    ChatControllerReceivedMessageCallback listener,
+  ) {
     _receivedMessageListeners.remove(listener);
   }
 

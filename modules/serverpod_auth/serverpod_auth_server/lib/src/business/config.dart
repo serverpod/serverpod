@@ -20,30 +20,35 @@ enum UserImageType {
 typedef UserImageGenerator = Future<Image> Function(UserInfo userInfo);
 
 /// Callback for user info being updated.
-typedef UserInfoUpdateCallback = Future<void> Function(
-    Session session, UserInfo userInfo);
+typedef UserInfoUpdateCallback =
+    Future<void> Function(Session session, UserInfo userInfo);
 
 /// Callback for user creation.
-typedef UserInfoCreationCallback = Future<bool> Function(
-    Session session, UserInfo userInfo, String? method);
+typedef UserInfoCreationCallback =
+    Future<bool> Function(Session session, UserInfo userInfo, String? method);
 
 /// Callback for emailing password resets.
-typedef SendPasswordResetEmailCallback = Future<bool> Function(
-    Session session, UserInfo userInfo, String validationCode);
+typedef SendPasswordResetEmailCallback =
+    Future<bool> Function(
+      Session session,
+      UserInfo userInfo,
+      String validationCode,
+    );
 
 /// Callback for emailing validation codes at account setup.
-typedef SendValidationEmailCallback = Future<bool> Function(
-    Session session, String email, String validationCode);
+typedef SendValidationEmailCallback =
+    Future<bool> Function(Session session, String email, String validationCode);
 
 /// Callback for generation of the hash password
 typedef PasswordHashGenerator = Future<String> Function(String password);
 
 /// Callback to validate the hash used by [PasswordHashGenerator]
-typedef PasswordHashValidator = Future<PasswordValidationResult> Function({
-  required String password,
-  required String email,
-  required String hash,
-});
+typedef PasswordHashValidator =
+    Future<PasswordValidationResult> Function({
+      required String password,
+      required String email,
+      required String hash,
+    });
 
 /// Represents the result of validating a plaintext password against a
 /// stored password hash.

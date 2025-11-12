@@ -87,43 +87,46 @@ final class AppleIDP {
     final Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db, transaction, (final transaction) async {
-      final account = await utils.authenticate(
-        session,
-        identityToken: identityToken,
-        authorizationCode: authorizationCode,
-        isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
-        firstName: firstName,
-        lastName: lastName,
-        transaction: transaction,
-      );
-
-      if (account.newAccount) {
-        await _userProfiles.createUserProfile(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await utils.authenticate(
           session,
-          account.authUserId,
-          UserProfileData(
-            fullName: [account.details.firstName, account.details.lastName]
-                .nonNulls
-                .map((final n) => n.trim())
-                .where((final n) => n.isNotEmpty)
-                .join(' '),
-            email: account.details.isVerifiedEmail == true
-                ? account.details.email
-                : null,
-          ),
+          identityToken: identityToken,
+          authorizationCode: authorizationCode,
+          isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+          firstName: firstName,
+          lastName: lastName,
           transaction: transaction,
         );
-      }
 
-      return _tokenIssuer.issueToken(
-        session,
-        authUserId: account.authUserId,
-        method: method,
-        transaction: transaction,
-        scopes: account.scopes,
-      );
-    });
+        if (account.newAccount) {
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: [account.details.firstName, account.details.lastName]
+                  .nonNulls
+                  .map((final n) => n.trim())
+                  .where((final n) => n.isNotEmpty)
+                  .join(' '),
+              email: account.details.isVerifiedEmail == true
+                  ? account.details.email
+                  : null,
+            ),
+            transaction: transaction,
+          );
+        }
+
+        return _tokenIssuer.issueToken(
+          session,
+          authUserId: account.authUserId,
+          method: method,
+          transaction: transaction,
+          scopes: account.scopes,
+        );
+      },
+    );
   }
 
   /// {@macro apple_idp.revokedNotificationRoute}

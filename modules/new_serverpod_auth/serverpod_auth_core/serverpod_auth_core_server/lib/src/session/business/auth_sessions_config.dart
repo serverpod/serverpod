@@ -79,7 +79,8 @@ void _validateSessionLifetime(final Duration? sessionLifetime) {
 }
 
 void _validateSessionInactivityTimeout(
-    final Duration? sessionInactivityTimeout) {
+  final Duration? sessionInactivityTimeout,
+) {
   if (sessionInactivityTimeout != null && sessionInactivityTimeout.isNegative) {
     throw ArgumentError.value(
       sessionInactivityTimeout,

@@ -15,6 +15,5 @@ class AuthenticationTokensTokenManagerFactory
   @override
   AuthenticationTokensTokenManager construct({
     required final AuthUsers authUsers,
-  }) =>
-      AuthenticationTokensTokenManager(config: config, authUsers: authUsers);
+  }) => AuthenticationTokensTokenManager(config: config, authUsers: authUsers);
 }

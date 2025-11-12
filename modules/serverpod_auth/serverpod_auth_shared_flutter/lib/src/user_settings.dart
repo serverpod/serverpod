@@ -128,8 +128,8 @@ class _CompactSettings extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
-                          ),
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
                     ),
                   ),
               ],
@@ -189,8 +189,8 @@ class _LargeSettings extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall!.color,
-                  ),
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
           ),
       ],

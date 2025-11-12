@@ -42,12 +42,18 @@ SessionKeyData? tryParseSessionKey(
 
     final decoded = base64Url.decode(key);
 
-    final authSessionId = UuidValue.fromByteList(Uint8List.sublistView(decoded,
-        _sessionKeyPrefix.lengthInBytes, _sessionKeyPrefix.lengthInBytes + 16))
-      ..validate();
+    final authSessionId = UuidValue.fromByteList(
+      Uint8List.sublistView(
+        decoded,
+        _sessionKeyPrefix.lengthInBytes,
+        _sessionKeyPrefix.lengthInBytes + 16,
+      ),
+    )..validate();
 
-    final secret =
-        Uint8List.sublistView(decoded, _sessionKeyPrefix.lengthInBytes + 16);
+    final secret = Uint8List.sublistView(
+      decoded,
+      _sessionKeyPrefix.lengthInBytes + 16,
+    );
 
     return (authSessionId: authSessionId, secret: secret);
   } catch (e, stackTrace) {

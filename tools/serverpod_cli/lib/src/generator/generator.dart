@@ -22,9 +22,9 @@ Future<bool> performGenerate({
 
   var generatedModelFiles =
       await ServerpodCodeGenerator.generateSerializableModels(
-    models: models,
-    config: config,
-  );
+        models: models,
+        config: config,
+      );
 
   log.debug('Analyzing the endpoints.');
 
@@ -46,9 +46,9 @@ Future<bool> performGenerate({
 
   var generatedProtocolFiles =
       await ServerpodCodeGenerator.generateProtocolDefinition(
-    protocolDefinition: protocolDefinition,
-    config: config,
-  );
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
   log.debug('Cleaning old files.');
 

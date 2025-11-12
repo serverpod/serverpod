@@ -12,16 +12,16 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions
-        .whereType<ModelClassDefinition>()
-        .forEach((classDefinition) {
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
       _resolveInheritance(classDefinition, modelDefinitions);
     });
 
     // Then resolve inherited id fields or create default id fields.
-    modelDefinitions
-        .whereType<ModelClassDefinition>()
-        .forEach((classDefinition) {
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
       _resolveIdField(classDefinition);
     });
 
@@ -83,7 +83,8 @@ class ModelDependencyResolver {
 
     final defaultIdType = SupportedIdType.int;
 
-    var maybeIdField = classDefinition.parentClass?.fieldsIncludingInherited
+    var maybeIdField =
+        classDefinition.parentClass?.fieldsIncludingInherited
             .where((f) => f.name == defaultPrimaryKeyName)
             .firstOrNull ??
         classDefinition.fields
@@ -150,8 +151,9 @@ class ModelDependencyResolver {
   }
 
   static TypeDefinition _resolveProtocolReference(
-      SerializableModelFieldDefinition fieldDefinition,
-      List<SerializableModelDefinition> modelDefinitions) {
+    SerializableModelFieldDefinition fieldDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
       modelDefinitions,
     );
@@ -169,9 +171,10 @@ class ModelDependencyResolver {
     }
 
     var enumDefinitionList = modelDefinitions.whereType<EnumDefinition>().where(
-        (e) =>
-            e.className == typeDefinition.className &&
-            e.type.moduleAlias == typeDefinition.moduleAlias);
+      (e) =>
+          e.className == typeDefinition.className &&
+          e.type.moduleAlias == typeDefinition.moduleAlias,
+    );
 
     if (enumDefinitionList.isEmpty) return;
 
@@ -189,10 +192,11 @@ class ModelDependencyResolver {
     var referenceClass = modelDefinitions
         .cast<SerializableModelDefinition?>()
         .firstWhere(
-            (model) =>
-                model?.className == fieldDefinition.type.className &&
-                model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
-            orElse: () => null);
+          (model) =>
+              model?.className == fieldDefinition.type.className &&
+              model?.type.moduleAlias == fieldDefinition.type.moduleAlias,
+          orElse: () => null,
+        );
 
     if (referenceClass is! ModelClassDefinition) return;
 
@@ -439,11 +443,12 @@ class ModelDependencyResolver {
     var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
-    var referenceClass =
-        modelDefinitions.cast<SerializableModelDefinition?>().firstWhere(
-              (model) => model?.className == referenceClassName,
-              orElse: () => null,
-            );
+    var referenceClass = modelDefinitions
+        .cast<SerializableModelDefinition?>()
+        .firstWhere(
+          (model) => model?.className == referenceClassName,
+          orElse: () => null,
+        );
 
     if (referenceClass is! ModelClassDefinition) return;
 
@@ -507,7 +512,8 @@ class ModelDependencyResolver {
       if (foreignRelation is ForeignRelationDefinition) {
         foreignFieldName = foreignField.name;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
-        foreignFieldName = foreignRelation.fieldName ??
+        foreignFieldName =
+            foreignRelation.fieldName ??
             _createImplicitForeignIdFieldName(foreignField.name);
       }
 

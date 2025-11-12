@@ -41,10 +41,12 @@ abstract class CodeGenerator {
 
 extension GenerateCode on Library {
   String generateCode({Allocator? allocator}) {
-    var code = accept(DartEmitter(
-      useNullSafetySyntax: true,
-      allocator: allocator ?? Allocator.simplePrefixing(),
-    )).toString();
+    var code = accept(
+      DartEmitter(
+        useNullSafetySyntax: true,
+        allocator: allocator ?? Allocator.simplePrefixing(),
+      ),
+    ).toString();
 
     try {
       return DartFormatter(

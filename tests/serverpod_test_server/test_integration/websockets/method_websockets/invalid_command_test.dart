@@ -27,31 +27,39 @@ void main() {
       await webSocket.tryClose();
     });
 
-    test('when an unrecognized message is sent then connection is closed.',
-        () async {
-      var webSocketCompleter = Completer<void>();
-      webSocket.textEvents.listen((event) {}, onDone: () {
-        webSocketCompleter.complete();
-      });
+    test(
+      'when an unrecognized message is sent then connection is closed.',
+      () async {
+        var webSocketCompleter = Completer<void>();
+        webSocket.textEvents.listen(
+          (event) {},
+          onDone: () {
+            webSocketCompleter.complete();
+          },
+        );
 
-      webSocket.sendText(unrecognizedCommandMessage);
+        webSocket.sendText(unrecognizedCommandMessage);
 
-      expectLater(
-        webSocketCompleter.future.timeout(Duration(seconds: 10)),
-        completes,
-      );
-    });
+        expectLater(
+          webSocketCompleter.future.timeout(Duration(seconds: 10)),
+          completes,
+        );
+      },
+    );
 
     test(
-        'when an unrecognized message is sent then BadRequestMessage response is received.',
-        () async {
-      var response = webSocket.textEvents.first.timeout(Duration(seconds: 10));
-      webSocket.sendText(unrecognizedCommandMessage);
+      'when an unrecognized message is sent then BadRequestMessage response is received.',
+      () async {
+        var response = webSocket.textEvents.first.timeout(
+          Duration(seconds: 10),
+        );
+        webSocket.sendText(unrecognizedCommandMessage);
 
-      expect(
-        await response,
-        BadRequestMessage.buildMessage(unrecognizedCommandMessage),
-      );
-    });
+        expect(
+          await response,
+          BadRequestMessage.buildMessage(unrecognizedCommandMessage),
+        );
+      },
+    );
   });
 }

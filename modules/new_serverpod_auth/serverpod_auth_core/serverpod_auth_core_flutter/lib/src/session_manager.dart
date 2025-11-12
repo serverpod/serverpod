@@ -37,8 +37,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     /// The secure storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
     ClientAuthInfoStorage? storage,
-  })  : _caller = caller,
-        storage = storage ?? SecureClientAuthInfoStorage() {
+  }) : _caller = caller,
+       storage = storage ?? SecureClientAuthInfoStorage() {
     _authKeyProviderDelegates = authKeyProviderDelegates ?? {};
   }
 
@@ -78,8 +78,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
         authKeyProvider = JwtAuthKeyProvider(
           getAuthInfo: () async => authInfo.value,
           onRefreshAuthInfo: updateSignedInUser,
-          refreshEndpoint:
-              caller.client.getEndpointOfType<EndpointRefreshJwtTokens>(),
+          refreshEndpoint: caller.client
+              .getEndpointOfType<EndpointRefreshJwtTokens>(),
         );
       case AuthStrategy.session:
         authKeyProvider = SasAuthKeyProvider(

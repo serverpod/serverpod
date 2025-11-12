@@ -46,7 +46,8 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: widget.style ??
+      style:
+          widget.style ??
           ElevatedButton.styleFrom(
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
@@ -61,19 +62,24 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
 
         // Attempt to sign in the user.
         signInWithApple(
-          widget.caller,
-        ).then((UserInfo? userInfo) {
-          // Notify the parent.
-          if (userInfo != null) {
-            widget.onSignedIn?.call();
-          } else {
-            widget.onFailure?.call();
-          }
-        }).onError((error, stackTrace) {
-          widget.onFailure?.call();
-        }).whenComplete(() =>
-            // Pop the loading barrier
-            navigator.pop());
+              widget.caller,
+            )
+            .then((UserInfo? userInfo) {
+              // Notify the parent.
+              if (userInfo != null) {
+                widget.onSignedIn?.call();
+              } else {
+                widget.onFailure?.call();
+              }
+            })
+            .onError((error, stackTrace) {
+              widget.onFailure?.call();
+            })
+            .whenComplete(
+              () =>
+                  // Pop the loading barrier
+                  navigator.pop(),
+            );
       },
       label: Text(widget.label ?? 'Sign in with Apple'),
       icon: Icon(MdiIcons.apple),

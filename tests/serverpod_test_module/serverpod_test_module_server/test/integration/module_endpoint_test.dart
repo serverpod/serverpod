@@ -10,12 +10,16 @@ void main() {
       expect(result, 'Hello name');
     });
 
-    test('when calling modifyModuleObject with object then modifies object',
-        () async {
-      final object = ModuleClass(name: 'name', data: 1);
-      final result =
-          await endpoints.module.modifyModuleObject(sessionBuilder, object);
-      expect(result.data, 42);
-    });
+    test(
+      'when calling modifyModuleObject with object then modifies object',
+      () async {
+        final object = ModuleClass(name: 'name', data: 1);
+        final result = await endpoints.module.modifyModuleObject(
+          sessionBuilder,
+          object,
+        );
+        expect(result.data, 42);
+      },
+    );
   });
 }

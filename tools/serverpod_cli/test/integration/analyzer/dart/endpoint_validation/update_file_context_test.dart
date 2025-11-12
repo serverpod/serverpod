@@ -9,14 +9,16 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(path.joinAll([
-  'test',
-  'integration',
-  'analyzer',
-  'dart',
-  'endpoint_validation',
-  const Uuid().v4(),
-]));
+var testProjectDirectory = Directory(
+  path.joinAll([
+    'test',
+    'integration',
+    'analyzer',
+    'dart',
+    'endpoint_validation',
+    const Uuid().v4(),
+  ]),
+);
 
 void main() {
   setUpAll(() async {
@@ -28,8 +30,9 @@ void main() {
   });
 
   group('Given an empty tracked and analyzed directory', () {
-    var trackedDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var trackedDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
@@ -37,8 +40,7 @@ void main() {
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
-    test(
-        'when the file context is updated with a file without an endpoint '
+    test('when the file context is updated with a file without an endpoint '
         'definition in the tracked directory'
         'then false is returned.', () async {
       var emptyFile = File(path.join(trackedDirectory.path, 'empty_file.dart'));
@@ -51,12 +53,12 @@ void main() {
       );
     });
 
-    test(
-        'when the file context is updated with an endpoint file outside '
+    test('when the file context is updated with an endpoint file outside '
         'of the tracked directory '
         'then false is returned.', () async {
-      var endpointFile =
-          File(path.join(testProjectDirectory.path, 'endpoint.dart'));
+      var endpointFile = File(
+        path.join(testProjectDirectory.path, 'endpoint.dart'),
+      );
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -74,12 +76,12 @@ class ExampleEndpoint extends Endpoint {
       );
     });
 
-    test(
-        'when the file context is updated with a new endpoint file in the '
+    test('when the file context is updated with a new endpoint file in the '
         'tracked directory '
         'then true is returned.', () async {
-      var endpointFile =
-          File(path.join(trackedDirectory.path, 'endpoint.dart'));
+      var endpointFile = File(
+        path.join(trackedDirectory.path, 'endpoint.dart'),
+      );
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -98,8 +100,9 @@ class ExampleEndpoint extends Endpoint {
     });
   });
   group('Given a tracked and analyzed directory with valid endpoint file', () {
-    var trackedDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var trackedDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late File endpointFile;
     late EndpointsAnalyzer analyzer;
@@ -119,8 +122,7 @@ class ExampleEndpoint extends Endpoint {
       await analyzer.analyze(collector: CodeGenerationCollector());
     });
 
-    test(
-        'when the file context is updated with the removal of the tracked '
+    test('when the file context is updated with the removal of the tracked '
         'endpoint file '
         'then true is returned.', () async {
       endpointFile.deleteSync();
@@ -131,8 +133,7 @@ class ExampleEndpoint extends Endpoint {
       );
     });
 
-    test(
-        'when the file context is updated with the update of the endpoint '
+    test('when the file context is updated with the update of the endpoint '
         'file in the tracked folder '
         'then true is returned.', () async {
       endpointFile.writeAsStringSync('''
@@ -151,11 +152,11 @@ class ExampleEndpoint extends Endpoint {
       );
     });
 
-    test(
-        'when the file context is updated with a non endpoint file '
+    test('when the file context is updated with a non endpoint file '
         'then false is returned.', () async {
-      var nonEndpointFile =
-          File(path.join(trackedDirectory.path, 'non_endpoint.dart'));
+      var nonEndpointFile = File(
+        path.join(trackedDirectory.path, 'non_endpoint.dart'),
+      );
       nonEndpointFile.createSync(recursive: true);
       nonEndpointFile.writeAsStringSync('''
 class ExampleClass {}
@@ -167,11 +168,11 @@ class ExampleClass {}
       );
     });
 
-    test(
-        'when the file context is updated with a new endpoint file '
+    test('when the file context is updated with a new endpoint file '
         'then true is returned.', () async {
-      var newEndpointFile =
-          File(path.join(trackedDirectory.path, 'new_endpoint.dart'));
+      var newEndpointFile = File(
+        path.join(trackedDirectory.path, 'new_endpoint.dart'),
+      );
       newEndpointFile.createSync(recursive: true);
       newEndpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -190,17 +191,19 @@ class NewEndpoint extends Endpoint {
     });
   });
 
-  group('Given a tracked and analyzed directory with valid non-endpoint file',
-      () {
-    var trackedDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+  group(
+    'Given a tracked and analyzed directory with valid non-endpoint file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late File trackedFile;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      trackedFile = File(path.join(trackedDirectory.path, 'tracked.dart'));
-      trackedFile.createSync(recursive: true);
-      trackedFile.writeAsStringSync('''
+      late File trackedFile;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        trackedFile = File(path.join(trackedDirectory.path, 'tracked.dart'));
+        trackedFile.createSync(recursive: true);
+        trackedFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleClass {
@@ -209,15 +212,14 @@ class ExampleClass {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
-      await analyzer.analyze(collector: CodeGenerationCollector());
-    });
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
 
-    test(
-        'when the file context is updated with an endpoint definition added '
-        'to the tracked file '
-        'then true is returned.', () async {
-      trackedFile.writeAsStringSync('''
+      test('when the file context is updated with an endpoint definition added '
+          'to the tracked file '
+          'then true is returned.', () async {
+        trackedFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
@@ -227,26 +229,28 @@ class ExampleEndpoint extends Endpoint {
 }
 ''');
 
-      await expectLater(
-        analyzer.updateFileContexts({trackedFile.path}),
-        completion(true),
-      );
-    });
-  });
+        await expectLater(
+          analyzer.updateFileContexts({trackedFile.path}),
+          completion(true),
+        );
+      });
+    },
+  );
 
   group(
-      'Given a tracked and analyzed directory with invalid dart endpoint file',
-      () {
-    var trackedDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given a tracked and analyzed directory with invalid dart endpoint file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late File endpointFile;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      // Class is missing closing brackets
-      endpointFile.writeAsStringSync('''
+      late File endpointFile;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        endpointFile = File(path.join(trackedDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        // Class is missing closing brackets
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
@@ -254,15 +258,14 @@ class ExampleEndpoint extends Endpoint {
     return 'Hello \$name';
   }
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
-      await analyzer.analyze(collector: CodeGenerationCollector());
-    });
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
 
-    test(
-        'when the file context is updated with a valid endpoint definition '
-        'added to the tracked file '
-        'then true is returned.', () async {
-      endpointFile.writeAsStringSync('''
+      test('when the file context is updated with a valid endpoint definition '
+          'added to the tracked file '
+          'then true is returned.', () async {
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
@@ -272,26 +275,29 @@ class ExampleEndpoint extends Endpoint {
 }
 ''');
 
-      await expectLater(
-        analyzer.updateFileContexts({endpointFile.path}),
-        completion(true),
-      );
-    });
-  });
+        await expectLater(
+          analyzer.updateFileContexts({endpointFile.path}),
+          completion(true),
+        );
+      });
+    },
+  );
 
   group(
-      'Given a tracked and analyzed endpoint file that depends on an invalid dart file',
-      () {
-    var trackedDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given a tracked and analyzed endpoint file that depends on an invalid dart file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late File invalidDartFile;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile =
-          File(path.join(trackedDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      late File invalidDartFile;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(
+          path.join(trackedDirectory.path, 'endpoint.dart'),
+        );
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 import 'invalid_dart.dart';
 
@@ -302,28 +308,32 @@ class ExampleClass extends Endpoint {
   }
 }
 ''');
-      invalidDartFile =
-          File(path.join(trackedDirectory.path, 'invalid_dart.dart'));
-      invalidDartFile.createSync(recursive: true);
-      // Class keyword is combined with class name
-      invalidDartFile.writeAsStringSync('''
+        invalidDartFile = File(
+          path.join(trackedDirectory.path, 'invalid_dart.dart'),
+        );
+        invalidDartFile.createSync(recursive: true);
+        // Class keyword is combined with class name
+        invalidDartFile.writeAsStringSync('''
 classInvalidClass {}
 ''');
-      analyzer = EndpointsAnalyzer(trackedDirectory);
-      await analyzer.analyze(collector: CodeGenerationCollector());
-    });
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
 
-    test(
+      test(
         'when the file context is updated with a fix for the invalid dart file '
-        'then true is returned.', () async {
-      invalidDartFile.writeAsStringSync('''
+        'then true is returned.',
+        () async {
+          invalidDartFile.writeAsStringSync('''
 class InvalidClass {}
 ''');
 
-      await expectLater(
-        analyzer.updateFileContexts({invalidDartFile.path}),
-        completion(true),
+          await expectLater(
+            analyzer.updateFileContexts({invalidDartFile.path}),
+            completion(true),
+          );
+        },
       );
-    });
-  });
+    },
+  );
 }

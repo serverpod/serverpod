@@ -16,8 +16,9 @@ void main() {
     new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  const newEmailIDPConfig =
-      new_email_idp.EmailIDPConfig(secretHashPepper: 'test');
+  const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
+    secretHashPepper: 'test',
+  );
   late final new_email_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
@@ -60,15 +61,16 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            assert(migratedUsers[oldUserId] == null);
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                assert(migratedUsers[oldUserId] == null);
+                migratedUsers[oldUserId] = newAuthUserId;
+              },
           transaction: session.transaction,
         );
       });
@@ -87,9 +89,11 @@ void main() {
               password: password,
               transaction: null,
             ),
-            throwsA(isA<
-                new_email_idp
-                .EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_email_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );

@@ -127,7 +127,9 @@ class GoogleEndpoint extends Endpoint {
 
   /// Authenticates a user using an id token.
   Future<AuthenticationResponse> authenticateWithIdToken(
-      Session session, String idToken) async {
+    Session session,
+    String idToken,
+  ) async {
     var clientSecret = GoogleAuth.clientSecret;
     if (clientSecret == null) {
       throw StateError('The server side Google client secret is not loaded.');
@@ -137,8 +139,11 @@ class GoogleEndpoint extends Endpoint {
 
       // Verify the token with Google's servers.
       // This should probably be done on this server.
-      var response = await http.get(Uri.parse(
-          'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken'));
+      var response = await http.get(
+        Uri.parse(
+          'https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=$idToken',
+        ),
+      );
 
       if (response.statusCode != 200) {
         session.log('Invalid token received', level: LogLevel.debug);
@@ -180,16 +185,22 @@ class GoogleEndpoint extends Endpoint {
 
       if (email == null || fullName == null || image == null || name == null) {
         session.log(
-            'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
-            level: LogLevel.debug);
+          'Failed to get info, email: $email name: $name fullName: $fullName image: $image',
+          level: LogLevel.debug,
+        );
         return AuthenticationResponse(
           success: false,
           failReason: AuthenticationFailReason.invalidCredentials,
         );
       }
 
-      var userInfo =
-          await _setupUserInfo(session, email, name, fullName, image);
+      var userInfo = await _setupUserInfo(
+        session,
+        email,
+        name,
+        fullName,
+        image,
+      );
       if (userInfo == null) {
         session.log('Failed to create UserInfo', level: LogLevel.debug);
         return AuthenticationResponse(
@@ -258,7 +269,10 @@ class GoogleEndpoint extends Endpoint {
               '${url.substring(0, url.length - 4)}s${AuthConfig.current.userImageSize}';
         }
         await UserImages.setUserImageFromUrl(
-            session, userInfo!.id!, Uri.parse(url));
+          session,
+          userInfo!.id!,
+          Uri.parse(url),
+        );
       }
     }
     return userInfo;

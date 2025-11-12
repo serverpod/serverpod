@@ -29,14 +29,15 @@ void main() {
 
         final verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
-            config: EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          passwordResetVerificationCodeGenerator: () => verificationCode,
-          passwordValidationFunction: (final password) =>
-              password == allowedNewPassword,
-          passwordResetVerificationCodeLifetime:
-              passwordResetVerificationCodeLifetime,
-        ));
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+            passwordValidationFunction: (final password) =>
+                password == allowedNewPassword,
+            passwordResetVerificationCodeLifetime:
+                passwordResetVerificationCodeLifetime,
+          ),
+        );
 
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
@@ -60,11 +61,11 @@ void main() {
         completePasswordResetToken = await session.db.transaction(
           (final transaction) =>
               fixture.passwordResetUtil.verifyPasswordResetCode(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
       });
 
@@ -73,105 +74,116 @@ void main() {
       });
 
       group(
-          'when complete password reset is called with valid complete password reset token and password',
-          () {
-        late Future<UuidValue> completePasswordResetResult;
+        'when complete password reset is called with valid complete password reset token and password',
+        () {
+          late Future<UuidValue> completePasswordResetResult;
 
-        setUp(() async {
-          completePasswordResetResult = session.db.transaction(
-            (final transaction) =>
-                fixture.passwordResetUtil.completePasswordReset(
-              session,
-              completePasswordResetToken: completePasswordResetToken,
-              newPassword: allowedNewPassword,
-              transaction: transaction,
-            ),
-          );
-        });
+          setUp(() async {
+            completePasswordResetResult = session.db.transaction(
+              (final transaction) =>
+                  fixture.passwordResetUtil.completePasswordReset(
+                    session,
+                    completePasswordResetToken: completePasswordResetToken,
+                    newPassword: allowedNewPassword,
+                    transaction: transaction,
+                  ),
+            );
+          });
 
-        test('then it succeeds and returns auth user id', () async {
-          await expectLater(
-              completePasswordResetResult, completion(authUserId));
-        });
+          test('then it succeeds and returns auth user id', () async {
+            await expectLater(
+              completePasswordResetResult,
+              completion(authUserId),
+            );
+          });
 
-        test('then new password can be used to authenticate', () async {
-          await completePasswordResetResult;
+          test('then new password can be used to authenticate', () async {
+            await completePasswordResetResult;
 
-          final authResult = await session.db.transaction(
-            (final transaction) => fixture.authenticationUtil.authenticate(
-              session,
-              email: email,
-              password: allowedNewPassword,
-              transaction: transaction,
-            ),
-          );
+            final authResult = await session.db.transaction(
+              (final transaction) => fixture.authenticationUtil.authenticate(
+                session,
+                email: email,
+                password: allowedNewPassword,
+                transaction: transaction,
+              ),
+            );
 
-          expect(authResult, equals(authUserId));
-        });
-      });
-
-      test(
-          'when called with password incompatible with password policy then throws password policy violation exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken: completePasswordResetToken,
-            newPassword: '$allowedNewPassword-invalid-addition',
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetPasswordPolicyViolationException>()),
-        );
-      });
+            expect(authResult, equals(authUserId));
+          });
+        },
+      );
 
       test(
-          'when called with invalid complete password reset token then throws invalid complete password reset token exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken:
-                '$completePasswordResetToken-invalid-addition',
-            newPassword: allowedNewPassword,
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
-        );
-      });
-
-      test(
-          'when complete password reset is called with valid complete password reset token after expiration then throws request expired exception',
-          () async {
-        await withClock(
-            Clock.fixed(DateTime.now().add(
-              passwordResetVerificationCodeLifetime + const Duration(hours: 1),
-            )), () async {
+        'when called with password incompatible with password policy then throws password policy violation exception',
+        () async {
           final result = session.db.transaction(
             (final transaction) =>
                 fixture.passwordResetUtil.completePasswordReset(
-              session,
-              completePasswordResetToken: completePasswordResetToken,
-              newPassword: 'NewPassword123!',
-              transaction: transaction,
-            ),
+                  session,
+                  completePasswordResetToken: completePasswordResetToken,
+                  newPassword: '$allowedNewPassword-invalid-addition',
+                  transaction: transaction,
+                ),
           );
 
           await expectLater(
             result,
-            throwsA(isA<EmailPasswordResetRequestExpiredException>()),
+            throwsA(isA<EmailPasswordResetPasswordPolicyViolationException>()),
           );
-        });
-      });
+        },
+      );
+
+      test(
+        'when called with invalid complete password reset token then throws invalid complete password reset token exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.passwordResetUtil.completePasswordReset(
+                  session,
+                  completePasswordResetToken:
+                      '$completePasswordResetToken-invalid-addition',
+                  newPassword: allowedNewPassword,
+                  transaction: transaction,
+                ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
+          );
+        },
+      );
+
+      test(
+        'when complete password reset is called with valid complete password reset token after expiration then throws request expired exception',
+        () async {
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                passwordResetVerificationCodeLifetime +
+                    const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = session.db.transaction(
+                (final transaction) =>
+                    fixture.passwordResetUtil.completePasswordReset(
+                      session,
+                      completePasswordResetToken: completePasswordResetToken,
+                      newPassword: 'NewPassword123!',
+                      transaction: transaction,
+                    ),
+              );
+
+              await expectLater(
+                result,
+                throwsA(isA<EmailPasswordResetRequestExpiredException>()),
+              );
+            },
+          );
+        },
+      );
     },
   );
 
@@ -192,12 +204,13 @@ void main() {
 
         verificationCode = const Uuid().v4().toString();
         fixture = EmailIDPTestFixture(
-            config: EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          passwordResetVerificationCodeGenerator: () => verificationCode,
-          passwordValidationFunction: (final password) =>
-              password == allowedNewPassword,
-        ));
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+            passwordValidationFunction: (final password) =>
+                password == allowedNewPassword,
+          ),
+        );
 
         final authUser = await fixture.authUsers.create(session);
 
@@ -222,105 +235,113 @@ void main() {
       });
 
       test(
-          'when complete password reset is called with invalid complete password reset token then throws set password token not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken: const Uuid().v4(),
-            newPassword: allowedNewPassword,
-            transaction: transaction,
-          ),
-        );
+        'when complete password reset is called with invalid complete password reset token then throws set password token not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.passwordResetUtil.completePasswordReset(
+                  session,
+                  completePasswordResetToken: const Uuid().v4(),
+                  newPassword: allowedNewPassword,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetInvalidVerificationCodeException>()),
+          );
+        },
+      );
     },
   );
 
   withServerpod(
-      'Given successful password complete request when capturing output from onPasswordResetCompleted callback',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late UuidValue emailAccountId;
-    late EmailIDPTestFixture fixture;
-    late UuidValue onPasswordResetCompletedEmailAccountId;
+    'Given successful password complete request when capturing output from onPasswordResetCompleted callback',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue emailAccountId;
+      late EmailIDPTestFixture fixture;
+      late UuidValue onPasswordResetCompletedEmailAccountId;
 
-    setUp(() async {
-      session = sessionBuilder.build();
+      setUp(() async {
+        session = sessionBuilder.build();
 
-      final verificationCode = const Uuid().v4().toString();
-      fixture = EmailIDPTestFixture(
-        config: EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          passwordResetVerificationCodeGenerator: () => verificationCode,
-          onPasswordResetCompleted: (
-            final session, {
-            required final UuidValue emailAccountId,
-            required final Transaction? transaction,
-          }) {
-            onPasswordResetCompletedEmailAccountId = emailAccountId;
-          },
-        ),
-      );
+        final verificationCode = const Uuid().v4().toString();
+        fixture = EmailIDPTestFixture(
+          config: EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            passwordResetVerificationCodeGenerator: () => verificationCode,
+            onPasswordResetCompleted:
+                (
+                  final session, {
+                  required final UuidValue emailAccountId,
+                  required final Transaction? transaction,
+                }) {
+                  onPasswordResetCompletedEmailAccountId = emailAccountId;
+                },
+          ),
+        );
 
-      final authUser = await fixture.authUsers.create(session);
+        final authUser = await fixture.authUsers.create(session);
 
-      const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
-      final emailAccount = await fixture.createEmailAccount(
-        session,
-        authUserId: authUser.id,
-        email: email,
-        password: EmailAccountPassword.fromString(password),
-      );
-      emailAccountId = emailAccount.id!;
-
-      final passwordResetRequestId = await session.db.transaction(
-        (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+        const email = 'test@serverpod.dev';
+        const password = 'Foobar123!';
+        final emailAccount = await fixture.createEmailAccount(
           session,
+          authUserId: authUser.id,
           email: email,
-          transaction: transaction,
-        ),
-      );
+          password: EmailAccountPassword.fromString(password),
+        );
+        emailAccountId = emailAccount.id!;
 
-      // First verify the password reset code to get the set password token
-      final completePasswordResetToken = await session.db.transaction(
-        (final transaction) =>
-            fixture.passwordResetUtil.verifyPasswordResetCode(
-          session,
-          passwordResetRequestId: passwordResetRequestId,
-          verificationCode: verificationCode,
-          transaction: transaction,
-        ),
-      );
+        final passwordResetRequestId = await session.db.transaction(
+          (final transaction) => fixture.passwordResetUtil.startPasswordReset(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
 
-      await session.db.transaction(
-        (final transaction) => fixture.passwordResetUtil.completePasswordReset(
-          session,
-          completePasswordResetToken: completePasswordResetToken,
-          newPassword: 'NewPassword123!',
-          transaction: transaction,
-        ),
-      );
-    });
+        // First verify the password reset code to get the set password token
+        final completePasswordResetToken = await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.verifyPasswordResetCode(
+                session,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
+        );
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
+        await session.db.transaction(
+          (final transaction) =>
+              fixture.passwordResetUtil.completePasswordReset(
+                session,
+                completePasswordResetToken: completePasswordResetToken,
+                newPassword: 'NewPassword123!',
+                transaction: transaction,
+              ),
+        );
+      });
 
-    test(
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
         'then the onPasswordResetCompleted callback is called with the correct email account id',
         () {
-      expect(onPasswordResetCompletedEmailAccountId, equals(emailAccountId));
-    });
-  });
+          expect(
+            onPasswordResetCompletedEmailAccountId,
+            equals(emailAccountId),
+          );
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given already completed password reset request',
@@ -364,22 +385,22 @@ void main() {
         completePasswordResetToken = await session.db.transaction(
           (final transaction) =>
               fixture.passwordResetUtil.verifyPasswordResetCode(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
 
         // Complete the password reset
         await session.db.transaction(
           (final transaction) =>
               fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken: completePasswordResetToken,
-            newPassword: 'NewPassword123!',
-            transaction: transaction,
-          ),
+                session,
+                completePasswordResetToken: completePasswordResetToken,
+                newPassword: 'NewPassword123!',
+                transaction: transaction,
+              ),
         );
       });
 
@@ -388,23 +409,24 @@ void main() {
       });
 
       test(
-          'when complete password reset is called with valid verification code and password then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken: completePasswordResetToken,
-            newPassword: 'AnotherPassword123!',
-            transaction: transaction,
-          ),
-        );
+        'when complete password reset is called with valid verification code and password then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.passwordResetUtil.completePasswordReset(
+                  session,
+                  completePasswordResetToken: completePasswordResetToken,
+                  newPassword: 'AnotherPassword123!',
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -454,35 +476,36 @@ void main() {
         completePasswordResetToken = await session.db.transaction(
           (final transaction) =>
               fixture.passwordResetUtil.verifyPasswordResetCode(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
+                session,
+                passwordResetRequestId: passwordResetRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
         );
 
         // Try to complete after expiration
         await withClock(
-            Clock.fixed(
-              DateTime.now().add(
-                passwordResetVerificationCodeLifetime +
-                    const Duration(hours: 1),
-              ),
-            ), () async {
-          try {
-            await session.db.transaction(
-              (final transaction) =>
-                  fixture.passwordResetUtil.completePasswordReset(
-                session,
-                completePasswordResetToken: completePasswordResetToken,
-                newPassword: 'NewPassword123!',
-                transaction: transaction,
-              ),
-            );
-          } on EmailPasswordResetRequestExpiredException {
-            // Expected - this should delete the request
-          }
-        });
+          Clock.fixed(
+            DateTime.now().add(
+              passwordResetVerificationCodeLifetime + const Duration(hours: 1),
+            ),
+          ),
+          () async {
+            try {
+              await session.db.transaction(
+                (final transaction) =>
+                    fixture.passwordResetUtil.completePasswordReset(
+                      session,
+                      completePasswordResetToken: completePasswordResetToken,
+                      newPassword: 'NewPassword123!',
+                      transaction: transaction,
+                    ),
+              );
+            } on EmailPasswordResetRequestExpiredException {
+              // Expected - this should delete the request
+            }
+          },
+        );
       });
 
       tearDown(() async {
@@ -490,23 +513,24 @@ void main() {
       });
 
       test(
-          'when complete password reset is called with valid credentials then it throws request not found exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.passwordResetUtil.completePasswordReset(
-            session,
-            completePasswordResetToken: completePasswordResetToken,
-            newPassword: 'NewPassword123!',
-            transaction: transaction,
-          ),
-        );
+        'when complete password reset is called with valid credentials then it throws request not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.passwordResetUtil.completePasswordReset(
+                  session,
+                  completePasswordResetToken: completePasswordResetToken,
+                  newPassword: 'NewPassword123!',
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 }

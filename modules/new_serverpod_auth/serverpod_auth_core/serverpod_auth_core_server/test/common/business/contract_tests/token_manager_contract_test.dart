@@ -33,8 +33,9 @@ void testSuite<T extends TokenManager>(
 
       setUp(() async {
         session = sessionBuilder.build();
-        authId =
-            await authUsers.create(session).then((final value) => value.id);
+        authId = await authUsers
+            .create(session)
+            .then((final value) => value.id);
         tokenManager = tokenManagerBuilder(authUsers);
       });
 
@@ -102,8 +103,9 @@ void testSuite<T extends TokenManager>(
         'when issuing a token with a transaction that succeeds '
         'then issuing the token completes',
         () async {
-          final authSuccessFuture =
-              session.db.transaction((final transaction) async {
+          final authSuccessFuture = session.db.transaction((
+            final transaction,
+          ) async {
             return await tokenManager.issueToken(
               session,
               authUserId: authId,
@@ -386,8 +388,10 @@ void testSuite<T extends TokenManager>(
         'when listing tokens '
         'then all tokens should be returned',
         () async {
-          final tokens =
-              await tokenManager.listTokens(session, authUserId: null);
+          final tokens = await tokenManager.listTokens(
+            session,
+            authUserId: null,
+          );
 
           expect(tokens, hasLength(initialTokens.length));
         },
@@ -560,8 +564,9 @@ void testSuite<T extends TokenManager>(
 
           expect(afterRevocationTokens, hasLength(initialTokens.length));
           expect(
-            afterRevocationTokens
-                .any((final t) => t.tokenId == tokenIdToRevoke),
+            afterRevocationTokens.any(
+              (final t) => t.tokenId == tokenIdToRevoke,
+            ),
             isTrue,
           );
         },
@@ -812,16 +817,18 @@ void testSuite<T extends TokenManager>(
 
         test('then all tokens for the authId should be removed', () {
           expect(
-            tokensAfterRevocation
-                .any((final t) => t.userId == authId1.toString()),
+            tokensAfterRevocation.any(
+              (final t) => t.userId == authId1.toString(),
+            ),
             isFalse,
           );
         });
 
         test('then tokens for other authIds should remain', () {
           expect(
-            tokensAfterRevocation
-                .any((final t) => t.userId == authId2.toString()),
+            tokensAfterRevocation.any(
+              (final t) => t.userId == authId2.toString(),
+            ),
             isTrue,
           );
         });
@@ -916,59 +923,63 @@ void testSuite<T extends TokenManager>(
       });
 
       group(
-          'when revoking all tokens for a specific authId with combined filters',
-          () {
-        late List<TokenInfo> tokensAfterRevocation;
+        'when revoking all tokens for a specific authId with combined filters',
+        () {
+          late List<TokenInfo> tokensAfterRevocation;
 
-        setUp(() async {
-          await tokenManager.revokeAllTokens(
-            session,
-            authUserId: authId1,
-            method: 'method1',
-            tokenIssuer: tokenIssuer,
-          );
+          setUp(() async {
+            await tokenManager.revokeAllTokens(
+              session,
+              authUserId: authId1,
+              method: 'method1',
+              tokenIssuer: tokenIssuer,
+            );
 
-          tokensAfterRevocation = await tokenManager.listTokens(
-            session,
-            authUserId: null,
-          );
-        });
+            tokensAfterRevocation = await tokenManager.listTokens(
+              session,
+              authUserId: null,
+            );
+          });
 
-        test('then only token matching all filters should be removed', () {
-          expect(
-            tokensAfterRevocation.any(
-              (final t) =>
-                  t.userId == authId1.toString() && t.method == 'method1',
-            ),
-            isFalse,
-          );
-        });
+          test('then only token matching all filters should be removed', () {
+            expect(
+              tokensAfterRevocation.any(
+                (final t) =>
+                    t.userId == authId1.toString() && t.method == 'method1',
+              ),
+              isFalse,
+            );
+          });
 
-        test('then all other tokens should remain', () {
-          expect(tokensAfterRevocation, hasLength(initialAllTokens.length - 1));
-          expect(
-            tokensAfterRevocation.any(
-              (final t) =>
-                  t.userId == authId1.toString() && t.method == 'method2',
-            ),
-            isTrue,
-          );
-          expect(
-            tokensAfterRevocation.any(
-              (final t) =>
-                  t.userId == authId2.toString() && t.method == 'method1',
-            ),
-            isTrue,
-          );
-          expect(
-            tokensAfterRevocation.any(
-              (final t) =>
-                  t.userId == authId2.toString() && t.method == 'method2',
-            ),
-            isTrue,
-          );
-        });
-      });
+          test('then all other tokens should remain', () {
+            expect(
+              tokensAfterRevocation,
+              hasLength(initialAllTokens.length - 1),
+            );
+            expect(
+              tokensAfterRevocation.any(
+                (final t) =>
+                    t.userId == authId1.toString() && t.method == 'method2',
+              ),
+              isTrue,
+            );
+            expect(
+              tokensAfterRevocation.any(
+                (final t) =>
+                    t.userId == authId2.toString() && t.method == 'method1',
+              ),
+              isTrue,
+            );
+            expect(
+              tokensAfterRevocation.any(
+                (final t) =>
+                    t.userId == authId2.toString() && t.method == 'method2',
+              ),
+              isTrue,
+            );
+          });
+        },
+      );
 
       test(
         'when revoking all tokens without any filters '

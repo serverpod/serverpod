@@ -28,46 +28,48 @@ void main() async {
     await UniqueData.db.deleteWhere(session, where: (_) => Constant.bool(true));
   });
 
-  group('Given a transaction that does not match required database transaction',
-      () {
-    var invalidTransactionType = MockTransaction();
+  group(
+    'Given a transaction that does not match required database transaction',
+    () {
+      var invalidTransactionType = MockTransaction();
 
-    test('when calling `insert` then an error is thrown.', () async {
-      expect(
-        session.db.transaction<void>((transaction) async {
-          await UniqueData.db.insert(
-            session,
-            [UniqueData(number: 1, email: 'test@serverpod.dev')],
+      test('when calling `insert` then an error is thrown.', () async {
+        expect(
+          session.db.transaction<void>((transaction) async {
+            await UniqueData.db.insert(
+              session,
+              [UniqueData(number: 1, email: 'test@serverpod.dev')],
+              transaction: invalidTransactionType,
+            );
+          }),
+          throwsArgumentError,
+        );
+      });
+
+      test('when calling `insertRow` then an error is thrown.', () async {
+        expect(
+          session.db.transaction<void>((transaction) async {
+            await UniqueData.db.insertRow(
+              session,
+              UniqueData(number: 1, email: 'test@serverpod.dev'),
+              transaction: invalidTransactionType,
+            );
+          }),
+          throwsArgumentError,
+        );
+      });
+
+      test('when making a query then an error is thrown.', () async {
+        expect(
+          session.db.unsafeExecute(
+            'SELECT 1;',
             transaction: invalidTransactionType,
-          );
-        }),
-        throwsArgumentError,
-      );
-    });
-
-    test('when calling `insertRow` then an error is thrown.', () async {
-      expect(
-        session.db.transaction<void>((transaction) async {
-          await UniqueData.db.insertRow(
-            session,
-            UniqueData(number: 1, email: 'test@serverpod.dev'),
-            transaction: invalidTransactionType,
-          );
-        }),
-        throwsArgumentError,
-      );
-    });
-
-    test('when making a query then an error is thrown.', () async {
-      expect(
-        session.db.unsafeExecute(
-          'SELECT 1;',
-          transaction: invalidTransactionType,
-        ),
-        throwsArgumentError,
-      );
-    });
-  });
+          ),
+          throwsArgumentError,
+        );
+      });
+    },
+  );
 
   group('Given inserting an object inside a transaction that is committed', () {
     UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
@@ -104,69 +106,82 @@ void main() async {
     UniqueData data = UniqueData(number: 111, email: 'test@serverpod.dev');
 
     test(
-        'when calling `insert` before cancelling then does not create the object.',
-        () async {
-      await session.db.transaction(
-        (transaction) async {
-          await UniqueData.db.insert(
-            session,
-            [data],
-            transaction: transaction,
-          );
+      'when calling `insert` before cancelling then does not create the object.',
+      () async {
+        await session.db.transaction(
+          (transaction) async {
+            await UniqueData.db.insert(
+              session,
+              [data],
+              transaction: transaction,
+            );
 
-          await transaction.cancel();
-        },
-      );
+            await transaction.cancel();
+          },
+        );
 
-      await expectLater(UniqueData.db.find(session), completion(hasLength(0)));
-    });
+        await expectLater(
+          UniqueData.db.find(session),
+          completion(hasLength(0)),
+        );
+      },
+    );
 
     test(
-        'when calling `insertRow` before cancelling then does not create the object.',
-        () async {
-      await session.db.transaction(
+      'when calling `insertRow` before cancelling then does not create the object.',
+      () async {
+        await session.db.transaction(
+          (transaction) async {
+            await UniqueData.db.insertRow(
+              session,
+              data,
+              transaction: transaction,
+            );
+
+            await transaction.cancel();
+          },
+        );
+
+        await expectLater(
+          UniqueData.db.find(session),
+          completion(hasLength(0)),
+        );
+      },
+    );
+  });
+
+  test(
+    'Given a transaction that is cancelled when inserting row after transaction is cancelled then insertion has no effect',
+    () async {
+      var data = UniqueData(number: 1, email: 'test@serverpod.dev');
+      var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');
+      await session.db.transaction<void>(
         (transaction) async {
           await UniqueData.db.insertRow(
             session,
             data,
             transaction: transaction,
           );
-
           await transaction.cancel();
+          try {
+            await UniqueData.db.insertRow(
+              session,
+              data2,
+              transaction: transaction,
+            );
+          } catch (_) {
+            // Ignore
+          }
         },
       );
 
-      await expectLater(UniqueData.db.find(session), completion(hasLength(0)));
-    });
-  });
+      var fetchedData = await UniqueData.db.findFirstRow(session);
 
-  test(
-      'Given a transaction that is cancelled when inserting row after transaction is cancelled then insertion has no effect',
-      () async {
-    var data = UniqueData(number: 1, email: 'test@serverpod.dev');
-    var data2 = UniqueData(number: 2, email: 'test2@serverpod.dev');
-    await session.db.transaction<void>(
-      (transaction) async {
-        await UniqueData.db.insertRow(session, data, transaction: transaction);
-        await transaction.cancel();
-        try {
-          await UniqueData.db.insertRow(
-            session,
-            data2,
-            transaction: transaction,
-          );
-        } catch (_) {
-          // Ignore
-        }
-      },
-    );
-
-    var fetchedData = await UniqueData.db.findFirstRow(session);
-
-    expect(
-      fetchedData,
-      isNull,
-      reason: 'Row was inserted after transaction was cancelled.',
-    );
-  });
+      expect(
+        fetchedData,
+        isNull,
+        reason: 'Row was inserted after transaction was cancelled.',
+      );
+    },
+  );
 }

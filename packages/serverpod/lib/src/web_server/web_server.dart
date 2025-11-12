@@ -37,8 +37,8 @@ class WebServer {
   WebServer({
     required this.serverpod,
     SecurityContext? securityContext,
-  })  : serverId = serverpod.serverId,
-        _securityContext = securityContext {
+  }) : serverId = serverpod.serverId,
+       _securityContext = securityContext {
     var config = serverpod.config.webServer;
 
     if (config == null) {
@@ -80,7 +80,8 @@ class WebServer {
     await templates.loadAll(templatesDirectory);
     if (templates.isEmpty) {
       logDebug(
-          'No webserver relic templates found, template directory path: "${templatesDirectory.path}".');
+        'No webserver relic templates found, template directory path: "${templatesDirectory.path}".',
+      );
     }
 
     try {
@@ -97,9 +98,12 @@ class WebServer {
       var host = _config.publicHost;
       logInfo('Webserver listening on $scheme://$host:$_actualPort');
     } catch (e, stackTrace) {
-      await _reportException(e, stackTrace,
-          message:
-              'Failed to bind socket, port ${_config.port} may already be in use.');
+      await _reportException(
+        e,
+        stackTrace,
+        message:
+            'Failed to bind socket, port ${_config.port} may already be in use.',
+      );
     }
     return _running;
   }
@@ -120,8 +124,8 @@ class WebServer {
     var context = session != null
         ? contextFromSession(session, request: request)
         : request != null
-            ? contextFromRequest(serverpod.server, request, OperationType.web)
-            : contextFromServer(serverpod.server);
+        ? contextFromRequest(serverpod.server, request, OperationType.web)
+        : contextFromServer(serverpod.server);
 
     serverpod.internalSubmitEvent(
       ExceptionEvent(e, stackTrace, message: message),
