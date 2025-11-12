@@ -16,7 +16,7 @@ void main() {
   setUp(() async {
     client = Client(
       'http://localhost:8080/',
-      onFailedCall: (_, error, __) {
+      onFailedCall: (_, error, _) {
         clientReceivedException = error;
       },
     );

@@ -11,19 +11,19 @@ class StaticRoute extends Route {
 
   /// Returns a [CacheControlHeader] with private and no-cache.
   CacheControlFactory privateNoCache() =>
-      (_, __) => CacheControlHeader(privateCache: true, noCache: true);
+      (_, _) => CacheControlHeader(privateCache: true, noCache: true);
 
   /// Returns a [CacheControlHeader] with no-store.
   CacheControlFactory noStore() =>
-      (_, __) => CacheControlHeader(noStore: true);
+      (_, _) => CacheControlHeader(noStore: true);
 
   /// Returns a [CacheControlHeader] with public, and possibly max-age set to [maxAge].
   CacheControlFactory public({int? maxAge}) =>
-      (_, __) => CacheControlHeader(publicCache: true, maxAge: maxAge);
+      (_, _) => CacheControlHeader(publicCache: true, maxAge: maxAge);
 
   /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
   CacheControlFactory publicImmutable({int? maxAge}) =>
-      (_, __) => CacheControlHeader(
+      (_, _) => CacheControlHeader(
         publicCache: true,
         immutable: true,
         maxAge: maxAge,

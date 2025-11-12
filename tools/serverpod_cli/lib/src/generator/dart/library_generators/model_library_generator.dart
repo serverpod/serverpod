@@ -378,8 +378,9 @@ class SerializableModelLibraryGenerator {
                 ..name = 'id'
                 ..type = idTypeReference
                 ..annotations.add(refer('override'));
-              if (classDefinition.isImmutable)
+              if (classDefinition.isImmutable) {
                 f.modifier = FieldModifier.final$;
+              }
             },
           ),
         );
