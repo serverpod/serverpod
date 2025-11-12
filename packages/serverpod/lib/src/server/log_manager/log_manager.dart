@@ -35,7 +35,7 @@ class SessionLogManager {
 
   bool _isLoggingOpened;
 
-  /// Creates a new [LogManager] from [RuntimeSettings].
+  /// Creates a new [SessionLogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
     LogWriter logWriter, {
@@ -333,20 +333,6 @@ class SessionLogManager {
     }
     return null;
   }
-}
-
-/// The [LogManager] handles logging and logging settings. Typically only used
-/// internally by Serverpod.
-class LogManager {
-  /// The [RuntimeSettings] the log manager retrieves its settings from.
-  @Deprecated('Will be removed in 3.0.0')
-  final RuntimeSettings runtimeSettings;
-
-  /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(
-    this.runtimeSettings, {
-    required String serverId,
-  });
 }
 
 extension on Session {
