@@ -8,6 +8,7 @@ import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';
+import 'apple_idp.dart';
 
 /// Details of the Apple account.
 typedef AppleAccountDetails = ({
@@ -216,6 +217,7 @@ class AppleIDPUtils {
         await _tokenManager.revokeAllTokens(
           session,
           authUserId: appleAccount.authUserId,
+          method: AppleIDP.method,
         );
 
         if (notification is AppleServerNotificationAccountDelete) {
