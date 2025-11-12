@@ -11,6 +11,8 @@ class S3CloudStorage extends CloudStorage {
   final String region;
   final String bucket;
   final bool public;
+  final String? endpointUrl;
+  final String? host;
   late final String publicHost;
 
   late final AwsS3Client _s3Client;
@@ -22,6 +24,8 @@ class S3CloudStorage extends CloudStorage {
     required this.public,
     required this.region,
     required this.bucket,
+    this.host,
+    this.endpointUrl,
     String? publicHost,
   }) : super(storageId) {
     serverpod.loadCustomPasswords([
@@ -70,6 +74,7 @@ class S3CloudStorage extends CloudStorage {
       data: byteData,
       uploadDst: path,
       public: public,
+      endpointUrl: endpointUrl,
     );
   }
 
@@ -129,6 +134,7 @@ class S3CloudStorage extends CloudStorage {
       expires: expirationDuration,
       maxFileSize: maxFileSize,
       public: public,
+      endpointUrl: endpointUrl,
     );
   }
 
