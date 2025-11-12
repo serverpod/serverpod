@@ -80,48 +80,96 @@ class AwsS3Client {
   ///Returns a [SignedRequestParams] object containing the uri and the HTTP headers
   ///needed to do a signed GET request to AWS S3. Does not actually execute a request.
   ///You can use this method to integrate this client with an HTTP client of your choice.
-  SignedRequestParams buildSignedParams(
-      {required String key,
-      Map<String, String>? queryParams,
-      String method = 'GET'}) {
+  ///
+  ///the original code is commented out below
+//   SignedRequestParams buildSignedParams(
+//       {required String key,
+//       Map<String, String>? queryParams,
+//       String method = 'GET'}) {
+//     final unencodedPath = "$_bucketId/$key";
+//     final uri = _useHttps
+//         ? Uri.https(_host, unencodedPath, queryParams)
+//         : Uri.http(_host, unencodedPath, queryParams);
+//     final payload = SigV4.hashCanonicalRequest('');
+//     final datetime = SigV4.generateDatetime();
+//     final credentialScope =
+//         SigV4.buildCredentialScope(datetime, _region, _service);
+
+//     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+//     final canonicalRequest = '''$method
+// ${'/$unencodedPath'.split('/').map(Uri.encodeComponent).join('/')}
+// $canonicalQuery
+// host:$_host
+// x-amz-content-sha256:$payload
+// x-amz-date:$datetime
+// x-amz-security-token:$_sessionToken
+
+// host;x-amz-content-sha256;x-amz-date;x-amz-security-token
+// $payload''';
+
+//     final stringToSign = SigV4.buildStringToSign(datetime, credentialScope,
+//         SigV4.hashCanonicalRequest(canonicalRequest));
+//     final signingKey =
+//         SigV4.calculateSigningKey(_secretKey, datetime, _region, _service);
+//     final signature = SigV4.calculateSignature(signingKey, stringToSign);
+
+//     final authorization = [
+//       'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope',
+//       'SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token',
+//       'Signature=$signature',
+//     ].join(',');
+
+//     return SignedRequestParams(uri, {
+//       'Authorization': authorization,
+//       'x-amz-content-sha256': payload,
+//       'x-amz-date': datetime,
+//     });
+//   }
+
+  SignedRequestParams buildSignedParams({
+    required String key,
+    Map<String, String>? queryParams,
+    String method = 'GET',
+  }) {
     final unencodedPath = "$_bucketId/$key";
     final uri = _useHttps
         ? Uri.https(_host, unencodedPath, queryParams)
         : Uri.http(_host, unencodedPath, queryParams);
+
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
     final credentialScope =
         SigV4.buildCredentialScope(datetime, _region, _service);
 
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+
     final canonicalRequest = '''$method
-${'/$unencodedPath'.split('/').map(Uri.encodeComponent).join('/')}
+/${unencodedPath.split('/').map(Uri.encodeComponent).join('/')}
 $canonicalQuery
 host:$_host
 x-amz-content-sha256:$payload
 x-amz-date:$datetime
-x-amz-security-token:${_sessionToken ?? ""}
 
-host;x-amz-content-sha256;x-amz-date;x-amz-security-token
+host;x-amz-content-sha256;x-amz-date
 $payload''';
 
     final stringToSign = SigV4.buildStringToSign(datetime, credentialScope,
         SigV4.hashCanonicalRequest(canonicalRequest));
+
     final signingKey =
         SigV4.calculateSigningKey(_secretKey, datetime, _region, _service);
     final signature = SigV4.calculateSignature(signingKey, stringToSign);
 
-    final authorization = [
-      'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope',
-      'SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token',
-      'Signature=$signature',
-    ].join(',');
+    final authorization =
+        'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=$signature';
 
-    return SignedRequestParams(uri, {
+    final headers = {
       'Authorization': authorization,
       'x-amz-content-sha256': payload,
       'x-amz-date': datetime,
-    });
+    };
+
+    return SignedRequestParams(uri, headers);
   }
 
   Future<Response> _doSignedGetRequest({
