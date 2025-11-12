@@ -68,9 +68,9 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
     int? id,
     required int number,
   }) : super._(
-          id: id,
-          number: number,
-        );
+         id: id,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.

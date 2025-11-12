@@ -200,7 +200,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -230,7 +230,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'expiration',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -287,7 +287,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -366,7 +366,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -379,7 +379,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'time',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -392,7 +392,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'serverId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -405,7 +405,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'identifier',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -474,7 +474,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -564,7 +564,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -682,7 +682,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -692,7 +692,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -705,7 +705,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'sessionLogId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -798,7 +798,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -808,12 +808,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -852,7 +852,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -919,7 +919,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -932,7 +932,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'module',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -1025,7 +1025,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -1035,7 +1035,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -1048,7 +1048,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'sessionLogId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -1087,12 +1087,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -1144,12 +1144,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -1260,7 +1260,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -1273,7 +1273,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'serverId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -1286,7 +1286,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'touched',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -1299,7 +1299,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'isOpen',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -1495,18 +1495,21 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i3.RevokedAuthenticationAuthId?>()) {
       return (data != null
-          ? _i3.RevokedAuthenticationAuthId.fromJson(data)
-          : null) as T;
+              ? _i3.RevokedAuthenticationAuthId.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i4.RevokedAuthenticationScope?>()) {
       return (data != null
-          ? _i4.RevokedAuthenticationScope.fromJson(data)
-          : null) as T;
+              ? _i4.RevokedAuthenticationScope.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i5.RevokedAuthenticationUser?>()) {
       return (data != null
-          ? _i5.RevokedAuthenticationUser.fromJson(data)
-          : null) as T;
+              ? _i5.RevokedAuthenticationUser.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i6.CacheInfo?>()) {
       return (data != null ? _i6.CacheInfo.fromJson(data) : null) as T;
@@ -1519,8 +1522,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i9.CloudStorageDirectUploadEntry?>()) {
       return (data != null
-          ? _i9.CloudStorageDirectUploadEntry.fromJson(data)
-          : null) as T;
+              ? _i9.CloudStorageDirectUploadEntry.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i10.ClusterInfo?>()) {
       return (data != null ? _i10.ClusterInfo.fromJson(data) : null) as T;
@@ -1536,8 +1540,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i14.BulkQueryColumnDescription?>()) {
       return (data != null
-          ? _i14.BulkQueryColumnDescription.fromJson(data)
-          : null) as T;
+              ? _i14.BulkQueryColumnDescription.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i15.BulkQueryResult?>()) {
       return (data != null ? _i15.BulkQueryResult.fromJson(data) : null) as T;
@@ -1568,23 +1573,27 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i23.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i23.DatabaseMigrationActionType.fromJson(data)
-          : null) as T;
+              ? _i23.DatabaseMigrationActionType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i24.DatabaseMigrationVersion?>()) {
       return (data != null
-          ? _i24.DatabaseMigrationVersion.fromJson(data)
-          : null) as T;
+              ? _i24.DatabaseMigrationVersion.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i25.DatabaseMigrationWarning?>()) {
       return (data != null
-          ? _i25.DatabaseMigrationWarning.fromJson(data)
-          : null) as T;
+              ? _i25.DatabaseMigrationWarning.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i26.DatabaseMigrationWarningType?>()) {
       return (data != null
-          ? _i26.DatabaseMigrationWarningType.fromJson(data)
-          : null) as T;
+              ? _i26.DatabaseMigrationWarningType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i27.EnumSerialization?>()) {
       return (data != null ? _i27.EnumSerialization.fromJson(data) : null) as T;
@@ -1619,8 +1628,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i36.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i36.IndexElementDefinitionType.fromJson(data)
-          : null) as T;
+              ? _i36.IndexElementDefinitionType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i37.TableDefinition?>()) {
       return (data != null ? _i37.TableDefinition.fromJson(data) : null) as T;
@@ -1681,8 +1691,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i54.ServerHealthConnectionInfo?>()) {
       return (data != null
-          ? _i54.ServerHealthConnectionInfo.fromJson(data)
-          : null) as T;
+              ? _i54.ServerHealthConnectionInfo.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i55.ServerHealthMetric?>()) {
       return (data != null ? _i55.ServerHealthMetric.fromJson(data) : null)
@@ -1713,74 +1724,90 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as T;
+              ? (data as List).map((e) => deserialize<String>(e)).toList()
+              : null)
+          as T;
     }
     if (t == List<_i11.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i11.ClusterServerInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i11.ClusterServerInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i14.BulkQueryColumnDescription>) {
       return (data as List)
-          .map((e) => deserialize<_i14.BulkQueryColumnDescription>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i14.BulkQueryColumnDescription>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i37.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i37.TableDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i37.TableDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i24.DatabaseMigrationVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i24.DatabaseMigrationVersion>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i24.DatabaseMigrationVersion>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i22.DatabaseMigrationAction>) {
       return (data as List)
-          .map((e) => deserialize<_i22.DatabaseMigrationAction>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i22.DatabaseMigrationAction>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i25.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i25.DatabaseMigrationWarning>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i25.DatabaseMigrationWarning>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i29.FilterConstraint>) {
       return (data as List)
-          .map((e) => deserialize<_i29.FilterConstraint>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i29.FilterConstraint>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i35.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i35.IndexElementDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i35.IndexElementDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
       return (data != null
-          ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<String>(v)))
-          : null) as T;
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
+                )
+              : null)
+          as T;
     }
     if (t == List<_i16.ColumnDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i16.ColumnDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i16.ColumnDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i32.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i32.ForeignKeyDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i32.ForeignKeyDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i34.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i34.IndexDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i34.IndexDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i17.ColumnMigration>) {
       return (data as List)
-          .map((e) => deserialize<_i17.ColumnMigration>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i17.ColumnMigration>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i44.LogEntry>) {
       return (data as List).map((e) => deserialize<_i44.LogEntry>(e)).toList()
@@ -1788,38 +1815,45 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<_i48.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i48.LogSettingsOverride>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i48.LogSettingsOverride>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i55.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i55.ServerHealthMetric>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i55.ServerHealthMetric>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i54.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i54.ServerHealthConnectionInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i54.ServerHealthConnectionInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i51.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i51.QueryLogEntry>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i51.QueryLogEntry>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i49.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i49.MessageLogEntry>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i49.MessageLogEntry>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i60.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i60.SessionLogInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i60.SessionLogInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i62.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i62.TableDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i62.TableDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;

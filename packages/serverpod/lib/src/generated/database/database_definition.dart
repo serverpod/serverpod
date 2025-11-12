@@ -41,8 +41,11 @@ abstract class DatabaseDefinition
           .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       installedModules: (jsonSerialization['installedModules'] as List)
-          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => _i3.DatabaseMigrationVersion.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
@@ -81,8 +84,9 @@ abstract class DatabaseDefinition
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJson()),
-      'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules': installedModules.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -93,8 +97,9 @@ abstract class DatabaseDefinition
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'installedModules': installedModules.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -115,12 +120,12 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
-          name: name,
-          moduleName: moduleName,
-          tables: tables,
-          installedModules: installedModules,
-          migrationApiVersion: migrationApiVersion,
-        );
+         name: name,
+         moduleName: moduleName,
+         tables: tables,
+         installedModules: installedModules,
+         migrationApiVersion: migrationApiVersion,
+       );
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +142,8 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.map((e0) => e0.copyWith()).toList(),
-      installedModules: installedModules ??
+      installedModules:
+          installedModules ??
           this.installedModules.map((e0) => e0.copyWith()).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );

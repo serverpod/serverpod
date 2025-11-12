@@ -119,10 +119,10 @@ class _CustomerIntImpl extends CustomerInt {
     required String name,
     List<_i2.OrderUuid>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +147,9 @@ class CustomerIntUpdateTable extends _i1.UpdateTable<CustomerIntTable> {
   CustomerIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CustomerIntTable extends _i1.Table<int?> {
@@ -195,16 +195,17 @@ class CustomerIntTable extends _i1.Table<int?> {
     _orders = _i1.ManyRelation<_i2.OrderUuidTable>(
       tableWithRelations: relationTable,
       table: _i2.OrderUuidTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _orders!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -534,8 +535,9 @@ class CustomerIntAttachRepository {
       throw ArgumentError.notNull('customerInt.id');
     }
 
-    var $orderUuid =
-        orderUuid.map((e) => e.copyWith(customerId: customerInt.id)).toList();
+    var $orderUuid = orderUuid
+        .map((e) => e.copyWith(customerId: customerInt.id))
+        .toList();
     await session.db.update<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],
@@ -588,8 +590,9 @@ class CustomerIntDetachRepository {
       throw ArgumentError.notNull('orderUuid.id');
     }
 
-    var $orderUuid =
-        orderUuid.map((e) => e.copyWith(customerId: null)).toList();
+    var $orderUuid = orderUuid
+        .map((e) => e.copyWith(customerId: null))
+        .toList();
     await session.db.update<_i2.OrderUuid>(
       $orderUuid,
       columns: [_i2.OrderUuid.t.customerId],

@@ -35,8 +35,10 @@ abstract class ChatMessagePost implements _i1.SerializableModel {
       message: jsonSerialization['message'] as String,
       clientMessageId: jsonSerialization['clientMessageId'] as int,
       attachments: (jsonSerialization['attachments'] as List?)
-          ?.map((e) =>
-              _i2.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) =>
+                _i2.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
     );
   }
@@ -88,11 +90,11 @@ class _ChatMessagePostImpl extends ChatMessagePost {
     required int clientMessageId,
     List<_i2.ChatMessageAttachment>? attachments,
   }) : super._(
-          channel: channel,
-          message: message,
-          clientMessageId: clientMessageId,
-          attachments: attachments,
-        );
+         channel: channel,
+         message: message,
+         clientMessageId: clientMessageId,
+         attachments: attachments,
+       );
 
   /// Returns a shallow copy of this [ChatMessagePost]
   /// with some or all fields replaced by the given arguments.

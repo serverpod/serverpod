@@ -33,18 +33,21 @@ abstract class UuidDefaultPersist
       id: jsonSerialization['id'] as int?,
       uuidDefaultPersistRandom:
           jsonSerialization['uuidDefaultPersistRandom'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandom']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultPersistRandom'],
+            ),
       uuidDefaultPersistRandomV7:
           jsonSerialization['uuidDefaultPersistRandomV7'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandomV7']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultPersistRandomV7'],
+            ),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidDefaultPersistStr']),
+              jsonSerialization['uuidDefaultPersistStr'],
+            ),
     );
   }
 
@@ -138,11 +141,11 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
     _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) : super._(
-          id: id,
-          uuidDefaultPersistRandom: uuidDefaultPersistRandom,
-          uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
-          uuidDefaultPersistStr: uuidDefaultPersistStr,
-        );
+         id: id,
+         uuidDefaultPersistRandom: uuidDefaultPersistRandom,
+         uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
+         uuidDefaultPersistStr: uuidDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -174,30 +177,30 @@ class UuidDefaultPersistUpdateTable
   UuidDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandom(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.uuidDefaultPersistRandom,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.uuidDefaultPersistRandom,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandomV7(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.uuidDefaultPersistRandomV7,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.uuidDefaultPersistRandomV7,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistStr(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.uuidDefaultPersistStr,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.uuidDefaultPersistStr,
+    value,
+  );
 }
 
 class UuidDefaultPersistTable extends _i1.Table<int?> {
   UuidDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'uuid_default_persist') {
+    : super(tableName: 'uuid_default_persist') {
     updateTable = UuidDefaultPersistUpdateTable(this);
     uuidDefaultPersistRandom = _i1.ColumnUuid(
       'uuidDefaultPersistRandom',
@@ -226,11 +229,11 @@ class UuidDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uuidDefaultPersistRandom,
-        uuidDefaultPersistRandomV7,
-        uuidDefaultPersistStr,
-      ];
+    id,
+    uuidDefaultPersistRandom,
+    uuidDefaultPersistRandomV7,
+    uuidDefaultPersistStr,
+  ];
 }
 
 class UuidDefaultPersistInclude extends _i1.IncludeObject {
@@ -428,7 +431,7 @@ class UuidDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultPersist>(
@@ -443,7 +446,7 @@ class UuidDefaultPersistRepository {
   Future<List<UuidDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     int? limit,
     int? offset,

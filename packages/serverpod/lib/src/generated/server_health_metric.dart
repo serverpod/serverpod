@@ -42,8 +42,9 @@ abstract class ServerHealthMetric
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
       isHealthy: jsonSerialization['isHealthy'] as bool,
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
@@ -159,14 +160,14 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
     required double value,
     required int granularity,
   }) : super._(
-          id: id,
-          name: name,
-          serverId: serverId,
-          timestamp: timestamp,
-          isHealthy: isHealthy,
-          value: value,
-          granularity: granularity,
-        );
+         id: id,
+         name: name,
+         serverId: serverId,
+         timestamp: timestamp,
+         isHealthy: isHealthy,
+         value: value,
+         granularity: granularity,
+       );
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
@@ -198,14 +199,14 @@ class ServerHealthMetricUpdateTable
   ServerHealthMetricUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
       _i1.ColumnValue(
@@ -214,24 +215,24 @@ class ServerHealthMetricUpdateTable
       );
 
   _i1.ColumnValue<bool, bool> isHealthy(bool value) => _i1.ColumnValue(
-        table.isHealthy,
-        value,
-      );
+    table.isHealthy,
+    value,
+  );
 
   _i1.ColumnValue<double, double> value(double value) => _i1.ColumnValue(
-        table.value,
-        value,
-      );
+    table.value,
+    value,
+  );
 
   _i1.ColumnValue<int, int> granularity(int value) => _i1.ColumnValue(
-        table.granularity,
-        value,
-      );
+    table.granularity,
+    value,
+  );
 }
 
 class ServerHealthMetricTable extends _i1.Table<int?> {
   ServerHealthMetricTable({super.tableRelation})
-      : super(tableName: 'serverpod_health_metric') {
+    : super(tableName: 'serverpod_health_metric') {
     updateTable = ServerHealthMetricUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -282,14 +283,14 @@ class ServerHealthMetricTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        serverId,
-        timestamp,
-        isHealthy,
-        value,
-        granularity,
-      ];
+    id,
+    name,
+    serverId,
+    timestamp,
+    isHealthy,
+    value,
+    granularity,
+  ];
 }
 
 class ServerHealthMetricInclude extends _i1.IncludeObject {
@@ -487,7 +488,7 @@ class ServerHealthMetricRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerHealthMetric>(
@@ -502,7 +503,7 @@ class ServerHealthMetricRepository {
   Future<List<ServerHealthMetric>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     int? limit,
     int? offset,

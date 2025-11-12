@@ -21,11 +21,13 @@ abstract class ImmutableObjectWithList
       _ImmutableObjectWithListImpl;
 
   factory ImmutableObjectWithList.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithList(
-        listVariable: (jsonSerialization['listVariable'] as List)
-            .map((e) => e as String)
-            .toList());
+      listVariable: (jsonSerialization['listVariable'] as List)
+          .map((e) => e as String)
+          .toList(),
+    );
   }
 
   final List<String> listVariable;
@@ -74,7 +76,7 @@ abstract class ImmutableObjectWithList
 
 class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
   const _ImmutableObjectWithListImpl({required List<String> listVariable})
-      : super._(listVariable: listVariable);
+    : super._(listVariable: listVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
@@ -82,7 +84,7 @@ class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
   @override
   ImmutableObjectWithList copyWith({List<String>? listVariable}) {
     return ImmutableObjectWithList(
-        listVariable:
-            listVariable ?? this.listVariable.map((e0) => e0).toList());
+      listVariable: listVariable ?? this.listVariable.map((e0) => e0).toList(),
+    );
   }
 }

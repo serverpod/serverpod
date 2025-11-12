@@ -35,12 +35,14 @@ abstract class CommentInt
     return CommentInt(
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
-      orderId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['orderId']),
+      orderId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['orderId'],
+      ),
       order: jsonSerialization['order'] == null
           ? null
           : _i2.OrderUuid.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+              (jsonSerialization['order'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -128,11 +130,11 @@ class _CommentIntImpl extends CommentInt {
     required _i1.UuidValue orderId,
     _i2.OrderUuid? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [CommentInt]
   /// with some or all fields replaced by the given arguments.
@@ -157,9 +159,9 @@ class CommentIntUpdateTable extends _i1.UpdateTable<CommentIntTable> {
   CommentIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> orderId(_i1.UuidValue value) =>
       _i1.ColumnValue(
@@ -204,10 +206,10 @@ class CommentIntTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        orderId,
-      ];
+    id,
+    description,
+    orderId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

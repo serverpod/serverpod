@@ -33,14 +33,16 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
   }) = _ChildWithInheritedIdImpl;
 
   factory ChildWithInheritedId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ChildWithInheritedId(
       id: _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       parent: jsonSerialization['parent'] == null
           ? null
           : _i3.ChildWithInheritedId.fromJson(
-              (jsonSerialization['parent'] as Map<String, dynamic>)),
+              (jsonSerialization['parent'] as Map<String, dynamic>),
+            ),
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
@@ -88,8 +90,9 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     return {};
   }
 
-  static ChildWithInheritedIdInclude include(
-      {_i3.ChildWithInheritedIdInclude? parent}) {
+  static ChildWithInheritedIdInclude include({
+    _i3.ChildWithInheritedIdInclude? parent,
+  }) {
     return ChildWithInheritedIdInclude._(parent: parent);
   }
 
@@ -128,11 +131,11 @@ class _ChildWithInheritedIdImpl extends ChildWithInheritedId {
     _i3.ChildWithInheritedId? parent,
     _i2.UuidValue? parentId,
   }) : super._(
-          id: id,
-          name: name,
-          parent: parent,
-          parentId: parentId,
-        );
+         id: id,
+         name: name,
+         parent: parent,
+         parentId: parentId,
+       );
 
   /// Returns a shallow copy of this [ChildWithInheritedId]
   /// with some or all fields replaced by the given arguments.
@@ -160,21 +163,21 @@ class ChildWithInheritedIdUpdateTable
   ChildWithInheritedIdUpdateTable(super.table);
 
   _i2.ColumnValue<String, String> name(String value) => _i2.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i2.ColumnValue<_i2.UuidValue, _i2.UuidValue> parentId(
-          _i2.UuidValue? value) =>
-      _i2.ColumnValue(
-        table.parentId,
-        value,
-      );
+    _i2.UuidValue? value,
+  ) => _i2.ColumnValue(
+    table.parentId,
+    value,
+  );
 }
 
 class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
   ChildWithInheritedIdTable({super.tableRelation})
-      : super(tableName: 'child_with_inherited_id') {
+    : super(tableName: 'child_with_inherited_id') {
     updateTable = ChildWithInheritedIdUpdateTable(this);
     name = _i2.ColumnString(
       'name',
@@ -209,10 +212,10 @@ class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
 
   @override
   List<_i2.Column> get columns => [
-        id,
-        name,
-        parentId,
-      ];
+    id,
+    name,
+    parentId,
+  ];
 
   @override
   _i2.Table? getRelationTable(String relationField) {
@@ -432,7 +435,7 @@ class ChildWithInheritedIdRepository {
     _i2.Session session,
     _i2.UuidValue id, {
     required _i2.ColumnValueListBuilder<ChildWithInheritedIdUpdateTable>
-        columnValues,
+    columnValues,
     _i2.Transaction? transaction,
   }) async {
     return session.db.updateById<ChildWithInheritedId>(
@@ -447,7 +450,7 @@ class ChildWithInheritedIdRepository {
   Future<List<ChildWithInheritedId>> updateWhere(
     _i2.Session session, {
     required _i2.ColumnValueListBuilder<ChildWithInheritedIdUpdateTable>
-        columnValues,
+    columnValues,
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
     int? limit,
     int? offset,
@@ -540,8 +543,9 @@ class ChildWithInheritedIdAttachRowRepository {
       throw ArgumentError.notNull('parent.id');
     }
 
-    var $childWithInheritedId =
-        childWithInheritedId.copyWith(parentId: parent.id);
+    var $childWithInheritedId = childWithInheritedId.copyWith(
+      parentId: parent.id,
+    );
     await session.db.updateRow<ChildWithInheritedId>(
       $childWithInheritedId,
       columns: [ChildWithInheritedId.t.parentId],

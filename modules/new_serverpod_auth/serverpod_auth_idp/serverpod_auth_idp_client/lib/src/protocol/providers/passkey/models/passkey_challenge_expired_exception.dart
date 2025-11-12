@@ -22,7 +22,8 @@ abstract class PasskeyChallengeExpiredException
       _PasskeyChallengeExpiredExceptionImpl;
 
   factory PasskeyChallengeExpiredException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyChallengeExpiredException();
   }
 

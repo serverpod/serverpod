@@ -30,8 +30,8 @@ abstract class RefreshToken
     required this.rotatingSecretSalt,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
-  })  : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
-        createdAt = createdAt ?? DateTime.now();
+  }) : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory RefreshToken({
     _i1.UuidValue? id,
@@ -52,27 +52,35 @@ abstract class RefreshToken
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
           : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+              (jsonSerialization['authUser'] as Map<String, dynamic>),
+            ),
       scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+        (jsonSerialization['scopeNames'] as List),
+        itemFromJson: (e) => e as String,
+      )!,
       extraClaims: jsonSerialization['extraClaims'] as String?,
       method: jsonSerialization['method'] as String,
-      fixedSecret:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['fixedSecret']),
+      fixedSecret: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['fixedSecret'],
+      ),
       rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['rotatingSecretHash']),
+        jsonSerialization['rotatingSecretHash'],
+      ),
       rotatingSecretSalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['rotatingSecretSalt']),
+        jsonSerialization['rotatingSecretSalt'],
+      ),
       lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['lastUpdatedAt']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+        jsonSerialization['lastUpdatedAt'],
+      ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
     );
   }
 
@@ -226,18 +234,18 @@ class _RefreshTokenImpl extends RefreshToken {
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          scopeNames: scopeNames,
-          extraClaims: extraClaims,
-          method: method,
-          fixedSecret: fixedSecret,
-          rotatingSecretHash: rotatingSecretHash,
-          rotatingSecretSalt: rotatingSecretSalt,
-          lastUpdatedAt: lastUpdatedAt,
-          createdAt: createdAt,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         scopeNames: scopeNames,
+         extraClaims: extraClaims,
+         method: method,
+         fixedSecret: fixedSecret,
+         rotatingSecretHash: rotatingSecretHash,
+         rotatingSecretSalt: rotatingSecretSalt,
+         lastUpdatedAt: lastUpdatedAt,
+         createdAt: createdAt,
+       );
 
   /// Returns a shallow copy of this [RefreshToken]
   /// with some or all fields replaced by the given arguments.
@@ -259,8 +267,9 @@ class _RefreshTokenImpl extends RefreshToken {
     return RefreshToken(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
       method: method ?? this.method,
@@ -277,11 +286,11 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
   RefreshTokenUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
       _i1.ColumnValue(
@@ -290,14 +299,14 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
       );
 
   _i1.ColumnValue<String, String> extraClaims(String? value) => _i1.ColumnValue(
-        table.extraClaims,
-        value,
-      );
+    table.extraClaims,
+    value,
+  );
 
   _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> fixedSecret(_i3.ByteData value) =>
       _i1.ColumnValue(
@@ -306,18 +315,18 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
       );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretHash(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.rotatingSecretHash,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.rotatingSecretHash,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretSalt(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.rotatingSecretSalt,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.rotatingSecretSalt,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
       _i1.ColumnValue(
@@ -334,7 +343,7 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
 
 class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   RefreshTokenTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
+    : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
     updateTable = RefreshTokenUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -449,17 +458,17 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        scopeNames,
-        extraClaims,
-        method,
-        fixedSecret,
-        rotatingSecretHash,
-        rotatingSecretSalt,
-        lastUpdatedAt,
-        createdAt,
-      ];
+    id,
+    authUserId,
+    scopeNames,
+    extraClaims,
+    method,
+    fixedSecret,
+    rotatingSecretHash,
+    rotatingSecretSalt,
+    lastUpdatedAt,
+    createdAt,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

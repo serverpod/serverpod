@@ -102,12 +102,12 @@ class _UserSettingsConfigImpl extends UserSettingsConfig {
     required bool canEditFullName,
     required bool canEditUserImage,
   }) : super._(
-          canSeeUserName: canSeeUserName,
-          canSeeFullName: canSeeFullName,
-          canEditUserName: canEditUserName,
-          canEditFullName: canEditFullName,
-          canEditUserImage: canEditUserImage,
-        );
+         canSeeUserName: canSeeUserName,
+         canSeeFullName: canSeeFullName,
+         canEditUserName: canEditUserName,
+         canEditFullName: canEditFullName,
+         canEditUserImage: canEditUserImage,
+       );
 
   /// Returns a shallow copy of this [UserSettingsConfig]
   /// with some or all fields replaced by the given arguments.

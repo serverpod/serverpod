@@ -77,10 +77,10 @@ class _CourseImpl extends Course {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.

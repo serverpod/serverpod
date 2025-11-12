@@ -31,13 +31,15 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   }) = _CloudStorageDirectUploadEntryImpl;
 
   factory CloudStorageDirectUploadEntry.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return CloudStorageDirectUploadEntry(
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      expiration: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['expiration'],
+      ),
       authKey: jsonSerialization['authKey'] as String,
     );
   }
@@ -96,12 +98,12 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     required DateTime expiration,
     required String authKey,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          expiration: expiration,
-          authKey: authKey,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         expiration: expiration,
+         authKey: authKey,
+       );
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.

@@ -119,41 +119,50 @@ abstract class Nullability
       anInt: jsonSerialization['anInt'] as int,
       aNullableInt: jsonSerialization['aNullableInt'] as int?,
       aDouble: (jsonSerialization['aDouble'] as num).toDouble(),
-      aNullableDouble:
-          (jsonSerialization['aNullableDouble'] as num?)?.toDouble(),
+      aNullableDouble: (jsonSerialization['aNullableDouble'] as num?)
+          ?.toDouble(),
       aBool: jsonSerialization['aBool'] as bool,
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
-      aDateTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+      aDateTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['aDateTime'],
+      ),
       aNullableDateTime: jsonSerialization['aNullableDateTime'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['aNullableDateTime']),
-      aByteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
+              jsonSerialization['aNullableDateTime'],
+            ),
+      aByteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['aByteData'],
+      ),
       aNullableByteData: jsonSerialization['aNullableByteData'] == null
           ? null
           : _i1.ByteDataJsonExtension.fromJson(
-              jsonSerialization['aNullableByteData']),
-      aDuration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
+              jsonSerialization['aNullableByteData'],
+            ),
+      aDuration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['aDuration'],
+      ),
       aNullableDuration: jsonSerialization['aNullableDuration'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(
-              jsonSerialization['aNullableDuration']),
+              jsonSerialization['aNullableDuration'],
+            ),
       aUuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       aNullableUuid: jsonSerialization['aNullableUuid'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['aNullableUuid']),
+              jsonSerialization['aNullableUuid'],
+            ),
       anObject: _i3.SimpleData.fromJson(
-          (jsonSerialization['anObject'] as Map<String, dynamic>)),
+        (jsonSerialization['anObject'] as Map<String, dynamic>),
+      ),
       aNullableObject: jsonSerialization['aNullableObject'] == null
           ? null
           : _i3.SimpleData.fromJson(
-              (jsonSerialization['aNullableObject'] as Map<String, dynamic>)),
+              (jsonSerialization['aNullableObject'] as Map<String, dynamic>),
+            ),
       anIntList: (jsonSerialization['anIntList'] as List)
           .map((e) => e as int)
           .toList(),
@@ -176,15 +185,19 @@ abstract class Nullability
           .toList(),
       aListWithNullableObjects:
           (jsonSerialization['aListWithNullableObjects'] as List)
-              .map((e) => e == null
-                  ? null
-                  : _i3.SimpleData.fromJson((e as Map<String, dynamic>)))
+              .map(
+                (e) => e == null
+                    ? null
+                    : _i3.SimpleData.fromJson((e as Map<String, dynamic>)),
+              )
               .toList(),
       aNullableListWithNullableObjects:
           (jsonSerialization['aNullableListWithNullableObjects'] as List?)
-              ?.map((e) => e == null
-                  ? null
-                  : _i3.SimpleData.fromJson((e as Map<String, dynamic>)))
+              ?.map(
+                (e) => e == null
+                    ? null
+                    : _i3.SimpleData.fromJson((e as Map<String, dynamic>)),
+              )
               .toList(),
       aDateTimeList: (jsonSerialization['aDateTimeList'] as List)
           .map((e) => _i1.DateTimeJsonExtension.fromJson(e))
@@ -193,14 +206,18 @@ abstract class Nullability
           (jsonSerialization['aNullableDateTimeList'] as List?)
               ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableDateTimes: (jsonSerialization[
-              'aListWithNullableDateTimes'] as List)
-          .map((e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e))
-          .toList(),
-      aNullableListWithNullableDateTimes: (jsonSerialization[
-              'aNullableListWithNullableDateTimes'] as List?)
-          ?.map((e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e))
-          .toList(),
+      aListWithNullableDateTimes:
+          (jsonSerialization['aListWithNullableDateTimes'] as List)
+              .map(
+                (e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e),
+              )
+              .toList(),
+      aNullableListWithNullableDateTimes:
+          (jsonSerialization['aNullableListWithNullableDateTimes'] as List?)
+              ?.map(
+                (e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e),
+              )
+              .toList(),
       aByteDataList: (jsonSerialization['aByteDataList'] as List)
           .map((e) => _i1.ByteDataJsonExtension.fromJson(e))
           .toList(),
@@ -208,14 +225,18 @@ abstract class Nullability
           (jsonSerialization['aNullableByteDataList'] as List?)
               ?.map((e) => _i1.ByteDataJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableByteDatas: (jsonSerialization[
-              'aListWithNullableByteDatas'] as List)
-          .map((e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e))
-          .toList(),
-      aNullableListWithNullableByteDatas: (jsonSerialization[
-              'aNullableListWithNullableByteDatas'] as List?)
-          ?.map((e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e))
-          .toList(),
+      aListWithNullableByteDatas:
+          (jsonSerialization['aListWithNullableByteDatas'] as List)
+              .map(
+                (e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e),
+              )
+              .toList(),
+      aNullableListWithNullableByteDatas:
+          (jsonSerialization['aNullableListWithNullableByteDatas'] as List?)
+              ?.map(
+                (e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e),
+              )
+              .toList(),
       aDurationList: (jsonSerialization['aDurationList'] as List)
           .map((e) => _i1.DurationJsonExtension.fromJson(e))
           .toList(),
@@ -223,49 +244,64 @@ abstract class Nullability
           (jsonSerialization['aNullableDurationList'] as List?)
               ?.map((e) => _i1.DurationJsonExtension.fromJson(e))
               .toList(),
-      aListWithNullableDurations: (jsonSerialization[
-              'aListWithNullableDurations'] as List)
-          .map((e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e))
-          .toList(),
-      aNullableListWithNullableDurations: (jsonSerialization[
-              'aNullableListWithNullableDurations'] as List?)
-          ?.map((e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e))
-          .toList(),
+      aListWithNullableDurations:
+          (jsonSerialization['aListWithNullableDurations'] as List)
+              .map(
+                (e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e),
+              )
+              .toList(),
+      aNullableListWithNullableDurations:
+          (jsonSerialization['aNullableListWithNullableDurations'] as List?)
+              ?.map(
+                (e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e),
+              )
+              .toList(),
       aUuidList: (jsonSerialization['aUuidList'] as List)
           .map((e) => _i1.UuidValueJsonExtension.fromJson(e))
           .toList(),
       aNullableUuidList: (jsonSerialization['aNullableUuidList'] as List?)
           ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
           .toList(),
-      aListWithNullableUuids: (jsonSerialization['aListWithNullableUuids']
-              as List)
-          .map((e) => e == null ? null : _i1.UuidValueJsonExtension.fromJson(e))
-          .toList(),
+      aListWithNullableUuids:
+          (jsonSerialization['aListWithNullableUuids'] as List)
+              .map(
+                (e) =>
+                    e == null ? null : _i1.UuidValueJsonExtension.fromJson(e),
+              )
+              .toList(),
       aNullableListWithNullableUuids:
           (jsonSerialization['aNullableListWithNullableUuids'] as List?)
-              ?.map((e) =>
-                  e == null ? null : _i1.UuidValueJsonExtension.fromJson(e))
+              ?.map(
+                (e) =>
+                    e == null ? null : _i1.UuidValueJsonExtension.fromJson(e),
+              )
               .toList(),
-      anIntMap: (jsonSerialization['anIntMap'] as Map).map((k, v) => MapEntry(
-            k as String,
-            v as int,
-          )),
-      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as Map?)
-          ?.map((k, v) => MapEntry(
-                k as String,
-                v as int,
-              )),
+      anIntMap: (jsonSerialization['anIntMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v as int,
+        ),
+      ),
+      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          v as int,
+        ),
+      ),
       aMapWithNullableInts: (jsonSerialization['aMapWithNullableInts'] as Map)
-          .map((k, v) => MapEntry(
-                k as String,
-                v as int?,
-              )),
+          .map(
+            (k, v) => MapEntry(
+              k as String,
+              v as int?,
+            ),
+          ),
       aNullableMapWithNullableInts:
-          (jsonSerialization['aNullableMapWithNullableInts'] as Map?)
-              ?.map((k, v) => MapEntry(
-                    k as String,
-                    v as int?,
-                  )),
+          (jsonSerialization['aNullableMapWithNullableInts'] as Map?)?.map(
+            (k, v) => MapEntry(
+              k as String,
+              v as int?,
+            ),
+          ),
     );
   }
 
@@ -441,50 +477,60 @@ abstract class Nullability
         'aNullableIntList': aNullableIntList?.toJson(),
       'aListWithNullableInts': aListWithNullableInts.toJson(),
       if (aNullableListWithNullableInts != null)
-        'aNullableListWithNullableInts':
-            aNullableListWithNullableInts?.toJson(),
+        'aNullableListWithNullableInts': aNullableListWithNullableInts
+            ?.toJson(),
       'anObjectList': anObjectList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableObjectList != null)
-        'aNullableObjectList':
-            aNullableObjectList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableObjects':
-          aListWithNullableObjects.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableObjectList': aNullableObjectList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableObjects': aListWithNullableObjects.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
-        'aNullableDateTimeList':
-            aNullableDateTimeList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableDateTimes':
-          aListWithNullableDateTimes.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableDateTimeList': aNullableDateTimeList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDateTimes': aListWithNullableDateTimes.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableDateTimes != null)
         'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aByteDataList': aByteDataList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableByteDataList != null)
-        'aNullableByteDataList':
-            aNullableByteDataList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableByteDatas':
-          aListWithNullableByteDatas.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableByteDataList': aNullableByteDataList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableByteDatas': aListWithNullableByteDatas.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableByteDatas != null)
         'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aDurationList': aDurationList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDurationList != null)
-        'aNullableDurationList':
-            aNullableDurationList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableDurations':
-          aListWithNullableDurations.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableDurationList': aNullableDurationList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDurations': aListWithNullableDurations.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableDurations != null)
         'aNullableListWithNullableDurations': aNullableListWithNullableDurations
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aUuidList': aUuidList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableUuidList != null)
-        'aNullableUuidList':
-            aNullableUuidList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableUuids':
-          aListWithNullableUuids.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableUuidList': aNullableUuidList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableUuids': aListWithNullableUuids.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableUuids != null)
         'aNullableListWithNullableUuids': aNullableListWithNullableUuids
             ?.toJson(valueToJson: (v) => v?.toJson()),
@@ -526,51 +572,62 @@ abstract class Nullability
         'aNullableIntList': aNullableIntList?.toJson(),
       'aListWithNullableInts': aListWithNullableInts.toJson(),
       if (aNullableListWithNullableInts != null)
-        'aNullableListWithNullableInts':
-            aNullableListWithNullableInts?.toJson(),
-      'anObjectList':
-          anObjectList.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'aNullableListWithNullableInts': aNullableListWithNullableInts
+            ?.toJson(),
+      'anObjectList': anObjectList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       if (aNullableObjectList != null)
         'aNullableObjectList': aNullableObjectList?.toJson(
-            valueToJson: (v) => v.toJsonForProtocol()),
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
       'aListWithNullableObjects': aListWithNullableObjects.toJson(
-          valueToJson: (v) => v?.toJsonForProtocol()),
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
             ?.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
-        'aNullableDateTimeList':
-            aNullableDateTimeList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableDateTimes':
-          aListWithNullableDateTimes.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableDateTimeList': aNullableDateTimeList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDateTimes': aListWithNullableDateTimes.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableDateTimes != null)
         'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aByteDataList': aByteDataList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableByteDataList != null)
-        'aNullableByteDataList':
-            aNullableByteDataList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableByteDatas':
-          aListWithNullableByteDatas.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableByteDataList': aNullableByteDataList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableByteDatas': aListWithNullableByteDatas.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableByteDatas != null)
         'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aDurationList': aDurationList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDurationList != null)
-        'aNullableDurationList':
-            aNullableDurationList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableDurations':
-          aListWithNullableDurations.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableDurationList': aNullableDurationList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableDurations': aListWithNullableDurations.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableDurations != null)
         'aNullableListWithNullableDurations': aNullableListWithNullableDurations
             ?.toJson(valueToJson: (v) => v?.toJson()),
       'aUuidList': aUuidList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableUuidList != null)
-        'aNullableUuidList':
-            aNullableUuidList?.toJson(valueToJson: (v) => v.toJson()),
-      'aListWithNullableUuids':
-          aListWithNullableUuids.toJson(valueToJson: (v) => v?.toJson()),
+        'aNullableUuidList': aNullableUuidList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
+      'aListWithNullableUuids': aListWithNullableUuids.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       if (aNullableListWithNullableUuids != null)
         'aNullableListWithNullableUuids': aNullableListWithNullableUuids
             ?.toJson(valueToJson: (v) => v?.toJson()),
@@ -639,56 +696,53 @@ class _NullabilityImpl extends Nullability {
     required Map<String, int?> aMapWithNullableInts,
     Map<String, int?>? aNullableMapWithNullableInts,
   }) : super._(
-          anInt: anInt,
-          aNullableInt: aNullableInt,
-          aDouble: aDouble,
-          aNullableDouble: aNullableDouble,
-          aBool: aBool,
-          aNullableBool: aNullableBool,
-          aString: aString,
-          aNullableString: aNullableString,
-          aDateTime: aDateTime,
-          aNullableDateTime: aNullableDateTime,
-          aByteData: aByteData,
-          aNullableByteData: aNullableByteData,
-          aDuration: aDuration,
-          aNullableDuration: aNullableDuration,
-          aUuid: aUuid,
-          aNullableUuid: aNullableUuid,
-          anObject: anObject,
-          aNullableObject: aNullableObject,
-          anIntList: anIntList,
-          aNullableIntList: aNullableIntList,
-          aListWithNullableInts: aListWithNullableInts,
-          aNullableListWithNullableInts: aNullableListWithNullableInts,
-          anObjectList: anObjectList,
-          aNullableObjectList: aNullableObjectList,
-          aListWithNullableObjects: aListWithNullableObjects,
-          aNullableListWithNullableObjects: aNullableListWithNullableObjects,
-          aDateTimeList: aDateTimeList,
-          aNullableDateTimeList: aNullableDateTimeList,
-          aListWithNullableDateTimes: aListWithNullableDateTimes,
-          aNullableListWithNullableDateTimes:
-              aNullableListWithNullableDateTimes,
-          aByteDataList: aByteDataList,
-          aNullableByteDataList: aNullableByteDataList,
-          aListWithNullableByteDatas: aListWithNullableByteDatas,
-          aNullableListWithNullableByteDatas:
-              aNullableListWithNullableByteDatas,
-          aDurationList: aDurationList,
-          aNullableDurationList: aNullableDurationList,
-          aListWithNullableDurations: aListWithNullableDurations,
-          aNullableListWithNullableDurations:
-              aNullableListWithNullableDurations,
-          aUuidList: aUuidList,
-          aNullableUuidList: aNullableUuidList,
-          aListWithNullableUuids: aListWithNullableUuids,
-          aNullableListWithNullableUuids: aNullableListWithNullableUuids,
-          anIntMap: anIntMap,
-          aNullableIntMap: aNullableIntMap,
-          aMapWithNullableInts: aMapWithNullableInts,
-          aNullableMapWithNullableInts: aNullableMapWithNullableInts,
-        );
+         anInt: anInt,
+         aNullableInt: aNullableInt,
+         aDouble: aDouble,
+         aNullableDouble: aNullableDouble,
+         aBool: aBool,
+         aNullableBool: aNullableBool,
+         aString: aString,
+         aNullableString: aNullableString,
+         aDateTime: aDateTime,
+         aNullableDateTime: aNullableDateTime,
+         aByteData: aByteData,
+         aNullableByteData: aNullableByteData,
+         aDuration: aDuration,
+         aNullableDuration: aNullableDuration,
+         aUuid: aUuid,
+         aNullableUuid: aNullableUuid,
+         anObject: anObject,
+         aNullableObject: aNullableObject,
+         anIntList: anIntList,
+         aNullableIntList: aNullableIntList,
+         aListWithNullableInts: aListWithNullableInts,
+         aNullableListWithNullableInts: aNullableListWithNullableInts,
+         anObjectList: anObjectList,
+         aNullableObjectList: aNullableObjectList,
+         aListWithNullableObjects: aListWithNullableObjects,
+         aNullableListWithNullableObjects: aNullableListWithNullableObjects,
+         aDateTimeList: aDateTimeList,
+         aNullableDateTimeList: aNullableDateTimeList,
+         aListWithNullableDateTimes: aListWithNullableDateTimes,
+         aNullableListWithNullableDateTimes: aNullableListWithNullableDateTimes,
+         aByteDataList: aByteDataList,
+         aNullableByteDataList: aNullableByteDataList,
+         aListWithNullableByteDatas: aListWithNullableByteDatas,
+         aNullableListWithNullableByteDatas: aNullableListWithNullableByteDatas,
+         aDurationList: aDurationList,
+         aNullableDurationList: aNullableDurationList,
+         aListWithNullableDurations: aListWithNullableDurations,
+         aNullableListWithNullableDurations: aNullableListWithNullableDurations,
+         aUuidList: aUuidList,
+         aNullableUuidList: aNullableUuidList,
+         aListWithNullableUuids: aListWithNullableUuids,
+         aNullableListWithNullableUuids: aNullableListWithNullableUuids,
+         anIntMap: anIntMap,
+         aNullableIntMap: aNullableIntMap,
+         aMapWithNullableInts: aMapWithNullableInts,
+         aNullableMapWithNullableInts: aNullableMapWithNullableInts,
+       );
 
   /// Returns a shallow copy of this [Nullability]
   /// with some or all fields replaced by the given arguments.
@@ -746,14 +800,17 @@ class _NullabilityImpl extends Nullability {
       anInt: anInt ?? this.anInt,
       aNullableInt: aNullableInt is int? ? aNullableInt : this.aNullableInt,
       aDouble: aDouble ?? this.aDouble,
-      aNullableDouble:
-          aNullableDouble is double? ? aNullableDouble : this.aNullableDouble,
+      aNullableDouble: aNullableDouble is double?
+          ? aNullableDouble
+          : this.aNullableDouble,
       aBool: aBool ?? this.aBool,
-      aNullableBool:
-          aNullableBool is bool? ? aNullableBool : this.aNullableBool,
+      aNullableBool: aNullableBool is bool?
+          ? aNullableBool
+          : this.aNullableBool,
       aString: aString ?? this.aString,
-      aNullableString:
-          aNullableString is String? ? aNullableString : this.aNullableString,
+      aNullableString: aNullableString is String?
+          ? aNullableString
+          : this.aNullableString,
       aDateTime: aDateTime ?? this.aDateTime,
       aNullableDateTime: aNullableDateTime is DateTime?
           ? aNullableDateTime
@@ -767,8 +824,9 @@ class _NullabilityImpl extends Nullability {
           ? aNullableDuration
           : this.aNullableDuration,
       aUuid: aUuid ?? this.aUuid,
-      aNullableUuid:
-          aNullableUuid is _i1.UuidValue? ? aNullableUuid : this.aNullableUuid,
+      aNullableUuid: aNullableUuid is _i1.UuidValue?
+          ? aNullableUuid
+          : this.aNullableUuid,
       anObject: anObject ?? this.anObject.copyWith(),
       aNullableObject: aNullableObject is _i3.SimpleData?
           ? aNullableObject
@@ -777,35 +835,37 @@ class _NullabilityImpl extends Nullability {
       aNullableIntList: aNullableIntList is List<int>?
           ? aNullableIntList
           : this.aNullableIntList?.map((e0) => e0).toList(),
-      aListWithNullableInts: aListWithNullableInts ??
+      aListWithNullableInts:
+          aListWithNullableInts ??
           this.aListWithNullableInts.map((e0) => e0).toList(),
       aNullableListWithNullableInts:
           aNullableListWithNullableInts is List<int?>?
-              ? aNullableListWithNullableInts
-              : this.aNullableListWithNullableInts?.map((e0) => e0).toList(),
+          ? aNullableListWithNullableInts
+          : this.aNullableListWithNullableInts?.map((e0) => e0).toList(),
       anObjectList:
           anObjectList ?? this.anObjectList.map((e0) => e0.copyWith()).toList(),
       aNullableObjectList: aNullableObjectList is List<_i3.SimpleData>?
           ? aNullableObjectList
           : this.aNullableObjectList?.map((e0) => e0.copyWith()).toList(),
-      aListWithNullableObjects: aListWithNullableObjects ??
+      aListWithNullableObjects:
+          aListWithNullableObjects ??
           this.aListWithNullableObjects.map((e0) => e0?.copyWith()).toList(),
       aNullableListWithNullableObjects:
           aNullableListWithNullableObjects is List<_i3.SimpleData?>?
-              ? aNullableListWithNullableObjects
-              : this
-                  .aNullableListWithNullableObjects
-                  ?.map((e0) => e0?.copyWith())
-                  .toList(),
+          ? aNullableListWithNullableObjects
+          : this.aNullableListWithNullableObjects
+                ?.map((e0) => e0?.copyWith())
+                .toList(),
       aDateTimeList:
           aDateTimeList ?? this.aDateTimeList.map((e0) => e0).toList(),
       aNullableDateTimeList: aNullableDateTimeList is List<DateTime>?
           ? aNullableDateTimeList
           : this.aNullableDateTimeList?.map((e0) => e0).toList(),
-      aListWithNullableDateTimes: aListWithNullableDateTimes ??
+      aListWithNullableDateTimes:
+          aListWithNullableDateTimes ??
           this.aListWithNullableDateTimes.map((e0) => e0).toList(),
-      aNullableListWithNullableDateTimes: aNullableListWithNullableDateTimes
-              is List<DateTime?>?
+      aNullableListWithNullableDateTimes:
+          aNullableListWithNullableDateTimes is List<DateTime?>?
           ? aNullableListWithNullableDateTimes
           : this.aNullableListWithNullableDateTimes?.map((e0) => e0).toList(),
       aByteDataList:
@@ -813,75 +873,83 @@ class _NullabilityImpl extends Nullability {
       aNullableByteDataList: aNullableByteDataList is List<_i2.ByteData>?
           ? aNullableByteDataList
           : this.aNullableByteDataList?.map((e0) => e0.clone()).toList(),
-      aListWithNullableByteDatas: aListWithNullableByteDatas ??
+      aListWithNullableByteDatas:
+          aListWithNullableByteDatas ??
           this.aListWithNullableByteDatas.map((e0) => e0?.clone()).toList(),
       aNullableListWithNullableByteDatas:
           aNullableListWithNullableByteDatas is List<_i2.ByteData?>?
-              ? aNullableListWithNullableByteDatas
-              : this
-                  .aNullableListWithNullableByteDatas
-                  ?.map((e0) => e0?.clone())
-                  .toList(),
+          ? aNullableListWithNullableByteDatas
+          : this.aNullableListWithNullableByteDatas
+                ?.map((e0) => e0?.clone())
+                .toList(),
       aDurationList:
           aDurationList ?? this.aDurationList.map((e0) => e0).toList(),
       aNullableDurationList: aNullableDurationList is List<Duration>?
           ? aNullableDurationList
           : this.aNullableDurationList?.map((e0) => e0).toList(),
-      aListWithNullableDurations: aListWithNullableDurations ??
+      aListWithNullableDurations:
+          aListWithNullableDurations ??
           this.aListWithNullableDurations.map((e0) => e0).toList(),
-      aNullableListWithNullableDurations: aNullableListWithNullableDurations
-              is List<Duration?>?
+      aNullableListWithNullableDurations:
+          aNullableListWithNullableDurations is List<Duration?>?
           ? aNullableListWithNullableDurations
           : this.aNullableListWithNullableDurations?.map((e0) => e0).toList(),
       aUuidList: aUuidList ?? this.aUuidList.map((e0) => e0).toList(),
       aNullableUuidList: aNullableUuidList is List<_i1.UuidValue>?
           ? aNullableUuidList
           : this.aNullableUuidList?.map((e0) => e0).toList(),
-      aListWithNullableUuids: aListWithNullableUuids ??
+      aListWithNullableUuids:
+          aListWithNullableUuids ??
           this.aListWithNullableUuids.map((e0) => e0).toList(),
       aNullableListWithNullableUuids:
           aNullableListWithNullableUuids is List<_i1.UuidValue?>?
-              ? aNullableListWithNullableUuids
-              : this.aNullableListWithNullableUuids?.map((e0) => e0).toList(),
-      anIntMap: anIntMap ??
-          this.anIntMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+          ? aNullableListWithNullableUuids
+          : this.aNullableListWithNullableUuids?.map((e0) => e0).toList(),
+      anIntMap:
+          anIntMap ??
+          this.anIntMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
       aNullableIntMap: aNullableIntMap is Map<String, int>?
           ? aNullableIntMap
-          : this.aNullableIntMap?.map((
+          : this.aNullableIntMap?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      aMapWithNullableInts: aMapWithNullableInts ??
-          this.aMapWithNullableInts.map((
+              ) => MapEntry(
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ),
+            ),
+      aMapWithNullableInts:
+          aMapWithNullableInts ??
+          this.aMapWithNullableInts.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
       aNullableMapWithNullableInts:
           aNullableMapWithNullableInts is Map<String, int?>?
-              ? aNullableMapWithNullableInts
-              : this.aNullableMapWithNullableInts?.map((
-                    key0,
-                    value0,
-                  ) =>
-                      MapEntry(
-                        key0,
-                        value0,
-                      )),
+          ? aNullableMapWithNullableInts
+          : this.aNullableMapWithNullableInts?.map(
+              (
+                key0,
+                value0,
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
     );
   }
 }

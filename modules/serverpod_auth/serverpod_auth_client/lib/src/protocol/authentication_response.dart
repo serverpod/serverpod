@@ -33,7 +33,8 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
   }) = _AuthenticationResponseImpl;
 
   factory AuthenticationResponse.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthenticationResponse(
       success: jsonSerialization['success'] as bool,
       key: jsonSerialization['key'] as String?,
@@ -41,11 +42,13 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
       userInfo: jsonSerialization['userInfo'] == null
           ? null
           : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+              (jsonSerialization['userInfo'] as Map<String, dynamic>),
+            ),
       failReason: jsonSerialization['failReason'] == null
           ? null
           : _i3.AuthenticationFailReason.fromJson(
-              (jsonSerialization['failReason'] as int)),
+              (jsonSerialization['failReason'] as int),
+            ),
     );
   }
 
@@ -103,12 +106,12 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
     _i2.UserInfo? userInfo,
     _i3.AuthenticationFailReason? failReason,
   }) : super._(
-          success: success,
-          key: key,
-          keyId: keyId,
-          userInfo: userInfo,
-          failReason: failReason,
-        );
+         success: success,
+         key: key,
+         keyId: keyId,
+         userInfo: userInfo,
+         failReason: failReason,
+       );
 
   /// Returns a shallow copy of this [AuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
@@ -125,8 +128,9 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo:
-          userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
+      userInfo: userInfo is _i2.UserInfo?
+          ? userInfo
+          : this.userInfo?.copyWith(),
       failReason: failReason is _i3.AuthenticationFailReason?
           ? failReason
           : this.failReason,

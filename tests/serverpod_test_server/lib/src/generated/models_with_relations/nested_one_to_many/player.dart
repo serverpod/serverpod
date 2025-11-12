@@ -38,7 +38,8 @@ abstract class Player implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -126,11 +127,11 @@ class _PlayerImpl extends Player {
     int? teamId,
     _i2.Team? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
@@ -155,14 +156,14 @@ class PlayerUpdateTable extends _i1.UpdateTable<PlayerTable> {
   PlayerUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
-        table.teamId,
-        value,
-      );
+    table.teamId,
+    value,
+  );
 }
 
 class PlayerTable extends _i1.Table<int?> {
@@ -201,10 +202,10 @@ class PlayerTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        teamId,
-      ];
+    id,
+    name,
+    teamId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

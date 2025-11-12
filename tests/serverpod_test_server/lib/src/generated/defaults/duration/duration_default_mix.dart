@@ -19,31 +19,33 @@ abstract class DurationDefaultMix
     Duration? durationDefaultAndDefaultModel,
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
-  })  : durationDefaultAndDefaultModel = durationDefaultAndDefaultModel ??
-            Duration(
-              days: 2,
-              hours: 1,
-              minutes: 20,
-              seconds: 40,
-              milliseconds: 100,
-            ),
-        durationDefaultAndDefaultPersist = durationDefaultAndDefaultPersist ??
-            Duration(
-              days: 1,
-              hours: 2,
-              minutes: 10,
-              seconds: 30,
-              milliseconds: 100,
-            ),
-        durationDefaultModelAndDefaultPersist =
-            durationDefaultModelAndDefaultPersist ??
-                Duration(
-                  days: 1,
-                  hours: 2,
-                  minutes: 10,
-                  seconds: 30,
-                  milliseconds: 100,
-                );
+  }) : durationDefaultAndDefaultModel =
+           durationDefaultAndDefaultModel ??
+           Duration(
+             days: 2,
+             hours: 1,
+             minutes: 20,
+             seconds: 40,
+             milliseconds: 100,
+           ),
+       durationDefaultAndDefaultPersist =
+           durationDefaultAndDefaultPersist ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           ),
+       durationDefaultModelAndDefaultPersist =
+           durationDefaultModelAndDefaultPersist ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           );
 
   factory DurationDefaultMix({
     int? id,
@@ -56,11 +58,14 @@ abstract class DurationDefaultMix
     return DurationDefaultMix(
       id: jsonSerialization['id'] as int?,
       durationDefaultAndDefaultModel: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultAndDefaultModel']),
+        jsonSerialization['durationDefaultAndDefaultModel'],
+      ),
       durationDefaultAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultAndDefaultPersist']),
+        jsonSerialization['durationDefaultAndDefaultPersist'],
+      ),
       durationDefaultModelAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultModelAndDefaultPersist']),
+        jsonSerialization['durationDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -94,8 +99,8 @@ abstract class DurationDefaultMix
     return {
       if (id != null) 'id': id,
       'durationDefaultAndDefaultModel': durationDefaultAndDefaultModel.toJson(),
-      'durationDefaultAndDefaultPersist':
-          durationDefaultAndDefaultPersist.toJson(),
+      'durationDefaultAndDefaultPersist': durationDefaultAndDefaultPersist
+          .toJson(),
       'durationDefaultModelAndDefaultPersist':
           durationDefaultModelAndDefaultPersist.toJson(),
     };
@@ -106,8 +111,8 @@ abstract class DurationDefaultMix
     return {
       if (id != null) 'id': id,
       'durationDefaultAndDefaultModel': durationDefaultAndDefaultModel.toJson(),
-      'durationDefaultAndDefaultPersist':
-          durationDefaultAndDefaultPersist.toJson(),
+      'durationDefaultAndDefaultPersist': durationDefaultAndDefaultPersist
+          .toJson(),
       'durationDefaultModelAndDefaultPersist':
           durationDefaultModelAndDefaultPersist.toJson(),
     };
@@ -152,12 +157,12 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          durationDefaultAndDefaultModel: durationDefaultAndDefaultModel,
-          durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist,
-          durationDefaultModelAndDefaultPersist:
-              durationDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         durationDefaultAndDefaultModel: durationDefaultAndDefaultModel,
+         durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist,
+         durationDefaultModelAndDefaultPersist:
+             durationDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -173,11 +178,12 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
       id: id is int? ? id : this.id,
       durationDefaultAndDefaultModel:
           durationDefaultAndDefaultModel ?? this.durationDefaultAndDefaultModel,
-      durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist ??
+      durationDefaultAndDefaultPersist:
+          durationDefaultAndDefaultPersist ??
           this.durationDefaultAndDefaultPersist,
       durationDefaultModelAndDefaultPersist:
           durationDefaultModelAndDefaultPersist ??
-              this.durationDefaultModelAndDefaultPersist,
+          this.durationDefaultModelAndDefaultPersist,
     );
   }
 }
@@ -187,30 +193,30 @@ class DurationDefaultMixUpdateTable
   DurationDefaultMixUpdateTable(super.table);
 
   _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
-          Duration value) =>
-      _i1.ColumnValue(
-        table.durationDefaultAndDefaultModel,
-        value,
-      );
+    Duration value,
+  ) => _i1.ColumnValue(
+    table.durationDefaultAndDefaultModel,
+    value,
+  );
 
   _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultPersist(
-          Duration value) =>
-      _i1.ColumnValue(
-        table.durationDefaultAndDefaultPersist,
-        value,
-      );
+    Duration value,
+  ) => _i1.ColumnValue(
+    table.durationDefaultAndDefaultPersist,
+    value,
+  );
 
   _i1.ColumnValue<Duration, Duration> durationDefaultModelAndDefaultPersist(
-          Duration value) =>
-      _i1.ColumnValue(
-        table.durationDefaultModelAndDefaultPersist,
-        value,
-      );
+    Duration value,
+  ) => _i1.ColumnValue(
+    table.durationDefaultModelAndDefaultPersist,
+    value,
+  );
 }
 
 class DurationDefaultMixTable extends _i1.Table<int?> {
   DurationDefaultMixTable({super.tableRelation})
-      : super(tableName: 'duration_default_mix') {
+    : super(tableName: 'duration_default_mix') {
     updateTable = DurationDefaultMixUpdateTable(this);
     durationDefaultAndDefaultModel = _i1.ColumnDuration(
       'durationDefaultAndDefaultModel',
@@ -239,11 +245,11 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        durationDefaultAndDefaultModel,
-        durationDefaultAndDefaultPersist,
-        durationDefaultModelAndDefaultPersist,
-      ];
+    id,
+    durationDefaultAndDefaultModel,
+    durationDefaultAndDefaultPersist,
+    durationDefaultModelAndDefaultPersist,
+  ];
 }
 
 class DurationDefaultMixInclude extends _i1.IncludeObject {
@@ -441,7 +447,7 @@ class DurationDefaultMixRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefaultMix>(
@@ -456,7 +462,7 @@ class DurationDefaultMixRepository {
   Future<List<DurationDefaultMix>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
     int? limit,
     int? offset,

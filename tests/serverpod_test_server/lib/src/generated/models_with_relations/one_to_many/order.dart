@@ -41,7 +41,8 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       customer: jsonSerialization['customer'] == null
           ? null
           : _i2.Customer.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
+              (jsonSerialization['customer'] as Map<String, dynamic>),
+            ),
       comments: (jsonSerialization['comments'] as List?)
           ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -146,12 +147,12 @@ class _OrderImpl extends Order {
     _i2.Customer? customer,
     List<_i3.Comment>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -168,8 +169,9 @@ class _OrderImpl extends Order {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer:
-          customer is _i2.Customer? ? customer : this.customer?.copyWith(),
+      customer: customer is _i2.Customer?
+          ? customer
+          : this.customer?.copyWith(),
       comments: comments is List<_i3.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
@@ -181,14 +183,14 @@ class OrderUpdateTable extends _i1.UpdateTable<OrderTable> {
   OrderUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
-        table.customerId,
-        value,
-      );
+    table.customerId,
+    value,
+  );
 }
 
 class OrderTable extends _i1.Table<int?> {
@@ -255,17 +257,18 @@ class OrderTable extends _i1.Table<int?> {
     _comments = _i1.ManyRelation<_i3.CommentTable>(
       tableWithRelations: relationTable,
       table: _i3.CommentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _comments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        customerId,
-      ];
+    id,
+    description,
+    customerId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -294,9 +297,9 @@ class OrderInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'customer': _customer,
-        'comments': _comments,
-      };
+    'customer': _customer,
+    'comments': _comments,
+  };
 
   @override
   _i1.Table<int?> get table => Order.t;

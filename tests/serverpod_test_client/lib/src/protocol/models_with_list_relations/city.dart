@@ -89,11 +89,11 @@ class _CityImpl extends City {
     List<_i2.Person>? citizens,
     List<_i3.Organization>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.

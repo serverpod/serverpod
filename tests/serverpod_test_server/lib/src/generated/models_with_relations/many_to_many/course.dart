@@ -76,8 +76,9 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -119,10 +120,10 @@ class _CourseImpl extends Course {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +148,9 @@ class CourseUpdateTable extends _i1.UpdateTable<CourseTable> {
   CourseUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CourseTable extends _i1.Table<int?> {
@@ -195,16 +196,17 @@ class CourseTable extends _i1.Table<int?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -534,8 +536,9 @@ class CourseAttachRepository {
       throw ArgumentError.notNull('course.id');
     }
 
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(courseId: course.id)).toList();
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(courseId: course.id))
+        .toList();
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
@@ -588,8 +591,9 @@ class CourseDetachRepository {
       throw ArgumentError.notNull('enrollment.id');
     }
 
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(courseId: null)).toList();
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(courseId: null))
+        .toList();
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],

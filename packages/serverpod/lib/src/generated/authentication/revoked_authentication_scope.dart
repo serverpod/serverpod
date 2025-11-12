@@ -21,11 +21,13 @@ abstract class RevokedAuthenticationScope
       _RevokedAuthenticationScopeImpl;
 
   factory RevokedAuthenticationScope.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RevokedAuthenticationScope(
-        scopes: (jsonSerialization['scopes'] as List)
-            .map((e) => e as String)
-            .toList());
+      scopes: (jsonSerialization['scopes'] as List)
+          .map((e) => e as String)
+          .toList(),
+    );
   }
 
   List<String> scopes;
@@ -52,7 +54,7 @@ abstract class RevokedAuthenticationScope
 
 class _RevokedAuthenticationScopeImpl extends RevokedAuthenticationScope {
   _RevokedAuthenticationScopeImpl({required List<String> scopes})
-      : super._(scopes: scopes);
+    : super._(scopes: scopes);
 
   /// Returns a shallow copy of this [RevokedAuthenticationScope]
   /// with some or all fields replaced by the given arguments.
@@ -60,6 +62,7 @@ class _RevokedAuthenticationScopeImpl extends RevokedAuthenticationScope {
   @override
   RevokedAuthenticationScope copyWith({List<String>? scopes}) {
     return RevokedAuthenticationScope(
-        scopes: scopes ?? this.scopes.map((e0) => e0).toList());
+      scopes: scopes ?? this.scopes.map((e0) => e0).toList(),
+    );
   }
 }

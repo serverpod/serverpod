@@ -33,8 +33,8 @@ abstract class AppleAccount
     this.isPrivateEmail,
     this.firstName,
     this.lastName,
-  })  : lastRefreshedAt = lastRefreshedAt ?? DateTime.now(),
-        createdAt = createdAt ?? DateTime.now();
+  }) : lastRefreshedAt = lastRefreshedAt ?? DateTime.now(),
+       createdAt = createdAt ?? DateTime.now();
 
   factory AppleAccount({
     _i1.UuidValue? id,
@@ -63,15 +63,19 @@ abstract class AppleAccount
           jsonSerialization['refreshTokenRequestedWithBundleIdentifier']
               as bool,
       lastRefreshedAt: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['lastRefreshedAt']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+        jsonSerialization['lastRefreshedAt'],
+      ),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
           : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+              (jsonSerialization['authUser'] as Map<String, dynamic>),
+            ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       email: jsonSerialization['email'] as String?,
       isEmailVerified: jsonSerialization['isEmailVerified'] as bool?,
       isPrivateEmail: jsonSerialization['isPrivateEmail'] as bool?,
@@ -233,21 +237,21 @@ class _AppleAccountImpl extends AppleAccount {
     String? firstName,
     String? lastName,
   }) : super._(
-          id: id,
-          userIdentifier: userIdentifier,
-          refreshToken: refreshToken,
-          refreshTokenRequestedWithBundleIdentifier:
-              refreshTokenRequestedWithBundleIdentifier,
-          lastRefreshedAt: lastRefreshedAt,
-          authUserId: authUserId,
-          authUser: authUser,
-          createdAt: createdAt,
-          email: email,
-          isEmailVerified: isEmailVerified,
-          isPrivateEmail: isPrivateEmail,
-          firstName: firstName,
-          lastName: lastName,
-        );
+         id: id,
+         userIdentifier: userIdentifier,
+         refreshToken: refreshToken,
+         refreshTokenRequestedWithBundleIdentifier:
+             refreshTokenRequestedWithBundleIdentifier,
+         lastRefreshedAt: lastRefreshedAt,
+         authUserId: authUserId,
+         authUser: authUser,
+         createdAt: createdAt,
+         email: email,
+         isEmailVerified: isEmailVerified,
+         isPrivateEmail: isPrivateEmail,
+         firstName: firstName,
+         lastName: lastName,
+       );
 
   /// Returns a shallow copy of this [AppleAccount]
   /// with some or all fields replaced by the given arguments.
@@ -274,17 +278,20 @@ class _AppleAccountImpl extends AppleAccount {
       refreshToken: refreshToken ?? this.refreshToken,
       refreshTokenRequestedWithBundleIdentifier:
           refreshTokenRequestedWithBundleIdentifier ??
-              this.refreshTokenRequestedWithBundleIdentifier,
+          this.refreshTokenRequestedWithBundleIdentifier,
       lastRefreshedAt: lastRefreshedAt ?? this.lastRefreshedAt,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
       email: email is String? ? email : this.email,
-      isEmailVerified:
-          isEmailVerified is bool? ? isEmailVerified : this.isEmailVerified,
-      isPrivateEmail:
-          isPrivateEmail is bool? ? isPrivateEmail : this.isPrivateEmail,
+      isEmailVerified: isEmailVerified is bool?
+          ? isEmailVerified
+          : this.isEmailVerified,
+      isPrivateEmail: isPrivateEmail is bool?
+          ? isPrivateEmail
+          : this.isPrivateEmail,
       firstName: firstName is String? ? firstName : this.firstName,
       lastName: lastName is String? ? lastName : this.lastName,
     );
@@ -301,16 +308,16 @@ class AppleAccountUpdateTable extends _i1.UpdateTable<AppleAccountTable> {
       );
 
   _i1.ColumnValue<String, String> refreshToken(String value) => _i1.ColumnValue(
-        table.refreshToken,
-        value,
-      );
+    table.refreshToken,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> refreshTokenRequestedWithBundleIdentifier(
-          bool value) =>
-      _i1.ColumnValue(
-        table.refreshTokenRequestedWithBundleIdentifier,
-        value,
-      );
+    bool value,
+  ) => _i1.ColumnValue(
+    table.refreshTokenRequestedWithBundleIdentifier,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> lastRefreshedAt(DateTime value) =>
       _i1.ColumnValue(
@@ -319,11 +326,11 @@ class AppleAccountUpdateTable extends _i1.UpdateTable<AppleAccountTable> {
       );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -332,34 +339,34 @@ class AppleAccountUpdateTable extends _i1.UpdateTable<AppleAccountTable> {
       );
 
   _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> isEmailVerified(bool? value) => _i1.ColumnValue(
-        table.isEmailVerified,
-        value,
-      );
+    table.isEmailVerified,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> isPrivateEmail(bool? value) => _i1.ColumnValue(
-        table.isPrivateEmail,
-        value,
-      );
+    table.isPrivateEmail,
+    value,
+  );
 
   _i1.ColumnValue<String, String> firstName(String? value) => _i1.ColumnValue(
-        table.firstName,
-        value,
-      );
+    table.firstName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> lastName(String? value) => _i1.ColumnValue(
-        table.lastName,
-        value,
-      );
+    table.lastName,
+    value,
+  );
 }
 
 class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
   AppleAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_apple_account') {
+    : super(tableName: 'serverpod_auth_idp_apple_account') {
     updateTable = AppleAccountUpdateTable(this);
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
@@ -477,19 +484,19 @@ class AppleAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userIdentifier,
-        refreshToken,
-        refreshTokenRequestedWithBundleIdentifier,
-        lastRefreshedAt,
-        authUserId,
-        createdAt,
-        email,
-        isEmailVerified,
-        isPrivateEmail,
-        firstName,
-        lastName,
-      ];
+    id,
+    userIdentifier,
+    refreshToken,
+    refreshTokenRequestedWithBundleIdentifier,
+    lastRefreshedAt,
+    authUserId,
+    createdAt,
+    email,
+    isEmailVerified,
+    isPrivateEmail,
+    firstName,
+    lastName,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

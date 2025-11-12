@@ -81,10 +81,10 @@ class _UserProfileDataImpl extends UserProfileData {
     String? fullName,
     String? email,
   }) : super._(
-          userName: userName,
-          fullName: fullName,
-          email: email,
-        );
+         userName: userName,
+         fullName: fullName,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.

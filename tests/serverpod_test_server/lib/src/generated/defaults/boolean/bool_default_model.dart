@@ -19,9 +19,9 @@ abstract class BoolDefaultModel
     bool? boolDefaultModelTrue,
     bool? boolDefaultModelFalse,
     bool? boolDefaultModelNullFalse,
-  })  : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
-        boolDefaultModelFalse = boolDefaultModelFalse ?? false,
-        boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false;
+  }) : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
+       boolDefaultModelFalse = boolDefaultModelFalse ?? false,
+       boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false;
 
   factory BoolDefaultModel({
     int? id,
@@ -124,11 +124,11 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
     bool? boolDefaultModelFalse,
     bool? boolDefaultModelNullFalse,
   }) : super._(
-          id: id,
-          boolDefaultModelTrue: boolDefaultModelTrue,
-          boolDefaultModelFalse: boolDefaultModelFalse,
-          boolDefaultModelNullFalse: boolDefaultModelNullFalse,
-        );
+         id: id,
+         boolDefaultModelTrue: boolDefaultModelTrue,
+         boolDefaultModelFalse: boolDefaultModelFalse,
+         boolDefaultModelNullFalse: boolDefaultModelNullFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -176,7 +176,7 @@ class BoolDefaultModelUpdateTable
 
 class BoolDefaultModelTable extends _i1.Table<int?> {
   BoolDefaultModelTable({super.tableRelation})
-      : super(tableName: 'bool_default_model') {
+    : super(tableName: 'bool_default_model') {
     updateTable = BoolDefaultModelUpdateTable(this);
     boolDefaultModelTrue = _i1.ColumnBool(
       'boolDefaultModelTrue',
@@ -202,11 +202,11 @@ class BoolDefaultModelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultModelTrue,
-        boolDefaultModelFalse,
-        boolDefaultModelNullFalse,
-      ];
+    id,
+    boolDefaultModelTrue,
+    boolDefaultModelFalse,
+    boolDefaultModelNullFalse,
+  ];
 }
 
 class BoolDefaultModelInclude extends _i1.IncludeObject {
@@ -404,7 +404,7 @@ class BoolDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultModel>(
@@ -419,7 +419,7 @@ class BoolDefaultModelRepository {
   Future<List<BoolDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
     int? limit,
     int? offset,

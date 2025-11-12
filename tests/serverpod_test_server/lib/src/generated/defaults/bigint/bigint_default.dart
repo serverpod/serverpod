@@ -18,10 +18,10 @@ abstract class BigIntDefault
     this.id,
     BigInt? bigintDefaultStr,
     BigInt? bigintDefaultStrNull,
-  })  : bigintDefaultStr =
-            bigintDefaultStr ?? BigInt.parse('-1234567890123456789099999999'),
-        bigintDefaultStrNull = bigintDefaultStrNull ??
-            BigInt.parse('1234567890123456789099999999');
+  }) : bigintDefaultStr =
+           bigintDefaultStr ?? BigInt.parse('-1234567890123456789099999999'),
+       bigintDefaultStrNull =
+           bigintDefaultStrNull ?? BigInt.parse('1234567890123456789099999999');
 
   factory BigIntDefault({
     int? id,
@@ -33,11 +33,13 @@ abstract class BigIntDefault
     return BigIntDefault(
       id: jsonSerialization['id'] as int?,
       bigintDefaultStr: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigintDefaultStr']),
+        jsonSerialization['bigintDefaultStr'],
+      ),
       bigintDefaultStrNull: jsonSerialization['bigintDefaultStrNull'] == null
           ? null
           : _i1.BigIntJsonExtension.fromJson(
-              jsonSerialization['bigintDefaultStrNull']),
+              jsonSerialization['bigintDefaultStrNull'],
+            ),
     );
   }
 
@@ -121,10 +123,10 @@ class _BigIntDefaultImpl extends BigIntDefault {
     BigInt? bigintDefaultStr,
     BigInt? bigintDefaultStrNull,
   }) : super._(
-          id: id,
-          bigintDefaultStr: bigintDefaultStr,
-          bigintDefaultStrNull: bigintDefaultStrNull,
-        );
+         id: id,
+         bigintDefaultStr: bigintDefaultStr,
+         bigintDefaultStrNull: bigintDefaultStrNull,
+       );
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
@@ -163,7 +165,7 @@ class BigIntDefaultUpdateTable extends _i1.UpdateTable<BigIntDefaultTable> {
 
 class BigIntDefaultTable extends _i1.Table<int?> {
   BigIntDefaultTable({super.tableRelation})
-      : super(tableName: 'bigint_default') {
+    : super(tableName: 'bigint_default') {
     updateTable = BigIntDefaultUpdateTable(this);
     bigintDefaultStr = _i1.ColumnBigInt(
       'bigintDefaultStr',
@@ -185,10 +187,10 @@ class BigIntDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        bigintDefaultStr,
-        bigintDefaultStrNull,
-      ];
+    id,
+    bigintDefaultStr,
+    bigintDefaultStrNull,
+  ];
 }
 
 class BigIntDefaultInclude extends _i1.IncludeObject {

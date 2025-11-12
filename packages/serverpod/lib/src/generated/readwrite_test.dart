@@ -106,9 +106,9 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
     int? id,
     required int number,
   }) : super._(
-          id: id,
-          number: number,
-        );
+         id: id,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
@@ -130,14 +130,14 @@ class ReadWriteTestEntryUpdateTable
   ReadWriteTestEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+    table.number,
+    value,
+  );
 }
 
 class ReadWriteTestEntryTable extends _i1.Table<int?> {
   ReadWriteTestEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_readwrite_test') {
+    : super(tableName: 'serverpod_readwrite_test') {
     updateTable = ReadWriteTestEntryUpdateTable(this);
     number = _i1.ColumnInt(
       'number',
@@ -152,9 +152,9 @@ class ReadWriteTestEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        number,
-      ];
+    id,
+    number,
+  ];
 }
 
 class ReadWriteTestEntryInclude extends _i1.IncludeObject {
@@ -352,7 +352,7 @@ class ReadWriteTestEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ReadWriteTestEntry>(
@@ -367,7 +367,7 @@ class ReadWriteTestEntryRepository {
   Future<List<ReadWriteTestEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     int? limit,
     int? offset,

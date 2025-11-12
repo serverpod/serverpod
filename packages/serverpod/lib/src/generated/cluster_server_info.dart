@@ -49,7 +49,7 @@ abstract class ClusterServerInfo
 
 class _ClusterServerInfoImpl extends ClusterServerInfo {
   _ClusterServerInfoImpl({required String serverId})
-      : super._(serverId: serverId);
+    : super._(serverId: serverId);
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.

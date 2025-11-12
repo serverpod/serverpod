@@ -96,11 +96,13 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       aHalfVector: jsonSerialization['aHalfVector'] == null
           ? null
           : _i1.HalfVectorJsonExtension.fromJson(
-              jsonSerialization['aHalfVector']),
+              jsonSerialization['aHalfVector'],
+            ),
       aSparseVector: jsonSerialization['aSparseVector'] == null
           ? null
           : _i1.SparseVectorJsonExtension.fromJson(
-              jsonSerialization['aSparseVector']),
+              jsonSerialization['aSparseVector'],
+            ),
       aBit: jsonSerialization['aBit'] == null
           ? null
           : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
@@ -110,19 +112,26 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
           : _i4.TestEnumStringified.fromJson(
-              (jsonSerialization['aStringifiedEnum'] as String)),
-      aList:
-          (jsonSerialization['aList'] as List?)?.map((e) => e as int).toList(),
+              (jsonSerialization['aStringifiedEnum'] as String),
+            ),
+      aList: (jsonSerialization['aList'] as List?)
+          ?.map((e) => e as int)
+          .toList(),
       aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
-          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+        {},
+        (t, e) => {...t, e['k'] as int: e['v'] as int},
+      ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i1.SetJsonExtension.fromJson((jsonSerialization['aSet'] as List),
-              itemFromJson: (e) => e as int),
+          : _i1.SetJsonExtension.fromJson(
+              (jsonSerialization['aSet'] as List),
+              itemFromJson: (e) => e as int,
+            ),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
           : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
-              (jsonSerialization['aRecord'] as Map<String, dynamic>)),
+              (jsonSerialization['aRecord'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -314,28 +323,28 @@ class _TypesImpl extends Types {
     Set<int>? aSet,
     (String, {Uri? optionalUri})? aRecord,
   }) : super._(
-          id: id,
-          anInt: anInt,
-          aBool: aBool,
-          aDouble: aDouble,
-          aDateTime: aDateTime,
-          aString: aString,
-          aByteData: aByteData,
-          aDuration: aDuration,
-          aUuid: aUuid,
-          aUri: aUri,
-          aBigInt: aBigInt,
-          aVector: aVector,
-          aHalfVector: aHalfVector,
-          aSparseVector: aSparseVector,
-          aBit: aBit,
-          anEnum: anEnum,
-          aStringifiedEnum: aStringifiedEnum,
-          aList: aList,
-          aMap: aMap,
-          aSet: aSet,
-          aRecord: aRecord,
-        );
+         id: id,
+         anInt: anInt,
+         aBool: aBool,
+         aDouble: aDouble,
+         aDateTime: aDateTime,
+         aString: aString,
+         aByteData: aByteData,
+         aDuration: aDuration,
+         aUuid: aUuid,
+         aUri: aUri,
+         aBigInt: aBigInt,
+         aVector: aVector,
+         aHalfVector: aHalfVector,
+         aSparseVector: aSparseVector,
+         aBit: aBit,
+         anEnum: anEnum,
+         aStringifiedEnum: aStringifiedEnum,
+         aList: aList,
+         aMap: aMap,
+         aSet: aSet,
+         aRecord: aRecord,
+       );
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
@@ -371,8 +380,9 @@ class _TypesImpl extends Types {
       aDouble: aDouble is double? ? aDouble : this.aDouble,
       aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
       aString: aString is String? ? aString : this.aString,
-      aByteData:
-          aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
+      aByteData: aByteData is _i2.ByteData?
+          ? aByteData
+          : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
@@ -392,23 +402,24 @@ class _TypesImpl extends Types {
       aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
       aMap: aMap is Map<int, int>?
           ? aMap
-          : this.aMap?.map((
+          : this.aMap?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aSet: aSet is Set<int>? ? aSet : this.aSet?.map((e0) => e0).toSet(),
       aRecord: aRecord is (String, {Uri? optionalUri})?
           ? aRecord
           : this.aRecord == null
-              ? null
-              : (
-                  this.aRecord!.$1,
-                  optionalUri: this.aRecord!.optionalUri,
-                ),
+          ? null
+          : (
+              this.aRecord!.$1,
+              optionalUri: this.aRecord!.optionalUri,
+            ),
     );
   }
 }
@@ -417,19 +428,19 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
   TypesUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> anInt(int? value) => _i1.ColumnValue(
-        table.anInt,
-        value,
-      );
+    table.anInt,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> aBool(bool? value) => _i1.ColumnValue(
-        table.aBool,
-        value,
-      );
+    table.aBool,
+    value,
+  );
 
   _i1.ColumnValue<double, double> aDouble(double? value) => _i1.ColumnValue(
-        table.aDouble,
-        value,
-      );
+    table.aDouble,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> aDateTime(DateTime? value) =>
       _i1.ColumnValue(
@@ -438,9 +449,9 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
       );
 
   _i1.ColumnValue<String, String> aString(String? value) => _i1.ColumnValue(
-        table.aString,
-        value,
-      );
+    table.aString,
+    value,
+  );
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> aByteData(_i2.ByteData? value) =>
       _i1.ColumnValue(
@@ -461,14 +472,14 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
       );
 
   _i1.ColumnValue<Uri, Uri> aUri(Uri? value) => _i1.ColumnValue(
-        table.aUri,
-        value,
-      );
+    table.aUri,
+    value,
+  );
 
   _i1.ColumnValue<BigInt, BigInt> aBigInt(BigInt? value) => _i1.ColumnValue(
-        table.aBigInt,
-        value,
-      );
+    table.aBigInt,
+    value,
+  );
 
   _i1.ColumnValue<_i1.Vector, _i1.Vector> aVector(_i1.Vector? value) =>
       _i1.ColumnValue(
@@ -477,23 +488,23 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
       );
 
   _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> aHalfVector(
-          _i1.HalfVector? value) =>
-      _i1.ColumnValue(
-        table.aHalfVector,
-        value,
-      );
+    _i1.HalfVector? value,
+  ) => _i1.ColumnValue(
+    table.aHalfVector,
+    value,
+  );
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> aSparseVector(
-          _i1.SparseVector? value) =>
-      _i1.ColumnValue(
-        table.aSparseVector,
-        value,
-      );
+    _i1.SparseVector? value,
+  ) => _i1.ColumnValue(
+    table.aSparseVector,
+    value,
+  );
 
   _i1.ColumnValue<_i1.Bit, _i1.Bit> aBit(_i1.Bit? value) => _i1.ColumnValue(
-        table.aBit,
-        value,
-      );
+    table.aBit,
+    value,
+  );
 
   _i1.ColumnValue<_i3.TestEnum, _i3.TestEnum> anEnum(_i3.TestEnum? value) =>
       _i1.ColumnValue(
@@ -502,10 +513,10 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
       );
 
   _i1.ColumnValue<_i4.TestEnumStringified, _i4.TestEnumStringified>
-      aStringifiedEnum(_i4.TestEnumStringified? value) => _i1.ColumnValue(
-            table.aStringifiedEnum,
-            value,
-          );
+  aStringifiedEnum(_i4.TestEnumStringified? value) => _i1.ColumnValue(
+    table.aStringifiedEnum,
+    value,
+  );
 
   _i1.ColumnValue<List<int>, List<int>> aList(List<int>? value) =>
       _i1.ColumnValue(
@@ -520,16 +531,16 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
       );
 
   _i1.ColumnValue<Set<int>, Set<int>> aSet(Set<int>? value) => _i1.ColumnValue(
-        table.aSet,
-        value,
-      );
+    table.aSet,
+    value,
+  );
 
   _i1.ColumnValue<(String, {Uri? optionalUri}), Map<String, dynamic>?> aRecord(
-          (String, {Uri? optionalUri})? value) =>
-      _i1.ColumnValue(
-        table.aRecord,
-        _i5.mapRecordToJson(value),
-      );
+    (String, {Uri? optionalUri})? value,
+  ) => _i1.ColumnValue(
+    table.aRecord,
+    _i5.mapRecordToJson(value),
+  );
 }
 
 class TypesTable extends _i1.Table<int?> {
@@ -667,28 +678,28 @@ class TypesTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        anInt,
-        aBool,
-        aDouble,
-        aDateTime,
-        aString,
-        aByteData,
-        aDuration,
-        aUuid,
-        aUri,
-        aBigInt,
-        aVector,
-        aHalfVector,
-        aSparseVector,
-        aBit,
-        anEnum,
-        aStringifiedEnum,
-        aList,
-        aMap,
-        aSet,
-        aRecord,
-      ];
+    id,
+    anInt,
+    aBool,
+    aDouble,
+    aDateTime,
+    aString,
+    aByteData,
+    aDuration,
+    aUuid,
+    aUri,
+    aBigInt,
+    aVector,
+    aHalfVector,
+    aSparseVector,
+    aBit,
+    anEnum,
+    aStringifiedEnum,
+    aList,
+    aMap,
+    aSet,
+    aRecord,
+  ];
 }
 
 class TypesInclude extends _i1.IncludeObject {

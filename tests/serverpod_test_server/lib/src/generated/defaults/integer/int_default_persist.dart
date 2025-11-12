@@ -103,9 +103,9 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
     int? id,
     int? intDefaultPersist,
   }) : super._(
-          id: id,
-          intDefaultPersist: intDefaultPersist,
-        );
+         id: id,
+         intDefaultPersist: intDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -129,14 +129,14 @@ class IntDefaultPersistUpdateTable
   IntDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultPersist(int? value) => _i1.ColumnValue(
-        table.intDefaultPersist,
-        value,
-      );
+    table.intDefaultPersist,
+    value,
+  );
 }
 
 class IntDefaultPersistTable extends _i1.Table<int?> {
   IntDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'int_default_persist') {
+    : super(tableName: 'int_default_persist') {
     updateTable = IntDefaultPersistUpdateTable(this);
     intDefaultPersist = _i1.ColumnInt(
       'intDefaultPersist',
@@ -151,9 +151,9 @@ class IntDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        intDefaultPersist,
-      ];
+    id,
+    intDefaultPersist,
+  ];
 }
 
 class IntDefaultPersistInclude extends _i1.IncludeObject {
@@ -351,7 +351,7 @@ class IntDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<IntDefaultPersist>(
@@ -366,7 +366,7 @@ class IntDefaultPersistRepository {
   Future<List<IntDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<IntDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultPersistTable> where,
     int? limit,
     int? offset,

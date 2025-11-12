@@ -45,17 +45,20 @@ abstract class Citizen
       address: jsonSerialization['address'] == null
           ? null
           : _i2.Address.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
+              (jsonSerialization['address'] as Map<String, dynamic>),
+            ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
           : _i3.Company.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+              (jsonSerialization['company'] as Map<String, dynamic>),
+            ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
           : _i3.Company.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+              (jsonSerialization['oldCompany'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -169,14 +172,14 @@ class _CitizenImpl extends Citizen {
     int? oldCompanyId,
     _i3.Company? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -198,8 +201,9 @@ class _CitizenImpl extends Citizen {
       companyId: companyId ?? this.companyId,
       company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany:
-          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
+      oldCompany: oldCompany is _i3.Company?
+          ? oldCompany
+          : this.oldCompany?.copyWith(),
     );
   }
 }
@@ -208,19 +212,19 @@ class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
   CitizenUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
-        table.companyId,
-        value,
-      );
+    table.companyId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
-        table.oldCompanyId,
-        value,
-      );
+    table.oldCompanyId,
+    value,
+  );
 }
 
 class CitizenTable extends _i1.Table<int?> {
@@ -295,11 +299,11 @@ class CitizenTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        companyId,
-        oldCompanyId,
-      ];
+    id,
+    name,
+    companyId,
+    oldCompanyId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -335,10 +339,10 @@ class CitizenInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'address': _address,
-        'company': _company,
-        'oldCompany': _oldCompany,
-      };
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
 
   @override
   _i1.Table<int?> get table => Citizen.t;

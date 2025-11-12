@@ -30,7 +30,8 @@ abstract class ExceptionWithRequiredField
   }) = _ExceptionWithRequiredFieldImpl;
 
   factory ExceptionWithRequiredField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ExceptionWithRequiredField(
       name: jsonSerialization['name'] as String,
       email: jsonSerialization['email'] as String?,
@@ -84,10 +85,10 @@ class _ExceptionWithRequiredFieldImpl extends ExceptionWithRequiredField {
     required String? email,
     String? phone,
   }) : super._(
-          name: name,
-          email: email,
-          phone: phone,
-        );
+         name: name,
+         email: email,
+         phone: phone,
+       );
 
   /// Returns a shallow copy of this [ExceptionWithRequiredField]
   /// with some or all fields replaced by the given arguments.

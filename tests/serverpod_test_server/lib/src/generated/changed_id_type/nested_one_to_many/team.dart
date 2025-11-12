@@ -44,7 +44,8 @@ abstract class TeamInt
       arena: jsonSerialization['arena'] == null
           ? null
           : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
+              (jsonSerialization['arena'] as Map<String, dynamic>),
+            ),
       players: (jsonSerialization['players'] as List?)
           ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -149,12 +150,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
@@ -183,9 +184,9 @@ class TeamIntUpdateTable extends _i1.UpdateTable<TeamIntTable> {
   TeamIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> arenaId(_i1.UuidValue? value) =>
       _i1.ColumnValue(
@@ -258,17 +259,18 @@ class TeamIntTable extends _i1.Table<int?> {
     _players = _i1.ManyRelation<_i3.PlayerUuidTable>(
       tableWithRelations: relationTable,
       table: _i3.PlayerUuidTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _players!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        arenaId,
-      ];
+    id,
+    name,
+    arenaId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -297,9 +299,9 @@ class TeamIntInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'arena': _arena,
-        'players': _players,
-      };
+    'arena': _arena,
+    'players': _players,
+  };
 
   @override
   _i1.Table<int?> get table => TeamInt.t;
@@ -610,8 +612,9 @@ class TeamIntAttachRepository {
       throw ArgumentError.notNull('teamInt.id');
     }
 
-    var $playerUuid =
-        playerUuid.map((e) => e.copyWith(teamId: teamInt.id)).toList();
+    var $playerUuid = playerUuid
+        .map((e) => e.copyWith(teamId: teamInt.id))
+        .toList();
     await session.db.update<_i3.PlayerUuid>(
       $playerUuid,
       columns: [_i3.PlayerUuid.t.teamId],

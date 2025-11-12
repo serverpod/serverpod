@@ -115,10 +115,10 @@ class _MethodInfoImpl extends MethodInfo {
     required String endpoint,
     required String method,
   }) : super._(
-          id: id,
-          endpoint: endpoint,
-          method: method,
-        );
+         id: id,
+         endpoint: endpoint,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
@@ -141,19 +141,19 @@ class MethodInfoUpdateTable extends _i1.UpdateTable<MethodInfoTable> {
   MethodInfoUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+    table.endpoint,
+    value,
+  );
 
   _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 }
 
 class MethodInfoTable extends _i1.Table<int?> {
   MethodInfoTable({super.tableRelation})
-      : super(tableName: 'serverpod_method') {
+    : super(tableName: 'serverpod_method') {
     updateTable = MethodInfoUpdateTable(this);
     endpoint = _i1.ColumnString(
       'endpoint',
@@ -175,10 +175,10 @@ class MethodInfoTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        endpoint,
-        method,
-      ];
+    id,
+    endpoint,
+    method,
+  ];
 }
 
 class MethodInfoInclude extends _i1.IncludeObject {

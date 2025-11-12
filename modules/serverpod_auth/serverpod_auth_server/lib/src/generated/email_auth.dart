@@ -125,11 +125,11 @@ class _EmailAuthImpl extends EmailAuth {
     required String email,
     required String hash,
   }) : super._(
-          id: id,
-          userId: userId,
-          email: email,
-          hash: hash,
-        );
+         id: id,
+         userId: userId,
+         email: email,
+         hash: hash,
+       );
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
@@ -154,24 +154,24 @@ class EmailAuthUpdateTable extends _i1.UpdateTable<EmailAuthTable> {
   EmailAuthUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 }
 
 class EmailAuthTable extends _i1.Table<int?> {
   EmailAuthTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_auth') {
+    : super(tableName: 'serverpod_email_auth') {
     updateTable = EmailAuthUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
@@ -200,11 +200,11 @@ class EmailAuthTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userId,
-        email,
-        hash,
-      ];
+    id,
+    userId,
+    email,
+    hash,
+  ];
 }
 
 class EmailAuthInclude extends _i1.IncludeObject {

@@ -38,12 +38,14 @@ abstract class Enrollment implements _i1.SerializableModel {
       student: jsonSerialization['student'] == null
           ? null
           : _i2.Student.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
+              (jsonSerialization['student'] as Map<String, dynamic>),
+            ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
           : _i3.Course.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+              (jsonSerialization['course'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -97,12 +99,12 @@ class _EnrollmentImpl extends Enrollment {
     required int courseId,
     _i3.Course? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.

@@ -31,19 +31,24 @@ abstract class ObjectWithSparseVector
   }) = _ObjectWithSparseVectorImpl;
 
   factory ObjectWithSparseVector.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSparseVector(
       id: jsonSerialization['id'] as int?,
       sparseVector: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVector']),
+        jsonSerialization['sparseVector'],
+      ),
       sparseVectorNullable: jsonSerialization['sparseVectorNullable'] == null
           ? null
           : _i1.SparseVectorJsonExtension.fromJson(
-              jsonSerialization['sparseVectorNullable']),
+              jsonSerialization['sparseVectorNullable'],
+            ),
       sparseVectorIndexedHnsw: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnsw']),
+        jsonSerialization['sparseVectorIndexedHnsw'],
+      ),
       sparseVectorIndexedHnswWithParams: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnswWithParams']),
+        jsonSerialization['sparseVectorIndexedHnswWithParams'],
+      ),
     );
   }
 
@@ -83,8 +88,8 @@ abstract class ObjectWithSparseVector
       if (sparseVectorNullable != null)
         'sparseVectorNullable': sparseVectorNullable?.toJson(),
       'sparseVectorIndexedHnsw': sparseVectorIndexedHnsw.toJson(),
-      'sparseVectorIndexedHnswWithParams':
-          sparseVectorIndexedHnswWithParams.toJson(),
+      'sparseVectorIndexedHnswWithParams': sparseVectorIndexedHnswWithParams
+          .toJson(),
     };
   }
 
@@ -96,8 +101,8 @@ abstract class ObjectWithSparseVector
       if (sparseVectorNullable != null)
         'sparseVectorNullable': sparseVectorNullable?.toJson(),
       'sparseVectorIndexedHnsw': sparseVectorIndexedHnsw.toJson(),
-      'sparseVectorIndexedHnswWithParams':
-          sparseVectorIndexedHnswWithParams.toJson(),
+      'sparseVectorIndexedHnswWithParams': sparseVectorIndexedHnswWithParams
+          .toJson(),
     };
   }
 
@@ -141,12 +146,12 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
     required _i1.SparseVector sparseVectorIndexedHnsw,
     required _i1.SparseVector sparseVectorIndexedHnswWithParams,
   }) : super._(
-          id: id,
-          sparseVector: sparseVector,
-          sparseVectorNullable: sparseVectorNullable,
-          sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
-          sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
-        );
+         id: id,
+         sparseVector: sparseVector,
+         sparseVectorNullable: sparseVectorNullable,
+         sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
+         sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithSparseVector]
   /// with some or all fields replaced by the given arguments.
@@ -167,7 +172,8 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
           : this.sparseVectorNullable?.clone(),
       sparseVectorIndexedHnsw:
           sparseVectorIndexedHnsw ?? this.sparseVectorIndexedHnsw.clone(),
-      sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams ??
+      sparseVectorIndexedHnswWithParams:
+          sparseVectorIndexedHnswWithParams ??
           this.sparseVectorIndexedHnswWithParams.clone(),
     );
   }
@@ -178,37 +184,36 @@ class ObjectWithSparseVectorUpdateTable
   ObjectWithSparseVectorUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVector(
-          _i1.SparseVector value) =>
-      _i1.ColumnValue(
-        table.sparseVector,
-        value,
-      );
+    _i1.SparseVector value,
+  ) => _i1.ColumnValue(
+    table.sparseVector,
+    value,
+  );
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorNullable(
-          _i1.SparseVector? value) =>
-      _i1.ColumnValue(
-        table.sparseVectorNullable,
-        value,
-      );
+    _i1.SparseVector? value,
+  ) => _i1.ColumnValue(
+    table.sparseVectorNullable,
+    value,
+  );
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector> sparseVectorIndexedHnsw(
-          _i1.SparseVector value) =>
-      _i1.ColumnValue(
-        table.sparseVectorIndexedHnsw,
-        value,
-      );
+    _i1.SparseVector value,
+  ) => _i1.ColumnValue(
+    table.sparseVectorIndexedHnsw,
+    value,
+  );
 
   _i1.ColumnValue<_i1.SparseVector, _i1.SparseVector>
-      sparseVectorIndexedHnswWithParams(_i1.SparseVector value) =>
-          _i1.ColumnValue(
-            table.sparseVectorIndexedHnswWithParams,
-            value,
-          );
+  sparseVectorIndexedHnswWithParams(_i1.SparseVector value) => _i1.ColumnValue(
+    table.sparseVectorIndexedHnswWithParams,
+    value,
+  );
 }
 
 class ObjectWithSparseVectorTable extends _i1.Table<int?> {
   ObjectWithSparseVectorTable({super.tableRelation})
-      : super(tableName: 'object_with_sparse_vector') {
+    : super(tableName: 'object_with_sparse_vector') {
     updateTable = ObjectWithSparseVectorUpdateTable(this);
     sparseVector = _i1.ColumnSparseVector(
       'sparseVector',
@@ -244,12 +249,12 @@ class ObjectWithSparseVectorTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        sparseVector,
-        sparseVectorNullable,
-        sparseVectorIndexedHnsw,
-        sparseVectorIndexedHnswWithParams,
-      ];
+    id,
+    sparseVector,
+    sparseVectorNullable,
+    sparseVectorIndexedHnsw,
+    sparseVectorIndexedHnswWithParams,
+  ];
 }
 
 class ObjectWithSparseVectorInclude extends _i1.IncludeObject {
@@ -447,7 +452,7 @@ class ObjectWithSparseVectorRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithSparseVector>(
@@ -462,7 +467,7 @@ class ObjectWithSparseVectorRepository {
   Future<List<ObjectWithSparseVector>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
     int? limit,
     int? offset,

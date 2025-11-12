@@ -33,10 +33,12 @@ abstract class PasskeyChallenge
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      challenge:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['challenge']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      challenge: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['challenge'],
+      ),
     );
   }
 
@@ -116,10 +118,10 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
     DateTime? createdAt,
     required _i2.ByteData challenge,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          challenge: challenge,
-        );
+         id: id,
+         createdAt: createdAt,
+         challenge: challenge,
+       );
 
   /// Returns a shallow copy of this [PasskeyChallenge]
   /// with some or all fields replaced by the given arguments.
@@ -157,7 +159,7 @@ class PasskeyChallengeUpdateTable
 
 class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyChallengeTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
+    : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
     updateTable = PasskeyChallengeUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
@@ -179,10 +181,10 @@ class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        challenge,
-      ];
+    id,
+    createdAt,
+    challenge,
+  ];
 }
 
 class PasskeyChallengeInclude extends _i1.IncludeObject {
@@ -380,7 +382,7 @@ class PasskeyChallengeRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<PasskeyChallenge>(
@@ -395,7 +397,7 @@ class PasskeyChallengeRepository {
   Future<List<PasskeyChallenge>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
     int? limit,
     int? offset,

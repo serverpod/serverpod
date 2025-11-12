@@ -90,7 +90,8 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.bit;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "ColumnType"');
+          'Value "$index" cannot be converted to "ColumnType"',
+        );
     }
   }
 

@@ -31,12 +31,18 @@ abstract class DatabaseMigration
   factory DatabaseMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseMigration(
       actions: (jsonSerialization['actions'] as List)
-          .map((e) =>
-              _i2.DatabaseMigrationAction.fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) => _i2.DatabaseMigrationAction.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       warnings: (jsonSerialization['warnings'] as List)
-          .map((e) => _i3.DatabaseMigrationWarning.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => _i3.DatabaseMigrationWarning.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
@@ -86,10 +92,10 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     required List<_i3.DatabaseMigrationWarning> warnings,
     required int migrationApiVersion,
   }) : super._(
-          actions: actions,
-          warnings: warnings,
-          migrationApiVersion: migrationApiVersion,
-        );
+         actions: actions,
+         warnings: warnings,
+         migrationApiVersion: migrationApiVersion,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigration]
   /// with some or all fields replaced by the given arguments.

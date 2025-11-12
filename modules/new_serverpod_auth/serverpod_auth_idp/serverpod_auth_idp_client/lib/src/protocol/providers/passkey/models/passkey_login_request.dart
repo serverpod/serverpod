@@ -33,15 +33,19 @@ abstract class PasskeyLoginRequest implements _i1.SerializableModel {
 
   factory PasskeyLoginRequest.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyLoginRequest(
-      challengeId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
+      challengeId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['challengeId'],
+      ),
       keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
       authenticatorData: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['authenticatorData']),
+        jsonSerialization['authenticatorData'],
+      ),
       clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['clientDataJSON']),
-      signature:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['signature']),
+        jsonSerialization['clientDataJSON'],
+      ),
+      signature: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['signature'],
+      ),
     );
   }
 
@@ -95,12 +99,12 @@ class _PasskeyLoginRequestImpl extends PasskeyLoginRequest {
     required _i2.ByteData clientDataJSON,
     required _i2.ByteData signature,
   }) : super._(
-          challengeId: challengeId,
-          keyId: keyId,
-          authenticatorData: authenticatorData,
-          clientDataJSON: clientDataJSON,
-          signature: signature,
-        );
+         challengeId: challengeId,
+         keyId: keyId,
+         authenticatorData: authenticatorData,
+         clientDataJSON: clientDataJSON,
+         signature: signature,
+       );
 
   /// Returns a shallow copy of this [PasskeyLoginRequest]
   /// with some or all fields replaced by the given arguments.

@@ -45,7 +45,8 @@ abstract class Organization
       city: jsonSerialization['city'] == null
           ? null
           : _i3.City.fromJson(
-              (jsonSerialization['city'] as Map<String, dynamic>)),
+              (jsonSerialization['city'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -147,12 +148,12 @@ class _OrganizationImpl extends Organization {
     int? cityId,
     _i3.City? city,
   }) : super._(
-          id: id,
-          name: name,
-          people: people,
-          cityId: cityId,
-          city: city,
-        );
+         id: id,
+         name: name,
+         people: people,
+         cityId: cityId,
+         city: city,
+       );
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
@@ -181,14 +182,14 @@ class OrganizationUpdateTable extends _i1.UpdateTable<OrganizationTable> {
   OrganizationUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> cityId(int? value) => _i1.ColumnValue(
-        table.cityId,
-        value,
-      );
+    table.cityId,
+    value,
+  );
 }
 
 class OrganizationTable extends _i1.Table<int?> {
@@ -255,17 +256,18 @@ class OrganizationTable extends _i1.Table<int?> {
     _people = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
       table: _i2.PersonTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _people!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        cityId,
-      ];
+    id,
+    name,
+    cityId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -294,9 +296,9 @@ class OrganizationInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'people': _people,
-        'city': _city,
-      };
+    'people': _people,
+    'city': _city,
+  };
 
   @override
   _i1.Table<int?> get table => Organization.t;
@@ -607,8 +609,9 @@ class OrganizationAttachRepository {
       throw ArgumentError.notNull('organization.id');
     }
 
-    var $person =
-        person.map((e) => e.copyWith(organizationId: organization.id)).toList();
+    var $person = person
+        .map((e) => e.copyWith(organizationId: organization.id))
+        .toList();
     await session.db.update<_i2.Person>(
       $person,
       columns: [_i2.Person.t.organizationId],

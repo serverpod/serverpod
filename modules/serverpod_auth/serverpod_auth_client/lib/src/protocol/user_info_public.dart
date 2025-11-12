@@ -92,12 +92,12 @@ class _UserInfoPublicImpl extends UserInfoPublic {
     required DateTime created,
     String? imageUrl,
   }) : super._(
-          id: id,
-          userName: userName,
-          fullName: fullName,
-          created: created,
-          imageUrl: imageUrl,
-        );
+         id: id,
+         userName: userName,
+         fullName: fullName,
+         created: created,
+         imageUrl: imageUrl,
+       );
 
   /// Returns a shallow copy of this [UserInfoPublic]
   /// with some or all fields replaced by the given arguments.

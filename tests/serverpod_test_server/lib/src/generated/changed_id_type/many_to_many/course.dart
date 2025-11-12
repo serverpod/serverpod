@@ -79,13 +79,15 @@ abstract class CourseUuid
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static CourseUuidInclude include(
-      {_i2.EnrollmentIntIncludeList? enrollments}) {
+  static CourseUuidInclude include({
+    _i2.EnrollmentIntIncludeList? enrollments,
+  }) {
     return CourseUuidInclude._(enrollments: enrollments);
   }
 
@@ -123,10 +125,10 @@ class _CourseUuidImpl extends CourseUuid {
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
@@ -151,9 +153,9 @@ class CourseUuidUpdateTable extends _i1.UpdateTable<CourseUuidTable> {
   CourseUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -199,16 +201,17 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -538,8 +541,9 @@ class CourseUuidAttachRepository {
       throw ArgumentError.notNull('courseUuid.id');
     }
 
-    var $enrollmentInt =
-        enrollmentInt.map((e) => e.copyWith(courseId: courseUuid.id)).toList();
+    var $enrollmentInt = enrollmentInt
+        .map((e) => e.copyWith(courseId: courseUuid.id))
+        .toList();
     await session.db.update<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.courseId],
@@ -592,8 +596,9 @@ class CourseUuidDetachRepository {
       throw ArgumentError.notNull('enrollmentInt.id');
     }
 
-    var $enrollmentInt =
-        enrollmentInt.map((e) => e.copyWith(courseId: null)).toList();
+    var $enrollmentInt = enrollmentInt
+        .map((e) => e.copyWith(courseId: null))
+        .toList();
     await session.db.update<_i2.EnrollmentInt>(
       $enrollmentInt,
       columns: [_i2.EnrollmentInt.t.courseId],

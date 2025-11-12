@@ -126,11 +126,11 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
     required DateTime time,
     required String ipAddress,
   }) : super._(
-          id: id,
-          email: email,
-          time: time,
-          ipAddress: ipAddress,
-        );
+         id: id,
+         email: email,
+         time: time,
+         ipAddress: ipAddress,
+       );
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
@@ -156,24 +156,24 @@ class EmailFailedSignInUpdateTable
   EmailFailedSignInUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+    table.time,
+    value,
+  );
 
   _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
-        table.ipAddress,
-        value,
-      );
+    table.ipAddress,
+    value,
+  );
 }
 
 class EmailFailedSignInTable extends _i1.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_failed_sign_in') {
+    : super(tableName: 'serverpod_email_failed_sign_in') {
     updateTable = EmailFailedSignInUpdateTable(this);
     email = _i1.ColumnString(
       'email',
@@ -202,11 +202,11 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        email,
-        time,
-        ipAddress,
-      ];
+    id,
+    email,
+    time,
+    ipAddress,
+  ];
 }
 
 class EmailFailedSignInInclude extends _i1.IncludeObject {
@@ -404,7 +404,7 @@ class EmailFailedSignInRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailFailedSignIn>(
@@ -419,7 +419,7 @@ class EmailFailedSignInRepository {
   Future<List<EmailFailedSignIn>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     int? limit,
     int? offset,

@@ -30,8 +30,9 @@ abstract class FilterConstraint implements _i1.SerializableModel {
 
   factory FilterConstraint.fromJson(Map<String, dynamic> jsonSerialization) {
     return FilterConstraint(
-      type:
-          _i2.FilterConstraintType.fromJson((jsonSerialization['type'] as int)),
+      type: _i2.FilterConstraintType.fromJson(
+        (jsonSerialization['type'] as int),
+      ),
       column: jsonSerialization['column'] as String,
       value: jsonSerialization['value'] as String,
       value2: jsonSerialization['value2'] as String?,
@@ -80,11 +81,11 @@ class _FilterConstraintImpl extends FilterConstraint {
     required String value,
     String? value2,
   }) : super._(
-          type: type,
-          column: column,
-          value: value,
-          value2: value2,
-        );
+         type: type,
+         column: column,
+         value: value,
+         value2: value2,
+       );
 
   /// Returns a shallow copy of this [FilterConstraint]
   /// with some or all fields replaced by the given arguments.

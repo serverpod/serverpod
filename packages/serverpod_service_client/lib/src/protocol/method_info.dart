@@ -76,10 +76,10 @@ class _MethodInfoImpl extends MethodInfo {
     required String endpoint,
     required String method,
   }) : super._(
-          id: id,
-          endpoint: endpoint,
-          method: method,
-        );
+         id: id,
+         endpoint: endpoint,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.

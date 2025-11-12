@@ -22,10 +22,12 @@ abstract class ClusterInfo implements _i1.SerializableModel {
 
   factory ClusterInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return ClusterInfo(
-        servers: (jsonSerialization['servers'] as List)
-            .map((e) =>
-                _i2.ClusterServerInfo.fromJson((e as Map<String, dynamic>)))
-            .toList());
+      servers: (jsonSerialization['servers'] as List)
+          .map(
+            (e) => _i2.ClusterServerInfo.fromJson((e as Map<String, dynamic>)),
+          )
+          .toList(),
+    );
   }
 
   /// List of servers in the cluster.
@@ -48,7 +50,7 @@ abstract class ClusterInfo implements _i1.SerializableModel {
 
 class _ClusterInfoImpl extends ClusterInfo {
   _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
-      : super._(servers: servers);
+    : super._(servers: servers);
 
   /// Returns a shallow copy of this [ClusterInfo]
   /// with some or all fields replaced by the given arguments.
@@ -56,6 +58,7 @@ class _ClusterInfoImpl extends ClusterInfo {
   @override
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
     return ClusterInfo(
-        servers: servers ?? this.servers.map((e0) => e0.copyWith()).toList());
+      servers: servers ?? this.servers.map((e0) => e0.copyWith()).toList(),
+    );
   }
 }

@@ -47,26 +47,31 @@ abstract class EmailAccountRequest
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       email: jsonSerialization['email'] as String,
-      challengeId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['challengeId']),
+      challengeId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['challengeId'],
+      ),
       challenge: jsonSerialization['challenge'] == null
           ? null
           : _i2.SecretChallenge.fromJson(
-              (jsonSerialization['challenge'] as Map<String, dynamic>)),
+              (jsonSerialization['challenge'] as Map<String, dynamic>),
+            ),
       createAccountChallengeId:
           jsonSerialization['createAccountChallengeId'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['createAccountChallengeId']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['createAccountChallengeId'],
+            ),
       createAccountChallenge:
           jsonSerialization['createAccountChallenge'] == null
-              ? null
-              : _i2.SecretChallenge.fromJson(
-                  (jsonSerialization['createAccountChallenge']
-                      as Map<String, dynamic>)),
+          ? null
+          : _i2.SecretChallenge.fromJson(
+              (jsonSerialization['createAccountChallenge']
+                  as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -179,14 +184,14 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
     _i1.UuidValue? createAccountChallengeId,
     _i2.SecretChallenge? createAccountChallenge,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          email: email,
-          challengeId: challengeId,
-          challenge: challenge,
-          createAccountChallengeId: createAccountChallengeId,
-          createAccountChallenge: createAccountChallenge,
-        );
+         id: id,
+         createdAt: createdAt,
+         email: email,
+         challengeId: challengeId,
+         challenge: challenge,
+         createAccountChallengeId: createAccountChallengeId,
+         createAccountChallenge: createAccountChallenge,
+       );
 
   /// Returns a shallow copy of this [EmailAccountRequest]
   /// with some or all fields replaced by the given arguments.
@@ -230,28 +235,28 @@ class EmailAccountRequestUpdateTable
       );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> challengeId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.challengeId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.challengeId,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createAccountChallengeId(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.createAccountChallengeId,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.createAccountChallengeId,
+    value,
+  );
 }
 
 class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountRequestTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_email_account_request') {
+    : super(tableName: 'serverpod_auth_idp_email_account_request') {
     updateTable = EmailAccountRequestUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
@@ -321,12 +326,12 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        email,
-        challengeId,
-        createAccountChallengeId,
-      ];
+    id,
+    createdAt,
+    email,
+    challengeId,
+    createAccountChallengeId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -355,9 +360,9 @@ class EmailAccountRequestInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'challenge': _challenge,
-        'createAccountChallenge': _createAccountChallenge,
-      };
+    'challenge': _challenge,
+    'createAccountChallenge': _createAccountChallenge,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => EmailAccountRequest.t;
@@ -558,7 +563,7 @@ class EmailAccountRequestRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountRequest>(
@@ -573,7 +578,7 @@ class EmailAccountRequestRepository {
   Future<List<EmailAccountRequest>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
     int? limit,
     int? offset,
@@ -666,8 +671,9 @@ class EmailAccountRequestAttachRowRepository {
       throw ArgumentError.notNull('challenge.id');
     }
 
-    var $emailAccountRequest =
-        emailAccountRequest.copyWith(challengeId: challenge.id);
+    var $emailAccountRequest = emailAccountRequest.copyWith(
+      challengeId: challenge.id,
+    );
     await session.db.updateRow<EmailAccountRequest>(
       $emailAccountRequest,
       columns: [EmailAccountRequest.t.challengeId],
@@ -691,7 +697,8 @@ class EmailAccountRequestAttachRowRepository {
     }
 
     var $emailAccountRequest = emailAccountRequest.copyWith(
-        createAccountChallengeId: createAccountChallenge.id);
+      createAccountChallengeId: createAccountChallenge.id,
+    );
     await session.db.updateRow<EmailAccountRequest>(
       $emailAccountRequest,
       columns: [EmailAccountRequest.t.createAccountChallengeId],
@@ -717,8 +724,9 @@ class EmailAccountRequestDetachRowRepository {
       throw ArgumentError.notNull('emailAccountRequest.id');
     }
 
-    var $emailAccountRequest =
-        emailAccountRequest.copyWith(createAccountChallengeId: null);
+    var $emailAccountRequest = emailAccountRequest.copyWith(
+      createAccountChallengeId: null,
+    );
     await session.db.updateRow<EmailAccountRequest>(
       $emailAccountRequest,
       columns: [EmailAccountRequest.t.createAccountChallengeId],

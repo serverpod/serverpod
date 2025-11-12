@@ -125,11 +125,11 @@ class _UserImageImpl extends UserImage {
     required int version,
     required String url,
   }) : super._(
-          id: id,
-          userId: userId,
-          version: version,
-          url: url,
-        );
+         id: id,
+         userId: userId,
+         version: version,
+         url: url,
+       );
 
   /// Returns a shallow copy of this [UserImage]
   /// with some or all fields replaced by the given arguments.
@@ -154,24 +154,24 @@ class UserImageUpdateTable extends _i1.UpdateTable<UserImageTable> {
   UserImageUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> version(int value) => _i1.ColumnValue(
-        table.version,
-        value,
-      );
+    table.version,
+    value,
+  );
 
   _i1.ColumnValue<String, String> url(String value) => _i1.ColumnValue(
-        table.url,
-        value,
-      );
+    table.url,
+    value,
+  );
 }
 
 class UserImageTable extends _i1.Table<int?> {
   UserImageTable({super.tableRelation})
-      : super(tableName: 'serverpod_user_image') {
+    : super(tableName: 'serverpod_user_image') {
     updateTable = UserImageUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
@@ -200,11 +200,11 @@ class UserImageTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userId,
-        version,
-        url,
-      ];
+    id,
+    userId,
+    version,
+    url,
+  ];
 }
 
 class UserImageInclude extends _i1.IncludeObject {

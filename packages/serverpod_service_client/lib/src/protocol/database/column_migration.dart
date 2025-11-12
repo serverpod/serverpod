@@ -86,12 +86,12 @@ class _ColumnMigrationImpl extends ColumnMigration {
     required bool changeDefault,
     String? newDefault,
   }) : super._(
-          columnName: columnName,
-          addNullable: addNullable,
-          removeNullable: removeNullable,
-          changeDefault: changeDefault,
-          newDefault: newDefault,
-        );
+         columnName: columnName,
+         addNullable: addNullable,
+         removeNullable: removeNullable,
+         changeDefault: changeDefault,
+         newDefault: newDefault,
+       );
 
   /// Returns a shallow copy of this [ColumnMigration]
   /// with some or all fields replaced by the given arguments.

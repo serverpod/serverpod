@@ -17,8 +17,8 @@ abstract class IntDefaultModel implements _i1.SerializableModel {
     this.id,
     int? intDefaultModel,
     int? intDefaultModelNull,
-  })  : intDefaultModel = intDefaultModel ?? 10,
-        intDefaultModelNull = intDefaultModelNull ?? 20;
+  }) : intDefaultModel = intDefaultModel ?? 10,
+       intDefaultModelNull = intDefaultModelNull ?? 20;
 
   factory IntDefaultModel({
     int? id,
@@ -74,10 +74,10 @@ class _IntDefaultModelImpl extends IntDefaultModel {
     int? intDefaultModel,
     int? intDefaultModelNull,
   }) : super._(
-          id: id,
-          intDefaultModel: intDefaultModel,
-          intDefaultModelNull: intDefaultModelNull,
-        );
+         id: id,
+         intDefaultModel: intDefaultModel,
+         intDefaultModelNull: intDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [IntDefaultModel]
   /// with some or all fields replaced by the given arguments.

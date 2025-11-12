@@ -30,7 +30,8 @@ abstract class PersonWithLongTableName implements _i1.SerializableModel {
   }) = _PersonWithLongTableNameImpl;
 
   factory PersonWithLongTableName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PersonWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -38,7 +39,8 @@ abstract class PersonWithLongTableName implements _i1.SerializableModel {
       organization: jsonSerialization['organization'] == null
           ? null
           : _i2.OrganizationWithLongTableName.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+              (jsonSerialization['organization'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -87,11 +89,11 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -106,8 +108,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     return PersonWithLongTableName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId:
-          organizationId is int? ? organizationId : this.organizationId,
+      organizationId: organizationId is int?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i2.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),

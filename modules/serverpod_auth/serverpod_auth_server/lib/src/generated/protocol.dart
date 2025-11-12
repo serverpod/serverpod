@@ -96,7 +96,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -109,7 +109,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -159,7 +159,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -172,7 +172,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -229,7 +229,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -242,7 +242,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -293,7 +293,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -306,7 +306,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -319,7 +319,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'time',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -369,7 +369,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -382,7 +382,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'verificationCode',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -427,7 +427,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -440,7 +440,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -490,7 +490,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -587,7 +587,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -600,7 +600,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -613,7 +613,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -691,8 +691,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i8.EmailCreateAccountRequest?>()) {
       return (data != null
-          ? _i8.EmailCreateAccountRequest.fromJson(data)
-          : null) as T;
+              ? _i8.EmailCreateAccountRequest.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i9.EmailFailedSignIn?>()) {
       return (data != null ? _i9.EmailFailedSignIn.fromJson(data) : null) as T;

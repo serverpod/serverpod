@@ -77,10 +77,10 @@ class _CustomerIntImpl extends CustomerInt {
     required String name,
     List<_i2.OrderUuid>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [CustomerInt]
   /// with some or all fields replaced by the given arguments.

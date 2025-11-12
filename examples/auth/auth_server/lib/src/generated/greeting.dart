@@ -31,8 +31,9 @@ abstract class Greeting
     return Greeting(
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
     );
   }
 
@@ -83,10 +84,10 @@ class _GreetingImpl extends Greeting {
     required String author,
     required DateTime timestamp,
   }) : super._(
-          message: message,
-          author: author,
-          timestamp: timestamp,
-        );
+         message: message,
+         author: author,
+         timestamp: timestamp,
+       );
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.

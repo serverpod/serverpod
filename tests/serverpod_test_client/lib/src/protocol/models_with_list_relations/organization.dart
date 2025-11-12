@@ -42,7 +42,8 @@ abstract class Organization implements _i1.SerializableModel {
       city: jsonSerialization['city'] == null
           ? null
           : _i3.City.fromJson(
-              (jsonSerialization['city'] as Map<String, dynamic>)),
+              (jsonSerialization['city'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -97,12 +98,12 @@ class _OrganizationImpl extends Organization {
     int? cityId,
     _i3.City? city,
   }) : super._(
-          id: id,
-          name: name,
-          people: people,
-          cityId: cityId,
-          city: city,
-        );
+         id: id,
+         name: name,
+         people: people,
+         cityId: cityId,
+         city: city,
+       );
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.

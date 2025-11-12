@@ -40,13 +40,15 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      addedTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['addedTime'],
+      ),
       expiration: jsonSerialization['expiration'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
       verified: jsonSerialization['verified'] as bool,
     );
   }
@@ -117,14 +119,14 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required _i2.ByteData byteData,
     required bool verified,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          addedTime: addedTime,
-          expiration: expiration,
-          byteData: byteData,
-          verified: verified,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         addedTime: addedTime,
+         expiration: expiration,
+         byteData: byteData,
+         verified: verified,
+       );
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.

@@ -73,10 +73,10 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
     required String normal,
     String? api,
   }) : super._(
-          id: id,
-          normal: normal,
-          api: api,
-        );
+         id: id,
+         normal: normal,
+         api: api,
+       );
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.

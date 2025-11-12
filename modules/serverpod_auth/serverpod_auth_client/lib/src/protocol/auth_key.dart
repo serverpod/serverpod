@@ -106,13 +106,13 @@ class _AuthKeyImpl extends AuthKey {
     required List<String> scopeNames,
     required String method,
   }) : super._(
-          id: id,
-          userId: userId,
-          hash: hash,
-          key: key,
-          scopeNames: scopeNames,
-          method: method,
-        );
+         id: id,
+         userId: userId,
+         hash: hash,
+         key: key,
+         scopeNames: scopeNames,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.

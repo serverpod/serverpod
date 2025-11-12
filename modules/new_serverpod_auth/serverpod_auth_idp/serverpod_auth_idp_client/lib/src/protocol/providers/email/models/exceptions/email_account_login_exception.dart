@@ -22,15 +22,18 @@ abstract class EmailAccountLoginException
     implements _i1.SerializableException, _i1.SerializableModel {
   EmailAccountLoginException._({required this.reason});
 
-  factory EmailAccountLoginException(
-          {required _i2.EmailAccountLoginExceptionReason reason}) =
-      _EmailAccountLoginExceptionImpl;
+  factory EmailAccountLoginException({
+    required _i2.EmailAccountLoginExceptionReason reason,
+  }) = _EmailAccountLoginExceptionImpl;
 
   factory EmailAccountLoginException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailAccountLoginException(
-        reason: _i2.EmailAccountLoginExceptionReason.fromJson(
-            (jsonSerialization['reason'] as String)));
+      reason: _i2.EmailAccountLoginExceptionReason.fromJson(
+        (jsonSerialization['reason'] as String),
+      ),
+    );
   }
 
   _i2.EmailAccountLoginExceptionReason reason;
@@ -38,8 +41,9 @@ abstract class EmailAccountLoginException
   /// Returns a shallow copy of this [EmailAccountLoginException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  EmailAccountLoginException copyWith(
-      {_i2.EmailAccountLoginExceptionReason? reason});
+  EmailAccountLoginException copyWith({
+    _i2.EmailAccountLoginExceptionReason? reason,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {'reason': reason.toJson()};
@@ -52,16 +56,17 @@ abstract class EmailAccountLoginException
 }
 
 class _EmailAccountLoginExceptionImpl extends EmailAccountLoginException {
-  _EmailAccountLoginExceptionImpl(
-      {required _i2.EmailAccountLoginExceptionReason reason})
-      : super._(reason: reason);
+  _EmailAccountLoginExceptionImpl({
+    required _i2.EmailAccountLoginExceptionReason reason,
+  }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountLoginException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  EmailAccountLoginException copyWith(
-      {_i2.EmailAccountLoginExceptionReason? reason}) {
+  EmailAccountLoginException copyWith({
+    _i2.EmailAccountLoginExceptionReason? reason,
+  }) {
     return EmailAccountLoginException(reason: reason ?? this.reason);
   }
 }

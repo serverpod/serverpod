@@ -38,13 +38,16 @@ abstract class AuthSuccess implements _i1.SerializableModel {
       tokenExpiresAt: jsonSerialization['tokenExpiresAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['tokenExpiresAt']),
+              jsonSerialization['tokenExpiresAt'],
+            ),
       refreshToken: jsonSerialization['refreshToken'] as String?,
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+        (jsonSerialization['scopeNames'] as List),
+        itemFromJson: (e) => e as String,
+      )!,
     );
   }
 
@@ -111,13 +114,13 @@ class _AuthSuccessImpl extends AuthSuccess {
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) : super._(
-          authStrategy: authStrategy,
-          token: token,
-          tokenExpiresAt: tokenExpiresAt,
-          refreshToken: refreshToken,
-          authUserId: authUserId,
-          scopeNames: scopeNames,
-        );
+         authStrategy: authStrategy,
+         token: token,
+         tokenExpiresAt: tokenExpiresAt,
+         refreshToken: refreshToken,
+         authUserId: authUserId,
+         scopeNames: scopeNames,
+       );
 
   /// Returns a shallow copy of this [AuthSuccess]
   /// with some or all fields replaced by the given arguments.
@@ -134,8 +137,9 @@ class _AuthSuccessImpl extends AuthSuccess {
     return AuthSuccess(
       authStrategy: authStrategy ?? this.authStrategy,
       token: token ?? this.token,
-      tokenExpiresAt:
-          tokenExpiresAt is DateTime? ? tokenExpiresAt : this.tokenExpiresAt,
+      tokenExpiresAt: tokenExpiresAt is DateTime?
+          ? tokenExpiresAt
+          : this.tokenExpiresAt,
       refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

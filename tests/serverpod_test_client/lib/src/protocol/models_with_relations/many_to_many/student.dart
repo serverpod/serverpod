@@ -77,10 +77,10 @@ class _StudentImpl extends Student {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.

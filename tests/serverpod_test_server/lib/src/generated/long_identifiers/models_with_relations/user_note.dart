@@ -29,8 +29,7 @@ abstract class UserNote
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
-          jsonSerialization[
-                  '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
+          jsonSerialization['_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId']
               as int?,
     );
   }
@@ -113,9 +112,9 @@ class _UserNoteImpl extends UserNote {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
@@ -139,12 +138,12 @@ class UserNoteImplicit extends _UserNoteImpl {
     int? id,
     required String name,
     int? $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-  })  : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
-            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-        super(
-          id: id,
-          name: name,
-        );
+  }) : _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
+           $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+       super(
+         id: id,
+         name: name,
+       );
 
   factory UserNoteImplicit(
     UserNote userNote, {
@@ -166,18 +165,16 @@ class UserNoteUpdateTable extends _i1.UpdateTable<UserNoteTable> {
   UserNoteUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int>
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId(
-              int? value) =>
-          _i1.ColumnValue(
-            table
-                .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-            value,
-          );
+  $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId(int? value) =>
+      _i1.ColumnValue(
+        table.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+        value,
+      );
 }
 
 class UserNoteTable extends _i1.Table<int?> {
@@ -189,9 +186,9 @@ class UserNoteTable extends _i1.Table<int?> {
     );
     $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
         _i1.ColumnInt(
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
-      this,
-    );
+          '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
+          this,
+        );
   }
 
   late final UserNoteUpdateTable updateTable;
@@ -199,20 +196,20 @@ class UserNoteTable extends _i1.Table<int?> {
   late final _i1.ColumnString name;
 
   late final _i1.ColumnInt
-      $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
+  $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-      ];
+    id,
+    name,
+    $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 }
 
 class UserNoteInclude extends _i1.IncludeObject {

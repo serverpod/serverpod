@@ -20,7 +20,8 @@ abstract class RefreshTokenInvalidSecretException
       _RefreshTokenInvalidSecretExceptionImpl;
 
   factory RefreshTokenInvalidSecretException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenInvalidSecretException();
   }
 

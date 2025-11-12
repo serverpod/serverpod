@@ -25,14 +25,16 @@ abstract class DurationDefaultPersist
   }) = _DurationDefaultPersistImpl;
 
   factory DurationDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DurationDefaultPersist(
       id: jsonSerialization['id'] as int?,
       durationDefaultPersist:
           jsonSerialization['durationDefaultPersist'] == null
-              ? null
-              : _i1.DurationJsonExtension.fromJson(
-                  jsonSerialization['durationDefaultPersist']),
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultPersist'],
+            ),
     );
   }
 
@@ -110,9 +112,9 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
     int? id,
     Duration? durationDefaultPersist,
   }) : super._(
-          id: id,
-          durationDefaultPersist: durationDefaultPersist,
-        );
+         id: id,
+         durationDefaultPersist: durationDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DurationDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -144,7 +146,7 @@ class DurationDefaultPersistUpdateTable
 
 class DurationDefaultPersistTable extends _i1.Table<int?> {
   DurationDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'duration_default_persist') {
+    : super(tableName: 'duration_default_persist') {
     updateTable = DurationDefaultPersistUpdateTable(this);
     durationDefaultPersist = _i1.ColumnDuration(
       'durationDefaultPersist',
@@ -159,9 +161,9 @@ class DurationDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        durationDefaultPersist,
-      ];
+    id,
+    durationDefaultPersist,
+  ];
 }
 
 class DurationDefaultPersistInclude extends _i1.IncludeObject {
@@ -359,7 +361,7 @@ class DurationDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefaultPersist>(
@@ -374,7 +376,7 @@ class DurationDefaultPersistRepository {
   Future<List<DurationDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     int? limit,
     int? offset,

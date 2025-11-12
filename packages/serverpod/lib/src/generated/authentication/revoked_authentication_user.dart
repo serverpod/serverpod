@@ -20,7 +20,8 @@ abstract class RevokedAuthenticationUser
   factory RevokedAuthenticationUser() = _RevokedAuthenticationUserImpl;
 
   factory RevokedAuthenticationUser.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RevokedAuthenticationUser();
   }
 

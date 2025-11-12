@@ -41,7 +41,8 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       mother: jsonSerialization['mother'] == null
           ? null
           : _i2.Cat.fromJson(
-              (jsonSerialization['mother'] as Map<String, dynamic>)),
+              (jsonSerialization['mother'] as Map<String, dynamic>),
+            ),
       kittens: (jsonSerialization['kittens'] as List?)
           ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -146,12 +147,12 @@ class _CatImpl extends Cat {
     _i2.Cat? mother,
     List<_i2.Cat>? kittens,
   }) : super._(
-          id: id,
-          name: name,
-          motherId: motherId,
-          mother: mother,
-          kittens: kittens,
-        );
+         id: id,
+         name: name,
+         motherId: motherId,
+         mother: mother,
+         kittens: kittens,
+       );
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
@@ -180,14 +181,14 @@ class CatUpdateTable extends _i1.UpdateTable<CatTable> {
   CatUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> motherId(int? value) => _i1.ColumnValue(
-        table.motherId,
-        value,
-      );
+    table.motherId,
+    value,
+  );
 }
 
 class CatTable extends _i1.Table<int?> {
@@ -254,17 +255,18 @@ class CatTable extends _i1.Table<int?> {
     _kittens = _i1.ManyRelation<_i2.CatTable>(
       tableWithRelations: relationTable,
       table: _i2.CatTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _kittens!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        motherId,
-      ];
+    id,
+    name,
+    motherId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -293,9 +295,9 @@ class CatInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'mother': _mother,
-        'kittens': _kittens,
-      };
+    'mother': _mother,
+    'kittens': _kittens,
+  };
 
   @override
   _i1.Table<int?> get table => Cat.t;
@@ -606,8 +608,9 @@ class CatAttachRepository {
       throw ArgumentError.notNull('cat.id');
     }
 
-    var $nestedCat =
-        nestedCat.map((e) => e.copyWith(motherId: cat.id)).toList();
+    var $nestedCat = nestedCat
+        .map((e) => e.copyWith(motherId: cat.id))
+        .toList();
     await session.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],

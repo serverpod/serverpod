@@ -17,22 +17,24 @@ abstract class DurationDefault implements _i1.SerializableModel {
     this.id,
     Duration? durationDefault,
     Duration? durationDefaultNull,
-  })  : durationDefault = durationDefault ??
-            Duration(
-              days: 1,
-              hours: 2,
-              minutes: 10,
-              seconds: 30,
-              milliseconds: 100,
-            ),
-        durationDefaultNull = durationDefaultNull ??
-            Duration(
-              days: 2,
-              hours: 1,
-              minutes: 20,
-              seconds: 40,
-              milliseconds: 100,
-            );
+  }) : durationDefault =
+           durationDefault ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           ),
+       durationDefaultNull =
+           durationDefaultNull ??
+           Duration(
+             days: 2,
+             hours: 1,
+             minutes: 20,
+             seconds: 40,
+             milliseconds: 100,
+           );
 
   factory DurationDefault({
     int? id,
@@ -44,11 +46,13 @@ abstract class DurationDefault implements _i1.SerializableModel {
     return DurationDefault(
       id: jsonSerialization['id'] as int?,
       durationDefault: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefault']),
+        jsonSerialization['durationDefault'],
+      ),
       durationDefaultNull: jsonSerialization['durationDefaultNull'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(
-              jsonSerialization['durationDefaultNull']),
+              jsonSerialization['durationDefaultNull'],
+            ),
     );
   }
 
@@ -93,10 +97,10 @@ class _DurationDefaultImpl extends DurationDefault {
     Duration? durationDefault,
     Duration? durationDefaultNull,
   }) : super._(
-          id: id,
-          durationDefault: durationDefault,
-          durationDefaultNull: durationDefaultNull,
-        );
+         id: id,
+         durationDefault: durationDefault,
+         durationDefaultNull: durationDefaultNull,
+       );
 
   /// Returns a shallow copy of this [DurationDefault]
   /// with some or all fields replaced by the given arguments.

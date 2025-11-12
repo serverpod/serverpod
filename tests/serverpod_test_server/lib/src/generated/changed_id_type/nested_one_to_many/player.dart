@@ -41,7 +41,8 @@ abstract class PlayerUuid
       team: jsonSerialization['team'] == null
           ? null
           : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -129,11 +130,11 @@ class _PlayerUuidImpl extends PlayerUuid {
     int? teamId,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +159,14 @@ class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
   PlayerUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
-        table.teamId,
-        value,
-      );
+    table.teamId,
+    value,
+  );
 }
 
 class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -204,10 +205,10 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        teamId,
-      ];
+    id,
+    name,
+    teamId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

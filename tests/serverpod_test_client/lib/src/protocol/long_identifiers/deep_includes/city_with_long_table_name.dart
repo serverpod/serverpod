@@ -32,17 +32,24 @@ abstract class CityWithLongTableName implements _i1.SerializableModel {
   }) = _CityWithLongTableNameImpl;
 
   factory CityWithLongTableName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return CityWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       citizens: (jsonSerialization['citizens'] as List?)
-          ?.map((e) =>
-              _i2.PersonWithLongTableName.fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) => _i2.PersonWithLongTableName.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i3.OrganizationWithLongTableName.fromJson(
-              (e as Map<String, dynamic>)))
+          ?.map(
+            (e) => _i3.OrganizationWithLongTableName.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
     );
   }
@@ -94,11 +101,11 @@ class _CityWithLongTableNameImpl extends CityWithLongTableName {
     List<_i2.PersonWithLongTableName>? citizens,
     List<_i3.OrganizationWithLongTableName>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [CityWithLongTableName]
   /// with some or all fields replaced by the given arguments.

@@ -23,10 +23,10 @@ class EndpointExample extends _i1.EndpointRef {
   String get name => 'example';
 
   _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
-        'example',
-        'hello',
-        {'name': name},
-      );
+    'example',
+    'hello',
+    {'name': name},
+  );
 }
 
 class Modules {
@@ -48,21 +48,22 @@ class Client extends _i1.ServerpodClientShared {
       _i1.MethodCallContext,
       Object,
       StackTrace,
-    )? onFailedCall,
+    )?
+    onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
-          host,
-          _i4.Protocol(),
-          securityContext: securityContext,
-          authenticationKeyManager: authenticationKeyManager,
-          streamingConnectionTimeout: streamingConnectionTimeout,
-          connectionTimeout: connectionTimeout,
-          onFailedCall: onFailedCall,
-          onSucceededCall: onSucceededCall,
-          disconnectStreamsOnLostInternetConnection:
-              disconnectStreamsOnLostInternetConnection,
-        ) {
+         host,
+         _i4.Protocol(),
+         securityContext: securityContext,
+         authenticationKeyManager: authenticationKeyManager,
+         streamingConnectionTimeout: streamingConnectionTimeout,
+         connectionTimeout: connectionTimeout,
+         onFailedCall: onFailedCall,
+         onSucceededCall: onSucceededCall,
+         disconnectStreamsOnLostInternetConnection:
+             disconnectStreamsOnLostInternetConnection,
+       ) {
     example = EndpointExample(this);
     modules = Modules(this);
   }
@@ -75,6 +76,7 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>
-      {'auth': modules.auth};
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+    'auth': modules.auth,
+  };
 }

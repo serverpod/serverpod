@@ -19,10 +19,10 @@ abstract class IntDefaultMix
     int? intDefaultAndDefaultModel,
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
-  })  : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
-        intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
-        intDefaultModelAndDefaultPersist =
-            intDefaultModelAndDefaultPersist ?? 10;
+  }) : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
+       intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
+       intDefaultModelAndDefaultPersist =
+           intDefaultModelAndDefaultPersist ?? 10;
 
   factory IntDefaultMix({
     int? id,
@@ -127,11 +127,11 @@ class _IntDefaultMixImpl extends IntDefaultMix {
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          intDefaultAndDefaultModel: intDefaultAndDefaultModel,
-          intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
-          intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         intDefaultAndDefaultModel: intDefaultAndDefaultModel,
+         intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
+         intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [IntDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,8 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultAndDefaultModel ?? this.intDefaultAndDefaultModel,
       intDefaultAndDefaultPersist:
           intDefaultAndDefaultPersist ?? this.intDefaultAndDefaultPersist,
-      intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist ??
+      intDefaultModelAndDefaultPersist:
+          intDefaultModelAndDefaultPersist ??
           this.intDefaultModelAndDefaultPersist,
     );
   }
@@ -179,7 +180,7 @@ class IntDefaultMixUpdateTable extends _i1.UpdateTable<IntDefaultMixTable> {
 
 class IntDefaultMixTable extends _i1.Table<int?> {
   IntDefaultMixTable({super.tableRelation})
-      : super(tableName: 'int_default_mix') {
+    : super(tableName: 'int_default_mix') {
     updateTable = IntDefaultMixUpdateTable(this);
     intDefaultAndDefaultModel = _i1.ColumnInt(
       'intDefaultAndDefaultModel',
@@ -208,11 +209,11 @@ class IntDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        intDefaultAndDefaultModel,
-        intDefaultAndDefaultPersist,
-        intDefaultModelAndDefaultPersist,
-      ];
+    id,
+    intDefaultAndDefaultModel,
+    intDefaultAndDefaultPersist,
+    intDefaultModelAndDefaultPersist,
+  ];
 }
 
 class IntDefaultMixInclude extends _i1.IncludeObject {

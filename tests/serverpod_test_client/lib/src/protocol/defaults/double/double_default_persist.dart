@@ -24,11 +24,12 @@ abstract class DoubleDefaultPersist implements _i1.SerializableModel {
   }) = _DoubleDefaultPersistImpl;
 
   factory DoubleDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DoubleDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      doubleDefaultPersist:
-          (jsonSerialization['doubleDefaultPersist'] as num?)?.toDouble(),
+      doubleDefaultPersist: (jsonSerialization['doubleDefaultPersist'] as num?)
+          ?.toDouble(),
     );
   }
 
@@ -68,9 +69,9 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
     int? id,
     double? doubleDefaultPersist,
   }) : super._(
-          id: id,
-          doubleDefaultPersist: doubleDefaultPersist,
-        );
+         id: id,
+         doubleDefaultPersist: doubleDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.

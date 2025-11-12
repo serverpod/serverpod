@@ -17,10 +17,10 @@ abstract class StringDefaultModel implements _i1.SerializableModel {
     this.id,
     String? stringDefaultModel,
     String? stringDefaultModelNull,
-  })  : stringDefaultModel =
-            stringDefaultModel ?? 'This is a default model value',
-        stringDefaultModelNull =
-            stringDefaultModelNull ?? 'This is a default model null value';
+  }) : stringDefaultModel =
+           stringDefaultModel ?? 'This is a default model value',
+       stringDefaultModelNull =
+           stringDefaultModelNull ?? 'This is a default model null value';
 
   factory StringDefaultModel({
     int? id,
@@ -77,10 +77,10 @@ class _StringDefaultModelImpl extends StringDefaultModel {
     String? stringDefaultModel,
     String? stringDefaultModelNull,
   }) : super._(
-          id: id,
-          stringDefaultModel: stringDefaultModel,
-          stringDefaultModelNull: stringDefaultModelNull,
-        );
+         id: id,
+         stringDefaultModel: stringDefaultModel,
+         stringDefaultModelNull: stringDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.

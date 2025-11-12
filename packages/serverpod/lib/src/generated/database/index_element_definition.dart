@@ -27,10 +27,12 @@ abstract class IndexElementDefinition
   }) = _IndexElementDefinitionImpl;
 
   factory IndexElementDefinition.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return IndexElementDefinition(
       type: _i2.IndexElementDefinitionType.fromJson(
-          (jsonSerialization['type'] as int)),
+        (jsonSerialization['type'] as int),
+      ),
       definition: jsonSerialization['definition'] as String,
     );
   }
@@ -75,9 +77,9 @@ class _IndexElementDefinitionImpl extends IndexElementDefinition {
     required _i2.IndexElementDefinitionType type,
     required String definition,
   }) : super._(
-          type: type,
-          definition: definition,
-        );
+         type: type,
+         definition: definition,
+       );
 
   /// Returns a shallow copy of this [IndexElementDefinition]
   /// with some or all fields replaced by the given arguments.

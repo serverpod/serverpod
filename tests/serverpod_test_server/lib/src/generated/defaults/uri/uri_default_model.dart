@@ -18,10 +18,11 @@ abstract class UriDefaultModel
     this.id,
     Uri? uriDefaultModel,
     Uri? uriDefaultModelNull,
-  })  : uriDefaultModel =
-            uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
-        uriDefaultModelNull = uriDefaultModelNull ??
-            Uri.parse('https://serverpod.dev/defaultModel');
+  }) : uriDefaultModel =
+           uriDefaultModel ?? Uri.parse('https://serverpod.dev/defaultModel'),
+       uriDefaultModelNull =
+           uriDefaultModelNull ??
+           Uri.parse('https://serverpod.dev/defaultModel');
 
   factory UriDefaultModel({
     int? id,
@@ -32,12 +33,14 @@ abstract class UriDefaultModel
   factory UriDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultModel(
       id: jsonSerialization['id'] as int?,
-      uriDefaultModel:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultModel']),
+      uriDefaultModel: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefaultModel'],
+      ),
       uriDefaultModelNull: jsonSerialization['uriDefaultModelNull'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultModelNull']),
+              jsonSerialization['uriDefaultModelNull'],
+            ),
     );
   }
 
@@ -121,10 +124,10 @@ class _UriDefaultModelImpl extends UriDefaultModel {
     Uri? uriDefaultModel,
     Uri? uriDefaultModelNull,
   }) : super._(
-          id: id,
-          uriDefaultModel: uriDefaultModel,
-          uriDefaultModelNull: uriDefaultModelNull,
-        );
+         id: id,
+         uriDefaultModel: uriDefaultModel,
+         uriDefaultModelNull: uriDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [UriDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -149,19 +152,19 @@ class UriDefaultModelUpdateTable extends _i1.UpdateTable<UriDefaultModelTable> {
   UriDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultModel(Uri value) => _i1.ColumnValue(
-        table.uriDefaultModel,
-        value,
-      );
+    table.uriDefaultModel,
+    value,
+  );
 
   _i1.ColumnValue<Uri, Uri> uriDefaultModelNull(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultModelNull,
-        value,
-      );
+    table.uriDefaultModelNull,
+    value,
+  );
 }
 
 class UriDefaultModelTable extends _i1.Table<int?> {
   UriDefaultModelTable({super.tableRelation})
-      : super(tableName: 'uri_default_model') {
+    : super(tableName: 'uri_default_model') {
     updateTable = UriDefaultModelUpdateTable(this);
     uriDefaultModel = _i1.ColumnUri(
       'uriDefaultModel',
@@ -181,10 +184,10 @@ class UriDefaultModelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uriDefaultModel,
-        uriDefaultModelNull,
-      ];
+    id,
+    uriDefaultModel,
+    uriDefaultModelNull,
+  ];
 }
 
 class UriDefaultModelInclude extends _i1.IncludeObject {
@@ -382,7 +385,7 @@ class UriDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultModel>(
@@ -397,7 +400,7 @@ class UriDefaultModelRepository {
   Future<List<UriDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     int? limit,
     int? offset,

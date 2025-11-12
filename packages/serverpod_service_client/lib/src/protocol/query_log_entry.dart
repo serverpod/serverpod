@@ -150,18 +150,18 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          query: query,
-          duration: duration,
-          numRows: numRows,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         serverId: serverId,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         query: query,
+         duration: duration,
+         numRows: numRows,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.

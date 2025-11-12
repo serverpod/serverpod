@@ -42,17 +42,20 @@ abstract class Citizen implements _i1.SerializableModel {
       address: jsonSerialization['address'] == null
           ? null
           : _i2.Address.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
+              (jsonSerialization['address'] as Map<String, dynamic>),
+            ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
           : _i3.Company.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+              (jsonSerialization['company'] as Map<String, dynamic>),
+            ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
           : _i3.Company.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+              (jsonSerialization['oldCompany'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -116,14 +119,14 @@ class _CitizenImpl extends Citizen {
     int? oldCompanyId,
     _i3.Company? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -145,8 +148,9 @@ class _CitizenImpl extends Citizen {
       companyId: companyId ?? this.companyId,
       company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany:
-          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
+      oldCompany: oldCompany is _i3.Company?
+          ? oldCompany
+          : this.oldCompany?.copyWith(),
     );
   }
 }

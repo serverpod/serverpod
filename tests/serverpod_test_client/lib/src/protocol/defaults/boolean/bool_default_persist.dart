@@ -77,10 +77,10 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
     bool? boolDefaultPersistTrue,
     bool? boolDefaultPersistFalse,
   }) : super._(
-          id: id,
-          boolDefaultPersistTrue: boolDefaultPersistTrue,
-          boolDefaultPersistFalse: boolDefaultPersistFalse,
-        );
+         id: id,
+         boolDefaultPersistTrue: boolDefaultPersistTrue,
+         boolDefaultPersistFalse: boolDefaultPersistFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultPersist]
   /// with some or all fields replaced by the given arguments.

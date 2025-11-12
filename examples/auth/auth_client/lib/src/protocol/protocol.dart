@@ -41,10 +41,12 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<({_i3.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-        challenge:
-            deserialize<_i3.ByteData>(((data as Map)['n'] as Map)['challenge']),
-        id: deserialize<_i1.UuidValue>(data['n']['id']),
-      ) as T;
+            challenge: deserialize<_i3.ByteData>(
+              ((data as Map)['n'] as Map)['challenge'],
+            ),
+            id: deserialize<_i1.UuidValue>(data['n']['id']),
+          )
+          as T;
     }
     try {
       return _i4.Protocol().deserialize<T>(data, t);
@@ -155,7 +157,7 @@ Object? mapContainerToJson(Object obj) {
           {
             'k': mapIfNeeded(entry.key),
             'v': mapIfNeeded(entry.value),
-          }
+          },
       ];
 
     case Iterable():

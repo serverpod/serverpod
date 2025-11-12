@@ -33,14 +33,16 @@ abstract class EnumDefaultPersist
       id: jsonSerialization['id'] as int?,
       byNameEnumDefaultPersist:
           jsonSerialization['byNameEnumDefaultPersist'] == null
-              ? null
-              : _i2.ByNameEnum.fromJson(
-                  (jsonSerialization['byNameEnumDefaultPersist'] as String)),
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultPersist'] as String),
+            ),
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
-              ? null
-              : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultPersist'] as int)),
+          ? null
+          : _i3.ByIndexEnum.fromJson(
+              (jsonSerialization['byIndexEnumDefaultPersist'] as int),
+            ),
     );
   }
 
@@ -126,10 +128,10 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
     _i2.ByNameEnum? byNameEnumDefaultPersist,
     _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
-          id: id,
-          byNameEnumDefaultPersist: byNameEnumDefaultPersist,
-          byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
-        );
+         id: id,
+         byNameEnumDefaultPersist: byNameEnumDefaultPersist,
+         byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -157,23 +159,23 @@ class EnumDefaultPersistUpdateTable
   EnumDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultPersist(
-          _i2.ByNameEnum? value) =>
-      _i1.ColumnValue(
-        table.byNameEnumDefaultPersist,
-        value,
-      );
+    _i2.ByNameEnum? value,
+  ) => _i1.ColumnValue(
+    table.byNameEnumDefaultPersist,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultPersist(
-          _i3.ByIndexEnum? value) =>
-      _i1.ColumnValue(
-        table.byIndexEnumDefaultPersist,
-        value,
-      );
+    _i3.ByIndexEnum? value,
+  ) => _i1.ColumnValue(
+    table.byIndexEnumDefaultPersist,
+    value,
+  );
 }
 
 class EnumDefaultPersistTable extends _i1.Table<int?> {
   EnumDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'enum_default_persist') {
+    : super(tableName: 'enum_default_persist') {
     updateTable = EnumDefaultPersistUpdateTable(this);
     byNameEnumDefaultPersist = _i1.ColumnEnum(
       'byNameEnumDefaultPersist',
@@ -197,10 +199,10 @@ class EnumDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        byNameEnumDefaultPersist,
-        byIndexEnumDefaultPersist,
-      ];
+    id,
+    byNameEnumDefaultPersist,
+    byIndexEnumDefaultPersist,
+  ];
 }
 
 class EnumDefaultPersistInclude extends _i1.IncludeObject {
@@ -398,7 +400,7 @@ class EnumDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultPersist>(
@@ -413,7 +415,7 @@ class EnumDefaultPersistRepository {
   Future<List<EnumDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     int? limit,
     int? offset,

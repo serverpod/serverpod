@@ -19,10 +19,10 @@ abstract class BoolDefaultMix
     bool? boolDefaultAndDefaultModel,
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
-  })  : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
-        boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
-        boolDefaultModelAndDefaultPersist =
-            boolDefaultModelAndDefaultPersist ?? true;
+  }) : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
+       boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
+       boolDefaultModelAndDefaultPersist =
+           boolDefaultModelAndDefaultPersist ?? true;
 
   factory BoolDefaultMix({
     int? id,
@@ -127,11 +127,11 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
-          boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
-          boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
+         boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
+         boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -149,7 +149,8 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
           boolDefaultAndDefaultModel ?? this.boolDefaultAndDefaultModel,
       boolDefaultAndDefaultPersist:
           boolDefaultAndDefaultPersist ?? this.boolDefaultAndDefaultPersist,
-      boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist ??
+      boolDefaultModelAndDefaultPersist:
+          boolDefaultModelAndDefaultPersist ??
           this.boolDefaultModelAndDefaultPersist,
     );
   }
@@ -179,7 +180,7 @@ class BoolDefaultMixUpdateTable extends _i1.UpdateTable<BoolDefaultMixTable> {
 
 class BoolDefaultMixTable extends _i1.Table<int?> {
   BoolDefaultMixTable({super.tableRelation})
-      : super(tableName: 'bool_default_mix') {
+    : super(tableName: 'bool_default_mix') {
     updateTable = BoolDefaultMixUpdateTable(this);
     boolDefaultAndDefaultModel = _i1.ColumnBool(
       'boolDefaultAndDefaultModel',
@@ -208,11 +209,11 @@ class BoolDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultAndDefaultModel,
-        boolDefaultAndDefaultPersist,
-        boolDefaultModelAndDefaultPersist,
-      ];
+    id,
+    boolDefaultAndDefaultModel,
+    boolDefaultAndDefaultPersist,
+    boolDefaultModelAndDefaultPersist,
+  ];
 }
 
 class BoolDefaultMixInclude extends _i1.IncludeObject {

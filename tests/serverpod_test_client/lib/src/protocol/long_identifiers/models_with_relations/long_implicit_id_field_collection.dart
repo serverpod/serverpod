@@ -25,20 +25,23 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
     int? id,
     required String name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) = _LongImplicitIdFieldCollectionImpl;
 
   factory LongImplicitIdFieldCollection.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return LongImplicitIdFieldCollection(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-          (jsonSerialization[
-                      'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
+          (jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
                   as List?)
-              ?.map((e) =>
-                  _i2.LongImplicitIdField.fromJson((e as Map<String, dynamic>)))
+              ?.map(
+                (e) => _i2.LongImplicitIdField.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
               .toList(),
     );
   }
@@ -51,7 +54,7 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   String name;
 
   List<_i2.LongImplicitIdField>?
-      thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+  thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
@@ -60,7 +63,7 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
     int? id,
     String? name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,13 +90,13 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
     int? id,
     required String name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) : super._(
-          id: id,
-          name: name,
-          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-              thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-        );
+         id: id,
+         name: name,
+         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
+             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+       );
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
@@ -110,12 +113,11 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
       name: name ?? this.name,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  is List<_i2.LongImplicitIdField>?
-              ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-              : this
-                  .thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  ?.map((e0) => e0.copyWith())
-                  .toList(),
+              is List<_i2.LongImplicitIdField>?
+          ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+          : this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.map((e0) => e0.copyWith())
+                .toList(),
     );
   }
 }

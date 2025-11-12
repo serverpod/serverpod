@@ -19,9 +19,9 @@ abstract class BoolDefault
     bool? boolDefaultTrue,
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
-  })  : boolDefaultTrue = boolDefaultTrue ?? true,
-        boolDefaultFalse = boolDefaultFalse ?? false,
-        boolDefaultNullFalse = boolDefaultNullFalse ?? false;
+  }) : boolDefaultTrue = boolDefaultTrue ?? true,
+       boolDefaultFalse = boolDefaultFalse ?? false,
+       boolDefaultNullFalse = boolDefaultNullFalse ?? false;
 
   factory BoolDefault({
     int? id,
@@ -125,11 +125,11 @@ class _BoolDefaultImpl extends BoolDefault {
     bool? boolDefaultFalse,
     bool? boolDefaultNullFalse,
   }) : super._(
-          id: id,
-          boolDefaultTrue: boolDefaultTrue,
-          boolDefaultFalse: boolDefaultFalse,
-          boolDefaultNullFalse: boolDefaultNullFalse,
-        );
+         id: id,
+         boolDefaultTrue: boolDefaultTrue,
+         boolDefaultFalse: boolDefaultFalse,
+         boolDefaultNullFalse: boolDefaultNullFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefault]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +156,14 @@ class BoolDefaultUpdateTable extends _i1.UpdateTable<BoolDefaultTable> {
   BoolDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<bool, bool> boolDefaultTrue(bool value) => _i1.ColumnValue(
-        table.boolDefaultTrue,
-        value,
-      );
+    table.boolDefaultTrue,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> boolDefaultFalse(bool value) => _i1.ColumnValue(
-        table.boolDefaultFalse,
-        value,
-      );
+    table.boolDefaultFalse,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> boolDefaultNullFalse(bool? value) =>
       _i1.ColumnValue(
@@ -202,11 +202,11 @@ class BoolDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultTrue,
-        boolDefaultFalse,
-        boolDefaultNullFalse,
-      ];
+    id,
+    boolDefaultTrue,
+    boolDefaultFalse,
+    boolDefaultNullFalse,
+  ];
 }
 
 class BoolDefaultInclude extends _i1.IncludeObject {

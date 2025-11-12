@@ -75,10 +75,10 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
     required List<_i2.ChatMessage> messages,
     required bool hasOlderMessages,
   }) : super._(
-          channel: channel,
-          messages: messages,
-          hasOlderMessages: hasOlderMessages,
-        );
+         channel: channel,
+         messages: messages,
+         hasOlderMessages: hasOlderMessages,
+       );
 
   /// Returns a shallow copy of this [ChatMessageChunk]
   /// with some or all fields replaced by the given arguments.

@@ -112,10 +112,10 @@ class _ParentUserImpl extends ParentUser {
     String? name,
     int? userInfoId,
   }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-        );
+         id: id,
+         name: name,
+         userInfoId: userInfoId,
+       );
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
@@ -138,14 +138,14 @@ class ParentUserUpdateTable extends _i1.UpdateTable<ParentUserTable> {
   ParentUserUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> userInfoId(int? value) => _i1.ColumnValue(
-        table.userInfoId,
-        value,
-      );
+    table.userInfoId,
+    value,
+  );
 }
 
 class ParentUserTable extends _i1.Table<int?> {
@@ -169,10 +169,10 @@ class ParentUserTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        userInfoId,
-      ];
+    id,
+    name,
+    userInfoId,
+  ];
 }
 
 class ParentUserInclude extends _i1.IncludeObject {

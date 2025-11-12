@@ -20,7 +20,8 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
       _DistributedCacheEntryImpl;
 
   factory DistributedCacheEntry.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DistributedCacheEntry(data: jsonSerialization['data'] as String);
   }
 

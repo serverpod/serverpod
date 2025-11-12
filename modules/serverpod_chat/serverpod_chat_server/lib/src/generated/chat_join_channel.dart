@@ -74,9 +74,9 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
     required String channel,
     String? userName,
   }) : super._(
-          channel: channel,
-          userName: userName,
-        );
+         channel: channel,
+         userName: userName,
+       );
 
   /// Returns a shallow copy of this [ChatJoinChannel]
   /// with some or all fields replaced by the given arguments.

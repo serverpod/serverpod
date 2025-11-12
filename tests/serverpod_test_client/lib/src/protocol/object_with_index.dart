@@ -73,10 +73,10 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
     required int indexed,
     required int indexed2,
   }) : super._(
-          id: id,
-          indexed: indexed,
-          indexed2: indexed2,
-        );
+         id: id,
+         indexed: indexed,
+         indexed2: indexed2,
+       );
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.

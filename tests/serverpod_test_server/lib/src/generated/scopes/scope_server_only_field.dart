@@ -23,20 +23,24 @@ class ScopeServerOnlyField
   });
 
   factory ScopeServerOnlyField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ScopeServerOnlyField(
       allScope: jsonSerialization['allScope'] == null
           ? null
           : _i2.Types.fromJson(
-              (jsonSerialization['allScope'] as Map<String, dynamic>)),
+              (jsonSerialization['allScope'] as Map<String, dynamic>),
+            ),
       serverOnlyScope: jsonSerialization['serverOnlyScope'] == null
           ? null
           : _i2.Types.fromJson(
-              (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>)),
+              (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>),
+            ),
       nested: jsonSerialization['nested'] == null
           ? null
           : _i3.ScopeServerOnlyField.fromJson(
-              (jsonSerialization['nested'] as Map<String, dynamic>)),
+              (jsonSerialization['nested'] as Map<String, dynamic>),
+            ),
     );
   }
 

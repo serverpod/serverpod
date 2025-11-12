@@ -47,24 +47,28 @@ abstract class UserProfile
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
           : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+              (jsonSerialization['authUser'] as Map<String, dynamic>),
+            ),
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       imageId: jsonSerialization['imageId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
       image: jsonSerialization['image'] == null
           ? null
           : _i3.UserProfileImage.fromJson(
-              (jsonSerialization['image'] as Map<String, dynamic>)),
+              (jsonSerialization['image'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -189,16 +193,16 @@ class _UserProfileImpl extends UserProfile {
     _i1.UuidValue? imageId,
     _i3.UserProfileImage? image,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          createdAt: createdAt,
-          imageId: imageId,
-          image: image,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         createdAt: createdAt,
+         imageId: imageId,
+         image: image,
+       );
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
@@ -218,8 +222,9 @@ class _UserProfileImpl extends UserProfile {
     return UserProfile(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
@@ -234,26 +239,26 @@ class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
   UserProfileUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
-        table.userName,
-        value,
-      );
+    table.userName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
-        table.fullName,
-        value,
-      );
+    table.fullName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -270,7 +275,7 @@ class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
 
 class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_profile') {
+    : super(tableName: 'serverpod_auth_core_profile') {
     updateTable = UserProfileUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -356,14 +361,14 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        userName,
-        fullName,
-        email,
-        createdAt,
-        imageId,
-      ];
+    id,
+    authUserId,
+    userName,
+    fullName,
+    email,
+    createdAt,
+    imageId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -392,9 +397,9 @@ class UserProfileInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'authUser': _authUser,
-        'image': _image,
-      };
+    'authUser': _authUser,
+    'image': _image,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => UserProfile.t;

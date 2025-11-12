@@ -30,11 +30,14 @@ abstract class CachesInfo implements _i1.SerializableModel {
   factory CachesInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CachesInfo(
       local: _i2.CacheInfo.fromJson(
-          (jsonSerialization['local'] as Map<String, dynamic>)),
+        (jsonSerialization['local'] as Map<String, dynamic>),
+      ),
       localPrio: _i2.CacheInfo.fromJson(
-          (jsonSerialization['localPrio'] as Map<String, dynamic>)),
+        (jsonSerialization['localPrio'] as Map<String, dynamic>),
+      ),
       global: _i2.CacheInfo.fromJson(
-          (jsonSerialization['global'] as Map<String, dynamic>)),
+        (jsonSerialization['global'] as Map<String, dynamic>),
+      ),
     );
   }
 
@@ -76,10 +79,10 @@ class _CachesInfoImpl extends CachesInfo {
     required _i2.CacheInfo localPrio,
     required _i2.CacheInfo global,
   }) : super._(
-          local: local,
-          localPrio: localPrio,
-          global: global,
-        );
+         local: local,
+         localPrio: localPrio,
+         global: global,
+       );
 
   /// Returns a shallow copy of this [CachesInfo]
   /// with some or all fields replaced by the given arguments.

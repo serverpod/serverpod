@@ -85,11 +85,11 @@ class _ChildWithDefaultImpl extends ChildWithDefault {
     required int age,
     int? childDefault,
   }) : super._(
-          name: name,
-          parentDefault: parentDefault,
-          age: age,
-          childDefault: childDefault,
-        );
+         name: name,
+         parentDefault: parentDefault,
+         age: age,
+         childDefault: childDefault,
+       );
 
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.

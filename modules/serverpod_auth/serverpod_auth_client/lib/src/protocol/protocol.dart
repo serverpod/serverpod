@@ -115,8 +115,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i7.EmailCreateAccountRequest?>()) {
       return (data != null
-          ? _i7.EmailCreateAccountRequest.fromJson(data)
-          : null) as T;
+              ? _i7.EmailCreateAccountRequest.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i8.EmailFailedSignIn?>()) {
       return (data != null ? _i8.EmailFailedSignIn.fromJson(data) : null) as T;

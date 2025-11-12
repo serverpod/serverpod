@@ -18,8 +18,8 @@ abstract class StringDefault
     this.id,
     String? stringDefault,
     String? stringDefaultNull,
-  })  : stringDefault = stringDefault ?? 'This is a default value',
-        stringDefaultNull = stringDefaultNull ?? 'This is a default null value';
+  }) : stringDefault = stringDefault ?? 'This is a default value',
+       stringDefaultNull = stringDefaultNull ?? 'This is a default null value';
 
   factory StringDefault({
     int? id,
@@ -113,10 +113,10 @@ class _StringDefaultImpl extends StringDefault {
     String? stringDefault,
     String? stringDefaultNull,
   }) : super._(
-          id: id,
-          stringDefault: stringDefault,
-          stringDefaultNull: stringDefaultNull,
-        );
+         id: id,
+         stringDefault: stringDefault,
+         stringDefaultNull: stringDefaultNull,
+       );
 
   /// Returns a shallow copy of this [StringDefault]
   /// with some or all fields replaced by the given arguments.
@@ -155,7 +155,7 @@ class StringDefaultUpdateTable extends _i1.UpdateTable<StringDefaultTable> {
 
 class StringDefaultTable extends _i1.Table<int?> {
   StringDefaultTable({super.tableRelation})
-      : super(tableName: 'string_default') {
+    : super(tableName: 'string_default') {
     updateTable = StringDefaultUpdateTable(this);
     stringDefault = _i1.ColumnString(
       'stringDefault',
@@ -177,10 +177,10 @@ class StringDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        stringDefault,
-        stringDefaultNull,
-      ];
+    id,
+    stringDefault,
+    stringDefaultNull,
+  ];
 }
 
 class StringDefaultInclude extends _i1.IncludeObject {

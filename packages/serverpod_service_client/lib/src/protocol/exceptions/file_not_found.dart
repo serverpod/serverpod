@@ -20,9 +20,11 @@ abstract class FileNotFoundException
       _FileNotFoundExceptionImpl;
 
   factory FileNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return FileNotFoundException(
-        message: jsonSerialization['message'] as String);
+      message: jsonSerialization['message'] as String,
+    );
   }
 
   String message;
@@ -44,7 +46,7 @@ abstract class FileNotFoundException
 
 class _FileNotFoundExceptionImpl extends FileNotFoundException {
   _FileNotFoundExceptionImpl({required String message})
-      : super._(message: message);
+    : super._(message: message);
 
   /// Returns a shallow copy of this [FileNotFoundException]
   /// with some or all fields replaced by the given arguments.

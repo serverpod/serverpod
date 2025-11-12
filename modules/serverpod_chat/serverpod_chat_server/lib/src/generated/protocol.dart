@@ -103,7 +103,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -116,7 +116,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'channel',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -167,7 +167,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -257,8 +257,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i10.ChatMessageAttachmentUploadDescription?>()) {
       return (data != null
-          ? _i10.ChatMessageAttachmentUploadDescription.fromJson(data)
-          : null) as T;
+              ? _i10.ChatMessageAttachmentUploadDescription.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i11.ChatMessageChunk?>()) {
       return (data != null ? _i11.ChatMessageChunk.fromJson(data) : null) as T;
@@ -275,10 +276,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
-              .toList()
-          : null) as T;
+              ? (data as List)
+                    .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
+                    .toList()
+              : null)
+          as T;
     }
     if (t == List<_i8.ChatMessage>) {
       return (data as List).map((e) => deserialize<_i8.ChatMessage>(e)).toList()
@@ -286,10 +288,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<List<_i9.ChatMessageAttachment>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
-              .toList()
-          : null) as T;
+              ? (data as List)
+                    .map((e) => deserialize<_i9.ChatMessageAttachment>(e))
+                    .toList()
+              : null)
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -365,7 +368,8 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'ChatMessageAttachmentUploadDescription') {
       return deserialize<_i10.ChatMessageAttachmentUploadDescription>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'ChatMessageChunk') {
       return deserialize<_i11.ChatMessageChunk>(data['data']);

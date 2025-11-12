@@ -19,9 +19,11 @@ abstract class TypesSetRequired implements _i1.SerializableModel {
 
   factory TypesSetRequired.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesSetRequired(
-        anInt: _i1.SetJsonExtension.fromJson(
-            (jsonSerialization['anInt'] as List),
-            itemFromJson: (e) => e as int)!);
+      anInt: _i1.SetJsonExtension.fromJson(
+        (jsonSerialization['anInt'] as List),
+        itemFromJson: (e) => e as int,
+      )!,
+    );
   }
 
   Set<int> anInt;

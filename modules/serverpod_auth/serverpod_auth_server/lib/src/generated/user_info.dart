@@ -182,16 +182,16 @@ class _UserInfoImpl extends UserInfo {
     required List<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          userIdentifier: userIdentifier,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          created: created,
-          imageUrl: imageUrl,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         userIdentifier: userIdentifier,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         created: created,
+         imageUrl: imageUrl,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
@@ -232,19 +232,19 @@ class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
       );
 
   _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
-        table.userName,
-        value,
-      );
+    table.userName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
-        table.fullName,
-        value,
-      );
+    table.fullName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
       _i1.ColumnValue(
@@ -253,9 +253,9 @@ class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
       );
 
   _i1.ColumnValue<String, String> imageUrl(String? value) => _i1.ColumnValue(
-        table.imageUrl,
-        value,
-      );
+    table.imageUrl,
+    value,
+  );
 
   _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
       _i1.ColumnValue(
@@ -264,14 +264,14 @@ class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
       );
 
   _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
-        table.blocked,
-        value,
-      );
+    table.blocked,
+    value,
+  );
 }
 
 class UserInfoTable extends _i1.Table<int?> {
   UserInfoTable({super.tableRelation})
-      : super(tableName: 'serverpod_user_info') {
+    : super(tableName: 'serverpod_user_info') {
     updateTable = UserInfoUpdateTable(this);
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
@@ -336,16 +336,16 @@ class UserInfoTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userIdentifier,
-        userName,
-        fullName,
-        email,
-        created,
-        imageUrl,
-        scopeNames,
-        blocked,
-      ];
+    id,
+    userIdentifier,
+    userName,
+    fullName,
+    email,
+    created,
+    imageUrl,
+    scopeNames,
+    blocked,
+  ];
 }
 
 class UserInfoInclude extends _i1.IncludeObject {

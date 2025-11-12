@@ -29,13 +29,16 @@ abstract class UserNoteCollectionWithALongName
   }) = _UserNoteCollectionWithALongNameImpl;
 
   factory UserNoteCollectionWithALongName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return UserNoteCollectionWithALongName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       notes: (jsonSerialization['notes'] as List?)
-          ?.map((e) =>
-              _i2.UserNoteWithALongName.fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) =>
+                _i2.UserNoteWithALongName.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
     );
   }
@@ -81,10 +84,10 @@ class _UserNoteCollectionWithALongNameImpl
     required String name,
     List<_i2.UserNoteWithALongName>? notes,
   }) : super._(
-          id: id,
-          name: name,
-          notes: notes,
-        );
+         id: id,
+         name: name,
+         notes: notes,
+       );
 
   /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
   /// with some or all fields replaced by the given arguments.

@@ -25,11 +25,12 @@ abstract class DoubleDefaultPersist
   }) = _DoubleDefaultPersistImpl;
 
   factory DoubleDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DoubleDefaultPersist(
       id: jsonSerialization['id'] as int?,
-      doubleDefaultPersist:
-          (jsonSerialization['doubleDefaultPersist'] as num?)?.toDouble(),
+      doubleDefaultPersist: (jsonSerialization['doubleDefaultPersist'] as num?)
+          ?.toDouble(),
     );
   }
 
@@ -107,9 +108,9 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
     int? id,
     double? doubleDefaultPersist,
   }) : super._(
-          id: id,
-          doubleDefaultPersist: doubleDefaultPersist,
-        );
+         id: id,
+         doubleDefaultPersist: doubleDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -141,7 +142,7 @@ class DoubleDefaultPersistUpdateTable
 
 class DoubleDefaultPersistTable extends _i1.Table<int?> {
   DoubleDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'double_default_persist') {
+    : super(tableName: 'double_default_persist') {
     updateTable = DoubleDefaultPersistUpdateTable(this);
     doubleDefaultPersist = _i1.ColumnDouble(
       'doubleDefaultPersist',
@@ -156,9 +157,9 @@ class DoubleDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        doubleDefaultPersist,
-      ];
+    id,
+    doubleDefaultPersist,
+  ];
 }
 
 class DoubleDefaultPersistInclude extends _i1.IncludeObject {
@@ -356,7 +357,7 @@ class DoubleDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultPersist>(
@@ -371,7 +372,7 @@ class DoubleDefaultPersistRepository {
   Future<List<DoubleDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultPersistTable> where,
     int? limit,
     int? offset,

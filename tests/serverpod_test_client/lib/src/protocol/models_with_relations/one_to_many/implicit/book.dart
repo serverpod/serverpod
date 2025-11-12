@@ -78,10 +78,10 @@ class _BookImpl extends Book {
     required String title,
     List<_i2.Chapter>? chapters,
   }) : super._(
-          id: id,
-          title: title,
-          chapters: chapters,
-        );
+         id: id,
+         title: title,
+         chapters: chapters,
+       );
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.

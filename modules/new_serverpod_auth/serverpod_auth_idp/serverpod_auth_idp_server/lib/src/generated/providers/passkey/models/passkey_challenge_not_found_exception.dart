@@ -26,7 +26,8 @@ abstract class PasskeyChallengeNotFoundException
       _PasskeyChallengeNotFoundExceptionImpl;
 
   factory PasskeyChallengeNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyChallengeNotFoundException();
   }
 

@@ -112,10 +112,10 @@ class _UniqueDataImpl extends UniqueData {
     required int number,
     required String email,
   }) : super._(
-          id: id,
-          number: number,
-          email: email,
-        );
+         id: id,
+         number: number,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -138,14 +138,14 @@ class UniqueDataUpdateTable extends _i1.UpdateTable<UniqueDataTable> {
   UniqueDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+    table.number,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 }
 
 class UniqueDataTable extends _i1.Table<int?> {
@@ -169,10 +169,10 @@ class UniqueDataTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        number,
-        email,
-      ];
+    id,
+    number,
+    email,
+  ];
 }
 
 class UniqueDataInclude extends _i1.IncludeObject {

@@ -23,7 +23,7 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'example',
           null,
-        )
+        ),
     };
     connectors['example'] = _i1.EndpointConnector(
       name: 'example',
@@ -36,17 +36,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'name',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['example'] as _i2.ExampleEndpoint).hello(
-            session,
-            params['name'],
-          ),
-        )
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['example'] as _i2.ExampleEndpoint).hello(
+                session,
+                params['name'],
+              ),
+        ),
       },
     );
     modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);

@@ -21,9 +21,10 @@ abstract class SimpleDataList implements _i1.SerializableModel {
 
   factory SimpleDataList.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataList(
-        rows: (jsonSerialization['rows'] as List)
-            .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
-            .toList());
+      rows: (jsonSerialization['rows'] as List)
+          .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+    );
   }
 
   List<_i2.SimpleData> rows;
@@ -45,7 +46,7 @@ abstract class SimpleDataList implements _i1.SerializableModel {
 
 class _SimpleDataListImpl extends SimpleDataList {
   _SimpleDataListImpl({required List<_i2.SimpleData> rows})
-      : super._(rows: rows);
+    : super._(rows: rows);
 
   /// Returns a shallow copy of this [SimpleDataList]
   /// with some or all fields replaced by the given arguments.
@@ -53,6 +54,7 @@ class _SimpleDataListImpl extends SimpleDataList {
   @override
   SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
     return SimpleDataList(
-        rows: rows ?? this.rows.map((e0) => e0.copyWith()).toList());
+      rows: rows ?? this.rows.map((e0) => e0.copyWith()).toList(),
+    );
   }
 }

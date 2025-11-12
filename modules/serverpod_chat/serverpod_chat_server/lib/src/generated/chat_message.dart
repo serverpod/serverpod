@@ -53,13 +53,16 @@ abstract class ChatMessage
       senderInfo: jsonSerialization['senderInfo'] == null
           ? null
           : _i2.UserInfoPublic.fromJson(
-              (jsonSerialization['senderInfo'] as Map<String, dynamic>)),
+              (jsonSerialization['senderInfo'] as Map<String, dynamic>),
+            ),
       removed: jsonSerialization['removed'] as bool,
       clientMessageId: jsonSerialization['clientMessageId'] as int?,
       sent: jsonSerialization['sent'] as bool?,
       attachments: (jsonSerialization['attachments'] as List?)
-          ?.map((e) =>
-              _i3.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) =>
+                _i3.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
     );
   }
@@ -146,8 +149,9 @@ abstract class ChatMessage
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
       if (attachments != null)
-        'attachments':
-            attachments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'attachments': attachments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -196,17 +200,17 @@ class _ChatMessageImpl extends ChatMessage {
     bool? sent,
     List<_i3.ChatMessageAttachment>? attachments,
   }) : super._(
-          id: id,
-          channel: channel,
-          message: message,
-          time: time,
-          sender: sender,
-          senderInfo: senderInfo,
-          removed: removed,
-          clientMessageId: clientMessageId,
-          sent: sent,
-          attachments: attachments,
-        );
+         id: id,
+         channel: channel,
+         message: message,
+         time: time,
+         sender: sender,
+         senderInfo: senderInfo,
+         removed: removed,
+         clientMessageId: clientMessageId,
+         sent: sent,
+         attachments: attachments,
+       );
 
   /// Returns a shallow copy of this [ChatMessage]
   /// with some or all fields replaced by the given arguments.
@@ -234,8 +238,9 @@ class _ChatMessageImpl extends ChatMessage {
           ? senderInfo
           : this.senderInfo?.copyWith(),
       removed: removed ?? this.removed,
-      clientMessageId:
-          clientMessageId is int? ? clientMessageId : this.clientMessageId,
+      clientMessageId: clientMessageId is int?
+          ? clientMessageId
+          : this.clientMessageId,
       sent: sent is bool? ? sent : this.sent,
       attachments: attachments is List<_i3.ChatMessageAttachment>?
           ? attachments
@@ -248,42 +253,43 @@ class ChatMessageUpdateTable extends _i1.UpdateTable<ChatMessageTable> {
   ChatMessageUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
-        table.channel,
-        value,
-      );
+    table.channel,
+    value,
+  );
 
   _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
-        table.message,
-        value,
-      );
+    table.message,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+    table.time,
+    value,
+  );
 
   _i1.ColumnValue<int, int> sender(int value) => _i1.ColumnValue(
-        table.sender,
-        value,
-      );
+    table.sender,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> removed(bool value) => _i1.ColumnValue(
-        table.removed,
-        value,
-      );
+    table.removed,
+    value,
+  );
 
-  _i1.ColumnValue<List<_i3.ChatMessageAttachment>,
-      List<_i3.ChatMessageAttachment>> attachments(
-          List<_i3.ChatMessageAttachment>? value) =>
-      _i1.ColumnValue(
-        table.attachments,
-        value,
-      );
+  _i1.ColumnValue<
+    List<_i3.ChatMessageAttachment>,
+    List<_i3.ChatMessageAttachment>
+  >
+  attachments(List<_i3.ChatMessageAttachment>? value) => _i1.ColumnValue(
+    table.attachments,
+    value,
+  );
 }
 
 class ChatMessageTable extends _i1.Table<int?> {
   ChatMessageTable({super.tableRelation})
-      : super(tableName: 'serverpod_chat_message') {
+    : super(tableName: 'serverpod_chat_message') {
     updateTable = ChatMessageUpdateTable(this);
     channel = _i1.ColumnString(
       'channel',
@@ -330,18 +336,18 @@ class ChatMessageTable extends _i1.Table<int?> {
 
   /// List of attachments associated with this message.
   late final _i1.ColumnSerializable<List<_i3.ChatMessageAttachment>>
-      attachments;
+  attachments;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        channel,
-        message,
-        time,
-        sender,
-        removed,
-        attachments,
-      ];
+    id,
+    channel,
+    message,
+    time,
+    sender,
+    removed,
+    attachments,
+  ];
 }
 
 class ChatMessageInclude extends _i1.IncludeObject {

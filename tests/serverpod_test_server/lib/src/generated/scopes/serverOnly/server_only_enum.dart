@@ -24,7 +24,8 @@ enum ServerOnlyEnum implements _i1.SerializableModel {
         return ServerOnlyEnum.bar;
       default:
         throw ArgumentError(
-            'Value "$index" cannot be converted to "ServerOnlyEnum"');
+          'Value "$index" cannot be converted to "ServerOnlyEnum"',
+        );
     }
   }
 

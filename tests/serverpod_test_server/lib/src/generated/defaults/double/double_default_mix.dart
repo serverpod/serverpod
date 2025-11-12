@@ -19,10 +19,10 @@ abstract class DoubleDefaultMix
     double? doubleDefaultAndDefaultModel,
     double? doubleDefaultAndDefaultPersist,
     double? doubleDefaultModelAndDefaultPersist,
-  })  : doubleDefaultAndDefaultModel = doubleDefaultAndDefaultModel ?? 20.5,
-        doubleDefaultAndDefaultPersist = doubleDefaultAndDefaultPersist ?? 10.5,
-        doubleDefaultModelAndDefaultPersist =
-            doubleDefaultModelAndDefaultPersist ?? 10.5;
+  }) : doubleDefaultAndDefaultModel = doubleDefaultAndDefaultModel ?? 20.5,
+       doubleDefaultAndDefaultPersist = doubleDefaultAndDefaultPersist ?? 10.5,
+       doubleDefaultModelAndDefaultPersist =
+           doubleDefaultModelAndDefaultPersist ?? 10.5;
 
   factory DoubleDefaultMix({
     int? id,
@@ -131,12 +131,12 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
     double? doubleDefaultAndDefaultPersist,
     double? doubleDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          doubleDefaultAndDefaultModel: doubleDefaultAndDefaultModel,
-          doubleDefaultAndDefaultPersist: doubleDefaultAndDefaultPersist,
-          doubleDefaultModelAndDefaultPersist:
-              doubleDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         doubleDefaultAndDefaultModel: doubleDefaultAndDefaultModel,
+         doubleDefaultAndDefaultPersist: doubleDefaultAndDefaultPersist,
+         doubleDefaultModelAndDefaultPersist:
+             doubleDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -156,7 +156,7 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
           doubleDefaultAndDefaultPersist ?? this.doubleDefaultAndDefaultPersist,
       doubleDefaultModelAndDefaultPersist:
           doubleDefaultModelAndDefaultPersist ??
-              this.doubleDefaultModelAndDefaultPersist,
+          this.doubleDefaultModelAndDefaultPersist,
     );
   }
 }
@@ -172,23 +172,23 @@ class DoubleDefaultMixUpdateTable
       );
 
   _i1.ColumnValue<double, double> doubleDefaultAndDefaultPersist(
-          double value) =>
-      _i1.ColumnValue(
-        table.doubleDefaultAndDefaultPersist,
-        value,
-      );
+    double value,
+  ) => _i1.ColumnValue(
+    table.doubleDefaultAndDefaultPersist,
+    value,
+  );
 
   _i1.ColumnValue<double, double> doubleDefaultModelAndDefaultPersist(
-          double value) =>
-      _i1.ColumnValue(
-        table.doubleDefaultModelAndDefaultPersist,
-        value,
-      );
+    double value,
+  ) => _i1.ColumnValue(
+    table.doubleDefaultModelAndDefaultPersist,
+    value,
+  );
 }
 
 class DoubleDefaultMixTable extends _i1.Table<int?> {
   DoubleDefaultMixTable({super.tableRelation})
-      : super(tableName: 'double_default_mix') {
+    : super(tableName: 'double_default_mix') {
     updateTable = DoubleDefaultMixUpdateTable(this);
     doubleDefaultAndDefaultModel = _i1.ColumnDouble(
       'doubleDefaultAndDefaultModel',
@@ -217,11 +217,11 @@ class DoubleDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        doubleDefaultAndDefaultModel,
-        doubleDefaultAndDefaultPersist,
-        doubleDefaultModelAndDefaultPersist,
-      ];
+    id,
+    doubleDefaultAndDefaultModel,
+    doubleDefaultAndDefaultPersist,
+    doubleDefaultModelAndDefaultPersist,
+  ];
 }
 
 class DoubleDefaultMixInclude extends _i1.IncludeObject {
@@ -419,7 +419,7 @@ class DoubleDefaultMixRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DoubleDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultMix>(
@@ -434,7 +434,7 @@ class DoubleDefaultMixRepository {
   Future<List<DoubleDefaultMix>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultMixTable> where,
     int? limit,
     int? offset,

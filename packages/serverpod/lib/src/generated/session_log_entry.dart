@@ -239,22 +239,22 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     bool? isOpen,
     required DateTime touched,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          time: time,
-          module: module,
-          endpoint: endpoint,
-          method: method,
-          duration: duration,
-          numQueries: numQueries,
-          slow: slow,
-          error: error,
-          stackTrace: stackTrace,
-          authenticatedUserId: authenticatedUserId,
-          userId: userId,
-          isOpen: isOpen,
-          touched: touched,
-        );
+         id: id,
+         serverId: serverId,
+         time: time,
+         module: module,
+         endpoint: endpoint,
+         method: method,
+         duration: duration,
+         numQueries: numQueries,
+         slow: slow,
+         error: error,
+         stackTrace: stackTrace,
+         authenticatedUserId: authenticatedUserId,
+         userId: userId,
+         isOpen: isOpen,
+         touched: touched,
+       );
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -303,69 +303,69 @@ class SessionLogEntryUpdateTable extends _i1.UpdateTable<SessionLogEntryTable> {
   SessionLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+    table.time,
+    value,
+  );
 
   _i1.ColumnValue<String, String> module(String? value) => _i1.ColumnValue(
-        table.module,
-        value,
-      );
+    table.module,
+    value,
+  );
 
   _i1.ColumnValue<String, String> endpoint(String? value) => _i1.ColumnValue(
-        table.endpoint,
-        value,
-      );
+    table.endpoint,
+    value,
+  );
 
   _i1.ColumnValue<String, String> method(String? value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 
   _i1.ColumnValue<double, double> duration(double? value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+    table.duration,
+    value,
+  );
 
   _i1.ColumnValue<int, int> numQueries(int? value) => _i1.ColumnValue(
-        table.numQueries,
-        value,
-      );
+    table.numQueries,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> slow(bool? value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+    table.slow,
+    value,
+  );
 
   _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+    table.error,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+    table.stackTrace,
+    value,
+  );
 
   _i1.ColumnValue<int, int> authenticatedUserId(int? value) => _i1.ColumnValue(
-        table.authenticatedUserId,
-        value,
-      );
+    table.authenticatedUserId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> userId(String? value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> isOpen(bool? value) => _i1.ColumnValue(
-        table.isOpen,
-        value,
-      );
+    table.isOpen,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
       _i1.ColumnValue(
@@ -376,7 +376,7 @@ class SessionLogEntryUpdateTable extends _i1.UpdateTable<SessionLogEntryTable> {
 
 class SessionLogEntryTable extends _i1.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_session_log') {
+    : super(tableName: 'serverpod_session_log') {
     updateTable = SessionLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
@@ -486,22 +486,22 @@ class SessionLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        serverId,
-        time,
-        module,
-        endpoint,
-        method,
-        duration,
-        numQueries,
-        slow,
-        error,
-        stackTrace,
-        authenticatedUserId,
-        userId,
-        isOpen,
-        touched,
-      ];
+    id,
+    serverId,
+    time,
+    module,
+    endpoint,
+    method,
+    duration,
+    numQueries,
+    slow,
+    error,
+    stackTrace,
+    authenticatedUserId,
+    userId,
+    isOpen,
+    touched,
+  ];
 }
 
 class SessionLogEntryInclude extends _i1.IncludeObject {
@@ -699,7 +699,7 @@ class SessionLogEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SessionLogEntry>(
@@ -714,7 +714,7 @@ class SessionLogEntryRepository {
   Future<List<SessionLogEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     int? limit,
     int? offset,

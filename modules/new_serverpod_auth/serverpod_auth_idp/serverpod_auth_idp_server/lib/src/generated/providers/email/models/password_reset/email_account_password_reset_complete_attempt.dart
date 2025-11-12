@@ -31,16 +31,19 @@ abstract class EmailAccountPasswordResetCompleteAttempt
   }) = _EmailAccountPasswordResetCompleteAttemptImpl;
 
   factory EmailAccountPasswordResetCompleteAttempt.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailAccountPasswordResetCompleteAttempt(
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      attemptedAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['attemptedAt']),
+      attemptedAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['attemptedAt'],
+      ),
       ipAddress: jsonSerialization['ipAddress'] as String,
       passwordResetRequestId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['passwordResetRequestId']),
+        jsonSerialization['passwordResetRequestId'],
+      ),
     );
   }
 
@@ -94,13 +97,13 @@ abstract class EmailAccountPasswordResetCompleteAttempt
 
   static EmailAccountPasswordResetCompleteAttemptIncludeList includeList({
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetCompleteAttemptTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        orderByList,
+    orderByList,
     EmailAccountPasswordResetCompleteAttemptInclude? include,
   }) {
     return EmailAccountPasswordResetCompleteAttemptIncludeList._(
@@ -109,8 +112,9 @@ abstract class EmailAccountPasswordResetCompleteAttempt
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetCompleteAttempt.t),
       orderDescending: orderDescending,
-      orderByList:
-          orderByList?.call(EmailAccountPasswordResetCompleteAttempt.t),
+      orderByList: orderByList?.call(
+        EmailAccountPasswordResetCompleteAttempt.t,
+      ),
       include: include,
     );
   }
@@ -131,11 +135,11 @@ class _EmailAccountPasswordResetCompleteAttemptImpl
     required String ipAddress,
     required _i1.UuidValue passwordResetRequestId,
   }) : super._(
-          id: id,
-          attemptedAt: attemptedAt,
-          ipAddress: ipAddress,
-          passwordResetRequestId: passwordResetRequestId,
-        );
+         id: id,
+         attemptedAt: attemptedAt,
+         ipAddress: ipAddress,
+         passwordResetRequestId: passwordResetRequestId,
+       );
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetCompleteAttempt]
   /// with some or all fields replaced by the given arguments.
@@ -168,24 +172,24 @@ class EmailAccountPasswordResetCompleteAttemptUpdateTable
       );
 
   _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
-        table.ipAddress,
-        value,
-      );
+    table.ipAddress,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> passwordResetRequestId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.passwordResetRequestId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.passwordResetRequestId,
+    value,
+  );
 }
 
 class EmailAccountPasswordResetCompleteAttemptTable
     extends _i1.Table<_i1.UuidValue?> {
   EmailAccountPasswordResetCompleteAttemptTable({super.tableRelation})
-      : super(
-            tableName:
-                'serverpod_auth_idp_email_account_password_reset_complete') {
+    : super(
+        tableName: 'serverpod_auth_idp_email_account_password_reset_complete',
+      ) {
     updateTable = EmailAccountPasswordResetCompleteAttemptUpdateTable(this);
     attemptedAt = _i1.ColumnDateTime(
       'attemptedAt',
@@ -215,11 +219,11 @@ class EmailAccountPasswordResetCompleteAttemptTable
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        attemptedAt,
-        ipAddress,
-        passwordResetRequestId,
-      ];
+    id,
+    attemptedAt,
+    ipAddress,
+    passwordResetRequestId,
+  ];
 }
 
 class EmailAccountPasswordResetCompleteAttemptInclude
@@ -238,7 +242,7 @@ class EmailAccountPasswordResetCompleteAttemptIncludeList
     extends _i1.IncludeList {
   EmailAccountPasswordResetCompleteAttemptIncludeList._({
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        where,
+    where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -285,20 +289,21 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
   Future<List<EmailAccountPasswordResetCompleteAttempt>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetCompleteAttemptTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        orderByList,
+    orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.find<EmailAccountPasswordResetCompleteAttempt>(
       where: where?.call(EmailAccountPasswordResetCompleteAttempt.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetCompleteAttempt.t),
-      orderByList:
-          orderByList?.call(EmailAccountPasswordResetCompleteAttempt.t),
+      orderByList: orderByList?.call(
+        EmailAccountPasswordResetCompleteAttempt.t,
+      ),
       orderDescending: orderDescending,
       limit: limit,
       offset: offset,
@@ -326,19 +331,20 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
   Future<EmailAccountPasswordResetCompleteAttempt?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        where,
+    where,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetCompleteAttemptTable>? orderBy,
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        orderByList,
+    orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.findFirstRow<EmailAccountPasswordResetCompleteAttempt>(
       where: where?.call(EmailAccountPasswordResetCompleteAttempt.t),
       orderBy: orderBy?.call(EmailAccountPasswordResetCompleteAttempt.t),
-      orderByList:
-          orderByList?.call(EmailAccountPasswordResetCompleteAttempt.t),
+      orderByList: orderByList?.call(
+        EmailAccountPasswordResetCompleteAttempt.t,
+      ),
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
@@ -397,7 +403,7 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
     _i1.Session session,
     List<EmailAccountPasswordResetCompleteAttempt> rows, {
     _i1.ColumnSelections<EmailAccountPasswordResetCompleteAttemptTable>?
-        columns,
+    columns,
     _i1.Transaction? transaction,
   }) async {
     return session.db.update<EmailAccountPasswordResetCompleteAttempt>(
@@ -414,7 +420,7 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
     _i1.Session session,
     EmailAccountPasswordResetCompleteAttempt row, {
     _i1.ColumnSelections<EmailAccountPasswordResetCompleteAttemptTable>?
-        columns,
+    columns,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailAccountPasswordResetCompleteAttempt>(
@@ -430,14 +436,16 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<
-            EmailAccountPasswordResetCompleteAttemptUpdateTable>
-        columnValues,
+      EmailAccountPasswordResetCompleteAttemptUpdateTable
+    >
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountPasswordResetCompleteAttempt>(
       id,
-      columnValues:
-          columnValues(EmailAccountPasswordResetCompleteAttempt.t.updateTable),
+      columnValues: columnValues(
+        EmailAccountPasswordResetCompleteAttempt.t.updateTable,
+      ),
       transaction: transaction,
     );
   }
@@ -447,28 +455,32 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
   Future<List<EmailAccountPasswordResetCompleteAttempt>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<
-            EmailAccountPasswordResetCompleteAttemptUpdateTable>
-        columnValues,
-    required _i1
-        .WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>
-        where,
+      EmailAccountPasswordResetCompleteAttemptUpdateTable
+    >
+    columnValues,
+    required _i1.WhereExpressionBuilder<
+      EmailAccountPasswordResetCompleteAttemptTable
+    >
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailAccountPasswordResetCompleteAttemptTable>? orderBy,
     _i1.OrderByListBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        orderByList,
+    orderByList,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateWhere<EmailAccountPasswordResetCompleteAttempt>(
-      columnValues:
-          columnValues(EmailAccountPasswordResetCompleteAttempt.t.updateTable),
+      columnValues: columnValues(
+        EmailAccountPasswordResetCompleteAttempt.t.updateTable,
+      ),
       where: where(EmailAccountPasswordResetCompleteAttempt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetCompleteAttempt.t),
-      orderByList:
-          orderByList?.call(EmailAccountPasswordResetCompleteAttempt.t),
+      orderByList: orderByList?.call(
+        EmailAccountPasswordResetCompleteAttempt.t,
+      ),
       orderDescending: orderDescending,
       transaction: transaction,
     );
@@ -503,9 +515,10 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
   /// Deletes all rows matching the [where] expression.
   Future<List<EmailAccountPasswordResetCompleteAttempt>> deleteWhere(
     _i1.Session session, {
-    required _i1
-        .WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>
-        where,
+    required _i1.WhereExpressionBuilder<
+      EmailAccountPasswordResetCompleteAttemptTable
+    >
+    where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetCompleteAttempt>(
@@ -519,7 +532,7 @@ class EmailAccountPasswordResetCompleteAttemptRepository {
   Future<int> count(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAccountPasswordResetCompleteAttemptTable>?
-        where,
+    where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

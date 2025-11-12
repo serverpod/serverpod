@@ -34,10 +34,12 @@ abstract class ChatJoinedChannel implements _i1.SerializableModel {
     return ChatJoinedChannel(
       channel: jsonSerialization['channel'] as String,
       initialMessageChunk: _i2.ChatMessageChunk.fromJson(
-          (jsonSerialization['initialMessageChunk'] as Map<String, dynamic>)),
+        (jsonSerialization['initialMessageChunk'] as Map<String, dynamic>),
+      ),
       lastReadMessageId: jsonSerialization['lastReadMessageId'] as int,
       userInfo: _i3.UserInfo.fromJson(
-          (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+        (jsonSerialization['userInfo'] as Map<String, dynamic>),
+      ),
     );
   }
 
@@ -85,11 +87,11 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
     required int lastReadMessageId,
     required _i3.UserInfo userInfo,
   }) : super._(
-          channel: channel,
-          initialMessageChunk: initialMessageChunk,
-          lastReadMessageId: lastReadMessageId,
-          userInfo: userInfo,
-        );
+         channel: channel,
+         initialMessageChunk: initialMessageChunk,
+         lastReadMessageId: lastReadMessageId,
+         userInfo: userInfo,
+       );
 
   /// Returns a shallow copy of this [ChatJoinedChannel]
   /// with some or all fields replaced by the given arguments.

@@ -39,7 +39,8 @@ abstract class Cat implements _i1.SerializableModel {
       mother: jsonSerialization['mother'] == null
           ? null
           : _i2.Cat.fromJson(
-              (jsonSerialization['mother'] as Map<String, dynamic>)),
+              (jsonSerialization['mother'] as Map<String, dynamic>),
+            ),
       kittens: (jsonSerialization['kittens'] as List?)
           ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -97,12 +98,12 @@ class _CatImpl extends Cat {
     _i2.Cat? mother,
     List<_i2.Cat>? kittens,
   }) : super._(
-          id: id,
-          name: name,
-          motherId: motherId,
-          mother: mother,
-          kittens: kittens,
-        );
+         id: id,
+         name: name,
+         motherId: motherId,
+         mother: mother,
+         kittens: kittens,
+       );
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.

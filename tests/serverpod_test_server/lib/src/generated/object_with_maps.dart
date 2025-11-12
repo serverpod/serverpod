@@ -54,76 +54,99 @@ abstract class ObjectWithMaps
 
   factory ObjectWithMaps.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithMaps(
-      dataMap: (jsonSerialization['dataMap'] as Map).map((k, v) => MapEntry(
-            k as String,
-            _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-          )),
-      intMap: (jsonSerialization['intMap'] as Map).map((k, v) => MapEntry(
-            k as String,
-            v as int,
-          )),
-      stringMap: (jsonSerialization['stringMap'] as Map).map((k, v) => MapEntry(
-            k as String,
-            v as String,
-          )),
-      dateTimeMap:
-          (jsonSerialization['dateTimeMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                _i1.DateTimeJsonExtension.fromJson(v),
-              )),
-      byteDataMap:
-          (jsonSerialization['byteDataMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                _i1.ByteDataJsonExtension.fromJson(v),
-              )),
-      durationMap:
-          (jsonSerialization['durationMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                _i1.DurationJsonExtension.fromJson(v),
-              )),
-      uuidMap: (jsonSerialization['uuidMap'] as Map).map((k, v) => MapEntry(
-            k as String,
-            _i1.UuidValueJsonExtension.fromJson(v),
-          )),
-      nullableDataMap:
-          (jsonSerialization['nullableDataMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                v == null
-                    ? null
-                    : _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-              )),
-      nullableIntMap:
-          (jsonSerialization['nullableIntMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                v as int?,
-              )),
-      nullableStringMap: (jsonSerialization['nullableStringMap'] as Map)
-          .map((k, v) => MapEntry(
-                k as String,
-                v as String?,
-              )),
+      dataMap: (jsonSerialization['dataMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
+        ),
+      ),
+      intMap: (jsonSerialization['intMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v as int,
+        ),
+      ),
+      stringMap: (jsonSerialization['stringMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v as String,
+        ),
+      ),
+      dateTimeMap: (jsonSerialization['dateTimeMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.DateTimeJsonExtension.fromJson(v),
+        ),
+      ),
+      byteDataMap: (jsonSerialization['byteDataMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.ByteDataJsonExtension.fromJson(v),
+        ),
+      ),
+      durationMap: (jsonSerialization['durationMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.DurationJsonExtension.fromJson(v),
+        ),
+      ),
+      uuidMap: (jsonSerialization['uuidMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.UuidValueJsonExtension.fromJson(v),
+        ),
+      ),
+      nullableDataMap: (jsonSerialization['nullableDataMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v == null
+              ? null
+              : _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
+        ),
+      ),
+      nullableIntMap: (jsonSerialization['nullableIntMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v as int?,
+        ),
+      ),
+      nullableStringMap: (jsonSerialization['nullableStringMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v as String?,
+        ),
+      ),
       nullableDateTimeMap: (jsonSerialization['nullableDateTimeMap'] as Map)
-          .map((k, v) => MapEntry(
-                k as String,
-                v == null ? null : _i1.DateTimeJsonExtension.fromJson(v),
-              )),
+          .map(
+            (k, v) => MapEntry(
+              k as String,
+              v == null ? null : _i1.DateTimeJsonExtension.fromJson(v),
+            ),
+          ),
       nullableByteDataMap: (jsonSerialization['nullableByteDataMap'] as Map)
-          .map((k, v) => MapEntry(
-                k as String,
-                v == null ? null : _i1.ByteDataJsonExtension.fromJson(v),
-              )),
+          .map(
+            (k, v) => MapEntry(
+              k as String,
+              v == null ? null : _i1.ByteDataJsonExtension.fromJson(v),
+            ),
+          ),
       nullableDurationMap: (jsonSerialization['nullableDurationMap'] as Map)
-          .map((k, v) => MapEntry(
-                k as String,
-                v == null ? null : _i1.DurationJsonExtension.fromJson(v),
-              )),
-      nullableUuidMap:
-          (jsonSerialization['nullableUuidMap'] as Map).map((k, v) => MapEntry(
-                k as String,
-                v == null ? null : _i1.UuidValueJsonExtension.fromJson(v),
-              )),
+          .map(
+            (k, v) => MapEntry(
+              k as String,
+              v == null ? null : _i1.DurationJsonExtension.fromJson(v),
+            ),
+          ),
+      nullableUuidMap: (jsonSerialization['nullableUuidMap'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          v == null ? null : _i1.UuidValueJsonExtension.fromJson(v),
+        ),
+      ),
       intIntMap: (jsonSerialization['intIntMap'] as List).fold<Map<int, int>>(
-          {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),
+        {},
+        (t, e) => {...t, e['k'] as int: e['v'] as int},
+      ),
     );
   }
 
@@ -187,18 +210,23 @@ abstract class ObjectWithMaps
       'byteDataMap': byteDataMap.toJson(valueToJson: (v) => v.toJson()),
       'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
       'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
-      'nullableDataMap':
-          nullableDataMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableDataMap': nullableDataMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'nullableIntMap': nullableIntMap.toJson(),
       'nullableStringMap': nullableStringMap.toJson(),
-      'nullableDateTimeMap':
-          nullableDateTimeMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableByteDataMap':
-          nullableByteDataMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableDurationMap':
-          nullableDurationMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableUuidMap':
-          nullableUuidMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableDateTimeMap': nullableDateTimeMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableByteDataMap': nullableByteDataMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableDurationMap': nullableDurationMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableUuidMap': nullableUuidMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'intIntMap': intIntMap.toJson(),
     };
   }
@@ -213,18 +241,23 @@ abstract class ObjectWithMaps
       'byteDataMap': byteDataMap.toJson(valueToJson: (v) => v.toJson()),
       'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
       'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
-      'nullableDataMap':
-          nullableDataMap.toJson(valueToJson: (v) => v?.toJsonForProtocol()),
+      'nullableDataMap': nullableDataMap.toJson(
+        valueToJson: (v) => v?.toJsonForProtocol(),
+      ),
       'nullableIntMap': nullableIntMap.toJson(),
       'nullableStringMap': nullableStringMap.toJson(),
-      'nullableDateTimeMap':
-          nullableDateTimeMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableByteDataMap':
-          nullableByteDataMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableDurationMap':
-          nullableDurationMap.toJson(valueToJson: (v) => v?.toJson()),
-      'nullableUuidMap':
-          nullableUuidMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableDateTimeMap': nullableDateTimeMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableByteDataMap': nullableByteDataMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableDurationMap': nullableDurationMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
+      'nullableUuidMap': nullableUuidMap.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'intIntMap': intIntMap.toJson(),
     };
   }
@@ -253,22 +286,22 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
     required Map<String, _i1.UuidValue?> nullableUuidMap,
     required Map<int, int> intIntMap,
   }) : super._(
-          dataMap: dataMap,
-          intMap: intMap,
-          stringMap: stringMap,
-          dateTimeMap: dateTimeMap,
-          byteDataMap: byteDataMap,
-          durationMap: durationMap,
-          uuidMap: uuidMap,
-          nullableDataMap: nullableDataMap,
-          nullableIntMap: nullableIntMap,
-          nullableStringMap: nullableStringMap,
-          nullableDateTimeMap: nullableDateTimeMap,
-          nullableByteDataMap: nullableByteDataMap,
-          nullableDurationMap: nullableDurationMap,
-          nullableUuidMap: nullableUuidMap,
-          intIntMap: intIntMap,
-        );
+         dataMap: dataMap,
+         intMap: intMap,
+         stringMap: stringMap,
+         dateTimeMap: dateTimeMap,
+         byteDataMap: byteDataMap,
+         durationMap: durationMap,
+         uuidMap: uuidMap,
+         nullableDataMap: nullableDataMap,
+         nullableIntMap: nullableIntMap,
+         nullableStringMap: nullableStringMap,
+         nullableDateTimeMap: nullableDateTimeMap,
+         nullableByteDataMap: nullableByteDataMap,
+         nullableDurationMap: nullableDurationMap,
+         nullableUuidMap: nullableUuidMap,
+         intIntMap: intIntMap,
+       );
 
   /// Returns a shallow copy of this [ObjectWithMaps]
   /// with some or all fields replaced by the given arguments.
@@ -292,141 +325,171 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
     Map<int, int>? intIntMap,
   }) {
     return ObjectWithMaps(
-      dataMap: dataMap ??
-          this.dataMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.copyWith(),
-                  )),
-      intMap: intMap ??
-          this.intMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      stringMap: stringMap ??
-          this.stringMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      dateTimeMap: dateTimeMap ??
-          this.dateTimeMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      byteDataMap: byteDataMap ??
-          this.byteDataMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.clone(),
-                  )),
-      durationMap: durationMap ??
-          this.durationMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      uuidMap: uuidMap ??
-          this.uuidMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      nullableDataMap: nullableDataMap ??
-          this.nullableDataMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0?.copyWith(),
-                  )),
-      nullableIntMap: nullableIntMap ??
-          this.nullableIntMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      nullableStringMap: nullableStringMap ??
-          this.nullableStringMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      nullableDateTimeMap: nullableDateTimeMap ??
-          this.nullableDateTimeMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      nullableByteDataMap: nullableByteDataMap ??
-          this.nullableByteDataMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0?.clone(),
-                  )),
-      nullableDurationMap: nullableDurationMap ??
-          this.nullableDurationMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      nullableUuidMap: nullableUuidMap ??
-          this.nullableUuidMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
-      intIntMap: intIntMap ??
-          this.intIntMap.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+      dataMap:
+          dataMap ??
+          this.dataMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0.copyWith(),
+            ),
+          ),
+      intMap:
+          intMap ??
+          this.intMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      stringMap:
+          stringMap ??
+          this.stringMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      dateTimeMap:
+          dateTimeMap ??
+          this.dateTimeMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      byteDataMap:
+          byteDataMap ??
+          this.byteDataMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0.clone(),
+            ),
+          ),
+      durationMap:
+          durationMap ??
+          this.durationMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      uuidMap:
+          uuidMap ??
+          this.uuidMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      nullableDataMap:
+          nullableDataMap ??
+          this.nullableDataMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0?.copyWith(),
+            ),
+          ),
+      nullableIntMap:
+          nullableIntMap ??
+          this.nullableIntMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      nullableStringMap:
+          nullableStringMap ??
+          this.nullableStringMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      nullableDateTimeMap:
+          nullableDateTimeMap ??
+          this.nullableDateTimeMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      nullableByteDataMap:
+          nullableByteDataMap ??
+          this.nullableByteDataMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0?.clone(),
+            ),
+          ),
+      nullableDurationMap:
+          nullableDurationMap ??
+          this.nullableDurationMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      nullableUuidMap:
+          nullableUuidMap ??
+          this.nullableUuidMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+      intIntMap:
+          intIntMap ??
+          this.intIntMap.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
     );
   }
 }

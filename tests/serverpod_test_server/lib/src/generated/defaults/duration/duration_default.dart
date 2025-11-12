@@ -18,22 +18,24 @@ abstract class DurationDefault
     this.id,
     Duration? durationDefault,
     Duration? durationDefaultNull,
-  })  : durationDefault = durationDefault ??
-            Duration(
-              days: 1,
-              hours: 2,
-              minutes: 10,
-              seconds: 30,
-              milliseconds: 100,
-            ),
-        durationDefaultNull = durationDefaultNull ??
-            Duration(
-              days: 2,
-              hours: 1,
-              minutes: 20,
-              seconds: 40,
-              milliseconds: 100,
-            );
+  }) : durationDefault =
+           durationDefault ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           ),
+       durationDefaultNull =
+           durationDefaultNull ??
+           Duration(
+             days: 2,
+             hours: 1,
+             minutes: 20,
+             seconds: 40,
+             milliseconds: 100,
+           );
 
   factory DurationDefault({
     int? id,
@@ -45,11 +47,13 @@ abstract class DurationDefault
     return DurationDefault(
       id: jsonSerialization['id'] as int?,
       durationDefault: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefault']),
+        jsonSerialization['durationDefault'],
+      ),
       durationDefaultNull: jsonSerialization['durationDefaultNull'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(
-              jsonSerialization['durationDefaultNull']),
+              jsonSerialization['durationDefaultNull'],
+            ),
     );
   }
 
@@ -133,10 +137,10 @@ class _DurationDefaultImpl extends DurationDefault {
     Duration? durationDefault,
     Duration? durationDefaultNull,
   }) : super._(
-          id: id,
-          durationDefault: durationDefault,
-          durationDefaultNull: durationDefaultNull,
-        );
+         id: id,
+         durationDefault: durationDefault,
+         durationDefaultNull: durationDefaultNull,
+       );
 
   /// Returns a shallow copy of this [DurationDefault]
   /// with some or all fields replaced by the given arguments.
@@ -175,7 +179,7 @@ class DurationDefaultUpdateTable extends _i1.UpdateTable<DurationDefaultTable> {
 
 class DurationDefaultTable extends _i1.Table<int?> {
   DurationDefaultTable({super.tableRelation})
-      : super(tableName: 'duration_default') {
+    : super(tableName: 'duration_default') {
     updateTable = DurationDefaultUpdateTable(this);
     durationDefault = _i1.ColumnDuration(
       'durationDefault',
@@ -197,10 +201,10 @@ class DurationDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        durationDefault,
-        durationDefaultNull,
-      ];
+    id,
+    durationDefault,
+    durationDefaultNull,
+  ];
 }
 
 class DurationDefaultInclude extends _i1.IncludeObject {
@@ -398,7 +402,7 @@ class DurationDefaultRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefault>(
@@ -413,7 +417,7 @@ class DurationDefaultRepository {
   Future<List<DurationDefault>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
     int? limit,
     int? offset,

@@ -18,8 +18,8 @@ abstract class DoubleDefaultModel
     this.id,
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
-  })  : doubleDefaultModel = doubleDefaultModel ?? 10.5,
-        doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
+  }) : doubleDefaultModel = doubleDefaultModel ?? 10.5,
+       doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
 
   factory DoubleDefaultModel({
     int? id,
@@ -30,8 +30,8 @@ abstract class DoubleDefaultModel
   factory DoubleDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return DoubleDefaultModel(
       id: jsonSerialization['id'] as int?,
-      doubleDefaultModel:
-          (jsonSerialization['doubleDefaultModel'] as num).toDouble(),
+      doubleDefaultModel: (jsonSerialization['doubleDefaultModel'] as num)
+          .toDouble(),
       doubleDefaultModelNull:
           (jsonSerialization['doubleDefaultModelNull'] as num).toDouble(),
     );
@@ -115,10 +115,10 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
   }) : super._(
-          id: id,
-          doubleDefaultModel: doubleDefaultModel,
-          doubleDefaultModelNull: doubleDefaultModelNull,
-        );
+         id: id,
+         doubleDefaultModel: doubleDefaultModel,
+         doubleDefaultModelNull: doubleDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -157,7 +157,7 @@ class DoubleDefaultModelUpdateTable
 
 class DoubleDefaultModelTable extends _i1.Table<int?> {
   DoubleDefaultModelTable({super.tableRelation})
-      : super(tableName: 'double_default_model') {
+    : super(tableName: 'double_default_model') {
     updateTable = DoubleDefaultModelUpdateTable(this);
     doubleDefaultModel = _i1.ColumnDouble(
       'doubleDefaultModel',
@@ -177,10 +177,10 @@ class DoubleDefaultModelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        doubleDefaultModel,
-        doubleDefaultModelNull,
-      ];
+    id,
+    doubleDefaultModel,
+    doubleDefaultModelNull,
+  ];
 }
 
 class DoubleDefaultModelInclude extends _i1.IncludeObject {
@@ -378,7 +378,7 @@ class DoubleDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultModel>(
@@ -393,7 +393,7 @@ class DoubleDefaultModelRepository {
   Future<List<DoubleDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     int? limit,
     int? offset,

@@ -103,13 +103,13 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     required String serverId,
     String? identifier,
   }) : super._(
-          id: id,
-          name: name,
-          time: time,
-          serializedObject: serializedObject,
-          serverId: serverId,
-          identifier: identifier,
-        );
+         id: id,
+         name: name,
+         time: time,
+         serializedObject: serializedObject,
+         serverId: serverId,
+         identifier: identifier,
+       );
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.

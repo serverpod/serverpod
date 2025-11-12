@@ -76,10 +76,10 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
     required int userId,
     required String refreshToken,
   }) : super._(
-          id: id,
-          userId: userId,
-          refreshToken: refreshToken,
-        );
+         id: id,
+         userId: userId,
+         refreshToken: refreshToken,
+       );
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.

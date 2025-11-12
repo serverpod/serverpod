@@ -38,7 +38,8 @@ abstract class PlayerUuid implements _i1.SerializableModel {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -87,11 +88,11 @@ class _PlayerUuidImpl extends PlayerUuid {
     int? teamId,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.

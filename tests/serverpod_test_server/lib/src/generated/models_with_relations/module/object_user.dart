@@ -39,7 +39,8 @@ abstract class ObjectUser
       userInfo: jsonSerialization['userInfo'] == null
           ? null
           : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+              (jsonSerialization['userInfo'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -127,11 +128,11 @@ class _ObjectUserImpl extends ObjectUser {
     required int userInfoId,
     _i2.UserInfo? userInfo,
   }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-          userInfo: userInfo,
-        );
+         id: id,
+         name: name,
+         userInfoId: userInfoId,
+         userInfo: userInfo,
+       );
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
@@ -147,8 +148,9 @@ class _ObjectUserImpl extends ObjectUser {
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo:
-          userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
+      userInfo: userInfo is _i2.UserInfo?
+          ? userInfo
+          : this.userInfo?.copyWith(),
     );
   }
 }
@@ -157,14 +159,14 @@ class ObjectUserUpdateTable extends _i1.UpdateTable<ObjectUserTable> {
   ObjectUserUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> userInfoId(int value) => _i1.ColumnValue(
-        table.userInfoId,
-        value,
-      );
+    table.userInfoId,
+    value,
+  );
 }
 
 class ObjectUserTable extends _i1.Table<int?> {
@@ -203,10 +205,10 @@ class ObjectUserTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        userInfoId,
-      ];
+    id,
+    name,
+    userInfoId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

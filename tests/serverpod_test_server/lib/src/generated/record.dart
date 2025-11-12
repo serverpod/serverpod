@@ -21,10 +21,12 @@ abstract class Record
 
   factory Record.fromJson(Map<String, dynamic> jsonSerialization) {
     return Record(
-        aBoolRecord: jsonSerialization['aBoolRecord'] == null
-            ? null
-            : _i2.Protocol().deserialize<(bool,)?>(
-                (jsonSerialization['aBoolRecord'] as Map<String, dynamic>)));
+      aBoolRecord: jsonSerialization['aBoolRecord'] == null
+          ? null
+          : _i2.Protocol().deserialize<(bool,)?>(
+              (jsonSerialization['aBoolRecord'] as Map<String, dynamic>),
+            ),
+    );
   }
 
   (bool,)? aBoolRecord;
@@ -36,14 +38,14 @@ abstract class Record
   @override
   Map<String, dynamic> toJson() {
     return {
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord)
+      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord)
+      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord),
     };
   }
 
@@ -64,10 +66,11 @@ class _RecordImpl extends Record {
   @override
   Record copyWith({Object? aBoolRecord = _Undefined}) {
     return Record(
-        aBoolRecord: aBoolRecord is (bool,)?
-            ? aBoolRecord
-            : this.aBoolRecord == null
-                ? null
-                : (this.aBoolRecord!.$1,));
+      aBoolRecord: aBoolRecord is (bool,)?
+          ? aBoolRecord
+          : this.aBoolRecord == null
+          ? null
+          : (this.aBoolRecord!.$1,),
+    );
   }
 }

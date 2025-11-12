@@ -18,8 +18,8 @@ abstract class IntDefaultModel
     this.id,
     int? intDefaultModel,
     int? intDefaultModelNull,
-  })  : intDefaultModel = intDefaultModel ?? 10,
-        intDefaultModelNull = intDefaultModelNull ?? 20;
+  }) : intDefaultModel = intDefaultModel ?? 10,
+       intDefaultModelNull = intDefaultModelNull ?? 20;
 
   factory IntDefaultModel({
     int? id,
@@ -113,10 +113,10 @@ class _IntDefaultModelImpl extends IntDefaultModel {
     int? intDefaultModel,
     int? intDefaultModelNull,
   }) : super._(
-          id: id,
-          intDefaultModel: intDefaultModel,
-          intDefaultModelNull: intDefaultModelNull,
-        );
+         id: id,
+         intDefaultModel: intDefaultModel,
+         intDefaultModelNull: intDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [IntDefaultModel]
   /// with some or all fields replaced by the given arguments.
@@ -139,19 +139,19 @@ class IntDefaultModelUpdateTable extends _i1.UpdateTable<IntDefaultModelTable> {
   IntDefaultModelUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> intDefaultModel(int value) => _i1.ColumnValue(
-        table.intDefaultModel,
-        value,
-      );
+    table.intDefaultModel,
+    value,
+  );
 
   _i1.ColumnValue<int, int> intDefaultModelNull(int value) => _i1.ColumnValue(
-        table.intDefaultModelNull,
-        value,
-      );
+    table.intDefaultModelNull,
+    value,
+  );
 }
 
 class IntDefaultModelTable extends _i1.Table<int?> {
   IntDefaultModelTable({super.tableRelation})
-      : super(tableName: 'int_default_model') {
+    : super(tableName: 'int_default_model') {
     updateTable = IntDefaultModelUpdateTable(this);
     intDefaultModel = _i1.ColumnInt(
       'intDefaultModel',
@@ -171,10 +171,10 @@ class IntDefaultModelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        intDefaultModel,
-        intDefaultModelNull,
-      ];
+    id,
+    intDefaultModel,
+    intDefaultModelNull,
+  ];
 }
 
 class IntDefaultModelInclude extends _i1.IncludeObject {
@@ -372,7 +372,7 @@ class IntDefaultModelRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<IntDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<IntDefaultModel>(
@@ -387,7 +387,7 @@ class IntDefaultModelRepository {
   Future<List<IntDefaultModel>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<IntDefaultModelUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
     int? limit,
     int? offset,
