@@ -301,14 +301,6 @@ class MethodCallSession extends Session {
   @override
   String get method => _method;
 
-  /// The name of the method that is being called.
-  @Deprecated('Use method instead')
-  String get methodName => _method;
-
-  /// The name of the endpoint that is being called.
-  @Deprecated('Use endpoint instead')
-  String get endpointName => endpoint;
-
   /// The [Request] associated with the call.
   final Request request;
 
@@ -394,10 +386,6 @@ class StreamingSession extends Session {
 
   @override
   String get endpoint => _endpoint;
-
-  /// The name of the endpoint that is being called.
-  @Deprecated('Use endpoint instead')
-  String get endpointName => _endpoint;
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession._({
