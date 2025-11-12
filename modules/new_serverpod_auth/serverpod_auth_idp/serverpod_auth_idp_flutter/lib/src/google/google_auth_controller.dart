@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import '../common/exceptions.dart';
 import 'google_sign_in_service.dart';
 
 /// Controller for managing Google-based authentication flows.
@@ -39,6 +40,10 @@ class GoogleAuthController extends ChangeNotifier {
   final VoidCallback? onAuthenticated;
 
   /// Callback when an error occurs during authentication.
+  ///
+  /// The [error] parameter is an exception that should be shown to the user.
+  /// Exceptions that should not be shown to the user are shown in the debug
+  /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
   /// Whether to attempt to authenticate the user automatically using the
@@ -188,17 +193,25 @@ class GoogleAuthController extends ChangeNotifier {
       _setState(GoogleAuthState.authenticated);
       onAuthenticated?.call();
     } catch (error) {
-      _error = error;
-      _setState(GoogleAuthState.error);
-      onError?.call(error);
+      _handleAuthenticationError(error);
     }
   }
 
   /// Handles authentication errors from the Google Sign-In service.
-  Future<void> _handleAuthenticationError(Object error) async {
+  void _handleAuthenticationError(Object error) {
+    if (error is GoogleSignInException &&
+        error.code == GoogleSignInExceptionCode.canceled) {
+      // The Google Sign-In package already prints these to the debug log.
+      return;
+    }
     _error = error;
     _setState(GoogleAuthState.error);
-    onError?.call(error);
+    debugPrint('[GoogleAuthController] Authentication error: $error');
+
+    final userFriendlyError = convertToUserFacingException(error);
+    if (userFriendlyError != null) {
+      onError?.call(userFriendlyError);
+    }
   }
 
   /// Sets the current state of the authentication flow and notifies listeners.
@@ -239,4 +252,32 @@ extension on GoogleSignInAuthorizationClient {
     if (authorization != null) return authorization;
     return await authorizeScopes(scopes);
   }
+}
+
+/// Converts server exceptions to user-friendly error messages.
+///
+/// Returns a user-friendly exception or message for exceptions that should be
+/// shown to the user. Returns `null` for internal errors that shouldn't be
+/// exposed to users (e.g., StateError, internal server errors, network errors).
+Exception? convertToUserFacingException(Object error) {
+  if (error is UserFacingException) return error;
+  if (error is GoogleIdTokenVerificationException) {
+    return UserFacingException(
+      'An error occurred while verifying the Google ID token. Please check '
+      'your Google account and try again. If the problem persists, please '
+      'contact support.',
+      originalException: error,
+    );
+  }
+  if (error is GoogleSignInException) {
+    return UserFacingException(
+      'An error occurred while signing in with Google. Please try again later. '
+      'If the problem persists, please contact support.',
+      originalException: error,
+    );
+  }
+  if (error is ServerpodClientException) {
+    return UserFacingException.fromServerpodClientException(error);
+  }
+  return null;
 }
