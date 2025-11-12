@@ -53,6 +53,7 @@ class S3CloudStorage extends CloudStorage {
       secretKey: _awsSecretKey,
       bucketId: bucket,
       region: region,
+      host: host
     );
 
     this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
