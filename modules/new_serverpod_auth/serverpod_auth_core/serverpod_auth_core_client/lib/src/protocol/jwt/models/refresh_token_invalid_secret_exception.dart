@@ -14,24 +14,43 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class RefreshTokenInvalidSecretException
     implements _i1.SerializableException, _i1.SerializableModel {
-  RefreshTokenInvalidSecretException._();
+  RefreshTokenInvalidSecretException._({
+    required this.authUserId,
+    required this.refreshTokenId,
+  });
 
-  factory RefreshTokenInvalidSecretException() =
-      _RefreshTokenInvalidSecretExceptionImpl;
+  factory RefreshTokenInvalidSecretException({
+    required _i1.UuidValue authUserId,
+    required _i1.UuidValue refreshTokenId,
+  }) = _RefreshTokenInvalidSecretExceptionImpl;
 
   factory RefreshTokenInvalidSecretException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-  ) {
-    return RefreshTokenInvalidSecretException();
+      Map<String, dynamic> jsonSerialization) {
+    return RefreshTokenInvalidSecretException(
+      authUserId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      refreshTokenId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['refreshTokenId']),
+    );
   }
+
+  _i1.UuidValue authUserId;
+
+  _i1.UuidValue refreshTokenId;
 
   /// Returns a shallow copy of this [RefreshTokenInvalidSecretException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  RefreshTokenInvalidSecretException copyWith();
+  RefreshTokenInvalidSecretException copyWith({
+    _i1.UuidValue? authUserId,
+    _i1.UuidValue? refreshTokenId,
+  });
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      'authUserId': authUserId.toJson(),
+      'refreshTokenId': refreshTokenId.toJson(),
+    };
   }
 
   @override
@@ -42,13 +61,25 @@ abstract class RefreshTokenInvalidSecretException
 
 class _RefreshTokenInvalidSecretExceptionImpl
     extends RefreshTokenInvalidSecretException {
-  _RefreshTokenInvalidSecretExceptionImpl() : super._();
+  _RefreshTokenInvalidSecretExceptionImpl({
+    required _i1.UuidValue authUserId,
+    required _i1.UuidValue refreshTokenId,
+  }) : super._(
+          authUserId: authUserId,
+          refreshTokenId: refreshTokenId,
+        );
 
   /// Returns a shallow copy of this [RefreshTokenInvalidSecretException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  RefreshTokenInvalidSecretException copyWith() {
-    return RefreshTokenInvalidSecretException();
+  RefreshTokenInvalidSecretException copyWith({
+    _i1.UuidValue? authUserId,
+    _i1.UuidValue? refreshTokenId,
+  }) {
+    return RefreshTokenInvalidSecretException(
+      authUserId: authUserId ?? this.authUserId,
+      refreshTokenId: refreshTokenId ?? this.refreshTokenId,
+    );
   }
 }

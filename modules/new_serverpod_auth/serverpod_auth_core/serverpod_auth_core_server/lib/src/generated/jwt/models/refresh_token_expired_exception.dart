@@ -17,28 +17,51 @@ abstract class RefreshTokenExpiredException
         _i1.SerializableException,
         _i1.SerializableModel,
         _i1.ProtocolSerialization {
-  RefreshTokenExpiredException._();
+  RefreshTokenExpiredException._({
+    required this.authUserId,
+    required this.refreshTokenId,
+  });
 
-  factory RefreshTokenExpiredException() = _RefreshTokenExpiredExceptionImpl;
+  factory RefreshTokenExpiredException({
+    required _i1.UuidValue authUserId,
+    required _i1.UuidValue refreshTokenId,
+  }) = _RefreshTokenExpiredExceptionImpl;
 
   factory RefreshTokenExpiredException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-  ) {
-    return RefreshTokenExpiredException();
+      Map<String, dynamic> jsonSerialization) {
+    return RefreshTokenExpiredException(
+      authUserId:
+          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      refreshTokenId: _i1.UuidValueJsonExtension.fromJson(
+          jsonSerialization['refreshTokenId']),
+    );
   }
+
+  _i1.UuidValue authUserId;
+
+  _i1.UuidValue refreshTokenId;
 
   /// Returns a shallow copy of this [RefreshTokenExpiredException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  RefreshTokenExpiredException copyWith();
+  RefreshTokenExpiredException copyWith({
+    _i1.UuidValue? authUserId,
+    _i1.UuidValue? refreshTokenId,
+  });
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      'authUserId': authUserId.toJson(),
+      'refreshTokenId': refreshTokenId.toJson(),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      'authUserId': authUserId.toJson(),
+      'refreshTokenId': refreshTokenId.toJson(),
+    };
   }
 
   @override
@@ -48,13 +71,25 @@ abstract class RefreshTokenExpiredException
 }
 
 class _RefreshTokenExpiredExceptionImpl extends RefreshTokenExpiredException {
-  _RefreshTokenExpiredExceptionImpl() : super._();
+  _RefreshTokenExpiredExceptionImpl({
+    required _i1.UuidValue authUserId,
+    required _i1.UuidValue refreshTokenId,
+  }) : super._(
+          authUserId: authUserId,
+          refreshTokenId: refreshTokenId,
+        );
 
   /// Returns a shallow copy of this [RefreshTokenExpiredException]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  RefreshTokenExpiredException copyWith() {
-    return RefreshTokenExpiredException();
+  RefreshTokenExpiredException copyWith({
+    _i1.UuidValue? authUserId,
+    _i1.UuidValue? refreshTokenId,
+  }) {
+    return RefreshTokenExpiredException(
+      authUserId: authUserId ?? this.authUserId,
+      refreshTokenId: refreshTokenId ?? this.refreshTokenId,
+    );
   }
 }
