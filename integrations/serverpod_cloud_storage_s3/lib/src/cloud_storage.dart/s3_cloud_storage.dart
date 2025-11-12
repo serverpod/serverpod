@@ -148,9 +148,6 @@ class S3CloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    print('📦 [S3CloudStorage] Vérification HEAD de: $path');
-    var response = await _s3Client.headObject(path);
-    print('📦 [S3CloudStorage] HEAD status: ${response.statusCode}');
-    return response.statusCode == 200;
+    return fileExists(session: session, path: path);
   }
 }
