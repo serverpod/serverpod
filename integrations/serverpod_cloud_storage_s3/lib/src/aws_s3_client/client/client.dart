@@ -17,6 +17,7 @@ class AwsS3Client {
   final String _bucketId;
   final String? _sessionToken;
   final Client _client;
+  final bool _useHttps;
 
   static const _service = "s3";
 
@@ -34,6 +35,7 @@ class AwsS3Client {
       required String accessKey,
       required String bucketId,
       String? host,
+      bool useHttps = true,
       required String region,
       String? sessionToken,
       Client? client})
@@ -43,6 +45,7 @@ class AwsS3Client {
         _bucketId = bucketId,
         _region = region,
         _sessionToken = sessionToken,
+        _useHttps = useHttps,
         _client = client ?? Client();
 
   Future<ListBucketResult?> listObjects(
@@ -82,7 +85,9 @@ class AwsS3Client {
       Map<String, String>? queryParams,
       String method = 'GET'}) {
     final unencodedPath = "$_bucketId/$key";
-    final uri = Uri.https(_host, unencodedPath, queryParams);
+    final uri = _useHttps
+        ? Uri.https(_host, unencodedPath, queryParams)
+        : Uri.http(_host, unencodedPath, queryParams);
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
     final credentialScope =
