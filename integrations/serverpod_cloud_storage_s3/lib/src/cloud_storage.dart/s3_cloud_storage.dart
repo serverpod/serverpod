@@ -13,6 +13,7 @@ class S3CloudStorage extends CloudStorage {
   final bool public;
   final String? endpointUrl;
   final String? host;
+  final bool useHttps;
   late final String publicHost;
 
   late final AwsS3Client _s3Client;
@@ -26,6 +27,7 @@ class S3CloudStorage extends CloudStorage {
     required this.bucket,
     this.host,
     this.endpointUrl,
+    this.useHttps = true,
     String? publicHost,
   }) : super(storageId) {
     serverpod.loadCustomPasswords([
@@ -54,6 +56,7 @@ class S3CloudStorage extends CloudStorage {
       bucketId: bucket,
       region: region,
       host: host,
+      useHttps: useHttps,
     );
 
     this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
