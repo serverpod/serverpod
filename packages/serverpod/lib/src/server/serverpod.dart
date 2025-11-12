@@ -62,14 +62,6 @@ class Serverpod {
 
   late final CommandLineArgs _commandLineArgs;
 
-  /// The parsed runtime arguments passed to Serverpod at startup.
-  @Deprecated(
-    'Use config instead. The commandLineArgs field provides raw command line arguments, '
-    'but the config field offers a more structured and comprehensive configuration system. '
-    'This field will be removed in a future major version.',
-  )
-  CommandLineArgs get commandLineArgs => _commandLineArgs;
-
   /// The server configuration, as read from the config/ directory.
   late ServerpodConfig config;
 
