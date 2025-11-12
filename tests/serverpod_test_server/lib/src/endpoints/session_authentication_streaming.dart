@@ -5,6 +5,7 @@ class SessionAuthenticationStreamingEndpoint extends Endpoint {
   @override
   Future<void> streamOpened(StreamingSession session) async {
     var auth = session.authenticated;
+    // ignore: deprecated_member_use
     await sendStreamMessage(
       session,
       SimpleData(num: auth != null ? 1 : 0),
@@ -17,6 +18,7 @@ class SessionAuthenticationStreamingEndpoint extends Endpoint {
     SerializableModel message,
   ) async {
     var auth = session.authenticated;
+    // ignore: deprecated_member_use
     await sendStreamMessage(
       session,
       SimpleData(num: auth != null ? 1 : 0),

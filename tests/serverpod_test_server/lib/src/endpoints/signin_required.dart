@@ -18,6 +18,7 @@ class SignInRequiredEndpoint extends Endpoint {
   ) async {
     if (message is SimpleData) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
+        // ignore: deprecated_member_use
         await sendStreamMessage(session, message);
       }));
     }
@@ -39,6 +40,7 @@ class AdminScopeRequiredEndpoint extends Endpoint {
   ) async {
     if (message is SimpleData) {
       unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
+        // ignore: deprecated_member_use
         await sendStreamMessage(session, message);
       }));
     }

@@ -23,6 +23,9 @@ class StreamingConnectionHandlerState {
 /// and once every second when counting down to reconnect. The time between
 /// reconnection attempts is specified with [retryEverySeconds], default is 5
 /// seconds.
+@Deprecated(
+    'This class was used in the old streaming API and will be removed in a future version. '
+    'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
 class StreamingConnectionHandler {
   /// The Serverpod client this StreamingConnectionHandler is managing.
   final ServerpodClientShared client;
@@ -40,6 +43,9 @@ class StreamingConnectionHandler {
 
   /// Creates a new connection handler with the specified listener and interval
   /// for reconnecting to the server.
+  @Deprecated(
+      'This constructor was used in the old streaming API and will be removed in a future version. '
+      'Use endpoints with stream parameters or return type to resolve the streaming connection status directly.')
   StreamingConnectionHandler({
     required this.client,
     required this.listener,

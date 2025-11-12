@@ -151,6 +151,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
     await storage.set(authInfo);
     _authInfo.value = authInfo;
+    // ignore: deprecated_member_use
     await caller.client.updateStreamingConnectionAuthenticationKey();
   }
 

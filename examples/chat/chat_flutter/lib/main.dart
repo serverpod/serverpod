@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:chat_flutter/src/disconnected_page.dart';
 import 'package:chat_flutter/src/loading_page.dart';
 import 'package:chat_flutter/src/main_page.dart';

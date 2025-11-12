@@ -31,6 +31,7 @@ void main() {
     test(
         'when sending a message to a restricted endpoint without authentication '
         'then the message should be ignored', () async {
+      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
@@ -58,6 +59,7 @@ void main() {
       var key = '${response.keyId}:${response.key}';
       await authKeyManager.put(key);
 
+      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

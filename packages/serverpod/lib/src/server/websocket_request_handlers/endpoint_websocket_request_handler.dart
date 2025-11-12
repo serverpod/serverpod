@@ -104,6 +104,7 @@ abstract class EndpointWebsocketRequestHandler {
             if (message == null) throw Exception('Streamed message was null');
 
             await endpointConnector.endpoint
+                // ignore: deprecated_member_use_from_same_package
                 .handleStreamMessage(session, message);
           } catch (e, s) {
             messageError = e;
@@ -163,6 +164,7 @@ abstract class EndpointWebsocketRequestHandler {
         session: session,
         endpointPath: endpointName,
       );
+      // ignore: deprecated_member_use_from_same_package
       await connector.endpoint.streamOpened(session);
     } on NotAuthorizedException catch (_) {
       // User is not authorized to communicate with this endpoint.
@@ -184,6 +186,7 @@ abstract class EndpointWebsocketRequestHandler {
         session: session,
         endpointPath: endpointName,
       );
+      // ignore: deprecated_member_use_from_same_package
       await connector.endpoint.streamClosed(session);
     } on NotAuthorizedException catch (_) {
       // User is not authorized to communicate with this endpoint.

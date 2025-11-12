@@ -276,6 +276,7 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
+      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
