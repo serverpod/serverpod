@@ -531,20 +531,21 @@ void main() {
     test(
         'when removing the user image then no default image is added and imageUrl remains null.',
         () async {
-      final profileBefore = await UserProfiles.findUserProfileByUserId(
+      const userProfiles = UserProfiles();
+      final profileBefore = await userProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
       expect(profileBefore.imageUrl, isNull);
 
-      final updatedProfile = await UserProfiles.removeUserImage(
+      final updatedProfile = await userProfiles.removeUserImage(
         session,
         authUserId,
       );
 
       expect(updatedProfile.imageUrl, isNull);
 
-      final profileAfter = await UserProfiles.findUserProfileByUserId(
+      final profileAfter = await userProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
@@ -685,7 +686,8 @@ void main() {
     test(
         'Given a user profile with an image when removing the user image then the image is deleted and imageUrl is null.',
         () async {
-      final profileBeforeRemove = await UserProfiles.findUserProfileByUserId(
+      const userProfiles = UserProfiles();
+      final profileBeforeRemove = await userProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
@@ -701,14 +703,14 @@ void main() {
         isTrue,
       );
 
-      final updatedProfile = await UserProfiles.removeUserImage(
+      final updatedProfile = await userProfiles.removeUserImage(
         session,
         authUserId,
       );
 
       expect(updatedProfile.imageUrl, isNull);
 
-      final profileAfterRemove = await UserProfiles.findUserProfileByUserId(
+      final profileAfterRemove = await userProfiles.findUserProfileByUserId(
         session,
         authUserId,
       );
