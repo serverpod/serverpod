@@ -62,6 +62,8 @@ class AwsS3Client {
   }
 
   Future<Response> headObject(String key) {
+    print('Key to HEAD: $key');
+    print('🧭 [AwsS3Client] HEAD request → http://$_host/$_bucketId/$key');
     return _doSignedHeadRequest(key: key);
   }
 

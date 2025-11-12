@@ -53,7 +53,7 @@ class S3CloudStorage extends CloudStorage {
       secretKey: _awsSecretKey,
       bucketId: bucket,
       region: region,
-      host: host
+      host: host,
     );
 
     this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
@@ -108,6 +108,7 @@ class S3CloudStorage extends CloudStorage {
     required String path,
   }) async {
     var response = await _s3Client.headObject(path);
+
     return response.statusCode == 200;
   }
 
@@ -144,6 +145,9 @@ class S3CloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    return fileExists(session: session, path: path);
+    print('📦 [S3CloudStorage] Vérification HEAD de: $path');
+    var response = await _s3Client.headObject(path);
+    print('📦 [S3CloudStorage] HEAD status: ${response.statusCode}');
+    return response.statusCode == 200;
   }
 }
