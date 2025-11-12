@@ -51,6 +51,28 @@ void run(List<String> args) async {
 
   final emailIDPConfig = EmailIDPConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
+    sendRegistrationVerificationCode: (
+      session, {
+      required accountRequestId,
+      required email,
+      required verificationCode,
+      required transaction,
+    }) {
+      // NOTE: Here you call your mail service to send the verification code to
+      // the user. For testing, we will just log the verification code.
+      session.log('[EmailIDP] Registration code ($email): $verificationCode');
+    },
+    sendPasswordResetVerificationCode: (
+      session, {
+      required email,
+      required passwordResetRequestId,
+      required verificationCode,
+      required transaction,
+    }) {
+      // NOTE: Here you call your mail service to send the verification code to
+      // the user. For testing, we will just log the verification code.
+      session.log('[EmailIDP] Password reset code ($email): $verificationCode');
+    },
   );
 
   final passkeyIDPConfig = PasskeyIDPConfig(
@@ -59,9 +81,7 @@ void run(List<String> args) async {
   );
 
   final authServices = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManager(
-        config: authSessionsConfig,
-      ),
+      primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
       identityProviders: [
         GoogleIdentityProviderFactory(googleIDPConfig),
         AppleIdentityProviderFactory(appleIDPConfig),
@@ -69,8 +89,8 @@ void run(List<String> args) async {
         PasskeyIdentityProviderFactory(passkeyIDPConfig),
       ],
       additionalTokenManagers: [
-        AuthenticationTokensTokenManager(
-          config: authenticationTokenConfig,
+        AuthenticationTokensTokenManagerFactory(
+          authenticationTokenConfig,
         ),
       ]);
 

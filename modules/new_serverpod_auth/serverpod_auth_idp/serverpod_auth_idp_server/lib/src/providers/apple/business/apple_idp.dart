@@ -37,22 +37,28 @@ final class AppleIDP {
 
   final TokenIssuer _tokenIssuer;
 
+  final UserProfiles _userProfiles;
+
   AppleIDP._(
     this.config,
     this._tokenIssuer,
     this.utils,
     this.admin,
+    this._userProfiles,
   );
 
   /// Creates a new instance of [AppleIDP].
   factory AppleIDP(
     final AppleIDPConfig config, {
     required final TokenIssuer tokenIssuer,
+    final AuthUsers authUsers = const AuthUsers(),
+    final UserProfiles userProfiles = const UserProfiles(),
   }) {
     final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
 
     final utils = AppleIDPUtils(
       signInWithApple: SignInWithApple(config: signInWithAppleConfig),
+      authUsers: authUsers,
     );
     final admin = AppleIDPAdmin(utils: utils);
 
@@ -61,6 +67,7 @@ final class AppleIDP {
       tokenIssuer,
       utils,
       admin,
+      userProfiles,
     );
   }
 
@@ -91,7 +98,7 @@ final class AppleIDP {
       );
 
       if (account.newAccount) {
-        await UserProfiles.createUserProfile(
+        await _userProfiles.createUserProfile(
           session,
           account.authUserId,
           UserProfileData(

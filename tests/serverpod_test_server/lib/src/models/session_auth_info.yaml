@@ -1,0 +1,6 @@
+class: SessionAuthInfo
+fields:
+  isAuthenticated: bool
+  userId: String?
+  scopes: List<String>
+  authId: String?

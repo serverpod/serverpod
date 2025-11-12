@@ -10,6 +10,11 @@ final class EmailAccountRequestInvalidVerificationCodeException
 final class EmailAccountRequestNotFoundException
     extends EmailAccountRequestServerException {}
 
+/// Exception thrown when trying to verify an email account request with a
+/// verification code that has already been used.
+final class EmailAccountRequestVerificationCodeAlreadyUsedException
+    extends EmailAccountRequestServerException {}
+
 /// Exception thrown when trying to complete a non-verified account request.
 final class EmailAccountRequestNotVerifiedException
     extends EmailAccountRequestServerException {}

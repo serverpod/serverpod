@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
+  const authUsers = AuthUsers();
+  const userProfiles = UserProfiles();
   withServerpod(
     'Given an `AuthUser` with a `UserProfile`,',
     (final sessionBuilder, final endpoints) {
@@ -20,16 +22,16 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final user1 = await AuthUsers.create(session);
+        final user1 = await authUsers.create(session);
         authUserId = user1.id;
 
-        await UserProfiles.createUserProfile(session, authUserId, profileData);
+        await userProfiles.createUserProfile(session, authUserId, profileData);
       });
 
       test(
         'when listing without any criteria, then the profile with data is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
           );
 
@@ -44,7 +46,7 @@ void main() {
       test(
         'when listing with the matching `email` parameter, then the profile is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             email: profileData.email,
           );
@@ -56,7 +58,7 @@ void main() {
       test(
         'when listing with the matching `username` parameter, then the profile is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             userName: profileData.userName,
           );
@@ -68,7 +70,7 @@ void main() {
       test(
         'when listing with the matching `fullName` parameter, then the profile is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             fullName: profileData.fullName,
           );
@@ -80,7 +82,7 @@ void main() {
       test(
         'when listing with no matching criteria, then no profiles are returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             email: 'does-not-match',
           );
@@ -92,7 +94,7 @@ void main() {
       test(
         'when listing with one matching and one non-matching criteria, then no profiles are returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             email: profileData.email,
             userName: 'does-not-match',
@@ -120,19 +122,19 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final user1 = await AuthUsers.create(session);
+        final user1 = await authUsers.create(session);
         authUserId1 = user1.id;
-        final user2 = await AuthUsers.create(session);
+        final user2 = await authUsers.create(session);
         authUserId2 = user2.id;
 
-        await UserProfiles.createUserProfile(session, user1.id, profileData);
-        await UserProfiles.createUserProfile(session, user2.id, profileData);
+        await userProfiles.createUserProfile(session, user1.id, profileData);
+        await userProfiles.createUserProfile(session, user2.id, profileData);
       });
 
       test(
         'when listing without any criteria, then all users are returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
           );
 
@@ -167,19 +169,19 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final user1 = await AuthUsers.create(session);
+        final user1 = await authUsers.create(session);
         authUserId1 = user1.id;
-        final user2 = await AuthUsers.create(session);
+        final user2 = await authUsers.create(session);
         authUserId2 = user2.id;
 
-        await UserProfiles.createUserProfile(session, user1.id, profileData1);
-        await UserProfiles.createUserProfile(session, user2.id, profileData2);
+        await userProfiles.createUserProfile(session, user1.id, profileData1);
+        await userProfiles.createUserProfile(session, user2.id, profileData2);
       });
 
       test(
         'when listing with a criteria for user1, then only that one is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             email: profileData1.email,
           );
@@ -192,7 +194,7 @@ void main() {
       test(
         'when listing with a criteria for user2, then only that one is returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             userName: profileData2.userName,
           );
@@ -205,7 +207,7 @@ void main() {
       test(
         'when listing with a criteria for user1 combined with one for user2, then no profiles are returned.',
         () async {
-          final profiles = await UserProfiles.admin.listUserProfiles(
+          final profiles = await userProfiles.admin.listUserProfiles(
             session,
             email: profileData1.email,
             userName: profileData2.userName,

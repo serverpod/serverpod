@@ -30,8 +30,8 @@ final class EmailAccountPasswordString extends EmailAccountPassword {
 final class EmailIDPTestFixture {
   late final EmailIDP emailIDP;
   late final TokenManager tokenManager;
-
-  final List<UuidValue> _authUserIds = [];
+  final UserProfiles userProfiles = const UserProfiles();
+  final AuthUsers authUsers = const AuthUsers();
 
   EmailIDPTestFixture({
     final EmailIDPConfig config = const EmailIDPConfig(
@@ -40,8 +40,10 @@ final class EmailIDPTestFixture {
     TokenManager? tokenManager,
   }) {
     tokenManager ??= AuthServices(
-      primaryTokenManager: AuthSessionsTokenManager(
-        config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+      primaryTokenManager: AuthSessionsTokenManagerFactory(
+        AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
       ),
       identityProviders: [],
     ).tokenManager;
@@ -75,12 +77,6 @@ final class EmailIDPTestFixture {
         passwordSalt: passwordHash.salt.asByteData,
       ),
     );
-  }
-
-  Future<AuthUserModel> createAuthUser(final Session session) async {
-    final authUser = await AuthUsers.create(session);
-    _authUserIds.add(authUser.id);
-    return authUser;
   }
 
   Future<void> tearDown(final Session session) async {

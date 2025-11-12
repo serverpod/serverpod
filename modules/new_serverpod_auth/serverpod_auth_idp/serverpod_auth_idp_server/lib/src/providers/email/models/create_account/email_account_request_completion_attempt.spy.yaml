@@ -12,7 +12,9 @@ fields:
   ### The IP address of the sign in attempt.
   ipAddress: String
 
-  emailAccountRequest: EmailAccountRequest?, relation(onDelete=Cascade)
+  ### The ID of the email account request.
+  ### This is explicitly not a relation to be able to track dummy requests.
+  emailAccountRequestId: UuidValue
 
 indexes:
   serverpod_auth_idp_email_account_request_completion_ip:

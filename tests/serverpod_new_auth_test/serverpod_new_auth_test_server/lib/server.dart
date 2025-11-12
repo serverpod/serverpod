@@ -22,8 +22,8 @@ void run(final List<String> args) async {
 
   const universalHashPepper = 'test-pepper';
   final authConfig = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManager(
-        config: AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+      primaryTokenManager: AuthSessionsTokenManagerFactory(
+        AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),
       identityProviders: [
         EmailIdentityProviderFactory(
@@ -34,8 +34,8 @@ void run(final List<String> args) async {
         ),
       ],
       additionalTokenManagers: [
-        AuthenticationTokensTokenManager(
-          config: AuthenticationTokenConfig(
+        AuthenticationTokensTokenManagerFactory(
+          AuthenticationTokenConfig(
             refreshTokenHashPepper: universalHashPepper,
             algorithm: AuthenticationTokenAlgorithm.hmacSha512(
               SecretKey('test-private-key-for-HS512'),

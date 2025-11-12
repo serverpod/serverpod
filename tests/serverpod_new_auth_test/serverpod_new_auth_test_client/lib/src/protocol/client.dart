@@ -211,16 +211,34 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
   @override
-  _i2.Future<_i1.UuidValue> startRegistration({
-    required String email,
-    required String password,
-  }) =>
+  _i2.Future<_i1.UuidValue> startRegistration({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
         'emailAccount',
         'startRegistration',
+        {'email': email},
+      );
+
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  @override
+  _i2.Future<String> verifyRegistrationCode({
+    required _i1.UuidValue accountRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'emailAccount',
+        'verifyRegistrationCode',
         {
-          'email': email,
-          'password': password,
+          'accountRequestId': accountRequestId,
+          'verificationCode': verificationCode,
         },
       );
 
@@ -241,15 +259,15 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Returns a session for the newly created user.
   @override
   _i2.Future<_i3.AuthSuccess> finishRegistration({
-    required _i1.UuidValue accountRequestId,
-    required String verificationCode,
+    required String registrationToken,
+    required String password,
   }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'emailAccount',
         'finishRegistration',
         {
-          'accountRequestId': accountRequestId,
-          'verificationCode': verificationCode,
+          'registrationToken': registrationToken,
+          'password': password,
         },
       );
 
@@ -446,21 +464,45 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
         },
       );
 
-  /// Starts the registration for a new user account with an email-based login associated to it.
+  /// Starts the registration for a new user account with an email-based login
+  /// associated to it.
   ///
   /// Upon successful completion of this method, an email will have been
-  /// sent to [email] with a verification link, which the user must open to complete the registration.
+  /// sent to [email] with a verification link, which the user must open to
+  /// complete the registration.
+  ///
+  /// Always returns a account request ID, which can be used to complete the
+  /// registration. If the email is already registered, the returned ID will not
+  /// be valid.
   @override
-  _i2.Future<_i1.UuidValue> startRegistration({
-    required String email,
-    required String password,
-  }) =>
+  _i2.Future<_i1.UuidValue> startRegistration({required String email}) =>
       caller.callServerEndpoint<_i1.UuidValue>(
         'passwordImportingEmailAccount',
         'startRegistration',
+        {'email': email},
+      );
+
+  /// Verifies an account request code and returns a token
+  /// that can be used to complete the account creation.
+  ///
+  /// Throws an [EmailAccountRequestException] in case of errors, with reason:
+  /// - [EmailAccountRequestExceptionReason.expired] if the account request has
+  ///   already expired.
+  /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
+  ///   does not comply with the password policy.
+  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
+  ///   for the given [accountRequestId] or [verificationCode] is invalid.
+  @override
+  _i2.Future<String> verifyRegistrationCode({
+    required _i1.UuidValue accountRequestId,
+    required String verificationCode,
+  }) =>
+      caller.callServerEndpoint<String>(
+        'passwordImportingEmailAccount',
+        'verifyRegistrationCode',
         {
-          'email': email,
-          'password': password,
+          'accountRequestId': accountRequestId,
+          'verificationCode': verificationCode,
         },
       );
 
@@ -481,15 +523,15 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   /// Returns a session for the newly created user.
   @override
   _i2.Future<_i3.AuthSuccess> finishRegistration({
-    required _i1.UuidValue accountRequestId,
-    required String verificationCode,
+    required String registrationToken,
+    required String password,
   }) =>
       caller.callServerEndpoint<_i3.AuthSuccess>(
         'passwordImportingEmailAccount',
         'finishRegistration',
         {
-          'accountRequestId': accountRequestId,
-          'verificationCode': verificationCode,
+          'registrationToken': registrationToken,
+          'password': password,
         },
       );
 

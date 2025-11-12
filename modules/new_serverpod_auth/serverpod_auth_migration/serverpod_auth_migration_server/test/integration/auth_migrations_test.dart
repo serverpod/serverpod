@@ -175,8 +175,9 @@ void main() {
       );
 
       test('when fetching the `UserProfile`, then it exists.', () async {
+        const userProfiles = UserProfiles();
         expect(
-          await UserProfiles.findUserProfileByUserId(
+          await userProfiles.findUserProfileByUserId(
             session,
             migratedUsers.values.single,
           ),
@@ -351,8 +352,9 @@ void main() {
       );
 
       test('when fetching the `UserProfile`, then it exists.', () async {
+        const userProfiles = UserProfiles();
         expect(
-          await UserProfiles.findUserProfileByUserId(
+          await userProfiles.findUserProfileByUserId(
             session,
             migratedUsers.values.single,
           ),

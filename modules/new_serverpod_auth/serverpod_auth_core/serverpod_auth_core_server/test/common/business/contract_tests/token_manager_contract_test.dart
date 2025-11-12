@@ -13,13 +13,17 @@ import '../fakes/fake_token_storage.dart';
 @isTestGroup
 void testSuite<T extends TokenManager>(
   final String description,
-  final T Function() tokenManagerBuilder, {
-  required final Future<UuidValue> Function(Session session) createAuthId,
+  final T Function(AuthUsers authUsers) tokenManagerBuilder, {
+  required final AuthUsers authUsers,
   required final String tokenIssuer,
   required final bool isDatabaseBackedManager,
   required final bool usesRefreshTokens,
   final FutureOr<void> Function(T tokenManager)? teardownFunction,
 }) {
+  Future<UuidValue> createAuthId(final Session session) async {
+    return await authUsers.create(session).then((final value) => value.id);
+  }
+
   withServerpod(
     'Given a TokenManager and an authId',
     (final sessionBuilder, final endpoints) {
@@ -29,8 +33,9 @@ void testSuite<T extends TokenManager>(
 
       setUp(() async {
         session = sessionBuilder.build();
-        authId = await createAuthId(session);
-        tokenManager = tokenManagerBuilder();
+        authId =
+            await authUsers.create(session).then((final value) => value.id);
+        tokenManager = tokenManagerBuilder(authUsers);
       });
 
       tearDown(() async {
@@ -154,7 +159,7 @@ void testSuite<T extends TokenManager>(
       setUp(() async {
         session = sessionBuilder.build();
         authId = await createAuthId(session);
-        tokenManager = tokenManagerBuilder();
+        tokenManager = tokenManagerBuilder(authUsers);
         authSuccess = await tokenManager.issueToken(
           session,
           authUserId: authId,
@@ -306,7 +311,7 @@ void testSuite<T extends TokenManager>(
       setUp(() async {
         session = sessionBuilder.build();
         authId = await createAuthId(session);
-        tokenManager = tokenManagerBuilder();
+        tokenManager = tokenManagerBuilder(authUsers);
 
         await tokenManager.issueToken(
           session,
@@ -630,7 +635,7 @@ void testSuite<T extends TokenManager>(
       setUp(() async {
         session = sessionBuilder.build();
         authId = await createAuthId(session);
-        tokenManager = tokenManagerBuilder();
+        tokenManager = tokenManagerBuilder(authUsers);
 
         await tokenManager.issueToken(
           session,
@@ -724,7 +729,7 @@ void testSuite<T extends TokenManager>(
 
       setUp(() async {
         session = sessionBuilder.build();
-        tokenManager = tokenManagerBuilder();
+        tokenManager = tokenManagerBuilder(authUsers);
 
         authId1 = await createAuthId(session);
         authId2 = await createAuthId(session);
@@ -871,7 +876,7 @@ void testSuite<T extends TokenManager>(
 
       setUp(() async {
         session = sessionBuilder.build();
-        tokenManager = tokenManagerBuilder();
+        tokenManager = tokenManagerBuilder(authUsers);
 
         authId1 = await createAuthId(session);
         authId2 = await createAuthId(session);
@@ -988,40 +993,40 @@ void testSuite<T extends TokenManager>(
 
 void main() {
   final fakeTokenStorage = FakeTokenStorage();
+  const authUsers = AuthUsers();
   testSuite(
     'FakeTokenManager',
-    () {
-      return FakeTokenManager(fakeTokenStorage);
+    (final authUsers) {
+      return FakeTokenManager(fakeTokenStorage, authUsers: authUsers);
     },
     teardownFunction: (final tokenManager) {
       fakeTokenStorage.clear();
     },
-    createAuthId: (final session) async {
-      return const Uuid().v4obj();
-    },
     tokenIssuer: 'fake',
+    authUsers: authUsers,
     isDatabaseBackedManager: false,
     usesRefreshTokens: false,
   );
 
   testSuite(
     'AuthSessionsTokenManager',
-    () {
+    (final authUsers) {
       return AuthSessionsTokenManager(
-          config: AuthSessionsConfig(
-        sessionKeyHashPepper: 'test-pepper',
-      ));
+        config: AuthSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+        ),
+        authUsers: authUsers,
+      );
     },
-    createAuthId: (final session) =>
-        AuthUsers.create(session).then((final value) => value.id),
     tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
+    authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: false,
   );
 
   testSuite(
     'AuthenticationTokensTokenManager',
-    () {
+    (final authUsers) {
       return AuthenticationTokensTokenManager(
         config: AuthenticationTokenConfig(
           algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
@@ -1029,11 +1034,11 @@ void main() {
           ),
           refreshTokenHashPepper: 'test-pepper',
         ),
+        authUsers: authUsers,
       );
     },
-    createAuthId: (final session) =>
-        AuthUsers.create(session).then((final value) => value.id),
     tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
+    authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: true,
   );

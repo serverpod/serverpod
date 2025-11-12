@@ -31,7 +31,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         const email = 'test@serverpod.dev';
         await fixture.createEmailAccount(
@@ -134,7 +134,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         const email = 'test@serverpod.dev';
         await fixture.createEmailAccount(
@@ -247,7 +247,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       const email = 'test@serverpod.dev';
       await fixture.createEmailAccount(
@@ -333,7 +333,7 @@ void main() {
       );
 
       // Create first user and password reset request
-      final firstAuthUser = await fixture.createAuthUser(session);
+      final firstAuthUser = await fixture.authUsers.create(session);
       const firstEmail = 'test1@serverpod.dev';
       final firstEmailAccount = await fixture.createEmailAccount(
         session,
@@ -350,7 +350,7 @@ void main() {
       );
 
       // Create second user and password reset request
-      final secondAuthUser = await fixture.createAuthUser(session);
+      final secondAuthUser = await fixture.authUsers.create(session);
       const secondEmail = 'test2@serverpod.dev';
       await fixture.createEmailAccount(
         session,

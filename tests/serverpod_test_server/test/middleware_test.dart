@@ -29,7 +29,7 @@ void main() {
         webServer: portZeroConfig,
       ),
       authenticationHandler: (session, token) => Future.value(
-          token == 'Bearer good' ? AuthenticationInfo('mario', {}) : null),
+          token == 'good' ? AuthenticationInfo('mario', {}) : null),
     );
 
     pod.webServer.addMiddleware(_AuthMiddleware().call, '/api');

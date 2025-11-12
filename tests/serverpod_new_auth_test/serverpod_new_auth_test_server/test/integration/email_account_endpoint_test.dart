@@ -7,14 +7,14 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
-final tokenManager = AuthSessionsTokenManager(
-  config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+final tokenManagerFactory = AuthSessionsTokenManagerFactory(
+  AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
 );
 
 void main() {
   setUp(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
       identityProviders: [
         EmailIdentityProviderFactory(
           const EmailIDPConfig(
@@ -27,7 +27,7 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
       identityProviders: [],
     );
   });
@@ -62,14 +62,13 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManager,
+            primaryTokenManager: tokenManagerFactory,
           );
 
           clientReceivedRequestId =
               await endpoints.emailAccount.startRegistration(
             sessionBuilder,
             email: 'test@serverpod.dev',
-            password: 'Foobar123!',
           );
         });
 
@@ -81,23 +80,6 @@ void main() {
         test('then the client received correct request id. ', () async {
           expect(clientReceivedRequestId, receivedAccountRequestId);
         });
-      });
-
-      test(
-          'when calling `startRegistration` with a short password, '
-          'then an error is thrown with reason `policyViolation`.', () async {
-        await expectLater(
-          () => endpoints.emailAccount.startRegistration(
-            sessionBuilder,
-            email: 'test@serverpod.dev',
-            password: 'short',
-          ),
-          throwsA(isA<EmailAccountRequestException>().having(
-            (final exception) => exception.reason,
-            'Reason',
-            EmailAccountRequestExceptionReason.policyViolation,
-          )),
-        );
       });
 
       test(
@@ -147,7 +129,7 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManager,
+            primaryTokenManager: tokenManagerFactory,
           );
 
           clientReceivedRequestId =
@@ -183,6 +165,8 @@ void main() {
 
   withServerpod(
     'Given a pending account request,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late UuidValue receivedAccountRequestId;
       late String receivedVerificationCode;
@@ -207,41 +191,63 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         await endpoints.emailAccount.startRegistration(
           sessionBuilder,
           email: 'test@serverpod.dev',
-          password: 'Foobar123!',
         );
       });
 
-      test(
-          'when calling `finishRegistration` with the correct verification code, '
-          'then it succeeds returning a valid session key.', () async {
-        final authSuccess = await endpoints.emailAccount.finishRegistration(
-          sessionBuilder,
-          accountRequestId: receivedAccountRequestId,
-          verificationCode: receivedVerificationCode,
-        );
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
 
-        expect(
-          await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            authSuccess.token,
-          ),
-          isNotNull,
-        );
+      group(
+          'when calling `verifyRegistrationCode` with the correct verification code, ',
+          () {
+        late Future<String> verificationToken;
+
+        setUp(() async {
+          verificationToken = endpoints.emailAccount.verifyRegistrationCode(
+            sessionBuilder,
+            accountRequestId: receivedAccountRequestId,
+            verificationCode: receivedVerificationCode,
+          );
+        });
+
+        test('then it succeeds returning a valid verification token.',
+            () async {
+          await expectLater(
+            verificationToken,
+            completion(isA<String>()),
+          );
+        });
+
+        test(
+            'then the returned verification token can be used to complete the account request.',
+            () async {
+          final authSuccess = endpoints.emailAccount.finishRegistration(
+            sessionBuilder,
+            registrationToken: await verificationToken,
+            password: 'Foobar123!',
+          );
+
+          await expectLater(
+            authSuccess,
+            completion(isA<AuthSuccess>()),
+          );
+        });
       });
 
       test(
-          'when calling `finishRegistration` with the correct verification code after the account request has expired, '
+          'when calling `verifyRegistrationCode` with the correct verification code after the account request has expired, '
           'then it fails with reason `expired`.', () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.finishRegistration(
+            () => endpoints.emailAccount.verifyRegistrationCode(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
               verificationCode: receivedVerificationCode,
@@ -256,10 +262,10 @@ void main() {
       });
 
       test(
-          'when calling `finishRegistration` with the wrong verification code, '
+          'when calling `verifyRegistrationCode` with the wrong verification code, '
           'then it fails with reason `invalid`.', () async {
         await expectLater(
-          () async => await endpoints.emailAccount.finishRegistration(
+          () async => await endpoints.emailAccount.verifyRegistrationCode(
             sessionBuilder,
             accountRequestId: receivedAccountRequestId,
             verificationCode: 'wrong',
@@ -273,13 +279,13 @@ void main() {
       });
 
       test(
-          'when calling `finishRegistration` with the wrong verification code after the account request has expired, '
+          'when calling `verifyRegistrationCode` with the wrong verification code after the account request has expired, '
           'then it fails with reason `invalid` to not leak that the request exists.',
           () async {
         await expectLater(
           () => withClock(
             Clock.fixed(DateTime.now().add(verificationCodeLifetime)),
-            () => endpoints.emailAccount.finishRegistration(
+            () => endpoints.emailAccount.verifyRegistrationCode(
               sessionBuilder,
               accountRequestId: receivedAccountRequestId,
               verificationCode: 'wrong',
@@ -297,13 +303,19 @@ void main() {
 
   withServerpod(
     'Given an invalid account request id,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
       test(
-          'when calling `finishRegistration`, '
+          'when calling `verifyRegistrationCode`, '
           'then it throws generic invalid error that does not leak that the email is not registered.',
           () async {
         await expectLater(
-          () => endpoints.emailAccount.finishRegistration(
+          () => endpoints.emailAccount.verifyRegistrationCode(
             sessionBuilder,
             accountRequestId: const Uuid().v4obj(),
             verificationCode: '123456',
@@ -359,7 +371,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
       });
 
@@ -413,7 +425,6 @@ void main() {
               await endpoints.emailAccount.startRegistration(
             sessionBuilder,
             email: email,
-            password: password,
           );
         });
 
@@ -454,6 +465,8 @@ void main() {
 
   withServerpod(
     'Given an email authentication for a blocked `AuthUser`,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -465,11 +478,16 @@ void main() {
           password: password,
         );
 
-        await AuthUsers.update(
+        const authUsers = AuthUsers();
+        await authUsers.update(
           sessionBuilder.build(),
           authUserId: registrationResult.authUserId,
           blocked: true,
         );
+      });
+
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
       });
 
       test(
@@ -505,7 +523,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -661,7 +679,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -870,7 +888,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManager,
+          primaryTokenManager: tokenManagerFactory,
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -977,19 +995,24 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
 
     await emailAccount.startRegistration(
       sessionBuilder,
       email: email,
-      password: password,
+    );
+
+    final verificationToken = await emailAccount.verifyRegistrationCode(
+      sessionBuilder,
+      accountRequestId: receivedAccountRequestId,
+      verificationCode: receivedVerificationCode,
     );
 
     final authSuccess = await emailAccount.finishRegistration(
       sessionBuilder,
-      accountRequestId: receivedAccountRequestId,
-      verificationCode: receivedVerificationCode,
+      registrationToken: verificationToken,
+      password: password,
     );
 
     final authInfo = await AuthServices.instance.tokenManager.validateToken(
@@ -1027,7 +1050,7 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManager,
+      primaryTokenManager: tokenManagerFactory,
     );
 
     await emailAccount.startPasswordReset(

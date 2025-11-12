@@ -1,14 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
+import '../utils/client.dart';
+import '../utils/notification.dart';
 import '../utils/story.dart';
 
 final googleStories = [
   Story(
     name: 'Google/Button Styles',
     description:
-        'Google Sign-In native and web button styles side-by-side. The first '
-        'row is the native button, the second row is the web button.',
+        'Google Sign-In native (first) and web (second) button styles.',
     builder: (context) {
       final fillStyle = context.knobs.options<GSIButtonTheme>(
         label: 'Fill style',
@@ -152,6 +155,30 @@ final googleStories = [
         ),
       ],
     }),
+  ),
+  Story(
+    name: 'Google/Working Example',
+    description: 'Configure the project and test this working example.',
+    builder: (context) => wrapWidgetInDefaultColumn([
+      const Text(
+        'For this story to work, follow the instructions in the README.md file '
+        'of the example project at `examples/auth/auth_flutter` to configure '
+        'this project as well. The server is mocked, so this test will only '
+        'validate the correct behavior of the Google Sign-In widget, not the '
+        'authentication flow itself.',
+        textAlign: TextAlign.center,
+      ),
+      const SizedBox(height: 16),
+      GoogleSignInWidget(
+        client: context.read<Client>(),
+        onAuthenticated: () {
+          context.showSuccessSnackBar('Authenticated with Google!');
+        },
+        onError: (error) {
+          context.showErrorSnackBar(error.toString());
+        },
+      ),
+    ], width: 300),
   ),
 ];
 

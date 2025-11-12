@@ -16,7 +16,6 @@ void main() {
       late Session session;
       late EmailIDPTestFixture fixture;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const allowedPassword = 'AllowedPassword123!';
       const verificationCode = '12345678';
 
@@ -41,11 +40,9 @@ void main() {
           'when starting account creation with valid email and password then it returns account request id',
           () async {
         final accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: allowedPassword,
             transaction: transaction,
           ),
         );
@@ -57,18 +54,15 @@ void main() {
           'when starting account creation with uppercase email then account creation can be verified with lowercase email',
           () async {
         final accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email.toUpperCase(),
-            password: allowedPassword,
             transaction: transaction,
           ),
         );
 
         final verificationResult = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+          (final transaction) => fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -83,18 +77,15 @@ void main() {
           'when starting account creation with email with spaces then account create can be verified with trimmed email',
           () async {
         final accountRequestId = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: '  $email  ',
-            password: allowedPassword,
             transaction: transaction,
           ),
         );
 
         final verificationResult = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyAccountRequest(
+          (final transaction) => fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -106,33 +97,12 @@ void main() {
       });
 
       test(
-          'when starting account creation with password violating password policy then it throws password policy violation exception',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordPolicyViolationException>()),
-        );
-      });
-
-      test(
           'when starting account creation with invalid email format then it throws email invalid exception',
           () async {
         final startAccountCreationFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: 'not-an-email',
-            password: allowedPassword,
             transaction: transaction,
           ),
         );
@@ -155,7 +125,6 @@ void main() {
     late UuidValue accountRequestId;
     late String verificationCode;
     const email = 'test@serverpod.dev';
-    const password = 'Foobar123!';
     late String capturedEmail;
     late UuidValue capturedAccountRequestId;
     late String capturedVerificationCode;
@@ -183,10 +152,9 @@ void main() {
       );
 
       accountRequestId = await session.db.transaction(
-        (final transaction) => fixture.accountCreationUtil.startAccountCreation(
+        (final transaction) => fixture.accountCreationUtil.startRegistration(
           session,
           email: email,
-          password: password,
           transaction: transaction,
         ),
       );
@@ -223,14 +191,13 @@ void main() {
       late Session session;
       late EmailIDPTestFixture fixture;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
 
       setUp(() async {
         session = sessionBuilder.build();
 
         fixture = EmailIDPTestFixture();
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
 
         await fixture.createEmailAccount(
           session,
@@ -247,11 +214,9 @@ void main() {
           'when starting account creation with same email then it throws email already registered exception',
           () async {
         final startAccountCreationFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -272,7 +237,6 @@ void main() {
       late Session session;
       late EmailIDPTestFixture fixture;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -281,11 +245,9 @@ void main() {
 
         // Create initial account request
         await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -299,11 +261,9 @@ void main() {
           'when starting account creation with same email then it throws email account request already exists exception',
           () async {
         final startAccountCreationFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );
@@ -324,7 +284,6 @@ void main() {
       late Session session;
       late EmailIDPTestFixture fixture;
       const email = 'test@serverpod.dev';
-      const password = 'Foobar123!';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
@@ -347,10 +306,9 @@ void main() {
           ),
           () => session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.startAccountCreation(
+                fixture.accountCreationUtil.startRegistration(
               session,
               email: email,
-              password: password,
               transaction: transaction,
             ),
           ),
@@ -365,11 +323,9 @@ void main() {
           'when starting account creation with same email then a new account request is created',
           () async {
         final startAccountCreationFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.startAccountCreation(
+          (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
-            password: password,
             transaction: transaction,
           ),
         );

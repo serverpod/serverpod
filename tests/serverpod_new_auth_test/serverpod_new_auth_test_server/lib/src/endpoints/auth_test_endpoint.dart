@@ -12,7 +12,8 @@ class AuthTestEndpoint extends Endpoint {
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
-    final authUser = await AuthUsers.create(session);
+    const authUsers = AuthUsers();
+    final authUser = await authUsers.create(session);
     return authUser.id;
   }
 
@@ -65,7 +66,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    final userId = await session.authenticated;
+    final userId = session.authenticated;
     return userId?.authUserId == authUserId;
   }
 }

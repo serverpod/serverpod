@@ -28,9 +28,9 @@ int _colorFromHexStr(final String hexStr) {
 }
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
-Future<Image> defaultUserImageGenerator(final UserProfileModel userInfo) {
+Future<Image> defaultUserImageGenerator(
+    final UserProfileModel userInfo, final int imageSize) {
   return Isolate.run(() {
-    final imageSize = UserProfileConfig.current.userImageSize;
     final image = Image(width: 256, height: 256);
 
     final font = roboto_138;

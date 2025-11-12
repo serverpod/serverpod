@@ -5,7 +5,7 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'common/widgets/gaps.dart';
 import 'common/widgets/column.dart';
 import 'common/widgets/divider.dart';
-// import 'email/email_sign_in_widget.dart';
+import 'email/email_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
 import 'providers.dart';
 
@@ -48,6 +48,9 @@ class SignInWidget extends StatefulWidget {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// Customized widget to use for email sign-in.
+  final EmailSignInWidget? emailSignInWidget;
+
   /// Customized widget to use for Google sign-in.
   final GoogleSignInWidget? googleSignInWidget;
 
@@ -56,6 +59,7 @@ class SignInWidget extends StatefulWidget {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.emailSignInWidget,
     this.googleSignInWidget,
     super.key,
   });
@@ -82,25 +86,23 @@ class _SignInWidgetState extends State<SignInWidget> {
 
     // TODO: Make this adaptative.
     return SignInWidgetsColumn(
+      spacing: 8,
       children: [
-        // TODO: Add the email sign-in widget.
-        // if (auth.idp.hasEmail)
-        //   EmailSignInWidget(
-        //     client: widget.client,
-        //     onAuthenticated: widget.onAuthenticated,
-        //     onError: widget.onError,
-        //   ),
+        if (auth.idp.hasEmail)
+          widget.emailSignInWidget ??
+              EmailSignInWidget(
+                client: widget.client,
+                onAuthenticated: widget.onAuthenticated,
+                onError: widget.onError,
+              ),
         if (auth.idp.count > 1 && auth.idp.hasEmail) const _SignInSeparator(),
         if (auth.idp.hasGoogle)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: widget.googleSignInWidget ??
-                GoogleSignInWidget(
-                  client: widget.client,
-                  onAuthenticated: widget.onAuthenticated,
-                  onError: widget.onError,
-                ),
-          ),
+          widget.googleSignInWidget ??
+              GoogleSignInWidget(
+                client: widget.client,
+                onAuthenticated: widget.onAuthenticated,
+                onError: widget.onError,
+              ),
         // TODO: Add the Apple sign-in widget.
         // if (auth.idp.hasApple)
         //   Padding(
@@ -123,7 +125,7 @@ class _SignInSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        largeGap,
+        smallGap,
         Row(
           children: [
             const ExpandedDivider(),
@@ -143,8 +145,8 @@ class _SignInSeparator extends StatelessWidget {
           ],
         ),
         // Each social sign-in widget has its top padding, so we only need a
-        // small gap that will be extended and symmetrical with the top gap.
-        smallGap,
+        // tiny gap that will be extended and symmetrical with the top gap.
+        tinyGap,
       ],
     );
   }

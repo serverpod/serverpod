@@ -1,3 +1,5 @@
+import 'package:serverpod_auth_core_server/auth_user.dart';
+
 import '../../../generated/protocol.dart';
 import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
@@ -37,8 +39,10 @@ class EmailIDPUtils {
   final EmailIDPAccountUtils account;
 
   /// Creates a new instance of [EmailIDPUtils].
-  EmailIDPUtils({required final EmailIDPConfig config})
-      : hashUtil = SecretHashUtil(
+  EmailIDPUtils({
+    required final EmailIDPConfig config,
+    required final AuthUsers authUsers,
+  })  : hashUtil = SecretHashUtil(
           hashPepper: config.secretHashPepper,
           hashSaltLength: config.secretHashSaltLength,
         ),
@@ -46,6 +50,7 @@ class EmailIDPUtils {
     accountCreation = EmailIDPAccountCreationUtil(
       config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
       passwordHashUtils: hashUtil,
+      authUsers: authUsers,
     );
     passwordReset = EmailIDPPasswordResetUtil(
       config: EmailIDPPasswordResetUtilsConfig.fromEmailIDPConfig(config),
@@ -98,6 +103,7 @@ extension on EmailAccountRequestServerException {
       case EmailAccountRequestNotVerifiedException():
       case EmailAccountAlreadyRegisteredException():
       case EmailAccountRequestAlreadyExistsException():
+      case EmailAccountRequestVerificationCodeAlreadyUsedException():
         return EmailAccountRequestExceptionReason.invalid;
       case EmailAccountRequestVerificationTooManyAttemptsException():
         return EmailAccountRequestExceptionReason.tooManyAttempts;

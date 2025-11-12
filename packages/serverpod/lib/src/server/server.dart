@@ -11,6 +11,7 @@ import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
+import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
@@ -146,8 +147,9 @@ class Server implements RouterInjectable {
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
-  Future<bool> start(
-      {required AuthenticationHandler authenticationHandler}) async {
+  Future<bool> start({
+    required AuthenticationHandler authenticationHandler,
+  }) async {
     _authenticationHandler = authenticationHandler;
     try {
       final server = await _app.serve(
@@ -399,8 +401,8 @@ class Server implements RouterInjectable {
     MethodCallSession? maybeSession;
     try {
       var methodCallContext = await endpoints.getMethodCallContext(
-        createSessionCallback: (connector) {
-          maybeSession = MethodCallSession(
+        createSessionCallback: (connector) async {
+          maybeSession = await SessionInternalMethods.createMethodCallSession(
             server: this,
             uri: uri,
             body: body,
@@ -545,5 +547,18 @@ class _RequestTooLargeException implements Exception {
   @override
   String toString() {
     return errorDescription;
+  }
+}
+
+/// Extension providing testing utilities for [Server] authentication.
+extension ServerInternalMethods on Server {
+  /// Sets the authentication handler for testing purposes.
+  ///
+  /// This method allows tests to override the default authentication handler
+  /// by directly setting the internal [_authenticationHandler] field.
+  void setAuthenticationHandlerForTesting(
+    AuthenticationHandler authenticationHandler,
+  ) {
+    _authenticationHandler = authenticationHandler;
   }
 }

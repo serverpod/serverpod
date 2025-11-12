@@ -39,7 +39,7 @@ void main() {
           ),
         );
 
-        final authUser = await fixture.createAuthUser(session);
+        final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
 
         await fixture.createEmailAccount(
@@ -148,7 +148,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -286,7 +286,7 @@ void main() {
         ),
       );
 
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
 
       await fixture.createEmailAccount(
         session,
@@ -308,7 +308,7 @@ void main() {
       );
 
       // Block the auth user after creating the password reset request
-      await AuthUsers.update(
+      await const AuthUsers().update(
         session,
         authUserId: authUser.id,
         blocked: true,
@@ -352,7 +352,7 @@ void main() {
           passwordResetVerificationCodeGenerator: () => verificationCode,
         ),
       );
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       authUserId = authUser.id;
 
       // Create a session before password reset
@@ -428,7 +428,7 @@ void main() {
           passwordResetVerificationCodeGenerator: () => verificationCode,
         ),
       );
-      final authUser = await fixture.createAuthUser(session);
+      final authUser = await fixture.authUsers.create(session);
       await fixture.createEmailAccount(
         session,
         authUserId: authUser.id,
