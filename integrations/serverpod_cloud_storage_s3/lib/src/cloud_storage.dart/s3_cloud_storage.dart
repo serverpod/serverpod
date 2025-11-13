@@ -100,7 +100,8 @@ class S3CloudStorage extends CloudStorage {
     required String path,
   }) async {
     if (await fileExists(session: session, path: path)) {
-      return Uri.parse('https://$publicHost/$path');
+      final protocol = useHttps ? 'https' : 'http';
+      return Uri.parse('$protocol://$publicHost/$path');
     }
     return null;
   }
