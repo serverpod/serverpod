@@ -135,11 +135,11 @@ void main() {
       });
 
       test('then that token is deleted.', () async {
-        final remainingTokens =
-            await authenticationTokensAdmin.listAuthenticationTokens(
-          session,
-          authUserId: authUserId,
-        );
+        final remainingTokens = await authenticationTokensAdmin
+            .listAuthenticationTokens(
+              session,
+              authUserId: authUserId,
+            );
 
         expect(remainingTokens, isEmpty);
       });
@@ -161,11 +161,11 @@ void main() {
           method: 'test',
         );
 
-        final remainingTokens =
-            await authenticationTokensAdmin.listAuthenticationTokens(
-          session,
-          authUserId: authUserId,
-        );
+        final remainingTokens = await authenticationTokensAdmin
+            .listAuthenticationTokens(
+              session,
+              authUserId: authUserId,
+            );
 
         expect(remainingTokens, isEmpty);
       },
@@ -175,17 +175,17 @@ void main() {
       'when calling `deleteRefreshTokens` with a non-existent refreshTokenId then no tokens are deleted.',
       () async {
         final nonExistentId = const Uuid().v4obj();
-        final deletedTokens =
-            await authenticationTokensAdmin.deleteRefreshTokens(
-          session,
-          refreshTokenId: nonExistentId,
-        );
+        final deletedTokens = await authenticationTokensAdmin
+            .deleteRefreshTokens(
+              session,
+              refreshTokenId: nonExistentId,
+            );
 
-        final remainingTokens =
-            await authenticationTokensAdmin.listAuthenticationTokens(
-          session,
-          authUserId: authUserId,
-        );
+        final remainingTokens = await authenticationTokensAdmin
+            .listAuthenticationTokens(
+              session,
+              authUserId: authUserId,
+            );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -197,17 +197,17 @@ void main() {
       () async {
         final nonExistentUserId = const Uuid().v4obj();
 
-        final deletedTokens =
-            await authenticationTokensAdmin.deleteRefreshTokens(
-          session,
-          authUserId: nonExistentUserId,
-        );
+        final deletedTokens = await authenticationTokensAdmin
+            .deleteRefreshTokens(
+              session,
+              authUserId: nonExistentUserId,
+            );
 
-        final remainingTokens =
-            await authenticationTokensAdmin.listAuthenticationTokens(
-          session,
-          authUserId: authUserId,
-        );
+        final remainingTokens = await authenticationTokensAdmin
+            .listAuthenticationTokens(
+              session,
+              authUserId: authUserId,
+            );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -217,17 +217,17 @@ void main() {
     test(
       'when calling `deleteRefreshTokens` with a non-matching method, then no tokens are deleted.',
       () async {
-        final deletedTokens =
-            await authenticationTokensAdmin.deleteRefreshTokens(
-          session,
-          method: 'non-existent-method',
-        );
+        final deletedTokens = await authenticationTokensAdmin
+            .deleteRefreshTokens(
+              session,
+              method: 'non-existent-method',
+            );
 
-        final remainingTokens =
-            await authenticationTokensAdmin.listAuthenticationTokens(
-          session,
-          authUserId: authUserId,
-        );
+        final remainingTokens = await authenticationTokensAdmin
+            .listAuthenticationTokens(
+              session,
+              authUserId: authUserId,
+            );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -274,10 +274,10 @@ void main() {
       test(
         'when calling `listAuthenticationTokens`, then it returns the first 100 tokens in order of creation date ASC.',
         () async {
-          final tokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-          );
+          final tokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
 
           expect(tokens, hasLength(100));
           expect(
@@ -290,11 +290,11 @@ void main() {
       test(
         'when calling `listAuthenticationTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
         () async {
-          final tokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-            offset: 50,
-          );
+          final tokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+                offset: 50,
+              );
 
           expect(tokens, hasLength(100));
           expect(
@@ -307,12 +307,12 @@ void main() {
       test(
         "when calling `listAuthenticationTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
         () async {
-          final tokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-            authUserId: authUserId1,
-            limit: 2,
-          );
+          final tokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+                authUserId: authUserId1,
+                limit: 2,
+              );
 
           expect(tokens, hasLength(2));
           expect(
@@ -387,187 +387,154 @@ void main() {
       authUserId = authUser.id;
 
       await withClock(
-          Clock.fixed(DateTime.now()
-              .subtract(authenticationTokens.config.refreshTokenLifetime)),
-          () async {
-        authSuccess = await authenticationTokens.createTokens(
-          session,
-          authUserId: authUserId,
-          scopes: {},
-          method: 'test',
-        );
-
-        tokenId = authenticationTokens.jwtUtil
-            .verifyJwt(authSuccess.token)
-            .refreshTokenId;
-      });
-    });
-
-    test(
-        'when calling `deleteExpiredRefreshTokens`, then that token is removed.',
-        () async {
-      await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
-
-      final tokens = await RefreshToken.db.find(session);
-
-      expect(tokens, isEmpty);
-    });
-
-    test(
-        'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredException with correct refreshTokenId.',
-        () async {
-      await expectLater(
-        () => authenticationTokensAdmin.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        ),
-        throwsA(
-          isA<RefreshTokenExpiredException>().having(
-            (final e) => e.refreshTokenId,
-            'refreshTokenId',
-            tokenId,
+        Clock.fixed(
+          DateTime.now().subtract(
+            authenticationTokens.config.refreshTokenLifetime,
           ),
         ),
-      );
-    });
-  });
-
-  withServerpod(
-      'Given an auth user with multiple authentication tokens (two with method "test", one with method "google"),',
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late UuidValue authUserId;
-    late UuidValue tokenId1;
-    late UuidValue tokenId2;
-
-    setUp(() async {
-      session = sessionBuilder.build();
-
-      final authUser = await authenticationTokens.authUsers.create(session);
-      authUserId = authUser.id;
-
-      final authSuccess1 = await authenticationTokens.createTokens(
-        session,
-        authUserId: authUserId,
-        scopes: {},
-        method: 'test',
-      );
-      tokenId1 = authenticationTokens.jwtUtil
-          .verifyJwt(authSuccess1.token)
-          .refreshTokenId;
-
-      final authSuccess2 = await authenticationTokens.createTokens(
-        session,
-        authUserId: authUserId,
-        scopes: {},
-        method: 'test',
-      );
-      tokenId2 = authenticationTokens.jwtUtil
-          .verifyJwt(authSuccess2.token)
-          .refreshTokenId;
-
-      await authenticationTokens.createTokens(
-        session,
-        authUserId: authUserId,
-        scopes: {},
-        method: 'google',
-      );
-    });
-
-    test(
-        'when calling `deleteRefreshTokens` with a specific refreshTokenId, then only that token is deleted.',
         () async {
-      await authenticationTokensAdmin.deleteRefreshTokens(
-        session,
-        refreshTokenId: tokenId1,
-      );
-
-      final remainingTokens =
-          await authenticationTokensAdmin.listAuthenticationTokens(
-        session,
-      );
-      expect(remainingTokens, hasLength(2));
-      expect(remainingTokens.map((final t) => t.id), isNot(contains(tokenId1)));
-    });
-
-    group(
-      'when calling `deleteRefreshTokens` with method "test"',
-      () {
-        late List<DeletedRefreshToken> deletedTokens;
-        setUp(() async {
-          deletedTokens = await authenticationTokensAdmin.deleteRefreshTokens(
+          authSuccess = await authenticationTokens.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},
             method: 'test',
           );
-          tokenId2 = authenticationTokens.jwtUtil
-              .verifyJwt(authSuccess2.token)
+
+          tokenId = authenticationTokens.jwtUtil
+              .verifyJwt(authSuccess.token)
               .refreshTokenId;
+        },
+      );
+    });
 
-          await authenticationTokens.createTokens(
-            session,
-            authUserId: authUserId,
-            scopes: {},
-            method: 'google',
-          );
-        });
+    test(
+      'when calling `deleteExpiredRefreshTokens`, then that token is removed.',
+      () async {
+        await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
 
-        test(
-          'when calling `deleteRefreshTokens` with a specific refreshTokenId, then only that token is deleted.',
-          () async {
-            await authenticationTokensAdmin.deleteRefreshTokens(
-              session,
-              refreshTokenId: tokenId1,
-            );
+        final tokens = await RefreshToken.db.find(session);
 
-            final remainingTokens =
-                await authenticationTokensAdmin.listAuthenticationTokens(
-              session,
-            );
-            expect(remainingTokens, hasLength(2));
-            expect(
-              remainingTokens.map((final t) => t.id),
-              isNot(contains(tokenId1)),
-            );
-          },
-        );
-
-        group('when calling `deleteRefreshTokens` with method "test"', () {
-          late List<DeletedRefreshToken> deletedTokens;
-          setUp(() async {
-            deletedTokens = await authenticationTokensAdmin.deleteRefreshTokens(
-              session,
-              method: 'test',
-            );
-          });
-
-          test('then returned tokens contains all matching tokens.', () async {
-            expect(deletedTokens, hasLength(2));
-            expect(
-              deletedTokens.map((final t) => t.refreshTokenId),
-              containsAll([tokenId1, tokenId2]),
-            );
-          });
-
-          test('then only tokens not matching the method remains.', () async {
-            final remainingTokens =
-                await authenticationTokensAdmin.listAuthenticationTokens(
-              session,
-            );
-            expect(remainingTokens, hasLength(1));
-            expect(
-              remainingTokens.map((final t) => t.method),
-              isNot(contains('test')),
-            );
-          });
-        });
+        expect(tokens, isEmpty);
       },
     );
 
-    withServerpod(
-        'Given two auth users, each with two authentication tokens (one with method "test" and one with method "google"),',
-        (final sessionBuilder, final endpoints) {
+    test(
+      'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredException with correct refreshTokenId.',
+      () async {
+        await expectLater(
+          () => authenticationTokensAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          ),
+          throwsA(
+            isA<RefreshTokenExpiredException>().having(
+              (final e) => e.refreshTokenId,
+              'refreshTokenId',
+              tokenId,
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  withServerpod(
+    'Given an auth user with multiple authentication tokens (two with method "test", one with method "google"),',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+      late UuidValue tokenId1;
+      late UuidValue tokenId2;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await authenticationTokens.authUsers.create(session);
+        authUserId = authUser.id;
+
+        final authSuccess1 = await authenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        );
+        tokenId1 = authenticationTokens.jwtUtil
+            .verifyJwt(authSuccess1.token)
+            .refreshTokenId;
+
+        final authSuccess2 = await authenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        );
+        tokenId2 = authenticationTokens.jwtUtil
+            .verifyJwt(authSuccess2.token)
+            .refreshTokenId;
+
+        await authenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'google',
+        );
+      });
+
+      test(
+        'when calling `deleteRefreshTokens` with a specific refreshTokenId, then only that token is deleted.',
+        () async {
+          await authenticationTokensAdmin.deleteRefreshTokens(
+            session,
+            refreshTokenId: tokenId1,
+          );
+
+          final remainingTokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
+          expect(remainingTokens, hasLength(2));
+          expect(
+            remainingTokens.map((final t) => t.id),
+            isNot(contains(tokenId1)),
+          );
+        },
+      );
+
+      group('when calling `deleteRefreshTokens` with method "test"', () {
+        late List<DeletedRefreshToken> deletedTokens;
+        setUp(() async {
+          deletedTokens = await authenticationTokensAdmin.deleteRefreshTokens(
+            session,
+            method: 'test',
+          );
+        });
+
+        test('then returned tokens contains all matching tokens.', () async {
+          expect(deletedTokens, hasLength(2));
+          expect(
+            deletedTokens.map((final t) => t.refreshTokenId),
+            containsAll([tokenId1, tokenId2]),
+          );
+        });
+
+        test('then only tokens not matching the method remains.', () async {
+          final remainingTokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
+          expect(remainingTokens, hasLength(1));
+          expect(
+            remainingTokens.map((final t) => t.method),
+            isNot(contains('test')),
+          );
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given two auth users, each with two authentication tokens (one with method "test" and one with method "google"),',
+    (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue firstUserAuthUserId;
       late UuidValue authUserId2;
@@ -617,17 +584,17 @@ void main() {
       test(
         "when calling `deleteRefreshTokens` with authUserId for the first user, then only that user's tokens are deleted.",
         () async {
-          final deletedTokens =
-              await authenticationTokensAdmin.deleteRefreshTokens(
-            session,
-            authUserId: firstUserAuthUserId,
-          );
+          final deletedTokens = await authenticationTokensAdmin
+              .deleteRefreshTokens(
+                session,
+                authUserId: firstUserAuthUserId,
+              );
 
           expect(deletedTokens, hasLength(2));
-          final remainingTokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-          );
+          final remainingTokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
           expect(remainingTokens, hasLength(2));
           expect(
             remainingTokens.map((final t) => t.authUserId),
@@ -639,21 +606,21 @@ void main() {
       test(
         "when calling `deleteRefreshTokens` with authUserId and method 'test' for the first user, then only that user's 'test' tokens are deleted",
         () async {
-          final deletedTokens =
-              await authenticationTokensAdmin.deleteRefreshTokens(
-            session,
-            authUserId: firstUserAuthUserId,
-            method: 'test',
-          );
+          final deletedTokens = await authenticationTokensAdmin
+              .deleteRefreshTokens(
+                session,
+                authUserId: firstUserAuthUserId,
+                method: 'test',
+              );
 
           expect(deletedTokens, hasLength(1));
           expect(deletedTokens.first.refreshTokenId, firstUserTestTokenID);
           expect(deletedTokens.first.authUserId, firstUserAuthUserId);
 
-          final remainingTokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-          );
+          final remainingTokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
           expect(remainingTokens, hasLength(3));
         },
       );
@@ -665,16 +632,15 @@ void main() {
             session,
           );
 
-          final remainingTokens =
-              await authenticationTokensAdmin.listAuthenticationTokens(
-            session,
-          );
+          final remainingTokens = await authenticationTokensAdmin
+              .listAuthenticationTokens(
+                session,
+              );
           expect(remainingTokens, isEmpty);
         },
       );
-      expect(remainingTokens, isEmpty);
-    });
-  });
+    },
+  );
 
   withServerpod(
     'Given an auth user with a refresh token with scopes and extra claims,',
@@ -703,138 +669,152 @@ void main() {
       });
 
       test(
-          'when rotating the tokens, then a new refresh and access token is returned.',
-          () async {
-        final newTokenPair = await authenticationTokensAdmin.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        );
+        'when rotating the tokens, then a new refresh and access token is returned.',
+        () async {
+          final newTokenPair = await authenticationTokensAdmin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
 
-        expect(newTokenPair.accessToken, isNot(authSuccess.token));
-        expect(newTokenPair.refreshToken, isNot(authSuccess.refreshToken));
-      });
+          expect(newTokenPair.accessToken, isNot(authSuccess.token));
+          expect(newTokenPair.refreshToken, isNot(authSuccess.refreshToken));
+        },
+      );
 
       test(
-          'when rotating tokens multiple times within the same second, then new tokens are returned.',
-          () async {
-        final newTokenPairs = await withClock(
+        'when rotating tokens multiple times within the same second, then new tokens are returned.',
+        () async {
+          final newTokenPairs = await withClock(
             Clock.fixed(DateTime.now()),
             () => Future.wait(
-                  List.generate(
-                    3,
-                    (final _) => authenticationTokensAdmin.rotateRefreshToken(
-                      session,
-                      refreshToken: authSuccess.refreshToken!,
-                    ),
-                  ),
-                ));
+              List.generate(
+                3,
+                (final _) => authenticationTokensAdmin.rotateRefreshToken(
+                  session,
+                  refreshToken: authSuccess.refreshToken!,
+                ),
+              ),
+            ),
+          );
 
-        final tokens = newTokenPairs.map((final t) => t.accessToken).toSet();
-        expect(tokens, hasLength(3));
-        expect(tokens.add(authSuccess.token), isTrue);
+          final tokens = newTokenPairs.map((final t) => t.accessToken).toSet();
+          expect(tokens, hasLength(3));
+          expect(tokens.add(authSuccess.token), isTrue);
 
-        final refreshTokens =
-            newTokenPairs.map((final t) => t.refreshToken).toSet();
-        expect(refreshTokens, hasLength(3));
-        expect(refreshTokens.add(authSuccess.refreshToken!), isTrue);
-      });
-
-      test(
-          'when rotating the tokens, then the new access token refers to the same refresh token ID.',
-          () async {
-        final newTokenPair = await authenticationTokensAdmin.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        );
-
-        expect(
-          _extractRefreshTokenId(authSuccess.token),
-          _extractRefreshTokenId(newTokenPair.accessToken),
-        );
-      });
+          final refreshTokens = newTokenPairs
+              .map((final t) => t.refreshToken)
+              .toSet();
+          expect(refreshTokens, hasLength(3));
+          expect(refreshTokens.add(authSuccess.refreshToken!), isTrue);
+        },
+      );
 
       test(
-          'when rotating the tokens, then the new access token has a different `jwtId`.',
-          () async {
-        final newTokenPair = await authenticationTokensAdmin.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        );
+        'when rotating the tokens, then the new access token refers to the same refresh token ID.',
+        () async {
+          final newTokenPair = await authenticationTokensAdmin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
 
-        final decodedToken = JWT.decode(authSuccess.token);
-        final newDecodedToken = JWT.decode(newTokenPair.accessToken);
-
-        expect(newDecodedToken.jwtId, isNotNull);
-        expect(decodedToken.jwtId, isNot(newDecodedToken.jwtId));
-      });
-
-      test(
-          'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
-          () async {
-        final newTokenPair = await authenticationTokensAdmin.rotateRefreshToken(
-          session,
-          refreshToken: authSuccess.refreshToken!,
-        );
-
-        final newDecodedToken = JWT.decode(newTokenPair.accessToken);
-
-        expect((newDecodedToken.payload as Map)['string'], 'foo');
-        expect((newDecodedToken.payload as Map)['int'], 1);
-      });
+          expect(
+            _extractRefreshTokenId(authSuccess.token),
+            _extractRefreshTokenId(newTokenPair.accessToken),
+          );
+        },
+      );
 
       test(
-          'when changing the configured pepper, then attempting to rotate the token throws an error.',
-          () async {
-        final differentPepperAuthenticationTokens = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
-            algorithm: authenticationTokens.config.algorithm,
-            refreshTokenHashPepper:
-                '${authenticationTokens.config.refreshTokenHashPepper}-addition',
-          ),
-        );
+        'when rotating the tokens, then the new access token has a different `jwtId`.',
+        () async {
+          final newTokenPair = await authenticationTokensAdmin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
 
-        await expectLater(
-          () => differentPepperAuthenticationTokens.admin.rotateRefreshToken(
-            session,
-            refreshToken: authSuccess.refreshToken!,
-          ),
-          throwsA(isA<RefreshTokenInvalidSecretException>()),
-        );
-      });
+          final decodedToken = JWT.decode(authSuccess.token);
+          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+
+          expect(newDecodedToken.jwtId, isNotNull);
+          expect(decodedToken.jwtId, isNot(newDecodedToken.jwtId));
+        },
+      );
 
       test(
-          'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
-          () async {
-        final tokenParts = authSuccess.refreshToken!.split(':');
-        tokenParts[2] = 'dGVzdA==';
+        'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
+        () async {
+          final newTokenPair = await authenticationTokensAdmin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
 
-        final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
 
-        await expectLater(
-          () => authenticationTokensAdmin.rotateRefreshToken(
-            session,
-            refreshToken: tokenWithUpdatedFixedSecret,
-          ),
-          throwsA(isA<RefreshTokenNotFoundException>()),
-        );
-      });
+          expect((newDecodedToken.payload as Map)['string'], 'foo');
+          expect((newDecodedToken.payload as Map)['int'], 1);
+        },
+      );
 
       test(
-          'when trying to rotate the token with a wrong variable secret, then it throws an error.',
-          () async {
-        final tokenParts = authSuccess.refreshToken!.split(':');
-        tokenParts[3] = 'dGVzdA==';
+        'when changing the configured pepper, then attempting to rotate the token throws an error.',
+        () async {
+          final differentPepperAuthenticationTokens = AuthenticationTokens(
+            config: AuthenticationTokenConfig(
+              algorithm: authenticationTokens.config.algorithm,
+              refreshTokenHashPepper:
+                  '${authenticationTokens.config.refreshTokenHashPepper}-addition',
+            ),
+          );
 
-        final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+          await expectLater(
+            () => differentPepperAuthenticationTokens.admin.rotateRefreshToken(
+              session,
+              refreshToken: authSuccess.refreshToken!,
+            ),
+            throwsA(isA<RefreshTokenInvalidSecretException>()),
+          );
+        },
+      );
 
-        await expectLater(
-          () => authenticationTokensAdmin.rotateRefreshToken(
-            session,
-            refreshToken: tokenWithUpdatedFixedSecret,
-          ),
-          throwsA(isA<RefreshTokenInvalidSecretException>()),
-        );
-      });
+      test(
+        'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
+        () async {
+          final tokenParts = authSuccess.refreshToken!.split(':');
+          tokenParts[2] = 'dGVzdA==';
+
+          final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+          await expectLater(
+            () => authenticationTokensAdmin.rotateRefreshToken(
+              session,
+              refreshToken: tokenWithUpdatedFixedSecret,
+            ),
+            throwsA(isA<RefreshTokenNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when trying to rotate the token with a wrong variable secret, then it throws an error.',
+        () async {
+          final tokenParts = authSuccess.refreshToken!.split(':');
+          tokenParts[3] = 'dGVzdA==';
+
+          final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+          await expectLater(
+            () => authenticationTokensAdmin.rotateRefreshToken(
+              session,
+              refreshToken: tokenWithUpdatedFixedSecret,
+            ),
+            throwsA(isA<RefreshTokenInvalidSecretException>()),
+          );
+        },
+      );
     },
   );
 }

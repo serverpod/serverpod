@@ -24,10 +24,10 @@ final class AuthenticationTokensAdmin {
     required final JwtUtil jwtUtil,
     required final RefreshTokenSecretHash refreshTokenSecretHash,
     required final int refreshTokenRotatingSecretLength,
-  })  : _refreshTokenLifetime = refreshTokenLifetime,
-        _jwtUtil = jwtUtil,
-        _refreshTokenSecretHash = refreshTokenSecretHash,
-        _refreshTokenRotatingSecretLength = refreshTokenRotatingSecretLength;
+  }) : _refreshTokenLifetime = refreshTokenLifetime,
+       _jwtUtil = jwtUtil,
+       _refreshTokenSecretHash = refreshTokenSecretHash,
+       _refreshTokenRotatingSecretLength = refreshTokenRotatingSecretLength;
 
   /// Removes all expired refresh tokens from the database.
   Future<void> deleteExpiredRefreshTokens(
@@ -247,8 +247,9 @@ final class AuthenticationTokensAdmin {
 
 extension on RefreshToken {
   bool isExpired(final Duration refreshTokenLifetime) {
-    final oldestAcceptedRefreshTokenDate =
-        clock.now().subtract(refreshTokenLifetime);
+    final oldestAcceptedRefreshTokenDate = clock.now().subtract(
+      refreshTokenLifetime,
+    );
 
     return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }

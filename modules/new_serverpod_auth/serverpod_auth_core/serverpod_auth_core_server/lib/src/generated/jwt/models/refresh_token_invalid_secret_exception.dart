@@ -28,12 +28,15 @@ abstract class RefreshTokenInvalidSecretException
   }) = _RefreshTokenInvalidSecretExceptionImpl;
 
   factory RefreshTokenInvalidSecretException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenInvalidSecretException(
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       refreshTokenId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['refreshTokenId']),
+        jsonSerialization['refreshTokenId'],
+      ),
     );
   }
 
@@ -76,9 +79,9 @@ class _RefreshTokenInvalidSecretExceptionImpl
     required _i1.UuidValue authUserId,
     required _i1.UuidValue refreshTokenId,
   }) : super._(
-          authUserId: authUserId,
-          refreshTokenId: refreshTokenId,
-        );
+         authUserId: authUserId,
+         refreshTokenId: refreshTokenId,
+       );
 
   /// Returns a shallow copy of this [RefreshTokenInvalidSecretException]
   /// with some or all fields replaced by the given arguments.
