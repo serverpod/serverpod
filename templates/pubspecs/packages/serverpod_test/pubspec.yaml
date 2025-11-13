@@ -11,18 +11,18 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  serverpod_lints: SERVERPOD_VERSION
-  test: ^1.25.5
-  serverpod: SERVERPOD_VERSION
   meta: ^1.15.0
+  serverpod: SERVERPOD_VERSION
+  serverpod_lints: SERVERPOD_VERSION
   synchronized: ^3.1.0
+  test: ^1.25.5
 
 dependency_overrides:
   serverpod:
     path: ../serverpod
-  serverpod_shared:
-    path: ../serverpod_shared
-  serverpod_serialization:
-    path: ../serverpod_serialization
   serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_shared:
+    path: ../serverpod_shared

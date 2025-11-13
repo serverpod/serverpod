@@ -9,36 +9,36 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  analyzer: ^8.1.0
   archive: '>=3.3.7 <5.0.0'
   args: ^2.7.0
+  async: ^2.11.0
+  built_collection: ^5.1.1
   ci: ^0.1.0
+  cli_tools: ^0.7.0
   code_builder: ^4.5.0
+  config: ^0.7.0
   dart_style: ^3.0.0
   http: '>=1.1.0 <2.0.0'
   intl: '>=0.19.0 <0.21.0'
-  recase: ^4.1.0
-  built_collection: ^5.1.1
+  json_rpc_2: ^4.0.0
+  lsp_server: ^0.4.0
+  meta: ^1.15.0
   package_config: ^2.1.0
-  pubspec_parse: ^1.4.0
-  source_span: ^1.10.0
-  super_string: ^1.0.3
-  watcher: ^1.0.2
-  analyzer: ^8.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
-  uuid: ^4.1.0
-  yaml: ^3.1.2
-  serverpod_shared: SERVERPOD_VERSION
+  pub_semver: ^2.1.4
+  pubspec_parse: ^1.4.0
+  recase: ^4.1.0
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
-  async: ^2.11.0
-  meta: ^1.15.0
-  json_rpc_2: ^4.0.0
+  serverpod_shared: SERVERPOD_VERSION
+  source_span: ^1.10.0
   stream_channel: ^2.1.1
-  lsp_server: ^0.4.0
-  pub_semver: ^2.1.4
-  cli_tools: ^0.7.0
-  config: ^0.7.0
+  super_string: ^1.0.3
+  uuid: ^4.1.0
+  watcher: ^1.0.2
+  yaml: ^3.1.2
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
@@ -47,16 +47,16 @@ dev_dependencies:
   test_descriptor: ^2.0.2
 
 dependency_overrides:
-  serverpod_shared:
-    path: ../../packages/serverpod_shared
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_lints:
+    path: ../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:
     path: ../../packages/serverpod_service_client
-  serverpod_lints:
-    path: ../../packages/serverpod_lints
-  serverpod_client:
-    path: ../../packages/serverpod_client
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
 
 executables:
   serverpod: serverpod_cli

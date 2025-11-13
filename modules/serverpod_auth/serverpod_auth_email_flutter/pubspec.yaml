@@ -11,9 +11,9 @@ environment:
   flutter: '^3.32.0'
 
 dependencies:
+  email_validator: '>=2.1.17 <4.0.0'
   flutter:
     sdk: flutter
-  email_validator: '>=2.1.17 <4.0.0'
   serverpod_auth_client: 3.0.0-rc.1
   serverpod_auth_shared_flutter: 3.0.0-rc.1
 
@@ -27,10 +27,10 @@ dependency_overrides:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter:
     path: ../serverpod_auth_shared_flutter
-  serverpod_lints:
-    path: ../../../packages/serverpod_lints
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
 

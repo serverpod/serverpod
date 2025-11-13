@@ -24,11 +24,11 @@ environment:
   flutter: FLUTTER_VERSION
 
 dependencies:
-  flutter:
-    sdk: flutter
   auth_client:
     path: ../auth_client
   extended_image: ^10.0.1
+  flutter:
+    sdk: flutter
   serverpod_auth_idp_flutter: SERVERPOD_VERSION
   serverpod_flutter: SERVERPOD_VERSION
 
