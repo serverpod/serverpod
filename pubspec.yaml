@@ -2,8 +2,10 @@ name: serverpod_workspace
 
 environment:
   sdk: '^3.8.0'
+
 dev_dependencies:
   melos: ^6.1.0
+  sort_pubspec_dependencies: ^0.0.2
 
 serverpod_cli:
   analyze_pubspecs:
