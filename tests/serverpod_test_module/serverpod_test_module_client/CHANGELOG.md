@@ -92,6 +92,9 @@ New packages:
 - docs(legacy auth): Fixes a documentation error where Google was referenced in the Email identity provider. ([@emilakerman](https://github.com/emilakerman))
 - chore: Bumps minimum Dart version to 3.2.0.
 
+## 2.9.2
+- fix: Fixes a crash when persistent logging is disabled but database is enabled.
+
 ## 2.9.1
 - feat: Makes it possible to configure a default page for `SignInWithEmailDialog`.
 - feat: Adds lints to project template.
