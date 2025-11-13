@@ -1,16 +1,52 @@
-## 3.0.0-alpha.3
-- feat: BREAKING. Removes deprecated signOut endpoint and legacy configuration.
-- feat: BREAKING. Adds comprehensive support for serving static assets from the web server including cache busting, HTTP range requests and more.
+## 3.0.0-rc.1
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### Reworked web server
+Serverpod 3 introduces a fully reworked web server with improved performance, additional features, and increased extensibility.
+Built on top of the [Relic framework](https://pub.dev/packages/relic), it provides a more robust and flexible foundation for building web applications.
+
+Key improvements include:
+- Dynamic routes
+- Middleware support
+- Router fallbacks
+- Comprehensive static asset handling, including cache busting and HTTP range requests
+
+### New authentication module
+A new authentication module has been developed based on the [authentication RFC](https://github.com/serverpod/serverpod/issues/3126). It provides a more flexible and robust foundation and significantly simplifies adding new identity providers.
+
+Highlights:
+- Multiple authentication strategies (JWT, server-side sessions)
+- Multiple identity providers (Email, Google, Apple, Passkey) that can be configured and exposed independently
+- New `AuthUser` class representing the authenticated user, their scopes, and all associated authentication tokens — extensible with custom user data
+- Beautiful new UI components that provide a great user experience out of the box.
+- Complete decoupling between UI and authentication logic on controllers that allow easy customization and replacement of the default components.
+
+New packages:
+- **`serverpod_auth_core`** — Core authentication logic and session management
+- **`serverpod_auth_idp`** — Identity provider integrations (Email, Google, Apple, Passkey)
+- **`serverpod_auth_bridge`** — Migration bridge for legacy auth (Email currently supported)
+- **`serverpod_auth_migration`** — Tools and helpers for migrating auth data (Email currently supported)
+
+
+### Additional changes
+#### Breaking changes
+- feat: BREAKING. Changes default enum serialization from `byIndex` to `byName`.
 - feat: BREAKING. Authenticated user id is now logged using a String to support multiple formats.
-- feat: BREAKING. Switches to Bearer token for authentication tokens in new auth module.
+- fix: BREAKING. Uses the Relic `Headers` class for configuring headers in the Serverpod server.
+- fix: BREAKING. Removes methods previously marked as deprecated.
 - fix: BREAKING. Removes deprecated `SerializableEntity` class.
-- refactor: BREAKING. Refactors the new email identity provider to clarify the code structure and improve readability.
-- refactor: BREAKING. Consolidates exceptions for new email identity provider. ([@yashas-hm](https://github.com/yashas-hm))
-- refactor: BREAKING. Replaces callbacks with exceptions and return object when validating password hash. ([@yashas-hm](https://github.com/yashas-hm))
-- feat: Adds support for router fallbacks in the web server.
+- fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
+- refactor(legacy auth): BREAKING. Replaces callbacks with exceptions and return object when validating password hash. ([@yashas-hm](https://github.com/yashas-hm))
+
+
+#### New features
+- feat: Adds `-d` / `--directory` flag to the `serverpod generate` command.
+- feat: Adds support for configuring server output modes in the test framework, defaults to logging only errors.
 - feat: Adds support for clearing storage cache on `ClientAuthSessionManager`.
-- feat: Adds support for supplying image when creating a user profile in new auth module.
-- feat: Adds support for middleware in the web server.
 - feat: Adds support for endpoint inheritance in generated client code.
 - feat: Adds support for generating abstract endpoint classes in client code.
 - feat: Adds support for `immutable` keyword in models to generate immutable models. ([obiwanzenobi](https://github.com/obiwanzenobi), [@kamil-matula](https://github.com/kamil-matula))
@@ -18,48 +54,46 @@
 - feat: Adds support for `required` field keyword on nullable fields in model and exception definitions.
 - feat: Adds support for `@unauthenticatedClientCall` annotation for endpoints.
 - feat: Web server templates can now be placed in subdirectories. ([@nicowalter256](https://github.com/nicowalter256))
-- feat: Introduces a new `authKeyProvider` and a new client session manager experience in new auth module.
-- feat: Dynamic routes by default now always include no cache headers in the web server.
 - feat: Adds a `~` operator on expressions to perform `NOT` expression.
+- feat: Server now stops automatically if the integrity check fails in `development` mode.
+- feat: Introduces a new `authKeyProvider` interface to support multiple authentication key formats.
 - feat(EXPERIMENTAL): Adds support for inheritance on `id` field for table models for `serverOnly` models.
-- fix: Fixes an issue where {@template} markers were not removed from generated endpoint documentation.
+
+#### Fixes
+- fix: Always resolves the authenticated user for all requests, making `session.authenticated` synchronous.
+- fix: Sets default log level to `debug` in development mode.
+- fix: Fixes an issue where the `@deprecated` annotation was not propagated to test framework endpoints.
+- fix: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
+- fix: Fixes an issue where `{@template}` markers were not removed from generated endpoint documentation.
 - fix: Fixes an issue where a failing database health check would fail the health check.
 - fix: Fixes an issue where request-specific information was included in error responses.
 - fix: Fixes an issue where the port retrieved from API and insights server would not be the actual port used by the service.
 - fix: Fixes an issue where updating a vector database entry would crash due to missing dimensions.
 - fix: Fixes a crash when persistent logging is disabled but database is enabled.
-- fix: Improves documentation for the email auth endpoint. ([@emilakerman](https://github.com/emilakerman))
-- fix: Fixes an issue where password length validation was not triggered for password reset and change password. ([@yashas-hm](https://github.com/yashas-hm))
 - fix: Replaces health check manager crash on unsupported platform with error message.
-- fix: Fixes an issue where transaction was not always propagated in auth bridge package.
 - fix: Index and table name collisions now give errors when generating project.
 - fix: Fixes an issue where the streaming connection handler would attempt to reconnect indefinitely if the connection was lost.
-
-## 3.0.0-alpha.2
-- fix: Fixes an issue where static assets could only be served once from the web server.
-
-## 3.0.0-alpha.1
-- fix: BREAKING. Renames web server template widgets for improved clarity and consistency.
-- fix: BREAKING. Changes the `userIdentifier` parameter in `AuthenticationInfo` from `Object` to `String`.
-- fix: BREAKING. Replaces direct use of `dart:io`s `HttpServer` with `relic` and updates interfaces accordingly.
-- feat: Introduces the `serverpod_auth_core` module, providing the foundation for the new authentication system.
-- feat: Introduces the `serverpod_auth_idp` module for concrete identity provider integrations.
-- feat: Introduces the `serverpod_auth_bridge` module to enable compatibility between old and new auth systems after migration.
-- feat: Introduces the `serverpod_auth_migration` module with tools to support auth migration.
-- feat: Server now stops automatically if the integrity check fails in `development` mode.
-- feat: Adds a clickable link to the web server when launched.
+- fix: Adds a clickable link to the web server when launched.
 - fix: Fixes an issue where invalid client code could be generated when using default values ([@ashishexee](https://github.com/ashishexee))
 - fix: Fixes an issue where the web server port would not reflect the actual port used by the server.
 - fix: Fixes an issue where Redis could not be enabled/disabled through configuration flag.
 - fix: Fixes an issue where constructor configuration could not be overridden by passed in arguments.
 - fix: Fixes an issue where SCP-lite Git URLs were not recognized when warning users about outdated lock files.
-- fix: Improves error messaging when database password cannot be resolved.
-- fix: `WebWidget` now uses `HTML` instead of `plainText` as the default `mimeType`.
 - fix: Database methods intended to only be used by generated code are now annotated with `@internal`.
-- fix: Only downloads templates during `serverpod create` execution.
+- fix: Improves error messaging when database password cannot be resolved.
+- fix: Serverpod templates are now only downloaded during `serverpod create` execution.
 - fix: Add missing `public` parameter to file upload description ([@LeonidVeremchuk](https://github.com/LeonidVeremchuk))
 - fix: Fixes an issue where empty maps in endpoint parameters and server-side return types where not encoded correctly.
 - fix: Removes redundant null check in models using custom classes.
+- fix: `WebWidget` now uses `HTML` instead of `plainText` as the default `mimeType`.
+- fix(legacy auth): Fixes an issue where password length validation was not triggered for password reset and change password. ([@yashas-hm](https://github.com/yashas-hm))
+
+#### Misc
+- docs(legacy auth): Fixes a documentation error where Google was referenced in the Email identity provider. ([@emilakerman](https://github.com/emilakerman))
+- chore: Bumps minimum Dart version to 3.2.0.
+
+## 2.9.2
+- fix: Fixes a crash when persistent logging is disabled but database is enabled.
 
 ## 2.9.1
 - feat: Makes it possible to configure a default page for `SignInWithEmailDialog`.
@@ -73,11 +107,11 @@
 
 ## 2.9.0
 - feat: Adds support for `HalfVector`, `SparseVector` and `Bit` vector types in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
-- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
-- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
+- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
 - feat: Adds support for supplying CLI arguments from environment variables when starting the server.
 - feat: Adds support for loading custom passwords from environment variables.
-- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.  
+- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.
 - feat(EXPERIMENTAL): Adds support for registering shutdown tasks that are executed when the server is shutting down. ([yashas-hm](https://github.com/yashas-hm))
 - fix: Fixes an issue where unblocking a user would not invalidate the user cache. ([@LesYampolskyi](https://github.com/LesYampolskyi))
 - fix: Fixes an issue where paths starting with `v` would be stripped when serving static files in the web server.
@@ -247,7 +281,7 @@
  - fix: Better error message if an error occurs when parsing the config files in CLI.
  - fix: Adds validation of custom class names to look for potential collisions.
  - fix: Only considers positional `Session` parameter when validating endpoint method.
- - fix: Updates example documentation. 
+ - fix: Updates example documentation.
  - fix: Before a session is closed, all logging is now awaited.
  - fix: Adds new `WebCallSession` for Relic.
  - fix: Correctly verifies `iss` value for all possible domains in Sign in with Google.
