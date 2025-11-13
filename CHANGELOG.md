@@ -22,6 +22,8 @@ Highlights:
 - Multiple authentication strategies (JWT, server-side sessions)
 - Multiple identity providers (Email, Google, Apple, Passkey) that can be configured and exposed independently
 - New `AuthUser` class representing the authenticated user, their scopes, and all associated authentication tokens — extensible with custom user data
+- Beautiful new UI components that provide a great user experience out of the box.
+- Complete decoupling between UI and authentication logic on controllers that allow easy customization and replacement of the default components.
 
 New packages:
 - **`serverpod_auth_core`** — Core authentication logic and session management
