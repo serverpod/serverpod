@@ -349,7 +349,12 @@ void main() {
           expect(
             endpointsFile,
             contains(
-              '\n// ignore: deprecated_member_use_from_same_package\n',
+              RegExp(
+                r'// ignore: deprecated_member_use_from_same_package\n^\s*\b' +
+                    methodName +
+                    r'\b\(',
+                multiLine: true,
+              ),
             ),
           );
         },

@@ -57,10 +57,10 @@ void main() {
             clientCode,
             contains('''\
   Future<String> hello() => caller.callServerEndpoint<String>(
-        'example',
-        'hello',
-        {},
-      );
+    'example',
+    'hello',
+    {},
+  );
 '''),
           );
         },
@@ -139,11 +139,11 @@ void main() {
             clientCode,
             contains('''\
   Future<String> hello() => caller.callServerEndpoint<String>(
-        'example',
-        'hello',
-        {},
-        authenticated: false,
-      );
+    'example',
+    'hello',
+    {},
+    authenticated: false,
+  );
 '''),
           );
         },
@@ -240,11 +240,11 @@ void main() {
             clientCode,
             contains('''\
   Future<String> hello() => caller.callServerEndpoint<String>(
-        'example',
-        'hello',
-        {},
-        authenticated: false,
-      );
+    'example',
+    'hello',
+    {},
+    authenticated: false,
+  );
 '''),
           );
         },
@@ -316,10 +316,10 @@ void main() {
             clientCode,
             contains('''\
   Future<String> authenticated() => caller.callServerEndpoint<String>(
-        'example',
-        'authenticated',
-        {},
-      );
+    'example',
+    'authenticated',
+    {},
+  );
 '''),
           );
         },
