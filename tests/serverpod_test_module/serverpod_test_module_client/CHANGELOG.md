@@ -2,18 +2,18 @@
 
 Release candidate for Serverpod 3.
 
-Serverpod 3 is a major overhaul of the authentication system and the web server.  
+Serverpod 3 is a major overhaul of the authentication system and the web server.
 This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
 
 ### Reworked web server
-Serverpod 3 introduces a fully reworked web server with improved performance, additional features, and increased extensibility.  
+Serverpod 3 introduces a fully reworked web server with improved performance, additional features, and increased extensibility.
 Built on top of the [Relic framework](https://pub.dev/packages/relic), it provides a more robust and flexible foundation for building web applications.
 
 Key improvements include:
-- Dynamic routes  
-- Middleware support  
-- Router fallbacks  
-- Comprehensive static asset handling, including cache busting and HTTP range requests  
+- Dynamic routes
+- Middleware support
+- Router fallbacks
+- Comprehensive static asset handling, including cache busting and HTTP range requests
 
 ### New authentication module
 A new authentication module has been developed based on the [authentication RFC](https://github.com/serverpod/serverpod/issues/3126). It provides a more flexible and robust foundation and significantly simplifies adding new identity providers.
@@ -22,12 +22,14 @@ Highlights:
 - Multiple authentication strategies (JWT, server-side sessions)
 - Multiple identity providers (Email, Google, Apple, Passkey) that can be configured and exposed independently
 - New `AuthUser` class representing the authenticated user, their scopes, and all associated authentication tokens — extensible with custom user data
+- Beautiful new UI components that provide a great user experience out of the box.
+- Complete decoupling between UI and authentication logic on controllers that allow easy customization and replacement of the default components.
 
 New packages:
-- **`serverpod_auth_core`** — Core authentication logic and session management  
-- **`serverpod_auth_idp`** — Identity provider integrations (Email, Google, Apple, Passkey)  
-- **`serverpod_auth_bridge`** — Migration bridge for legacy auth (Email currently supported)  
-- **`serverpod_auth_migration`** — Tools and helpers for migrating auth data (Email currently supported)  
+- **`serverpod_auth_core`** — Core authentication logic and session management
+- **`serverpod_auth_idp`** — Identity provider integrations (Email, Google, Apple, Passkey)
+- **`serverpod_auth_bridge`** — Migration bridge for legacy auth (Email currently supported)
+- **`serverpod_auth_migration`** — Tools and helpers for migrating auth data (Email currently supported)
 
 
 ### Additional changes
@@ -102,11 +104,11 @@ New packages:
 
 ## 2.9.0
 - feat: Adds support for `HalfVector`, `SparseVector` and `Bit` vector types in models and endpoints. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
-- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
-- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))  
+- feat: Adds support for changing model `id` type to `UUID`. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
+- feat: Adds support for setting runtime parameters on the database connection. ([@marcelomendoncasoares](https://github.com/marcelomendoncasoares))
 - feat: Adds support for supplying CLI arguments from environment variables when starting the server.
 - feat: Adds support for loading custom passwords from environment variables.
-- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.  
+- feat: Adds support for loading Google and Firebase secrets from environment variables in the auth module.
 - feat(EXPERIMENTAL): Adds support for registering shutdown tasks that are executed when the server is shutting down. ([yashas-hm](https://github.com/yashas-hm))
 - fix: Fixes an issue where unblocking a user would not invalidate the user cache. ([@LesYampolskyi](https://github.com/LesYampolskyi))
 - fix: Fixes an issue where paths starting with `v` would be stripped when serving static files in the web server.
@@ -276,7 +278,7 @@ New packages:
  - fix: Better error message if an error occurs when parsing the config files in CLI.
  - fix: Adds validation of custom class names to look for potential collisions.
  - fix: Only considers positional `Session` parameter when validating endpoint method.
- - fix: Updates example documentation. 
+ - fix: Updates example documentation.
  - fix: Before a session is closed, all logging is now awaited.
  - fix: Adds new `WebCallSession` for Relic.
  - fix: Correctly verifies `iss` value for all possible domains in Sign in with Google.
