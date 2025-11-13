@@ -42,8 +42,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultAndDefaultModel", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefaultMix(
             uuidDefaultAndDefaultModel: uuid,
           );
@@ -57,8 +58,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultAndDefaultPersist", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefaultMix(
             uuidDefaultAndDefaultPersist: uuid,
           );
@@ -72,8 +74,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "uuidDefaultModelAndDefaultPersist", then the field value should match the provided value',
         () {
-          var uuid =
-              UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+          var uuid = UuidValue.fromString(
+            '3f2504e0-4f89-11d3-9a0c-0305e82c3301',
+          );
           var object = UuidDefaultMix(
             uuidDefaultModelAndDefaultPersist: uuid,
           );

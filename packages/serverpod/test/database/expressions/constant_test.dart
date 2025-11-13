@@ -10,18 +10,21 @@ void main() {
     });
 
     test(
-        'when bool constructor is used value then output is uppercase bool value.',
-        () {
-      var expression = Constant.bool(true);
+      'when bool constructor is used value then output is uppercase bool value.',
+      () {
+        var expression = Constant.bool(true);
 
-      expect(expression.toString(), 'TRUE');
-    });
+        expect(expression.toString(), 'TRUE');
+      },
+    );
 
-    test('when initialized with String value then output is escaped string.',
-        () {
-      var expression = Constant.string('test');
+    test(
+      'when initialized with String value then output is escaped string.',
+      () {
+        var expression = Constant.string('test');
 
-      expect(expression.toString(), '\'test\'');
-    });
+        expect(expression.toString(), '\'test\'');
+      },
+    );
   });
 }

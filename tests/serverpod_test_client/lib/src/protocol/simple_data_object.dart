@@ -21,8 +21,10 @@ abstract class SimpleDataObject implements _i1.SerializableModel {
 
   factory SimpleDataObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataObject(
-        object: _i2.SimpleData.fromJson(
-            (jsonSerialization['object'] as Map<String, dynamic>)));
+      object: _i2.SimpleData.fromJson(
+        (jsonSerialization['object'] as Map<String, dynamic>),
+      ),
+    );
   }
 
   _i2.SimpleData object;
@@ -44,7 +46,7 @@ abstract class SimpleDataObject implements _i1.SerializableModel {
 
 class _SimpleDataObjectImpl extends SimpleDataObject {
   _SimpleDataObjectImpl({required _i2.SimpleData object})
-      : super._(object: object);
+    : super._(object: object);
 
   /// Returns a shallow copy of this [SimpleDataObject]
   /// with some or all fields replaced by the given arguments.

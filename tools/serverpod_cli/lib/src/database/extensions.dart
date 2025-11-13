@@ -435,7 +435,8 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
           : '';
     }
 
-    out += 'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
+    out +=
+        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
         'USING $type (${elementStrs.join(', ')}$distanceStr)$pgvectorParams;\n';
 
     return out;
@@ -502,26 +503,33 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     out += '\n';
 
     // Must be declared before any table creation.
-    if (actions.any((e) =>
-        (e.createTable != null &&
-            e.createTable!.columns.any((c) => c.isVectorColumn)) ||
-        (e.alterTable != null &&
-            e.alterTable!.addColumns.any((c) => c.isVectorColumn)))) {
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any((c) => c.isVectorColumn)) ||
+          (e.alterTable != null &&
+              e.alterTable!.addColumns.any((c) => c.isVectorColumn)),
+    )) {
       out += _sqlCreateVectorExtensionIfAvailable();
       out += '\n';
     }
 
     // Must be declared at the beginning for the function to be available.
     // Only add the function if it is used by any column on the migration.
-    if (actions.any((e) =>
-        (e.createTable != null &&
-            e.createTable!.columns
-                .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7)) ||
-        (e.alterTable != null &&
-            (e.alterTable!.addColumns
-                    .any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7) ||
-                e.alterTable!.modifyColumns
-                    .any((c) => c.newDefault == pgsqlFunctionRandomUuidV7))))) {
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any(
+                (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+              )) ||
+          (e.alterTable != null &&
+              (e.alterTable!.addColumns.any(
+                    (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+                  ) ||
+                  e.alterTable!.modifyColumns.any(
+                    (c) => c.newDefault == pgsqlFunctionRandomUuidV7,
+                  ))),
+    )) {
       out += _sqlUuidGenerateV7FunctionDeclaration();
       out += '\n';
     }
@@ -596,7 +604,8 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
   String foreignRelationToSql() {
     var out = '';
 
-    var noForeignKeys = (createTable?.foreignKeys.isEmpty ?? true) &&
+    var noForeignKeys =
+        (createTable?.foreignKeys.isEmpty ?? true) &&
         (alterTable?.addForeignKeys.isEmpty ?? true);
 
     if (noForeignKeys) return out;
@@ -668,19 +677,23 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
   }) {
     var out = '';
     if (addNullable) {
-      out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+      out +=
+          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
           ' DROP NOT NULL;\n';
     } else if (removeNullable) {
-      out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+      out +=
+          'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
           ' SET NOT NULL;\n';
     }
     if (changeDefault) {
       if (newDefault == null) {
-        out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+        out +=
+            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' DROP DEFAULT;\n';
         return out;
       } else {
-        out += 'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
+        out +=
+            'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
             ' SET DEFAULT $newDefault;\n';
       }
     }
@@ -697,7 +710,8 @@ String _sqlStoreMigrationVersion({
   out += '--\n';
   out += '-- MIGRATION VERSION FOR $module\n';
   out += '--\n';
-  out += 'INSERT INTO "serverpod_migrations" '
+  out +=
+      'INSERT INTO "serverpod_migrations" '
       '("module", "version", "timestamp")\n';
   out += '    VALUES (\'$module\', \'$version\', now())\n';
   out += '    ON CONFLICT ("module")\n';

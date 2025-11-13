@@ -22,12 +22,15 @@ void main() {
             example_index:
               fields:
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -58,12 +61,15 @@ void main() {
             example_index:
               fields: missingField
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -94,12 +100,15 @@ void main() {
             example_index:
               fields: name, name
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -131,12 +140,15 @@ void main() {
             example_index:
               fields: apiField
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -167,12 +179,15 @@ void main() {
             example_index:
               fields: name,
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -205,12 +220,15 @@ void main() {
               fields: name, vector
               type: btree
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -246,12 +264,15 @@ void main() {
               fields: vector1, vector2
               type: hnsw
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -287,12 +308,15 @@ void main() {
               fields: name, vector
               type: btree
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -328,12 +352,15 @@ void main() {
               fields: vector1, vector2
               type: hnsw
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -369,12 +396,15 @@ void main() {
               fields: name, vector
               type: btree
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -410,12 +440,15 @@ void main() {
               fields: vector1, vector2
               type: hnsw
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -451,12 +484,15 @@ void main() {
               fields: name, vector
               type: btree
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -492,12 +528,15 @@ void main() {
               fields: vector1, vector2
               type: hnsw
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(

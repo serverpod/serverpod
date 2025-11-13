@@ -36,7 +36,8 @@ abstract class AddressUuid implements _i1.SerializableModel {
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
           : _i2.CitizenInt.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+              (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -83,11 +84,11 @@ class _AddressUuidImpl extends AddressUuid {
     int? inhabitantId,
     _i2.CitizenInt? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [AddressUuid]
   /// with some or all fields replaced by the given arguments.

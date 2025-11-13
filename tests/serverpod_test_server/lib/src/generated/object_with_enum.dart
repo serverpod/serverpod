@@ -47,9 +47,11 @@ abstract class ObjectWithEnum
           .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
           .toList(),
       enumListList: (jsonSerialization['enumListList'] as List)
-          .map((e) => (e as List)
-              .map((e) => _i2.TestEnum.fromJson((e as int)))
-              .toList())
+          .map(
+            (e) => (e as List)
+                .map((e) => _i2.TestEnum.fromJson((e as int)))
+                .toList(),
+          )
           .toList(),
     );
   }
@@ -92,10 +94,12 @@ abstract class ObjectWithEnum
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
       'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableEnumList': nullableEnumList.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+        valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+      ),
     };
   }
 
@@ -106,10 +110,12 @@ abstract class ObjectWithEnum
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
       'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableEnumList': nullableEnumList.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+        valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+      ),
     };
   }
 
@@ -154,13 +160,13 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     required List<_i2.TestEnum?> nullableEnumList,
     required List<List<_i2.TestEnum>> enumListList,
   }) : super._(
-          id: id,
-          testEnum: testEnum,
-          nullableEnum: nullableEnum,
-          enumList: enumList,
-          nullableEnumList: nullableEnumList,
-          enumListList: enumListList,
-        );
+         id: id,
+         testEnum: testEnum,
+         nullableEnum: nullableEnum,
+         enumList: enumList,
+         nullableEnumList: nullableEnumList,
+         enumListList: enumListList,
+       );
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
@@ -177,12 +183,14 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     return ObjectWithEnum(
       id: id is int? ? id : this.id,
       testEnum: testEnum ?? this.testEnum,
-      nullableEnum:
-          nullableEnum is _i2.TestEnum? ? nullableEnum : this.nullableEnum,
+      nullableEnum: nullableEnum is _i2.TestEnum?
+          ? nullableEnum
+          : this.nullableEnum,
       enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
       nullableEnumList:
           nullableEnumList ?? this.nullableEnumList.map((e0) => e0).toList(),
-      enumListList: enumListList ??
+      enumListList:
+          enumListList ??
           this.enumListList.map((e0) => e0.map((e1) => e1).toList()).toList(),
     );
   }
@@ -198,36 +206,36 @@ class ObjectWithEnumUpdateTable extends _i1.UpdateTable<ObjectWithEnumTable> {
       );
 
   _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> nullableEnum(
-          _i2.TestEnum? value) =>
-      _i1.ColumnValue(
-        table.nullableEnum,
-        value,
-      );
+    _i2.TestEnum? value,
+  ) => _i1.ColumnValue(
+    table.nullableEnum,
+    value,
+  );
 
   _i1.ColumnValue<List<_i2.TestEnum>, List<_i2.TestEnum>> enumList(
-          List<_i2.TestEnum> value) =>
-      _i1.ColumnValue(
-        table.enumList,
-        value,
-      );
+    List<_i2.TestEnum> value,
+  ) => _i1.ColumnValue(
+    table.enumList,
+    value,
+  );
 
   _i1.ColumnValue<List<_i2.TestEnum?>, List<_i2.TestEnum?>> nullableEnumList(
-          List<_i2.TestEnum?> value) =>
-      _i1.ColumnValue(
-        table.nullableEnumList,
-        value,
-      );
+    List<_i2.TestEnum?> value,
+  ) => _i1.ColumnValue(
+    table.nullableEnumList,
+    value,
+  );
 
   _i1.ColumnValue<List<List<_i2.TestEnum>>, List<List<_i2.TestEnum>>>
-      enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
-            table.enumListList,
-            value,
-          );
+  enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
+    table.enumListList,
+    value,
+  );
 }
 
 class ObjectWithEnumTable extends _i1.Table<int?> {
   ObjectWithEnumTable({super.tableRelation})
-      : super(tableName: 'object_with_enum') {
+    : super(tableName: 'object_with_enum') {
     updateTable = ObjectWithEnumUpdateTable(this);
     testEnum = _i1.ColumnEnum(
       'testEnum',
@@ -267,13 +275,13 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        testEnum,
-        nullableEnum,
-        enumList,
-        nullableEnumList,
-        enumListList,
-      ];
+    id,
+    testEnum,
+    nullableEnum,
+    enumList,
+    nullableEnumList,
+    enumListList,
+  ];
 }
 
 class ObjectWithEnumInclude extends _i1.IncludeObject {

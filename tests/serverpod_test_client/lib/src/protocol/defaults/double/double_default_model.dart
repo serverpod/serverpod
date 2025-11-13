@@ -17,8 +17,8 @@ abstract class DoubleDefaultModel implements _i1.SerializableModel {
     this.id,
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
-  })  : doubleDefaultModel = doubleDefaultModel ?? 10.5,
-        doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
+  }) : doubleDefaultModel = doubleDefaultModel ?? 10.5,
+       doubleDefaultModelNull = doubleDefaultModelNull ?? 20.5;
 
   factory DoubleDefaultModel({
     int? id,
@@ -29,8 +29,8 @@ abstract class DoubleDefaultModel implements _i1.SerializableModel {
   factory DoubleDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return DoubleDefaultModel(
       id: jsonSerialization['id'] as int?,
-      doubleDefaultModel:
-          (jsonSerialization['doubleDefaultModel'] as num).toDouble(),
+      doubleDefaultModel: (jsonSerialization['doubleDefaultModel'] as num)
+          .toDouble(),
       doubleDefaultModelNull:
           (jsonSerialization['doubleDefaultModelNull'] as num).toDouble(),
     );
@@ -76,10 +76,10 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
     double? doubleDefaultModel,
     double? doubleDefaultModelNull,
   }) : super._(
-          id: id,
-          doubleDefaultModel: doubleDefaultModel,
-          doubleDefaultModelNull: doubleDefaultModelNull,
-        );
+         id: id,
+         doubleDefaultModel: doubleDefaultModel,
+         doubleDefaultModelNull: doubleDefaultModelNull,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultModel]
   /// with some or all fields replaced by the given arguments.

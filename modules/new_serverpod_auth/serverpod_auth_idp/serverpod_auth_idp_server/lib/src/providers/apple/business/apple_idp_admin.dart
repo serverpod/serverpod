@@ -21,12 +21,13 @@ final class AppleIDPAdmin {
   /// revoked.
   Future<void> checkAccountStatus(
     final Session session, {
+
     /// Callback to be invoked when an Apple authentication has been revoked.
     ///
     /// In this case all sessions associated with this sign-in method should be
     /// removed.
     required final void Function(UuidValue authUserId)
-        onExpiredUserAuthentication,
+    onExpiredUserAuthentication,
     final Transaction? transaction,
     final int databaseBatchSize = 100,
   }) async {

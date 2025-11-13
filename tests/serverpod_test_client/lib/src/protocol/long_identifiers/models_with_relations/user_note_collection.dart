@@ -60,8 +60,9 @@ abstract class UserNoteCollection implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'name': name,
       if (userNotesPropertyName != null)
-        'userNotesPropertyName':
-            userNotesPropertyName?.toJson(valueToJson: (v) => v.toJson()),
+        'userNotesPropertyName': userNotesPropertyName?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
     };
   }
 
@@ -79,10 +80,10 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
     required String name,
     List<_i2.UserNote>? userNotesPropertyName,
   }) : super._(
-          id: id,
-          name: name,
-          userNotesPropertyName: userNotesPropertyName,
-        );
+         id: id,
+         name: name,
+         userNotesPropertyName: userNotesPropertyName,
+       );
 
   /// Returns a shallow copy of this [UserNoteCollection]
   /// with some or all fields replaced by the given arguments.

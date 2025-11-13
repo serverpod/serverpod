@@ -6,7 +6,8 @@ import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-      final HashResult passwordHash) {
+    final HashResult passwordHash,
+  ) {
     return EmailAccountPasswordHash(passwordHash);
   }
 
@@ -80,23 +81,39 @@ final class EmailIDPTestFixture {
   }
 
   Future<void> tearDown(final Session session) async {
-    await EmailAccount.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountFailedLoginAttempt.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountPasswordResetRequest.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountPasswordResetCompleteAttempt.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountPasswordResetRequestAttempt.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountRequest.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
-    await EmailAccountRequestCompletionAttempt.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
+    await EmailAccount.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountFailedLoginAttempt.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountPasswordResetRequest.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountRequest.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
+    await EmailAccountRequestCompletionAttempt.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
 
-    await AuthUser.db
-        .deleteWhere(session, where: (final _) => Constant.bool(true));
+    await AuthUser.db.deleteWhere(
+      session,
+      where: (final _) => Constant.bool(true),
+    );
   }
 
   SecretHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;

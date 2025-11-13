@@ -18,8 +18,8 @@ final class PasskeyIDPUtils {
   PasskeyIDPUtils({
     required final Duration challengeLifetime,
     required final Passkeys passkeys,
-  })  : _challengeLifetime = challengeLifetime,
-        _passkeys = passkeys;
+  }) : _challengeLifetime = challengeLifetime,
+       _passkeys = passkeys;
 
   /// Returns the challenge and deletes it from the database (as each challenge
   /// should only be used once).
@@ -183,10 +183,12 @@ final class PasskeyIDPUtils {
     );
 
     return removedAccounts
-        .map((final account) => (
-              authUserId: account.authUserId,
-              passkeyAccountId: account.id!,
-            ))
+        .map(
+          (final account) => (
+            authUserId: account.authUserId,
+            passkeyAccountId: account.id!,
+          ),
+        )
         .toList();
   }
 }

@@ -11,20 +11,24 @@ class MigrationVersions {
   static List<String> listVersions({
     required Directory projectDirectory,
   }) {
-    var directory =
-        MigrationConstants.migrationsBaseDirectory(projectDirectory);
+    var directory = MigrationConstants.migrationsBaseDirectory(
+      projectDirectory,
+    );
 
-    var moduleDirectory = Directory(path.join(
-      directory.path,
-    ));
+    var moduleDirectory = Directory(
+      path.join(
+        directory.path,
+      ),
+    );
 
     if (!moduleDirectory.existsSync()) {
       return [];
     }
 
     var migrationPaths = moduleDirectory.listSync().whereType<Directory>();
-    var migrationVersions =
-        migrationPaths.map((d) => path.basename(d.path)).toList();
+    var migrationVersions = migrationPaths
+        .map((d) => path.basename(d.path))
+        .toList();
     migrationVersions.sort();
 
     return migrationVersions;

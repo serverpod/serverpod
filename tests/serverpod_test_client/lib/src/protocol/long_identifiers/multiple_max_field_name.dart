@@ -22,22 +22,21 @@ abstract class MultipleMaxFieldName implements _i1.SerializableModel {
   factory MultipleMaxFieldName({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
   }) = _MultipleMaxFieldNameImpl;
 
   factory MultipleMaxFieldName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return MultipleMaxFieldName(
       id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-          jsonSerialization[
-                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1']
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1']
               as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-          jsonSerialization[
-                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2']
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2']
               as String,
     );
   }
@@ -82,16 +81,16 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
   _MultipleMaxFieldNameImpl({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
   }) : super._(
-          id: id,
-          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
-          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-        );
+         id: id,
+         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
+             thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
+             thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+       );
 
   /// Returns a shallow copy of this [MultipleMaxFieldName]
   /// with some or all fields replaced by the given arguments.
@@ -106,10 +105,10 @@ class _MultipleMaxFieldNameImpl extends MultipleMaxFieldName {
       id: id is int? ? id : this.id,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1 ??
-              this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
+          this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2 ??
-              this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
+          this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
     );
   }
 }

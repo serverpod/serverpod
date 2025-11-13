@@ -29,14 +29,16 @@ class DefaultChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var compress = previous != null &&
+    var compress =
+        previous != null &&
         message.sender == previous!.sender &&
         message.time
                 .difference(previous!.time)
                 .compareTo(const Duration(minutes: 3)) <
             0;
 
-    var hasPreview = message.attachments != null &&
+    var hasPreview =
+        message.attachments != null &&
         message.attachments!.length == 1 &&
         message.attachments![0].previewImage != null;
 
@@ -51,7 +53,10 @@ class DefaultChatTile extends StatelessWidget {
 
     Widget tile = Container(
       padding: EdgeInsets.only(
-          bottom: 20, left: horizontalPadding, right: horizontalPadding),
+        bottom: 20,
+        left: horizontalPadding,
+        right: horizontalPadding,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,10 +101,9 @@ class DefaultChatTile extends StatelessWidget {
                     message.message,
                     selectable: true,
                     linkColor: Colors.lightBlue[300]!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(height: 1.5),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium!.copyWith(height: 1.5),
                   ),
                 if (attachmentTiles.isNotEmpty)
                   Container(
@@ -116,12 +120,14 @@ class DefaultChatTile extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: _AttachmentTile(
-                          attachment: message.attachments![0], preview: true),
+                        attachment: message.attachments![0],
+                        preview: true,
+                      ),
                     ),
                   ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

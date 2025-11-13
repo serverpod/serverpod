@@ -145,13 +145,13 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     required String serverId,
     String? identifier,
   }) : super._(
-          id: id,
-          name: name,
-          time: time,
-          serializedObject: serializedObject,
-          serverId: serverId,
-          identifier: identifier,
-        );
+         id: id,
+         name: name,
+         time: time,
+         serializedObject: serializedObject,
+         serverId: serverId,
+         identifier: identifier,
+       );
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
@@ -182,14 +182,14 @@ class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
   FutureCallEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+    table.time,
+    value,
+  );
 
   _i1.ColumnValue<String, String> serializedObject(String? value) =>
       _i1.ColumnValue(
@@ -198,19 +198,19 @@ class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
       );
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> identifier(String? value) => _i1.ColumnValue(
-        table.identifier,
-        value,
-      );
+    table.identifier,
+    value,
+  );
 }
 
 class FutureCallEntryTable extends _i1.Table<int?> {
   FutureCallEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_future_call') {
+    : super(tableName: 'serverpod_future_call') {
     updateTable = FutureCallEntryUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -253,13 +253,13 @@ class FutureCallEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        time,
-        serializedObject,
-        serverId,
-        identifier,
-      ];
+    id,
+    name,
+    time,
+    serializedObject,
+    serverId,
+    identifier,
+  ];
 }
 
 class FutureCallEntryInclude extends _i1.IncludeObject {
@@ -457,7 +457,7 @@ class FutureCallEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallEntry>(
@@ -472,7 +472,7 @@ class FutureCallEntryRepository {
   Future<List<FutureCallEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     int? limit,
     int? offset,

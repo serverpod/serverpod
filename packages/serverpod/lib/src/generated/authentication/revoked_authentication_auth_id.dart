@@ -21,9 +21,11 @@ abstract class RevokedAuthenticationAuthId
       _RevokedAuthenticationAuthIdImpl;
 
   factory RevokedAuthenticationAuthId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RevokedAuthenticationAuthId(
-        authId: jsonSerialization['authId'] as String);
+      authId: jsonSerialization['authId'] as String,
+    );
   }
 
   String authId;
@@ -50,7 +52,7 @@ abstract class RevokedAuthenticationAuthId
 
 class _RevokedAuthenticationAuthIdImpl extends RevokedAuthenticationAuthId {
   _RevokedAuthenticationAuthIdImpl({required String authId})
-      : super._(authId: authId);
+    : super._(authId: authId);
 
   /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
   /// with some or all fields replaced by the given arguments.

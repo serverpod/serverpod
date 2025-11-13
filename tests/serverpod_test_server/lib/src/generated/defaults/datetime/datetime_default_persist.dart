@@ -27,19 +27,22 @@ abstract class DateTimeDefaultPersist
   }) = _DateTimeDefaultPersistImpl;
 
   factory DateTimeDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DateTimeDefaultPersist(
       id: jsonSerialization['id'] as int?,
       dateTimeDefaultPersistNow:
           jsonSerialization['dateTimeDefaultPersistNow'] == null
-              ? null
-              : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultPersistNow']),
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultPersistNow'],
+            ),
       dateTimeDefaultPersistStr:
           jsonSerialization['dateTimeDefaultPersistStr'] == null
-              ? null
-              : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultPersistStr']),
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultPersistStr'],
+            ),
     );
   }
 
@@ -125,10 +128,10 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
     DateTime? dateTimeDefaultPersistNow,
     DateTime? dateTimeDefaultPersistStr,
   }) : super._(
-          id: id,
-          dateTimeDefaultPersistNow: dateTimeDefaultPersistNow,
-          dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
-        );
+         id: id,
+         dateTimeDefaultPersistNow: dateTimeDefaultPersistNow,
+         dateTimeDefaultPersistStr: dateTimeDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [DateTimeDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -156,23 +159,23 @@ class DateTimeDefaultPersistUpdateTable
   DateTimeDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
-          DateTime? value) =>
-      _i1.ColumnValue(
-        table.dateTimeDefaultPersistNow,
-        value,
-      );
+    DateTime? value,
+  ) => _i1.ColumnValue(
+    table.dateTimeDefaultPersistNow,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistStr(
-          DateTime? value) =>
-      _i1.ColumnValue(
-        table.dateTimeDefaultPersistStr,
-        value,
-      );
+    DateTime? value,
+  ) => _i1.ColumnValue(
+    table.dateTimeDefaultPersistStr,
+    value,
+  );
 }
 
 class DateTimeDefaultPersistTable extends _i1.Table<int?> {
   DateTimeDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'datetime_default_persist') {
+    : super(tableName: 'datetime_default_persist') {
     updateTable = DateTimeDefaultPersistUpdateTable(this);
     dateTimeDefaultPersistNow = _i1.ColumnDateTime(
       'dateTimeDefaultPersistNow',
@@ -194,10 +197,10 @@ class DateTimeDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        dateTimeDefaultPersistNow,
-        dateTimeDefaultPersistStr,
-      ];
+    id,
+    dateTimeDefaultPersistNow,
+    dateTimeDefaultPersistStr,
+  ];
 }
 
 class DateTimeDefaultPersistInclude extends _i1.IncludeObject {
@@ -395,7 +398,7 @@ class DateTimeDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefaultPersist>(
@@ -410,7 +413,7 @@ class DateTimeDefaultPersistRepository {
   Future<List<DateTimeDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     int? limit,
     int? offset,

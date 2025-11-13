@@ -24,7 +24,8 @@ abstract class ObjectWithSelfParent implements _i1.SerializableModel {
   }) = _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSelfParent(
       id: jsonSerialization['id'] as int?,
       other: jsonSerialization['other'] as int?,
@@ -66,9 +67,9 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
     int? id,
     int? other,
   }) : super._(
-          id: id,
-          other: other,
-        );
+         id: id,
+         other: other,
+       );
 
   /// Returns a shallow copy of this [ObjectWithSelfParent]
   /// with some or all fields replaced by the given arguments.

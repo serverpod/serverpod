@@ -17,9 +17,9 @@ abstract class UriDefault implements _i1.SerializableModel {
     this.id,
     Uri? uriDefault,
     Uri? uriDefaultNull,
-  })  : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
-        uriDefaultNull =
-            uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
+  }) : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
+       uriDefaultNull =
+           uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
 
   factory UriDefault({
     int? id,
@@ -30,8 +30,9 @@ abstract class UriDefault implements _i1.SerializableModel {
   factory UriDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefault(
       id: jsonSerialization['id'] as int?,
-      uriDefault:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefault']),
+      uriDefault: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefault'],
+      ),
       uriDefaultNull: jsonSerialization['uriDefaultNull'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultNull']),
@@ -78,10 +79,10 @@ class _UriDefaultImpl extends UriDefault {
     Uri? uriDefault,
     Uri? uriDefaultNull,
   }) : super._(
-          id: id,
-          uriDefault: uriDefault,
-          uriDefaultNull: uriDefaultNull,
-        );
+         id: id,
+         uriDefault: uriDefault,
+         uriDefaultNull: uriDefaultNull,
+       );
 
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
@@ -95,8 +96,9 @@ class _UriDefaultImpl extends UriDefault {
     return UriDefault(
       id: id is int? ? id : this.id,
       uriDefault: uriDefault ?? this.uriDefault,
-      uriDefaultNull:
-          uriDefaultNull is Uri? ? uriDefaultNull : this.uriDefaultNull,
+      uriDefaultNull: uriDefaultNull is Uri?
+          ? uriDefaultNull
+          : this.uriDefaultNull,
     );
   }
 }

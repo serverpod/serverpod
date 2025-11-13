@@ -36,7 +36,8 @@ abstract class Player implements _i1.SerializableModel {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -85,11 +86,11 @@ class _PlayerImpl extends Player {
     int? teamId,
     _i2.Team? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.

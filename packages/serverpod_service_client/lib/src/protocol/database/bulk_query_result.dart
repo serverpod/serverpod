@@ -31,13 +31,17 @@ abstract class BulkQueryResult implements _i1.SerializableModel {
   factory BulkQueryResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkQueryResult(
       headers: (jsonSerialization['headers'] as List)
-          .map((e) => _i2.BulkQueryColumnDescription.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => _i2.BulkQueryColumnDescription.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -81,11 +85,11 @@ class _BulkQueryResultImpl extends BulkQueryResult {
     required int numAffectedRows,
     required Duration duration,
   }) : super._(
-          headers: headers,
-          data: data,
-          numAffectedRows: numAffectedRows,
-          duration: duration,
-        );
+         headers: headers,
+         data: data,
+         numAffectedRows: numAffectedRows,
+         duration: duration,
+       );
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.

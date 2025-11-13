@@ -137,16 +137,16 @@ class _UserInfoImpl extends UserInfo {
     required List<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          userIdentifier: userIdentifier,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          created: created,
-          imageUrl: imageUrl,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         userIdentifier: userIdentifier,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         created: created,
+         imageUrl: imageUrl,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.

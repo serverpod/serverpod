@@ -27,32 +27,35 @@ void testSuite<T extends Object>(
         expect(idpFactory.type, equals(T));
       });
 
-      test('when constructing a provider the provider should be constructed',
-          () {
-        final provider = idpFactory.construct(
-          tokenManager: tokenManager,
-          authUsers: authUsers,
-          userProfiles: userProfiles,
-        );
-        expect(provider, isNotNull);
-        expect(provider, isA<T>());
-      });
+      test(
+        'when constructing a provider the provider should be constructed',
+        () {
+          final provider = idpFactory.construct(
+            tokenManager: tokenManager,
+            authUsers: authUsers,
+            userProfiles: userProfiles,
+          );
+          expect(provider, isNotNull);
+          expect(provider, isA<T>());
+        },
+      );
 
       test(
-          'when constructing multiple providers the providers should be unique',
-          () {
-        final provider1 = idpFactory.construct(
-          tokenManager: tokenManager,
-          authUsers: authUsers,
-          userProfiles: userProfiles,
-        );
-        final provider2 = idpFactory.construct(
-          tokenManager: tokenManager,
-          authUsers: authUsers,
-          userProfiles: userProfiles,
-        );
-        expect(provider1, isNot(same(provider2)));
-      });
+        'when constructing multiple providers the providers should be unique',
+        () {
+          final provider1 = idpFactory.construct(
+            tokenManager: tokenManager,
+            authUsers: authUsers,
+            userProfiles: userProfiles,
+          );
+          final provider2 = idpFactory.construct(
+            tokenManager: tokenManager,
+            authUsers: authUsers,
+            userProfiles: userProfiles,
+          );
+          expect(provider1, isNot(same(provider2)));
+        },
+      );
     },
   );
 }

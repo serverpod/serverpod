@@ -148,13 +148,13 @@ class _AuthKeyImpl extends AuthKey {
     required List<String> scopeNames,
     required String method,
   }) : super._(
-          id: id,
-          userId: userId,
-          hash: hash,
-          key: key,
-          scopeNames: scopeNames,
-          method: method,
-        );
+         id: id,
+         userId: userId,
+         hash: hash,
+         key: key,
+         scopeNames: scopeNames,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
@@ -183,14 +183,14 @@ class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
   AuthKeyUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 
   _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
       _i1.ColumnValue(
@@ -199,9 +199,9 @@ class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
       );
 
   _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 }
 
 class AuthKeyTable extends _i1.Table<int?> {
@@ -242,12 +242,12 @@ class AuthKeyTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userId,
-        hash,
-        scopeNames,
-        method,
-      ];
+    id,
+    userId,
+    hash,
+    scopeNames,
+    method,
+  ];
 }
 
 class AuthKeyInclude extends _i1.IncludeObject {

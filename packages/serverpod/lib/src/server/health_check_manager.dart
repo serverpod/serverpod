@@ -34,7 +34,8 @@ class HealthCheckManager {
 
     if (Platform.isWindows) {
       stderr.writeln(
-          'WARNING: CPU and memory usage metrics are not supported on Windows.');
+        'WARNING: CPU and memory usage metrics are not supported on Windows.',
+      );
       return;
     }
 
@@ -42,7 +43,8 @@ class HealthCheckManager {
       await SystemResources.init();
     } catch (e) {
       stderr.writeln(
-          'WARNING: CPU and memory usage metrics are not supported on this platform.');
+        'WARNING: CPU and memory usage metrics are not supported on this platform.',
+      );
     }
 
     _scheduleNextCheck();
@@ -404,10 +406,10 @@ class HealthCheckManager {
 Duration _timeUntilNextMinute() {
   // Add a second to make sure we don't end up on the same minute.
   var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next =
-      DateTime.utc(now.year, now.month, now.day, now.hour, now.minute).add(
-    const Duration(minutes: 1),
-  );
+  var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute)
+      .add(
+        const Duration(minutes: 1),
+      );
 
   return next.difference(now);
 }

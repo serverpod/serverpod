@@ -34,8 +34,9 @@ abstract class ExceptionWithData
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['creationDate']),
+      creationDate: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['creationDate'],
+      ),
       errorFields: (jsonSerialization['errorFields'] as List)
           .map((e) => e as String)
           .toList(),
@@ -95,11 +96,11 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
     required List<String> errorFields,
     int? someNullableField,
   }) : super._(
-          message: message,
-          creationDate: creationDate,
-          errorFields: errorFields,
-          someNullableField: someNullableField,
-        );
+         message: message,
+         creationDate: creationDate,
+         errorFields: errorFields,
+         someNullableField: someNullableField,
+       );
 
   /// Returns a shallow copy of this [ExceptionWithData]
   /// with some or all fields replaced by the given arguments.

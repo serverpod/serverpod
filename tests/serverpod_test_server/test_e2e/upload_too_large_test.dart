@@ -7,8 +7,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(serverUrl);
 
-  test(
-      'Given the test server '
+  test('Given the test server '
       'when request is too large '
       'then the server should respond with an error.', () {
     expectLater(

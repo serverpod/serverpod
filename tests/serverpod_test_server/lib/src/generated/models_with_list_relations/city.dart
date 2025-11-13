@@ -89,8 +89,9 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (citizens != null)
         'citizens': citizens?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (organizations != null)
-        'organizations':
-            organizations?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'organizations': organizations?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -139,11 +140,11 @@ class _CityImpl extends City {
     List<_i2.Person>? citizens,
     List<_i3.Organization>? organizations,
   }) : super._(
-          id: id,
-          name: name,
-          citizens: citizens,
-          organizations: organizations,
-        );
+         id: id,
+         name: name,
+         citizens: citizens,
+         organizations: organizations,
+       );
 
   /// Returns a shallow copy of this [City]
   /// with some or all fields replaced by the given arguments.
@@ -172,9 +173,9 @@ class CityUpdateTable extends _i1.UpdateTable<CityTable> {
   CityUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CityTable extends _i1.Table<int?> {
@@ -237,7 +238,8 @@ class CityTable extends _i1.Table<int?> {
     _citizens = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
       table: _i2.PersonTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _citizens!;
   }
@@ -255,16 +257,17 @@ class CityTable extends _i1.Table<int?> {
     _organizations = _i1.ManyRelation<_i3.OrganizationTable>(
       tableWithRelations: relationTable,
       table: _i3.OrganizationTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _organizations!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -293,9 +296,9 @@ class CityInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'citizens': _citizens,
-        'organizations': _organizations,
-      };
+    'citizens': _citizens,
+    'organizations': _organizations,
+  };
 
   @override
   _i1.Table<int?> get table => City.t;
@@ -607,10 +610,12 @@ class CityAttachRepository {
     }
 
     var $person = person
-        .map((e) => _i2.PersonImplicit(
-              e,
-              $_cityCitizensCityId: city.id,
-            ))
+        .map(
+          (e) => _i2.PersonImplicit(
+            e,
+            $_cityCitizensCityId: city.id,
+          ),
+        )
         .toList();
     await session.db.update<_i2.Person>(
       $person,
@@ -634,8 +639,9 @@ class CityAttachRepository {
       throw ArgumentError.notNull('city.id');
     }
 
-    var $organization =
-        organization.map((e) => e.copyWith(cityId: city.id)).toList();
+    var $organization = organization
+        .map((e) => e.copyWith(cityId: city.id))
+        .toList();
     await session.db.update<_i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],
@@ -715,10 +721,12 @@ class CityDetachRepository {
     }
 
     var $person = person
-        .map((e) => _i2.PersonImplicit(
-              e,
-              $_cityCitizensCityId: null,
-            ))
+        .map(
+          (e) => _i2.PersonImplicit(
+            e,
+            $_cityCitizensCityId: null,
+          ),
+        )
         .toList();
     await session.db.update<_i2.Person>(
       $person,
@@ -741,8 +749,9 @@ class CityDetachRepository {
       throw ArgumentError.notNull('organization.id');
     }
 
-    var $organization =
-        organization.map((e) => e.copyWith(cityId: null)).toList();
+    var $organization = organization
+        .map((e) => e.copyWith(cityId: null))
+        .toList();
     await session.db.update<_i3.Organization>(
       $organization,
       columns: [_i3.Organization.t.cityId],

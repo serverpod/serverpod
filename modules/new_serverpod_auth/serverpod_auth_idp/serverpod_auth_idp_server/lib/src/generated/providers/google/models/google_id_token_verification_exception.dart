@@ -27,7 +27,8 @@ abstract class GoogleIdTokenVerificationException
       _GoogleIdTokenVerificationExceptionImpl;
 
   factory GoogleIdTokenVerificationException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return GoogleIdTokenVerificationException();
   }
 

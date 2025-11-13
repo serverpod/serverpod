@@ -102,8 +102,8 @@ class _SignInWidgetState extends State<SignInWidget> {
         child: Text(
           'No authentication providers configured',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
+            color: Theme.of(context).colorScheme.error,
+          ),
         ),
       );
     }
@@ -119,7 +119,8 @@ class _SignInWidgetState extends State<SignInWidget> {
     ];
 
     if (hasApple) {
-      final appleSignInWidget = widget.appleSignInWidget ??
+      final appleSignInWidget =
+          widget.appleSignInWidget ??
           AppleSignInWidget(
             client: widget.client,
             onAuthenticated: widget.onAuthenticated,
@@ -168,11 +169,10 @@ class _SignInSeparator extends StatelessWidget {
               child: Text(
                 'or continue with',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.6),
-                    ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
               ),
             ),
             const ExpandedDivider(),

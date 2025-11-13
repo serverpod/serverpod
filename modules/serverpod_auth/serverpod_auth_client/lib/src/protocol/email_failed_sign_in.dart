@@ -86,11 +86,11 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
     required DateTime time,
     required String ipAddress,
   }) : super._(
-          id: id,
-          email: email,
-          time: time,
-          ipAddress: ipAddress,
-        );
+         id: id,
+         email: email,
+         time: time,
+         ipAddress: ipAddress,
+       );
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.

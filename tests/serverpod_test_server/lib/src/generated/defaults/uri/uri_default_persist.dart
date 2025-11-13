@@ -30,7 +30,8 @@ abstract class UriDefaultPersist
       uriDefaultPersist: jsonSerialization['uriDefaultPersist'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultPersist']),
+              jsonSerialization['uriDefaultPersist'],
+            ),
     );
   }
 
@@ -108,9 +109,9 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
     int? id,
     Uri? uriDefaultPersist,
   }) : super._(
-          id: id,
-          uriDefaultPersist: uriDefaultPersist,
-        );
+         id: id,
+         uriDefaultPersist: uriDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -134,14 +135,14 @@ class UriDefaultPersistUpdateTable
   UriDefaultPersistUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefaultPersist(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultPersist,
-        value,
-      );
+    table.uriDefaultPersist,
+    value,
+  );
 }
 
 class UriDefaultPersistTable extends _i1.Table<int?> {
   UriDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'uri_default_persist') {
+    : super(tableName: 'uri_default_persist') {
     updateTable = UriDefaultPersistUpdateTable(this);
     uriDefaultPersist = _i1.ColumnUri(
       'uriDefaultPersist',
@@ -156,9 +157,9 @@ class UriDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uriDefaultPersist,
-      ];
+    id,
+    uriDefaultPersist,
+  ];
 }
 
 class UriDefaultPersistInclude extends _i1.IncludeObject {
@@ -356,7 +357,7 @@ class UriDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UriDefaultPersist>(
@@ -371,7 +372,7 @@ class UriDefaultPersistRepository {
   Future<List<UriDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
     int? limit,
     int? offset,

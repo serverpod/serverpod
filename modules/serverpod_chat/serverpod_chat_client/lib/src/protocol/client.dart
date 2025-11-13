@@ -27,26 +27,25 @@ class EndpointChat extends _i1.EndpointRef {
 
   /// Creates a description for uploading an attachment.
   _i2.Future<_i3.ChatMessageAttachmentUploadDescription?>
-      createAttachmentUploadDescription(String fileName) => caller
-              .callServerEndpoint<_i3.ChatMessageAttachmentUploadDescription?>(
-            'serverpod_chat.chat',
-            'createAttachmentUploadDescription',
-            {'fileName': fileName},
-          );
+  createAttachmentUploadDescription(String fileName) =>
+      caller.callServerEndpoint<_i3.ChatMessageAttachmentUploadDescription?>(
+        'serverpod_chat.chat',
+        'createAttachmentUploadDescription',
+        {'fileName': fileName},
+      );
 
   /// Verifies that an attachment has been uploaded.
   _i2.Future<_i4.ChatMessageAttachment?> verifyAttachmentUpload(
     String fileName,
     String filePath,
-  ) =>
-      caller.callServerEndpoint<_i4.ChatMessageAttachment?>(
-        'serverpod_chat.chat',
-        'verifyAttachmentUpload',
-        {
-          'fileName': fileName,
-          'filePath': filePath,
-        },
-      );
+  ) => caller.callServerEndpoint<_i4.ChatMessageAttachment?>(
+    'serverpod_chat.chat',
+    'verifyAttachmentUpload',
+    {
+      'fileName': fileName,
+      'filePath': filePath,
+    },
+  );
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
@@ -57,6 +56,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointChat chat;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup =>
-      {'serverpod_chat.chat': chat};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'serverpod_chat.chat': chat,
+  };
 }

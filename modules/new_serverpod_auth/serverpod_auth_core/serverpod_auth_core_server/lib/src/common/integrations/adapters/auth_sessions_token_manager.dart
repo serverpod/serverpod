@@ -54,18 +54,20 @@ class AuthSessionsTokenManager implements TokenManager {
     }
 
     return (await authSessions.admin.findSessions(
-      session,
-      authUserId: authUserId,
-      method: method,
-      transaction: transaction,
-    ))
-        .map((final element) => TokenInfo(
-              userId: element.authUserId.toString(),
-              tokenId: element.id.toString(),
-              tokenIssuer: tokenIssuerName,
-              scopes: element.scopeNames.map(Scope.new).toSet(),
-              method: element.method,
-            ))
+          session,
+          authUserId: authUserId,
+          method: method,
+          transaction: transaction,
+        ))
+        .map(
+          (final element) => TokenInfo(
+            userId: element.authUserId.toString(),
+            tokenId: element.id.toString(),
+            tokenIssuer: tokenIssuerName,
+            scopes: element.scopeNames.map(Scope.new).toSet(),
+            method: element.method,
+          ),
+        )
         .toList();
   }
 
@@ -122,7 +124,8 @@ class AuthSessionsTokenManager implements TokenManager {
 
     if (deletedSessions.length != 1) {
       throw StateError(
-          'Expected 1 session to be deleted, but got ${deletedSessions.length}');
+        'Expected 1 session to be deleted, but got ${deletedSessions.length}',
+      );
     }
 
     final (:authUserId, :sessionId) = deletedSessions.first;

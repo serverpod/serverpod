@@ -108,9 +108,9 @@ class _ChapterImpl extends Chapter {
     int? id,
     required String title,
   }) : super._(
-          id: id,
-          title: title,
-        );
+         id: id,
+         title: title,
+       );
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
@@ -133,11 +133,11 @@ class ChapterImplicit extends _ChapterImpl {
     int? id,
     required String title,
     int? $_bookChaptersBookId,
-  })  : _bookChaptersBookId = $_bookChaptersBookId,
-        super(
-          id: id,
-          title: title,
-        );
+  }) : _bookChaptersBookId = $_bookChaptersBookId,
+       super(
+         id: id,
+         title: title,
+       );
 
   factory ChapterImplicit(
     Chapter chapter, {
@@ -158,14 +158,14 @@ class ChapterUpdateTable extends _i1.UpdateTable<ChapterTable> {
   ChapterUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
-        table.title,
-        value,
-      );
+    table.title,
+    value,
+  );
 
   _i1.ColumnValue<int, int> $_bookChaptersBookId(int? value) => _i1.ColumnValue(
-        table.$_bookChaptersBookId,
-        value,
-      );
+    table.$_bookChaptersBookId,
+    value,
+  );
 }
 
 class ChapterTable extends _i1.Table<int?> {
@@ -189,16 +189,16 @@ class ChapterTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        title,
-        $_bookChaptersBookId,
-      ];
+    id,
+    title,
+    $_bookChaptersBookId,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [
-        id,
-        title,
-      ];
+    id,
+    title,
+  ];
 }
 
 class ChapterInclude extends _i1.IncludeObject {

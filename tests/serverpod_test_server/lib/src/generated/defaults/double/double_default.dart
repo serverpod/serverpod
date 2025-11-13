@@ -18,8 +18,8 @@ abstract class DoubleDefault
     this.id,
     double? doubleDefault,
     double? doubleDefaultNull,
-  })  : doubleDefault = doubleDefault ?? 10.5,
-        doubleDefaultNull = doubleDefaultNull ?? 20.5;
+  }) : doubleDefault = doubleDefault ?? 10.5,
+       doubleDefaultNull = doubleDefaultNull ?? 20.5;
 
   factory DoubleDefault({
     int? id,
@@ -31,8 +31,8 @@ abstract class DoubleDefault
     return DoubleDefault(
       id: jsonSerialization['id'] as int?,
       doubleDefault: (jsonSerialization['doubleDefault'] as num).toDouble(),
-      doubleDefaultNull:
-          (jsonSerialization['doubleDefaultNull'] as num?)?.toDouble(),
+      doubleDefaultNull: (jsonSerialization['doubleDefaultNull'] as num?)
+          ?.toDouble(),
     );
   }
 
@@ -114,10 +114,10 @@ class _DoubleDefaultImpl extends DoubleDefault {
     double? doubleDefault,
     double? doubleDefaultNull,
   }) : super._(
-          id: id,
-          doubleDefault: doubleDefault,
-          doubleDefaultNull: doubleDefaultNull,
-        );
+         id: id,
+         doubleDefault: doubleDefault,
+         doubleDefaultNull: doubleDefaultNull,
+       );
 
   /// Returns a shallow copy of this [DoubleDefault]
   /// with some or all fields replaced by the given arguments.
@@ -156,7 +156,7 @@ class DoubleDefaultUpdateTable extends _i1.UpdateTable<DoubleDefaultTable> {
 
 class DoubleDefaultTable extends _i1.Table<int?> {
   DoubleDefaultTable({super.tableRelation})
-      : super(tableName: 'double_default') {
+    : super(tableName: 'double_default') {
     updateTable = DoubleDefaultUpdateTable(this);
     doubleDefault = _i1.ColumnDouble(
       'doubleDefault',
@@ -178,10 +178,10 @@ class DoubleDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        doubleDefault,
-        doubleDefaultNull,
-      ];
+    id,
+    doubleDefault,
+    doubleDefaultNull,
+  ];
 }
 
 class DoubleDefaultInclude extends _i1.IncludeObject {

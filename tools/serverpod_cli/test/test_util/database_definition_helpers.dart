@@ -7,17 +7,22 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import '../generator/dart/client_code_generator/class_constructors_test.dart';
 
 ({DatabaseDefinition sourceDefinition, DatabaseDefinition targetDefinition})
-    databaseDefinitionsFromModels(
+databaseDefinitionsFromModels(
   List<ModelSource> sourceModels,
   List<ModelSource> targetModels,
 ) {
   DatabaseDefinition createDefinition(models) {
     var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
     var definitions = analyzer.validateAll();
-    assert(collector.errors.isEmpty,
-        'Errors found during analysis: ${collector.errors}');
+    assert(
+      collector.errors.isEmpty,
+      'Errors found during analysis: ${collector.errors}',
+    );
 
     return createDatabaseDefinitionFromModels(
       definitions,
@@ -28,6 +33,6 @@ import '../generator/dart/client_code_generator/class_constructors_test.dart';
 
   return (
     sourceDefinition: createDefinition(sourceModels),
-    targetDefinition: createDefinition(targetModels)
+    targetDefinition: createDefinition(targetModels),
   );
 }

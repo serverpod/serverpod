@@ -71,8 +71,10 @@ extension SourceSpanExceptionLogger on Logger {
 
     if (!(logLevel.index >= log.logLevel.index)) return;
 
-    var highlightAnsiCode =
-        _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
+    var highlightAnsiCode = _SeveritySpanHelpers.highlightAnsiCode(
+      logLevel,
+      isHint,
+    );
     var message = sourceSpan.toString(color: highlightAnsiCode);
 
     write(message, logLevel, newParagraph: newParagraph);
@@ -99,8 +101,10 @@ abstract class _SeveritySpanHelpers {
 
     switch (severity) {
       case LogLevel.nothing:
-        assert(severity != LogLevel.nothing,
-            'Log level nothing should never be used for a log message');
+        assert(
+          severity != LogLevel.nothing,
+          'Log level nothing should never be used for a log message',
+        );
         return AnsiStyle.terminalDefault.ansiCode;
       case LogLevel.error:
         return AnsiStyle.red.ansiCode;

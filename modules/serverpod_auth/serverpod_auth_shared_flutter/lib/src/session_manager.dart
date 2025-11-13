@@ -34,16 +34,21 @@ class SessionManager with ChangeNotifier {
     Storage? storage,
   }) : _storage = storage ?? SharedPreferenceStorage() {
     _instance = this;
-    assert(caller.client.authenticationKeyManager != null,
-        'The client needs an associated key manager');
-    keyManager = caller.client.authenticationKeyManager!
-        as FlutterAuthenticationKeyManager;
+    assert(
+      caller.client.authenticationKeyManager != null,
+      'The client needs an associated key manager',
+    );
+    keyManager =
+        caller.client.authenticationKeyManager!
+            as FlutterAuthenticationKeyManager;
   }
 
   /// Returns a singleton instance of the session manager
   static Future<SessionManager> get instance async {
-    assert(_instance != null,
-        'You need to create a SessionManager before the instance method can be called');
+    assert(
+      _instance != null,
+      'You need to create a SessionManager before the instance method can be called',
+    );
     return _instance!;
   }
 
@@ -139,8 +144,9 @@ class SessionManager with ChangeNotifier {
   }
 
   Future<void> _loadSharedPrefs() async {
-    var version =
-        await _storage.getInt('${_prefsKey}_${keyManager.runMode}_version');
+    var version = await _storage.getInt(
+      '${_prefsKey}_${keyManager.runMode}_version',
+    );
     if (version != _prefsVersion) return;
 
     var json = await _storage.getString('${_prefsKey}_${keyManager.runMode}');
@@ -153,12 +159,16 @@ class SessionManager with ChangeNotifier {
 
   Future<void> _storeSharedPrefs() async {
     await _storage.setInt(
-        '${_prefsKey}_${keyManager.runMode}_version', _prefsVersion);
+      '${_prefsKey}_${keyManager.runMode}_version',
+      _prefsVersion,
+    );
     if (signedInUser == null) {
       await _storage.remove('${_prefsKey}_${keyManager.runMode}');
     } else {
-      await _storage.setString('${_prefsKey}_${keyManager.runMode}',
-          SerializationManager.encode(signedInUser));
+      await _storage.setString(
+        '${_prefsKey}_${keyManager.runMode}',
+        SerializationManager.encode(signedInUser),
+      );
     }
   }
 

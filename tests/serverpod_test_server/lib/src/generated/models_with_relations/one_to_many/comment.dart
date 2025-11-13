@@ -39,7 +39,8 @@ abstract class Comment
       order: jsonSerialization['order'] == null
           ? null
           : _i2.Order.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+              (jsonSerialization['order'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -127,11 +128,11 @@ class _CommentImpl extends Comment {
     required int orderId,
     _i2.Order? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +157,14 @@ class CommentUpdateTable extends _i1.UpdateTable<CommentTable> {
   CommentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<int, int> orderId(int value) => _i1.ColumnValue(
-        table.orderId,
-        value,
-      );
+    table.orderId,
+    value,
+  );
 }
 
 class CommentTable extends _i1.Table<int?> {
@@ -202,10 +203,10 @@ class CommentTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        orderId,
-      ];
+    id,
+    description,
+    orderId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

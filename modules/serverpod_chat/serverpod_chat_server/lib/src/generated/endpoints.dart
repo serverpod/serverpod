@@ -23,7 +23,7 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'chat',
           'serverpod_chat',
-        )
+        ),
     };
     connectors['chat'] = _i1.EndpointConnector(
       name: 'chat',
@@ -36,17 +36,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'fileName',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['chat'] as _i2.ChatEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i2.ChatEndpoint)
                   .createAttachmentUploadDescription(
-            session,
-            params['fileName'],
-          ),
+                    session,
+                    params['fileName'],
+                  ),
         ),
         'verifyAttachmentUpload': _i1.MethodConnector(
           name: 'verifyAttachmentUpload',
@@ -62,15 +62,16 @@ class Endpoints extends _i1.EndpointDispatch {
               nullable: false,
             ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['chat'] as _i2.ChatEndpoint).verifyAttachmentUpload(
-            session,
-            params['fileName'],
-            params['filePath'],
-          ),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i2.ChatEndpoint)
+                  .verifyAttachmentUpload(
+                    session,
+                    params['fileName'],
+                    params['filePath'],
+                  ),
         ),
       },
     );

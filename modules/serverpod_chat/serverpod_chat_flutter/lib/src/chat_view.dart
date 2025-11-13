@@ -6,8 +6,12 @@ import 'package:serverpod_chat_flutter/src/chat_tile.dart';
 const _offsetForRequestingNextChunk = 100.0;
 
 /// Builds a new chat tile. By default the [DefaultChatTile] is used.
-typedef ChatTileBuilder = Widget Function(
-    BuildContext context, ChatMessage message, ChatMessage? previous);
+typedef ChatTileBuilder =
+    Widget Function(
+      BuildContext context,
+      ChatMessage message,
+      ChatMessage? previous,
+    );
 
 /// A [ChatView] displays a scrollable list of chat messages associated with the
 /// [controller]. The messages are rendered using the [tileBuilder]. To create
@@ -64,7 +68,8 @@ class ChatViewState extends State<ChatView>
 
     _scrollController.addListener(() {
       widget.controller.scrollOffset = _scrollController.offset;
-      widget.controller.scrollAtBottom = _scrollController.offset ==
+      widget.controller.scrollAtBottom =
+          _scrollController.offset ==
           _scrollController.position.maxScrollExtent;
       if (widget.controller.scrollAtBottom) {
         widget.controller.markLastMessageRead();
@@ -94,8 +99,9 @@ class ChatViewState extends State<ChatView>
   void dispose() {
     widget.controller.removeMessageReceivedListener(_handleNewChatMessage);
     widget.controller.removeMessageUpdatedListener(_handleUpdatedChatMessage);
-    widget.controller
-        .removeReceivedMessageChunkListener(_handleNewMessageChunk);
+    widget.controller.removeReceivedMessageChunkListener(
+      _handleNewMessageChunk,
+    );
     _scrollController.dispose();
     _fadeInAnimation.dispose();
     super.dispose();
@@ -121,30 +127,34 @@ class ChatViewState extends State<ChatView>
         _scrollController.position.maxScrollExtent - _scrollController.offset;
     setState(() {});
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent -
-          _distanceToBottomBeforeMessageChunk!);
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent -
+            _distanceToBottomBeforeMessageChunk!,
+      );
       _distanceToBottomBeforeMessageChunk = null;
     });
   }
 
   void _fadeIn() {
-    _fadeInAnimation.animateTo(1.0,
-        duration: const Duration(milliseconds: 500));
+    _fadeInAnimation.animateTo(
+      1.0,
+      duration: const Duration(milliseconds: 500),
+    );
   }
 
   void _scrollToBottom() {
     _scrollController
         .animateTo(
-      _scrollController.position.maxScrollExtent,
-      curve: Curves.linear,
-      duration: const Duration(milliseconds: 200),
-    )
+          _scrollController.position.maxScrollExtent,
+          curve: Curves.linear,
+          duration: const Duration(milliseconds: 200),
+        )
         .then((_) {
-      if (_scrollController.offset !=
-          _scrollController.position.maxScrollExtent) {
-        _scrollToBottom();
-      }
-    });
+          if (_scrollController.offset !=
+              _scrollController.position.maxScrollExtent) {
+            _scrollToBottom();
+          }
+        });
   }
 
   @override
@@ -198,8 +208,9 @@ class ChatViewState extends State<ChatView>
                 _scrollController.offset ==
                     _scrollController.position.maxScrollExtent) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                _scrollController
-                    .jumpTo(_scrollController.position.maxScrollExtent);
+                _scrollController.jumpTo(
+                  _scrollController.position.maxScrollExtent,
+                );
               });
             }
           }
@@ -214,7 +225,8 @@ class ChatViewState extends State<ChatView>
               reverse: false,
               controller: _scrollController,
               itemBuilder: _chatItemBuilder,
-              itemCount: widget.controller.messages.length +
+              itemCount:
+                  widget.controller.messages.length +
                   (widget.leading != null && !widget.controller.hasOlderMessages
                       ? 1
                       : 0),

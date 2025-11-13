@@ -40,7 +40,8 @@ abstract class ForeignKeyDefinition
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ForeignKeyDefinition(
       constraintName: jsonSerialization['constraintName'] as String,
       columns: (jsonSerialization['columns'] as List)
@@ -54,15 +55,18 @@ abstract class ForeignKeyDefinition
       onUpdate: jsonSerialization['onUpdate'] == null
           ? null
           : _i2.ForeignKeyAction.fromJson(
-              (jsonSerialization['onUpdate'] as int)),
+              (jsonSerialization['onUpdate'] as int),
+            ),
       onDelete: jsonSerialization['onDelete'] == null
           ? null
           : _i2.ForeignKeyAction.fromJson(
-              (jsonSerialization['onDelete'] as int)),
+              (jsonSerialization['onDelete'] as int),
+            ),
       matchType: jsonSerialization['matchType'] == null
           ? null
           : _i3.ForeignKeyMatchType.fromJson(
-              (jsonSerialization['matchType'] as int)),
+              (jsonSerialization['matchType'] as int),
+            ),
     );
   }
 
@@ -150,15 +154,15 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     _i2.ForeignKeyAction? onDelete,
     _i3.ForeignKeyMatchType? matchType,
   }) : super._(
-          constraintName: constraintName,
-          columns: columns,
-          referenceTable: referenceTable,
-          referenceTableSchema: referenceTableSchema,
-          referenceColumns: referenceColumns,
-          onUpdate: onUpdate,
-          onDelete: onDelete,
-          matchType: matchType,
-        );
+         constraintName: constraintName,
+         columns: columns,
+         referenceTable: referenceTable,
+         referenceTableSchema: referenceTableSchema,
+         referenceColumns: referenceColumns,
+         onUpdate: onUpdate,
+         onDelete: onDelete,
+         matchType: matchType,
+       );
 
   /// Returns a shallow copy of this [ForeignKeyDefinition]
   /// with some or all fields replaced by the given arguments.
@@ -183,8 +187,9 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
           referenceColumns ?? this.referenceColumns.map((e0) => e0).toList(),
       onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
       onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
-      matchType:
-          matchType is _i3.ForeignKeyMatchType? ? matchType : this.matchType,
+      matchType: matchType is _i3.ForeignKeyMatchType?
+          ? matchType
+          : this.matchType,
     );
   }
 }

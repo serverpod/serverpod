@@ -149,18 +149,18 @@ class _LogEntryImpl extends LogEntry {
     String? stackTrace,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          reference: reference,
-          serverId: serverId,
-          time: time,
-          logLevel: logLevel,
-          message: message,
-          error: error,
-          stackTrace: stackTrace,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         reference: reference,
+         serverId: serverId,
+         time: time,
+         logLevel: logLevel,
+         message: message,
+         error: error,
+         stackTrace: stackTrace,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.

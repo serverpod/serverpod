@@ -36,7 +36,8 @@ abstract class ObjectFieldPersist implements _i1.SerializableModel {
       data: jsonSerialization['data'] == null
           ? null
           : _i2.SimpleData.fromJson(
-              (jsonSerialization['data'] as Map<String, dynamic>)),
+              (jsonSerialization['data'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -85,11 +86,11 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     String? api,
     _i2.SimpleData? data,
   }) : super._(
-          id: id,
-          normal: normal,
-          api: api,
-          data: data,
-        );
+         id: id,
+         normal: normal,
+         api: api,
+         data: data,
+       );
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.

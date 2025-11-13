@@ -12,8 +12,9 @@ import './test_tools/serverpod_test_tools.dart';
 
 void main() {
   final tokenManager = new_auth_core.AuthSessionsTokenManager(
-    config:
-        new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+    config: new_auth_core.AuthSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
   );
 
   const config = new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
@@ -95,15 +96,16 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            assert(migratedUsers[oldUserId] == null);
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                assert(migratedUsers[oldUserId] == null);
+                migratedUsers[oldUserId] = newAuthUserId;
+              },
           transaction: session.transaction,
         );
       });
@@ -164,11 +166,11 @@ void main() {
       test(
         'when checking the `LegacyUserIdentifier`, then it has been created with the lower-case email variant.',
         () async {
-          final authUserId = await AuthBackwardsCompatibility
-              .lookUpLegacyExternalUserIdentifier(
-            session,
-            userIdentifier: email.toLowerCase(),
-          );
+          final authUserId =
+              await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
+                session,
+                userIdentifier: email.toLowerCase(),
+              );
 
           expect(authUserId, migratedUsers.values.single);
         },
@@ -187,8 +189,7 @@ void main() {
     },
   );
 
-  withServerpod('Given five legacy `serverpod_auth` email-based user accounts,',
-      (
+  withServerpod('Given five legacy `serverpod_auth` email-based user accounts,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -200,14 +201,15 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      userMigration = (
-        final session, {
-        required final newAuthUserId,
-        required final oldUserId,
-        final transaction,
-      }) async {
-        migratedUsers[oldUserId] = newAuthUserId;
-      };
+      userMigration =
+          (
+            final session, {
+            required final newAuthUserId,
+            required final oldUserId,
+            final transaction,
+          }) async {
+            migratedUsers[oldUserId] = newAuthUserId;
+          };
 
       for (var i = 0; i < 5; i++) {
         await legacy_auth.Emails.createUser(
@@ -290,15 +292,16 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            assert(migratedUsers[oldUserId] == null);
-            migratedUsers[oldUserId] = newAuthUserId;
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                assert(migratedUsers[oldUserId] == null);
+                migratedUsers[oldUserId] = newAuthUserId;
+              },
           transaction: session.transaction,
         );
       });
@@ -341,11 +344,11 @@ void main() {
       test(
         'when checking the `LegacyUserIdentifier`, then it has been created with the external user ID.',
         () async {
-          final authUserId = await AuthBackwardsCompatibility
-              .lookUpLegacyExternalUserIdentifier(
-            session,
-            userIdentifier: externalUserIdentifier,
-          );
+          final authUserId =
+              await AuthBackwardsCompatibility.lookUpLegacyExternalUserIdentifier(
+                session,
+                userIdentifier: externalUserIdentifier,
+              );
 
           expect(authUserId, migratedUsers.values.single);
         },

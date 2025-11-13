@@ -10,8 +10,7 @@ void main() {
     (sessionBuilder, endpoints) {
       var session = sessionBuilder.build();
 
-      test(
-          'when querying runtime parameters globally '
+      test('when querying runtime parameters globally '
           'then no database parameters are set.', () async {
         // Forces the pgvector extension to load. After the extension is loaded,
         // parameters default will return a value instead of null. Without this
@@ -134,14 +133,16 @@ void main() {
         var checkQuery = HnswIndexQueryOptions().buildCheckValues();
 
         await session.db.transaction((transaction) async {
-          await transaction.setRuntimeParameters((params) => [
-                params.hnswIndexQuery(
-                  efSearch: 100,
-                  iterativeScan: IterativeScan.strict,
-                  maxScanTuples: 1000,
-                  scanMemMultiplier: 3,
-                ),
-              ]);
+          await transaction.setRuntimeParameters(
+            (params) => [
+              params.hnswIndexQuery(
+                efSearch: 100,
+                iterativeScan: IterativeScan.strict,
+                maxScanTuples: 1000,
+                scanMemMultiplier: 3,
+              ),
+            ],
+          );
 
           var localResult = await session.db.unsafeQuery(
             checkQuery,
@@ -171,13 +172,15 @@ void main() {
         var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
 
         await session.db.transaction((transaction) async {
-          await transaction.setRuntimeParameters((params) => [
-                params.ivfflatIndexQuery(
-                  probes: 2,
-                  iterativeScan: IterativeScan.relaxed,
-                  maxProbes: 4,
-                ),
-              ]);
+          await transaction.setRuntimeParameters(
+            (params) => [
+              params.ivfflatIndexQuery(
+                probes: 2,
+                iterativeScan: IterativeScan.relaxed,
+                maxProbes: 4,
+              ),
+            ],
+          );
 
           var localResult = await session.db.unsafeQuery(
             checkQuery,

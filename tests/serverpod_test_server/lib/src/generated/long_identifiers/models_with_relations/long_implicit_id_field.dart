@@ -29,8 +29,7 @@ abstract class LongImplicitIdField
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
-          jsonSerialization[
-                  '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id']
+          jsonSerialization['_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id']
               as int?,
     );
   }
@@ -113,9 +112,9 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.
@@ -139,12 +138,12 @@ class LongImplicitIdFieldImplicit extends _LongImplicitIdFieldImpl {
     int? id,
     required String name,
     int? $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-  })  : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id =
-            $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-        super(
-          id: id,
-          name: name,
-        );
+  }) : _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id =
+           $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+       super(
+         id: id,
+         name: name,
+       );
 
   factory LongImplicitIdFieldImplicit(
     LongImplicitIdField longImplicitIdField, {
@@ -167,23 +166,22 @@ class LongImplicitIdFieldUpdateTable
   LongImplicitIdFieldUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int>
-      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id(
-              int? value) =>
-          _i1.ColumnValue(
-            table
-                .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-            value,
-          );
+  $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id(
+    int? value,
+  ) => _i1.ColumnValue(
+    table.$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+    value,
+  );
 }
 
 class LongImplicitIdFieldTable extends _i1.Table<int?> {
   LongImplicitIdFieldTable({super.tableRelation})
-      : super(tableName: 'long_implicit_id_field') {
+    : super(tableName: 'long_implicit_id_field') {
     updateTable = LongImplicitIdFieldUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -191,9 +189,9 @@ class LongImplicitIdFieldTable extends _i1.Table<int?> {
     );
     $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id =
         _i1.ColumnInt(
-      '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id',
-      this,
-    );
+          '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id',
+          this,
+        );
   }
 
   late final LongImplicitIdFieldUpdateTable updateTable;
@@ -201,20 +199,20 @@ class LongImplicitIdFieldTable extends _i1.Table<int?> {
   late final _i1.ColumnString name;
 
   late final _i1.ColumnInt
-      $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
+  $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-      ];
+    id,
+    name,
+    $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 }
 
 class LongImplicitIdFieldInclude extends _i1.IncludeObject {
@@ -412,7 +410,7 @@ class LongImplicitIdFieldRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LongImplicitIdField>(
@@ -427,7 +425,7 @@ class LongImplicitIdFieldRepository {
   Future<List<LongImplicitIdField>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LongImplicitIdFieldUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
     int? limit,
     int? offset,

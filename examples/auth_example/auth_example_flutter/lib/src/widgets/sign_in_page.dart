@@ -36,7 +36,7 @@ class SignInPage extends StatelessWidget {
               ),
               SignInWithAppleButton(
                 caller: client.modules.auth,
-              )
+              ),
             ],
           ),
         ),

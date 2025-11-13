@@ -22,10 +22,10 @@ abstract class SessionLogResult implements _i1.SerializableModel {
 
   factory SessionLogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogResult(
-        sessionLog: (jsonSerialization['sessionLog'] as List)
-            .map(
-                (e) => _i2.SessionLogInfo.fromJson((e as Map<String, dynamic>)))
-            .toList());
+      sessionLog: (jsonSerialization['sessionLog'] as List)
+          .map((e) => _i2.SessionLogInfo.fromJson((e as Map<String, dynamic>)))
+          .toList(),
+    );
   }
 
   /// The list of SessionLogInfo.
@@ -48,7 +48,7 @@ abstract class SessionLogResult implements _i1.SerializableModel {
 
 class _SessionLogResultImpl extends SessionLogResult {
   _SessionLogResultImpl({required List<_i2.SessionLogInfo> sessionLog})
-      : super._(sessionLog: sessionLog);
+    : super._(sessionLog: sessionLog);
 
   /// Returns a shallow copy of this [SessionLogResult]
   /// with some or all fields replaced by the given arguments.
@@ -56,7 +56,8 @@ class _SessionLogResultImpl extends SessionLogResult {
   @override
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(
-        sessionLog:
-            sessionLog ?? this.sessionLog.map((e0) => e0.copyWith()).toList());
+      sessionLog:
+          sessionLog ?? this.sessionLog.map((e0) => e0.copyWith()).toList(),
+    );
   }
 }

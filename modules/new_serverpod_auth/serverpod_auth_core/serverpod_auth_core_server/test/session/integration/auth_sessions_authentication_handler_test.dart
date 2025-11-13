@@ -23,34 +23,38 @@ void main() {
       });
 
       test(
-          'when calling `authenticationHandler` with an unrelated string, then it returns `null`.',
-          () async {
-        expect(
-          await authSessions.authenticationHandler(session, 'some string'),
-          isNull,
-        );
-      });
+        'when calling `authenticationHandler` with an unrelated string, then it returns `null`.',
+        () async {
+          expect(
+            await authSessions.authenticationHandler(session, 'some string'),
+            isNull,
+          );
+        },
+      );
 
       test(
-          'when calling `authenticationHandler` with an invalid string fitting the pattern, then it returns `null`.',
-          () async {
-        expect(
-          await authSessions.authenticationHandler(
-            session,
-            base64Url.encode([
-              ...utf8.encode('sat'),
-              ...const Uuid().v4obj().toBytes(),
-              ...utf8.encode('nosecret64'),
-            ]),
-          ),
-          isNull,
-        );
-      });
+        'when calling `authenticationHandler` with an invalid string fitting the pattern, then it returns `null`.',
+        () async {
+          expect(
+            await authSessions.authenticationHandler(
+              session,
+              base64Url.encode([
+                ...utf8.encode('sat'),
+                ...const Uuid().v4obj().toBytes(),
+                ...utf8.encode('nosecret64'),
+              ]),
+            ),
+            isNull,
+          );
+        },
+      );
     },
   );
 
-  withServerpod('Given an auth session,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late String sessionKey;
@@ -65,8 +69,7 @@ void main() {
         authUserId: authUserId,
         scopes: {},
         method: 'test',
-      ))
-          .token;
+      )).token;
     });
 
     test(
@@ -112,11 +115,11 @@ void main() {
           config: AuthSessionsConfig(sessionKeyHashPepper: 'another pepper'),
         );
 
-        final authInfo =
-            await differentPepperAuthSessions.authenticationHandler(
-          session,
-          sessionKey,
-        );
+        final authInfo = await differentPepperAuthSessions
+            .authenticationHandler(
+              session,
+              sessionKey,
+            );
 
         expect(
           authInfo,
@@ -126,8 +129,10 @@ void main() {
     );
   });
 
-  withServerpod('Given an auth session with custom scopes,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session with custom scopes,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late String sessionKey;
 
@@ -141,8 +146,7 @@ void main() {
         authUserId: authUserId,
         scopes: {const Scope('test')},
         method: 'test',
-      ))
-          .token;
+      )).token;
     });
 
     test(
@@ -180,8 +184,7 @@ void main() {
           scopes: {},
           method: 'test',
           expiresAt: expiresAt,
-        ))
-            .token;
+        )).token;
       });
 
       test(
@@ -219,8 +222,10 @@ void main() {
     },
   );
 
-  withServerpod('Given an auth session which will expire when unused,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session which will expire when unused,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     const expireAfterUnusedFor = Duration(minutes: 10);
     late Session session;
     late UuidValue authUserId;
@@ -237,8 +242,7 @@ void main() {
         scopes: {},
         method: 'test',
         expireAfterUnusedFor: expireAfterUnusedFor,
-      ))
-          .token;
+      )).token;
     });
 
     test(
@@ -259,8 +263,9 @@ void main() {
     test(
       'when calling `authenticationHandler` within the time limit and then afterwards, then it returns an `AuthenticationInfo` for the user (as the lifetime was extended).',
       () async {
-        final firstUseTime = DateTime.now()
-            .add(expireAfterUnusedFor - const Duration(minutes: 1));
+        final firstUseTime = DateTime.now().add(
+          expireAfterUnusedFor - const Duration(minutes: 1),
+        );
         final authInfoBeforeInitialExpiration = await withClock(
           Clock.fixed(firstUseTime),
           () => authSessions.authenticationHandler(
@@ -274,8 +279,9 @@ void main() {
           authUserId,
         );
 
-        final secondUseTime =
-            firstUseTime.add(expireAfterUnusedFor - const Duration(minutes: 1));
+        final secondUseTime = firstUseTime.add(
+          expireAfterUnusedFor - const Duration(minutes: 1),
+        );
         final authInfoAfterExtension = await withClock(
           Clock.fixed(secondUseTime),
           () => authSessions.authenticationHandler(
@@ -295,8 +301,11 @@ void main() {
       'when calling `authenticationHandler` after the inactivity time limit, then it returns `null`',
       () async {
         final authInfo = await withClock(
-          Clock.fixed(DateTime.now()
-              .add(expireAfterUnusedFor + const Duration(minutes: 1))),
+          Clock.fixed(
+            DateTime.now().add(
+              expireAfterUnusedFor + const Duration(minutes: 1),
+            ),
+          ),
           () => authSessions.authenticationHandler(
             session,
             sessionKey,

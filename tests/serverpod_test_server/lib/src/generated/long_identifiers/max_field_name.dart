@@ -22,15 +22,14 @@ abstract class MaxFieldName
   factory MaxFieldName({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   }) = _MaxFieldNameImpl;
 
   factory MaxFieldName.fromJson(Map<String, dynamic> jsonSerialization) {
     return MaxFieldName(
       id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
-          jsonSerialization[
-                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']
               as String,
     );
   }
@@ -108,12 +107,12 @@ class _MaxFieldNameImpl extends MaxFieldName {
   _MaxFieldNameImpl({
     int? id,
     required String
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   }) : super._(
-          id: id,
-          thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
-              thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-        );
+         id: id,
+         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
+             thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+       );
 
   /// Returns a shallow copy of this [MaxFieldName]
   /// with some or all fields replaced by the given arguments.
@@ -127,7 +126,7 @@ class _MaxFieldNameImpl extends MaxFieldName {
       id: id is int? ? id : this.id,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo ??
-              this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+          this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
     );
   }
 }
@@ -136,35 +135,34 @@ class MaxFieldNameUpdateTable extends _i1.UpdateTable<MaxFieldNameTable> {
   MaxFieldNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String>
-      thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo(
-              String value) =>
-          _i1.ColumnValue(
-            table.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-            value,
-          );
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo(String value) =>
+      _i1.ColumnValue(
+        table.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+        value,
+      );
 }
 
 class MaxFieldNameTable extends _i1.Table<int?> {
   MaxFieldNameTable({super.tableRelation})
-      : super(tableName: 'max_field_name') {
+    : super(tableName: 'max_field_name') {
     updateTable = MaxFieldNameUpdateTable(this);
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo =
         _i1.ColumnString(
-      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
-      this,
-    );
+          'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
+          this,
+        );
   }
 
   late final MaxFieldNameUpdateTable updateTable;
 
   late final _i1.ColumnString
-      thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-      ];
+    id,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+  ];
 }
 
 class MaxFieldNameInclude extends _i1.IncludeObject {

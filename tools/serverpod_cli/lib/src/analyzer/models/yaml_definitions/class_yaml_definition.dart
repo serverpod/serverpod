@@ -31,14 +31,16 @@ class ClassYamlDefinition {
         mutuallyExclusiveKeys: {
           Keyword.table,
         },
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+          ExperimentalFeature.inheritance,
+        ),
       ),
       ValidateNode(
         Keyword.extendsClass,
         valueRestriction: restrictions.validateExtendingClassName,
-        isHidden: !restrictions.config
-            .isExperimentalFeatureEnabled(ExperimentalFeature.inheritance),
+        isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+          ExperimentalFeature.inheritance,
+        ),
       ),
       ValidateNode(
         Keyword.isImmutable,
@@ -240,7 +242,7 @@ class ClassYamlDefinition {
                 valueRestriction: restrictions.validateIndexParametersValue,
               ),
             },
-          )
+          ),
         },
       ),
     };

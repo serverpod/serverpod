@@ -37,10 +37,13 @@ abstract class RuntimeSettings
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
       logSettings: _i2.LogSettings.fromJson(
-          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
+        (jsonSerialization['logSettings'] as Map<String, dynamic>),
+      ),
       logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
-          .map((e) =>
-              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
@@ -84,8 +87,9 @@ abstract class RuntimeSettings
     return {
       if (id != null) 'id': id,
       'logSettings': logSettings.toJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -97,7 +101,8 @@ abstract class RuntimeSettings
       if (id != null) 'id': id,
       'logSettings': logSettings.toJsonForProtocol(),
       'logSettingsOverrides': logSettingsOverrides.toJson(
-          valueToJson: (v) => v.toJsonForProtocol()),
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -143,12 +148,12 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
-          id: id,
-          logSettings: logSettings,
-          logSettingsOverrides: logSettingsOverrides,
-          logServiceCalls: logServiceCalls,
-          logMalformedCalls: logMalformedCalls,
-        );
+         id: id,
+         logSettings: logSettings,
+         logSettingsOverrides: logSettingsOverrides,
+         logServiceCalls: logServiceCalls,
+         logMalformedCalls: logMalformedCalls,
+       );
 
   /// Returns a shallow copy of this [RuntimeSettings]
   /// with some or all fields replaced by the given arguments.
@@ -164,7 +169,8 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     return RuntimeSettings(
       id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
-      logSettingsOverrides: logSettingsOverrides ??
+      logSettingsOverrides:
+          logSettingsOverrides ??
           this.logSettingsOverrides.map((e0) => e0.copyWith()).toList(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
@@ -176,33 +182,32 @@ class RuntimeSettingsUpdateTable extends _i1.UpdateTable<RuntimeSettingsTable> {
   RuntimeSettingsUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.LogSettings, _i2.LogSettings> logSettings(
-          _i2.LogSettings value) =>
-      _i1.ColumnValue(
-        table.logSettings,
-        value,
-      );
+    _i2.LogSettings value,
+  ) => _i1.ColumnValue(
+    table.logSettings,
+    value,
+  );
 
   _i1.ColumnValue<List<_i3.LogSettingsOverride>, List<_i3.LogSettingsOverride>>
-      logSettingsOverrides(List<_i3.LogSettingsOverride> value) =>
-          _i1.ColumnValue(
-            table.logSettingsOverrides,
-            value,
-          );
+  logSettingsOverrides(List<_i3.LogSettingsOverride> value) => _i1.ColumnValue(
+    table.logSettingsOverrides,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> logServiceCalls(bool value) => _i1.ColumnValue(
-        table.logServiceCalls,
-        value,
-      );
+    table.logServiceCalls,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> logMalformedCalls(bool value) => _i1.ColumnValue(
-        table.logMalformedCalls,
-        value,
-      );
+    table.logMalformedCalls,
+    value,
+  );
 }
 
 class RuntimeSettingsTable extends _i1.Table<int?> {
   RuntimeSettingsTable({super.tableRelation})
-      : super(tableName: 'serverpod_runtime_settings') {
+    : super(tableName: 'serverpod_runtime_settings') {
     updateTable = RuntimeSettingsUpdateTable(this);
     logSettings = _i1.ColumnSerializable<_i2.LogSettings>(
       'logSettings',
@@ -210,9 +215,9 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
     );
     logSettingsOverrides =
         _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>(
-      'logSettingsOverrides',
-      this,
-    );
+          'logSettingsOverrides',
+          this,
+        );
     logServiceCalls = _i1.ColumnBool(
       'logServiceCalls',
       this,
@@ -230,7 +235,7 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
 
   /// List of log setting overrides.
   late final _i1.ColumnSerializable<List<_i3.LogSettingsOverride>>
-      logSettingsOverrides;
+  logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   late final _i1.ColumnBool logServiceCalls;
@@ -240,12 +245,12 @@ class RuntimeSettingsTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        logSettings,
-        logSettingsOverrides,
-        logServiceCalls,
-        logMalformedCalls,
-      ];
+    id,
+    logSettings,
+    logSettingsOverrides,
+    logServiceCalls,
+    logMalformedCalls,
+  ];
 }
 
 class RuntimeSettingsInclude extends _i1.IncludeObject {
@@ -443,7 +448,7 @@ class RuntimeSettingsRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RuntimeSettings>(
@@ -458,7 +463,7 @@ class RuntimeSettingsRepository {
   Future<List<RuntimeSettings>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     int? limit,
     int? offset,

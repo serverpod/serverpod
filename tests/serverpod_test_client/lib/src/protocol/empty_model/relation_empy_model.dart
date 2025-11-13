@@ -28,8 +28,11 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
     return RelationEmptyModel(
       id: jsonSerialization['id'] as int?,
       items: (jsonSerialization['items'] as List?)
-          ?.map((e) =>
-              _i2.EmptyModelRelationItem.fromJson((e as Map<String, dynamic>)))
+          ?.map(
+            (e) => _i2.EmptyModelRelationItem.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
     );
   }
@@ -69,9 +72,9 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
   }) : super._(
-          id: id,
-          items: items,
-        );
+         id: id,
+         items: items,
+       );
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.

@@ -73,10 +73,10 @@ class _ParentUserImpl extends ParentUser {
     String? name,
     int? userInfoId,
   }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-        );
+         id: id,
+         name: name,
+         userInfoId: userInfoId,
+       );
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.

@@ -77,10 +77,10 @@ class _CustomerImpl extends Customer {
     required String name,
     List<_i2.Order>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.

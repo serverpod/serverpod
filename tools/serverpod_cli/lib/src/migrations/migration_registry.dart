@@ -37,10 +37,12 @@ class MigrationRegistry {
 
   /// Writes the registry to the migrations directory.
   Future<void> write() async {
-    var registryFile = File(path.join(
-      moduleMigrationDirectory.path,
-      _migrationRegistryFileName,
-    ));
+    var registryFile = File(
+      path.join(
+        moduleMigrationDirectory.path,
+        _migrationRegistryFileName,
+      ),
+    );
 
     var out = '''
 ### AUTOMATICALLY GENERATED DO NOT MODIFY
@@ -69,8 +71,9 @@ class MigrationRegistry {
     }
 
     var migrationPaths = migrationsDirectory.listSync().whereType<Directory>();
-    var migrationVersions =
-        migrationPaths.map((d) => path.basename(d.path)).toList();
+    var migrationVersions = migrationPaths
+        .map((d) => path.basename(d.path))
+        .toList();
     migrationVersions.sort();
 
     return MigrationRegistry(migrationsDirectory, migrationVersions);

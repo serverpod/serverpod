@@ -34,81 +34,84 @@ void main() {
       });
 
       test(
-          'when set password is called with new password then user can authenticate with password',
-          () async {
-        const newPassword = 'new$password';
+        'when set password is called with new password then user can authenticate with password',
+        () async {
+          const newPassword = 'new$password';
 
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.setPassword(
-            session,
-            emailAccount: emailAccount,
-            password: newPassword,
-            transaction: transaction,
-          ),
-        );
+          await session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.setPassword(
+              session,
+              emailAccount: emailAccount,
+              password: newPassword,
+              transaction: transaction,
+            ),
+          );
 
-        final authResult = await session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: newPassword,
-            transaction: transaction,
-          ),
-        );
+          final authResult = await session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: newPassword,
+              transaction: transaction,
+            ),
+          );
 
-        expect(authResult, equals(authUserId));
-      });
-
-      test(
-          'when set password is called with null password then user cannot authenticate with empty password',
-          () async {
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.setPassword(
-            session,
-            emailAccount: emailAccount,
-            password: null,
-            transaction: transaction,
-          ),
-        );
-
-        final authResult = session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '',
-            transaction: transaction,
-          ),
-        );
-
-        await expectLater(
-          authResult,
-          throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
-        );
-      });
+          expect(authResult, equals(authUserId));
+        },
+      );
 
       test(
-          'when set password is called with empty password then user can authenticate with empty password',
-          () async {
-        await session.db.transaction(
-          (final transaction) => fixture.passwordResetUtil.setPassword(
-            session,
-            emailAccount: emailAccount,
-            password: '',
-            transaction: transaction,
-          ),
-        );
+        'when set password is called with null password then user cannot authenticate with empty password',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.setPassword(
+              session,
+              emailAccount: emailAccount,
+              password: null,
+              transaction: transaction,
+            ),
+          );
 
-        final authResult = await session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '',
-            transaction: transaction,
-          ),
-        );
+          final authResult = session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '',
+              transaction: transaction,
+            ),
+          );
 
-        expect(authResult, equals(authUserId));
-      });
+          await expectLater(
+            authResult,
+            throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
+          );
+        },
+      );
+
+      test(
+        'when set password is called with empty password then user can authenticate with empty password',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.passwordResetUtil.setPassword(
+              session,
+              emailAccount: emailAccount,
+              password: '',
+              transaction: transaction,
+            ),
+          );
+
+          final authResult = await session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '',
+              transaction: transaction,
+            ),
+          );
+
+          expect(authResult, equals(authUserId));
+        },
+      );
     },
   );
 }

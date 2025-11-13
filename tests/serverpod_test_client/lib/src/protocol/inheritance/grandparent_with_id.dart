@@ -19,7 +19,8 @@ class GrandparentClassWithId implements _i1.SerializableModel {
   });
 
   factory GrandparentClassWithId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return GrandparentClassWithId(
       id: jsonSerialization['id'] == null
           ? null

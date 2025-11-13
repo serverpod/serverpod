@@ -197,18 +197,18 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          query: query,
-          duration: duration,
-          numRows: numRows,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         serverId: serverId,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         query: query,
+         duration: duration,
+         numRows: numRows,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -247,59 +247,59 @@ class QueryLogEntryUpdateTable extends _i1.UpdateTable<QueryLogEntryTable> {
   QueryLogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+    table.sessionLogId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+    table.messageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> query(String value) => _i1.ColumnValue(
-        table.query,
-        value,
-      );
+    table.query,
+    value,
+  );
 
   _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
-        table.duration,
-        value,
-      );
+    table.duration,
+    value,
+  );
 
   _i1.ColumnValue<int, int> numRows(int? value) => _i1.ColumnValue(
-        table.numRows,
-        value,
-      );
+    table.numRows,
+    value,
+  );
 
   _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+    table.error,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+    table.stackTrace,
+    value,
+  );
 
   _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
-        table.slow,
-        value,
-      );
+    table.slow,
+    value,
+  );
 
   _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+    table.order,
+    value,
+  );
 }
 
 class QueryLogEntryTable extends _i1.Table<int?> {
   QueryLogEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_query_log') {
+    : super(tableName: 'serverpod_query_log') {
     updateTable = QueryLogEntryUpdateTable(this);
     serverId = _i1.ColumnString(
       'serverId',
@@ -379,18 +379,18 @@ class QueryLogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        serverId,
-        sessionLogId,
-        messageId,
-        query,
-        duration,
-        numRows,
-        error,
-        stackTrace,
-        slow,
-        order,
-      ];
+    id,
+    serverId,
+    sessionLogId,
+    messageId,
+    query,
+    duration,
+    numRows,
+    error,
+    stackTrace,
+    slow,
+    order,
+  ];
 }
 
 class QueryLogEntryInclude extends _i1.IncludeObject {

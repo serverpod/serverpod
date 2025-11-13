@@ -38,7 +38,8 @@ abstract class Person implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       organization: jsonSerialization['organization'] == null
           ? null
           : _i2.Organization.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+              (jsonSerialization['organization'] as Map<String, dynamic>),
+            ),
       $_cityCitizensCityId: jsonSerialization['_cityCitizensCityId'] as int?,
     );
   }
@@ -132,11 +133,11 @@ class _PersonImpl extends Person {
     int? organizationId,
     _i2.Organization? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -151,8 +152,9 @@ class _PersonImpl extends Person {
     return PersonImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId:
-          organizationId is int? ? organizationId : this.organizationId,
+      organizationId: organizationId is int?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
@@ -168,13 +170,13 @@ class PersonImplicit extends _PersonImpl {
     int? organizationId,
     _i2.Organization? organization,
     int? $_cityCitizensCityId,
-  })  : _cityCitizensCityId = $_cityCitizensCityId,
-        super(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+  }) : _cityCitizensCityId = $_cityCitizensCityId,
+       super(
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   factory PersonImplicit(
     Person person, {
@@ -197,19 +199,19 @@ class PersonUpdateTable extends _i1.UpdateTable<PersonTable> {
   PersonUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
-        table.organizationId,
-        value,
-      );
+    table.organizationId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> $_cityCitizensCityId(int? value) => _i1.ColumnValue(
-        table.$_cityCitizensCityId,
-        value,
-      );
+    table.$_cityCitizensCityId,
+    value,
+  );
 }
 
 class PersonTable extends _i1.Table<int?> {
@@ -254,18 +256,18 @@ class PersonTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        organizationId,
-        $_cityCitizensCityId,
-      ];
+    id,
+    name,
+    organizationId,
+    $_cityCitizensCityId,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [
-        id,
-        name,
-        organizationId,
-      ];
+    id,
+    name,
+    organizationId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

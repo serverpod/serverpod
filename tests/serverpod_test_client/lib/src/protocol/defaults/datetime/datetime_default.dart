@@ -18,11 +18,11 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull,
-  })  : dateTimeDefaultNow = dateTimeDefaultNow ?? DateTime.now(),
-        dateTimeDefaultStr =
-            dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
-        dateTimeDefaultStrNull = dateTimeDefaultStrNull ??
-            DateTime.parse('2024-05-24T22:00:00.000Z');
+  }) : dateTimeDefaultNow = dateTimeDefaultNow ?? DateTime.now(),
+       dateTimeDefaultStr =
+           dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
+       dateTimeDefaultStrNull =
+           dateTimeDefaultStrNull ?? DateTime.parse('2024-05-24T22:00:00.000Z');
 
   factory DateTimeDefault({
     int? id,
@@ -35,14 +35,17 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
     return DateTimeDefault(
       id: jsonSerialization['id'] as int?,
       dateTimeDefaultNow: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['dateTimeDefaultNow']),
+        jsonSerialization['dateTimeDefaultNow'],
+      ),
       dateTimeDefaultStr: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['dateTimeDefaultStr']),
+        jsonSerialization['dateTimeDefaultStr'],
+      ),
       dateTimeDefaultStrNull:
           jsonSerialization['dateTimeDefaultStrNull'] == null
-              ? null
-              : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultStrNull']),
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultStrNull'],
+            ),
     );
   }
 
@@ -92,11 +95,11 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull,
   }) : super._(
-          id: id,
-          dateTimeDefaultNow: dateTimeDefaultNow,
-          dateTimeDefaultStr: dateTimeDefaultStr,
-          dateTimeDefaultStrNull: dateTimeDefaultStrNull,
-        );
+         id: id,
+         dateTimeDefaultNow: dateTimeDefaultNow,
+         dateTimeDefaultStr: dateTimeDefaultStr,
+         dateTimeDefaultStrNull: dateTimeDefaultStrNull,
+       );
 
   /// Returns a shallow copy of this [DateTimeDefault]
   /// with some or all fields replaced by the given arguments.

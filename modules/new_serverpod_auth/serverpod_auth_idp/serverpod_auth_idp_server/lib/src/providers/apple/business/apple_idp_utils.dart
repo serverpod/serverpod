@@ -47,9 +47,9 @@ class AppleIDPUtils {
     required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
-  })  : _tokenManager = tokenManager,
-        _signInWithApple = signInWithApple,
-        _authUsers = authUsers;
+  }) : _tokenManager = tokenManager,
+       _signInWithApple = signInWithApple,
+       _authUsers = authUsers;
 
   /// Authenticates a user using an [identityToken] and [authorizationCode].
   ///
@@ -91,13 +91,13 @@ class AppleIDPUtils {
 
     final AuthUserModel authUser = switch (createNewAccount) {
       true => await _authUsers.create(
-          session,
-          transaction: transaction,
-        ),
+        session,
+        transaction: transaction,
+      ),
       false => await _authUsers.get(
-          session,
-          authUserId: appleAccount!.authUserId,
-        ),
+        session,
+        authUserId: appleAccount!.authUserId,
+      ),
     };
 
     if (createNewAccount) {
@@ -151,7 +151,7 @@ class AppleIDPUtils {
     final Session session, {
     required final AppleAccount appleAccount,
     required final void Function(UuidValue authUserId)
-        onExpiredUserAuthentication,
+    onExpiredUserAuthentication,
   }) async {
     await AppleAccount.db.updateRow(
       session,
@@ -192,8 +192,9 @@ class AppleIDPUtils {
     final body = await utf8.decodeStream(req.body.read());
     final payload = (jsonDecode(body) as Map)['payload'] as String;
 
-    final notification =
-        await _signInWithApple.decodeAppleServerNotification(payload);
+    final notification = await _signInWithApple.decodeAppleServerNotification(
+      payload,
+    );
 
     final userIdentifier = switch (notification) {
       AppleServerNotificationConsentRevoked() => notification.userIdentifier,

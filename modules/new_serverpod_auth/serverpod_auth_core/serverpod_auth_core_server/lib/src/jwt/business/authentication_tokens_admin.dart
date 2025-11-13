@@ -19,8 +19,9 @@ final class AuthenticationTokensAdmin {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    final oldestValidRefreshTokenDate =
-        clock.now().subtract(_refreshTokenLifetime);
+    final oldestValidRefreshTokenDate = clock.now().subtract(
+      _refreshTokenLifetime,
+    );
 
     await RefreshToken.db.deleteWhere(
       session,
@@ -121,10 +122,12 @@ final class AuthenticationTokensAdmin {
     );
 
     return refreshTokens
-        .map((final refreshToken) => (
-              authUserId: refreshToken.authUserId,
-              refreshTokenId: refreshToken.id!,
-            ))
+        .map(
+          (final refreshToken) => (
+            authUserId: refreshToken.authUserId,
+            refreshTokenId: refreshToken.id!,
+          ),
+        )
         .toList();
   }
 }
@@ -132,5 +135,5 @@ final class AuthenticationTokensAdmin {
 /// A tuple of (refresh token ID) representing a deleted refresh token.
 typedef DeletedRefreshToken = ({
   UuidValue authUserId,
-  UuidValue refreshTokenId
+  UuidValue refreshTokenId,
 });

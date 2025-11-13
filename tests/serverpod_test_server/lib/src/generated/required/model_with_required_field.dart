@@ -29,7 +29,8 @@ abstract class ModelWithRequiredField
   }) = _ModelWithRequiredFieldImpl;
 
   factory ModelWithRequiredField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ModelWithRequiredField(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -122,11 +123,11 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
     required String? email,
     String? phone,
   }) : super._(
-          id: id,
-          name: name,
-          email: email,
-          phone: phone,
-        );
+         id: id,
+         name: name,
+         email: email,
+         phone: phone,
+       );
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.
@@ -152,24 +153,24 @@ class ModelWithRequiredFieldUpdateTable
   ModelWithRequiredFieldUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<String, String> phone(String? value) => _i1.ColumnValue(
-        table.phone,
-        value,
-      );
+    table.phone,
+    value,
+  );
 }
 
 class ModelWithRequiredFieldTable extends _i1.Table<int?> {
   ModelWithRequiredFieldTable({super.tableRelation})
-      : super(tableName: 'model_with_required_field') {
+    : super(tableName: 'model_with_required_field') {
     updateTable = ModelWithRequiredFieldUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -195,11 +196,11 @@ class ModelWithRequiredFieldTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        email,
-        phone,
-      ];
+    id,
+    name,
+    email,
+    phone,
+  ];
 }
 
 class ModelWithRequiredFieldInclude extends _i1.IncludeObject {
@@ -397,7 +398,7 @@ class ModelWithRequiredFieldRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ModelWithRequiredField>(
@@ -412,7 +413,7 @@ class ModelWithRequiredFieldRepository {
   Future<List<ModelWithRequiredField>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
     int? limit,
     int? offset,

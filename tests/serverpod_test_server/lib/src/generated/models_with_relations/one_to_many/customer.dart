@@ -119,10 +119,10 @@ class _CustomerImpl extends Customer {
     required String name,
     List<_i2.Order>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +147,9 @@ class CustomerUpdateTable extends _i1.UpdateTable<CustomerTable> {
   CustomerUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CustomerTable extends _i1.Table<int?> {
@@ -195,16 +195,17 @@ class CustomerTable extends _i1.Table<int?> {
     _orders = _i1.ManyRelation<_i2.OrderTable>(
       tableWithRelations: relationTable,
       table: _i2.OrderTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _orders!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

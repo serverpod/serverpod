@@ -27,8 +27,9 @@ abstract class ObjectWithDuration
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -104,9 +105,9 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
     int? id,
     required Duration duration,
   }) : super._(
-          id: id,
-          duration: duration,
-        );
+         id: id,
+         duration: duration,
+       );
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
@@ -136,7 +137,7 @@ class ObjectWithDurationUpdateTable
 
 class ObjectWithDurationTable extends _i1.Table<int?> {
   ObjectWithDurationTable({super.tableRelation})
-      : super(tableName: 'object_with_duration') {
+    : super(tableName: 'object_with_duration') {
     updateTable = ObjectWithDurationUpdateTable(this);
     duration = _i1.ColumnDuration(
       'duration',
@@ -150,9 +151,9 @@ class ObjectWithDurationTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        duration,
-      ];
+    id,
+    duration,
+  ];
 }
 
 class ObjectWithDurationInclude extends _i1.IncludeObject {
@@ -350,7 +351,7 @@ class ObjectWithDurationRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithDuration>(
@@ -365,7 +366,7 @@ class ObjectWithDurationRepository {
   Future<List<ObjectWithDuration>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithDurationUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     int? limit,
     int? offset,

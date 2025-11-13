@@ -33,8 +33,9 @@ void main() {
     const customKey = 'custom_auth_key';
 
     setUp(() {
-      storage =
-          TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: customKey);
+      storage = TestKeyValueAuthInfoStorage.create(
+        authSuccessStorageKey: customKey,
+      );
     });
 
     test('when calling set then it uses the custom key', () async {
@@ -64,14 +65,15 @@ void main() {
     });
 
     test(
-        'when calling set with AuthSuccess data then it encodes and stores the data as JSON string.',
-        () async {
-      await storage.set(_authSuccess);
+      'when calling set with AuthSuccess data then it encodes and stores the data as JSON string.',
+      () async {
+        await storage.set(_authSuccess);
 
-      final value = await storage.delegate.get(key);
+        final value = await storage.delegate.get(key);
 
-      expect(value, _authSuccess.toString());
-    });
+        expect(value, _authSuccess.toString());
+      },
+    );
   });
 
   group('Given a KeyValueClientAuthInfoStorage with data in storage', () {
@@ -80,16 +82,18 @@ void main() {
       await storage.delegate.set(key, _authSuccess.toString());
     });
 
-    test('when decoding stored value then original object is returned.',
-        () async {
-      final value = await storage.delegate.get(key);
+    test(
+      'when decoding stored value then original object is returned.',
+      () async {
+        final value = await storage.delegate.get(key);
 
-      expect(value, isNotNull);
-      expect(() => Protocol().decode<AuthSuccess>(value!), returnsNormally);
+        expect(value, isNotNull);
+        expect(() => Protocol().decode<AuthSuccess>(value!), returnsNormally);
 
-      final decoded = Protocol().decode<AuthSuccess>(value!);
-      expect(decoded.toString(), _authSuccess.toString());
-    });
+        final decoded = Protocol().decode<AuthSuccess>(value!);
+        expect(decoded.toString(), _authSuccess.toString());
+      },
+    );
 
     test('when calling get then data is retrieved from storage', () async {
       final result = await storage.get();
@@ -99,15 +103,16 @@ void main() {
     });
 
     test(
-        'when calling set with a new AuthSuccess data then new data replaces old stored data.',
-        () async {
-      final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
-      await storage.set(authSuccessNew);
+      'when calling set with a new AuthSuccess data then new data replaces old stored data.',
+      () async {
+        final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
+        await storage.set(authSuccessNew);
 
-      final stored = await storage.get();
+        final stored = await storage.get();
 
-      expect(stored.toString(), authSuccessNew.toString());
-    });
+        expect(stored.toString(), authSuccessNew.toString());
+      },
+    );
 
     test('when calling set with null then stored data is null.', () async {
       await storage.set(null);
@@ -119,14 +124,15 @@ void main() {
   });
 
   test(
-      'Given a KeyValueClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
-      () async {
-    storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
+    'Given a KeyValueClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
+    () async {
+      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
 
-    await storage.delegate.set(key, 'invalid-json');
+      await storage.delegate.set(key, 'invalid-json');
 
-    await expectLater(() => storage.get(), throwsA(isA<Exception>()));
-  });
+      await expectLater(() => storage.get(), throwsA(isA<Exception>()));
+    },
+  );
 
   group('Given storage operations that throw exceptions', () {
     setUp(() {
@@ -138,11 +144,13 @@ void main() {
 
       await expectLater(
         () => storage.set(_authSuccess),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Error on set'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Error on set'),
+          ),
+        ),
       );
     });
 
@@ -151,11 +159,13 @@ void main() {
 
       await expectLater(
         () => storage.get(),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Error on get'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Error on get'),
+          ),
+        ),
       );
     });
   });

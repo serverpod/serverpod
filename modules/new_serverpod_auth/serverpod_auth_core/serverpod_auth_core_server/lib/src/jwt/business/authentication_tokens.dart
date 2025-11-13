@@ -36,20 +36,20 @@ final class AuthenticationTokens {
   AuthenticationTokens({
     required this.config,
     this.authUsers = const AuthUsers(),
-  })  : admin = AuthenticationTokensAdmin(
-          refreshTokenLifetime: config.refreshTokenLifetime,
-        ),
-        jwtUtil = JwtUtil(
-          accessTokenLifetime: config.accessTokenLifetime,
-          issuer: config.issuer,
-          algorithm: config.algorithm,
-          fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
-        ),
-        refreshTokenSecretHash = RefreshTokenSecretHash(
-          refreshTokenRotatingSecretSaltLength:
-              config.refreshTokenRotatingSecretSaltLength,
-          refreshTokenHashPepper: config.refreshTokenHashPepper,
-        );
+  }) : admin = AuthenticationTokensAdmin(
+         refreshTokenLifetime: config.refreshTokenLifetime,
+       ),
+       jwtUtil = JwtUtil(
+         accessTokenLifetime: config.accessTokenLifetime,
+         issuer: config.issuer,
+         algorithm: config.algorithm,
+         fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
+       ),
+       refreshTokenSecretHash = RefreshTokenSecretHash(
+         refreshTokenRotatingSecretSaltLength:
+             config.refreshTokenRotatingSecretSaltLength,
+         refreshTokenHashPepper: config.refreshTokenHashPepper,
+       );
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
@@ -139,8 +139,8 @@ final class AuthenticationTokens {
         : extraClaims;
     final encodedExtraClaims =
         mergedExtraClaims != null && mergedExtraClaims.isNotEmpty
-            ? jsonEncode(mergedExtraClaims)
-            : null;
+        ? jsonEncode(mergedExtraClaims)
+        : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);
@@ -334,8 +334,7 @@ final class AuthenticationTokens {
       session,
       refreshTokenId: refreshTokenId,
       transaction: transaction,
-    ))
-        .firstOrNull;
+    )).firstOrNull;
 
     if (refreshToken == null) {
       return false;
@@ -379,15 +378,16 @@ final class AuthenticationTokens {
 
 extension on Set<Scope> {
   Set<String> get names => {
-        for (final scope in this)
-          if (scope.name != null) scope.name!,
-      };
+    for (final scope in this)
+      if (scope.name != null) scope.name!,
+  };
 }
 
 extension on RefreshToken {
   bool isExpired(final Duration refreshTokenLifetime) {
-    final oldestAcceptedRefreshTokenDate =
-        clock.now().subtract(refreshTokenLifetime);
+    final oldestAcceptedRefreshTokenDate = clock.now().subtract(
+      refreshTokenLifetime,
+    );
 
     return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }

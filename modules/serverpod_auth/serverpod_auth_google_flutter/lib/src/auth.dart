@@ -70,8 +70,9 @@ Future<UserInfo?> signInWithGoogle(
       );
     } else {
       // Fall back on idToken
-      serverResponse =
-          await caller.google.authenticateWithIdToken(tokens.idToken!);
+      serverResponse = await caller.google.authenticateWithIdToken(
+        tokens.idToken!,
+      );
     }
 
     if (!serverResponse.success) {

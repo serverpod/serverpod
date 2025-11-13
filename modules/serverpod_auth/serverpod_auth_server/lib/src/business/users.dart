@@ -15,13 +15,18 @@ class Users {
     UserInfoUpdateCallback? onUserCreatedOverride,
   ]) async {
     bool approved = switch (onUserWillBeCreatedOverride) {
-      null => await AuthConfig.current.onUserWillBeCreated?.call(
-            session,
-            userInfo,
-            authMethod,
-          ) ??
-          true,
-      _ => await onUserWillBeCreatedOverride.call(session, userInfo, authMethod)
+      null =>
+        await AuthConfig.current.onUserWillBeCreated?.call(
+              session,
+              userInfo,
+              authMethod,
+            ) ??
+            true,
+      _ => await onUserWillBeCreatedOverride.call(
+        session,
+        userInfo,
+        authMethod,
+      ),
     };
     if (!approved) return null;
 
@@ -64,8 +69,11 @@ class Users {
   /// result is cached locally on the server. You can configure the cache
   /// lifetime in [AuthConfig], or disable it on a call to call basis by
   /// setting [useCache] to false.
-  static Future<UserInfo?> findUserByUserId(Session session, int userId,
-      {bool useCache = true}) async {
+  static Future<UserInfo?> findUserByUserId(
+    Session session,
+    int userId, {
+    bool useCache = true,
+  }) async {
     var cacheKey = 'serverpod_auth_userinfo_$userId';
     UserInfo? userInfo;
 
@@ -144,7 +152,8 @@ class Users {
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
     await session.db.unsafeQuery(
-        'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
+      'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId',
+    );
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
@@ -152,8 +161,10 @@ class Users {
 
     var scopesHaveBeenRevoked = removedScopes.isNotEmpty;
     if (scopesHaveBeenRevoked) {
-      var removedScopesList =
-          removedScopes.map((s) => s.name).whereType<String>().toList();
+      var removedScopesList = removedScopes
+          .map((s) => s.name)
+          .whereType<String>()
+          .toList();
       await session.messages.authenticationRevoked(
         userId.toString(),
         RevokedAuthenticationScope(

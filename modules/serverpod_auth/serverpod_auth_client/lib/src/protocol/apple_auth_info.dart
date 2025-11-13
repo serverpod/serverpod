@@ -101,13 +101,13 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
     required String identityToken,
     required String authorizationCode,
   }) : super._(
-          userIdentifier: userIdentifier,
-          email: email,
-          fullName: fullName,
-          nickname: nickname,
-          identityToken: identityToken,
-          authorizationCode: authorizationCode,
-        );
+         userIdentifier: userIdentifier,
+         email: email,
+         fullName: fullName,
+         nickname: nickname,
+         identityToken: identityToken,
+         authorizationCode: authorizationCode,
+       );
 
   /// Returns a shallow copy of this [AppleAuthInfo]
   /// with some or all fields replaced by the given arguments.

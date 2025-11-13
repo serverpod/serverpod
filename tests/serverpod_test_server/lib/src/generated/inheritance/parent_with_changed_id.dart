@@ -18,7 +18,8 @@ class ParentWithChangedId
 
   factory ParentWithChangedId.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithChangedId(
-        id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']));
+      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+    );
   }
 
   _i1.UuidValue id;

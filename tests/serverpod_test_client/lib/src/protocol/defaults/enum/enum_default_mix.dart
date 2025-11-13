@@ -19,12 +19,12 @@ abstract class EnumDefaultMix implements _i1.SerializableModel {
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
     _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
-  })  : byNameEnumDefaultAndDefaultModel =
-            byNameEnumDefaultAndDefaultModel ?? _i2.ByNameEnum.byName2,
-        byNameEnumDefaultAndDefaultPersist =
-            byNameEnumDefaultAndDefaultPersist ?? _i2.ByNameEnum.byName1,
-        byNameEnumDefaultModelAndDefaultPersist =
-            byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1;
+  }) : byNameEnumDefaultAndDefaultModel =
+           byNameEnumDefaultAndDefaultModel ?? _i2.ByNameEnum.byName2,
+       byNameEnumDefaultAndDefaultPersist =
+           byNameEnumDefaultAndDefaultPersist ?? _i2.ByNameEnum.byName1,
+       byNameEnumDefaultModelAndDefaultPersist =
+           byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1;
 
   factory EnumDefaultMix({
     int? id,
@@ -37,12 +37,15 @@ abstract class EnumDefaultMix implements _i1.SerializableModel {
     return EnumDefaultMix(
       id: jsonSerialization['id'] as int?,
       byNameEnumDefaultAndDefaultModel: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefaultAndDefaultModel'] as String)),
+        (jsonSerialization['byNameEnumDefaultAndDefaultModel'] as String),
+      ),
       byNameEnumDefaultAndDefaultPersist: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefaultAndDefaultPersist'] as String)),
+        (jsonSerialization['byNameEnumDefaultAndDefaultPersist'] as String),
+      ),
       byNameEnumDefaultModelAndDefaultPersist: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefaultModelAndDefaultPersist']
-              as String)),
+        (jsonSerialization['byNameEnumDefaultModelAndDefaultPersist']
+            as String),
+      ),
     );
   }
 
@@ -70,10 +73,10 @@ abstract class EnumDefaultMix implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'byNameEnumDefaultAndDefaultModel':
-          byNameEnumDefaultAndDefaultModel.toJson(),
-      'byNameEnumDefaultAndDefaultPersist':
-          byNameEnumDefaultAndDefaultPersist.toJson(),
+      'byNameEnumDefaultAndDefaultModel': byNameEnumDefaultAndDefaultModel
+          .toJson(),
+      'byNameEnumDefaultAndDefaultPersist': byNameEnumDefaultAndDefaultPersist
+          .toJson(),
       'byNameEnumDefaultModelAndDefaultPersist':
           byNameEnumDefaultModelAndDefaultPersist.toJson(),
     };
@@ -94,13 +97,12 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
     _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
     _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          byNameEnumDefaultAndDefaultModel: byNameEnumDefaultAndDefaultModel,
-          byNameEnumDefaultAndDefaultPersist:
-              byNameEnumDefaultAndDefaultPersist,
-          byNameEnumDefaultModelAndDefaultPersist:
-              byNameEnumDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         byNameEnumDefaultAndDefaultModel: byNameEnumDefaultAndDefaultModel,
+         byNameEnumDefaultAndDefaultPersist: byNameEnumDefaultAndDefaultPersist,
+         byNameEnumDefaultModelAndDefaultPersist:
+             byNameEnumDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [EnumDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -114,13 +116,15 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
   }) {
     return EnumDefaultMix(
       id: id is int? ? id : this.id,
-      byNameEnumDefaultAndDefaultModel: byNameEnumDefaultAndDefaultModel ??
+      byNameEnumDefaultAndDefaultModel:
+          byNameEnumDefaultAndDefaultModel ??
           this.byNameEnumDefaultAndDefaultModel,
-      byNameEnumDefaultAndDefaultPersist: byNameEnumDefaultAndDefaultPersist ??
+      byNameEnumDefaultAndDefaultPersist:
+          byNameEnumDefaultAndDefaultPersist ??
           this.byNameEnumDefaultAndDefaultPersist,
       byNameEnumDefaultModelAndDefaultPersist:
           byNameEnumDefaultModelAndDefaultPersist ??
-              this.byNameEnumDefaultModelAndDefaultPersist,
+          this.byNameEnumDefaultModelAndDefaultPersist,
     );
   }
 }

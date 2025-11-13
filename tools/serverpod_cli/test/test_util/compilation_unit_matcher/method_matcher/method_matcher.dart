@@ -11,8 +11,8 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
     this._name, {
     required bool? isOverride,
     required String? returnType,
-  })  : _isOverride = isOverride,
-        _returnType = returnType;
+  }) : _isOverride = isOverride,
+       _returnType = returnType;
 
   @override
   Description describe(Description description) {
@@ -65,7 +65,7 @@ class _MethodMatcherImpl extends Matcher implements MethodMatcher {
       if (!methodDecl._hasMatchingOverride(_isOverride))
         'is ${_isOverride == true ? 'not overridden' : 'overridden'}',
       if (!methodDecl._hasMatchingReturnType(_returnType))
-        'returns "${methodDecl.returnType?.toSource()}"'
+        'returns "${methodDecl.returnType?.toSource()}"',
     ], ' and ');
 
     return mismatchDescription.add(output.toString());

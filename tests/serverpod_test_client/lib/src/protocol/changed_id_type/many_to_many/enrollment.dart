@@ -34,18 +34,22 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
   factory EnrollmentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnrollmentInt(
       id: jsonSerialization['id'] as int?,
-      studentId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['studentId']),
+      studentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['studentId'],
+      ),
       student: jsonSerialization['student'] == null
           ? null
           : _i2.StudentUuid.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
-      courseId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['courseId']),
+              (jsonSerialization['student'] as Map<String, dynamic>),
+            ),
+      courseId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['courseId'],
+      ),
       course: jsonSerialization['course'] == null
           ? null
           : _i3.CourseUuid.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+              (jsonSerialization['course'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -99,12 +103,12 @@ class _EnrollmentIntImpl extends EnrollmentInt {
     required _i1.UuidValue courseId,
     _i3.CourseUuid? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.

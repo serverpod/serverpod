@@ -21,70 +21,77 @@ void main() {
   );
 
   group(
-      'Given protocol definition with a concrete endpoint that extends another concrete endpoint when generating server files',
-      () {
-    var baseEndpointName = 'base';
-    var concreteEndpointName = 'subclass';
-    var baseMethodName = 'baseMethod';
-    var concreteMethodName = 'subclassMethod';
+    'Given protocol definition with a concrete endpoint that extends another concrete endpoint when generating server files',
+    () {
+      var baseEndpointName = 'base';
+      var concreteEndpointName = 'subclass';
+      var baseMethodName = 'baseMethod';
+      var concreteMethodName = 'subclassMethod';
 
-    // Create base endpoint
-    var baseEndpoint = EndpointDefinitionBuilder()
-        .withClassName('${baseEndpointName.pascalCase}Endpoint')
-        .withName(baseEndpointName)
-        .withMethods([
-      MethodDefinitionBuilder()
-          .withName(baseMethodName)
-          .buildMethodCallDefinition(),
-    ]).build();
+      // Create base endpoint
+      var baseEndpoint = EndpointDefinitionBuilder()
+          .withClassName('${baseEndpointName.pascalCase}Endpoint')
+          .withName(baseEndpointName)
+          .withMethods([
+            MethodDefinitionBuilder()
+                .withName(baseMethodName)
+                .buildMethodCallDefinition(),
+          ])
+          .build();
 
-    // Create endpoint that extends base endpoint
-    var concreteEndpoint = EndpointDefinitionBuilder()
-        .withClassName('${concreteEndpointName.pascalCase}Endpoint')
-        .withName(concreteEndpointName)
-        .withExtends(baseEndpoint)
-        .withMethods([
-      MethodDefinitionBuilder()
-          .withName(baseMethodName)
-          .buildMethodCallDefinition(),
-      MethodDefinitionBuilder()
-          .withName(concreteMethodName)
-          .buildMethodCallDefinition(),
-    ]).build();
+      // Create endpoint that extends base endpoint
+      var concreteEndpoint = EndpointDefinitionBuilder()
+          .withClassName('${concreteEndpointName.pascalCase}Endpoint')
+          .withName(concreteEndpointName)
+          .withExtends(baseEndpoint)
+          .withMethods([
+            MethodDefinitionBuilder()
+                .withName(baseMethodName)
+                .buildMethodCallDefinition(),
+            MethodDefinitionBuilder()
+                .withName(concreteMethodName)
+                .buildMethodCallDefinition(),
+          ])
+          .build();
 
-    var protocolDefinition = ProtocolDefinition(
-      endpoints: [baseEndpoint, concreteEndpoint],
-      models: [],
-    );
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [baseEndpoint, concreteEndpoint],
+        models: [],
+      );
 
-    late var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test('then endpoints file is created.', () {
-      expect(codeMap, contains(expectedEndpointsFileName));
-    });
-
-    group('then generated endpoints file', () {
-      late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
-
-      test('contains both endpoints in endpoints map.', () {
-        expect(endpointsFileContent, contains("'$baseEndpointName'"));
-        expect(endpointsFileContent, contains("'$concreteEndpointName'"));
+      test('then endpoints file is created.', () {
+        expect(codeMap, contains(expectedEndpointsFileName));
       });
 
-      test('contains both endpoints in connectors.', () {
-        expect(endpointsFileContent,
-            contains('connectors[\'$baseEndpointName\']'));
-        expect(endpointsFileContent,
-            contains('connectors[\'$concreteEndpointName\']'));
-      });
+      group('then generated endpoints file', () {
+        late var endpointsFileContent = codeMap[expectedEndpointsFileName]!;
 
-      test('contains both endpoints in endpoint dispatch map.', () {
-        expect(endpointsFileContent, contains(baseEndpointName));
-        expect(endpointsFileContent, contains(concreteEndpointName));
+        test('contains both endpoints in endpoints map.', () {
+          expect(endpointsFileContent, contains("'$baseEndpointName'"));
+          expect(endpointsFileContent, contains("'$concreteEndpointName'"));
+        });
+
+        test('contains both endpoints in connectors.', () {
+          expect(
+            endpointsFileContent,
+            contains('connectors[\'$baseEndpointName\']'),
+          );
+          expect(
+            endpointsFileContent,
+            contains('connectors[\'$concreteEndpointName\']'),
+          );
+        });
+
+        test('contains both endpoints in endpoint dispatch map.', () {
+          expect(endpointsFileContent, contains(baseEndpointName));
+          expect(endpointsFileContent, contains(concreteEndpointName));
+        });
       });
-    });
-  });
+    },
+  );
 }

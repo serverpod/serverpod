@@ -6,10 +6,12 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => DateTimeDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DateTimeDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "dateTimeDefaultAndDefaultModel" field value should match the default value',

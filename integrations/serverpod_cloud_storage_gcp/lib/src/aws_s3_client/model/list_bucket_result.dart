@@ -35,13 +35,16 @@ abstract class ListBucketResult
   BuiltList<Contents>? get contents;
 
   String toJson() {
-    return json
-        .encode(serializers.serializeWith(ListBucketResult.serializer, this));
+    return json.encode(
+      serializers.serializeWith(ListBucketResult.serializer, this),
+    );
   }
 
   static ListBucketResult fromJson(String jsonString) {
     return serializers.deserializeWith(
-        ListBucketResult.serializer, json.decode(jsonString))!;
+      ListBucketResult.serializer,
+      json.decode(jsonString),
+    )!;
   }
 
   static Serializer<ListBucketResult> get serializer =>

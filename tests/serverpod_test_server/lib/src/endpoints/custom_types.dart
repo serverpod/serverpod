@@ -59,7 +59,7 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithoutProtocolSerialization>
-      returnCustomClassWithoutProtocolSerialization(
+  returnCustomClassWithoutProtocolSerialization(
     Session session,
     CustomClassWithoutProtocolSerialization data,
   ) async {
@@ -67,7 +67,7 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithProtocolSerialization>
-      returnCustomClassWithProtocolSerialization(
+  returnCustomClassWithProtocolSerialization(
     Session session,
     CustomClassWithProtocolSerialization data,
   ) async {
@@ -75,7 +75,7 @@ class CustomTypesEndpoint extends Endpoint {
   }
 
   Future<CustomClassWithProtocolSerializationMethod>
-      returnCustomClassWithProtocolSerializationMethod(
+  returnCustomClassWithProtocolSerializationMethod(
     Session session,
     CustomClassWithProtocolSerializationMethod data,
   ) async {
@@ -90,7 +90,9 @@ class CustomTypesEndpoint extends Endpoint {
     if (message is CustomClass) {
       // ignore: deprecated_member_use
       await sendStreamMessage(
-          session, CustomClass('${message.value}${message.value}'));
+        session,
+        CustomClass('${message.value}${message.value}'),
+      );
     }
   }
 }

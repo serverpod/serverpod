@@ -41,13 +41,15 @@ abstract class CloudStorageEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['addedTime']),
+      addedTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['addedTime'],
+      ),
       expiration: jsonSerialization['expiration'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
       verified: jsonSerialization['verified'] as bool,
     );
   }
@@ -160,14 +162,14 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required _i2.ByteData byteData,
     required bool verified,
   }) : super._(
-          id: id,
-          storageId: storageId,
-          path: path,
-          addedTime: addedTime,
-          expiration: expiration,
-          byteData: byteData,
-          verified: verified,
-        );
+         id: id,
+         storageId: storageId,
+         path: path,
+         addedTime: addedTime,
+         expiration: expiration,
+         byteData: byteData,
+         verified: verified,
+       );
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
@@ -199,14 +201,14 @@ class CloudStorageEntryUpdateTable
   CloudStorageEntryUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
-        table.storageId,
-        value,
-      );
+    table.storageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
-        table.path,
-        value,
-      );
+    table.path,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
       _i1.ColumnValue(
@@ -227,14 +229,14 @@ class CloudStorageEntryUpdateTable
       );
 
   _i1.ColumnValue<bool, bool> verified(bool value) => _i1.ColumnValue(
-        table.verified,
-        value,
-      );
+    table.verified,
+    value,
+  );
 }
 
 class CloudStorageEntryTable extends _i1.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
-      : super(tableName: 'serverpod_cloud_storage') {
+    : super(tableName: 'serverpod_cloud_storage') {
     updateTable = CloudStorageEntryUpdateTable(this);
     storageId = _i1.ColumnString(
       'storageId',
@@ -284,14 +286,14 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        storageId,
-        path,
-        addedTime,
-        expiration,
-        byteData,
-        verified,
-      ];
+    id,
+    storageId,
+    path,
+    addedTime,
+    expiration,
+    byteData,
+    verified,
+  ];
 }
 
 class CloudStorageEntryInclude extends _i1.IncludeObject {
@@ -489,7 +491,7 @@ class CloudStorageEntryRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageEntry>(
@@ -504,7 +506,7 @@ class CloudStorageEntryRepository {
   Future<List<CloudStorageEntry>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     int? limit,
     int? offset,

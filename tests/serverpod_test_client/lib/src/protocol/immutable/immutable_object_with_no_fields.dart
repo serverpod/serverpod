@@ -20,7 +20,8 @@ abstract class ImmutableObjectWithNoFields implements _i1.SerializableModel {
       _ImmutableObjectWithNoFieldsImpl;
 
   factory ImmutableObjectWithNoFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithNoFields();
   }
 

@@ -77,8 +77,9 @@ abstract class Student
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
@@ -120,10 +121,10 @@ class _StudentImpl extends Student {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.
@@ -148,9 +149,9 @@ class StudentUpdateTable extends _i1.UpdateTable<StudentTable> {
   StudentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class StudentTable extends _i1.Table<int?> {
@@ -196,16 +197,17 @@ class StudentTable extends _i1.Table<int?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -531,8 +533,9 @@ class StudentAttachRepository {
       throw ArgumentError.notNull('student.id');
     }
 
-    var $enrollment =
-        enrollment.map((e) => e.copyWith(studentId: student.id)).toList();
+    var $enrollment = enrollment
+        .map((e) => e.copyWith(studentId: student.id))
+        .toList();
     await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],

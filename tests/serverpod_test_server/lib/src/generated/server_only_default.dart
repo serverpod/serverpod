@@ -18,8 +18,8 @@ abstract class ServerOnlyDefault
     required this.normalField,
     int? serverOnlyField,
     String? serverOnlyStringField,
-  })  : serverOnlyField = serverOnlyField ?? -1,
-        serverOnlyStringField = serverOnlyStringField ?? 'Server only message';
+  }) : serverOnlyField = serverOnlyField ?? -1,
+       serverOnlyStringField = serverOnlyStringField ?? 'Server only message';
 
   factory ServerOnlyDefault({
     required String normalField,
@@ -79,10 +79,10 @@ class _ServerOnlyDefaultImpl extends ServerOnlyDefault {
     int? serverOnlyField,
     String? serverOnlyStringField,
   }) : super._(
-          normalField: normalField,
-          serverOnlyField: serverOnlyField,
-          serverOnlyStringField: serverOnlyStringField,
-        );
+         normalField: normalField,
+         serverOnlyField: serverOnlyField,
+         serverOnlyStringField: serverOnlyStringField,
+       );
 
   /// Returns a shallow copy of this [ServerOnlyDefault]
   /// with some or all fields replaced by the given arguments.
@@ -95,8 +95,9 @@ class _ServerOnlyDefaultImpl extends ServerOnlyDefault {
   }) {
     return ServerOnlyDefault(
       normalField: normalField ?? this.normalField,
-      serverOnlyField:
-          serverOnlyField is int? ? serverOnlyField : this.serverOnlyField,
+      serverOnlyField: serverOnlyField is int?
+          ? serverOnlyField
+          : this.serverOnlyField,
       serverOnlyStringField: serverOnlyStringField is String?
           ? serverOnlyStringField
           : this.serverOnlyStringField,

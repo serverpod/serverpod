@@ -10,12 +10,15 @@ Pubspec parsePubspec(File pubspecFile) {
     return pubspec;
   } catch (e) {
     throw Exception(
-        'Error while parsing pubspec file: ${pubspecFile.path}: $e');
+      'Error while parsing pubspec file: ${pubspecFile.path}: $e',
+    );
   }
 }
 
-List<File> findPubspecsFiles(Directory dir,
-    {List<String> ignorePaths = const []}) {
+List<File> findPubspecsFiles(
+  Directory dir, {
+  List<String> ignorePaths = const [],
+}) {
   var pubspecFiles = <File>[];
   for (var file in dir.listSync(recursive: true, followLinks: false)) {
     if (shouldBeIgnored(file.path, ignorePaths)) continue;

@@ -26,7 +26,8 @@ abstract class ImmutableObjectWithTable
   }) = _ImmutableObjectWithTableImpl;
 
   factory ImmutableObjectWithTable.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTable(
       id: jsonSerialization['id'] as int?,
       variable: jsonSerialization['variable'] as String,
@@ -134,9 +135,9 @@ class _ImmutableObjectWithTableImpl extends ImmutableObjectWithTable {
     int? id,
     required String variable,
   }) : super._(
-          id: id,
-          variable: variable,
-        );
+         id: id,
+         variable: variable,
+       );
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +159,14 @@ class ImmutableObjectWithTableUpdateTable
   ImmutableObjectWithTableUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> variable(String value) => _i1.ColumnValue(
-        table.variable,
-        value,
-      );
+    table.variable,
+    value,
+  );
 }
 
 class ImmutableObjectWithTableTable extends _i1.Table<int?> {
   ImmutableObjectWithTableTable({super.tableRelation})
-      : super(tableName: 'immutable_object_with_table') {
+    : super(tableName: 'immutable_object_with_table') {
     updateTable = ImmutableObjectWithTableUpdateTable(this);
     variable = _i1.ColumnString(
       'variable',
@@ -179,9 +180,9 @@ class ImmutableObjectWithTableTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        variable,
-      ];
+    id,
+    variable,
+  ];
 }
 
 class ImmutableObjectWithTableInclude extends _i1.IncludeObject {
@@ -379,7 +380,7 @@ class ImmutableObjectWithTableRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ImmutableObjectWithTable>(
@@ -394,7 +395,7 @@ class ImmutableObjectWithTableRepository {
   Future<List<ImmutableObjectWithTable>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
     int? limit,
     int? offset,

@@ -139,7 +139,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -149,7 +149,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -162,7 +162,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'lastUpdatedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -252,7 +252,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -265,7 +265,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'authUserId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -329,7 +329,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -339,12 +339,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -428,7 +428,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -438,12 +438,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -488,12 +488,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -574,8 +574,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i6.AuthUserNotFoundException?>()) {
       return (data != null
-          ? _i6.AuthUserNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i6.AuthUserNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i7.AuthStrategy?>()) {
       return (data != null ? _i7.AuthStrategy.fromJson(data) : null) as T;
@@ -592,23 +593,27 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i11.RefreshTokenExpiredException?>()) {
       return (data != null
-          ? _i11.RefreshTokenExpiredException.fromJson(data)
-          : null) as T;
+              ? _i11.RefreshTokenExpiredException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i12.RefreshTokenInvalidSecretException?>()) {
       return (data != null
-          ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
-          : null) as T;
+              ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i13.RefreshTokenMalformedException?>()) {
       return (data != null
-          ? _i13.RefreshTokenMalformedException.fromJson(data)
-          : null) as T;
+              ? _i13.RefreshTokenMalformedException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i14.RefreshTokenNotFoundException?>()) {
       return (data != null
-          ? _i14.RefreshTokenNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i14.RefreshTokenNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i15.TokenPair?>()) {
       return (data != null ? _i15.TokenPair.fromJson(data) : null) as T;

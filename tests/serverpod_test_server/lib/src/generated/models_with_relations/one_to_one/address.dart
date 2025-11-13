@@ -39,7 +39,8 @@ abstract class Address
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
           : _i2.Citizen.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+              (jsonSerialization['inhabitant'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -127,11 +128,11 @@ class _AddressImpl extends Address {
     int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
@@ -147,8 +148,9 @@ class _AddressImpl extends Address {
       id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant:
-          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _i2.Citizen?
+          ? inhabitant
+          : this.inhabitant?.copyWith(),
     );
   }
 }
@@ -157,14 +159,14 @@ class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
   AddressUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
-        table.street,
-        value,
-      );
+    table.street,
+    value,
+  );
 
   _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
-        table.inhabitantId,
-        value,
-      );
+    table.inhabitantId,
+    value,
+  );
 }
 
 class AddressTable extends _i1.Table<int?> {
@@ -203,10 +205,10 @@ class AddressTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        street,
-        inhabitantId,
-      ];
+    id,
+    street,
+    inhabitantId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

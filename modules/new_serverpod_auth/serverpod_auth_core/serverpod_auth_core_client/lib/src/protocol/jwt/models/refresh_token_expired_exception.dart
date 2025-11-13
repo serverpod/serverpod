@@ -19,7 +19,8 @@ abstract class RefreshTokenExpiredException
   factory RefreshTokenExpiredException() = _RefreshTokenExpiredExceptionImpl;
 
   factory RefreshTokenExpiredException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenExpiredException();
   }
 

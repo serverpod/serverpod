@@ -9,7 +9,8 @@ import '../utils/notification.dart';
 final List<Story> signInStories = [
   Story(
     name: 'Sign In/Default Widget',
-    description: 'Sign in flow using the default sign-in widget. Email can be '
+    description:
+        'Sign in flow using the default sign-in widget. Email can be '
         'tested as the endpoint is mocked.',
     builder: (context) => _signInWidgetStory(context),
   ),

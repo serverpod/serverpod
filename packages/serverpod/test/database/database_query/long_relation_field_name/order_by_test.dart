@@ -17,8 +17,9 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when ordering by list relation with a long field name', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withOrderBy([Order(column: manyRelation.count())]).build();
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withOrderBy([Order(column: manyRelation.count())]).build();
       var expectedTruncatedName =
           'order_by_citizen_thisFieldIsExactly61CharactersLongAndIsThee498';
 

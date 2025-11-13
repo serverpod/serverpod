@@ -36,7 +36,8 @@ abstract class TownInt implements _i1.SerializableModel {
       mayor: jsonSerialization['mayor'] == null
           ? null
           : _i2.CitizenInt.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>)),
+              (jsonSerialization['mayor'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -85,11 +86,11 @@ class _TownIntImpl extends TownInt {
     int? mayorId,
     _i2.CitizenInt? mayor,
   }) : super._(
-          id: id,
-          name: name,
-          mayorId: mayorId,
-          mayor: mayor,
-        );
+         id: id,
+         name: name,
+         mayorId: mayorId,
+         mayor: mayor,
+       );
 
   /// Returns a shallow copy of this [TownInt]
   /// with some or all fields replaced by the given arguments.

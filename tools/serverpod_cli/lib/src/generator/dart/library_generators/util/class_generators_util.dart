@@ -288,39 +288,45 @@ Expression _buildListOrSetTypeFromJson(
   List<String> subDirParts,
 ) {
   if (type.isSetType) {
-    return CodeExpression(Block.of([
-      if (type.nullable) ...[
-        valueExpression.code,
-        const Code(' == null ? null :'),
-      ],
-      refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
-      const Code('.fromJson('),
-      valueExpression
-          .asA(const CodeExpression(
-            // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
-            Code('List'),
-          ))
-          .code,
-      const Code(', itemFromJson: (e) =>'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e'),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(')'),
-      if (type.isSetType && !type.nullable) const Code('!'),
-    ]));
+    return CodeExpression(
+      Block.of([
+        if (type.nullable) ...[
+          valueExpression.code,
+          const Code(' == null ? null :'),
+        ],
+        refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
+        const Code('.fromJson('),
+        valueExpression
+            .asA(
+              const CodeExpression(
+                // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
+                Code('List'),
+              ),
+            )
+            .code,
+        const Code(', itemFromJson: (e) =>'),
+        _buildFromJson(
+          jsonReference,
+          type.generics.first,
+          serverCode,
+          config,
+          mapExpression: refer('e'),
+          subDirParts: subDirParts,
+        ).code,
+        const Code(')'),
+        if (type.isSetType && !type.nullable) const Code('!'),
+      ]),
+    );
   }
 
   return CodeExpression(
     Block.of([
       valueExpression
-          .asA(CodeExpression(
-            Code('List${type.nullable ? '?' : ''}'),
-          ))
+          .asA(
+            CodeExpression(
+              Code('List${type.nullable ? '?' : ''}'),
+            ),
+          )
           .code,
       Code('${type.nullable ? '?' : ''}.map((e) => '),
       _buildFromJson(
@@ -459,23 +465,29 @@ Expression _buildRecordTypeFromJson(
         : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
   );
 
-  return CodeExpression(Block.of([
-    if (type.nullable) ...[
-      valueExpression.code,
-      const Code('== null ? null : '),
-    ],
-    protocolRef
-        .newInstance([])
-        .property('deserialize')
-        .call(
-          [valueExpression.asA(refer('Map<String, dynamic>'))],
-          {},
-          [
-            type.reference(serverCode, config: config, subDirParts: subDirParts)
-          ],
-        )
-        .code,
-  ]));
+  return CodeExpression(
+    Block.of([
+      if (type.nullable) ...[
+        valueExpression.code,
+        const Code('== null ? null : '),
+      ],
+      protocolRef
+          .newInstance([])
+          .property('deserialize')
+          .call(
+            [valueExpression.asA(refer('Map<String, dynamic>'))],
+            {},
+            [
+              type.reference(
+                serverCode,
+                config: config,
+                subDirParts: subDirParts,
+              ),
+            ],
+          )
+          .code,
+    ]),
+  );
 }
 
 extension ExpressionExtension on Expression {

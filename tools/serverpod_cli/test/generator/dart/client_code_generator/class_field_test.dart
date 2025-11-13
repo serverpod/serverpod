@@ -31,7 +31,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -43,13 +43,14 @@ void main() {
 
     test('then generated class imports client version of serverpod.', () {
       expect(
-          CompilationUnitHelpers.hasImportDirective(
-            compilationUnit,
-            uri: 'package:serverpod_client/serverpod_client.dart',
-          ),
-          isTrue,
-          reason:
-              'Missing import of package:serverpod_client/serverpod_client.dart.');
+        CompilationUnitHelpers.hasImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod_client/serverpod_client.dart',
+        ),
+        isTrue,
+        reason:
+            'Missing import of package:serverpod_client/serverpod_client.dart.',
+      );
     });
 
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
@@ -58,59 +59,67 @@ void main() {
     );
 
     test('then a class named $testClassName is generated.', () {
-      expect(maybeClassNamedExample, isNotNull,
-          reason: 'Missing definition for class named $testClassName.');
+      expect(
+        maybeClassNamedExample,
+        isNotNull,
+        reason: 'Missing definition for class named $testClassName.',
+      );
     });
 
     group('then the class named $testClassName', () {
       test('implements SerializableModel.', () {
         expect(
-            CompilationUnitHelpers.hasImplementsClause(
-              maybeClassNamedExample!,
-              name: 'SerializableModel',
-            ),
-            isTrue,
-            reason: 'Missing extends clause for SerializableModel.');
+          CompilationUnitHelpers.hasImplementsClause(
+            maybeClassNamedExample!,
+            name: 'SerializableModel',
+          ),
+          isTrue,
+          reason: 'Missing extends clause for SerializableModel.',
+        );
       });
 
       test('does not implement ProtocolSerialization.', () {
         expect(
-            CompilationUnitHelpers.hasImplementsClause(
-              maybeClassNamedExample!,
-              name: 'ProtocolSerialization',
-            ),
-            isFalse,
-            reason: 'Should not implement ProtocolSerialization');
+          CompilationUnitHelpers.hasImplementsClause(
+            maybeClassNamedExample!,
+            name: 'ProtocolSerialization',
+          ),
+          isFalse,
+          reason: 'Should not implement ProtocolSerialization',
+        );
       });
 
       test('has a fromJson factory.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(
-              maybeClassNamedExample!,
-              name: 'fromJson',
-            ),
-            isTrue,
-            reason: 'Missing declaration for fromJson factory.');
+          CompilationUnitHelpers.hasConstructorDeclaration(
+            maybeClassNamedExample!,
+            name: 'fromJson',
+          ),
+          isTrue,
+          reason: 'Missing declaration for fromJson factory.',
+        );
       });
 
       test('has a toJson method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'toJson',
-            ),
-            isTrue,
-            reason: 'Missing declaration for toJson method.');
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'toJson',
+          ),
+          isTrue,
+          reason: 'Missing declaration for toJson method.',
+        );
       });
 
       test('does not have a toJsonForProtocol method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'toJsonForProtocol',
-            ),
-            isFalse,
-            reason: 'Class should not have a toJsonForProtocol method.');
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'toJsonForProtocol',
+          ),
+          isFalse,
+          reason: 'Class should not have a toJsonForProtocol method.',
+        );
       });
     }, skip: maybeClassNamedExample == null);
   });
@@ -118,13 +127,13 @@ void main() {
   group('Given a class with documentation when generating code', () {
     var documentation = [
       '// This is an example documentation',
-      '// This is another example'
+      '// This is another example',
     ];
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -144,7 +153,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName('example_table')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -157,49 +166,58 @@ void main() {
       compilationUnit,
       name: testClassName,
     );
-    group('then the class named $testClassName', () {
-      test('still implements SerializableModel.', () {
-        expect(
+    group(
+      'then the class named $testClassName',
+      () {
+        test('still implements SerializableModel.', () {
+          expect(
             CompilationUnitHelpers.hasImplementsClause(
               maybeClassNamedExample!,
               name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableModel.');
-      });
+            reason: 'Missing extends clause for SerializableModel.',
+          );
+        });
 
-      test('has id in constructor.', () {
-        expect(
+        test('has id in constructor.', () {
+          expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
               parameters: ['int? id'],
             ),
             isTrue,
-            reason: 'Missing declaration for $testClassName constructor.');
-      });
+            reason: 'Missing declaration for $testClassName constructor.',
+          );
+        });
 
-      test('is generated with id field.', () {
-        expect(
+        test('is generated with id field.', () {
+          expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'id',
               type: 'int?',
             ),
             isTrue,
-            reason: 'Declaration for id field was should be generated.');
-      });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+            reason: 'Declaration for id field was should be generated.',
+          );
+        });
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
 
     test('then a class named ${testClassName}Include does NOT exist.', () {
       expect(
-          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
-              name: '${testClassName}Include'),
-          isFalse,
-          reason: 'Class ${testClassName}Include should not be generated.');
+        CompilationUnitHelpers.hasClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}Include',
+        ),
+        isFalse,
+        reason: 'Class ${testClassName}Include should not be generated.',
+      );
     });
   });
 
@@ -209,7 +227,7 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -223,33 +241,37 @@ void main() {
       name: testClassName,
     );
 
-    group('then the class name $testClassName', () {
-      test('has field as required in constructor.', () {
-        expect(
+    group(
+      'then the class name $testClassName',
+      () {
+        test('has field as required in constructor.', () {
+          expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
               parameters: ['required String title'],
             ),
             isTrue,
-            reason: 'Missing declaration for $testClassName constructor.');
-      });
+            reason: 'Missing declaration for $testClassName constructor.',
+          );
+        });
 
-      test('has that class variable.', () {
-        expect(
-          CompilationUnitHelpers.hasFieldDeclaration(
-            maybeClassNamedExample!,
-            name: 'title',
-            type: 'String',
-          ),
-          isTrue,
-          reason: 'Missing declaration for title field.',
-        );
-      });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
+        test('has that class variable.', () {
+          expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'title',
+              type: 'String',
+            ),
+            isTrue,
+            reason: 'Missing declaration for title field.',
+          );
+        });
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
   });
 
   group('Given a class with a nullable field when generating code', () {
@@ -258,7 +280,7 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withSimpleField('title', 'String', nullable: true)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -272,170 +294,195 @@ void main() {
       name: testClassName,
     );
 
-    group('then the class named $testClassName', () {
-      test('has field in constructor.', () {
-        expect(
+    group(
+      'then the class named $testClassName',
+      () {
+        test('has field in constructor.', () {
+          expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
               parameters: ['String? title'],
             ),
             isTrue,
-            reason: 'Missing declaration for $testClassName constructor.');
-      });
+            reason: 'Missing declaration for $testClassName constructor.',
+          );
+        });
 
-      test('has that class variable.', () {
-        expect(
-          CompilationUnitHelpers.hasFieldDeclaration(
-            maybeClassNamedExample!,
-            name: 'title',
-            type: 'String?',
-          ),
-          isTrue,
-          reason: 'Missing declaration for title field.',
-        );
-      });
-    },
-        skip: maybeClassNamedExample == null
-            ? 'Could not run test because $testClassName class was not found.'
-            : false);
-  });
-
-  group(
-      'Given a class with a non persistent field with scope all when generating code',
-      () {
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withFileName(testClassFileName)
-          .withField(
-            FieldDefinitionBuilder()
-                .withName('title')
-                .withTypeDefinition('String', true)
-                .withScope(ModelFieldScopeDefinition.all)
-                .withShouldPersist(false)
-                .build(),
-          )
-          .build()
-    ];
-
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
-    test(
-      'then the class is generated with that class variable.',
-      () {
-        expect(
+        test('has that class variable.', () {
+          expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'title',
               type: 'String?',
             ),
             isTrue,
-            reason: 'Missing declaration for title field.');
+            reason: 'Missing declaration for title field.',
+          );
+        });
       },
       skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found'
+          ? 'Could not run test because $testClassName class was not found.'
           : false,
     );
   });
 
   group(
-      'Given a class with a non persistent field with scope server only when generating code',
-      () {
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withFileName(testClassFileName)
-          .withField(
-            FieldDefinitionBuilder()
-                .withName('title')
-                .withTypeDefinition('String', true)
-                .withScope(ModelFieldScopeDefinition.serverOnly)
-                .withShouldPersist(false)
-                .build(),
-          )
-          .build()
-    ];
+    'Given a class with a non persistent field with scope all when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('title')
+                  .withTypeDefinition('String', true)
+                  .withScope(ModelFieldScopeDefinition.all)
+                  .withShouldPersist(false)
+                  .build(),
+            )
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
-    test(
-      'then class is NOT generated with that class variable.',
-      () {
-        expect(
+      var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+      var maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+      test(
+        'then the class is generated with that class variable.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'title',
+              type: 'String?',
+            ),
+            isTrue,
+            reason: 'Missing declaration for title field.',
+          );
+        },
+        skip: maybeClassNamedExample == null
+            ? 'Could not run test because $testClassName class was not found'
+            : false,
+      );
+    },
+  );
+
+  group(
+    'Given a class with a non persistent field with scope server only when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('title')
+                  .withTypeDefinition('String', true)
+                  .withScope(ModelFieldScopeDefinition.serverOnly)
+                  .withShouldPersist(false)
+                  .build(),
+            )
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+      var maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+      test(
+        'then class is NOT generated with that class variable.',
+        () {
+          expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               maybeClassNamedExample!,
               name: 'title',
               type: 'String?',
             ),
             isFalse,
-            reason: 'Field title should not be generated.');
-      },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
-    );
-  });
+            reason: 'Field title should not be generated.',
+          );
+        },
+        skip: maybeClassNamedExample == null
+            ? 'Could not run test because $testClassName class was not found.'
+            : false,
+      );
+    },
+  );
 
   group(
-      'Given a class with a non persistent field with scope none when generating code',
-      () {
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withFileName(testClassFileName)
-          .withField(
-            SerializableModelFieldDefinition(
+    'Given a class with a non persistent field with scope none when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withFileName(testClassFileName)
+            .withField(
+              SerializableModelFieldDefinition(
                 name: 'title',
                 type: TypeDefinition(className: 'String', nullable: true),
                 scope: ModelFieldScopeDefinition.none,
-                shouldPersist: false),
-          )
-          .build()
-    ];
+                shouldPersist: false,
+              ),
+            )
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
-    test(
-      'then class is NOT generated with that class variable.',
-      () {
-        expect(
-            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-                name: 'title', type: 'String?'),
+      var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+      var maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+      test(
+        'then class is NOT generated with that class variable.',
+        () {
+          expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'title',
+              type: 'String?',
+            ),
             isFalse,
-            reason: 'Field title should not be generated.');
-      },
-      skip: maybeClassNamedExample == null
-          ? 'Could not run test because $testClassName class was not found.'
-          : false,
-    );
-  });
+            reason: 'Field title should not be generated.',
+          );
+        },
+        skip: maybeClassNamedExample == null
+            ? 'Could not run test because $testClassName class was not found.'
+            : false,
+      );
+    },
+  );
 
   group('Given exception class when generating code', () {
     var models = [
       ExceptionClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -453,12 +500,13 @@ void main() {
       'then class implements SerializableException.',
       () {
         expect(
-            CompilationUnitHelpers.hasImplementsClause(
-              maybeClassNamedExample!,
-              name: 'SerializableException',
-            ),
-            isTrue,
-            reason: 'Class should implement SerializableException.');
+          CompilationUnitHelpers.hasImplementsClause(
+            maybeClassNamedExample!,
+            name: 'SerializableException',
+          ),
+          isTrue,
+          reason: 'Class should implement SerializableException.',
+        );
       },
       skip: maybeClassNamedExample == null
           ? 'Could not run test because $testClassName class was not found.'

@@ -26,7 +26,7 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'sessionMigration',
           'serverpod_auth_bridge',
-        )
+        ),
     };
     connectors['sessionMigration'] = _i1.EndpointConnector(
       name: 'sessionMigration',
@@ -39,18 +39,20 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'sessionKey',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['sessionMigration'] as _i2.SessionMigrationEndpoint)
-                  .convertSession(
-            session,
-            sessionKey: params['sessionKey'],
-          ),
-        )
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionMigration']
+                          as _i2.SessionMigrationEndpoint)
+                      .convertSession(
+                        session,
+                        sessionKey: params['sessionKey'],
+                      ),
+        ),
       },
     );
     modules['serverpod_auth_core'] = _i3.Endpoints()

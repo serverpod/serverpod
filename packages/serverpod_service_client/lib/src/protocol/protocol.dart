@@ -319,8 +319,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i5.CloudStorageDirectUploadEntry?>()) {
       return (data != null
-          ? _i5.CloudStorageDirectUploadEntry.fromJson(data)
-          : null) as T;
+              ? _i5.CloudStorageDirectUploadEntry.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i6.ClusterInfo?>()) {
       return (data != null ? _i6.ClusterInfo.fromJson(data) : null) as T;
@@ -336,8 +337,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i10.BulkQueryColumnDescription?>()) {
       return (data != null
-          ? _i10.BulkQueryColumnDescription.fromJson(data)
-          : null) as T;
+              ? _i10.BulkQueryColumnDescription.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i11.BulkQueryResult?>()) {
       return (data != null ? _i11.BulkQueryResult.fromJson(data) : null) as T;
@@ -368,23 +370,27 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i19.DatabaseMigrationActionType?>()) {
       return (data != null
-          ? _i19.DatabaseMigrationActionType.fromJson(data)
-          : null) as T;
+              ? _i19.DatabaseMigrationActionType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i20.DatabaseMigrationVersion?>()) {
       return (data != null
-          ? _i20.DatabaseMigrationVersion.fromJson(data)
-          : null) as T;
+              ? _i20.DatabaseMigrationVersion.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i21.DatabaseMigrationWarning?>()) {
       return (data != null
-          ? _i21.DatabaseMigrationWarning.fromJson(data)
-          : null) as T;
+              ? _i21.DatabaseMigrationWarning.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i22.DatabaseMigrationWarningType?>()) {
       return (data != null
-          ? _i22.DatabaseMigrationWarningType.fromJson(data)
-          : null) as T;
+              ? _i22.DatabaseMigrationWarningType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i23.EnumSerialization?>()) {
       return (data != null ? _i23.EnumSerialization.fromJson(data) : null) as T;
@@ -419,8 +425,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i32.IndexElementDefinitionType?>()) {
       return (data != null
-          ? _i32.IndexElementDefinitionType.fromJson(data)
-          : null) as T;
+              ? _i32.IndexElementDefinitionType.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i33.TableDefinition?>()) {
       return (data != null ? _i33.TableDefinition.fromJson(data) : null) as T;
@@ -481,8 +488,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i50.ServerHealthConnectionInfo?>()) {
       return (data != null
-          ? _i50.ServerHealthConnectionInfo.fromJson(data)
-          : null) as T;
+              ? _i50.ServerHealthConnectionInfo.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i51.ServerHealthMetric?>()) {
       return (data != null ? _i51.ServerHealthMetric.fromJson(data) : null)
@@ -510,77 +518,93 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<String>(e)).toList()
-          : null) as T;
+              ? (data as List).map((e) => deserialize<String>(e)).toList()
+              : null)
+          as T;
     }
     if (t == List<_i7.ClusterServerInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i7.ClusterServerInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i7.ClusterServerInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i10.BulkQueryColumnDescription>) {
       return (data as List)
-          .map((e) => deserialize<_i10.BulkQueryColumnDescription>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i10.BulkQueryColumnDescription>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i33.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i33.TableDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i33.TableDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i20.DatabaseMigrationVersion>) {
       return (data as List)
-          .map((e) => deserialize<_i20.DatabaseMigrationVersion>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i20.DatabaseMigrationVersion>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i18.DatabaseMigrationAction>) {
       return (data as List)
-          .map((e) => deserialize<_i18.DatabaseMigrationAction>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i18.DatabaseMigrationAction>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i21.DatabaseMigrationWarning>) {
       return (data as List)
-          .map((e) => deserialize<_i21.DatabaseMigrationWarning>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i21.DatabaseMigrationWarning>(e))
+              .toList()
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     if (t == List<_i25.FilterConstraint>) {
       return (data as List)
-          .map((e) => deserialize<_i25.FilterConstraint>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i25.FilterConstraint>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i31.IndexElementDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i31.IndexElementDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i31.IndexElementDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
       return (data != null
-          ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<String>(v)))
-          : null) as T;
+              ? (data as Map).map(
+                  (k, v) =>
+                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
+                )
+              : null)
+          as T;
     }
     if (t == List<_i12.ColumnDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i12.ColumnDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i12.ColumnDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i28.ForeignKeyDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i28.ForeignKeyDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i28.ForeignKeyDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i30.IndexDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i30.IndexDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i30.IndexDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i13.ColumnMigration>) {
       return (data as List)
-          .map((e) => deserialize<_i13.ColumnMigration>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i13.ColumnMigration>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i40.LogEntry>) {
       return (data as List).map((e) => deserialize<_i40.LogEntry>(e)).toList()
@@ -588,38 +612,45 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == List<_i44.LogSettingsOverride>) {
       return (data as List)
-          .map((e) => deserialize<_i44.LogSettingsOverride>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i44.LogSettingsOverride>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i51.ServerHealthMetric>) {
       return (data as List)
-          .map((e) => deserialize<_i51.ServerHealthMetric>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i51.ServerHealthMetric>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i50.ServerHealthConnectionInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i50.ServerHealthConnectionInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i50.ServerHealthConnectionInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i47.QueryLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i47.QueryLogEntry>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i47.QueryLogEntry>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i45.MessageLogEntry>) {
       return (data as List)
-          .map((e) => deserialize<_i45.MessageLogEntry>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i45.MessageLogEntry>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i56.SessionLogInfo>) {
       return (data as List)
-          .map((e) => deserialize<_i56.SessionLogInfo>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i56.SessionLogInfo>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i58.TableDefinition>) {
       return (data as List)
-          .map((e) => deserialize<_i58.TableDefinition>(e))
-          .toList() as T;
+              .map((e) => deserialize<_i58.TableDefinition>(e))
+              .toList()
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;

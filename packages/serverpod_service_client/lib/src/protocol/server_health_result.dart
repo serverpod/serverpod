@@ -29,12 +29,16 @@ abstract class ServerHealthResult implements _i1.SerializableModel {
   factory ServerHealthResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthResult(
       metrics: (jsonSerialization['metrics'] as List)
-          .map((e) =>
-              _i2.ServerHealthMetric.fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) => _i2.ServerHealthMetric.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
       connectionInfos: (jsonSerialization['connectionInfos'] as List)
-          .map((e) => _i3.ServerHealthConnectionInfo.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => _i3.ServerHealthConnectionInfo.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
     );
   }
@@ -71,9 +75,9 @@ class _ServerHealthResultImpl extends ServerHealthResult {
     required List<_i2.ServerHealthMetric> metrics,
     required List<_i3.ServerHealthConnectionInfo> connectionInfos,
   }) : super._(
-          metrics: metrics,
-          connectionInfos: connectionInfos,
-        );
+         metrics: metrics,
+         connectionInfos: connectionInfos,
+       );
 
   /// Returns a shallow copy of this [ServerHealthResult]
   /// with some or all fields replaced by the given arguments.
@@ -85,7 +89,8 @@ class _ServerHealthResultImpl extends ServerHealthResult {
   }) {
     return ServerHealthResult(
       metrics: metrics ?? this.metrics.map((e0) => e0.copyWith()).toList(),
-      connectionInfos: connectionInfos ??
+      connectionInfos:
+          connectionInfos ??
           this.connectionInfos.map((e0) => e0.copyWith()).toList(),
     );
   }

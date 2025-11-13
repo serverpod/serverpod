@@ -58,8 +58,9 @@ class StartRegistrationForm extends StatelessWidget {
                 onTermsAndConditionsPressed: onTermsAndConditionsPressed,
                 onPrivacyPolicyPressed: onPrivacyPolicyPressed,
                 isChecked: controller.legalNoticeAcceptedNotifier.value,
-                onCheckboxChanged: (value) => controller
-                    .legalNoticeAcceptedNotifier.value = value ?? false,
+                onCheckboxChanged: (value) =>
+                    controller.legalNoticeAcceptedNotifier.value =
+                        value ?? false,
               ),
             ),
             smallGap,
@@ -67,7 +68,8 @@ class StartRegistrationForm extends StatelessWidget {
         ],
       ),
       actionButton: ActionButton(
-        onPressed: controller.emailController.text.isNotEmpty &&
+        onPressed:
+            controller.emailController.text.isNotEmpty &&
                 controller.state == EmailAuthState.idle &&
                 (!hasTermsAndConditions ||
                     controller.legalNoticeAcceptedNotifier.value)

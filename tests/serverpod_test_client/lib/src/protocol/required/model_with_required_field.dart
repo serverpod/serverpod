@@ -28,7 +28,8 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   }) = _ModelWithRequiredFieldImpl;
 
   factory ModelWithRequiredField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ModelWithRequiredField(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -82,11 +83,11 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
     required String? email,
     String? phone,
   }) : super._(
-          id: id,
-          name: name,
-          email: email,
-          phone: phone,
-        );
+         id: id,
+         name: name,
+         email: email,
+         phone: phone,
+       );
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.

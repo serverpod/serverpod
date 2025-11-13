@@ -62,7 +62,8 @@ abstract class ImmutableObjectWithTwentyFields
   }) = _ImmutableObjectWithTwentyFieldsImpl;
 
   factory ImmutableObjectWithTwentyFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTwentyFields(
       variable1: jsonSerialization['variable1'] as String?,
       variable2: jsonSerialization['variable2'] as String?,
@@ -373,27 +374,27 @@ class _ImmutableObjectWithTwentyFieldsImpl
     String? variable19,
     String? variable20,
   }) : super._(
-          variable1: variable1,
-          variable2: variable2,
-          variable3: variable3,
-          variable4: variable4,
-          variable5: variable5,
-          variable6: variable6,
-          variable7: variable7,
-          variable8: variable8,
-          variable9: variable9,
-          variable10: variable10,
-          variable11: variable11,
-          variable12: variable12,
-          variable13: variable13,
-          variable14: variable14,
-          variable15: variable15,
-          variable16: variable16,
-          variable17: variable17,
-          variable18: variable18,
-          variable19: variable19,
-          variable20: variable20,
-        );
+         variable1: variable1,
+         variable2: variable2,
+         variable3: variable3,
+         variable4: variable4,
+         variable5: variable5,
+         variable6: variable6,
+         variable7: variable7,
+         variable8: variable8,
+         variable9: variable9,
+         variable10: variable10,
+         variable11: variable11,
+         variable12: variable12,
+         variable13: variable13,
+         variable14: variable14,
+         variable15: variable15,
+         variable16: variable16,
+         variable17: variable17,
+         variable18: variable18,
+         variable19: variable19,
+         variable20: variable20,
+       );
 
   /// Returns a shallow copy of this [ImmutableObjectWithTwentyFields]
   /// with some or all fields replaced by the given arguments.

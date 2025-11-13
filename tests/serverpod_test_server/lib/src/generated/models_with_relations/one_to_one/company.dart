@@ -39,7 +39,8 @@ abstract class Company
       town: jsonSerialization['town'] == null
           ? null
           : _i2.Town.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+              (jsonSerialization['town'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -127,11 +128,11 @@ class _CompanyImpl extends Company {
     required int townId,
     _i2.Town? town,
   }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+         id: id,
+         name: name,
+         townId: townId,
+         town: town,
+       );
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +157,14 @@ class CompanyUpdateTable extends _i1.UpdateTable<CompanyTable> {
   CompanyUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
-        table.townId,
-        value,
-      );
+    table.townId,
+    value,
+  );
 }
 
 class CompanyTable extends _i1.Table<int?> {
@@ -202,10 +203,10 @@ class CompanyTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        townId,
-      ];
+    id,
+    name,
+    townId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

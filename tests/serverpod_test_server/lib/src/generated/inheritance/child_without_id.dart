@@ -121,11 +121,11 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
     required String parentField,
     required String childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.
@@ -157,19 +157,19 @@ class ChildClassWithoutIdUpdateTable
       );
 
   _i2.ColumnValue<String, String> parentField(String value) => _i2.ColumnValue(
-        table.parentField,
-        value,
-      );
+    table.parentField,
+    value,
+  );
 
   _i2.ColumnValue<String, String> childField(String value) => _i2.ColumnValue(
-        table.childField,
-        value,
-      );
+    table.childField,
+    value,
+  );
 }
 
 class ChildClassWithoutIdTable extends _i2.Table<_i2.UuidValue?> {
   ChildClassWithoutIdTable({super.tableRelation})
-      : super(tableName: 'child_table_with_inherited_id') {
+    : super(tableName: 'child_table_with_inherited_id') {
     updateTable = ChildClassWithoutIdUpdateTable(this);
     grandParentField = _i2.ColumnString(
       'grandParentField',
@@ -195,11 +195,11 @@ class ChildClassWithoutIdTable extends _i2.Table<_i2.UuidValue?> {
 
   @override
   List<_i2.Column> get columns => [
-        id,
-        grandParentField,
-        parentField,
-        childField,
-      ];
+    id,
+    grandParentField,
+    parentField,
+    childField,
+  ];
 }
 
 class ChildClassWithoutIdInclude extends _i2.IncludeObject {
@@ -397,7 +397,7 @@ class ChildClassWithoutIdRepository {
     _i2.Session session,
     _i2.UuidValue id, {
     required _i2.ColumnValueListBuilder<ChildClassWithoutIdUpdateTable>
-        columnValues,
+    columnValues,
     _i2.Transaction? transaction,
   }) async {
     return session.db.updateById<ChildClassWithoutId>(
@@ -412,7 +412,7 @@ class ChildClassWithoutIdRepository {
   Future<List<ChildClassWithoutId>> updateWhere(
     _i2.Session session, {
     required _i2.ColumnValueListBuilder<ChildClassWithoutIdUpdateTable>
-        columnValues,
+    columnValues,
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
     int? limit,
     int? offset,

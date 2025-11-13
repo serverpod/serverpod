@@ -18,50 +18,55 @@ void main() {
     'generated',
     'protocol.dart',
   );
-  group('Given classes with a circular relation when generating protocol files',
-      () {
-    /**
+  group(
+    'Given classes with a circular relation when generating protocol files',
+    () {
+      /**
      * Citizen -> Company -> Town -> Citizen
      */
-    var citizen = 'citizen';
-    var company = 'company';
-    var town = 'town';
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(citizen.sentenceCase)
-          .withFileName(citizen)
-          .withTableName(citizen)
-          .withSimpleField('name', 'String')
-          .withObjectRelationField(company, company.sentenceCase, company)
-          .build(),
-      ModelClassDefinitionBuilder()
-          .withClassName(company.sentenceCase)
-          .withFileName(company)
-          .withTableName(company)
-          .withSimpleField('name', 'String')
-          .withObjectRelationField(town, town.sentenceCase, town)
-          .build(),
-      ModelClassDefinitionBuilder()
-          .withClassName(town.sentenceCase)
-          .withFileName(town)
-          .withTableName(town)
-          .withSimpleField('name', 'String')
-          .withObjectRelationField('mayor', citizen.sentenceCase, citizen)
-          .build()
-    ];
+      var citizen = 'citizen';
+      var company = 'company';
+      var town = 'town';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(citizen.sentenceCase)
+            .withFileName(citizen)
+            .withTableName(citizen)
+            .withSimpleField('name', 'String')
+            .withObjectRelationField(company, company.sentenceCase, company)
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName(company.sentenceCase)
+            .withFileName(company)
+            .withTableName(company)
+            .withSimpleField('name', 'String')
+            .withObjectRelationField(town, town.sentenceCase, town)
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName(town.sentenceCase)
+            .withFileName(town)
+            .withTableName(town)
+            .withSimpleField('name', 'String')
+            .withObjectRelationField('mayor', citizen.sentenceCase, citizen)
+            .build(),
+      ];
 
-    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+      );
 
-    var codeMap = generator.generateProtocolCode(
-      protocolDefinition: protocolDefinition,
-      config: config,
-    );
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
 
-    test(
-      'then expected files is created.',
-      () {
-        expect(codeMap[expectedFileName], isNotNull);
-      },
-    );
-  });
+      test(
+        'then expected files is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+    },
+  );
 }

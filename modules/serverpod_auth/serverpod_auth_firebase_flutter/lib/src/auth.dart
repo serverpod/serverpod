@@ -44,8 +44,9 @@ Future<UserInfo?> signInWithFirebase({
                     return;
                   }
 
-                  var serverResponse =
-                      await caller.firebase.authenticate(idToken);
+                  var serverResponse = await caller.firebase.authenticate(
+                    idToken,
+                  );
 
                   if (!serverResponse.success) {
                     // Failed to sign in.
@@ -73,8 +74,10 @@ Future<UserInfo?> signInWithFirebase({
                   return;
                 } catch (e) {
                   if (kDebugMode) {
-                    print('serverpod_auth_firebase: Failed to authenticate '
-                        'with Serverpod backend: $e');
+                    print(
+                      'serverpod_auth_firebase: Failed to authenticate '
+                      'with Serverpod backend: $e',
+                    );
                   }
                   navigator.maybePop();
                   return;

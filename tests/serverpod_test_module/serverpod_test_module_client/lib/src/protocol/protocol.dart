@@ -144,7 +144,7 @@ Object? mapContainerToJson(Object obj) {
           {
             'k': mapIfNeeded(entry.key),
             'v': mapIfNeeded(entry.value),
-          }
+          },
       ];
 
     case Iterable():

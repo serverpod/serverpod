@@ -20,8 +20,9 @@ final class AuthUsers {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       final authUser = await AuthUser.db.findById(
         session,
         authUserId,
@@ -43,9 +44,11 @@ final class AuthUsers {
     final bool blocked = false,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
-      final authUserToCreate = await _config.onBeforeAuthUserCreated?.call(
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
+      final authUserToCreate =
+          await _config.onBeforeAuthUserCreated?.call(
             session,
             scopes,
             blocked,
@@ -57,8 +60,10 @@ final class AuthUsers {
         session,
         AuthUser(
           blocked: authUserToCreate.blocked,
-          scopeNames:
-              authUserToCreate.scopes.map((final s) => s.name).nonNulls.toSet(),
+          scopeNames: authUserToCreate.scopes
+              .map((final s) => s.name)
+              .nonNulls
+              .toSet(),
         ),
         transaction: transaction,
       );
@@ -90,8 +95,9 @@ final class AuthUsers {
     final bool? blocked,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       var authUser = await AuthUser.db.findById(
         session,
         authUserId,
@@ -128,8 +134,9 @@ final class AuthUsers {
     final Session session, {
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       final authUsers = await AuthUser.db.find(
         session,
         transaction: transaction,
@@ -158,8 +165,9 @@ final class AuthUsers {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       final deletedUsers = await AuthUser.db.deleteWhere(
         session,
         where: (final t) => t.id.equals(authUserId),

@@ -4,20 +4,20 @@ import 'package:test/test.dart';
 
 class TableWithMaxFieldName extends Table<int?> {
   late final ColumnString
-      thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
+  thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
   TableWithMaxFieldName(String tableName) : super(tableName: tableName) {
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo =
         ColumnString(
-      'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
-      this,
-    );
+          'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
+          this,
+        );
   }
 
   @override
   List<Column> get columns => [
-        id,
-        thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
-      ];
+    id,
+    thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
+  ];
 }
 
 void main() {
@@ -26,13 +26,16 @@ void main() {
   var table = TableWithMaxFieldName('table');
   group('Given SelectQueryBuilder', () {
     test(
-        'when selecting from table with long field name then field alias is truncated',
-        () {
-      var query = SelectQueryBuilder(table: table).build();
-      expect(
+      'when selecting from table with long field name then field alias is truncated',
+      () {
+        var query = SelectQueryBuilder(table: table).build();
+        expect(
           query,
           contains(
-              '"table"."thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo" AS "table.thisFieldIsExactly61CharactersLongAndIsThereforeValid9e99"'));
-    });
+            '"table"."thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo" AS "table.thisFieldIsExactly61CharactersLongAndIsThereforeValid9e99"',
+          ),
+        );
+      },
+    );
   });
 }

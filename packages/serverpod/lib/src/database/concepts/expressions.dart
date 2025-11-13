@@ -49,7 +49,8 @@ class Expression<T> {
   /// Calls [action] for each element along with the index in the
   /// iteration order.
   void forEachDepthFirstIndexed(
-      void Function(int index, Expression expression) action) {
+    void Function(int index, Expression expression) action,
+  ) {
     var index = 0;
     for (var expression in depthFirst) {
       action(index, expression);

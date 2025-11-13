@@ -30,14 +30,13 @@ sealed class _SignInWithAppleRoute extends Route {
 final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
   /// Creates a new route to handle Apple IDP revoked notifications.
   AppleRevokedNotificationRoute({required final AppleIDPUtils utils})
-      : super(utils, methods: {Method.post});
+    : super(utils, methods: {Method.post});
 
   @override
   Future<Result> handleCall(
     final Session session,
     final Request req,
-  ) =>
-      _utils.serverNotificationHandler(session, req);
+  ) => _utils.serverNotificationHandler(session, req);
 }
 
 /// {@template apple_idp.webAuthenticationCallbackRoute}
@@ -58,7 +57,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
   /// Create a new route to handle Apple IDP authentication callbacks for web and
   /// other foreign platforms (Android, etc.).
   AppleWebAuthenticationCallbackRoute({required final AppleIDPUtils utils})
-      : super(utils, methods: {Method.get});
+    : super(utils, methods: {Method.get});
 
   @override
   FutureOr<Result> handleCall(final Session session, final Request context) {

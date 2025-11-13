@@ -35,7 +35,8 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -117,10 +118,10 @@ class _ArenaImpl extends Arena {
     required String name,
     _i2.Team? team,
   }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+         id: id,
+         name: name,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
@@ -143,9 +144,9 @@ class ArenaUpdateTable extends _i1.UpdateTable<ArenaTable> {
   ArenaUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class ArenaTable extends _i1.Table<int?> {
@@ -178,9 +179,9 @@ class ArenaTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

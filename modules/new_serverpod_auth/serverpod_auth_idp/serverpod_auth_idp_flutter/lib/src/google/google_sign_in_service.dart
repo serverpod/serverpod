@@ -70,8 +70,10 @@ class GoogleSignInService {
     auth.authInfo.addListener(() {
       if (!auth.isAuthenticated) {
         unawaited(
-          googleSignIn.signOut().onError((e, _) =>
-              debugPrint('Failed to sign out from Google: ${e.toString()}')),
+          googleSignIn.signOut().onError(
+            (e, _) =>
+                debugPrint('Failed to sign out from Google: ${e.toString()}'),
+          ),
         );
       }
     });
@@ -144,8 +146,9 @@ extension DisconnectGoogleSignIn on ClientAuthSessionManager {
   /// flow again on the next sign-in, including the account picker and consent
   /// screens.
   Future<void> disconnectGoogleAccount() async {
-    final signIn =
-        await GoogleSignInService.instance.ensureInitialized(auth: this);
+    final signIn = await GoogleSignInService.instance.ensureInitialized(
+      auth: this,
+    );
     await signIn.disconnect();
 
     // NOTE: This delay prevents the Google Sign-In web button to render before

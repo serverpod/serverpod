@@ -18,31 +18,33 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
     Duration? durationDefaultAndDefaultModel,
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
-  })  : durationDefaultAndDefaultModel = durationDefaultAndDefaultModel ??
-            Duration(
-              days: 2,
-              hours: 1,
-              minutes: 20,
-              seconds: 40,
-              milliseconds: 100,
-            ),
-        durationDefaultAndDefaultPersist = durationDefaultAndDefaultPersist ??
-            Duration(
-              days: 1,
-              hours: 2,
-              minutes: 10,
-              seconds: 30,
-              milliseconds: 100,
-            ),
-        durationDefaultModelAndDefaultPersist =
-            durationDefaultModelAndDefaultPersist ??
-                Duration(
-                  days: 1,
-                  hours: 2,
-                  minutes: 10,
-                  seconds: 30,
-                  milliseconds: 100,
-                );
+  }) : durationDefaultAndDefaultModel =
+           durationDefaultAndDefaultModel ??
+           Duration(
+             days: 2,
+             hours: 1,
+             minutes: 20,
+             seconds: 40,
+             milliseconds: 100,
+           ),
+       durationDefaultAndDefaultPersist =
+           durationDefaultAndDefaultPersist ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           ),
+       durationDefaultModelAndDefaultPersist =
+           durationDefaultModelAndDefaultPersist ??
+           Duration(
+             days: 1,
+             hours: 2,
+             minutes: 10,
+             seconds: 30,
+             milliseconds: 100,
+           );
 
   factory DurationDefaultMix({
     int? id,
@@ -55,11 +57,14 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
     return DurationDefaultMix(
       id: jsonSerialization['id'] as int?,
       durationDefaultAndDefaultModel: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultAndDefaultModel']),
+        jsonSerialization['durationDefaultAndDefaultModel'],
+      ),
       durationDefaultAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultAndDefaultPersist']),
+        jsonSerialization['durationDefaultAndDefaultPersist'],
+      ),
       durationDefaultModelAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-          jsonSerialization['durationDefaultModelAndDefaultPersist']),
+        jsonSerialization['durationDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -88,8 +93,8 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
     return {
       if (id != null) 'id': id,
       'durationDefaultAndDefaultModel': durationDefaultAndDefaultModel.toJson(),
-      'durationDefaultAndDefaultPersist':
-          durationDefaultAndDefaultPersist.toJson(),
+      'durationDefaultAndDefaultPersist': durationDefaultAndDefaultPersist
+          .toJson(),
       'durationDefaultModelAndDefaultPersist':
           durationDefaultModelAndDefaultPersist.toJson(),
     };
@@ -110,12 +115,12 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
     Duration? durationDefaultAndDefaultPersist,
     Duration? durationDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          durationDefaultAndDefaultModel: durationDefaultAndDefaultModel,
-          durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist,
-          durationDefaultModelAndDefaultPersist:
-              durationDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         durationDefaultAndDefaultModel: durationDefaultAndDefaultModel,
+         durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist,
+         durationDefaultModelAndDefaultPersist:
+             durationDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -131,11 +136,12 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
       id: id is int? ? id : this.id,
       durationDefaultAndDefaultModel:
           durationDefaultAndDefaultModel ?? this.durationDefaultAndDefaultModel,
-      durationDefaultAndDefaultPersist: durationDefaultAndDefaultPersist ??
+      durationDefaultAndDefaultPersist:
+          durationDefaultAndDefaultPersist ??
           this.durationDefaultAndDefaultPersist,
       durationDefaultModelAndDefaultPersist:
           durationDefaultModelAndDefaultPersist ??
-              this.durationDefaultModelAndDefaultPersist,
+          this.durationDefaultModelAndDefaultPersist,
     );
   }
 }

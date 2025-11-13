@@ -41,7 +41,8 @@ abstract class CompanyUuid
       town: jsonSerialization['town'] == null
           ? null
           : _i2.TownInt.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+              (jsonSerialization['town'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -129,11 +130,11 @@ class _CompanyUuidImpl extends CompanyUuid {
     required int townId,
     _i2.TownInt? town,
   }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+         id: id,
+         name: name,
+         townId: townId,
+         town: town,
+       );
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +159,14 @@ class CompanyUuidUpdateTable extends _i1.UpdateTable<CompanyUuidTable> {
   CompanyUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
-        table.townId,
-        value,
-      );
+    table.townId,
+    value,
+  );
 }
 
 class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -204,10 +205,10 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        townId,
-      ];
+    id,
+    name,
+    townId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

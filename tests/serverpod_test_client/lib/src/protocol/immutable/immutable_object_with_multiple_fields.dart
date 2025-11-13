@@ -32,7 +32,8 @@ abstract class ImmutableObjectWithMultipleFields
   }) = _ImmutableObjectWithMultipleFieldsImpl;
 
   factory ImmutableObjectWithMultipleFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithMultipleFields(
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
@@ -139,12 +140,12 @@ class _ImmutableObjectWithMultipleFieldsImpl
     DateTime? aDateTime,
     String? aString,
   }) : super._(
-          anInt: anInt,
-          aBool: aBool,
-          aDouble: aDouble,
-          aDateTime: aDateTime,
-          aString: aString,
-        );
+         anInt: anInt,
+         aBool: aBool,
+         aDouble: aDouble,
+         aDateTime: aDateTime,
+         aString: aString,
+       );
 
   /// Returns a shallow copy of this [ImmutableObjectWithMultipleFields]
   /// with some or all fields replaced by the given arguments.

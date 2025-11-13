@@ -11,15 +11,17 @@ void main() {
     });
   });
 
-  group('Given an `AuthenticationInfo` with a non-integer `userIdentifier`',
-      () {
-    final authInfo = AuthenticationInfo('abc-123', {});
+  group(
+    'Given an `AuthenticationInfo` with a non-integer `userIdentifier`',
+    () {
+      final authInfo = AuthenticationInfo('abc-123', {});
 
-    test('when calling the `userId` helper, then it throws.', () {
-      expect(
-        () => authInfo.userId,
-        throwsFormatException,
-      );
-    });
-  });
+      test('when calling the `userId` helper, then it throws.', () {
+        expect(
+          () => authInfo.userId,
+          throwsFormatException,
+        );
+      });
+    },
+  );
 }

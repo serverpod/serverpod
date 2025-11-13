@@ -22,11 +22,11 @@ abstract class EnumDefault
     _i2.ByNameEnum? byNameEnumDefaultNull,
     _i3.ByIndexEnum? byIndexEnumDefault,
     _i3.ByIndexEnum? byIndexEnumDefaultNull,
-  })  : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
-        byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
-        byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
-        byIndexEnumDefaultNull =
-            byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
+  }) : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
+       byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
+       byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
+       byIndexEnumDefaultNull =
+           byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
 
   factory EnumDefault({
     int? id,
@@ -40,18 +40,22 @@ abstract class EnumDefault
     return EnumDefault(
       id: jsonSerialization['id'] as int?,
       byNameEnumDefault: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefault'] as String)),
+        (jsonSerialization['byNameEnumDefault'] as String),
+      ),
       byNameEnumDefaultNull: jsonSerialization['byNameEnumDefaultNull'] == null
           ? null
           : _i2.ByNameEnum.fromJson(
-              (jsonSerialization['byNameEnumDefaultNull'] as String)),
+              (jsonSerialization['byNameEnumDefaultNull'] as String),
+            ),
       byIndexEnumDefault: _i3.ByIndexEnum.fromJson(
-          (jsonSerialization['byIndexEnumDefault'] as int)),
+        (jsonSerialization['byIndexEnumDefault'] as int),
+      ),
       byIndexEnumDefaultNull:
           jsonSerialization['byIndexEnumDefaultNull'] == null
-              ? null
-              : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultNull'] as int)),
+          ? null
+          : _i3.ByIndexEnum.fromJson(
+              (jsonSerialization['byIndexEnumDefaultNull'] as int),
+            ),
     );
   }
 
@@ -149,12 +153,12 @@ class _EnumDefaultImpl extends EnumDefault {
     _i3.ByIndexEnum? byIndexEnumDefault,
     _i3.ByIndexEnum? byIndexEnumDefaultNull,
   }) : super._(
-          id: id,
-          byNameEnumDefault: byNameEnumDefault,
-          byNameEnumDefaultNull: byNameEnumDefaultNull,
-          byIndexEnumDefault: byIndexEnumDefault,
-          byIndexEnumDefaultNull: byIndexEnumDefaultNull,
-        );
+         id: id,
+         byNameEnumDefault: byNameEnumDefault,
+         byNameEnumDefaultNull: byNameEnumDefaultNull,
+         byIndexEnumDefault: byIndexEnumDefault,
+         byIndexEnumDefaultNull: byIndexEnumDefaultNull,
+       );
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
@@ -185,32 +189,32 @@ class EnumDefaultUpdateTable extends _i1.UpdateTable<EnumDefaultTable> {
   EnumDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefault(
-          _i2.ByNameEnum value) =>
-      _i1.ColumnValue(
-        table.byNameEnumDefault,
-        value,
-      );
+    _i2.ByNameEnum value,
+  ) => _i1.ColumnValue(
+    table.byNameEnumDefault,
+    value,
+  );
 
   _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultNull(
-          _i2.ByNameEnum? value) =>
-      _i1.ColumnValue(
-        table.byNameEnumDefaultNull,
-        value,
-      );
+    _i2.ByNameEnum? value,
+  ) => _i1.ColumnValue(
+    table.byNameEnumDefaultNull,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefault(
-          _i3.ByIndexEnum value) =>
-      _i1.ColumnValue(
-        table.byIndexEnumDefault,
-        value,
-      );
+    _i3.ByIndexEnum value,
+  ) => _i1.ColumnValue(
+    table.byIndexEnumDefault,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultNull(
-          _i3.ByIndexEnum? value) =>
-      _i1.ColumnValue(
-        table.byIndexEnumDefaultNull,
-        value,
-      );
+    _i3.ByIndexEnum? value,
+  ) => _i1.ColumnValue(
+    table.byIndexEnumDefaultNull,
+    value,
+  );
 }
 
 class EnumDefaultTable extends _i1.Table<int?> {
@@ -254,12 +258,12 @@ class EnumDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        byNameEnumDefault,
-        byNameEnumDefaultNull,
-        byIndexEnumDefault,
-        byIndexEnumDefaultNull,
-      ];
+    id,
+    byNameEnumDefault,
+    byNameEnumDefaultNull,
+    byIndexEnumDefault,
+    byIndexEnumDefaultNull,
+  ];
 }
 
 class EnumDefaultInclude extends _i1.IncludeObject {

@@ -124,9 +124,9 @@ class EmailAuthController extends ChangeNotifier {
     this.verificationCodeLength = 8,
     void Function(String email)? emailValidation,
     List<PasswordRequirement>? passwordRequirements,
-  })  : emailValidation = emailValidation ?? validateEmail,
-        passwordRequirements =
-            passwordRequirements ?? PasswordRequirement.defaultRequirements {
+  }) : emailValidation = emailValidation ?? validateEmail,
+       passwordRequirements =
+           passwordRequirements ?? PasswordRequirement.defaultRequirements {
     _currentScreen = startScreen;
 
     emailController.addListener(() {

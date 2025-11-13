@@ -6,27 +6,30 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given a hash from the legacy hash used as password for argon2id hash when generating hash using same salt and base password then same hash is produced',
-      () async {
-    var password = 'hunter2';
-    var legacySalt = 'legacySalt';
-    var salt = 'saltySalt';
+    'Given a hash from the legacy hash used as password for argon2id hash when generating hash using same salt and base password then same hash is produced',
+    () async {
+      var password = 'hunter2';
+      var legacySalt = 'legacySalt';
+      var salt = 'saltySalt';
 
-    var legacyHash = await PasswordHash.legacyHash(password, legacySalt);
-    var argon2idPasswordHashFromLegacy =
-        await PasswordHash.argon2id(legacyHash, salt: salt);
-    var expectedHash = argon2idPasswordHashFromLegacy.split('\$')[3];
+      var legacyHash = await PasswordHash.legacyHash(password, legacySalt);
+      var argon2idPasswordHashFromLegacy = await PasswordHash.argon2id(
+        legacyHash,
+        salt: salt,
+      );
+      var expectedHash = argon2idPasswordHashFromLegacy.split('\$')[3];
 
-    var passwordHash = await PasswordHash.migratedLegacyToArgon2idHash(
-      legacyHash,
-      legacySalt: legacySalt,
-      salt: salt,
-    );
+      var passwordHash = await PasswordHash.migratedLegacyToArgon2idHash(
+        legacyHash,
+        legacySalt: legacySalt,
+        salt: salt,
+      );
 
-    var actualHash = passwordHash.split('\$')[3];
+      var actualHash = passwordHash.split('\$')[3];
 
-    expect(actualHash, expectedHash);
-  });
+      expect(actualHash, expectedHash);
+    },
+  );
 
   group('Given legacyHash, legacy salt and fixed salt', () {
     group('when generating password hash', () {
@@ -148,220 +151,249 @@ void main() {
   });
 
   group('Given password hash', () {
-    test('when checking if hash should be updated then no update is needed.',
-        () async {
-      var salt = 'saltySalt';
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          'hunter2',
-          legacySalt: salt,
-        ),
-        legacySalt: salt,
-      );
-
-      expect(passwordHash.shouldUpdateHash(), isTrue);
-    });
-
-    test('when checking if hash is legacy hash then method returns false.',
-        () async {
-      var salt = 'saltySalt';
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          'hunter2',
-          legacySalt: salt,
-        ),
-        legacySalt: salt,
-      );
-
-      expect(passwordHash.isLegacyHash(), isFalse);
-    });
     test(
-        'when validating with correct password then validator returns PasswordValidationSuccess',
-        () async {
-      var salt = 'saltySalt';
-      var legacySalt = 'legacySalt';
-      var password = 'hunter2';
-
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
-          legacySalt: legacySalt,
-          salt: salt,
-        ),
-        legacySalt: legacySalt,
-      );
-
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationSuccess>());
-    });
-
-    test(
-        'when validating with correct password but different legacy salt then validator returns PasswordValidationFailed',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
-          legacySalt: legacySalt,
-          salt: 'saltySalt',
-        ),
-        legacySalt: 'differentLegacySalt',
-      );
-
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationFailed>());
-    });
-
-    test(
-        'when validating with incorrect password then validator returns PasswordValidationFailed',
-        () async {
-      var salt = 'saltySalt';
-      var legacySalt = 'legacySalt';
-
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash('hunter2', legacySalt),
-          legacySalt: legacySalt,
-          salt: salt,
-        ),
-        legacySalt: legacySalt,
-      );
-
-      expect(await passwordHash.validate('chaser1'),
-          isA<PasswordValidationFailed>());
-    });
-
-    test(
-        'when validating with modified salt then validator returns PasswordValidationFailed',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-      var originalPasswordHash =
+      'when checking if hash should be updated then no update is needed.',
+      () async {
+        var salt = 'saltySalt';
+        var passwordHash = PasswordHash(
           await PasswordHash.migratedLegacyToArgon2idHash(
-        await PasswordHash.legacyHash(password, legacySalt),
-        legacySalt: legacySalt,
-        salt: 'original salt',
-      );
+            'hunter2',
+            legacySalt: salt,
+          ),
+          legacySalt: salt,
+        );
 
-      // Replace the salt in the password hash with a different one
-      var parts = originalPasswordHash.split('\$');
-      parts[2] = 'modified salt';
-      var modifiedPasswordHash = parts.join('\$');
-
-      var passwordHash = PasswordHash(
-        modifiedPasswordHash,
-        legacySalt: legacySalt,
-      );
-
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationFailed>());
-    });
+        expect(passwordHash.shouldUpdateHash(), isTrue);
+      },
+    );
 
     test(
-        'when validating with valid pepper then validator returns PasswordValidationSuccess.',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-      var salt = 'saltySalt';
-      var pepper = 'pepper';
+      'when checking if hash is legacy hash then method returns false.',
+      () async {
+        var salt = 'saltySalt';
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            'hunter2',
+            legacySalt: salt,
+          ),
+          legacySalt: salt,
+        );
 
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
+        expect(passwordHash.isLegacyHash(), isFalse);
+      },
+    );
+    test(
+      'when validating with correct password then validator returns PasswordValidationSuccess',
+      () async {
+        var salt = 'saltySalt';
+        var legacySalt = 'legacySalt';
+        var password = 'hunter2';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+          ),
           legacySalt: legacySalt,
-          salt: salt,
+        );
+
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with correct password but different legacy salt then validator returns PasswordValidationFailed',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: 'saltySalt',
+          ),
+          legacySalt: 'differentLegacySalt',
+        );
+
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with incorrect password then validator returns PasswordValidationFailed',
+      () async {
+        var salt = 'saltySalt';
+        var legacySalt = 'legacySalt';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash('hunter2', legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+          ),
+          legacySalt: legacySalt,
+        );
+
+        expect(
+          await passwordHash.validate('chaser1'),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with modified salt then validator returns PasswordValidationFailed',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+        var originalPasswordHash =
+            await PasswordHash.migratedLegacyToArgon2idHash(
+              await PasswordHash.legacyHash(password, legacySalt),
+              legacySalt: legacySalt,
+              salt: 'original salt',
+            );
+
+        // Replace the salt in the password hash with a different one
+        var parts = originalPasswordHash.split('\$');
+        parts[2] = 'modified salt';
+        var modifiedPasswordHash = parts.join('\$');
+
+        var passwordHash = PasswordHash(
+          modifiedPasswordHash,
+          legacySalt: legacySalt,
+        );
+
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with valid pepper then validator returns PasswordValidationSuccess.',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+        var salt = 'saltySalt';
+        var pepper = 'pepper';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+            pepper: pepper,
+          ),
+          legacySalt: legacySalt,
           pepper: pepper,
-        ),
-        legacySalt: legacySalt,
-        pepper: pepper,
-      );
+        );
 
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationSuccess>());
-    });
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationSuccess>(),
+        );
+      },
+    );
 
     test(
-        'when validating with invalid pepper then validator returns PasswordValidationFailed.',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-      var salt = 'saltySalt';
+      'when validating with invalid pepper then validator returns PasswordValidationFailed.',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+        var salt = 'saltySalt';
 
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+            pepper: 'pepper',
+          ),
           legacySalt: legacySalt,
-          salt: salt,
+          pepper: 'differentPepper',
+        );
+
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with missing pepper then validator returns PasswordValidationFailed.',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+        var salt = 'saltySalt';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+            pepper: 'pepper',
+          ),
+          legacySalt: legacySalt,
+        );
+
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
+
+    test(
+      'when validating with added pepper then validator returns PasswordValidationFailed.',
+      () async {
+        var password = 'hunter2';
+        var legacySalt = 'legacySalt';
+        var salt = 'saltySalt';
+
+        var passwordHash = PasswordHash(
+          await PasswordHash.migratedLegacyToArgon2idHash(
+            await PasswordHash.legacyHash(password, legacySalt),
+            legacySalt: legacySalt,
+            salt: salt,
+          ),
+          legacySalt: legacySalt,
           pepper: 'pepper',
-        ),
-        legacySalt: legacySalt,
-        pepper: 'differentPepper',
-      );
+        );
 
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationFailed>());
-    });
-
-    test(
-        'when validating with missing pepper then validator returns PasswordValidationFailed.',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-      var salt = 'saltySalt';
-
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
-          legacySalt: legacySalt,
-          salt: salt,
-          pepper: 'pepper',
-        ),
-        legacySalt: legacySalt,
-      );
-
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationFailed>());
-    });
-
-    test(
-        'when validating with added pepper then validator returns PasswordValidationFailed.',
-        () async {
-      var password = 'hunter2';
-      var legacySalt = 'legacySalt';
-      var salt = 'saltySalt';
-
-      var passwordHash = PasswordHash(
-        await PasswordHash.migratedLegacyToArgon2idHash(
-          await PasswordHash.legacyHash(password, legacySalt),
-          legacySalt: legacySalt,
-          salt: salt,
-        ),
-        legacySalt: legacySalt,
-        pepper: 'pepper',
-      );
-
-      expect(await passwordHash.validate(password),
-          isA<PasswordValidationFailed>());
-    });
+        expect(
+          await passwordHash.validate(password),
+          isA<PasswordValidationFailed>(),
+        );
+      },
+    );
   });
 
   group('Given salt that contains \$', () {
     test(
-        'when generating password hash then hash still only has 4 parts split by \$.',
-        () async {
-      var legacySalt = 'legacySalt';
-      var salt = 'salty\$salt';
+      'when generating password hash then hash still only has 4 parts split by \$.',
+      () async {
+        var legacySalt = 'legacySalt';
+        var salt = 'salty\$salt';
 
-      var passwordHash = await PasswordHash.migratedLegacyToArgon2idHash(
-        await PasswordHash.legacyHash('hunter2', legacySalt),
-        legacySalt: legacySalt,
-        salt: salt,
-      );
-      var parts = passwordHash.split('\$');
+        var passwordHash = await PasswordHash.migratedLegacyToArgon2idHash(
+          await PasswordHash.legacyHash('hunter2', legacySalt),
+          legacySalt: legacySalt,
+          salt: salt,
+        );
+        var parts = passwordHash.split('\$');
 
-      expect(parts, hasLength(4));
-    });
+        expect(parts, hasLength(4));
+      },
+    );
   });
 }

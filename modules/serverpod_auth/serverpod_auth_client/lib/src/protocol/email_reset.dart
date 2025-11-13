@@ -33,8 +33,9 @@ abstract class EmailReset implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      expiration: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['expiration'],
+      ),
     );
   }
 
@@ -86,11 +87,11 @@ class _EmailResetImpl extends EmailReset {
     required String verificationCode,
     required DateTime expiration,
   }) : super._(
-          id: id,
-          userId: userId,
-          verificationCode: verificationCode,
-          expiration: expiration,
-        );
+         id: id,
+         userId: userId,
+         verificationCode: verificationCode,
+         expiration: expiration,
+       );
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.

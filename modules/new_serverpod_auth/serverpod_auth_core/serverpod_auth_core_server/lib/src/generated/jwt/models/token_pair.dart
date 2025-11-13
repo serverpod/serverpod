@@ -74,9 +74,9 @@ class _TokenPairImpl extends TokenPair {
     required String refreshToken,
     required String accessToken,
   }) : super._(
-          refreshToken: refreshToken,
-          accessToken: accessToken,
-        );
+         refreshToken: refreshToken,
+         accessToken: accessToken,
+       );
 
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.

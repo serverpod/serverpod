@@ -8,11 +8,11 @@ class ModuleConfigBuilder {
   List<String> _serverPackageDirectoryPathParts;
 
   ModuleConfigBuilder(String name, [String? nickname])
-      : _name = name,
-        _nickname = nickname ?? name,
-        _migrationVersions = [],
-        _type = PackageType.module,
-        _serverPackageDirectoryPathParts = [];
+    : _name = name,
+      _nickname = nickname ?? name,
+      _migrationVersions = [],
+      _type = PackageType.module,
+      _serverPackageDirectoryPathParts = [];
 
   ModuleConfigBuilder withType(PackageType type) {
     _type = type;
@@ -35,7 +35,8 @@ class ModuleConfigBuilder {
   }
 
   ModuleConfigBuilder withServerPackageDirectoryPathParts(
-      List<String> serverPackageDirectoryPathParts) {
+    List<String> serverPackageDirectoryPathParts,
+  ) {
     _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
     return this;
   }

@@ -137,9 +137,9 @@ abstract class Session implements DatabaseAccessor {
     int? messageId,
     this.method,
     this.remoteInfo,
-  })  : _authenticationKey = authenticationKey,
-        _messageId = messageId,
-        sessionId = sessionId ?? const Uuid().v4obj() {
+  }) : _authenticationKey = authenticationKey,
+       _messageId = messageId,
+       sessionId = sessionId ?? const Uuid().v4obj() {
     _startTime = DateTime.now();
 
     storage = StorageAccess._(this);
@@ -158,7 +158,8 @@ abstract class Session implements DatabaseAccessor {
         logWriter,
         session: this,
         settingsForSession: (Session session) => server
-            .serverpod.logSettingsManager
+            .serverpod
+            .logSettingsManager
             .getLogSettingsForSession(session),
         disableLoggingSlowSessions: _isLongLived(this),
         serverId: server.serverId,
@@ -317,8 +318,8 @@ class MethodCallSession extends Session {
     required super.authenticationKey,
     super.enableLogging = true,
     super.remoteInfo,
-  })  : _method = method,
-        super(method: method);
+  }) : _method = method,
+       super(method: method);
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -356,8 +357,8 @@ class MethodStreamSession extends Session {
     required super.endpoint,
     required String method,
     required this.connectionId,
-  })  : _method = method,
-        super(method: method);
+  }) : _method = method,
+       super(method: method);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -395,8 +396,8 @@ class StreamingSession extends Session {
     required this.webSocket,
     super.endpoint = 'StreamingSession',
     super.enableLogging = true,
-  })  : _endpoint = endpoint,
-        super(messageId: 0) {
+  }) : _endpoint = endpoint,
+       super(messageId: 0) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -505,9 +506,9 @@ class StorageAccess {
   Future<List<Uri?>> getPublicUrls({
     required String storageId,
     required List<String> paths,
-  }) =>
-      Future.wait(
-          paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
+  }) => Future.wait(
+    paths.map((path) => getPublicUrl(storageId: storageId, path: path)),
+  );
 
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
@@ -523,7 +524,9 @@ class StorageAccess {
     }
 
     return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+      session: _session,
+      path: path,
+    );
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -562,9 +565,14 @@ class MessageCentralAccess {
 
   /// Removes a listener from a named channel.
   void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
+    String channelName,
+    MessageCentralListenerCallback listener,
+  ) {
+    _session.server.messageCentral.removeListener(
+      _session,
+      channelName,
+      listener,
+    );
   }
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
@@ -579,12 +587,11 @@ class MessageCentralAccess {
     String channelName,
     SerializableModel message, {
     bool global = false,
-  }) =>
-      _session.server.messageCentral.postMessage(
-        channelName,
-        message,
-        global: global,
-      );
+  }) => _session.server.messageCentral.postMessage(
+    channelName,
+    message,
+    global: global,
+  );
 
   /// Creates a stream that listens to a specified channel.
   ///

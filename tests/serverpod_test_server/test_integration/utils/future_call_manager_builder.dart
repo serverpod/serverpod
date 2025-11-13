@@ -12,12 +12,13 @@ class FutureCallManagerBuilder {
 
   Session _internalSession;
 
-  InitializeFutureCall _initializeFutureCall = (
-    FutureCall futureCall,
-    String name,
-  ) {
-    // Skip initialization
-  };
+  InitializeFutureCall _initializeFutureCall =
+      (
+        FutureCall futureCall,
+        String name,
+      ) {
+        // Skip initialization
+      };
 
   FutureCallConfig _config = FutureCallConfig(
     concurrencyLimit: 1,
@@ -31,8 +32,8 @@ class FutureCallManagerBuilder {
   FutureCallManagerBuilder({
     required FutureCallSessionBuilder sessionProvider,
     required Session internalSession,
-  })  : _sessionBuilder = sessionProvider,
-        _internalSession = internalSession;
+  }) : _sessionBuilder = sessionProvider,
+       _internalSession = internalSession;
 
   factory FutureCallManagerBuilder.fromTestSessionBuilder(
     TestSessionBuilder sessionBuilder,
@@ -44,13 +45,13 @@ class FutureCallManagerBuilder {
   }
 
   FutureCallManager build() => FutureCallManager(
-        _config,
-        _protocol,
-        diagnosticsService: _diagnosticsService,
-        internalSession: _internalSession,
-        sessionProvider: _sessionBuilder,
-        initializeFutureCall: _initializeFutureCall,
-      );
+    _config,
+    _protocol,
+    diagnosticsService: _diagnosticsService,
+    internalSession: _internalSession,
+    sessionProvider: _sessionBuilder,
+    initializeFutureCall: _initializeFutureCall,
+  );
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {
     _config = config;

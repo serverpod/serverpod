@@ -26,7 +26,8 @@ class SessionLogConfigBuilder {
   }
 
   SessionLogConfigBuilder withConsoleLogFormat(
-      ConsoleLogFormat consoleLogFormat) {
+    ConsoleLogFormat consoleLogFormat,
+  ) {
     _consoleLogFormat = consoleLogFormat;
     return this;
   }

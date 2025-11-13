@@ -4,7 +4,9 @@ import 'package:serverpod_new_auth_test_server/src/web/widgets/built_with_server
 class RootRoute extends WidgetRoute {
   @override
   Future<TemplateWidget> build(
-      final Session session, final Request request) async {
+    final Session session,
+    final Request request,
+  ) async {
     return BuiltWithServerpodPageWidget();
   }
 }

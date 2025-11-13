@@ -68,8 +68,9 @@ abstract class UserNoteCollection
       if (id != null) 'id': id,
       'name': name,
       if (userNotesPropertyName != null)
-        'userNotesPropertyName':
-            userNotesPropertyName?.toJson(valueToJson: (v) => v.toJson()),
+        'userNotesPropertyName': userNotesPropertyName?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
     };
   }
 
@@ -80,14 +81,17 @@ abstract class UserNoteCollection
       'name': name,
       if (userNotesPropertyName != null)
         'userNotesPropertyName': userNotesPropertyName?.toJson(
-            valueToJson: (v) => v.toJsonForProtocol()),
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static UserNoteCollectionInclude include(
-      {_i2.UserNoteIncludeList? userNotesPropertyName}) {
+  static UserNoteCollectionInclude include({
+    _i2.UserNoteIncludeList? userNotesPropertyName,
+  }) {
     return UserNoteCollectionInclude._(
-        userNotesPropertyName: userNotesPropertyName);
+      userNotesPropertyName: userNotesPropertyName,
+    );
   }
 
   static UserNoteCollectionIncludeList includeList({
@@ -124,10 +128,10 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
     required String name,
     List<_i2.UserNote>? userNotesPropertyName,
   }) : super._(
-          id: id,
-          name: name,
-          userNotesPropertyName: userNotesPropertyName,
-        );
+         id: id,
+         name: name,
+         userNotesPropertyName: userNotesPropertyName,
+       );
 
   /// Returns a shallow copy of this [UserNoteCollection]
   /// with some or all fields replaced by the given arguments.
@@ -153,14 +157,14 @@ class UserNoteCollectionUpdateTable
   UserNoteCollectionUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class UserNoteCollectionTable extends _i1.Table<int?> {
   UserNoteCollectionTable({super.tableRelation})
-      : super(tableName: 'user_note_collections') {
+    : super(tableName: 'user_note_collections') {
     updateTable = UserNoteCollectionUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -181,7 +185,9 @@ class UserNoteCollectionTable extends _i1.Table<int?> {
     ___userNotesPropertyName = _i1.createRelationTable(
       relationFieldName: '__userNotesPropertyName',
       field: UserNoteCollection.t.id,
-      foreignField: _i2.UserNote.t
+      foreignField: _i2
+          .UserNote
+          .t
           .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
@@ -195,7 +201,9 @@ class UserNoteCollectionTable extends _i1.Table<int?> {
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'userNotesPropertyName',
       field: UserNoteCollection.t.id,
-      foreignField: _i2.UserNote.t
+      foreignField: _i2
+          .UserNote
+          .t
           .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
@@ -204,16 +212,17 @@ class UserNoteCollectionTable extends _i1.Table<int?> {
     _userNotesPropertyName = _i1.ManyRelation<_i2.UserNoteTable>(
       tableWithRelations: relationTable,
       table: _i2.UserNoteTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _userNotesPropertyName!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -225,16 +234,18 @@ class UserNoteCollectionTable extends _i1.Table<int?> {
 }
 
 class UserNoteCollectionInclude extends _i1.IncludeObject {
-  UserNoteCollectionInclude._(
-      {_i2.UserNoteIncludeList? userNotesPropertyName}) {
+  UserNoteCollectionInclude._({
+    _i2.UserNoteIncludeList? userNotesPropertyName,
+  }) {
     _userNotesPropertyName = userNotesPropertyName;
   }
 
   _i2.UserNoteIncludeList? _userNotesPropertyName;
 
   @override
-  Map<String, _i1.Include?> get includes =>
-      {'userNotesPropertyName': _userNotesPropertyName};
+  Map<String, _i1.Include?> get includes => {
+    'userNotesPropertyName': _userNotesPropertyName,
+  };
 
   @override
   _i1.Table<int?> get table => UserNoteCollection.t;
@@ -439,7 +450,7 @@ class UserNoteCollectionRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNoteCollection>(
@@ -454,7 +465,7 @@ class UserNoteCollectionRepository {
   Future<List<UserNoteCollection>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserNoteCollectionUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     int? limit,
     int? offset,
@@ -548,17 +559,21 @@ class UserNoteCollectionAttachRepository {
     }
 
     var $userNote = userNote
-        .map((e) => _i2.UserNoteImplicit(
-              e,
-              $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
-                  userNoteCollection.id,
-            ))
+        .map(
+          (e) => _i2.UserNoteImplicit(
+            e,
+            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+                userNoteCollection.id,
+          ),
+        )
         .toList();
     await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
-        _i2.UserNote.t
-            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
+        _i2
+            .UserNote
+            .t
+            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ],
       transaction: transaction,
     );
@@ -591,8 +606,10 @@ class UserNoteCollectionAttachRowRepository {
     await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
-        _i2.UserNote.t
-            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
+        _i2
+            .UserNote
+            .t
+            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ],
       transaction: transaction,
     );
@@ -617,17 +634,21 @@ class UserNoteCollectionDetachRepository {
     }
 
     var $userNote = userNote
-        .map((e) => _i2.UserNoteImplicit(
-              e,
-              $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
-                  null,
-            ))
+        .map(
+          (e) => _i2.UserNoteImplicit(
+            e,
+            $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
+                null,
+          ),
+        )
         .toList();
     await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
-        _i2.UserNote.t
-            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
+        _i2
+            .UserNote
+            .t
+            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ],
       transaction: transaction,
     );
@@ -658,8 +679,10 @@ class UserNoteCollectionDetachRowRepository {
     await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
-        _i2.UserNote.t
-            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId
+        _i2
+            .UserNote
+            .t
+            .$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
       ],
       transaction: transaction,
     );

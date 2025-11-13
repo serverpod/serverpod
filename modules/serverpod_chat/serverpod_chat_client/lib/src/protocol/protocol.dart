@@ -104,8 +104,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<_i8.ChatMessageAttachmentUploadDescription?>()) {
       return (data != null
-          ? _i8.ChatMessageAttachmentUploadDescription.fromJson(data)
-          : null) as T;
+              ? _i8.ChatMessageAttachmentUploadDescription.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i9.ChatMessageChunk?>()) {
       return (data != null ? _i9.ChatMessageChunk.fromJson(data) : null) as T;
@@ -122,10 +123,11 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<List<_i7.ChatMessageAttachment>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
-              .toList()
-          : null) as T;
+              ? (data as List)
+                    .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
+                    .toList()
+              : null)
+          as T;
     }
     if (t == List<_i6.ChatMessage>) {
       return (data as List).map((e) => deserialize<_i6.ChatMessage>(e)).toList()
@@ -133,10 +135,11 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i1.getType<List<_i7.ChatMessageAttachment>?>()) {
       return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
-              .toList()
-          : null) as T;
+              ? (data as List)
+                    .map((e) => deserialize<_i7.ChatMessageAttachment>(e))
+                    .toList()
+              : null)
+          as T;
     }
     try {
       return _i13.Protocol().deserialize<T>(data, t);
@@ -205,7 +208,8 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName == 'ChatMessageAttachmentUploadDescription') {
       return deserialize<_i8.ChatMessageAttachmentUploadDescription>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'ChatMessageChunk') {
       return deserialize<_i9.ChatMessageChunk>(data['data']);

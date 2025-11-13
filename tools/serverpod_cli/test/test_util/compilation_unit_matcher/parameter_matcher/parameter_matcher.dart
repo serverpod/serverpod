@@ -61,7 +61,8 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
           .join(', ');
 
       return mismatchDescription.add(
-          'does not contain parameter "$parameterName". Found parameters: [$parameterNames]');
+        'does not contain parameter "$parameterName". Found parameters: [$parameterNames]',
+      );
     }
 
     var output = StringBuffer();
@@ -70,7 +71,8 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
     var deviations = <String>[];
     if (!parameterDecl._hasMatchingRequired(isRequired)) {
       deviations.add(
-          'it is ${parameterDecl.isRequired == true ? 'required' : 'optional'}');
+        'it is ${parameterDecl.isRequired == true ? 'required' : 'optional'}',
+      );
     }
 
     if (!parameterDecl._hasMatchingType(type)) {
@@ -87,7 +89,8 @@ class _ParameterMatcherImpl extends Matcher implements ParameterMatcher {
         deviations.add('it is of type "${parameterDecl._getType()}"');
       } else {
         deviations.add(
-            'it is initialized with "${parameterDecl._getInitializer()?.toToken()}"');
+          'it is initialized with "${parameterDecl._getInitializer()?.toToken()}"',
+        );
       }
     }
 

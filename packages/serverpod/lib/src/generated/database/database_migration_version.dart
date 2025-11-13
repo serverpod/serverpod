@@ -30,7 +30,8 @@ abstract class DatabaseMigrationVersion
   }) = _DatabaseMigrationVersionImpl;
 
   factory DatabaseMigrationVersion.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DatabaseMigrationVersion(
       id: jsonSerialization['id'] as int?,
       module: jsonSerialization['module'] as String,
@@ -128,11 +129,11 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
     required String version,
     DateTime? timestamp,
   }) : super._(
-          id: id,
-          module: module,
-          version: version,
-          timestamp: timestamp,
-        );
+         id: id,
+         module: module,
+         version: version,
+         timestamp: timestamp,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +159,14 @@ class DatabaseMigrationVersionUpdateTable
   DatabaseMigrationVersionUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> module(String value) => _i1.ColumnValue(
-        table.module,
-        value,
-      );
+    table.module,
+    value,
+  );
 
   _i1.ColumnValue<String, String> version(String value) => _i1.ColumnValue(
-        table.version,
-        value,
-      );
+    table.version,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime? value) =>
       _i1.ColumnValue(
@@ -176,7 +177,7 @@ class DatabaseMigrationVersionUpdateTable
 
 class DatabaseMigrationVersionTable extends _i1.Table<int?> {
   DatabaseMigrationVersionTable({super.tableRelation})
-      : super(tableName: 'serverpod_migrations') {
+    : super(tableName: 'serverpod_migrations') {
     updateTable = DatabaseMigrationVersionUpdateTable(this);
     module = _i1.ColumnString(
       'module',
@@ -205,11 +206,11 @@ class DatabaseMigrationVersionTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        module,
-        version,
-        timestamp,
-      ];
+    id,
+    module,
+    version,
+    timestamp,
+  ];
 }
 
 class DatabaseMigrationVersionInclude extends _i1.IncludeObject {
@@ -407,7 +408,7 @@ class DatabaseMigrationVersionRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DatabaseMigrationVersion>(
@@ -422,7 +423,7 @@ class DatabaseMigrationVersionRepository {
   Future<List<DatabaseMigrationVersion>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     int? limit,
     int? offset,

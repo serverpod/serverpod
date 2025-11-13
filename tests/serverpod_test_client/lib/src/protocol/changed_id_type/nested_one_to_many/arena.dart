@@ -33,7 +33,8 @@ abstract class ArenaUuid implements _i1.SerializableModel {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -75,10 +76,10 @@ class _ArenaUuidImpl extends ArenaUuid {
     required String name,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+         id: id,
+         name: name,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.

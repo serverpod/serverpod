@@ -10,18 +10,22 @@ void main() {
     var uri = Uri.parse('${serverUrl}simple/hello');
 
     test('When http method is POST', () async {
-      var result = await http.post(uri,
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: jsonEncode({'name': 'mike'}));
+      var result = await http.post(
+        uri,
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: jsonEncode({'name': 'mike'}),
+      );
 
       expect(
         result.headers['access-control-allow-origin'],
         equals('*'),
       );
       expect(
-          result.headers.containsKey('access-control-allow-headers'), isFalse);
+        result.headers.containsKey('access-control-allow-headers'),
+        isFalse,
+      );
       expect(
         result.headers['access-control-allow-methods'],
         equals('POST'),
@@ -49,7 +53,9 @@ void main() {
         equals('0'),
       );
       expect(
-          response.headers.containsKey('access-control-allow-headers'), isTrue);
+        response.headers.containsKey('access-control-allow-headers'),
+        isTrue,
+      );
       expect(
         response.headers['access-control-allow-methods'],
         equals('POST'),

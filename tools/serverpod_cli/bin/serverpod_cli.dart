@@ -71,16 +71,16 @@ ServerpodCommandRunner buildCommandRunner() {
     productionMode,
     version,
   )..addCommands([
-      AnalyzePubspecsCommand(),
-      CreateCommand(),
-      GenerateCommand(),
-      GeneratePubspecsCommand(),
-      LanguageServerCommand(),
-      CreateMigrationCommand(),
-      CreateRepairMigrationCommand(),
-      UpgradeCommand(),
-      VersionCommand(version),
-    ]);
+    AnalyzePubspecsCommand(),
+    CreateCommand(),
+    GenerateCommand(),
+    GeneratePubspecsCommand(),
+    LanguageServerCommand(),
+    CreateMigrationCommand(),
+    CreateRepairMigrationCommand(),
+    UpgradeCommand(),
+    VersionCommand(version),
+  ]);
 }
 
 Future<void> _preExit() async {

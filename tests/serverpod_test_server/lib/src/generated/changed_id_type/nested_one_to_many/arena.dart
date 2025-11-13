@@ -36,7 +36,8 @@ abstract class ArenaUuid
       team: jsonSerialization['team'] == null
           ? null
           : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -118,10 +119,10 @@ class _ArenaUuidImpl extends ArenaUuid {
     required String name,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+         id: id,
+         name: name,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [ArenaUuid]
   /// with some or all fields replaced by the given arguments.
@@ -144,9 +145,9 @@ class ArenaUuidUpdateTable extends _i1.UpdateTable<ArenaUuidTable> {
   ArenaUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
@@ -179,9 +180,9 @@ class ArenaUuidTable extends _i1.Table<_i1.UuidValue> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

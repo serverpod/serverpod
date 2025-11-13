@@ -179,7 +179,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -189,7 +189,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -202,7 +202,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -265,7 +265,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -275,7 +275,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -288,7 +288,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -339,7 +339,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -352,7 +352,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -365,7 +365,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'attemptedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -416,7 +416,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -429,7 +429,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'ipAddress',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -442,7 +442,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'attemptedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -534,12 +534,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -584,7 +584,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -597,7 +597,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -610,7 +610,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'ipAddress',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -623,7 +623,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'attemptedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -701,7 +701,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -714,7 +714,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -764,7 +764,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -777,7 +777,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'ipAddress',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -790,7 +790,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'attemptedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -847,7 +847,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -857,7 +857,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -870,7 +870,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -945,7 +945,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -955,7 +955,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -968,7 +968,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'keyIdBase64',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -1012,12 +1012,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -1056,12 +1056,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -1154,8 +1154,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i6.EmailAccountFailedLoginAttempt?>()) {
       return (data != null
-          ? _i6.EmailAccountFailedLoginAttempt.fromJson(data)
-          : null) as T;
+              ? _i6.EmailAccountFailedLoginAttempt.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i7.EmailAccountRequest?>()) {
       return (data != null ? _i7.EmailAccountRequest.fromJson(data) : null)
@@ -1163,64 +1164,75 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i8.EmailAccountRequestCompletionAttempt?>()) {
       return (data != null
-          ? _i8.EmailAccountRequestCompletionAttempt.fromJson(data)
-          : null) as T;
+              ? _i8.EmailAccountRequestCompletionAttempt.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i9.EmailAccount?>()) {
       return (data != null ? _i9.EmailAccount.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i10.EmailAccountLoginException?>()) {
       return (data != null
-          ? _i10.EmailAccountLoginException.fromJson(data)
-          : null) as T;
+              ? _i10.EmailAccountLoginException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i11.EmailAccountLoginExceptionReason?>()) {
       return (data != null
-          ? _i11.EmailAccountLoginExceptionReason.fromJson(data)
-          : null) as T;
+              ? _i11.EmailAccountLoginExceptionReason.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i12.EmailAccountPasswordResetException?>()) {
       return (data != null
-          ? _i12.EmailAccountPasswordResetException.fromJson(data)
-          : null) as T;
+              ? _i12.EmailAccountPasswordResetException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i13.EmailAccountPasswordResetExceptionReason?>()) {
       return (data != null
-          ? _i13.EmailAccountPasswordResetExceptionReason.fromJson(data)
-          : null) as T;
+              ? _i13.EmailAccountPasswordResetExceptionReason.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i14.EmailAccountRequestException?>()) {
       return (data != null
-          ? _i14.EmailAccountRequestException.fromJson(data)
-          : null) as T;
+              ? _i14.EmailAccountRequestException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i15.EmailAccountRequestExceptionReason?>()) {
       return (data != null
-          ? _i15.EmailAccountRequestExceptionReason.fromJson(data)
-          : null) as T;
+              ? _i15.EmailAccountRequestExceptionReason.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i16.EmailAccountPasswordResetCompleteAttempt?>()) {
       return (data != null
-          ? _i16.EmailAccountPasswordResetCompleteAttempt.fromJson(data)
-          : null) as T;
+              ? _i16.EmailAccountPasswordResetCompleteAttempt.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i17.EmailAccountPasswordResetRequest?>()) {
       return (data != null
-          ? _i17.EmailAccountPasswordResetRequest.fromJson(data)
-          : null) as T;
+              ? _i17.EmailAccountPasswordResetRequest.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i18.EmailAccountPasswordResetRequestAttempt?>()) {
       return (data != null
-          ? _i18.EmailAccountPasswordResetRequestAttempt.fromJson(data)
-          : null) as T;
+              ? _i18.EmailAccountPasswordResetRequestAttempt.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i19.GoogleAccount?>()) {
       return (data != null ? _i19.GoogleAccount.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i20.GoogleIdTokenVerificationException?>()) {
       return (data != null
-          ? _i20.GoogleIdTokenVerificationException.fromJson(data)
-          : null) as T;
+              ? _i20.GoogleIdTokenVerificationException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i21.PasskeyAccount?>()) {
       return (data != null ? _i21.PasskeyAccount.fromJson(data) : null) as T;
@@ -1230,13 +1242,15 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i23.PasskeyChallengeExpiredException?>()) {
       return (data != null
-          ? _i23.PasskeyChallengeExpiredException.fromJson(data)
-          : null) as T;
+              ? _i23.PasskeyChallengeExpiredException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i24.PasskeyChallengeNotFoundException?>()) {
       return (data != null
-          ? _i24.PasskeyChallengeNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i24.PasskeyChallengeNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i25.PasskeyLoginRequest?>()) {
       return (data != null ? _i25.PasskeyLoginRequest.fromJson(data) : null)
@@ -1244,20 +1258,24 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i26.PasskeyPublicKeyNotFoundException?>()) {
       return (data != null
-          ? _i26.PasskeyPublicKeyNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i26.PasskeyPublicKeyNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i27.PasskeyRegistrationRequest?>()) {
       return (data != null
-          ? _i27.PasskeyRegistrationRequest.fromJson(data)
-          : null) as T;
+              ? _i27.PasskeyRegistrationRequest.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<({_i28.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-        challenge: deserialize<_i28.ByteData>(
-            ((data as Map)['n'] as Map)['challenge']),
-        id: deserialize<_i1.UuidValue>(data['n']['id']),
-      ) as T;
+            challenge: deserialize<_i28.ByteData>(
+              ((data as Map)['n'] as Map)['challenge'],
+            ),
+            id: deserialize<_i1.UuidValue>(data['n']['id']),
+          )
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -1353,7 +1371,8 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'EmailAccountRequestCompletionAttempt') {
       return deserialize<_i8.EmailAccountRequestCompletionAttempt>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccount') {
       return deserialize<_i9.EmailAccount>(data['data']);
@@ -1369,7 +1388,8 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'EmailAccountPasswordResetExceptionReason') {
       return deserialize<_i13.EmailAccountPasswordResetExceptionReason>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountRequestException') {
       return deserialize<_i14.EmailAccountRequestException>(data['data']);
@@ -1379,14 +1399,16 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'EmailAccountPasswordResetCompleteAttempt') {
       return deserialize<_i16.EmailAccountPasswordResetCompleteAttempt>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountPasswordResetRequest') {
       return deserialize<_i17.EmailAccountPasswordResetRequest>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetRequestAttempt') {
       return deserialize<_i18.EmailAccountPasswordResetRequestAttempt>(
-          data['data']);
+        data['data'],
+      );
     }
     if (dataClassName == 'GoogleAccount') {
       return deserialize<_i19.GoogleAccount>(data['data']);
@@ -1537,7 +1559,7 @@ Object? mapContainerToJson(Object obj) {
           {
             'k': mapIfNeeded(entry.key),
             'v': mapIfNeeded(entry.value),
-          }
+          },
       ];
 
     case Iterable():

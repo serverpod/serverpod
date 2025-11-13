@@ -38,11 +38,13 @@ abstract class LegacyEmailPassword
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       emailAccountId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['emailAccountId']),
+        jsonSerialization['emailAccountId'],
+      ),
       emailAccount: jsonSerialization['emailAccount'] == null
           ? null
           : _i2.EmailAccount.fromJson(
-              (jsonSerialization['emailAccount'] as Map<String, dynamic>)),
+              (jsonSerialization['emailAccount'] as Map<String, dynamic>),
+            ),
       hash: jsonSerialization['hash'] as String,
     );
   }
@@ -91,8 +93,9 @@ abstract class LegacyEmailPassword
     return {};
   }
 
-  static LegacyEmailPasswordInclude include(
-      {_i2.EmailAccountInclude? emailAccount}) {
+  static LegacyEmailPasswordInclude include({
+    _i2.EmailAccountInclude? emailAccount,
+  }) {
     return LegacyEmailPasswordInclude._(emailAccount: emailAccount);
   }
 
@@ -131,11 +134,11 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
     _i2.EmailAccount? emailAccount,
     required String hash,
   }) : super._(
-          id: id,
-          emailAccountId: emailAccountId,
-          emailAccount: emailAccount,
-          hash: hash,
-        );
+         id: id,
+         emailAccountId: emailAccountId,
+         emailAccount: emailAccount,
+         hash: hash,
+       );
 
   /// Returns a shallow copy of this [LegacyEmailPassword]
   /// with some or all fields replaced by the given arguments.
@@ -163,21 +166,21 @@ class LegacyEmailPasswordUpdateTable
   LegacyEmailPasswordUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.emailAccountId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.emailAccountId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 }
 
 class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
   LegacyEmailPasswordTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_bridge_email_password') {
+    : super(tableName: 'serverpod_auth_bridge_email_password') {
     updateTable = LegacyEmailPasswordUpdateTable(this);
     emailAccountId = _i1.ColumnUuid(
       'emailAccountId',
@@ -216,10 +219,10 @@ class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        emailAccountId,
-        hash,
-      ];
+    id,
+    emailAccountId,
+    hash,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -437,7 +440,7 @@ class LegacyEmailPasswordRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyEmailPassword>(
@@ -452,7 +455,7 @@ class LegacyEmailPasswordRepository {
   Future<List<LegacyEmailPassword>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
     int? limit,
     int? offset,
@@ -545,8 +548,9 @@ class LegacyEmailPasswordAttachRowRepository {
       throw ArgumentError.notNull('emailAccount.id');
     }
 
-    var $legacyEmailPassword =
-        legacyEmailPassword.copyWith(emailAccountId: emailAccount.id);
+    var $legacyEmailPassword = legacyEmailPassword.copyWith(
+      emailAccountId: emailAccount.id,
+    );
     await session.db.updateRow<LegacyEmailPassword>(
       $legacyEmailPassword,
       columns: [LegacyEmailPassword.t.emailAccountId],

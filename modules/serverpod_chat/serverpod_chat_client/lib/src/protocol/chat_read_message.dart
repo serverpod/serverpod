@@ -85,11 +85,11 @@ class _ChatReadMessageImpl extends ChatReadMessage {
     required int userId,
     required int lastReadMessageId,
   }) : super._(
-          id: id,
-          channel: channel,
-          userId: userId,
-          lastReadMessageId: lastReadMessageId,
-        );
+         id: id,
+         channel: channel,
+         userId: userId,
+         lastReadMessageId: lastReadMessageId,
+       );
 
   /// Returns a shallow copy of this [ChatReadMessage]
   /// with some or all fields replaced by the given arguments.

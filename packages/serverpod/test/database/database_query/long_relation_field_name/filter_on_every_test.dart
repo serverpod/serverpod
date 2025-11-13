@@ -19,9 +19,9 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when "every" filtering on relation with a long field name', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1)))
-          .build();
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 
       test('then sub query alias name is truncated.', () {
         expect(query, contains('WITH "$expectedTruncatedName" AS'));
@@ -29,17 +29,19 @@ void main() {
 
       test('then sub query is referenced using truncated name.', () {
         expect(
-            query,
-            contains(
-                'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"'));
+          query,
+          contains(
+            'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"',
+          ),
+        );
       });
     });
   });
   group('Given CountQueryBuilder', () {
     group('when "every" filtering on relation with a long field name', () {
-      var query = CountQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1)))
-          .build();
+      var query = CountQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 
       test('then sub query alias name is truncated.', () {
         expect(query, contains('WITH "$expectedTruncatedName" AS'));
@@ -47,17 +49,19 @@ void main() {
 
       test('then sub query is referenced using truncated name.', () {
         expect(
-            query,
-            contains(
-                'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"'));
+          query,
+          contains(
+            'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"',
+          ),
+        );
       });
     });
   });
   group('Given DeleteQueryBuilder', () {
     group('when "every" filtering on relation with a long field name', () {
-      var query = DeleteQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1)))
-          .build();
+      var query = DeleteQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
 
       test('then sub query alias name is truncated.', () {
         expect(query, contains('WITH "$expectedTruncatedName" AS'));
@@ -65,9 +69,11 @@ void main() {
 
       test('then sub query is referenced using truncated name.', () {
         expect(
-            query,
-            contains(
-                'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"'));
+          query,
+          contains(
+            'SELECT "$expectedTruncatedName"."citizen.id" FROM "$expectedTruncatedName"',
+          ),
+        );
       });
     });
   });

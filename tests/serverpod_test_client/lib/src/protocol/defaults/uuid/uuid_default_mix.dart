@@ -18,12 +18,15 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
     _i1.UuidValue? uuidDefaultAndDefaultModel,
     _i1.UuidValue? uuidDefaultAndDefaultPersist,
     _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
-  })  : uuidDefaultAndDefaultModel = uuidDefaultAndDefaultModel ??
-            _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
-        uuidDefaultAndDefaultPersist = uuidDefaultAndDefaultPersist ??
-            _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
-        uuidDefaultModelAndDefaultPersist = uuidDefaultModelAndDefaultPersist ??
-            _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
+  }) : uuidDefaultAndDefaultModel =
+           uuidDefaultAndDefaultModel ??
+           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+       uuidDefaultAndDefaultPersist =
+           uuidDefaultAndDefaultPersist ??
+           _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
+       uuidDefaultModelAndDefaultPersist =
+           uuidDefaultModelAndDefaultPersist ??
+           _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
 
   factory UuidDefaultMix({
     int? id,
@@ -36,11 +39,14 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
     return UuidDefaultMix(
       id: jsonSerialization['id'] as int?,
       uuidDefaultAndDefaultModel: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultAndDefaultModel']),
+        jsonSerialization['uuidDefaultAndDefaultModel'],
+      ),
       uuidDefaultAndDefaultPersist: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultAndDefaultPersist']),
+        jsonSerialization['uuidDefaultAndDefaultPersist'],
+      ),
       uuidDefaultModelAndDefaultPersist: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultModelAndDefaultPersist']),
+        jsonSerialization['uuidDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -70,8 +76,8 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'uuidDefaultAndDefaultModel': uuidDefaultAndDefaultModel.toJson(),
       'uuidDefaultAndDefaultPersist': uuidDefaultAndDefaultPersist.toJson(),
-      'uuidDefaultModelAndDefaultPersist':
-          uuidDefaultModelAndDefaultPersist.toJson(),
+      'uuidDefaultModelAndDefaultPersist': uuidDefaultModelAndDefaultPersist
+          .toJson(),
     };
   }
 
@@ -90,11 +96,11 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
     _i1.UuidValue? uuidDefaultAndDefaultPersist,
     _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          uuidDefaultAndDefaultModel: uuidDefaultAndDefaultModel,
-          uuidDefaultAndDefaultPersist: uuidDefaultAndDefaultPersist,
-          uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         uuidDefaultAndDefaultModel: uuidDefaultAndDefaultModel,
+         uuidDefaultAndDefaultPersist: uuidDefaultAndDefaultPersist,
+         uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -112,7 +118,8 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
           uuidDefaultAndDefaultModel ?? this.uuidDefaultAndDefaultModel,
       uuidDefaultAndDefaultPersist:
           uuidDefaultAndDefaultPersist ?? this.uuidDefaultAndDefaultPersist,
-      uuidDefaultModelAndDefaultPersist: uuidDefaultModelAndDefaultPersist ??
+      uuidDefaultModelAndDefaultPersist:
+          uuidDefaultModelAndDefaultPersist ??
           this.uuidDefaultModelAndDefaultPersist,
     );
   }

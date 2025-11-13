@@ -39,7 +39,8 @@ abstract class TownInt
       mayor: jsonSerialization['mayor'] == null
           ? null
           : _i2.CitizenInt.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>)),
+              (jsonSerialization['mayor'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -127,11 +128,11 @@ class _TownIntImpl extends TownInt {
     int? mayorId,
     _i2.CitizenInt? mayor,
   }) : super._(
-          id: id,
-          name: name,
-          mayorId: mayorId,
-          mayor: mayor,
-        );
+         id: id,
+         name: name,
+         mayorId: mayorId,
+         mayor: mayor,
+       );
 
   /// Returns a shallow copy of this [TownInt]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +157,14 @@ class TownIntUpdateTable extends _i1.UpdateTable<TownIntTable> {
   TownIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> mayorId(int? value) => _i1.ColumnValue(
-        table.mayorId,
-        value,
-      );
+    table.mayorId,
+    value,
+  );
 }
 
 class TownIntTable extends _i1.Table<int?> {
@@ -202,10 +203,10 @@ class TownIntTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        mayorId,
-      ];
+    id,
+    name,
+    mayorId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

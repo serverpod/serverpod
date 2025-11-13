@@ -42,12 +42,14 @@ abstract class GoogleAccount
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
           : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
+              (jsonSerialization['authUser'] as Map<String, dynamic>),
+            ),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
@@ -152,13 +154,13 @@ class _GoogleAccountImpl extends GoogleAccount {
     required String email,
     required String userIdentifier,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          created: created,
-          email: email,
-          userIdentifier: userIdentifier,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         created: created,
+         email: email,
+         userIdentifier: userIdentifier,
+       );
 
   /// Returns a shallow copy of this [GoogleAccount]
   /// with some or all fields replaced by the given arguments.
@@ -175,8 +177,9 @@ class _GoogleAccountImpl extends GoogleAccount {
     return GoogleAccount(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       created: created ?? this.created,
       email: email ?? this.email,
       userIdentifier: userIdentifier ?? this.userIdentifier,
@@ -188,11 +191,11 @@ class GoogleAccountUpdateTable extends _i1.UpdateTable<GoogleAccountTable> {
   GoogleAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
       _i1.ColumnValue(
@@ -201,9 +204,9 @@ class GoogleAccountUpdateTable extends _i1.UpdateTable<GoogleAccountTable> {
       );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
       _i1.ColumnValue(
@@ -214,7 +217,7 @@ class GoogleAccountUpdateTable extends _i1.UpdateTable<GoogleAccountTable> {
 
 class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   GoogleAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_google_account') {
+    : super(tableName: 'serverpod_auth_idp_google_account') {
     updateTable = GoogleAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -270,12 +273,12 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        created,
-        email,
-        userIdentifier,
-      ];
+    id,
+    authUserId,
+    created,
+    email,
+    userIdentifier,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

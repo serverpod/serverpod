@@ -15,12 +15,14 @@ void main() {
         '''
           class: Example
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -42,12 +44,14 @@ void main() {
         '''
           exception: Example
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -64,116 +68,132 @@ void main() {
   });
   group('Test invalid top level fields key values', () {
     test(
-        'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields:
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+          ).build(),
+        ];
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "fields" property must have at least one value.',
-      );
-    });
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The "fields" property must have at least one value.',
+        );
+      },
+    );
 
     test(
-        'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           exception: Example
           fields:
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+          ).build(),
+        ];
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "fields" property must have at least one value.',
-      );
-    });
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The "fields" property must have at least one value.',
+        );
+      },
+    );
 
     test(
-        'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields: int
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+          ).build(),
+        ];
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "fields" property must have at least one value.',
-      );
-    });
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The "fields" property must have at least one value.',
+        );
+      },
+    );
 
     test(
-        'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           enum: Example
           fields:
           ''',
-        ).build()
-      ];
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+          ).build(),
+        ];
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "fields" property is not allowed for enum type. Valid keys are {enum, serialized, default, serverOnly, values}.',
-      );
-    });
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The "fields" property is not allowed for enum type. Valid keys are {enum, serialized, default, serverOnly, values}.',
+        );
+      },
+    );
   });
 
   group('Testing key of fields.', () {
@@ -187,11 +207,14 @@ void main() {
             fields:
               1: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -214,11 +237,14 @@ void main() {
             fields:
               Invalid-Field-Name: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -244,11 +270,14 @@ void main() {
             fields:
               UPPERCASE: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -274,11 +303,14 @@ void main() {
             fields:
               PascalCase: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(
           collector.errors,
@@ -304,14 +336,20 @@ void main() {
             fields:
               snake_case: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-        expect(collector.errors, isNotEmpty,
-            reason: 'Expected an error but none was generated.');
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
 
         var error = collector.errors.first as SourceSpanSeverityException;
 
@@ -334,7 +372,7 @@ void main() {
             fields:
               name: String
             ''',
-          ).build()
+          ).build(),
         ];
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
@@ -361,7 +399,7 @@ void main() {
             duplicatedField: String
             duplicatedField: String
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -390,73 +428,77 @@ void main() {
   );
 
   test(
-      'Given a class with a field name longer than 61 characters, then an error is collected.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a field name longer than 61 characters, then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         fields:
           thisFieldIsExactly62CharactersLongAndIsThereforeInvalidAsNameF: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error to be collected, but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error to be collected, but none was generated.',
+      );
 
-    var error = collector.errors.first;
+      var error = collector.errors.first;
 
-    expect(
-      error.message,
-      'The field name "thisFieldIsExactly62CharactersLongAndIsThereforeInvalidAsNameF" exceeds the 61 character field name limitation.',
-      reason: 'Expected the error message to indicate a field name too long.',
-    );
-  });
+      expect(
+        error.message,
+        'The field name "thisFieldIsExactly62CharactersLongAndIsThereforeInvalidAsNameF" exceeds the 61 character field name limitation.',
+        reason: 'Expected the error message to indicate a field name too long.',
+      );
+    },
+  );
 
   group(
-      'Given a class with a field name that is 61 characters when analyzing models',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with a field name that is 61 characters when analyzing models',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         fields:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: String
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    var errors = collector.errors;
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
 
-    var definition = definitions.firstOrNull as ClassDefinition?;
+      var definition = definitions.firstOrNull as ClassDefinition?;
 
-    test('then a field definition is created.', () {
-      var field = definition?.fields.firstOrNull;
-      expect(field?.name,
-          'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa');
-    }, skip: errors.isNotEmpty);
-  });
+      test('then a field definition is created.', () {
+        var field = definition?.fields.firstOrNull;
+        expect(
+          field?.name,
+          'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa',
+        );
+      }, skip: errors.isNotEmpty);
+    },
+  );
 }

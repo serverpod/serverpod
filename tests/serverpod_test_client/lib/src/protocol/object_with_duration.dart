@@ -26,8 +26,9 @@ abstract class ObjectWithDuration implements _i1.SerializableModel {
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -66,9 +67,9 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
     int? id,
     required Duration duration,
   }) : super._(
-          id: id,
-          duration: duration,
-        );
+         id: id,
+         duration: duration,
+       );
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.

@@ -15,9 +15,7 @@ import '../simple_data.dart' as _i2;
 
 abstract class ScopeNoneFields
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
-  ScopeNoneFields._({this.id})
-      : _name = null,
-        _object = null;
+  ScopeNoneFields._({this.id}) : _name = null, _object = null;
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
 
@@ -28,7 +26,8 @@ abstract class ScopeNoneFields
       $object: jsonSerialization['object'] == null
           ? null
           : _i2.SimpleData.fromJson(
-              (jsonSerialization['object'] as Map<String, dynamic>)),
+              (jsonSerialization['object'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -117,9 +116,9 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
     int? id,
     String? $name,
     _i2.SimpleData? $object,
-  })  : _name = $name,
-        _object = $object,
-        super(id: id);
+  }) : _name = $name,
+       _object = $object,
+       super(id: id);
 
   factory ScopeNoneFieldsImplicit(
     ScopeNoneFields scopeNoneFields, {
@@ -144,21 +143,21 @@ class ScopeNoneFieldsUpdateTable extends _i1.UpdateTable<ScopeNoneFieldsTable> {
   ScopeNoneFieldsUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> $name(String? value) => _i1.ColumnValue(
-        table.$name,
-        value,
-      );
+    table.$name,
+    value,
+  );
 
   _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> $object(
-          _i2.SimpleData? value) =>
-      _i1.ColumnValue(
-        table.$object,
-        value,
-      );
+    _i2.SimpleData? value,
+  ) => _i1.ColumnValue(
+    table.$object,
+    value,
+  );
 }
 
 class ScopeNoneFieldsTable extends _i1.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
-      : super(tableName: 'scope_none_fields') {
+    : super(tableName: 'scope_none_fields') {
     updateTable = ScopeNoneFieldsUpdateTable(this);
     $name = _i1.ColumnString(
       'name',
@@ -178,10 +177,10 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        $name,
-        $object,
-      ];
+    id,
+    $name,
+    $object,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [id];
@@ -382,7 +381,7 @@ class ScopeNoneFieldsRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ScopeNoneFields>(
@@ -397,7 +396,7 @@ class ScopeNoneFieldsRepository {
   Future<List<ScopeNoneFields>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     int? limit,
     int? offset,

@@ -46,62 +46,65 @@ void main() {
         });
 
         test(
-            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
-            () async {
-          const nonRegisteredEmail = 'non-registered-$email';
-          final capturedAccountRequestId =
-              await fixture.emailIDP.startRegistration(
-            session,
-            email: nonRegisteredEmail,
-          );
+          'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+          () async {
+            const nonRegisteredEmail = 'non-registered-$email';
+            final capturedAccountRequestId = await fixture.emailIDP
+                .startRegistration(
+                  session,
+                  email: nonRegisteredEmail,
+                );
 
-          await expectLater(
-            accountRequestIdFuture,
-            completion(
-              isA<UuidValue>().having(
-                (final uuid) => uuid.version,
-                'version',
-                equals(capturedAccountRequestId.version),
+            await expectLater(
+              accountRequestIdFuture,
+              completion(
+                isA<UuidValue>().having(
+                  (final uuid) => uuid.version,
+                  'version',
+                  equals(capturedAccountRequestId.version),
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       });
 
       group(
-          'when start registration is called for the same email address in uppercase',
-          () {
-        late Future<UuidValue> accountRequestIdFuture;
+        'when start registration is called for the same email address in uppercase',
+        () {
+          late Future<UuidValue> accountRequestIdFuture;
 
-        setUp(() async {
-          accountRequestIdFuture = fixture.emailIDP.startRegistration(
-            session,
-            email: email.toUpperCase(),
-          );
-        });
+          setUp(() async {
+            accountRequestIdFuture = fixture.emailIDP.startRegistration(
+              session,
+              email: email.toUpperCase(),
+            );
+          });
 
-        test(
+          test(
             'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
             () async {
-          const nonRegisteredEmail = 'non-registered-$email';
-          final capturedAccountRequestId =
-              await fixture.emailIDP.startRegistration(
-            session,
-            email: nonRegisteredEmail,
-          );
+              const nonRegisteredEmail = 'non-registered-$email';
+              final capturedAccountRequestId = await fixture.emailIDP
+                  .startRegistration(
+                    session,
+                    email: nonRegisteredEmail,
+                  );
 
-          await expectLater(
-            accountRequestIdFuture,
-            completion(
-              isA<UuidValue>().having(
-                (final uuid) => uuid.version,
-                'version',
-                equals(capturedAccountRequestId.version),
-              ),
-            ),
+              await expectLater(
+                accountRequestIdFuture,
+                completion(
+                  isA<UuidValue>().having(
+                    (final uuid) => uuid.version,
+                    'version',
+                    equals(capturedAccountRequestId.version),
+                  ),
+                ),
+              );
+            },
           );
-        });
-      });
+        },
+      );
     },
   );
 
@@ -142,7 +145,9 @@ void main() {
 
         test('then it returns account registration request id', () async {
           await expectLater(
-              accountRequestIdFuture, completion(isA<UuidValue>()));
+            accountRequestIdFuture,
+            completion(isA<UuidValue>()),
+          );
         });
       });
     },

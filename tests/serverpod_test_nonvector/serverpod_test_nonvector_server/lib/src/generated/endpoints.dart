@@ -22,7 +22,7 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'greeting',
           null,
-        )
+        ),
     };
     connectors['greeting'] = _i1.EndpointConnector(
       name: 'greeting',
@@ -35,17 +35,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'name',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['greeting'] as _i2.GreetingEndpoint).hello(
-            session,
-            params['name'],
-          ),
-        )
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['greeting'] as _i2.GreetingEndpoint).hello(
+                session,
+                params['name'],
+              ),
+        ),
       },
     );
   }

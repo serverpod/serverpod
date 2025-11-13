@@ -54,84 +54,94 @@ void main() {
 
         test('then it returns password reset request id', () async {
           await expectLater(
-              passwordResetRequestIdFuture, completion(isA<UuidValue>()));
-        });
-
-        test('then password reset request can be used to verify password reset',
-            () async {
-          final passwordResetRequestId = await passwordResetRequestIdFuture;
-
-          final passwordResetResult = fixture.emailIDP.verifyPasswordResetCode(
-            session,
-            passwordResetRequestId: passwordResetRequestId,
-            verificationCode: verificationCode,
+            passwordResetRequestIdFuture,
+            completion(isA<UuidValue>()),
           );
-
-          await expectLater(passwordResetResult, completion(isA<String>()));
         });
+
+        test(
+          'then password reset request can be used to verify password reset',
+          () async {
+            final passwordResetRequestId = await passwordResetRequestIdFuture;
+
+            final passwordResetResult = fixture.emailIDP
+                .verifyPasswordResetCode(
+                  session,
+                  passwordResetRequestId: passwordResetRequestId,
+                  verificationCode: verificationCode,
+                );
+
+            await expectLater(passwordResetResult, completion(isA<String>()));
+          },
+        );
       });
     },
   );
 
   withServerpod(
-      'Given existing email account with maximum allowed password reset requests',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
-    const email = 'test@serverpod.dev';
-    const password = 'Password123!';
-    const maxPasswordResetAttempts = RateLimit(
-      maxAttempts: 1,
-      timeframe: Duration(hours: 1),
-    );
-
-    setUp(() async {
-      session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          maxPasswordResetAttempts: maxPasswordResetAttempts,
-        ),
+    'Given existing email account with maximum allowed password reset requests',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      const maxPasswordResetAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
       );
 
-      final authUser = await fixture.authUsers.create(session);
-      await fixture.createEmailAccount(
-        session,
-        authUserId: authUser.id,
-        email: email,
-        password: EmailAccountPassword.fromString(password),
-      );
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            maxPasswordResetAttempts: maxPasswordResetAttempts,
+          ),
+        );
 
-      // Make initial request to hit the rate limit
-      await fixture.emailIDP.startPasswordReset(
-        session,
-        email: email,
-      );
-    });
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
+        // Make initial request to hit the rate limit
+        await fixture.emailIDP.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
 
-    test(
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
         'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
-      final result = fixture.emailIDP.startPasswordReset(
-        session,
-        email: email,
-      );
+          final result = fixture.emailIDP.startPasswordReset(
+            session,
+            email: email,
+          );
 
-      await expectLater(
-          result,
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
-          )));
-    });
-  });
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given no email account',
@@ -162,85 +172,91 @@ void main() {
         });
 
         test(
-            'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
-            () async {
-          const existingUserEmail = 'existinguser@serverpod.dev';
-          final authUser = await fixture.authUsers.create(session);
-          await fixture.createEmailAccount(
-            session,
-            authUserId: authUser.id,
-            email: existingUserEmail,
-          );
+          'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
+          () async {
+            const existingUserEmail = 'existinguser@serverpod.dev';
+            final authUser = await fixture.authUsers.create(session);
+            await fixture.createEmailAccount(
+              session,
+              authUserId: authUser.id,
+              email: existingUserEmail,
+            );
 
-          final capturedPasswordResetRequestId =
-              await fixture.emailIDP.startPasswordReset(
-            session,
-            email: existingUserEmail,
-          );
+            final capturedPasswordResetRequestId = await fixture.emailIDP
+                .startPasswordReset(
+                  session,
+                  email: existingUserEmail,
+                );
 
-          await expectLater(
-            passwordResetRequestIdFuture,
-            completion(
-              isA<UuidValue>().having(
-                (final uuid) => uuid.version,
-                'version',
-                equals(capturedPasswordResetRequestId.version),
+            await expectLater(
+              passwordResetRequestIdFuture,
+              completion(
+                isA<UuidValue>().having(
+                  (final uuid) => uuid.version,
+                  'version',
+                  equals(capturedPasswordResetRequestId.version),
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       });
     },
   );
 
   withServerpod(
-      'Given maximum allowed password reset requests for non-existing email account',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
-    const email = 'test@serverpod.dev';
-    const maxPasswordResetAttempts = RateLimit(
-      maxAttempts: 1,
-      timeframe: Duration(hours: 1),
-    );
-
-    setUp(() async {
-      session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          maxPasswordResetAttempts: maxPasswordResetAttempts,
-        ),
+    'Given maximum allowed password reset requests for non-existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIDPTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const maxPasswordResetAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
       );
 
-      // Make initial request to hit the rate limit
-      await fixture.emailIDP.startPasswordReset(
-        session,
-        email: email,
-      );
-    });
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            secretHashPepper: 'pepper',
+            maxPasswordResetAttempts: maxPasswordResetAttempts,
+          ),
+        );
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
+        // Make initial request to hit the rate limit
+        await fixture.emailIDP.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
 
-    test(
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
         'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
-      final result = fixture.emailIDP.startPasswordReset(
-        session,
-        email: email,
-      );
+          final result = fixture.emailIDP.startPasswordReset(
+            session,
+            email: email,
+          );
 
-      await expectLater(
-          result,
-          throwsA(isA<EmailAccountPasswordResetException>().having(
-            (final e) => e.reason,
-            'reason',
-            EmailAccountPasswordResetExceptionReason.tooManyAttempts,
-          )));
-    });
-  });
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountPasswordResetException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountPasswordResetExceptionReason.tooManyAttempts,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }

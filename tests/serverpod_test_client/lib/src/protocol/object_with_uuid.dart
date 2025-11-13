@@ -32,7 +32,8 @@ abstract class ObjectWithUuid implements _i1.SerializableModel {
       uuidNullable: jsonSerialization['uuidNullable'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidNullable']),
+              jsonSerialization['uuidNullable'],
+            ),
     );
   }
 
@@ -76,10 +77,10 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     required _i1.UuidValue uuid,
     _i1.UuidValue? uuidNullable,
   }) : super._(
-          id: id,
-          uuid: uuid,
-          uuidNullable: uuidNullable,
-        );
+         id: id,
+         uuid: uuid,
+         uuidNullable: uuidNullable,
+       );
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
@@ -93,8 +94,9 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     return ObjectWithUuid(
       id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
-      uuidNullable:
-          uuidNullable is _i1.UuidValue? ? uuidNullable : this.uuidNullable,
+      uuidNullable: uuidNullable is _i1.UuidValue?
+          ? uuidNullable
+          : this.uuidNullable,
     );
   }
 }

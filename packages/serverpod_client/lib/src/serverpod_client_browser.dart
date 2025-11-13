@@ -35,13 +35,16 @@ class ServerpodClientRequestDelegateImpl
     String? authenticationValue,
   }) async {
     try {
-      var response = await _httpClient.post(
-        url,
-        body: body,
-        headers: {
-          if (authenticationValue != null) 'authorization': authenticationValue,
-        },
-      ).timeout(connectionTimeout);
+      var response = await _httpClient
+          .post(
+            url,
+            body: body,
+            headers: {
+              if (authenticationValue != null)
+                'authorization': authenticationValue,
+            },
+          )
+          .timeout(connectionTimeout);
 
       var data = response.body;
 

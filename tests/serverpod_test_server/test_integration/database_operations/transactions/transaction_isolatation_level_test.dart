@@ -16,61 +16,63 @@ void main() async {
       var session = sessionBuilder.build();
 
       tearDown(() async {
-        await SimpleData.db
-            .deleteWhere(session, where: (t) => Constant.bool(true));
+        await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
       });
 
       group(
-          'Given read committed transaction isolation level and single row in database',
-          () {
-        var settings = TransactionSettings(
-          isolationLevel: IsolationLevel.readCommitted,
-        );
-
-        late SimpleData testData;
-        setUp(() async {
-          testData = await SimpleData.db.insertRow(
-            session,
-            SimpleData(num: 1),
-          );
-        });
-
-        test(
-            'when row is modified after first statement in transaction '
-            'then transaction observes the updated value.', () async {
-          var c1 = Completer();
-          var c2 = Completer();
-          var transactionFuture = session.db.transaction(
-            (t) async {
-              await SimpleData.db.findById(
-                session,
-                testData.id!,
-                transaction: t,
-              );
-
-              c1.complete();
-              await c2.future;
-
-              return await SimpleData.db.findById(
-                session,
-                testData.id!,
-                transaction: t,
-              );
-            },
-            settings: settings,
+        'Given read committed transaction isolation level and single row in database',
+        () {
+          var settings = TransactionSettings(
+            isolationLevel: IsolationLevel.readCommitted,
           );
 
-          await c1.future;
-          await SimpleData.db.updateRow(
-            session,
-            testData.copyWith(num: 2),
-          );
-          c2.complete();
+          late SimpleData testData;
+          setUp(() async {
+            testData = await SimpleData.db.insertRow(
+              session,
+              SimpleData(num: 1),
+            );
+          });
 
-          var transactionResult = await transactionFuture;
-          expect(transactionResult?.num, 2);
-        });
-      });
+          test('when row is modified after first statement in transaction '
+              'then transaction observes the updated value.', () async {
+            var c1 = Completer();
+            var c2 = Completer();
+            var transactionFuture = session.db.transaction(
+              (t) async {
+                await SimpleData.db.findById(
+                  session,
+                  testData.id!,
+                  transaction: t,
+                );
+
+                c1.complete();
+                await c2.future;
+
+                return await SimpleData.db.findById(
+                  session,
+                  testData.id!,
+                  transaction: t,
+                );
+              },
+              settings: settings,
+            );
+
+            await c1.future;
+            await SimpleData.db.updateRow(
+              session,
+              testData.copyWith(num: 2),
+            );
+            c2.complete();
+
+            var transactionResult = await transactionFuture;
+            expect(transactionResult?.num, 2);
+          });
+        },
+      );
     },
   );
 
@@ -82,16 +84,17 @@ void main() async {
       var session = sessionBuilder.build();
 
       tearDown(() async {
-        await SimpleData.db
-            .deleteWhere(session, where: (t) => Constant.bool(true));
+        await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
       });
 
       var settings = TransactionSettings(
         isolationLevel: IsolationLevel.repeatableRead,
       );
 
-      test(
-          'when row is modified after first statement in transaction '
+      test('when row is modified after first statement in transaction '
           'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
@@ -131,8 +134,7 @@ void main() async {
         expect(result?.num, 1);
       });
 
-      test(
-          'when read row is concurrently modified by other transaction '
+      test('when read row is concurrently modified by other transaction '
           'then modifications are preserved', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,
@@ -208,16 +210,17 @@ void main() async {
       var session = sessionBuilder.build();
 
       tearDown(() async {
-        await SimpleData.db
-            .deleteWhere(session, where: (t) => Constant.bool(true));
+        await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => Constant.bool(true),
+        );
       });
 
       var settings = TransactionSettings(
         isolationLevel: IsolationLevel.serializable,
       );
 
-      test(
-          'when row is modified after first statement in transaction '
+      test('when row is modified after first statement in transaction '
           'then transaction does NOT observe the updated value.', () async {
         var testData = await SimpleData.db.insertRow(
           session,
@@ -256,8 +259,7 @@ void main() async {
         expect(result?.num, 1);
       });
 
-      test(
-          'when read row is concurrently modified by other transaction '
+      test('when read row is concurrently modified by other transaction '
           'then database exception is thrown for one transaction', () async {
         var testData1 = await SimpleData.db.insertRow(
           session,
@@ -313,9 +315,15 @@ void main() async {
         );
 
         expectLater(
-            transaction1,
-            throwsA(isA<DatabaseQueryException>().having(
-                (e) => e.code, 'code', PgErrorCode.serializationFailure)));
+          transaction1,
+          throwsA(
+            isA<DatabaseQueryException>().having(
+              (e) => e.code,
+              'code',
+              PgErrorCode.serializationFailure,
+            ),
+          ),
+        );
         await transaction2;
         var data1AfterTransaction = await SimpleData.db.findById(
           session,

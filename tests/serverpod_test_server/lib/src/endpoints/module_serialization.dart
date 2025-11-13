@@ -19,7 +19,8 @@ class ModuleSerializationEndpoint extends Endpoint {
       return (unpacked.data == 42 && unpacked.name == 'foo');
     } catch (e, stackTrace) {
       stdout.writeln(
-          'ModuleSerializationEndpoint.serializeModuleObject failed: $e');
+        'ModuleSerializationEndpoint.serializeModuleObject failed: $e',
+      );
       stdout.writeln('$stackTrace');
 
       return false;
@@ -27,7 +28,9 @@ class ModuleSerializationEndpoint extends Endpoint {
   }
 
   Future<module.ModuleClass> modifyModuleObject(
-      Session session, module.ModuleClass object) async {
+    Session session,
+    module.ModuleClass object,
+  ) async {
     object.data = 42;
     return object;
   }

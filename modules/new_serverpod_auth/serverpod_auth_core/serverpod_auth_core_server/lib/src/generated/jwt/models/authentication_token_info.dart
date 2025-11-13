@@ -35,19 +35,24 @@ abstract class AuthenticationTokenInfo
   }) = _AuthenticationTokenInfoImpl;
 
   factory AuthenticationTokenInfo.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthenticationTokenInfo(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+        (jsonSerialization['scopeNames'] as List),
+        itemFromJson: (e) => e as String,
+      )!,
       extraClaimsJSON: jsonSerialization['extraClaimsJSON'] as String?,
       lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['lastUpdatedAt']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+        jsonSerialization['lastUpdatedAt'],
+      ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -130,14 +135,14 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     required DateTime createdAt,
     required String method,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          scopeNames: scopeNames,
-          extraClaimsJSON: extraClaimsJSON,
-          lastUpdatedAt: lastUpdatedAt,
-          createdAt: createdAt,
-          method: method,
-        );
+         id: id,
+         authUserId: authUserId,
+         scopeNames: scopeNames,
+         extraClaimsJSON: extraClaimsJSON,
+         lastUpdatedAt: lastUpdatedAt,
+         createdAt: createdAt,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthenticationTokenInfo]
   /// with some or all fields replaced by the given arguments.
@@ -156,8 +161,9 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
       id: id ?? this.id,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
-      extraClaimsJSON:
-          extraClaimsJSON is String? ? extraClaimsJSON : this.extraClaimsJSON,
+      extraClaimsJSON: extraClaimsJSON is String?
+          ? extraClaimsJSON
+          : this.extraClaimsJSON,
       lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
       createdAt: createdAt ?? this.createdAt,
       method: method ?? this.method,

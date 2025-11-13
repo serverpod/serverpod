@@ -10,21 +10,25 @@ void main() {
       ''',
     );
 
-    test('when negate matching class and unnamed constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withUnnamedConstructor()),
-      );
-    });
+    test(
+      'when negate matching class and unnamed constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withUnnamedConstructor()),
+        );
+      },
+    );
 
-    test('when negate matching class and named constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withNamedConstructor('_')),
-      );
-    });
+    test(
+      'when negate matching class and named constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withNamedConstructor('_')),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class and unnamed constructor', () {
@@ -44,39 +48,44 @@ void main() {
     });
 
     test(
-        'when matching class and unnamed non-factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        containsClass('User').withUnnamedConstructor(isFactory: false),
-      );
-    });
+      'when matching class and unnamed non-factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          containsClass('User').withUnnamedConstructor(isFactory: false),
+        );
+      },
+    );
 
     test(
-        'when negate matching with non-existent class and constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('NonExistentClass').withUnnamedConstructor()),
-      );
-    });
-
-    test('when negate matching class and named constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withNamedConstructor('_')),
-      );
-    });
+      'when negate matching with non-existent class and constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('NonExistentClass').withUnnamedConstructor()),
+        );
+      },
+    );
 
     test(
-        'when negate matching class and unnamed factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withUnnamedConstructor(isFactory: true)),
-      );
-    });
+      'when negate matching class and named constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withNamedConstructor('_')),
+        );
+      },
+    );
+
+    test(
+      'when negate matching class and unnamed factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withUnnamedConstructor(isFactory: true)),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class and private named constructor', () {
@@ -88,25 +97,28 @@ void main() {
     ''',
     );
 
-    test('when matching class and private named constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        containsClass('User').withNamedConstructor('_'),
-      );
-    });
+    test(
+      'when matching class and private named constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          containsClass('User').withNamedConstructor('_'),
+        );
+      },
+    );
 
-    test('when negate matching class and unnamed constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withUnnamedConstructor()),
-      );
-    });
+    test(
+      'when negate matching class and unnamed constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withUnnamedConstructor()),
+        );
+      },
+    );
   });
 
-  group('Given compilation unit with class and unnamed factory constructor',
-      () {
+  group('Given compilation unit with class and unnamed factory constructor', () {
     late final compilationUnit = parseCode(
       '''
       class User {
@@ -115,31 +127,37 @@ void main() {
     ''',
     );
 
-    test('when matching class and unnamed factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        containsClass('User').withUnnamedConstructor(isFactory: true),
-      );
-    });
+    test(
+      'when matching class and unnamed factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          containsClass('User').withUnnamedConstructor(isFactory: true),
+        );
+      },
+    );
 
     test(
-        'when negate matching class and unnamed non-factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withUnnamedConstructor(isFactory: false)),
-      );
-    });
+      'when negate matching class and unnamed non-factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(containsClass('User').withUnnamedConstructor(isFactory: false)),
+        );
+      },
+    );
 
     test(
-        'when negate matching class and named factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withNamedConstructor('_', isFactory: true)),
-      );
-    });
+      'when negate matching class and named factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(
+            containsClass('User').withNamedConstructor('_', isFactory: true),
+          ),
+        );
+      },
+    );
   });
 
   group('Given compilation unit with class and named factory constructor', () {
@@ -160,38 +178,46 @@ void main() {
       );
     });
 
-    test('when matching class and named factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        containsClass('User').withNamedConstructor(
-          'namedFactory',
-          isFactory: true,
-        ),
-      );
-    });
+    test(
+      'when matching class and named factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          containsClass('User').withNamedConstructor(
+            'namedFactory',
+            isFactory: true,
+          ),
+        );
+      },
+    );
 
     test(
-        'when negate matching class and unnamed factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withUnnamedConstructor(
-          isFactory: true,
-        )),
-      );
-    });
+      'when negate matching class and unnamed factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(
+            containsClass('User').withUnnamedConstructor(
+              isFactory: true,
+            ),
+          ),
+        );
+      },
+    );
 
     test(
-        'when negate matching class and named non-factory constructor then test passes',
-        () {
-      expect(
-        compilationUnit,
-        isNot(containsClass('User').withNamedConstructor(
-          'namedFactory',
-          isFactory: false,
-        )),
-      );
-    });
+      'when negate matching class and named non-factory constructor then test passes',
+      () {
+        expect(
+          compilationUnit,
+          isNot(
+            containsClass('User').withNamedConstructor(
+              'namedFactory',
+              isFactory: false,
+            ),
+          ),
+        );
+      },
+    );
   });
 }

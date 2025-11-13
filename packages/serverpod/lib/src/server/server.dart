@@ -120,10 +120,10 @@ class Server implements RouterInjectable {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
-  })  : name = name ?? 'Server $serverId',
-        _databasePoolManager = databasePoolManager,
-        _securityContext = securityContext,
-        _port = port;
+  }) : name = name ?? 'Server $serverId',
+       _databasePoolManager = databasePoolManager,
+       _securityContext = securityContext,
+       _port = port;
 
   late final _app = RelicApp()..inject(this);
 
@@ -136,12 +136,19 @@ class Server implements RouterInjectable {
       ..use('/', _headers)
       ..use('/', _reportException)
       ..get('/', _health)
-      ..get('/websocket',
-          _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket))
-      ..get('/v1/websocket',
-          _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket))
-      ..anyOf({Method.get, Method.options, Method.post},
-          '/serverpod_cloud_storage', _cloudStorage)
+      ..get(
+        '/websocket',
+        _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket),
+      )
+      ..get(
+        '/v1/websocket',
+        _dispatchWebSocket(MethodWebsocketRequestHandler.handleWebsocket),
+      )
+      ..anyOf(
+        {Method.get, Method.options, Method.post},
+        '/serverpod_cloud_storage',
+        _cloudStorage,
+      )
       ..any('/**', _endpoints);
   }
 
@@ -160,8 +167,11 @@ class Server implements RouterInjectable {
       _actualPort = server.port;
       _relicServer = server;
     } catch (e, stackTrace) {
-      await _reportFrameworkException(e, stackTrace,
-          message: 'Failed to bind socket, port $_port may already be in use.');
+      await _reportFrameworkException(
+        e,
+        stackTrace,
+        message: 'Failed to bind socket, port $_port may already be in use.',
+      );
       return false;
     }
 
@@ -195,31 +205,34 @@ class Server implements RouterInjectable {
         );
       } on EndpointDispatchException catch (e) {
         return switch (e) {
-          EndpointNotFoundException() =>
-            Response.notFound(body: Body.fromString(e.message)),
+          EndpointNotFoundException() => Response.notFound(
+            body: Body.fromString(e.message),
+          ),
           NotAuthorizedException() => Response(switch (e.reason) {
-              AuthenticationFailureReason.unauthenticated =>
-                io.HttpStatus.unauthorized,
-              AuthenticationFailureReason.insufficientAccess =>
-                io.HttpStatus.forbidden,
-            }),
+            AuthenticationFailureReason.unauthenticated =>
+              io.HttpStatus.unauthorized,
+            AuthenticationFailureReason.insufficientAccess =>
+              io.HttpStatus.forbidden,
+          }),
           MethodNotFoundException() ||
           InvalidEndpointMethodTypeException() ||
-          InvalidParametersException() =>
-            Response.badRequest(body: Body.fromString(e.message)),
+          InvalidParametersException() => Response.badRequest(
+            body: Body.fromString(e.message),
+          ),
         };
       } on SerializableException catch (e) {
         return Response.badRequest(
           body: Body.fromString(
-              serializationManager.encodeWithTypeForProtocol(e),
-              mimeType: MimeType.json),
+            serializationManager.encodeWithTypeForProtocol(e),
+            mimeType: MimeType.json,
+          ),
         );
       } on HeaderException catch (e) {
         return Response.badRequest(body: Body.fromString(e.httpResponseBody));
       } on AuthHeaderEncodingException catch (_) {
         return Response.badRequest(
-            body:
-                Body.fromString('Request has invalid "authorization" header'));
+          body: Body.fromString('Request has invalid "authorization" header'),
+        );
       } catch (e, stackTrace) {
         await _reportFrameworkException(
           e,
@@ -239,12 +252,15 @@ class Server implements RouterInjectable {
     final ok = issues.isEmpty;
     final now = DateTime.timestamp();
     if (ok) return Response.ok(body: Body.fromString('OK $now'));
-    return Response(503, body: Body.fromDataStream(() async* {
-      yield utf8.encode('SADNESS $now\r\n');
-      for (final metric in issues) {
-        yield utf8.encode('${metric.name}: ${metric.value}\r\n');
-      }
-    }()));
+    return Response(
+      503,
+      body: Body.fromDataStream(() async* {
+        yield utf8.encode('SADNESS $now\r\n');
+        for (final metric in issues) {
+          yield utf8.encode('${metric.name}: ${metric.value}\r\n');
+        }
+      }()),
+    );
   }
 
   Handler _headers(Handler next) {
@@ -264,13 +280,14 @@ class Server implements RouterInjectable {
       final result = await next(req);
       return switch (result) {
         Response() => result.copyWith(
-            headers: result.headers.isEmpty
-                ? headers
-                : result.headers.transform((mh) {
-                    for (final h in headers.entries) {
-                      mh[h.key] ??= h.value;
-                    }
-                  })),
+          headers: result.headers.isEmpty
+              ? headers
+              : result.headers.transform((mh) {
+                  for (final h in headers.entries) {
+                    mh[h.key] ??= h.value;
+                  }
+                }),
+        ),
         _ => result,
       };
     };
@@ -293,7 +310,8 @@ class Server implements RouterInjectable {
       RelicWebSocket,
       Request,
       void Function(),
-    ) requestHandler,
+    )
+    requestHandler,
   ) {
     return (req) async {
       return WebSocketUpgrade((webSocket) async {

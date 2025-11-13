@@ -82,11 +82,11 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
     required String parentField,
     required String childField,
   }) : super._(
-          id: id,
-          grandParentField: grandParentField,
-          parentField: parentField,
-          childField: childField,
-        );
+         id: id,
+         grandParentField: grandParentField,
+         parentField: parentField,
+         childField: childField,
+       );
 
   /// Returns a shallow copy of this [ChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.

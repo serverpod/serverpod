@@ -38,12 +38,14 @@ abstract class Post implements _i1.SerializableModel {
       previous: jsonSerialization['previous'] == null
           ? null
           : _i2.Post.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
+              (jsonSerialization['previous'] as Map<String, dynamic>),
+            ),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
           : _i2.Post.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
+              (jsonSerialization['next'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -97,12 +99,12 @@ class _PostImpl extends Post {
     int? nextId,
     _i2.Post? next,
   }) : super._(
-          id: id,
-          content: content,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-        );
+         id: id,
+         content: content,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+       );
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.

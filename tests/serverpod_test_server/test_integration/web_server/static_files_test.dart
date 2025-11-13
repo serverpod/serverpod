@@ -8,7 +8,8 @@ import 'package:path/path.dart' as path;
 
 void main() {
   var directory = Directory(
-      path.join(Directory.current.path, 'web', 'server_root_directory'));
+    path.join(Directory.current.path, 'web', 'server_root_directory'),
+  );
   var nestedDirectory = Directory(path.join(directory.path, 'nested_dir'));
 
   late http.Client client;
@@ -17,12 +18,15 @@ void main() {
 
     await directory.create(recursive: true);
     await nestedDirectory.create(recursive: true);
-    await File(path.join(directory.path, 'file1.txt'))
-        .writeAsString('contents');
-    await File(path.join(directory.path, 'file2.test'))
-        .writeAsString('contents');
-    await File(path.join(nestedDirectory.path, 'file3.txt'))
-        .writeAsString('nested contents');
+    await File(
+      path.join(directory.path, 'file1.txt'),
+    ).writeAsString('contents');
+    await File(
+      path.join(directory.path, 'file2.test'),
+    ).writeAsString('contents');
+    await File(
+      path.join(nestedDirectory.path, 'file3.txt'),
+    ).writeAsString('nested contents');
   });
 
   tearDownAll(() async {
@@ -43,11 +47,13 @@ void main() {
     group('and a path cache pattern having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(directory,
-              cacheControlFactory: (ctx, fileInfo) =>
-                  RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
-                      ? CacheControlHeader(maxAge: 1)
-                      : null),
+          StaticRoute.directory(
+            directory,
+            cacheControlFactory: (ctx, fileInfo) =>
+                RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
+                ? CacheControlHeader(maxAge: 1)
+                : null,
+          ),
           '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
@@ -55,8 +61,7 @@ void main() {
         await pod.start();
       });
 
-      test(
-          'when requesting a static file with the same path pattern '
+      test('when requesting a static file with the same path pattern '
           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
@@ -67,8 +72,7 @@ void main() {
         expect(response.headers['cache-control'], 'max-age=1');
       });
 
-      test(
-          'when requesting a static file with a different path pattern '
+      test('when requesting a static file with a different path pattern '
           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
@@ -83,11 +87,13 @@ void main() {
     group('and a path cache string having a max age of 1 second', () {
       setUp(() async {
         pod.webServer.addRoute(
-          StaticRoute.directory(directory,
-              cacheControlFactory: (ctx, fileInfo) =>
-                  RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
-                      ? CacheControlHeader(maxAge: 1)
-                      : null),
+          StaticRoute.directory(
+            directory,
+            cacheControlFactory: (ctx, fileInfo) =>
+                RegExp(r'.*\.txt').hasMatch(ctx.remainingPath.path)
+                ? CacheControlHeader(maxAge: 1)
+                : null,
+          ),
           '/url_prefix/**',
         );
         // Server should start after adding the route otherwise web server
@@ -95,8 +101,7 @@ void main() {
         await pod.start();
       });
 
-      test(
-          'when requesting a static file with the same path string '
+      test('when requesting a static file with the same path string '
           'then the cache-control header is set to max-age=1', () async {
         var response = await client.get(
           Uri.parse(
@@ -107,8 +112,7 @@ void main() {
         expect(response.headers['cache-control'], 'max-age=1');
       });
 
-      test(
-          'when requesting a static file with a different path string '
+      test('when requesting a static file with a different path string '
           'then the cache-control header is set to default max age', () async {
         var response = await client.get(
           Uri.parse(
@@ -138,16 +142,16 @@ void main() {
         );
         await pod.start();
 
-        file1AssetPath =
-            await cacheBustingConfig.assetPath('/url_prefix/file1.txt');
+        file1AssetPath = await cacheBustingConfig.assetPath(
+          '/url_prefix/file1.txt',
+        );
       });
 
       test('then asset path contains ___', () {
         expect(file1AssetPath, contains('___'));
       });
 
-      test(
-          'when requesting a static file with '
+      test('when requesting a static file with '
           'then the file is served correctly', () async {
         var response = await client.get(
           Uri.parse(
@@ -203,67 +207,71 @@ void main() {
         });
 
         test(
-            'then 304 Not Modified is returned when If-None-Match matches ETag',
-            () async {
-          // First request to get ETag
-          var initialResponse = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-          );
-          var etag = initialResponse.headers['etag'];
-          expect(etag, isNotNull);
+          'then 304 Not Modified is returned when If-None-Match matches ETag',
+          () async {
+            // First request to get ETag
+            var initialResponse = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            );
+            var etag = initialResponse.headers['etag'];
+            expect(etag, isNotNull);
 
-          // Second request with If-None-Match
-          var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-            headers: {
-              'If-None-Match': etag!,
-            },
-          );
+            // Second request with If-None-Match
+            var response = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              headers: {
+                'If-None-Match': etag!,
+              },
+            );
 
-          expect(response.statusCode, 304);
-          expect(response.body, isEmpty);
-        });
+            expect(response.statusCode, 304);
+            expect(response.body, isEmpty);
+          },
+        );
       });
 
       group('and an If-Modified-Since header', () {
-        test('then Last-Modified header is returned with initial request',
-            () async {
-          var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-          );
+        test(
+          'then Last-Modified header is returned with initial request',
+          () async {
+            var response = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            );
 
-          expect(response.statusCode, 200);
-          expect(response.headers['last-modified'], isNotNull);
-          expect(response.body, 'contents');
-        });
+            expect(response.statusCode, 200);
+            expect(response.headers['last-modified'], isNotNull);
+            expect(response.body, 'contents');
+          },
+        );
 
         test(
-            'then 304 Not Modified is returned when If-Modified-Since is after last modification',
-            () async {
-          // First request to get Last-Modified
-          var initialResponse = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-          );
-          var lastModified = initialResponse.headers['last-modified'];
-          expect(lastModified, isNotNull);
+          'then 304 Not Modified is returned when If-Modified-Since is after last modification',
+          () async {
+            // First request to get Last-Modified
+            var initialResponse = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            );
+            var lastModified = initialResponse.headers['last-modified'];
+            expect(lastModified, isNotNull);
 
-          // Move lastModified 1 second into the future to ensure it's after
-          // the file's actual last modified time.
-          lastModified = HttpDate.format(
-            HttpDate.parse(lastModified!).add(Duration(seconds: 1)),
-          );
+            // Move lastModified 1 second into the future to ensure it's after
+            // the file's actual last modified time.
+            lastModified = HttpDate.format(
+              HttpDate.parse(lastModified!).add(Duration(seconds: 1)),
+            );
 
-          // Second request with If-Modified-Since set to lastModified
-          var response = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-            headers: {
-              'If-Modified-Since': lastModified,
-            },
-          );
+            // Second request with If-Modified-Since set to lastModified
+            var response = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+              headers: {
+                'If-Modified-Since': lastModified,
+              },
+            );
 
-          expect(response.statusCode, 304);
-          expect(response.body, isEmpty);
-        });
+            expect(response.statusCode, 304);
+            expect(response.body, isEmpty);
+          },
+        );
       });
 
       group('and a Range header for partial content', () {
@@ -295,10 +303,11 @@ void main() {
 
         test('then 416 is returned for invalid range', () async {
           var response = await http.get(
-              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-              headers: {
-                'Range': 'bytes=100-200', // Beyond file size
-              });
+            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            headers: {
+              'Range': 'bytes=100-200', // Beyond file size
+            },
+          );
 
           expect(response.statusCode, 416); // Range Not Satisfiable
         });
@@ -316,27 +325,33 @@ void main() {
       });
 
       group('and HEAD method is used', () {
-        test('then HEAD requests are supported with same headers as GET',
-            () async {
-          // GET request for comparison
-          var getResponse = await client.get(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-          );
-          expect(getResponse.statusCode, 200);
+        test(
+          'then HEAD requests are supported with same headers as GET',
+          () async {
+            // GET request for comparison
+            var getResponse = await client.get(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            );
+            expect(getResponse.statusCode, 200);
 
-          // HEAD request
-          var headResponse = await client.head(
-            Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
-          );
+            // HEAD request
+            var headResponse = await client.head(
+              Uri.parse('http://localhost:8082/url_prefix/file1.txt'),
+            );
 
-          expect(headResponse.statusCode, 200);
-          expect(headResponse.body, isEmpty); // HEAD should have no body
-          expect(headResponse.headers['content-length'],
-              getResponse.headers['content-length']);
-          expect(headResponse.headers['etag'], getResponse.headers['etag']);
-          expect(headResponse.headers['last-modified'],
-              getResponse.headers['last-modified']);
-        });
+            expect(headResponse.statusCode, 200);
+            expect(headResponse.body, isEmpty); // HEAD should have no body
+            expect(
+              headResponse.headers['content-length'],
+              getResponse.headers['content-length'],
+            );
+            expect(headResponse.headers['etag'], getResponse.headers['etag']);
+            expect(
+              headResponse.headers['last-modified'],
+              getResponse.headers['last-modified'],
+            );
+          },
+        );
       });
     });
   });

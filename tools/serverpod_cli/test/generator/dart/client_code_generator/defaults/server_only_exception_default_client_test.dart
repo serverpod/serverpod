@@ -16,88 +16,93 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group(
-      'Given an exception class with serverOnly scoped fields having defaultModelValue when generating client code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given an exception class with serverOnly scoped fields having defaultModelValue when generating client code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'ServerOnlyException';
-      var testClassFileName = 'server_only_exception';
-      var expectedFilePath = path.join(
-        '..',
-        'example_project_client',
-        'lib',
-        'src',
-        'protocol',
-        '$testClassFileName.dart',
-      );
-
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('message')
-            .withTypeDefinition('String', false)
-            .withScope(ModelFieldScopeDefinition.all)
-            .withDefaults(defaultModelValue: '\'Default error message\'')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('serverErrorCode')
-            .withTypeDefinition('int', true)
-            .withScope(ModelFieldScopeDefinition.serverOnly)
-            .withDefaults(defaultModelValue: '500')
-            .build(),
-      ];
-
-      var models = [
-        ExceptionClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
-
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
-
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
-
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
-
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the ServerOnlyException client class', () {
-      test('has message field default value initializer', () {
-        var initializer = privateConstructor?.initializers
-            .firstWhere((e) => e.toSource().contains('message'));
-        expect(
-          initializer?.toSource(),
-          "message = message ?? 'Default error message'",
+      setUpAll(() {
+        var testClassName = 'ServerOnlyException';
+        var testClassFileName = 'server_only_exception';
+        var expectedFilePath = path.join(
+          '..',
+          'example_project_client',
+          'lib',
+          'src',
+          'protocol',
+          '$testClassFileName.dart',
         );
+
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('message')
+              .withTypeDefinition('String', false)
+              .withScope(ModelFieldScopeDefinition.all)
+              .withDefaults(defaultModelValue: '\'Default error message\'')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('serverErrorCode')
+              .withTypeDefinition('int', true)
+              .withScope(ModelFieldScopeDefinition.serverOnly)
+              .withDefaults(defaultModelValue: '500')
+              .build(),
+        ];
+
+        var models = [
+          ExceptionClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
+
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
+
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
+
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
+
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test('does NOT have serverErrorCode field initializer', () {
-        var initializerSources = privateConstructor?.initializers
-                .map((init) => init.toSource())
-                .toList() ??
-            [];
+      group('then the ServerOnlyException client class', () {
+        test('has message field default value initializer', () {
+          var initializer = privateConstructor?.initializers.firstWhere(
+            (e) => e.toSource().contains('message'),
+          );
+          expect(
+            initializer?.toSource(),
+            "message = message ?? 'Default error message'",
+          );
+        });
 
-        expect(
-          initializerSources,
-          isNot(contains(contains('serverErrorCode'))),
-          reason:
-              'serverOnly field should not have initializer in client exception',
-        );
+        test('does NOT have serverErrorCode field initializer', () {
+          var initializerSources =
+              privateConstructor?.initializers
+                  .map((init) => init.toSource())
+                  .toList() ??
+              [];
+
+          expect(
+            initializerSources,
+            isNot(contains(contains('serverErrorCode'))),
+            reason:
+                'serverOnly field should not have initializer in client exception',
+          );
+        });
       });
-    });
-  });
+    },
+  );
 }

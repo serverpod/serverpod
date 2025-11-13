@@ -15,11 +15,11 @@ class GeneratorConfigFileBuilder {
   List<ModuleConfigEntry> _modules;
 
   GeneratorConfigFileBuilder()
-      : _type = PackageType.server,
-        _nickname = null,
-        _clientPackagePath = '../example_client',
-        _serverTestToolsPath = '../server_test_tools',
-        _modules = [];
+    : _type = PackageType.server,
+      _nickname = null,
+      _clientPackagePath = '../example_client',
+      _serverTestToolsPath = '../server_test_tools',
+      _modules = [];
 
   GeneratorConfigFileBuilder withType(PackageType type) {
     _type = type;
@@ -37,7 +37,8 @@ class GeneratorConfigFileBuilder {
   }
 
   GeneratorConfigFileBuilder withServerTestToolsPath(
-      String? serverTestToolsPath) {
+    String? serverTestToolsPath,
+  ) {
     _serverTestToolsPath = serverTestToolsPath;
     return this;
   }

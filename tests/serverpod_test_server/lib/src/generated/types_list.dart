@@ -65,10 +65,12 @@ abstract class TypesList
 
   factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesList(
-      anInt:
-          (jsonSerialization['anInt'] as List?)?.map((e) => e as int).toList(),
-      aBool:
-          (jsonSerialization['aBool'] as List?)?.map((e) => e as bool).toList(),
+      anInt: (jsonSerialization['anInt'] as List?)
+          ?.map((e) => e as int)
+          .toList(),
+      aBool: (jsonSerialization['aBool'] as List?)
+          ?.map((e) => e as bool)
+          .toList(),
       aDouble: (jsonSerialization['aDouble'] as List?)
           ?.map((e) => (e as num).toDouble())
           .toList(),
@@ -103,33 +105,50 @@ abstract class TypesList
           ?.map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
           .toList(),
       aMap: (jsonSerialization['aMap'] as List?)
-          ?.map((e) => (e as Map).map((k, v) => MapEntry(
+          ?.map(
+            (e) => (e as Map).map(
+              (k, v) => MapEntry(
                 k as String,
                 _i5.Types.fromJson((v as Map<String, dynamic>)),
-              )))
+              ),
+            ),
+          )
           .toList(),
       aList: (jsonSerialization['aList'] as List?)
-          ?.map((e) => (e as List)
-              .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-              .toList())
+          ?.map(
+            (e) => (e as List)
+                .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
+                .toList(),
+          )
           .toList(),
       aRecord: (jsonSerialization['aRecord'] as List?)
-          ?.map((e) =>
-              _i6.Protocol().deserialize<(int,)>((e as Map<String, dynamic>)))
+          ?.map(
+            (e) =>
+                _i6.Protocol().deserialize<(int,)>((e as Map<String, dynamic>)),
+          )
           .toList(),
       aNullableRecord: (jsonSerialization['aNullableRecord'] as List?)
-          ?.map((e) => e == null
-              ? null
-              : _i6.Protocol()
-                  .deserialize<(int,)?>((e as Map<String, dynamic>)))
+          ?.map(
+            (e) => e == null
+                ? null
+                : _i6.Protocol().deserialize<(int,)?>(
+                    (e as Map<String, dynamic>),
+                  ),
+          )
           .toList(),
       anEnumRecord: (jsonSerialization['anEnumRecord'] as List?)
-          ?.map((e) => _i6.Protocol()
-              .deserialize<(_i3.TestEnum,)>((e as Map<String, dynamic>)))
+          ?.map(
+            (e) => _i6.Protocol().deserialize<(_i3.TestEnum,)>(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       anEnum2Record: (jsonSerialization['anEnum2Record'] as List?)
-          ?.map((e) => _i6.Protocol().deserialize<(_i4.TestEnumStringified,)>(
-              (e as Map<String, dynamic>)))
+          ?.map(
+            (e) => _i6.Protocol().deserialize<(_i4.TestEnumStringified,)>(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
     );
   }
@@ -216,16 +235,19 @@ abstract class TypesList
       if (anEnum != null)
         'anEnum': anEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnum != null)
-        'aStringifiedEnum':
-            aStringifiedEnum?.toJson(valueToJson: (v) => v.toJson()),
+        'aStringifiedEnum': aStringifiedEnum?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (anObject != null)
         'anObject': anObject?.toJson(valueToJson: (v) => v.toJson()),
       if (aMap != null)
         'aMap': aMap?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
       if (aList != null)
         'aList': aList?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
       if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
         'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
@@ -256,18 +278,21 @@ abstract class TypesList
       if (anEnum != null)
         'anEnum': anEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnum != null)
-        'aStringifiedEnum':
-            aStringifiedEnum?.toJson(valueToJson: (v) => v.toJson()),
+        'aStringifiedEnum': aStringifiedEnum?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (anObject != null)
         'anObject': anObject?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (aMap != null)
         'aMap': aMap?.toJson(
-            valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
       if (aList != null)
         'aList': aList?.toJson(
-            valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
       if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
         'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
@@ -308,26 +333,26 @@ class _TypesListImpl extends TypesList {
     List<(_i3.TestEnum,)>? anEnumRecord,
     List<(_i4.TestEnumStringified,)>? anEnum2Record,
   }) : super._(
-          anInt: anInt,
-          aBool: aBool,
-          aDouble: aDouble,
-          aDateTime: aDateTime,
-          aString: aString,
-          aByteData: aByteData,
-          aDuration: aDuration,
-          aUuid: aUuid,
-          aUri: aUri,
-          aBigInt: aBigInt,
-          anEnum: anEnum,
-          aStringifiedEnum: aStringifiedEnum,
-          anObject: anObject,
-          aMap: aMap,
-          aList: aList,
-          aRecord: aRecord,
-          aNullableRecord: aNullableRecord,
-          anEnumRecord: anEnumRecord,
-          anEnum2Record: anEnum2Record,
-        );
+         anInt: anInt,
+         aBool: aBool,
+         aDouble: aDouble,
+         aDateTime: aDateTime,
+         aString: aString,
+         aByteData: aByteData,
+         aDuration: aDuration,
+         aUuid: aUuid,
+         aUri: aUri,
+         aBigInt: aBigInt,
+         anEnum: anEnum,
+         aStringifiedEnum: aStringifiedEnum,
+         anObject: anObject,
+         aMap: aMap,
+         aList: aList,
+         aRecord: aRecord,
+         aNullableRecord: aNullableRecord,
+         anEnumRecord: anEnumRecord,
+         anEnum2Record: anEnum2Record,
+       );
 
   /// Returns a shallow copy of this [TypesList]
   /// with some or all fields replaced by the given arguments.
@@ -356,8 +381,9 @@ class _TypesListImpl extends TypesList {
   }) {
     return TypesList(
       anInt: anInt is List<int>? ? anInt : this.anInt?.map((e0) => e0).toList(),
-      aBool:
-          aBool is List<bool>? ? aBool : this.aBool?.map((e0) => e0).toList(),
+      aBool: aBool is List<bool>?
+          ? aBool
+          : this.aBool?.map((e0) => e0).toList(),
       aDouble: aDouble is List<double>?
           ? aDouble
           : this.aDouble?.map((e0) => e0).toList(),
@@ -391,32 +417,32 @@ class _TypesListImpl extends TypesList {
           : this.anObject?.map((e0) => e0.copyWith()).toList(),
       aMap: aMap is List<Map<String, _i5.Types>>?
           ? aMap
-          : this
-              .aMap
-              ?.map((e0) => e0.map((
-                    key1,
-                    value1,
-                  ) =>
-                      MapEntry(
-                        key1,
-                        value1.copyWith(),
-                      )))
-              .toList(),
+          : this.aMap
+                ?.map(
+                  (e0) => e0.map(
+                    (
+                      key1,
+                      value1,
+                    ) => MapEntry(
+                      key1,
+                      value1.copyWith(),
+                    ),
+                  ),
+                )
+                .toList(),
       aList: aList is List<List<_i5.Types>>?
           ? aList
-          : this
-              .aList
-              ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
-              .toList(),
+          : this.aList
+                ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
+                .toList(),
       aRecord: aRecord is List<(int,)>?
           ? aRecord
           : this.aRecord?.map((e0) => (e0.$1,)).toList(),
       aNullableRecord: aNullableRecord is List<(int,)?>?
           ? aNullableRecord
-          : this
-              .aNullableRecord
-              ?.map((e0) => e0 == null ? null : (e0.$1,))
-              .toList(),
+          : this.aNullableRecord
+                ?.map((e0) => e0 == null ? null : (e0.$1,))
+                .toList(),
       anEnumRecord: anEnumRecord is List<(_i3.TestEnum,)>?
           ? anEnumRecord
           : this.anEnumRecord?.map((e0) => (e0.$1,)).toList(),

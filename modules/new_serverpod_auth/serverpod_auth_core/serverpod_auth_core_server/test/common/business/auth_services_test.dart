@@ -18,8 +18,9 @@ void main() {
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManagerFactory =
-            FakeTokenManagerFactory(tokenStorage: fakeTokenStorage);
+        fakeTokenManagerFactory = FakeTokenManagerFactory(
+          tokenStorage: fakeTokenStorage,
+        );
 
         identityProviderFactories = [
           FakeIdentityProviderFactory(),
@@ -35,8 +36,9 @@ void main() {
 
         setUp(() {
           authServices = AuthServices.set(
-            primaryTokenManager:
-                FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
+            primaryTokenManager: FakeTokenManagerFactory(
+              tokenStorage: fakeTokenStorage,
+            ),
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
@@ -125,43 +127,50 @@ void main() {
 
       group('when retrieving provider by type', () {
         test(
-            'then getProvider should return correct provider instance for registered types',
-            () {
+          'then getProvider should return correct provider instance for registered types',
+          () {
+            final provider =
+                AuthServices.getIdentityProvider<FakeIdentityProvider>();
+            expect(provider, isA<FakeIdentityProvider>());
+            expect(provider.tokenIssuer, isA<MultiTokenManager>());
+          },
+        );
+
+        test(
+          'then StateError should be thrown for unregistered provider types',
+          () {
+            expect(
+              () => AuthServices.getIdentityProvider<String>(),
+              throwsA(
+                isA<StateError>().having(
+                  (final e) => e.message,
+                  'message',
+                  contains('Provider for String is not registered'),
+                ),
+              ),
+            );
+          },
+        );
+      });
+
+      test(
+        'when accessing a registered provider then the provider should be accessible',
+        () {
           final provider =
               AuthServices.getIdentityProvider<FakeIdentityProvider>();
           expect(provider, isA<FakeIdentityProvider>());
-          expect(provider.tokenIssuer, isA<MultiTokenManager>());
-        });
+        },
+      );
 
-        test('then StateError should be thrown for unregistered provider types',
-            () {
+      test(
+        'when accessing an unregistered provider then a StateError is thrown',
+        () {
           expect(
             () => AuthServices.getIdentityProvider<String>(),
-            throwsA(isA<StateError>().having(
-              (final e) => e.message,
-              'message',
-              contains('Provider for String is not registered'),
-            )),
+            throwsA(isA<StateError>()),
           );
-        });
-      });
-
-      test(
-          'when accessing a registered provider then the provider should be accessible',
-          () {
-        final provider =
-            AuthServices.getIdentityProvider<FakeIdentityProvider>();
-        expect(provider, isA<FakeIdentityProvider>());
-      });
-
-      test(
-          'when accessing an unregistered provider then a StateError is thrown',
-          () {
-        expect(
-          () => AuthServices.getIdentityProvider<String>(),
-          throwsA(isA<StateError>()),
-        );
-      });
+        },
+      );
     },
   );
 
@@ -247,14 +256,17 @@ void main() {
 
         setUp(() async {
           final authSuccess = await authServices.tokenManager.issueToken(
-              session,
-              authUserId: authUserId,
-              method: 'test-method',
-              scopes: {const Scope('test-scope')});
+            session,
+            authUserId: authUserId,
+            method: 'test-method',
+            scopes: {const Scope('test-scope')},
+          );
           validToken = authSuccess.token;
 
-          result =
-              await authServices.authenticationHandler(session, validToken);
+          result = await authServices.authenticationHandler(
+            session,
+            validToken,
+          );
         });
 
         test('then authentication info should be returned', () {
@@ -278,20 +290,23 @@ void main() {
 
         setUp(() async {
           final authSuccess = await authServices.tokenManager.issueToken(
-              session,
-              authUserId: authUserId,
-              method: 'oauth',
-              scopes: {
-                const Scope('read'),
-                const Scope('write'),
-                const Scope('admin')
-              });
+            session,
+            authUserId: authUserId,
+            method: 'oauth',
+            scopes: {
+              const Scope('read'),
+              const Scope('write'),
+              const Scope('admin'),
+            },
+          );
           validToken = authSuccess.token;
         });
 
         test('then all scopes should be included', () async {
-          final result =
-              await authServices.authenticationHandler(session, validToken);
+          final result = await authServices.authenticationHandler(
+            session,
+            validToken,
+          );
 
           expect(result, isNotNull);
           final scopeNames = result!.scopes.map((final s) => s.name);

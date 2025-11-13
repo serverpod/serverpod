@@ -33,7 +33,8 @@ abstract class PersonWithLongTableName
   }) = _PersonWithLongTableNameImpl;
 
   factory PersonWithLongTableName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PersonWithLongTableNameImplicit._(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -41,10 +42,10 @@ abstract class PersonWithLongTableName
       organization: jsonSerialization['organization'] == null
           ? null
           : _i2.OrganizationWithLongTableName.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+              (jsonSerialization['organization'] as Map<String, dynamic>),
+            ),
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
-          jsonSerialization[
-                  '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
+          jsonSerialization['_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
               as int?,
     );
   }
@@ -101,8 +102,9 @@ abstract class PersonWithLongTableName
     };
   }
 
-  static PersonWithLongTableNameInclude include(
-      {_i2.OrganizationWithLongTableNameInclude? organization}) {
+  static PersonWithLongTableNameInclude include({
+    _i2.OrganizationWithLongTableNameInclude? organization,
+  }) {
     return PersonWithLongTableNameInclude._(organization: organization);
   }
 
@@ -141,11 +143,11 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
@@ -160,8 +162,9 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     return PersonWithLongTableNameImplicit._(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId:
-          organizationId is int? ? organizationId : this.organizationId,
+      organizationId: organizationId is int?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i2.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
@@ -178,14 +181,14 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     int? organizationId,
     _i2.OrganizationWithLongTableName? organization,
     int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-  })  : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
-            $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-        super(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+  }) : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
+           $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+       super(
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   factory PersonWithLongTableNameImplicit(
     PersonWithLongTableName personWithLongTableName, {
@@ -210,28 +213,27 @@ class PersonWithLongTableNameUpdateTable
   PersonWithLongTableNameUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
-        table.organizationId,
-        value,
-      );
+    table.organizationId,
+    value,
+  );
 
   _i1.ColumnValue<int, int>
-      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id(
-              int? value) =>
-          _i1.ColumnValue(
-            table
-                .$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-            value,
-          );
+  $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id(
+    int? value,
+  ) => _i1.ColumnValue(
+    table.$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+    value,
+  );
 }
 
 class PersonWithLongTableNameTable extends _i1.Table<int?> {
   PersonWithLongTableNameTable({super.tableRelation})
-      : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
+    : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
     updateTable = PersonWithLongTableNameUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -243,9 +245,9 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
     );
     $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
         _i1.ColumnInt(
-      '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id',
-      this,
-    );
+          '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id',
+          this,
+        );
   }
 
   late final PersonWithLongTableNameUpdateTable updateTable;
@@ -257,7 +259,7 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
   _i2.OrganizationWithLongTableNameTable? _organization;
 
   late final _i1.ColumnInt
-      $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
+  $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   _i2.OrganizationWithLongTableNameTable get organization {
     if (_organization != null) return _organization!;
@@ -268,25 +270,26 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.OrganizationWithLongTableNameTable(
-              tableRelation: foreignTableRelation),
+            tableRelation: foreignTableRelation,
+          ),
     );
     return _organization!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        organizationId,
-        $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
-      ];
+    id,
+    name,
+    organizationId,
+    $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
+  ];
 
   @override
   List<_i1.Column> get managedColumns => [
-        id,
-        name,
-        organizationId,
-      ];
+    id,
+    name,
+    organizationId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -298,8 +301,9 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
 }
 
 class PersonWithLongTableNameInclude extends _i1.IncludeObject {
-  PersonWithLongTableNameInclude._(
-      {_i2.OrganizationWithLongTableNameInclude? organization}) {
+  PersonWithLongTableNameInclude._({
+    _i2.OrganizationWithLongTableNameInclude? organization,
+  }) {
     _organization = organization;
   }
 
@@ -507,7 +511,7 @@ class PersonWithLongTableNameRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<PersonWithLongTableName>(
@@ -522,7 +526,7 @@ class PersonWithLongTableNameRepository {
   Future<List<PersonWithLongTableName>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     int? limit,
     int? offset,
@@ -615,8 +619,9 @@ class PersonWithLongTableNameAttachRowRepository {
       throw ArgumentError.notNull('organization.id');
     }
 
-    var $personWithLongTableName =
-        personWithLongTableName.copyWith(organizationId: organization.id);
+    var $personWithLongTableName = personWithLongTableName.copyWith(
+      organizationId: organization.id,
+    );
     await session.db.updateRow<PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [PersonWithLongTableName.t.organizationId],
@@ -642,8 +647,9 @@ class PersonWithLongTableNameDetachRowRepository {
       throw ArgumentError.notNull('personWithLongTableName.id');
     }
 
-    var $personWithLongTableName =
-        personWithLongTableName.copyWith(organizationId: null);
+    var $personWithLongTableName = personWithLongTableName.copyWith(
+      organizationId: null,
+    );
     await session.db.updateRow<PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [PersonWithLongTableName.t.organizationId],

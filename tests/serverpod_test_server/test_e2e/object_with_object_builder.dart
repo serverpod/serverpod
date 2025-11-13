@@ -8,9 +8,9 @@ class ObjectWithObjectBuilder {
   List<SimpleData?> _listWithNullableData;
 
   ObjectWithObjectBuilder()
-      : _data = SimpleData(num: 0),
-        _dataList = [],
-        _listWithNullableData = [];
+    : _data = SimpleData(num: 0),
+      _dataList = [],
+      _listWithNullableData = [];
 
   ObjectWithObject build() {
     return ObjectWithObject(

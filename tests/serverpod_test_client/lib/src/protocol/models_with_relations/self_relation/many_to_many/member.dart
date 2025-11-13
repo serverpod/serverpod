@@ -89,11 +89,11 @@ class _MemberImpl extends Member {
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   }) : super._(
-          id: id,
-          name: name,
-          blocking: blocking,
-          blockedBy: blockedBy,
-        );
+         id: id,
+         name: name,
+         blocking: blocking,
+         blockedBy: blockedBy,
+       );
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.

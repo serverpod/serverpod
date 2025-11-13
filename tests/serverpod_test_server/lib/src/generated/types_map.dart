@@ -97,216 +97,264 @@ abstract class TypesMap
     return TypesMap(
       anIntKey: (jsonSerialization['anIntKey'] as List?)
           ?.fold<Map<int, String>>(
-              {}, (t, e) => {...t, e['k'] as int: e['v'] as String}),
+            {},
+            (t, e) => {...t, e['k'] as int: e['v'] as String},
+          ),
       aBoolKey: (jsonSerialization['aBoolKey'] as List?)
           ?.fold<Map<bool, String>>(
-              {}, (t, e) => {...t, e['k'] as bool: e['v'] as String}),
+            {},
+            (t, e) => {...t, e['k'] as bool: e['v'] as String},
+          ),
       aDoubleKey: (jsonSerialization['aDoubleKey'] as List?)
-          ?.fold<Map<double, String>>({},
-              (t, e) => {...t, (e['k'] as num).toDouble(): e['v'] as String}),
+          ?.fold<Map<double, String>>(
+            {},
+            (t, e) => {...t, (e['k'] as num).toDouble(): e['v'] as String},
+          ),
       aDateTimeKey: (jsonSerialization['aDateTimeKey'] as List?)
           ?.fold<Map<DateTime, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i1.DateTimeJsonExtension.fromJson(e['k']): e['v'] as String
-                  }),
-      aStringKey:
-          (jsonSerialization['aStringKey'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                v as String,
-              )),
+            {},
+            (t, e) => {
+              ...t,
+              _i1.DateTimeJsonExtension.fromJson(e['k']): e['v'] as String,
+            },
+          ),
+      aStringKey: (jsonSerialization['aStringKey'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          v as String,
+        ),
+      ),
       aByteDataKey: (jsonSerialization['aByteDataKey'] as List?)
           ?.fold<Map<_i2.ByteData, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i1.ByteDataJsonExtension.fromJson(e['k']): e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i1.ByteDataJsonExtension.fromJson(e['k']): e['v'] as String,
+            },
+          ),
       aDurationKey: (jsonSerialization['aDurationKey'] as List?)
           ?.fold<Map<Duration, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i1.DurationJsonExtension.fromJson(e['k']): e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i1.DurationJsonExtension.fromJson(e['k']): e['v'] as String,
+            },
+          ),
       aUuidKey: (jsonSerialization['aUuidKey'] as List?)
           ?.fold<Map<_i1.UuidValue, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i1.UuidValueJsonExtension.fromJson(e['k']):
-                        e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i1.UuidValueJsonExtension.fromJson(e['k']): e['v'] as String,
+            },
+          ),
       aUriKey: (jsonSerialization['aUriKey'] as List?)?.fold<Map<Uri, String>>(
-          {},
-          (t, e) =>
-              {...t, _i1.UriJsonExtension.fromJson(e['k']): e['v'] as String}),
+        {},
+        (t, e) => {
+          ...t,
+          _i1.UriJsonExtension.fromJson(e['k']): e['v'] as String,
+        },
+      ),
       aBigIntKey: (jsonSerialization['aBigIntKey'] as List?)
           ?.fold<Map<BigInt, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i1.BigIntJsonExtension.fromJson(e['k']): e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i1.BigIntJsonExtension.fromJson(e['k']): e['v'] as String,
+            },
+          ),
       anEnumKey: (jsonSerialization['anEnumKey'] as List?)
           ?.fold<Map<_i3.TestEnum, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i3.TestEnum.fromJson((e['k'] as int)): e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i3.TestEnum.fromJson((e['k'] as int)): e['v'] as String,
+            },
+          ),
       aStringifiedEnumKey: (jsonSerialization['aStringifiedEnumKey'] as List?)
           ?.fold<Map<_i4.TestEnumStringified, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i4.TestEnumStringified.fromJson((e['k'] as String)):
-                        e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              _i4.TestEnumStringified.fromJson((e['k'] as String)):
+                  e['v'] as String,
+            },
+          ),
       anObjectKey: (jsonSerialization['anObjectKey'] as List?)
           ?.fold<Map<_i5.Types, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
-                        e['v'] as String
-                  }),
-      aMapKey: (jsonSerialization['aMapKey'] as List?)?.fold<
-              Map<Map<_i5.Types, String>, String>>(
-          {},
-          (t, e) => {
-                ...t,
-                (e['k'] as List).fold<Map<_i5.Types, String>>(
-                    {},
-                    (t, e) => {
-                          ...t,
-                          _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
-                              e['v'] as String
-                        }): e['v'] as String
-              }),
-      aListKey: (jsonSerialization['aListKey'] as List?)?.fold<
-              Map<List<_i5.Types>, String>>(
-          {},
-          (t, e) => {
-                ...t,
-                (e['k'] as List)
-                    .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-                    .toList(): e['v'] as String
-              }),
+            {},
+            (t, e) => {
+              ...t,
+              _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
+                  e['v'] as String,
+            },
+          ),
+      aMapKey: (jsonSerialization['aMapKey'] as List?)
+          ?.fold<Map<Map<_i5.Types, String>, String>>(
+            {},
+            (t, e) => {
+              ...t,
+              (e['k'] as List).fold<Map<_i5.Types, String>>(
+                {},
+                (t, e) => {
+                  ...t,
+                  _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
+                      e['v'] as String,
+                },
+              ): e['v'] as String,
+            },
+          ),
+      aListKey: (jsonSerialization['aListKey'] as List?)
+          ?.fold<Map<List<_i5.Types>, String>>(
+            {},
+            (t, e) => {
+              ...t,
+              (e['k'] as List)
+                      .map(
+                        (e) => _i5.Types.fromJson((e as Map<String, dynamic>)),
+                      )
+                      .toList():
+                  e['v'] as String,
+            },
+          ),
       aRecordKey: (jsonSerialization['aRecordKey'] as List?)
           ?.fold<Map<(String,), String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    _i6.Protocol().deserialize<(String,)>(
-                        (e['k'] as Map<String, dynamic>)): e['v'] as String
-                  }),
-      anIntValue:
-          (jsonSerialization['anIntValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                v as int,
-              )),
-      aBoolValue:
-          (jsonSerialization['aBoolValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                v as bool,
-              )),
-      aDoubleValue:
-          (jsonSerialization['aDoubleValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                (v as num).toDouble(),
-              )),
-      aDateTimeValue:
-          (jsonSerialization['aDateTimeValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.DateTimeJsonExtension.fromJson(v),
-              )),
-      aStringValue:
-          (jsonSerialization['aStringValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                v as String,
-              )),
-      aByteDataValue:
-          (jsonSerialization['aByteDataValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.ByteDataJsonExtension.fromJson(v),
-              )),
-      aDurationValue:
-          (jsonSerialization['aDurationValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.DurationJsonExtension.fromJson(v),
-              )),
-      aUuidValue:
-          (jsonSerialization['aUuidValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.UuidValueJsonExtension.fromJson(v),
-              )),
-      aUriValue:
-          (jsonSerialization['aUriValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.UriJsonExtension.fromJson(v),
-              )),
-      aBigIntValue:
-          (jsonSerialization['aBigIntValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i1.BigIntJsonExtension.fromJson(v),
-              )),
-      anEnumValue:
-          (jsonSerialization['anEnumValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i3.TestEnum.fromJson((v as int)),
-              )),
+            {},
+            (t, e) => {
+              ...t,
+              _i6.Protocol().deserialize<(String,)>(
+                (e['k'] as Map<String, dynamic>),
+              ): e['v'] as String,
+            },
+          ),
+      anIntValue: (jsonSerialization['anIntValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          v as int,
+        ),
+      ),
+      aBoolValue: (jsonSerialization['aBoolValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          v as bool,
+        ),
+      ),
+      aDoubleValue: (jsonSerialization['aDoubleValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          (v as num).toDouble(),
+        ),
+      ),
+      aDateTimeValue: (jsonSerialization['aDateTimeValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.DateTimeJsonExtension.fromJson(v),
+        ),
+      ),
+      aStringValue: (jsonSerialization['aStringValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          v as String,
+        ),
+      ),
+      aByteDataValue: (jsonSerialization['aByteDataValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.ByteDataJsonExtension.fromJson(v),
+        ),
+      ),
+      aDurationValue: (jsonSerialization['aDurationValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.DurationJsonExtension.fromJson(v),
+        ),
+      ),
+      aUuidValue: (jsonSerialization['aUuidValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.UuidValueJsonExtension.fromJson(v),
+        ),
+      ),
+      aUriValue: (jsonSerialization['aUriValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.UriJsonExtension.fromJson(v),
+        ),
+      ),
+      aBigIntValue: (jsonSerialization['aBigIntValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i1.BigIntJsonExtension.fromJson(v),
+        ),
+      ),
+      anEnumValue: (jsonSerialization['anEnumValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i3.TestEnum.fromJson((v as int)),
+        ),
+      ),
       aStringifiedEnumValue:
-          (jsonSerialization['aStringifiedEnumValue'] as Map?)
-              ?.map((k, v) => MapEntry(
-                    k as String,
-                    _i4.TestEnumStringified.fromJson((v as String)),
-                  )),
-      anObjectValue:
-          (jsonSerialization['anObjectValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i5.Types.fromJson((v as Map<String, dynamic>)),
-              )),
-      aMapValue:
-          (jsonSerialization['aMapValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                (v as Map).map((k, v) => MapEntry(
-                      k as String,
-                      _i5.Types.fromJson((v as Map<String, dynamic>)),
-                    )),
-              )),
-      aListValue:
-          (jsonSerialization['aListValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                (v as List)
-                    .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-                    .toList(),
-              )),
-      aRecordValue:
-          (jsonSerialization['aRecordValue'] as Map?)?.map((k, v) => MapEntry(
-                k as String,
-                _i6.Protocol()
-                    .deserialize<(String,)>((v as Map<String, dynamic>)),
-              )),
+          (jsonSerialization['aStringifiedEnumValue'] as Map?)?.map(
+            (k, v) => MapEntry(
+              k as String,
+              _i4.TestEnumStringified.fromJson((v as String)),
+            ),
+          ),
+      anObjectValue: (jsonSerialization['anObjectValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i5.Types.fromJson((v as Map<String, dynamic>)),
+        ),
+      ),
+      aMapValue: (jsonSerialization['aMapValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          (v as Map).map(
+            (k, v) => MapEntry(
+              k as String,
+              _i5.Types.fromJson((v as Map<String, dynamic>)),
+            ),
+          ),
+        ),
+      ),
+      aListValue: (jsonSerialization['aListValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          (v as List)
+              .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
+              .toList(),
+        ),
+      ),
+      aRecordValue: (jsonSerialization['aRecordValue'] as Map?)?.map(
+        (k, v) => MapEntry(
+          k as String,
+          _i6.Protocol().deserialize<(String,)>((v as Map<String, dynamic>)),
+        ),
+      ),
       aNullableRecordValue: (jsonSerialization['aNullableRecordValue'] as Map?)
-          ?.map((k, v) => MapEntry(
-                k as String,
-                v == null
-                    ? null
-                    : _i6.Protocol()
-                        .deserialize<(String,)?>((v as Map<String, dynamic>)),
-              )),
+          ?.map(
+            (k, v) => MapEntry(
+              k as String,
+              v == null
+                  ? null
+                  : _i6.Protocol().deserialize<(String,)?>(
+                      (v as Map<String, dynamic>),
+                    ),
+            ),
+          ),
       aNullableRecordKey: (jsonSerialization['aNullableRecordKey'] as List?)
           ?.fold<Map<(String,)?, String>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    e['k'] == null
-                        ? null
-                        : _i6.Protocol().deserialize<(String,)?>(
-                            (e['k'] as Map<String, dynamic>)): e['v'] as String
-                  }),
+            {},
+            (t, e) => {
+              ...t,
+              e['k'] == null
+                      ? null
+                      : _i6.Protocol().deserialize<(String,)?>(
+                          (e['k'] as Map<String, dynamic>),
+                        ):
+                  e['v'] as String,
+            },
+          ),
     );
   }
 
@@ -439,30 +487,36 @@ abstract class TypesMap
       if (anEnumKey != null)
         'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aStringifiedEnumKey != null)
-        'aStringifiedEnumKey':
-            aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
+        'aStringifiedEnumKey': aStringifiedEnumKey?.toJson(
+          keyToJson: (k) => k.toJson(),
+        ),
       if (anObjectKey != null)
         'anObjectKey': anObjectKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJson())),
+          keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJson()),
+        ),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
-            keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson())),
+          keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson()),
+        ),
       if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
       if (aDateTimeValue != null)
-        'aDateTimeValue':
-            aDateTimeValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aDateTimeValue': aDateTimeValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aStringValue != null) 'aStringValue': aStringValue?.toJson(),
       if (aByteDataValue != null)
-        'aByteDataValue':
-            aByteDataValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aByteDataValue': aByteDataValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aDurationValue != null)
-        'aDurationValue':
-            aDurationValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aDurationValue': aDurationValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aUuidValue != null)
         'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aUriValue != null)
@@ -472,16 +526,19 @@ abstract class TypesMap
       if (anEnumValue != null)
         'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnumValue != null)
-        'aStringifiedEnumValue':
-            aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aStringifiedEnumValue': aStringifiedEnumValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (anObjectValue != null)
         'anObjectValue': anObjectValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+        ),
       if (aRecordValue != null)
         'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
@@ -513,33 +570,38 @@ abstract class TypesMap
       if (anEnumKey != null)
         'anEnumKey': anEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (aStringifiedEnumKey != null)
-        'aStringifiedEnumKey':
-            aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
+        'aStringifiedEnumKey': aStringifiedEnumKey?.toJson(
+          keyToJson: (k) => k.toJson(),
+        ),
       if (anObjectKey != null)
-        'anObjectKey':
-            anObjectKey?.toJson(keyToJson: (k) => k.toJsonForProtocol()),
+        'anObjectKey': anObjectKey?.toJson(
+          keyToJson: (k) => k.toJsonForProtocol(),
+        ),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) =>
-                k.toJson(keyToJson: (k) => k.toJsonForProtocol())),
+          keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJsonForProtocol()),
+        ),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
-            keyToJson: (k) =>
-                k.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+          keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
       if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
       if (aDateTimeValue != null)
-        'aDateTimeValue':
-            aDateTimeValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aDateTimeValue': aDateTimeValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aStringValue != null) 'aStringValue': aStringValue?.toJson(),
       if (aByteDataValue != null)
-        'aByteDataValue':
-            aByteDataValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aByteDataValue': aByteDataValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aDurationValue != null)
-        'aDurationValue':
-            aDurationValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aDurationValue': aDurationValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (aUuidValue != null)
         'aUuidValue': aUuidValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aUriValue != null)
@@ -549,19 +611,23 @@ abstract class TypesMap
       if (anEnumValue != null)
         'anEnumValue': anEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (aStringifiedEnumValue != null)
-        'aStringifiedEnumValue':
-            aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
+        'aStringifiedEnumValue': aStringifiedEnumValue?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (anObjectValue != null)
-        'anObjectValue':
-            anObjectValue?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'anObjectValue': anObjectValue?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
-            valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
-            valueToJson: (v) =>
-                v.toJson(valueToJson: (v) => v.toJsonForProtocol())),
+          valueToJson: (v) =>
+              v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        ),
       if (aRecordValue != null)
         'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
@@ -616,41 +682,41 @@ class _TypesMapImpl extends TypesMap {
     Map<String, (String,)?>? aNullableRecordValue,
     Map<(String,)?, String>? aNullableRecordKey,
   }) : super._(
-          anIntKey: anIntKey,
-          aBoolKey: aBoolKey,
-          aDoubleKey: aDoubleKey,
-          aDateTimeKey: aDateTimeKey,
-          aStringKey: aStringKey,
-          aByteDataKey: aByteDataKey,
-          aDurationKey: aDurationKey,
-          aUuidKey: aUuidKey,
-          aUriKey: aUriKey,
-          aBigIntKey: aBigIntKey,
-          anEnumKey: anEnumKey,
-          aStringifiedEnumKey: aStringifiedEnumKey,
-          anObjectKey: anObjectKey,
-          aMapKey: aMapKey,
-          aListKey: aListKey,
-          aRecordKey: aRecordKey,
-          anIntValue: anIntValue,
-          aBoolValue: aBoolValue,
-          aDoubleValue: aDoubleValue,
-          aDateTimeValue: aDateTimeValue,
-          aStringValue: aStringValue,
-          aByteDataValue: aByteDataValue,
-          aDurationValue: aDurationValue,
-          aUuidValue: aUuidValue,
-          aUriValue: aUriValue,
-          aBigIntValue: aBigIntValue,
-          anEnumValue: anEnumValue,
-          aStringifiedEnumValue: aStringifiedEnumValue,
-          anObjectValue: anObjectValue,
-          aMapValue: aMapValue,
-          aListValue: aListValue,
-          aRecordValue: aRecordValue,
-          aNullableRecordValue: aNullableRecordValue,
-          aNullableRecordKey: aNullableRecordKey,
-        );
+         anIntKey: anIntKey,
+         aBoolKey: aBoolKey,
+         aDoubleKey: aDoubleKey,
+         aDateTimeKey: aDateTimeKey,
+         aStringKey: aStringKey,
+         aByteDataKey: aByteDataKey,
+         aDurationKey: aDurationKey,
+         aUuidKey: aUuidKey,
+         aUriKey: aUriKey,
+         aBigIntKey: aBigIntKey,
+         anEnumKey: anEnumKey,
+         aStringifiedEnumKey: aStringifiedEnumKey,
+         anObjectKey: anObjectKey,
+         aMapKey: aMapKey,
+         aListKey: aListKey,
+         aRecordKey: aRecordKey,
+         anIntValue: anIntValue,
+         aBoolValue: aBoolValue,
+         aDoubleValue: aDoubleValue,
+         aDateTimeValue: aDateTimeValue,
+         aStringValue: aStringValue,
+         aByteDataValue: aByteDataValue,
+         aDurationValue: aDurationValue,
+         aUuidValue: aUuidValue,
+         aUriValue: aUriValue,
+         aBigIntValue: aBigIntValue,
+         anEnumValue: anEnumValue,
+         aStringifiedEnumValue: aStringifiedEnumValue,
+         anObjectValue: anObjectValue,
+         aMapValue: aMapValue,
+         aListValue: aListValue,
+         aRecordValue: aRecordValue,
+         aNullableRecordValue: aNullableRecordValue,
+         aNullableRecordKey: aNullableRecordKey,
+       );
 
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
@@ -695,360 +761,396 @@ class _TypesMapImpl extends TypesMap {
     return TypesMap(
       anIntKey: anIntKey is Map<int, String>?
           ? anIntKey
-          : this.anIntKey?.map((
+          : this.anIntKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aBoolKey: aBoolKey is Map<bool, String>?
           ? aBoolKey
-          : this.aBoolKey?.map((
+          : this.aBoolKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aDoubleKey: aDoubleKey is Map<double, String>?
           ? aDoubleKey
-          : this.aDoubleKey?.map((
+          : this.aDoubleKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aDateTimeKey: aDateTimeKey is Map<DateTime, String>?
           ? aDateTimeKey
-          : this.aDateTimeKey?.map((
+          : this.aDateTimeKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aStringKey: aStringKey is Map<String, String>?
           ? aStringKey
-          : this.aStringKey?.map((
+          : this.aStringKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aByteDataKey: aByteDataKey is Map<_i2.ByteData, String>?
           ? aByteDataKey
-          : this.aByteDataKey?.map((
+          : this.aByteDataKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0.clone(),
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0.clone(),
+                value0,
+              ),
+            ),
       aDurationKey: aDurationKey is Map<Duration, String>?
           ? aDurationKey
-          : this.aDurationKey?.map((
+          : this.aDurationKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aUuidKey: aUuidKey is Map<_i1.UuidValue, String>?
           ? aUuidKey
-          : this.aUuidKey?.map((
+          : this.aUuidKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aUriKey: aUriKey is Map<Uri, String>?
           ? aUriKey
-          : this.aUriKey?.map((
+          : this.aUriKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aBigIntKey: aBigIntKey is Map<BigInt, String>?
           ? aBigIntKey
-          : this.aBigIntKey?.map((
+          : this.aBigIntKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       anEnumKey: anEnumKey is Map<_i3.TestEnum, String>?
           ? anEnumKey
-          : this.anEnumKey?.map((
+          : this.anEnumKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aStringifiedEnumKey:
           aStringifiedEnumKey is Map<_i4.TestEnumStringified, String>?
-              ? aStringifiedEnumKey
-              : this.aStringifiedEnumKey?.map((
-                    key0,
-                    value0,
-                  ) =>
-                      MapEntry(
-                        key0,
-                        value0,
-                      )),
+          ? aStringifiedEnumKey
+          : this.aStringifiedEnumKey?.map(
+              (
+                key0,
+                value0,
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       anObjectKey: anObjectKey is Map<_i5.Types, String>?
           ? anObjectKey
-          : this.anObjectKey?.map((
+          : this.anObjectKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0.copyWith(),
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0.copyWith(),
+                value0,
+              ),
+            ),
       aMapKey: aMapKey is Map<Map<_i5.Types, String>, String>?
           ? aMapKey
-          : this.aMapKey?.map((
+          : this.aMapKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0.map((
-                      key1,
-                      value1,
-                    ) =>
-                        MapEntry(
-                          key1.copyWith(),
-                          value1,
-                        )),
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0.map(
+                  (
+                    key1,
+                    value1,
+                  ) => MapEntry(
+                    key1.copyWith(),
+                    value1,
+                  ),
+                ),
+                value0,
+              ),
+            ),
       aListKey: aListKey is Map<List<_i5.Types>, String>?
           ? aListKey
-          : this.aListKey?.map((
+          : this.aListKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0.map((e1) => e1.copyWith()).toList(),
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0.map((e1) => e1.copyWith()).toList(),
+                value0,
+              ),
+            ),
       aRecordKey: aRecordKey is Map<(String,), String>?
           ? aRecordKey
-          : this.aRecordKey?.map((
+          : this.aRecordKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    (key0.$1,),
-                    value0,
-                  )),
+              ) => MapEntry(
+                (key0.$1,),
+                value0,
+              ),
+            ),
       anIntValue: anIntValue is Map<String, int>?
           ? anIntValue
-          : this.anIntValue?.map((
+          : this.anIntValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aBoolValue: aBoolValue is Map<String, bool>?
           ? aBoolValue
-          : this.aBoolValue?.map((
+          : this.aBoolValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aDoubleValue: aDoubleValue is Map<String, double>?
           ? aDoubleValue
-          : this.aDoubleValue?.map((
+          : this.aDoubleValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aDateTimeValue: aDateTimeValue is Map<String, DateTime>?
           ? aDateTimeValue
-          : this.aDateTimeValue?.map((
+          : this.aDateTimeValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aStringValue: aStringValue is Map<String, String>?
           ? aStringValue
-          : this.aStringValue?.map((
+          : this.aStringValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aByteDataValue: aByteDataValue is Map<String, _i2.ByteData>?
           ? aByteDataValue
-          : this.aByteDataValue?.map((
+          : this.aByteDataValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.clone(),
-                  )),
+              ) => MapEntry(
+                key0,
+                value0.clone(),
+              ),
+            ),
       aDurationValue: aDurationValue is Map<String, Duration>?
           ? aDurationValue
-          : this.aDurationValue?.map((
+          : this.aDurationValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aUuidValue: aUuidValue is Map<String, _i1.UuidValue>?
           ? aUuidValue
-          : this.aUuidValue?.map((
+          : this.aUuidValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aUriValue: aUriValue is Map<String, Uri>?
           ? aUriValue
-          : this.aUriValue?.map((
+          : this.aUriValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aBigIntValue: aBigIntValue is Map<String, BigInt>?
           ? aBigIntValue
-          : this.aBigIntValue?.map((
+          : this.aBigIntValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       anEnumValue: anEnumValue is Map<String, _i3.TestEnum>?
           ? anEnumValue
-          : this.anEnumValue?.map((
+          : this.anEnumValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       aStringifiedEnumValue:
           aStringifiedEnumValue is Map<String, _i4.TestEnumStringified>?
-              ? aStringifiedEnumValue
-              : this.aStringifiedEnumValue?.map((
-                    key0,
-                    value0,
-                  ) =>
-                      MapEntry(
-                        key0,
-                        value0,
-                      )),
+          ? aStringifiedEnumValue
+          : this.aStringifiedEnumValue?.map(
+              (
+                key0,
+                value0,
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
       anObjectValue: anObjectValue is Map<String, _i5.Types>?
           ? anObjectValue
-          : this.anObjectValue?.map((
+          : this.anObjectValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.copyWith(),
-                  )),
+              ) => MapEntry(
+                key0,
+                value0.copyWith(),
+              ),
+            ),
       aMapValue: aMapValue is Map<String, Map<String, _i5.Types>>?
           ? aMapValue
-          : this.aMapValue?.map((
+          : this.aMapValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.map((
-                      key1,
-                      value1,
-                    ) =>
-                        MapEntry(
-                          key1,
-                          value1.copyWith(),
-                        )),
-                  )),
+              ) => MapEntry(
+                key0,
+                value0.map(
+                  (
+                    key1,
+                    value1,
+                  ) => MapEntry(
+                    key1,
+                    value1.copyWith(),
+                  ),
+                ),
+              ),
+            ),
       aListValue: aListValue is Map<String, List<_i5.Types>>?
           ? aListValue
-          : this.aListValue?.map((
+          : this.aListValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.map((e1) => e1.copyWith()).toList(),
-                  )),
+              ) => MapEntry(
+                key0,
+                value0.map((e1) => e1.copyWith()).toList(),
+              ),
+            ),
       aRecordValue: aRecordValue is Map<String, (String,)>?
           ? aRecordValue
-          : this.aRecordValue?.map((
+          : this.aRecordValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    (value0.$1,),
-                  )),
+              ) => MapEntry(
+                key0,
+                (value0.$1,),
+              ),
+            ),
       aNullableRecordValue: aNullableRecordValue is Map<String, (String,)?>?
           ? aNullableRecordValue
-          : this.aNullableRecordValue?.map((
+          : this.aNullableRecordValue?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0 == null ? null : (value0.$1,),
-                  )),
+              ) => MapEntry(
+                key0,
+                value0 == null ? null : (value0.$1,),
+              ),
+            ),
       aNullableRecordKey: aNullableRecordKey is Map<(String,)?, String>?
           ? aNullableRecordKey
-          : this.aNullableRecordKey?.map((
+          : this.aNullableRecordKey?.map(
+              (
                 key0,
                 value0,
-              ) =>
-                  MapEntry(
-                    key0 == null ? null : (key0.$1,),
-                    value0,
-                  )),
+              ) => MapEntry(
+                key0 == null ? null : (key0.$1,),
+                value0,
+              ),
+            ),
     );
   }
 }

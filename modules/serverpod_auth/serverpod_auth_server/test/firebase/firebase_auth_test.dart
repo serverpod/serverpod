@@ -146,7 +146,8 @@ void main() {
           var idToken = generateMockIdToken(
             uid: uid,
             overrides: {
-              'auth_time': DateTime.now()
+              'auth_time':
+                  DateTime.now()
                       .subtract(const Duration(days: 1))
                       .millisecondsSinceEpoch ~/
                   1000,

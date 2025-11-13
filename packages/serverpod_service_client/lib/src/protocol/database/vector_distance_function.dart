@@ -48,7 +48,8 @@ enum VectorDistanceFunction implements _i1.SerializableModel {
         return VectorDistanceFunction.jaccard;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "VectorDistanceFunction"');
+          'Value "$name" cannot be converted to "VectorDistanceFunction"',
+        );
     }
   }
 

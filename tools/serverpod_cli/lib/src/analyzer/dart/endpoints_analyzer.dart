@@ -25,11 +25,11 @@ class EndpointsAnalyzer {
   /// [AnalysisContextCollection] that analyzes all dart files in the
   /// provided [directory].
   EndpointsAnalyzer(Directory directory)
-      : collection = AnalysisContextCollection(
-          includedPaths: [directory.absolute.path],
-          resourceProvider: PhysicalResourceProvider.INSTANCE,
-        ),
-        absoluteIncludedPaths = directory.absolute.path;
+    : collection = AnalysisContextCollection(
+        includedPaths: [directory.absolute.path],
+        resourceProvider: PhysicalResourceProvider.INSTANCE,
+      ),
+      absoluteIncludedPaths = directory.absolute.path;
 
   Set<EndpointDefinition> _endpointDefinitions = {};
 
@@ -113,11 +113,13 @@ class EndpointsAnalyzer {
 
       var failingExceptions = _filterNoFailExceptions(severityExceptions);
 
-      endpointDefs.addAll(_parseLibrary(
-        library,
-        filePath,
-        failingExceptions,
-      ));
+      endpointDefs.addAll(
+        _parseLibrary(
+          library,
+          filePath,
+          failingExceptions,
+        ),
+      );
     }
 
     // After parsing all endpoints, we must remove all that are not part of
@@ -138,9 +140,11 @@ class EndpointsAnalyzer {
     if (errors is ErrorsResult) {
       errors.diagnostics
           .where((error) => error.severity == Severity.error)
-          .forEach((error) => errorMessages.add(
-                '${error.problemMessage.filePath} Error: ${error.message}',
-              ));
+          .forEach(
+            (error) => errorMessages.add(
+              '${error.problemMessage.filePath} Error: ${error.message}',
+            ),
+          );
     }
 
     return errorMessages;
@@ -151,10 +155,11 @@ class EndpointsAnalyzer {
     String filePath,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
-    var endpointClasses = _getEndpointClasses(library)
-        .where((element) => !validationErrors.containsKey(
-              EndpointClassAnalyzer.elementNamespace(element, filePath),
-            ));
+    var endpointClasses = _getEndpointClasses(library).where(
+      (element) => !validationErrors.containsKey(
+        EndpointClassAnalyzer.elementNamespace(element, filePath),
+      ),
+    );
 
     var endpointDefinitions = <EndpointDefinition>[];
     for (var classElement in endpointClasses) {
@@ -207,23 +212,27 @@ class EndpointsAnalyzer {
       );
       if (errors.isNotEmpty) {
         validationErrors[EndpointClassAnalyzer.elementNamespace(
-          classElement,
-          filePath,
-        )] = errors;
+              classElement,
+              filePath,
+            )] =
+            errors;
       }
 
-      var endpointMethods =
-          classElement.methods.where(EndpointMethodAnalyzer.isEndpointMethod);
+      var endpointMethods = classElement.methods.where(
+        EndpointMethodAnalyzer.isEndpointMethod,
+      );
       for (var method in endpointMethods) {
         errors = EndpointMethodAnalyzer.validate(method, classElement);
         errors.addAll(
-            EndpointParameterAnalyzer.validate(method.formalParameters));
+          EndpointParameterAnalyzer.validate(method.formalParameters),
+        );
         if (errors.isNotEmpty) {
           validationErrors[EndpointMethodAnalyzer.elementNamespace(
-            classElement,
-            method,
-            filePath,
-          )] = errors;
+                classElement,
+                method,
+                filePath,
+              )] =
+              errors;
         }
       }
     }

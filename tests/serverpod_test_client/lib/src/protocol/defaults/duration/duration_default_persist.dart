@@ -24,14 +24,16 @@ abstract class DurationDefaultPersist implements _i1.SerializableModel {
   }) = _DurationDefaultPersistImpl;
 
   factory DurationDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DurationDefaultPersist(
       id: jsonSerialization['id'] as int?,
       durationDefaultPersist:
           jsonSerialization['durationDefaultPersist'] == null
-              ? null
-              : _i1.DurationJsonExtension.fromJson(
-                  jsonSerialization['durationDefaultPersist']),
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultPersist'],
+            ),
     );
   }
 
@@ -71,9 +73,9 @@ class _DurationDefaultPersistImpl extends DurationDefaultPersist {
     int? id,
     Duration? durationDefaultPersist,
   }) : super._(
-          id: id,
-          durationDefaultPersist: durationDefaultPersist,
-        );
+         id: id,
+         durationDefaultPersist: durationDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DurationDefaultPersist]
   /// with some or all fields replaced by the given arguments.

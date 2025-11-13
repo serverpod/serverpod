@@ -101,8 +101,10 @@ class _ChannelDrawer extends StatelessWidget {
           const Divider(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child:
-                Text('Channels', style: Theme.of(context).textTheme.bodySmall),
+            child: Text(
+              'Channels',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
           Expanded(
             child: ListView(
@@ -127,7 +129,7 @@ class _ChannelDrawer extends StatelessWidget {
                   )
                   .toList(),
             ),
-          )
+          ),
         ],
       ),
     );

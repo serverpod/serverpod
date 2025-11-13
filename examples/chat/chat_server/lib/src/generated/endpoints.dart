@@ -24,7 +24,7 @@ class Endpoints extends _i1.EndpointDispatch {
           server,
           'channels',
           null,
-        )
+        ),
     };
     connectors['channels'] = _i1.EndpointConnector(
       name: 'channels',
@@ -33,13 +33,13 @@ class Endpoints extends _i1.EndpointDispatch {
         'getChannels': _i1.MethodConnector(
           name: 'getChannels',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['channels'] as _i2.ChannelsEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['channels'] as _i2.ChannelsEndpoint)
                   .getChannels(session),
-        )
+        ),
       },
     );
     modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);

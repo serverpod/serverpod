@@ -33,7 +33,8 @@ abstract class Arena implements _i1.SerializableModel {
       team: jsonSerialization['team'] == null
           ? null
           : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+              (jsonSerialization['team'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -77,10 +78,10 @@ class _ArenaImpl extends Arena {
     required String name,
     _i2.Team? team,
   }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+         id: id,
+         name: name,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.

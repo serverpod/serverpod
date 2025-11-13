@@ -49,58 +49,60 @@ void run(List<String> args) async {
   // This is a test example, do not use this type of integration in production
   // as that may lead to you getting blocked for spam and other issues.
   // Instead use a real email service provider, such as SendGrid, Mailjet or others.
-  auth.AuthConfig.set(auth.AuthConfig(
-    sendValidationEmail: (session, email, validationCode) async {
-      // Retrieve the credentials
-      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
-      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+  auth.AuthConfig.set(
+    auth.AuthConfig(
+      sendValidationEmail: (session, email, validationCode) async {
+        // Retrieve the credentials
+        final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
+        final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
 
-      // Create a SMTP client for Gmail.
-      final smtpServer = gmail(gmailEmail, gmailPassword);
+        // Create a SMTP client for Gmail.
+        final smtpServer = gmail(gmailEmail, gmailPassword);
 
-      // Create an email message with the validation code.
-      final message = Message()
-        ..from = Address(gmailEmail)
-        ..recipients.add(email)
-        ..subject = 'Verification code for Serverpod'
-        ..html = 'Your verification code is: $validationCode';
+        // Create an email message with the validation code.
+        final message = Message()
+          ..from = Address(gmailEmail)
+          ..recipients.add(email)
+          ..subject = 'Verification code for Serverpod'
+          ..html = 'Your verification code is: $validationCode';
 
-      // Send the email message.
-      try {
-        await send(message, smtpServer);
-      } catch (_) {
-        // Return false if the email could not be sent.
-        return false;
-      }
+        // Send the email message.
+        try {
+          await send(message, smtpServer);
+        } catch (_) {
+          // Return false if the email could not be sent.
+          return false;
+        }
 
-      return true;
-    },
-    sendPasswordResetEmail: (session, userInfo, validationCode) async {
-      // Retrieve the credentials
-      final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
-      final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
+        return true;
+      },
+      sendPasswordResetEmail: (session, userInfo, validationCode) async {
+        // Retrieve the credentials
+        final gmailEmail = session.serverpod.getPassword('gmailEmail')!;
+        final gmailPassword = session.serverpod.getPassword('gmailPassword')!;
 
-      // Create a SMTP client for Gmail.
-      final smtpServer = gmail(gmailEmail, gmailPassword);
+        // Create a SMTP client for Gmail.
+        final smtpServer = gmail(gmailEmail, gmailPassword);
 
-      // Create an email message with the password reset link.
-      final message = Message()
-        ..from = Address(gmailEmail)
-        ..recipients.add(userInfo.email!)
-        ..subject = 'Password reset link for Serverpod'
-        ..html = 'Here is your password reset code: $validationCode';
+        // Create an email message with the password reset link.
+        final message = Message()
+          ..from = Address(gmailEmail)
+          ..recipients.add(userInfo.email!)
+          ..subject = 'Password reset link for Serverpod'
+          ..html = 'Here is your password reset code: $validationCode';
 
-      // Send the email message.
-      try {
-        await send(message, smtpServer);
-      } catch (_) {
-        // Return false if the email could not be sent.
-        return false;
-      }
+        // Send the email message.
+        try {
+          await send(message, smtpServer);
+        } catch (_) {
+          // Return false if the email could not be sent.
+          return false;
+        }
 
-      return true;
-    },
-  ));
+        return true;
+      },
+    ),
+  );
 
   // Start the server.
   await pod.start();

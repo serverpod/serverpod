@@ -101,7 +101,8 @@ class EntitlementsModifier {
       // Check if file exists
       if (!file.existsSync()) {
         log.debug(
-            'Entitlements file not found: $filePath, updating entitlements skipped.');
+          'Entitlements file not found: $filePath, updating entitlements skipped.',
+        );
         return false;
       }
       String contents = await file.readAsString();
@@ -109,17 +110,20 @@ class EntitlementsModifier {
       // Check if the current content matches the expected original content
       if (contents.trim() != originalContent.trim()) {
         log.debug(
-            'Entitlements file content does not match expected content, updating entitlements skipped for $filePath.');
+          'Entitlements file content does not match expected content, updating entitlements skipped for $filePath.',
+        );
         return false;
       }
 
       await file.writeAsString(modifiedContent);
       log.debug(
-          'Added `com.apple.security.network.client` entitlement to $filePath');
+        'Added `com.apple.security.network.client` entitlement to $filePath',
+      );
       return true;
     } catch (e) {
       log.debug(
-          'Error modifying entitlements: $e, updating entitlements skipped.');
+        'Error modifying entitlements: $e, updating entitlements skipped.',
+      );
       return false;
     }
   }

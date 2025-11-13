@@ -36,8 +36,10 @@ void main() async {
           Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
         ]);
 
-        var deleted = await Member.db
-            .deleteWhere(session, where: (t) => t.blocking.count() > 1);
+        var deleted = await Member.db.deleteWhere(
+          session,
+          where: (t) => t.blocking.count() > 1,
+        );
 
         expect(deleted, hasLength(2));
         var deletedIds = deleted.map((c) => c.id).toList();

@@ -17,40 +17,43 @@ void main() {
   });
 
   test(
-      'Given a running Serverpod server when it is shutdown and restarted then it can be successfully started again.',
-      () async {
-    await serverpod.start();
-
-    await serverpod.shutdown(exitProcess: false);
-
-    await expectLater(serverpod.start(), completes);
-  });
-
-  test(
-      'Given a running Serverpod server when it is shutdown and started then database request can be made.',
-      () async {
-    await serverpod.start();
-
-    await serverpod.shutdown(exitProcess: false);
-    await serverpod.start();
-
-    var session = await serverpod.createSession();
-    // ignore: invalid_use_of_internal_member
-    await expectLater(session.db.testConnection(), completion(true));
-  });
-
-  test(
-      'Given a running Serverpod server when it is shutdown and started then no error is written to stderr.',
-      () async {
-    var record = MockStdout();
-    await IOOverrides.runZoned(() async {
+    'Given a running Serverpod server when it is shutdown and restarted then it can be successfully started again.',
+    () async {
       await serverpod.start();
 
       await serverpod.shutdown(exitProcess: false);
 
       await expectLater(serverpod.start(), completes);
-    }, stderr: () => record);
+    },
+  );
 
-    expect(record.output, isEmpty);
-  });
+  test(
+    'Given a running Serverpod server when it is shutdown and started then database request can be made.',
+    () async {
+      await serverpod.start();
+
+      await serverpod.shutdown(exitProcess: false);
+      await serverpod.start();
+
+      var session = await serverpod.createSession();
+      // ignore: invalid_use_of_internal_member
+      await expectLater(session.db.testConnection(), completion(true));
+    },
+  );
+
+  test(
+    'Given a running Serverpod server when it is shutdown and started then no error is written to stderr.',
+    () async {
+      var record = MockStdout();
+      await IOOverrides.runZoned(() async {
+        await serverpod.start();
+
+        await serverpod.shutdown(exitProcess: false);
+
+        await expectLater(serverpod.start(), completes);
+      }, stderr: () => record);
+
+      expect(record.output, isEmpty);
+    },
+  );
 }

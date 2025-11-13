@@ -46,8 +46,10 @@ class MethodSignaturePermutationsEndpoint extends Endpoint {
   }
 
   Future<List<String?>> echoPositionalAndOptionalArgs(
-      Session session, String string1,
-      [String? string2]) async {
+    Session session,
+    String string1, [
+    String? string2,
+  ]) async {
     return [string1, string2];
   }
 
@@ -68,14 +70,18 @@ class MethodSignaturePermutationsEndpoint extends Endpoint {
   }
 
   Stream<String> echoPositionalArgStream(
-      Session session, Stream<String> strings) async* {
+    Session session,
+    Stream<String> strings,
+  ) async* {
     await for (var string in strings) {
       yield string;
     }
   }
 
   Future<String> echoPositionalArgStreamAsFuture(
-      Session session, Stream<String> strings) async {
+    Session session,
+    Stream<String> strings,
+  ) async {
     return strings.first;
   }
 }

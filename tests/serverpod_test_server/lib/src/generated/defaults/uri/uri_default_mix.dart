@@ -19,12 +19,15 @@ abstract class UriDefaultMix
     Uri? uriDefaultAndDefaultModel,
     Uri? uriDefaultAndDefaultPersist,
     Uri? uriDefaultModelAndDefaultPersist,
-  })  : uriDefaultAndDefaultModel = uriDefaultAndDefaultModel ??
-            Uri.parse('https://serverpod.dev/defaultModel'),
-        uriDefaultAndDefaultPersist = uriDefaultAndDefaultPersist ??
-            Uri.parse('https://serverpod.dev/default'),
-        uriDefaultModelAndDefaultPersist = uriDefaultModelAndDefaultPersist ??
-            Uri.parse('https://serverpod.dev/defaultModel');
+  }) : uriDefaultAndDefaultModel =
+           uriDefaultAndDefaultModel ??
+           Uri.parse('https://serverpod.dev/defaultModel'),
+       uriDefaultAndDefaultPersist =
+           uriDefaultAndDefaultPersist ??
+           Uri.parse('https://serverpod.dev/default'),
+       uriDefaultModelAndDefaultPersist =
+           uriDefaultModelAndDefaultPersist ??
+           Uri.parse('https://serverpod.dev/defaultModel');
 
   factory UriDefaultMix({
     int? id,
@@ -37,11 +40,14 @@ abstract class UriDefaultMix
     return UriDefaultMix(
       id: jsonSerialization['id'] as int?,
       uriDefaultAndDefaultModel: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultAndDefaultModel']),
+        jsonSerialization['uriDefaultAndDefaultModel'],
+      ),
       uriDefaultAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultAndDefaultPersist']),
+        jsonSerialization['uriDefaultAndDefaultPersist'],
+      ),
       uriDefaultModelAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-          jsonSerialization['uriDefaultModelAndDefaultPersist']),
+        jsonSerialization['uriDefaultModelAndDefaultPersist'],
+      ),
     );
   }
 
@@ -76,8 +82,8 @@ abstract class UriDefaultMix
       if (id != null) 'id': id,
       'uriDefaultAndDefaultModel': uriDefaultAndDefaultModel.toJson(),
       'uriDefaultAndDefaultPersist': uriDefaultAndDefaultPersist.toJson(),
-      'uriDefaultModelAndDefaultPersist':
-          uriDefaultModelAndDefaultPersist.toJson(),
+      'uriDefaultModelAndDefaultPersist': uriDefaultModelAndDefaultPersist
+          .toJson(),
     };
   }
 
@@ -87,8 +93,8 @@ abstract class UriDefaultMix
       if (id != null) 'id': id,
       'uriDefaultAndDefaultModel': uriDefaultAndDefaultModel.toJson(),
       'uriDefaultAndDefaultPersist': uriDefaultAndDefaultPersist.toJson(),
-      'uriDefaultModelAndDefaultPersist':
-          uriDefaultModelAndDefaultPersist.toJson(),
+      'uriDefaultModelAndDefaultPersist': uriDefaultModelAndDefaultPersist
+          .toJson(),
     };
   }
 
@@ -131,11 +137,11 @@ class _UriDefaultMixImpl extends UriDefaultMix {
     Uri? uriDefaultAndDefaultPersist,
     Uri? uriDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          uriDefaultAndDefaultModel: uriDefaultAndDefaultModel,
-          uriDefaultAndDefaultPersist: uriDefaultAndDefaultPersist,
-          uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         uriDefaultAndDefaultModel: uriDefaultAndDefaultModel,
+         uriDefaultAndDefaultPersist: uriDefaultAndDefaultPersist,
+         uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -153,7 +159,8 @@ class _UriDefaultMixImpl extends UriDefaultMix {
           uriDefaultAndDefaultModel ?? this.uriDefaultAndDefaultModel,
       uriDefaultAndDefaultPersist:
           uriDefaultAndDefaultPersist ?? this.uriDefaultAndDefaultPersist,
-      uriDefaultModelAndDefaultPersist: uriDefaultModelAndDefaultPersist ??
+      uriDefaultModelAndDefaultPersist:
+          uriDefaultModelAndDefaultPersist ??
           this.uriDefaultModelAndDefaultPersist,
     );
   }
@@ -183,7 +190,7 @@ class UriDefaultMixUpdateTable extends _i1.UpdateTable<UriDefaultMixTable> {
 
 class UriDefaultMixTable extends _i1.Table<int?> {
   UriDefaultMixTable({super.tableRelation})
-      : super(tableName: 'uri_default_mix') {
+    : super(tableName: 'uri_default_mix') {
     updateTable = UriDefaultMixUpdateTable(this);
     uriDefaultAndDefaultModel = _i1.ColumnUri(
       'uriDefaultAndDefaultModel',
@@ -212,11 +219,11 @@ class UriDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uriDefaultAndDefaultModel,
-        uriDefaultAndDefaultPersist,
-        uriDefaultModelAndDefaultPersist,
-      ];
+    id,
+    uriDefaultAndDefaultModel,
+    uriDefaultAndDefaultPersist,
+    uriDefaultModelAndDefaultPersist,
+  ];
 }
 
 class UriDefaultMixInclude extends _i1.IncludeObject {

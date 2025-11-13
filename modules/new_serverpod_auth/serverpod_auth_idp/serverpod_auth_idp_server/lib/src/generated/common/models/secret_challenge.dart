@@ -33,9 +33,11 @@ abstract class SecretChallenge
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       challengeCodeHash: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['challengeCodeHash']),
+        jsonSerialization['challengeCodeHash'],
+      ),
       challengeCodeSalt: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['challengeCodeSalt']),
+        jsonSerialization['challengeCodeSalt'],
+      ),
     );
   }
 
@@ -115,10 +117,10 @@ class _SecretChallengeImpl extends SecretChallenge {
     required _i2.ByteData challengeCodeHash,
     required _i2.ByteData challengeCodeSalt,
   }) : super._(
-          id: id,
-          challengeCodeHash: challengeCodeHash,
-          challengeCodeSalt: challengeCodeSalt,
-        );
+         id: id,
+         challengeCodeHash: challengeCodeHash,
+         challengeCodeSalt: challengeCodeSalt,
+       );
 
   /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
@@ -141,23 +143,23 @@ class SecretChallengeUpdateTable extends _i1.UpdateTable<SecretChallengeTable> {
   SecretChallengeUpdateTable(super.table);
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeHash(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challengeCodeHash,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(
+    table.challengeCodeHash,
+    value,
+  );
 
   _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeSalt(
-          _i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challengeCodeSalt,
-        value,
-      );
+    _i2.ByteData value,
+  ) => _i1.ColumnValue(
+    table.challengeCodeSalt,
+    value,
+  );
 }
 
 class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   SecretChallengeTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_secret_challenge') {
+    : super(tableName: 'serverpod_auth_idp_secret_challenge') {
     updateTable = SecretChallengeUpdateTable(this);
     challengeCodeHash = _i1.ColumnByteData(
       'challengeCodeHash',
@@ -179,10 +181,10 @@ class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        challengeCodeHash,
-        challengeCodeSalt,
-      ];
+    id,
+    challengeCodeHash,
+    challengeCodeSalt,
+  ];
 }
 
 class SecretChallengeInclude extends _i1.IncludeObject {
@@ -380,7 +382,7 @@ class SecretChallengeRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<SecretChallenge>(
@@ -395,7 +397,7 @@ class SecretChallengeRepository {
   Future<List<SecretChallenge>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
     int? limit,
     int? offset,

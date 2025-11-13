@@ -45,33 +45,32 @@ class DatabasePoolManager {
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
   ) : _poolSettings = pg.PoolSettings(
-          maxConnectionCount: 10,
-          queryTimeout: const Duration(minutes: 1),
-          sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
-          typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
-          onOpen: (connection) async {
-            var parameters =
-                runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ??
-                    [];
+        maxConnectionCount: 10,
+        queryTimeout: const Duration(minutes: 1),
+        sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+        typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
+        onOpen: (connection) async {
+          var parameters =
+              runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
 
-            if (!parameters.any((p) => p is SearchPathsConfig) &&
-                config.searchPaths != null &&
-                config.searchPaths!.isNotEmpty) {
-              parameters.add(
-                SearchPathsConfig(searchPaths: config.searchPaths),
-              );
-            }
+          if (!parameters.any((p) => p is SearchPathsConfig) &&
+              config.searchPaths != null &&
+              config.searchPaths!.isNotEmpty) {
+            parameters.add(
+              SearchPathsConfig(searchPaths: config.searchPaths),
+            );
+          }
 
-            var setParametersStatements = parameters
-                .map((p) => p.buildStatements(isLocal: false))
-                .expand((e) => e);
-            if (setParametersStatements.isNotEmpty) {
-              for (var statement in setParametersStatements) {
-                await connection.execute(statement);
-              }
+          var setParametersStatements = parameters
+              .map((p) => p.buildStatements(isLocal: false))
+              .expand((e) => e);
+          if (setParametersStatements.isNotEmpty) {
+            for (var statement in setParametersStatements) {
+              await connection.execute(statement);
             }
-          },
-        ) {
+          }
+        },
+      ) {
     _serializationManager = serializationManager;
   }
 
@@ -87,7 +86,7 @@ class DatabasePoolManager {
           username: config.user,
           password: config.password,
           isUnixSocket: config.isUnixSocket,
-        )
+        ),
       ],
       settings: _poolSettings,
     );

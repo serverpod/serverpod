@@ -87,66 +87,76 @@ void main() {
     group('when calling signOutDevice on the first SessionManager', () {
       setUp(() async {
         bool result = await primarySessionManager.signOutDevice();
-        assert(result,
-            'Primary SessionManager failed to sign out from current device.');
-      });
-
-      test(
-          'then the first client is signed out in SessionManager and on the server',
-          () async {
-        expect(
-          await primaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Primary client should be signed out but is still signed in on the server.',
+        assert(
+          result,
+          'Primary SessionManager failed to sign out from current device.',
         );
       });
 
       test(
-          'then the second client remains signed in in SessionManager and on the server',
-          () async {
-        expect(
-          await secondaryClient.modules.auth.status.isSignedIn(),
-          isTrue,
-          reason: 'Secondary client should remain signed in on the server.',
-        );
-      });
+        'then the first client is signed out in SessionManager and on the server',
+        () async {
+          expect(
+            await primaryClient.modules.auth.status.isSignedIn(),
+            isFalse,
+            reason:
+                'Primary client should be signed out but is still signed in on the server.',
+          );
+        },
+      );
+
+      test(
+        'then the second client remains signed in in SessionManager and on the server',
+        () async {
+          expect(
+            await secondaryClient.modules.auth.status.isSignedIn(),
+            isTrue,
+            reason: 'Secondary client should remain signed in on the server.',
+          );
+        },
+      );
     });
 
     group('when calling signOutAllDevices on the first SessionManager', () {
       setUp(() async {
         bool result = await primarySessionManager.signOutAllDevices();
-        assert(result,
-            'Primary SessionManager failed to sign out from all devices.');
-      });
-
-      test(
-          'then the first client is signed out in SessionManager and on the server',
-          () async {
-        expect(
-          await primaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Primary client should be signed out but is still signed in on the server.',
+        assert(
+          result,
+          'Primary SessionManager failed to sign out from all devices.',
         );
       });
 
       test(
-          'then the second client is signed out in SessionManager and on the server',
-          () async {
-        expect(
-          await secondaryClient.modules.auth.status.isSignedIn(),
-          isFalse,
-          reason:
-              'Secondary client should be signed out but is still signed in on the server.',
-        );
-      });
+        'then the first client is signed out in SessionManager and on the server',
+        () async {
+          expect(
+            await primaryClient.modules.auth.status.isSignedIn(),
+            isFalse,
+            reason:
+                'Primary client should be signed out but is still signed in on the server.',
+          );
+        },
+      );
+
+      test(
+        'then the second client is signed out in SessionManager and on the server',
+        () async {
+          expect(
+            await secondaryClient.modules.auth.status.isSignedIn(),
+            isFalse,
+            reason:
+                'Secondary client should be signed out but is still signed in on the server.',
+          );
+        },
+      );
     });
   });
 }
 
 Future<void> _authenticateClientAndSessionManager(
-    Client client, SessionManager sessionManager) async {
+  Client client,
+  SessionManager sessionManager,
+) async {
   var response = await client.authentication.authenticate(
     'test@foo.bar',
     'password',

@@ -22,7 +22,8 @@ class ParentClassWithoutId extends _i1.GrandparentClassWithId
   });
 
   factory ParentClassWithoutId.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ParentClassWithoutId(
       id: jsonSerialization['id'] == null
           ? null

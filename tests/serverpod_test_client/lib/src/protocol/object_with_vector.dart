@@ -40,15 +40,20 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
       vectorNullable: jsonSerialization['vectorNullable'] == null
           ? null
           : _i1.VectorJsonExtension.fromJson(
-              jsonSerialization['vectorNullable']),
+              jsonSerialization['vectorNullable'],
+            ),
       vectorIndexedHnsw: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedHnsw']),
+        jsonSerialization['vectorIndexedHnsw'],
+      ),
       vectorIndexedHnswWithParams: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedHnswWithParams']),
+        jsonSerialization['vectorIndexedHnswWithParams'],
+      ),
       vectorIndexedIvfflat: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedIvfflat']),
+        jsonSerialization['vectorIndexedIvfflat'],
+      ),
       vectorIndexedIvfflatWithParams: _i1.VectorJsonExtension.fromJson(
-          jsonSerialization['vectorIndexedIvfflatWithParams']),
+        jsonSerialization['vectorIndexedIvfflatWithParams'],
+      ),
     );
   }
 
@@ -112,14 +117,14 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
     required _i1.Vector vectorIndexedIvfflat,
     required _i1.Vector vectorIndexedIvfflatWithParams,
   }) : super._(
-          id: id,
-          vector: vector,
-          vectorNullable: vectorNullable,
-          vectorIndexedHnsw: vectorIndexedHnsw,
-          vectorIndexedHnswWithParams: vectorIndexedHnswWithParams,
-          vectorIndexedIvfflat: vectorIndexedIvfflat,
-          vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams,
-        );
+         id: id,
+         vector: vector,
+         vectorNullable: vectorNullable,
+         vectorIndexedHnsw: vectorIndexedHnsw,
+         vectorIndexedHnswWithParams: vectorIndexedHnswWithParams,
+         vectorIndexedIvfflat: vectorIndexedIvfflat,
+         vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
@@ -141,11 +146,13 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
           ? vectorNullable
           : this.vectorNullable?.clone(),
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
-      vectorIndexedHnswWithParams: vectorIndexedHnswWithParams ??
+      vectorIndexedHnswWithParams:
+          vectorIndexedHnswWithParams ??
           this.vectorIndexedHnswWithParams.clone(),
       vectorIndexedIvfflat:
           vectorIndexedIvfflat ?? this.vectorIndexedIvfflat.clone(),
-      vectorIndexedIvfflatWithParams: vectorIndexedIvfflatWithParams ??
+      vectorIndexedIvfflatWithParams:
+          vectorIndexedIvfflatWithParams ??
           this.vectorIndexedIvfflatWithParams.clone(),
     );
   }

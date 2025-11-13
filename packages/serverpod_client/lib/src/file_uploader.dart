@@ -35,7 +35,8 @@ class FileUploader {
   Future<bool> _upload(http.ByteStream stream, int? length) async {
     if (_attemptedUpload) {
       throw Exception(
-          'Data has already been uploaded using this FileUploader.');
+        'Data has already been uploaded using this FileUploader.',
+      );
     }
     _attemptedUpload = true;
 
@@ -57,10 +58,16 @@ class FileUploader {
         case _UploadType.multipart:
           var multipartFile = switch (length) {
             null => http.MultipartFile.fromBytes(
-                _uploadDescription.field!, await stream.toBytes(),
-                filename: _uploadDescription.fileName),
-            _ => http.MultipartFile(_uploadDescription.field!, stream, length,
-                filename: _uploadDescription.fileName),
+              _uploadDescription.field!,
+              await stream.toBytes(),
+              filename: _uploadDescription.fileName,
+            ),
+            _ => http.MultipartFile(
+              _uploadDescription.field!,
+              stream,
+              length,
+              filename: _uploadDescription.fileName,
+            ),
           };
 
           var request = http.MultipartRequest('POST', _uploadDescription.url);

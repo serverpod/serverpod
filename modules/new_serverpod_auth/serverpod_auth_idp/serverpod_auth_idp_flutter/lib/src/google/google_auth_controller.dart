@@ -110,8 +110,9 @@ class GoogleAuthController extends ChangeNotifier {
   /// Initializes the Google Sign-In service and sets up auth event listeners.
   Future<void> _initialize() async {
     try {
-      final signIn = await GoogleSignInService.instance
-          .ensureInitialized(auth: client.auth);
+      final signIn = await GoogleSignInService.instance.ensureInitialized(
+        auth: client.auth,
+      );
 
       _authSubscription = signIn.authenticationEvents.listen(
         _handleAuthenticationEvent,
@@ -172,8 +173,8 @@ class GoogleAuthController extends ChangeNotifier {
     try {
       String? accessToken;
       if (scopes.isNotEmpty) {
-        final authorization =
-            await account.authorizationClient.ensureAuthorized(scopes);
+        final authorization = await account.authorizationClient
+            .ensureAuthorized(scopes);
         accessToken = authorization.accessToken;
       }
 

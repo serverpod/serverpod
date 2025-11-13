@@ -17,10 +17,12 @@ class SignInRequiredEndpoint extends Endpoint {
     SerializableModel message,
   ) async {
     if (message is SimpleData) {
-      unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
-        // ignore: deprecated_member_use
-        await sendStreamMessage(session, message);
-      }));
+      unawaited(
+        Future.delayed(const Duration(seconds: 1)).then((value) async {
+          // ignore: deprecated_member_use
+          await sendStreamMessage(session, message);
+        }),
+      );
     }
   }
 }
@@ -39,10 +41,12 @@ class AdminScopeRequiredEndpoint extends Endpoint {
     SerializableModel message,
   ) async {
     if (message is SimpleData) {
-      unawaited(Future.delayed(const Duration(seconds: 1)).then((value) async {
-        // ignore: deprecated_member_use
-        await sendStreamMessage(session, message);
-      }));
+      unawaited(
+        Future.delayed(const Duration(seconds: 1)).then((value) async {
+          // ignore: deprecated_member_use
+          await sendStreamMessage(session, message);
+        }),
+      );
     }
   }
 }

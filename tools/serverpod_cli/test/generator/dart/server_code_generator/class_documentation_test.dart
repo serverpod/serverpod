@@ -11,19 +11,23 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   var testClassFileName = 'example';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join(
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  );
 
   group('Given class with documentation when generating code', () {
     var documentation = [
       '// This is an example documentation',
-      '// This is another example'
+      '// This is another example',
     ];
     var models = [
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(

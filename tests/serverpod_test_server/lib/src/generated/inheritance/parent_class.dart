@@ -116,14 +116,14 @@ class ParentClassUpdateTable extends _i2.UpdateTable<ParentClassTable> {
       );
 
   _i2.ColumnValue<String, String> parentField(String value) => _i2.ColumnValue(
-        table.parentField,
-        value,
-      );
+    table.parentField,
+    value,
+  );
 }
 
 class ParentClassTable extends _i2.Table<int?> {
   ParentClassTable({super.tableRelation})
-      : super(tableName: 'parent_class_table') {
+    : super(tableName: 'parent_class_table') {
     updateTable = ParentClassUpdateTable(this);
     grandParentField = _i2.ColumnString(
       'grandParentField',
@@ -143,10 +143,10 @@ class ParentClassTable extends _i2.Table<int?> {
 
   @override
   List<_i2.Column> get columns => [
-        id,
-        grandParentField,
-        parentField,
-      ];
+    id,
+    grandParentField,
+    parentField,
+  ];
 }
 
 class ParentClassInclude extends _i2.IncludeObject {

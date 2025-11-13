@@ -24,10 +24,11 @@ import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
 
 /// Performs a set of custom health checks on a [Serverpod].
-typedef HealthCheckHandler = Future<List<internal.ServerHealthMetric>> Function(
-  Serverpod pod,
-  DateTime timestamp,
-);
+typedef HealthCheckHandler =
+    Future<List<internal.ServerHealthMetric>> Function(
+      Serverpod pod,
+      DateTime timestamp,
+    );
 
 /// The [Serverpod] handles all setup and manages the main [Server]. In addition
 /// to the user managed server, it also runs a server for handling the
@@ -50,8 +51,10 @@ class Serverpod {
   /// program it's not recommended.
   static Serverpod get instance {
     if (_instance == null) {
-      throw Exception('Serverpod has not been initialized. You need to create '
-          'the Serverpod object before calling this method.');
+      throw Exception(
+        'Serverpod has not been initialized. You need to create '
+        'the Serverpod object before calling this method.',
+      );
     }
     return _instance!;
   }
@@ -258,8 +261,9 @@ class Serverpod {
     }
 
     try {
-      var settings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      var settings = await internal.RuntimeSettings.db.findFirstRow(
+        internalSession,
+      );
       if (settings != null) {
         _updateLogSettings(settings);
       }
@@ -272,12 +276,15 @@ class Serverpod {
 
   Future<void> _storeRuntimeSettings(internal.RuntimeSettings settings) async {
     try {
-      var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      var oldRuntimeSettings = await internal.RuntimeSettings.db.findFirstRow(
+        internalSession,
+      );
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        settings = await internal.RuntimeSettings.db
-            .insertRow(internalSession, settings);
+        settings = await internal.RuntimeSettings.db.insertRow(
+          internalSession,
+          settings,
+        );
       } else {
         settings.id = oldRuntimeSettings.id;
         await internal.RuntimeSettings.db.updateRow(internalSession, settings);
@@ -315,19 +322,21 @@ class Serverpod {
   static final _defaultHttpResponseHeaders = Headers.build((mh) {
     mh.accessControlAllowOrigin =
         const AccessControlAllowOriginHeader.wildcard();
-    mh.accessControlAllowMethods =
-        AccessControlAllowMethodsHeader.methods(methods: [Method.post]);
+    mh.accessControlAllowMethods = AccessControlAllowMethodsHeader.methods(
+      methods: [Method.post],
+    );
   });
 
   static final _defaultHttpOptionsResponseHeaders = Headers.build((mh) {
-    mh.accessControlAllowHeaders =
-        AccessControlAllowHeadersHeader.headers(headers: [
-      'Content-Type',
-      'Authorization',
-      'Accept',
-      'User-Agent',
-      'X-Requested-With',
-    ]);
+    mh.accessControlAllowHeaders = AccessControlAllowHeadersHeader.headers(
+      headers: [
+        'Content-Type',
+        'Authorization',
+        'Accept',
+        'User-Agent',
+        'X-Requested-With',
+      ],
+    );
   });
 
   /// Security context if the insights server is running over https.
@@ -362,15 +371,14 @@ class Serverpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     this.runtimeParametersBuilder,
-  })  : httpResponseHeaders =
-            httpResponseHeaders ?? _defaultHttpResponseHeaders,
-        httpOptionsResponseHeaders =
-            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
-        _securityContextConfig = securityContextConfig,
-        _experimental = ExperimentalApi._(
-          config: config,
-          experimentalFeatures: experimentalFeatures,
-        ) {
+  }) : httpResponseHeaders = httpResponseHeaders ?? _defaultHttpResponseHeaders,
+       httpOptionsResponseHeaders =
+           httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
+       _securityContextConfig = securityContextConfig,
+       _experimental = ExperimentalApi._(
+         config: config,
+         experimentalFeatures: experimentalFeatures,
+       ) {
     try {
       _initializeServerpod(
         args,
@@ -407,7 +415,8 @@ class Serverpod {
       CliArgsConstants.role: ServerpodRole? role,
       CliArgsConstants.applyMigrations: bool? applyMigrations,
       CliArgsConstants.applyRepairMigration: bool? applyRepairMigration,
-    } = _commandLineArgs.toMap();
+    } = _commandLineArgs
+        .toMap();
 
     final runMode = _calculateRunMode(
       runModeFromCommandLine: runModeFromCommandLine,
@@ -426,7 +435,8 @@ class Serverpod {
     //
     // This is a workaround to allow the command line arguments to override the
     // config if the user provides a config object.
-    this.config = config?.copyWith(
+    this.config =
+        config?.copyWith(
           runMode: runMode,
           serverId: serverId,
           loggingMode: loggingMode,
@@ -448,8 +458,11 @@ class Serverpod {
     try {
       _innerInitializeServerpod();
     } catch (e, stackTrace) {
-      _reportException(e, stackTrace,
-          message: 'Error in Serverpod initialization');
+      _reportException(
+        e,
+        stackTrace,
+        message: 'Error in Serverpod initialization',
+      );
       rethrow;
     }
 
@@ -597,8 +610,11 @@ class Serverpod {
       }
 
       _exitCode = 1;
-      _reportException(error, stackTrace,
-          message: 'Internal server error. Zoned exception.');
+      _reportException(
+        error,
+        stackTrace,
+        message: 'Internal server error. Zoned exception.',
+      );
     }
 
     if (runInGuardedZone) {
@@ -675,7 +691,8 @@ class Serverpod {
 
       // Serverpod Insights.
       if (Features.enableInsights) {
-        serversStarted &= await _insightsServer?.start(
+        serversStarted &=
+            await _insightsServer?.start(
               authenticationHandler: serviceAuthenticationHandler,
             ) ??
             true;
@@ -721,9 +738,9 @@ class Serverpod {
         _completedFutureCalls = true;
       } else if (config.role == ServerpodRole.maintenance) {
         unawaited(
-          _futureCallManager
-              ?.runScheduledFutureCalls()
-              .whenComplete(_onCompletedFutureCalls),
+          _futureCallManager?.runScheduledFutureCalls().whenComplete(
+            _onCompletedFutureCalls,
+          ),
         );
       } else {
         _futureCallManager?.start();
@@ -754,26 +771,29 @@ class Serverpod {
 
       if (applyRepairMigration) {
         logVerbose('Applying database repair migration');
-        var appliedRepairMigration =
-            await migrationManager.applyRepairMigration(internalSession);
+        var appliedRepairMigration = await migrationManager
+            .applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
           stderr.writeln('Failed to apply database repair migration.');
         } else {
           stdout.writeln(
-              'Database repair migration "$appliedRepairMigration" applied.');
+            'Database repair migration "$appliedRepairMigration" applied.',
+          );
         }
       }
 
       if (applyMigrations) {
         logVerbose('Applying database migrations.');
-        var migrationsApplied =
-            await migrationManager.migrateToLatest(internalSession);
+        var migrationsApplied = await migrationManager.migrateToLatest(
+          internalSession,
+        );
 
         if (migrationsApplied == null) {
           stdout.writeln('Latest database migration already applied.');
         } else {
           stdout.writeln(
-              'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:');
+            'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
+          );
           for (var migration in migrationsApplied) {
             stdout.writeln(' - $migration');
           }
@@ -781,8 +801,9 @@ class Serverpod {
       }
 
       logVerbose('Verifying database integrity.');
-      verified =
-          await MigrationManager.verifyDatabaseIntegrity(internalSession);
+      verified = await MigrationManager.verifyDatabaseIntegrity(
+        internalSession,
+      );
     } catch (e, stackTrace) {
       verified = false;
 
@@ -803,8 +824,9 @@ class Serverpod {
 
     internal.RuntimeSettings? runtimeSettings;
     try {
-      runtimeSettings =
-          await internal.RuntimeSettings.db.findFirstRow(internalSession);
+      runtimeSettings = await internal.RuntimeSettings.db.findFirstRow(
+        internalSession,
+      );
     } catch (e, stackTrace) {
       _exitCode = 1;
       const message = 'Failed to load runtime settings.';
@@ -814,8 +836,10 @@ class Serverpod {
     if (runtimeSettings == null) {
       logVerbose('Runtime settings not found, creating default settings.');
       try {
-        runtimeSettings = await internal.RuntimeSettings.db
-            .insertRow(internalSession, _runtimeSettings);
+        runtimeSettings = await internal.RuntimeSettings.db.insertRow(
+          internalSession,
+          _runtimeSettings,
+        );
         _runtimeSettings = runtimeSettings;
       } catch (e, stackTrace) {
         _exitCode = 1;
@@ -853,11 +877,10 @@ class Serverpod {
         ServerpodRunMode.development ||
         ServerpodRunMode.test ||
         ServerpodRunMode.staging ||
-        ServerpodRunMode.production =>
-          runModeFromEnv,
+        ServerpodRunMode.production => runModeFromEnv,
         _ => throw ArgumentError(
-            'Invalid run mode from environment (${ServerpodEnv.runMode.envVariable}): $runModeFromEnv',
-          ),
+          'Invalid run mode from environment (${ServerpodEnv.runMode.envVariable}): $runModeFromEnv',
+        ),
       };
     }
 
@@ -888,20 +911,25 @@ class Serverpod {
   }
 
   void _onShutdownSignal(ProcessSignal signal) {
-    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
-        ', time: ${DateTime.now().toUtc()}');
+    stdout.writeln(
+      '${signal.name} (${signal.signalNumber}) received'
+      ', time: ${DateTime.now().toUtc()}',
+    );
     shutdown(exitProcess: true, signalNumber: signal.signalNumber);
   }
 
   bool _interruptSignalSent = false;
 
   void _onInterruptSignal(ProcessSignal signal) {
-    stdout.writeln('${signal.name} (${signal.signalNumber}) received'
-        ', time: ${DateTime.now().toUtc()}');
+    stdout.writeln(
+      '${signal.name} (${signal.signalNumber}) received'
+      ', time: ${DateTime.now().toUtc()}',
+    );
 
     if (_interruptSignalSent) {
-      stdout
-          .writeln('SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}');
+      stdout.writeln(
+        'SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}',
+      );
       exit(128 + signal.signalNumber);
     }
 
@@ -950,8 +978,10 @@ class Serverpod {
     Duration delay, {
     String? identifier,
   }) async {
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
+    assert(
+      server.running,
+      'Server is not running, call start() before using future calls',
+    );
     var futureCallManager = _futureCallManager;
     if (futureCallManager == null) {
       throw StateError('Future calls are disabled.');
@@ -974,8 +1004,10 @@ class Serverpod {
     String? identifier,
   }) async {
     var futureCallManager = _futureCallManager;
-    assert(server.running,
-        'Server is not running, call start() before using future calls');
+    assert(
+      server.running,
+      'Server is not running, call start() before using future calls',
+    );
     if (futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
@@ -1043,7 +1075,8 @@ class Serverpod {
     int? signalNumber,
   }) async {
     stdout.writeln(
-        'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}');
+      'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}',
+    );
 
     Object? shutdownError;
 
@@ -1068,8 +1101,11 @@ class Serverpod {
     await _internalServicesShutdownTasks.executeTasks(
       onTaskError: (error, stack, id) {
         shutdownError = error;
-        _reportException(error, stack,
-            message: 'Error in service shutdown "$id"');
+        _reportException(
+          error,
+          stack,
+          message: 'Error in service shutdown "$id"',
+        );
       },
     );
 
@@ -1086,7 +1122,8 @@ class Serverpod {
     }
 
     stdout.writeln(
-        'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}');
+      'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}',
+    );
 
     if (exitProcess) {
       int conventionalExitCode = signalNumber != null ? 128 + signalNumber : 0;
@@ -1258,11 +1295,11 @@ class ExperimentalApi {
   ExperimentalApi._({
     ServerpodConfig? config,
     ExperimentalFeatures? experimentalFeatures,
-  })  : _eventDispatcher = DiagnosticEventDispatcher(
-          experimentalFeatures?.diagnosticEventHandlers ?? const [],
-          timeout: config?.experimentalDiagnosticHandlerTimeout,
-        ),
-        _shutdownTasks = TaskManagerImpl();
+  }) : _eventDispatcher = DiagnosticEventDispatcher(
+         experimentalFeatures?.diagnosticEventHandlers ?? const [],
+         timeout: config?.experimentalDiagnosticHandlerTimeout,
+       ),
+       _shutdownTasks = TaskManagerImpl();
 
   /// Application method for submitting a diagnostic event
   /// to registered event handlers.

@@ -10,14 +10,16 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(path.joinAll([
-  'test',
-  'integration',
-  'analyzer',
-  'dart',
-  'endpoint_validation',
-  const Uuid().v4(),
-]));
+var testProjectDirectory = Directory(
+  path.joinAll([
+    'test',
+    'integration',
+    'analyzer',
+    'dart',
+    'endpoint_validation',
+    const Uuid().v4(),
+  ]),
+);
 
 void main() {
   setUpAll(() async {
@@ -30,8 +32,9 @@ void main() {
 
   group('Given endpoint with @doNotGenerate annotation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
@@ -65,8 +68,9 @@ class ExampleEndpoint extends Endpoint {
 
   group('Given endpoint with a random annotation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
@@ -101,18 +105,19 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given two endpoints in the same file where one has `@doNotGenerate` annotation when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given two endpoints in the same file where one has `@doNotGenerate` annotation when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
@@ -130,17 +135,20 @@ class SecondExampleEndpoint extends Endpoint {
   }
 }
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
 
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then endpoint definition is created for the non-marked endpoint.',
+      test(
+        'then endpoint definition is created for the non-marked endpoint.',
         () {
-      expect(endpointDefinitions, hasLength(1));
-    });
-  });
+          expect(endpointDefinitions, hasLength(1));
+        },
+      );
+    },
+  );
 }

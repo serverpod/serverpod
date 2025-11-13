@@ -41,13 +41,19 @@ abstract class DatabaseDefinitions
           .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
           .toList(),
       installedMigrations: (jsonSerialization['installedMigrations'] as List)
-          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
-              (e as Map<String, dynamic>)))
+          .map(
+            (e) => _i3.DatabaseMigrationVersion.fromJson(
+              (e as Map<String, dynamic>),
+            ),
+          )
           .toList(),
       latestAvailableMigrations:
           (jsonSerialization['latestAvailableMigrations'] as List)
-              .map((e) => _i3.DatabaseMigrationVersion.fromJson(
-                  (e as Map<String, dynamic>)))
+              .map(
+                (e) => _i3.DatabaseMigrationVersion.fromJson(
+                  (e as Map<String, dynamic>),
+                ),
+              )
               .toList(),
     );
   }
@@ -78,10 +84,12 @@ abstract class DatabaseDefinitions
     return {
       'target': target.toJson(valueToJson: (v) => v.toJson()),
       'live': live.toJson(valueToJson: (v) => v.toJson()),
-      'installedMigrations':
-          installedMigrations.toJson(valueToJson: (v) => v.toJson()),
-      'latestAvailableMigrations':
-          latestAvailableMigrations.toJson(valueToJson: (v) => v.toJson()),
+      'installedMigrations': installedMigrations.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
+      'latestAvailableMigrations': latestAvailableMigrations.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
     };
   }
 
@@ -90,10 +98,12 @@ abstract class DatabaseDefinitions
     return {
       'target': target.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'live': live.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'installedMigrations':
-          installedMigrations.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'installedMigrations': installedMigrations.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'latestAvailableMigrations': latestAvailableMigrations.toJson(
-          valueToJson: (v) => v.toJsonForProtocol()),
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
     };
   }
 
@@ -110,11 +120,11 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
     required List<_i3.DatabaseMigrationVersion> installedMigrations,
     required List<_i3.DatabaseMigrationVersion> latestAvailableMigrations,
   }) : super._(
-          target: target,
-          live: live,
-          installedMigrations: installedMigrations,
-          latestAvailableMigrations: latestAvailableMigrations,
-        );
+         target: target,
+         live: live,
+         installedMigrations: installedMigrations,
+         latestAvailableMigrations: latestAvailableMigrations,
+       );
 
   /// Returns a shallow copy of this [DatabaseDefinitions]
   /// with some or all fields replaced by the given arguments.
@@ -129,9 +139,11 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
     return DatabaseDefinitions(
       target: target ?? this.target.map((e0) => e0.copyWith()).toList(),
       live: live ?? this.live.map((e0) => e0.copyWith()).toList(),
-      installedMigrations: installedMigrations ??
+      installedMigrations:
+          installedMigrations ??
           this.installedMigrations.map((e0) => e0.copyWith()).toList(),
-      latestAvailableMigrations: latestAvailableMigrations ??
+      latestAvailableMigrations:
+          latestAvailableMigrations ??
           this.latestAvailableMigrations.map((e0) => e0.copyWith()).toList(),
     );
   }

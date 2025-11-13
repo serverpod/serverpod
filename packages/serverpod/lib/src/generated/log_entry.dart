@@ -196,18 +196,18 @@ class _LogEntryImpl extends LogEntry {
     String? stackTrace,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          messageId: messageId,
-          reference: reference,
-          serverId: serverId,
-          time: time,
-          logLevel: logLevel,
-          message: message,
-          error: error,
-          stackTrace: stackTrace,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         messageId: messageId,
+         reference: reference,
+         serverId: serverId,
+         time: time,
+         logLevel: logLevel,
+         message: message,
+         error: error,
+         stackTrace: stackTrace,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
@@ -246,29 +246,29 @@ class LogEntryUpdateTable extends _i1.UpdateTable<LogEntryTable> {
   LogEntryUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
-        table.sessionLogId,
-        value,
-      );
+    table.sessionLogId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> messageId(int? value) => _i1.ColumnValue(
-        table.messageId,
-        value,
-      );
+    table.messageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> reference(String? value) => _i1.ColumnValue(
-        table.reference,
-        value,
-      );
+    table.reference,
+    value,
+  );
 
   _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-        table.serverId,
-        value,
-      );
+    table.serverId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-        table.time,
-        value,
-      );
+    table.time,
+    value,
+  );
 
   _i1.ColumnValue<_i2.LogLevel, _i2.LogLevel> logLevel(_i2.LogLevel value) =>
       _i1.ColumnValue(
@@ -277,24 +277,24 @@ class LogEntryUpdateTable extends _i1.UpdateTable<LogEntryTable> {
       );
 
   _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
-        table.message,
-        value,
-      );
+    table.message,
+    value,
+  );
 
   _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
-        table.error,
-        value,
-      );
+    table.error,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
-        table.stackTrace,
-        value,
-      );
+    table.stackTrace,
+    value,
+  );
 
   _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
-        table.order,
-        value,
-      );
+    table.order,
+    value,
+  );
 }
 
 class LogEntryTable extends _i1.Table<int?> {
@@ -377,18 +377,18 @@ class LogEntryTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        sessionLogId,
-        messageId,
-        reference,
-        serverId,
-        time,
-        logLevel,
-        message,
-        error,
-        stackTrace,
-        order,
-      ];
+    id,
+    sessionLogId,
+    messageId,
+    reference,
+    serverId,
+    time,
+    logLevel,
+    message,
+    error,
+    stackTrace,
+    order,
+  ];
 }
 
 class LogEntryInclude extends _i1.IncludeObject {

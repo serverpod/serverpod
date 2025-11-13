@@ -60,17 +60,21 @@ void main() {
         inStream = StreamController<int>();
         Stream<int> outStream;
         {
-          outStream = client.authenticatedMethodStreaming
-              .intEchoStream(inStream.stream);
+          outStream = client.authenticatedMethodStreaming.intEchoStream(
+            inStream.stream,
+          );
           valueReceivedCompleter = Completer<int>();
-          outStream.listen((event) {
-            if (valueReceivedCompleter.isCompleted) {
-              return;
-            }
-            valueReceivedCompleter.complete(event);
-          }, onError: (e) {
-            streamClosedCompleter.complete(e);
-          });
+          outStream.listen(
+            (event) {
+              if (valueReceivedCompleter.isCompleted) {
+                return;
+              }
+              valueReceivedCompleter.complete(event);
+            },
+            onError: (e) {
+              streamClosedCompleter.complete(e);
+            },
+          );
 
           inStream.add(1);
           // Validate that the stream works
@@ -80,90 +84,97 @@ void main() {
       });
 
       test(
-          'when the authenticated user is revoked then the stream is closed with an error.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationUser(),
-          ),
-          completion(true),
-        );
+        'when the authenticated user is revoked then the stream is closed with an error.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationUser(),
+            ),
+            completion(true),
+          );
 
-        await expectLater(streamClosedCompleter.future, completes);
-        var exception = await streamClosedCompleter.future;
-        expect(exception, isA<ConnectionClosedException>());
-      });
-
-      test(
-          'when the authentication id is revoked then the stream is closed with an error.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationAuthId(authId: 'token-$tokenCounter'),
-          ),
-          completion(true),
-        );
-
-        await expectLater(streamClosedCompleter.future, completes);
-        var exception = await streamClosedCompleter.future;
-        expect(exception, isA<ConnectionClosedException>());
-      });
+          await expectLater(streamClosedCompleter.future, completes);
+          var exception = await streamClosedCompleter.future;
+          expect(exception, isA<ConnectionClosedException>());
+        },
+      );
 
       test(
-          'when an unrelated authentication id is revoked then the stream can still be used.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationAuthId(authId: 'token-${tokenCounter + 100}'),
-          ),
-          completion(true),
-        );
+        'when the authentication id is revoked then the stream is closed with an error.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationAuthId(authId: 'token-$tokenCounter'),
+            ),
+            completion(true),
+          );
 
-        valueReceivedCompleter = Completer<int>();
-        inStream.add(2);
-        await expectLater(
-          valueReceivedCompleter.future,
-          completion(2),
-        );
-      });
+          await expectLater(streamClosedCompleter.future, completes);
+          var exception = await streamClosedCompleter.future;
+          expect(exception, isA<ConnectionClosedException>());
+        },
+      );
 
       test(
-          'when the required scope for an endpoint is revoked then the stream is closed with an error.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationScope(scopes: [Scope.admin.name!]),
-          ),
-          completion(true),
-        );
+        'when an unrelated authentication id is revoked then the stream can still be used.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationAuthId(
+                authId: 'token-${tokenCounter + 100}',
+              ),
+            ),
+            completion(true),
+          );
 
-        await expectLater(streamClosedCompleter.future, completes);
-        var exception = await streamClosedCompleter.future;
-        expect(exception, isA<c.ConnectionClosedException>());
-      });
+          valueReceivedCompleter = Completer<int>();
+          inStream.add(2);
+          await expectLater(
+            valueReceivedCompleter.future,
+            completion(2),
+          );
+        },
+      );
 
       test(
-          'when a scope not required for an endpoint is revoked then the stream can still be used.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationScope(scopes: ['unrelated-scope']),
-          ),
-          completion(true),
-        );
+        'when the required scope for an endpoint is revoked then the stream is closed with an error.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationScope(scopes: [Scope.admin.name!]),
+            ),
+            completion(true),
+          );
 
-        valueReceivedCompleter = Completer<int>();
-        inStream.add(2);
-        await expectLater(
-          valueReceivedCompleter.future,
-          completion(2),
-        );
-      });
+          await expectLater(streamClosedCompleter.future, completes);
+          var exception = await streamClosedCompleter.future;
+          expect(exception, isA<c.ConnectionClosedException>());
+        },
+      );
+
+      test(
+        'when a scope not required for an endpoint is revoked then the stream can still be used.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationScope(scopes: ['unrelated-scope']),
+            ),
+            completion(true),
+          );
+
+          valueReceivedCompleter = Completer<int>();
+          inStream.add(2);
+          await expectLater(
+            valueReceivedCompleter.future,
+            completion(2),
+          );
+        },
+      );
     });
 
     group('connected to two authenticated streaming methods', () {
@@ -180,17 +191,21 @@ void main() {
         inStream1 = StreamController<int>();
         Stream<int> outStream;
         {
-          outStream = client.authenticatedMethodStreaming
-              .intEchoStream(inStream1.stream);
+          outStream = client.authenticatedMethodStreaming.intEchoStream(
+            inStream1.stream,
+          );
           valueReceivedCompleter1 = Completer<int>();
-          outStream.listen((event) {
-            if (valueReceivedCompleter1.isCompleted) {
-              return;
-            }
-            valueReceivedCompleter1.complete(event);
-          }, onError: (e) {
-            streamClosedCompleter1.complete(e);
-          });
+          outStream.listen(
+            (event) {
+              if (valueReceivedCompleter1.isCompleted) {
+                return;
+              }
+              valueReceivedCompleter1.complete(event);
+            },
+            onError: (e) {
+              streamClosedCompleter1.complete(e);
+            },
+          );
 
           inStream1.add(1);
           // Validate that the stream works
@@ -202,17 +217,21 @@ void main() {
         inStream2 = StreamController<int>();
         Stream<int> outStream2;
         {
-          outStream2 = client.authenticatedMethodStreaming
-              .intEchoStream(inStream2.stream);
+          outStream2 = client.authenticatedMethodStreaming.intEchoStream(
+            inStream2.stream,
+          );
           valueReceivedCompleter2 = Completer<int>();
-          outStream2.listen((event) {
-            if (valueReceivedCompleter2.isCompleted) {
-              return;
-            }
-            valueReceivedCompleter2.complete(event);
-          }, onError: (e) {
-            streamClosedCompleter2.complete(e);
-          });
+          outStream2.listen(
+            (event) {
+              if (valueReceivedCompleter2.isCompleted) {
+                return;
+              }
+              valueReceivedCompleter2.complete(event);
+            },
+            onError: (e) {
+              streamClosedCompleter2.complete(e);
+            },
+          );
 
           inStream2.add(1);
           // Validate that the stream works
@@ -222,129 +241,140 @@ void main() {
       });
 
       test(
-          'when the authenticated user is revoked then streams are closed with errors.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationUser(),
-          ),
-          completion(true),
-        );
+        'when the authenticated user is revoked then streams are closed with errors.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationUser(),
+            ),
+            completion(true),
+          );
 
-        await expectLater(streamClosedCompleter1.future, completes);
-        var exception = await streamClosedCompleter1.future;
-        expect(exception, isA<ConnectionClosedException>());
+          await expectLater(streamClosedCompleter1.future, completes);
+          var exception = await streamClosedCompleter1.future;
+          expect(exception, isA<ConnectionClosedException>());
 
-        await expectLater(streamClosedCompleter2.future, completes);
-        exception = await streamClosedCompleter2.future;
-        expect(exception, isA<ConnectionClosedException>());
-      });
+          await expectLater(streamClosedCompleter2.future, completes);
+          exception = await streamClosedCompleter2.future;
+          expect(exception, isA<ConnectionClosedException>());
+        },
+      );
 
       test(
-          'when the required scope for an endpoint is revoked then streams are closed with an error.',
-          () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationScope(scopes: [Scope.admin.name!]),
-          ),
-          completion(true),
-        );
+        'when the required scope for an endpoint is revoked then streams are closed with an error.',
+        () async {
+          await expectLater(
+            session.messages.authenticationRevoked(
+              authenticatedUserId,
+              RevokedAuthenticationScope(scopes: [Scope.admin.name!]),
+            ),
+            completion(true),
+          );
 
-        await expectLater(streamClosedCompleter1.future, completes);
-        var exception = await streamClosedCompleter1.future;
-        expect(exception, isA<c.ConnectionClosedException>());
+          await expectLater(streamClosedCompleter1.future, completes);
+          var exception = await streamClosedCompleter1.future;
+          expect(exception, isA<c.ConnectionClosedException>());
 
-        await expectLater(streamClosedCompleter2.future, completes);
-        exception = await streamClosedCompleter2.future;
-        expect(exception, isA<c.ConnectionClosedException>());
-      });
+          await expectLater(streamClosedCompleter2.future, completes);
+          exception = await streamClosedCompleter2.future;
+          expect(exception, isA<c.ConnectionClosedException>());
+        },
+      );
     });
 
     group(
-        'connected to both an authenticated and an unauthenticated streaming method',
-        () {
-      late Completer authenticatedStreamClosedCompleter;
-      late Completer<int> unauthenticatedValueReceivedCompleter;
-      late StreamController<int> unauthenticatedInStream;
+      'connected to both an authenticated and an unauthenticated streaming method',
+      () {
+        late Completer authenticatedStreamClosedCompleter;
+        late Completer<int> unauthenticatedValueReceivedCompleter;
+        late StreamController<int> unauthenticatedInStream;
 
-      setUp(() async {
-        authenticatedStreamClosedCompleter = Completer<dynamic>();
-        var authenticatedInStream = StreamController<int>();
-        Stream<int> authenticatedOutStream;
-        {
-          authenticatedOutStream = client.authenticatedMethodStreaming
-              .intEchoStream(authenticatedInStream.stream);
-          var valueReceivedCompleter = Completer<int>();
-          authenticatedOutStream.listen((event) {
-            if (valueReceivedCompleter.isCompleted) {
-              return;
-            }
-            valueReceivedCompleter.complete(event);
-          }, onError: (e) {
-            authenticatedStreamClosedCompleter.complete(e);
-          });
+        setUp(() async {
+          authenticatedStreamClosedCompleter = Completer<dynamic>();
+          var authenticatedInStream = StreamController<int>();
+          Stream<int> authenticatedOutStream;
+          {
+            authenticatedOutStream = client.authenticatedMethodStreaming
+                .intEchoStream(authenticatedInStream.stream);
+            var valueReceivedCompleter = Completer<int>();
+            authenticatedOutStream.listen(
+              (event) {
+                if (valueReceivedCompleter.isCompleted) {
+                  return;
+                }
+                valueReceivedCompleter.complete(event);
+              },
+              onError: (e) {
+                authenticatedStreamClosedCompleter.complete(e);
+              },
+            );
 
-          authenticatedInStream.add(1);
-          // Validate that the stream works
-          await valueReceivedCompleter.future;
-          assert(valueReceivedCompleter.isCompleted);
-        }
+            authenticatedInStream.add(1);
+            // Validate that the stream works
+            await valueReceivedCompleter.future;
+            assert(valueReceivedCompleter.isCompleted);
+          }
 
-        unauthenticatedInStream = StreamController<int>();
-        Stream<int> unauthenticatedOutStream;
-        unauthenticatedValueReceivedCompleter = Completer<int>();
-        {
-          unauthenticatedOutStream = client.methodStreaming.intEchoStream(
-            unauthenticatedInStream.stream,
-          );
-          unauthenticatedOutStream.listen((event) {
-            if (unauthenticatedValueReceivedCompleter.isCompleted) {
-              return;
-            }
-            unauthenticatedValueReceivedCompleter.complete(event);
-          });
+          unauthenticatedInStream = StreamController<int>();
+          Stream<int> unauthenticatedOutStream;
+          unauthenticatedValueReceivedCompleter = Completer<int>();
+          {
+            unauthenticatedOutStream = client.methodStreaming.intEchoStream(
+              unauthenticatedInStream.stream,
+            );
+            unauthenticatedOutStream.listen((event) {
+              if (unauthenticatedValueReceivedCompleter.isCompleted) {
+                return;
+              }
+              unauthenticatedValueReceivedCompleter.complete(event);
+            });
 
-          unauthenticatedInStream.add(1);
-          // Validate that the stream works
-          await unauthenticatedValueReceivedCompleter.future;
-          assert(unauthenticatedValueReceivedCompleter.isCompleted);
-        }
-      });
+            unauthenticatedInStream.add(1);
+            // Validate that the stream works
+            await unauthenticatedValueReceivedCompleter.future;
+            assert(unauthenticatedValueReceivedCompleter.isCompleted);
+          }
+        });
 
-      test(
+        test(
           'when the authenticated user is revoked then the authenticated stream is closed',
           () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationUser(),
-          ),
-          completion(true),
+            await expectLater(
+              session.messages.authenticationRevoked(
+                authenticatedUserId,
+                RevokedAuthenticationUser(),
+              ),
+              completion(true),
+            );
+
+            await expectLater(
+              authenticatedStreamClosedCompleter.future,
+              completes,
+            );
+          },
         );
 
-        await expectLater(authenticatedStreamClosedCompleter.future, completes);
-      });
-
-      test(
+        test(
           'when the authenticated user is revoked then the unauthenticated stream can still be used',
           () async {
-        await expectLater(
-          session.messages.authenticationRevoked(
-            authenticatedUserId,
-            RevokedAuthenticationUser(),
-          ),
-          completion(true),
-        );
+            await expectLater(
+              session.messages.authenticationRevoked(
+                authenticatedUserId,
+                RevokedAuthenticationUser(),
+              ),
+              completion(true),
+            );
 
-        unauthenticatedValueReceivedCompleter = Completer<int>();
-        unauthenticatedInStream.add(2);
-        await expectLater(
-          unauthenticatedValueReceivedCompleter.future,
-          completion(2),
+            unauthenticatedValueReceivedCompleter = Completer<int>();
+            unauthenticatedInStream.add(2);
+            await expectLater(
+              unauthenticatedValueReceivedCompleter.future,
+              completion(2),
+            );
+          },
         );
-      });
-    });
+      },
+    );
   });
 }

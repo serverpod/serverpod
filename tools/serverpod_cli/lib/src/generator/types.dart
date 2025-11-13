@@ -75,8 +75,9 @@ class TypeDefinition {
           .map((f) => TypeDefinition.fromDartType(f.type))
           .toList();
       var namedFields = type.namedFields
-          .map((f) =>
-              TypeDefinition.fromDartType(f.type, recordFieldName: f.name))
+          .map(
+            (f) => TypeDefinition.fromDartType(f.type, recordFieldName: f.name),
+          )
           .toList();
 
       return TypeDefinition(
@@ -137,8 +138,12 @@ class TypeDefinition {
 
   bool get isCollectionType => isListType || isSetType || isMapType;
 
-  static List<String> get vectorClassNames =>
-      ['Vector', 'HalfVector', 'SparseVector', 'Bit'];
+  static List<String> get vectorClassNames => [
+    'Vector',
+    'HalfVector',
+    'SparseVector',
+    'Bit',
+  ];
 
   bool get isVectorType => vectorClassNames.contains(className);
 
@@ -206,50 +211,52 @@ class TypeDefinition {
 
   /// A convenience variable for getting a [TypeDefinition] of a non null
   /// UuidValue quickly.
-  static TypeDefinition uuid =
-      TypeDefinition(className: 'UuidValue', nullable: false);
+  static TypeDefinition uuid = TypeDefinition(
+    className: 'UuidValue',
+    nullable: false,
+  );
 
   /// Get this [TypeDefinition], but nullable.
   TypeDefinition get asNullable => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: true,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: true,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   /// Get this [TypeDefinition], but non nullable.
   TypeDefinition get asNonNullable => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: false,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: false,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   /// Returns this [TypeDefinition] as a named record field
   TypeDefinition asNamedRecordField(String recordFieldName) => TypeDefinition(
-        className: className,
-        url: url,
-        nullable: nullable,
-        customClass: customClass,
-        dartType: dartType,
-        generics: generics,
-        enumDefinition: enumDefinition,
-        projectModelDefinition: projectModelDefinition,
-        recordFieldName: recordFieldName,
-        vectorDimension: vectorDimension,
-      );
+    className: className,
+    url: url,
+    nullable: nullable,
+    customClass: customClass,
+    dartType: dartType,
+    generics: generics,
+    enumDefinition: enumDefinition,
+    projectModelDefinition: projectModelDefinition,
+    recordFieldName: recordFieldName,
+    vectorDimension: vectorDimension,
+  );
 
   static String getRef(SerializableModelDefinition model) {
     if (model is ModelClassDefinition) {
@@ -306,22 +313,24 @@ class TypeDefinition {
           // module:nickname: reference
           var moduleName = url?.substring(_moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
-                (m) => m?.nickname == moduleName,
-                orElse: () => null,
-              );
+            (m) => m?.nickname == moduleName,
+            orElse: () => null,
+          );
           if (module == null) {
             throw FormatException(
-                'Module with nickname $moduleName not found in config!');
+              'Module with nickname $moduleName not found in config!',
+            );
           }
-          var packageName =
-              serverCode ? module.serverPackage : module.dartClientPackage;
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
           t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
             (className == 'UuidValue' &&
                 [
                   'serverpod',
                   'package:uuid/uuid_value.dart',
-                  'package:uuid/uuid.dart'
+                  'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
                 (['UuidValue', ...vectorClassNames]).contains(className))) {
@@ -330,7 +339,8 @@ class TypeDefinition {
         } else if (url?.startsWith('project:') ?? false) {
           // project:path:reference
           var split = url!.split(':');
-          t.url = 'package:'
+          t.url =
+              'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
         } else if (url == defaultModuleAlias) {
@@ -338,8 +348,9 @@ class TypeDefinition {
           var localProjectModelDefinition = projectModelDefinition;
           String reference = switch (localProjectModelDefinition) {
             // Import model directly
-            SerializableModelDefinition modelDefinition =>
-              getRef(modelDefinition),
+            SerializableModelDefinition modelDefinition => getRef(
+              modelDefinition,
+            ),
             // Import model through generated protocol file
             null => 'protocol.dart',
           };
@@ -349,34 +360,43 @@ class TypeDefinition {
             (url?.startsWith('package:${config.serverPackage}') ?? false)) {
           // import from the server package
           t.url = url
-              ?.replaceFirst('package:${config.serverPackage}',
-                  'package:${config.dartClientPackage}')
+              ?.replaceFirst(
+                'package:${config.serverPackage}',
+                'package:${config.dartClientPackage}',
+              )
               .replaceFirst('src/generated/', 'src/protocol/');
         } else if (config.modules.any(
-            (m) => url?.startsWith('package:${m.serverPackage}') ?? false)) {
+          (m) => url?.startsWith('package:${m.serverPackage}') ?? false,
+        )) {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
-              (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
-          var packageName =
-              serverCode ? module.serverPackage : module.dartClientPackage;
+            (m) => url?.startsWith('package:${m.serverPackage}') ?? false,
+          );
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
               ? 'package:$packageName/$packageName.dart'
               : serverCode
-                  ? url
-                  : url?.replaceFirst('package:${module.serverPackage}',
-                      'package:${module.dartClientPackage}');
+              ? url
+              : url?.replaceFirst(
+                  'package:${module.serverPackage}',
+                  'package:${module.dartClientPackage}',
+                );
         } else {
           t.url = url;
         }
         t.isNullable = nullable ?? this.nullable;
         t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
-        t.types.addAll(generics.map(
-          (e) => e.reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
+        t.types.addAll(
+          generics.map(
+            (e) => e.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            ),
           ),
-        ));
+        );
       },
     );
   }
@@ -456,8 +476,10 @@ class TypeDefinition {
     if (isRecordType) {
       return [
         MapEntry(
-          refer('getType', serverpodUrl(serverCode))
-              .call([], {}, [reference(serverCode, config: config)]),
+          refer(
+            'getType',
+            serverpodUrl(serverCode),
+          ).call([], {}, [reference(serverCode, config: config)]),
           Block.of(
             [
               if (nullable) const Code(' (data == null) ? null as T : '),
@@ -466,7 +488,8 @@ class TypeDefinition {
                   in positionalRecordFields.indexed) ...[
                 if (positionalField.nullable)
                   Code(
-                      "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : "),
+                    "((data ${i == 0 ? 'as Map' : ''})['p'] as List)[$i] == null ? null : ",
+                  ),
                 const Code('deserialize<'),
                 positionalField
                     .reference(serverCode, config: config, nullable: false)
@@ -485,7 +508,8 @@ class TypeDefinition {
                   const Code(':'),
                   if (namedField.nullable)
                     Code(
-                        "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : "),
+                      "((data ${i == 0 && positionalRecordFields.isEmpty ? 'as Map' : ''})['n'] as Map)['${namedField.recordFieldName!}'] == null ? null : ",
+                    ),
                   const Code('deserialize<'),
                   namedField
                       .reference(serverCode, config: config, nullable: false)
@@ -495,7 +519,8 @@ class TypeDefinition {
                       positionalRecordFields.isEmpty &&
                       !namedField.nullable)
                     Code(
-                        "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']")
+                      "((data as Map)['n'] as Map)['${namedField.recordFieldName!}']",
+                    )
                   else
                     Code("data['n']['${namedField.recordFieldName!}']"),
                   const Code(')'),
@@ -513,27 +538,36 @@ class TypeDefinition {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode, config: config)])
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             nullable
                 ? Block.of([
                     // using Code.scope only sets the generic to List
-                    const Code('(data!=null?'
-                        '(data as List).map((e) =>'
-                        'deserialize<'),
-                    generics.first.reference(serverCode, config: config).code,
-                    Code('>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
-                        ':null) as T')
-                  ])
-                : Block.of([
-                    const Code('(data as List).map((e) =>'
-                        'deserialize<'),
+                    const Code(
+                      '(data!=null?'
+                      '(data as List).map((e) =>'
+                      'deserialize<',
+                    ),
                     generics.first.reference(serverCode, config: config).code,
                     Code(
-                        '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T'),
+                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'}'
+                      ':null) as T',
+                    ),
                   ])
+                : Block.of([
+                    const Code(
+                      '(data as List).map((e) =>'
+                      'deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    Code(
+                      '>(e))${className == 'Set' ? '.toSet()' : '.toList()'} as T',
+                    ),
+                  ]),
           ]),
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
@@ -542,60 +576,76 @@ class TypeDefinition {
       return [
         MapEntry(
           nullable
-              ? refer('getType', serverpodUrl(serverCode))
-                  .call([], {}, [reference(serverCode, config: config)])
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
               : reference(serverCode, config: config),
           Block.of([
             generics.first.className == 'String'
                 ? nullable
-                    ? Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data!=null?'
+                      ? Block.of([
+                          // using Code.scope only sets the generic to List
+                          const Code(
+                            '(data!=null?'
                             '(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v)))' ':null) as T')
-                      ])
-                    : Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data as Map).map((k,v) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(k),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(v))) as T')
-                      ])
+                            'MapEntry(deserialize<',
+                          ),
+                          generics.first
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(k),deserialize<'),
+                          generics[1]
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code(
+                            '>(v)))'
+                            ':null) as T',
+                          ),
+                        ])
+                      : Block.of([
+                          // using Code.scope only sets the generic to List
+                          const Code(
+                            '(data as Map).map((k,v) =>'
+                            'MapEntry(deserialize<',
+                          ),
+                          generics.first
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(k),deserialize<'),
+                          generics[1]
+                              .reference(serverCode, config: config)
+                              .code,
+                          const Code('>(v))) as T'),
+                        ])
                 : // Key is not String -> stored as list of map entries
-                nullable
-                    ? Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('(data!=null?'
-                            'Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\']))))' ':null) as T')
-                      ])
-                    : Block.of([
-                        // using Code.scope only sets the generic to List
-                        const Code('Map.fromEntries((data as List).map((e) =>'
-                            'MapEntry(deserialize<'),
-                        generics.first
-                            .reference(serverCode, config: config)
-                            .code,
-                        const Code('>(e[\'k\']),deserialize<'),
-                        generics[1].reference(serverCode, config: config).code,
-                        const Code('>(e[\'v\'])))) as T')
-                      ])
+                  nullable
+                ? Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code(
+                      '(data!=null?'
+                      'Map.fromEntries((data as List).map((e) =>'
+                      'MapEntry(deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    const Code('>(e[\'k\']),deserialize<'),
+                    generics[1].reference(serverCode, config: config).code,
+                    const Code(
+                      '>(e[\'v\']))))'
+                      ':null) as T',
+                    ),
+                  ])
+                : Block.of([
+                    // using Code.scope only sets the generic to List
+                    const Code(
+                      'Map.fromEntries((data as List).map((e) =>'
+                      'MapEntry(deserialize<',
+                    ),
+                    generics.first.reference(serverCode, config: config).code,
+                    const Code('>(e[\'k\']),deserialize<'),
+                    generics[1].reference(serverCode, config: config).code,
+                    const Code('>(e[\'v\'])))) as T'),
+                  ]),
           ]),
         ),
         ...generics.first.generateDeserialization(serverCode, config: config),
@@ -610,16 +660,21 @@ class TypeDefinition {
       // in lists, maps, etc the customClass bool can be removed which will simplify the code.
       return [
         MapEntry(
-            nullable
-                ? refer('getType', serverpodUrl(serverCode))
-                    .call([], {}, [reference(serverCode, config: config)])
-                : reference(serverCode, config: config),
-            Code.scope((a) => nullable
+          nullable
+              ? refer(
+                  'getType',
+                  serverpodUrl(serverCode),
+                ).call([], {}, [reference(serverCode, config: config)])
+              : reference(serverCode, config: config),
+          Code.scope(
+            (a) => nullable
                 ? '(data!=null?'
-                    '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data):null)as T'
+                      '${a(reference(serverCode, config: config))}'
+                      '.fromJson(data):null)as T'
                 : '${a(reference(serverCode, config: config))}'
-                    '.fromJson(data) as T'))
+                      '.fromJson(data) as T',
+          ),
+        ),
       ];
     } else {
       return [];
@@ -762,24 +817,24 @@ class SupportedIdType {
 
   /// Id type that generates sequential integer values.
   static SupportedIdType get int => SupportedIdType(
-        type: TypeDefinition.int,
-        aliases: ['int'],
-        defaultValue: defaultIntSerial,
-      );
+    type: TypeDefinition.int,
+    aliases: ['int'],
+    defaultValue: defaultIntSerial,
+  );
 
   /// Id type that generates UUID v4 values.
   static SupportedIdType get uuidV4 => SupportedIdType(
-        type: TypeDefinition.uuid,
-        aliases: ['uuidV4'],
-        defaultValue: defaultUuidValueRandom,
-      );
+    type: TypeDefinition.uuid,
+    aliases: ['uuidV4'],
+    defaultValue: defaultUuidValueRandom,
+  );
 
   /// Id type that generates UUID v7 values.
   static SupportedIdType get uuidV7 => SupportedIdType(
-        type: TypeDefinition.uuid,
-        aliases: ['uuidV7'],
-        defaultValue: defaultUuidValueRandomV7,
-      );
+    type: TypeDefinition.uuid,
+    aliases: ['uuidV7'],
+    defaultValue: defaultUuidValueRandomV7,
+  );
 
   /// All supported id types.
   static List<SupportedIdType> get all => [int, uuidV4, uuidV7];
@@ -834,15 +889,18 @@ TypeDefinition parseType(
 
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
-  var vectorDimension = (TypeDefinition.vectorClassNames.contains(className) &&
+  var vectorDimension =
+      (TypeDefinition.vectorClassNames.contains(className) &&
           (trimmedInput.count('(') == 1 && trimmedInput.count(')') == 1))
       ? int.tryParse(
-          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')))
+          trimmedInput.substring(terminatedAt + 1, trimmedInput.indexOf(')')),
+        )
       : null;
 
-  var extraClass = extraClasses
-      ?.cast<TypeDefinition?>()
-      .firstWhere((c) => c?.className == className, orElse: () => null);
+  var extraClass = extraClasses?.cast<TypeDefinition?>().firstWhere(
+    (c) => c?.className == className,
+    orElse: () => null,
+  );
 
   if (extraClass != null) {
     return isNullable ? extraClass.asNullable : extraClass;
@@ -897,7 +955,7 @@ enum ValueType {
   halfVector,
   sparseVector,
   bit,
-  uri;
+  uri,
 }
 
 enum DefaultValueAllowedType {
@@ -950,7 +1008,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     List<String> positionalFieldTypes,
     Map<String, String> namedFields,
     bool nullable,
-  })? _tryReadRecord(
+  })?
+  _tryReadRecord(
     String trimmedRecordInput,
   ) {
     if (!trimmedRecordInput.startsWith('(')) {
@@ -989,10 +1048,8 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
     );
   }
 
-  static ({
-    List<String> positionalFieldStrings,
-    String? namedFieldsString,
-  })? _parseRecordBody(String recordBody) {
+  static ({List<String> positionalFieldStrings, String? namedFieldsString})?
+  _parseRecordBody(String recordBody) {
     var recordParts = splitIgnoringBracketsAndBracesAndQuotes(
       recordBody,
     );
@@ -1020,7 +1077,7 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
 
     return (
       positionalFieldStrings: positionalFieldStrings,
-      namedFieldsString: namedFieldsString
+      namedFieldsString: namedFieldsString,
     );
   }
 
@@ -1069,8 +1126,9 @@ extension _RecordTypeDefinitionParsing on TypeDefinition {
         return null;
       }
 
-      var typeDescription =
-          namedFieldWithType.substring(0, lastWhitespaceIndex).trim();
+      var typeDescription = namedFieldWithType
+          .substring(0, lastWhitespaceIndex)
+          .trim();
       var name = namedFieldWithType.substring(lastWhitespaceIndex).trim();
 
       namedFields[name] = typeDescription;

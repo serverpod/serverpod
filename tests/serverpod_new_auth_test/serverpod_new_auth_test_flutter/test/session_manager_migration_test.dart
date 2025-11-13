@@ -18,17 +18,17 @@ void main() {
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
       const password = 'Asdf123!!!!!';
 
-      final userId =
-          await client.emailAccountBackwardsCompatibilityTest.createLegacyUser(
-        email: email,
-        password: password,
-      );
+      final userId = await client.emailAccountBackwardsCompatibilityTest
+          .createLegacyUser(
+            email: email,
+            password: password,
+          );
 
       final authKey = await client.emailAccountBackwardsCompatibilityTest
           .createLegacySession(
-        userId: userId,
-        scopes: {'test'},
-      );
+            userId: userId,
+            scopes: {'test'},
+          );
 
       final legacyStorage = _TestLegacyStorage();
 

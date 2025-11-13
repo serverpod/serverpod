@@ -28,7 +28,8 @@ abstract class BulkData
   factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
       tableDefinition: _i2.TableDefinition.fromJson(
-          (jsonSerialization['tableDefinition'] as Map<String, dynamic>)),
+        (jsonSerialization['tableDefinition'] as Map<String, dynamic>),
+      ),
       data: jsonSerialization['data'] as String,
     );
   }
@@ -71,9 +72,9 @@ class _BulkDataImpl extends BulkData {
     required _i2.TableDefinition tableDefinition,
     required String data,
   }) : super._(
-          tableDefinition: tableDefinition,
-          data: data,
-        );
+         tableDefinition: tableDefinition,
+         data: data,
+       );
 
   /// Returns a shallow copy of this [BulkData]
   /// with some or all fields replaced by the given arguments.

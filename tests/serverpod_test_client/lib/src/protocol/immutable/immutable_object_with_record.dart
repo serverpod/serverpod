@@ -17,14 +17,18 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
   const ImmutableObjectWithRecord._({required this.recordVariable});
 
-  const factory ImmutableObjectWithRecord(
-      {required (int, String) recordVariable}) = _ImmutableObjectWithRecordImpl;
+  const factory ImmutableObjectWithRecord({
+    required (int, String) recordVariable,
+  }) = _ImmutableObjectWithRecordImpl;
 
   factory ImmutableObjectWithRecord.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithRecord(
-        recordVariable: _i2.Protocol().deserialize<(int, String)>(
-            (jsonSerialization['recordVariable'] as Map<String, dynamic>)));
+      recordVariable: _i2.Protocol().deserialize<(int, String)>(
+        (jsonSerialization['recordVariable'] as Map<String, dynamic>),
+      ),
+    );
   }
 
   final (int, String) recordVariable;
@@ -69,7 +73,7 @@ abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
 
 class _ImmutableObjectWithRecordImpl extends ImmutableObjectWithRecord {
   const _ImmutableObjectWithRecordImpl({required (int, String) recordVariable})
-      : super._(recordVariable: recordVariable);
+    : super._(recordVariable: recordVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithRecord]
   /// with some or all fields replaced by the given arguments.
@@ -77,10 +81,12 @@ class _ImmutableObjectWithRecordImpl extends ImmutableObjectWithRecord {
   @override
   ImmutableObjectWithRecord copyWith({(int, String)? recordVariable}) {
     return ImmutableObjectWithRecord(
-        recordVariable: recordVariable ??
-            (
-              this.recordVariable.$1,
-              this.recordVariable.$2,
-            ));
+      recordVariable:
+          recordVariable ??
+          (
+            this.recordVariable.$1,
+            this.recordVariable.$2,
+          ),
+    );
   }
 }

@@ -65,9 +65,9 @@ class _IntDefaultPersistImpl extends IntDefaultPersist {
     int? id,
     int? intDefaultPersist,
   }) : super._(
-          id: id,
-          intDefaultPersist: intDefaultPersist,
-        );
+         id: id,
+         intDefaultPersist: intDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [IntDefaultPersist]
   /// with some or all fields replaced by the given arguments.

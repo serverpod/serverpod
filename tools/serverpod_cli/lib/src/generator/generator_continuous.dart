@@ -34,8 +34,9 @@ Future<bool> performGenerateContinuously({
   await for (WatchEvent event in watchers) {
     log.debug('File changed: $event');
 
-    var shouldGenerate =
-        await endpointsAnalyzer.updateFileContexts({event.path});
+    var shouldGenerate = await endpointsAnalyzer.updateFileContexts({
+      event.path,
+    });
 
     if (ModelHelper.isModelFile(
       event.path,
@@ -47,12 +48,14 @@ Future<bool> performGenerateContinuously({
         case ChangeType.ADD:
         case ChangeType.MODIFY:
           var yaml = File(event.path).readAsStringSync();
-          modelAnalyzer.addYamlModel(ModelSource(
-            defaultModuleAlias,
-            yaml,
-            modelUri,
-            ModelHelper.extractPathFromConfig(config, Uri.parse(event.path)),
-          ));
+          modelAnalyzer.addYamlModel(
+            ModelSource(
+              defaultModuleAlias,
+              yaml,
+              modelUri,
+              ModelHelper.extractPathFromConfig(config, Uri.parse(event.path)),
+            ),
+          );
         case ChangeType.REMOVE:
           modelAnalyzer.removeYamlModel(modelUri);
       }
@@ -97,8 +100,9 @@ Stream<WatchEvent> _setupAllWatchedDirectories(GeneratorConfig config) {
     return !generatedFile;
   }
 
-  return StreamGroup.merge(watchers.map((w) => w.events))
-      .where(notInGeneratedDirectory);
+  return StreamGroup.merge(
+    watchers.map((w) => w.events),
+  ).where(notInGeneratedDirectory);
 }
 
 bool _directoryPathExists(String path) {

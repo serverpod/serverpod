@@ -76,10 +76,10 @@ class _CacheInfoImpl extends CacheInfo {
     required int maxEntries,
     List<String>? keys,
   }) : super._(
-          numEntries: numEntries,
-          maxEntries: maxEntries,
-          keys: keys,
-        );
+         numEntries: numEntries,
+         maxEntries: maxEntries,
+         keys: keys,
+       );
 
   /// Returns a shallow copy of this [CacheInfo]
   /// with some or all fields replaced by the given arguments.

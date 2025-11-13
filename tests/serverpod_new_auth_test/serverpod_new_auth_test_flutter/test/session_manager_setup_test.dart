@@ -78,8 +78,7 @@ void main() {
       expect(client1.auth, client2.auth);
     });
 
-    test(
-        'when retrieving caller from `client.auth` '
+    test('when retrieving caller from `client.auth` '
         'then it is the caller from the latest configured client.', () {
       expect(sharedSessionManager.caller, client2.modules.serverpod_auth_core);
     });

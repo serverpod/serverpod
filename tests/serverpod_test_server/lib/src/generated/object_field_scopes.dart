@@ -120,11 +120,11 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
     String? api,
     String? database,
   }) : super._(
-          id: id,
-          normal: normal,
-          api: api,
-          database: database,
-        );
+         id: id,
+         normal: normal,
+         api: api,
+         database: database,
+       );
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.
@@ -150,19 +150,19 @@ class ObjectFieldScopesUpdateTable
   ObjectFieldScopesUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
-        table.normal,
-        value,
-      );
+    table.normal,
+    value,
+  );
 
   _i1.ColumnValue<String, String> database(String? value) => _i1.ColumnValue(
-        table.database,
-        value,
-      );
+    table.database,
+    value,
+  );
 }
 
 class ObjectFieldScopesTable extends _i1.Table<int?> {
   ObjectFieldScopesTable({super.tableRelation})
-      : super(tableName: 'object_field_scopes') {
+    : super(tableName: 'object_field_scopes') {
     updateTable = ObjectFieldScopesUpdateTable(this);
     normal = _i1.ColumnString(
       'normal',
@@ -182,10 +182,10 @@ class ObjectFieldScopesTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        normal,
-        database,
-      ];
+    id,
+    normal,
+    database,
+  ];
 }
 
 class ObjectFieldScopesInclude extends _i1.IncludeObject {
@@ -383,7 +383,7 @@ class ObjectFieldScopesRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
@@ -398,7 +398,7 @@ class ObjectFieldScopesRepository {
   Future<List<ObjectFieldScopes>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     int? limit,
     int? offset,

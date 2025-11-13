@@ -28,7 +28,8 @@ enum TestEnumDefaultSerialization implements _i1.SerializableModel {
         return TestEnumDefaultSerialization.gamma;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "TestEnumDefaultSerialization"');
+          'Value "$name" cannot be converted to "TestEnumDefaultSerialization"',
+        );
     }
   }
 

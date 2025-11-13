@@ -73,10 +73,10 @@ class _UniqueDataImpl extends UniqueData {
     required int number,
     required String email,
   }) : super._(
-          id: id,
-          number: number,
-          email: email,
-        );
+         id: id,
+         number: number,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [UniqueData]
   /// with some or all fields replaced by the given arguments.

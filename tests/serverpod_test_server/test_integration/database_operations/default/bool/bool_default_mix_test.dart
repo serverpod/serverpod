@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with mixed default fields,', () {
-    tearDownAll(() async => BoolDefaultMix.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => BoolDefaultMix.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database with an unsafe query, then the "boolDefaultAndDefaultModel" field value should match the default value',
@@ -93,7 +95,9 @@ void main() async {
           specificObject,
         );
         expect(
-            specificDatabaseObject.boolDefaultModelAndDefaultPersist, isFalse);
+          specificDatabaseObject.boolDefaultModelAndDefaultPersist,
+          isFalse,
+        );
       },
     );
   });

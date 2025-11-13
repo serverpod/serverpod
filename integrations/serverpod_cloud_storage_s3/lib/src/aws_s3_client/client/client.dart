@@ -29,30 +29,36 @@ class AwsS3Client {
   /// @param region The region of the bucket. Required.
   /// @param sessionToken The session token. Optional.
   /// @param client The http client. Optional. Useful for debugging.
-  AwsS3Client(
-      {required String secretKey,
-      required String accessKey,
-      required String bucketId,
-      String? host,
-      required String region,
-      String? sessionToken,
-      Client? client})
-      : _accessKey = accessKey,
-        _secretKey = secretKey,
-        _host = host ?? "s3.$region.amazonaws.com",
-        _bucketId = bucketId,
-        _region = region,
-        _sessionToken = sessionToken,
-        _client = client ?? Client();
+  AwsS3Client({
+    required String secretKey,
+    required String accessKey,
+    required String bucketId,
+    String? host,
+    required String region,
+    String? sessionToken,
+    Client? client,
+  }) : _accessKey = accessKey,
+       _secretKey = secretKey,
+       _host = host ?? "s3.$region.amazonaws.com",
+       _bucketId = bucketId,
+       _region = region,
+       _sessionToken = sessionToken,
+       _client = client ?? Client();
 
-  Future<ListBucketResult?> listObjects(
-      {String? prefix, String? delimiter, int? maxKeys}) async {
-    final response = await _doSignedGetRequest(key: '', queryParams: {
-      "list-type": "2",
-      if (prefix != null) "prefix": prefix,
-      if (delimiter != null) "delimiter": delimiter,
-      if (maxKeys != null) "maxKeys": maxKeys.toString(),
-    });
+  Future<ListBucketResult?> listObjects({
+    String? prefix,
+    String? delimiter,
+    int? maxKeys,
+  }) async {
+    final response = await _doSignedGetRequest(
+      key: '',
+      queryParams: {
+        "list-type": "2",
+        if (prefix != null) "prefix": prefix,
+        if (delimiter != null) "delimiter": delimiter,
+        if (maxKeys != null) "maxKeys": maxKeys.toString(),
+      },
+    );
     _checkResponseError(response);
     return _parseListObjectResponse(response.body);
   }
@@ -75,19 +81,24 @@ class AwsS3Client {
   ///Returns a [SignedRequestParams] object containing the uri and the HTTP headers
   ///needed to do a signed GET request to AWS S3. Does not actually execute a request.
   ///You can use this method to integrate this client with an HTTP client of your choice.
-  SignedRequestParams buildSignedParams(
-      {required String key,
-      Map<String, String>? queryParams,
-      String method = 'GET'}) {
+  SignedRequestParams buildSignedParams({
+    required String key,
+    Map<String, String>? queryParams,
+    String method = 'GET',
+  }) {
     final unencodedPath = "$_bucketId/$key";
     final uri = Uri.https(_host, unencodedPath, queryParams);
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
-    final credentialScope =
-        SigV4.buildCredentialScope(datetime, _region, _service);
+    final credentialScope = SigV4.buildCredentialScope(
+      datetime,
+      _region,
+      _service,
+    );
 
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
-    final canonicalRequest = '''$method
+    final canonicalRequest =
+        '''$method
 ${'/$unencodedPath'.split('/').map(Uri.encodeComponent).join('/')}
 $canonicalQuery
 host:$_host
@@ -98,10 +109,17 @@ x-amz-security-token:${_sessionToken ?? ""}
 host;x-amz-content-sha256;x-amz-date;x-amz-security-token
 $payload''';
 
-    final stringToSign = SigV4.buildStringToSign(datetime, credentialScope,
-        SigV4.hashCanonicalRequest(canonicalRequest));
-    final signingKey =
-        SigV4.calculateSigningKey(_secretKey, datetime, _region, _service);
+    final stringToSign = SigV4.buildStringToSign(
+      datetime,
+      credentialScope,
+      SigV4.hashCanonicalRequest(canonicalRequest),
+    );
+    final signingKey = SigV4.calculateSigningKey(
+      _secretKey,
+      datetime,
+      _region,
+      _service,
+    );
     final signature = SigV4.calculateSignature(signingKey, stringToSign);
 
     final authorization = [
@@ -121,8 +139,10 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams);
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+    );
     return _client.get(params.uri, headers: params.headers);
   }
 
@@ -130,8 +150,11 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams, method: 'HEAD');
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+      method: 'HEAD',
+    );
     return _client.head(params.uri, headers: params.headers);
   }
 
@@ -139,8 +162,11 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams, method: 'DELETE');
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+      method: 'DELETE',
+    );
     return _client.delete(params.uri, headers: params.headers);
   }
 
@@ -174,8 +200,9 @@ ListBucketResult? _parseListObjectResponse(String responseXml) {
   String jsonString = myTransformer.toParker();
   //parse json to src.model objects
   try {
-    ListBucketResult? parsedObj =
-        ListBucketResultParker.fromJson(jsonString).result;
+    ListBucketResult? parsedObj = ListBucketResultParker.fromJson(
+      jsonString,
+    ).result;
 
     return parsedObj;
   } on DeserializationError {
@@ -183,8 +210,9 @@ ListBucketResult? _parseListObjectResponse(String responseXml) {
     //issue due to json/xml transform: Lists with 1 element are transformed to json objects instead of lists
     final fixedJson = json.decode(jsonString);
 
-    fixedJson["ListBucketResult"]
-        ["Contents"] = [fixedJson["ListBucketResult"]["Contents"]];
+    fixedJson["ListBucketResult"]["Contents"] = [
+      fixedJson["ListBucketResult"]["Contents"],
+    ];
 
     return ListBucketResultParker.fromJsonMap(fixedJson).result;
   }

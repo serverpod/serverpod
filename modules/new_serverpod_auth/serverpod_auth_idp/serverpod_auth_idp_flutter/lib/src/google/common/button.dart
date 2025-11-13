@@ -50,29 +50,30 @@ abstract class GoogleSignInBaseButton extends StatelessWidget {
     required GoogleSignInStyle style,
     required Widget child,
     required VoidCallback? onPressed,
-  })? buttonWrapper;
+  })?
+  buttonWrapper;
 
   /// Creates a base Google Sign-In button.
-  const GoogleSignInBaseButton(
-      {this.type = GSIButtonType.standard,
-      this.theme = GSIButtonTheme.outline,
-      this.size = GSIButtonSize.large,
-      this.text = GSIButtonText.continueWith,
-      this.shape = GSIButtonShape.pill,
-      this.logoAlignment = GSIButtonLogoAlignment.center,
-      this.minimumWidth = 240,
-      this.buttonWrapper = wrapAsOutline,
-      super.key})
-      : assert(
-          minimumWidth > 0 && minimumWidth <= 400,
-          'Invalid minimumWidth. Must be between 0 and 400.',
-        ),
-        assert(
-          size != GSIButtonSize.small,
-          'Small size is disabled due to Android Material and iOS Human '
-          'Interface design guidelines regarding minimum target size. Use '
-          'medium or large instead.',
-        );
+  const GoogleSignInBaseButton({
+    this.type = GSIButtonType.standard,
+    this.theme = GSIButtonTheme.outline,
+    this.size = GSIButtonSize.large,
+    this.text = GSIButtonText.continueWith,
+    this.shape = GSIButtonShape.pill,
+    this.logoAlignment = GSIButtonLogoAlignment.center,
+    this.minimumWidth = 240,
+    this.buttonWrapper = wrapAsOutline,
+    super.key,
+  }) : assert(
+         minimumWidth > 0 && minimumWidth <= 400,
+         'Invalid minimumWidth. Must be between 0 and 400.',
+       ),
+       assert(
+         size != GSIButtonSize.small,
+         'Small size is disabled due to Android Material and iOS Human '
+         'Interface design guidelines regarding minimum target size. Use '
+         'medium or large instead.',
+       );
 
   /// Wraps the button to match Material's outlined button style.
   static Widget wrapAsOutline({

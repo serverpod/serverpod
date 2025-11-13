@@ -1,17 +1,23 @@
 class StringValidators {
-  static final _pascalCaseTester =
-      RegExp(r'^[A-Z][a-zA-Z0-9]*((?<=.)([A-Z][a-z0-9]*)+)?$');
-  static final _pascalCaseWithUppercaseTester =
-      RegExp(r'^[A-Z]([A-Z0-9]*[a-z0-9]*)*([A-Z])?$');
-  static final _camelCaseTester =
-      RegExp(r'^[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$');
-  static final _camelCaseWithUppercaseTester =
-      RegExp(r'^[a-z]+([A-Z][a-z0-9]*)*$');
+  static final _pascalCaseTester = RegExp(
+    r'^[A-Z][a-zA-Z0-9]*((?<=.)([A-Z][a-z0-9]*)+)?$',
+  );
+  static final _pascalCaseWithUppercaseTester = RegExp(
+    r'^[A-Z]([A-Z0-9]*[a-z0-9]*)*([A-Z])?$',
+  );
+  static final _camelCaseTester = RegExp(
+    r'^[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$',
+  );
+  static final _camelCaseWithUppercaseTester = RegExp(
+    r'^[a-z]+([A-Z][a-z0-9]*)*$',
+  );
   static final _snakeCaseTester = RegExp(r'^[a-z]+[a-z0-9_]*$');
-  static final _mixedSnakeCaseTester =
-      RegExp(r'^[a-z]+((\d)|([A-Z0-9_][a-z0-9_]+))*([A-Z])?$');
-  static final _lowerCaseWithDashesTester =
-      RegExp(r'^[a-z0-9]+([-][a-z0-9]+)*$');
+  static final _mixedSnakeCaseTester = RegExp(
+    r'^[a-z]+((\d)|([A-Z0-9_][a-z0-9_]+))*([A-Z])?$',
+  );
+  static final _lowerCaseWithDashesTester = RegExp(
+    r'^[a-z0-9]+([-][a-z0-9]+)*$',
+  );
   static final _fullUpperCaseTester = RegExp(r'^[A-Z]+$');
 
   static bool isValidFieldName(String name) {

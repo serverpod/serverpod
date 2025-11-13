@@ -38,7 +38,8 @@ abstract class CompanyUuid implements _i1.SerializableModel {
       town: jsonSerialization['town'] == null
           ? null
           : _i2.TownInt.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+              (jsonSerialization['town'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -87,11 +88,11 @@ class _CompanyUuidImpl extends CompanyUuid {
     required int townId,
     _i2.TownInt? town,
   }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+         id: id,
+         name: name,
+         townId: townId,
+         town: town,
+       );
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.

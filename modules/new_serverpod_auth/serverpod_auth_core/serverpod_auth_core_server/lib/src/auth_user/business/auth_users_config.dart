@@ -20,22 +20,21 @@ class AuthUsersConfig {
 }
 
 /// Data to be created for an auth user.
-typedef AuthUserToCreate = ({
-  Set<Scope> scopes,
-  bool blocked,
-});
+typedef AuthUserToCreate = ({Set<Scope> scopes, bool blocked});
 
 /// Callback to be invoked with the new auth user data before it gets created.
-typedef BeforeAuthUserCreatedHandler = FutureOr<AuthUserToCreate> Function(
-  Session session,
-  Set<Scope> scopes,
-  bool blocked, {
-  required Transaction transaction,
-});
+typedef BeforeAuthUserCreatedHandler =
+    FutureOr<AuthUserToCreate> Function(
+      Session session,
+      Set<Scope> scopes,
+      bool blocked, {
+      required Transaction transaction,
+    });
 
 /// Callback to be invoked with the new auth user data after it has been created.
-typedef AfterAuthUserCreatedHandler = FutureOr<void> Function(
-  Session session,
-  AuthUserModel authUser, {
-  required Transaction transaction,
-});
+typedef AfterAuthUserCreatedHandler =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser, {
+      required Transaction transaction,
+    });

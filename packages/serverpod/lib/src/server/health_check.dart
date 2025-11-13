@@ -99,7 +99,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
         closing: connectionsInfo.closing,
         idle: connectionsInfo.idle,
         granularity: 1,
-      )
+      ),
     ],
   );
 }

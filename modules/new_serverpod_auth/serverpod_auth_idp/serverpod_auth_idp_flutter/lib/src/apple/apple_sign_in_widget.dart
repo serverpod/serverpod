@@ -107,15 +107,15 @@ class AppleSignInWidget extends StatefulWidget {
     this.logoAlignment = AppleButtonLogoAlignment.center,
     this.minimumWidth = 240,
     super.key,
-  })  : assert(
-          (controller == null || client == null),
-          'Either controller or client must be provided, but not both. When '
-          'passing a controller, the client parameter is ignored.',
-        ),
-        assert(
-          minimumWidth > 0 && minimumWidth <= 400,
-          'Invalid minimumWidth. Must be between 0 and 400.',
-        );
+  }) : assert(
+         (controller == null || client == null),
+         'Either controller or client must be provided, but not both. When '
+         'passing a controller, the client parameter is ignored.',
+       ),
+       assert(
+         minimumWidth > 0 && minimumWidth <= 400,
+         'Invalid minimumWidth. Must be between 0 and 400.',
+       );
 
   @override
   State<AppleSignInWidget> createState() => _AppleSignInWidgetState();
@@ -127,7 +127,8 @@ class _AppleSignInWidgetState extends State<AppleSignInWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ??
+    _controller =
+        widget.controller ??
         AppleAuthController(
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,

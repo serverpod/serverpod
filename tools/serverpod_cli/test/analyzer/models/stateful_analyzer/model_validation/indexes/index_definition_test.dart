@@ -21,12 +21,15 @@ void main() {
             name: String
           indexes:
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -56,12 +59,15 @@ void main() {
           indexes:
             example_index:
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -92,12 +98,15 @@ void main() {
             example_index:
               fields: name
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ModelClassDefinition;
 
@@ -120,12 +129,15 @@ void main() {
             example_index:
               fields: name
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
@@ -134,15 +146,20 @@ void main() {
       });
 
       var definition = definitions.firstOrNull as ModelClassDefinition?;
-      test('then the index definition contains the fields of the index.', () {
-        var index = definition?.indexes.first;
-        var field = index?.fields.first;
-        expect(field, 'name');
-      }, skip: errors.isNotEmpty);
+      test(
+        'then the index definition contains the fields of the index.',
+        () {
+          var index = definition?.indexes.first;
+          var field = index?.fields.first;
+          expect(field, 'name');
+        },
+        skip: errors.isNotEmpty,
+      );
 
       test('then the field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'name');
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'name',
+        );
         var index = field?.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
@@ -165,12 +182,15 @@ void main() {
             example_index:
               fields: name, foo
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
@@ -194,16 +214,18 @@ void main() {
       });
 
       test('then first field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'name');
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'name',
+        );
         var index = field?.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
       });
 
       test('then second field definition contains index.', () {
-        var field =
-            definition?.fields.firstWhere((field) => field.name == 'foo');
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'foo',
+        );
         var index = field?.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
@@ -228,12 +250,15 @@ void main() {
             example_index2:
               fields: foo
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ModelClassDefinition;
 
@@ -246,11 +271,11 @@ void main() {
   );
 
   test(
-      'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -260,25 +285,29 @@ void main() {
             fields: name
             invalidKey: true
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The "invalidKey" property is not allowed for example_index type. Valid '
-      'keys are {fields, type, unique, distanceFunction, parameters}.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "invalidKey" property is not allowed for example_index type. Valid '
+        'keys are {fields, type, unique, distanceFunction, parameters}.',
+      );
+    },
+  );
 }

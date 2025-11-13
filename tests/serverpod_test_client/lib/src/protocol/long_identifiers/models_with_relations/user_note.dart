@@ -65,9 +65,9 @@ class _UserNoteImpl extends UserNote {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.

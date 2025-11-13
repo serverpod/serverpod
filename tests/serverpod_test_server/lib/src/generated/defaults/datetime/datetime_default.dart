@@ -19,11 +19,11 @@ abstract class DateTimeDefault
     DateTime? dateTimeDefaultNow,
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull,
-  })  : dateTimeDefaultNow = dateTimeDefaultNow ?? DateTime.now(),
-        dateTimeDefaultStr =
-            dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
-        dateTimeDefaultStrNull = dateTimeDefaultStrNull ??
-            DateTime.parse('2024-05-24T22:00:00.000Z');
+  }) : dateTimeDefaultNow = dateTimeDefaultNow ?? DateTime.now(),
+       dateTimeDefaultStr =
+           dateTimeDefaultStr ?? DateTime.parse('2024-05-24T22:00:00.000Z'),
+       dateTimeDefaultStrNull =
+           dateTimeDefaultStrNull ?? DateTime.parse('2024-05-24T22:00:00.000Z');
 
   factory DateTimeDefault({
     int? id,
@@ -36,14 +36,17 @@ abstract class DateTimeDefault
     return DateTimeDefault(
       id: jsonSerialization['id'] as int?,
       dateTimeDefaultNow: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['dateTimeDefaultNow']),
+        jsonSerialization['dateTimeDefaultNow'],
+      ),
       dateTimeDefaultStr: _i1.DateTimeJsonExtension.fromJson(
-          jsonSerialization['dateTimeDefaultStr']),
+        jsonSerialization['dateTimeDefaultStr'],
+      ),
       dateTimeDefaultStrNull:
           jsonSerialization['dateTimeDefaultStrNull'] == null
-              ? null
-              : _i1.DateTimeJsonExtension.fromJson(
-                  jsonSerialization['dateTimeDefaultStrNull']),
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultStrNull'],
+            ),
     );
   }
 
@@ -133,11 +136,11 @@ class _DateTimeDefaultImpl extends DateTimeDefault {
     DateTime? dateTimeDefaultStr,
     DateTime? dateTimeDefaultStrNull,
   }) : super._(
-          id: id,
-          dateTimeDefaultNow: dateTimeDefaultNow,
-          dateTimeDefaultStr: dateTimeDefaultStr,
-          dateTimeDefaultStrNull: dateTimeDefaultStrNull,
-        );
+         id: id,
+         dateTimeDefaultNow: dateTimeDefaultNow,
+         dateTimeDefaultStr: dateTimeDefaultStr,
+         dateTimeDefaultStrNull: dateTimeDefaultStrNull,
+       );
 
   /// Returns a shallow copy of this [DateTimeDefault]
   /// with some or all fields replaced by the given arguments.
@@ -184,7 +187,7 @@ class DateTimeDefaultUpdateTable extends _i1.UpdateTable<DateTimeDefaultTable> {
 
 class DateTimeDefaultTable extends _i1.Table<int?> {
   DateTimeDefaultTable({super.tableRelation})
-      : super(tableName: 'datetime_default') {
+    : super(tableName: 'datetime_default') {
     updateTable = DateTimeDefaultUpdateTable(this);
     dateTimeDefaultNow = _i1.ColumnDateTime(
       'dateTimeDefaultNow',
@@ -213,11 +216,11 @@ class DateTimeDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        dateTimeDefaultNow,
-        dateTimeDefaultStr,
-        dateTimeDefaultStrNull,
-      ];
+    id,
+    dateTimeDefaultNow,
+    dateTimeDefaultStr,
+    dateTimeDefaultStrNull,
+  ];
 }
 
 class DateTimeDefaultInclude extends _i1.IncludeObject {
@@ -415,7 +418,7 @@ class DateTimeDefaultRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefault>(
@@ -430,7 +433,7 @@ class DateTimeDefaultRepository {
   Future<List<DateTimeDefault>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     int? limit,
     int? offset,

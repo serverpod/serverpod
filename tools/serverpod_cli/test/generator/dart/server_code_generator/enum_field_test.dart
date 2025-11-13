@@ -13,75 +13,90 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   var expectedFileName = path.join('lib', 'src', 'generated', 'example.dart');
-  group('Given an enum named Example serialized by index when generating code',
-      () {
-    var models = [
-      EnumDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withSerialized(EnumSerialization.byIndex)
-          .build()
-    ];
+  group(
+    'Given an enum named Example serialized by index when generating code',
+    () {
+      var models = [
+        EnumDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withSerialized(EnumSerialization.byIndex)
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-
-    test('then generated enum name is Example', () {
-      expect(codeMap[expectedFileName], contains('enum Example'));
-    });
-
-    test('then generated enum implements SerializableModel', () {
-      expect(codeMap[expectedFileName],
-          contains('enum Example implements _i1.SerializableModel {'));
-    });
-
-    test('then generated enum imports server version of serverpod client', () {
-      expect(codeMap[expectedFileName],
-          contains("import 'package:serverpod/serverpod.dart' as"));
-    });
-
-    test('then generated enum has static fromJson method', () {
-      expect(codeMap[expectedFileName],
-          contains('static Example fromJson(int index)'));
-    });
-
-    test('then generated enum has toJson method', () {
-      expect(codeMap[expectedFileName], contains('int toJson() => index;'));
-    });
-  });
-
-  group('Given an enum named Example serialized by name when generating code',
-      () {
-    var models = [
-      EnumDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withSerialized(EnumSerialization.byName)
-          .build()
-    ];
-
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-    test('then generated enum has static fromJson method', () {
-      expect(codeMap[expectedFileName],
-          contains('static Example fromJson(String name)'));
-    });
-
-    test('then generated enum has toJson method', () {
-      expect(codeMap[expectedFileName], contains('String toJson() => name;'));
-    });
-
-    test('then generated enum has toString method', () {
-      expect(
-        codeMap[expectedFileName],
-        contains('String toString() => name;'),
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
       );
-    });
-  });
+
+      test('then generated enum name is Example', () {
+        expect(codeMap[expectedFileName], contains('enum Example'));
+      });
+
+      test('then generated enum implements SerializableModel', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('enum Example implements _i1.SerializableModel {'),
+        );
+      });
+
+      test(
+        'then generated enum imports server version of serverpod client',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains("import 'package:serverpod/serverpod.dart' as"),
+          );
+        },
+      );
+
+      test('then generated enum has static fromJson method', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('static Example fromJson(int index)'),
+        );
+      });
+
+      test('then generated enum has toJson method', () {
+        expect(codeMap[expectedFileName], contains('int toJson() => index;'));
+      });
+    },
+  );
+
+  group(
+    'Given an enum named Example serialized by name when generating code',
+    () {
+      var models = [
+        EnumDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withSerialized(EnumSerialization.byName)
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+      test('then generated enum has static fromJson method', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('static Example fromJson(String name)'),
+        );
+      });
+
+      test('then generated enum has toJson method', () {
+        expect(codeMap[expectedFileName], contains('String toJson() => name;'));
+      });
+
+      test('then generated enum has toString method', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('String toString() => name;'),
+        );
+      });
+    },
+  );
 
   group('Given an enum with a value named "name" when generating code', () {
     var models = [
@@ -92,7 +107,7 @@ void main() {
             ProtocolEnumValueDefinition('name', []),
           ])
           .withSerialized(EnumSerialization.byName)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -118,13 +133,13 @@ void main() {
   group('Given enum with documentation when generating code', () {
     var documentation = [
       '// This is an example documentation',
-      '// This is another example'
+      '// This is another example',
     ];
     var models = [
       EnumDefinitionBuilder()
           .withFileName('example')
           .withDocumentation(documentation)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -139,37 +154,46 @@ void main() {
     });
   });
 
-  group('Given enum with two values with documentation when generating code',
-      () {
-    var models = [
-      EnumDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withValues([
-        ProtocolEnumValueDefinition(
-            'one', ['// This is a comment for the first value']),
-        ProtocolEnumValueDefinition(
-            'two', ['// This is a comment for the second value'])
-      ]).build()
-    ];
+  group(
+    'Given enum with two values with documentation when generating code',
+    () {
+      var models = [
+        EnumDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withValues([
+              ProtocolEnumValueDefinition('one', [
+                '// This is a comment for the first value',
+              ]),
+              ProtocolEnumValueDefinition('two', [
+                '// This is a comment for the second value',
+              ]),
+            ])
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    test('then generated enum includes first value', () {
-      expect(codeMap[expectedFileName], contains('one'));
-    });
+      test('then generated enum includes first value', () {
+        expect(codeMap[expectedFileName], contains('one'));
+      });
 
-    test('then generated enum includes first value comment', () {
-      expect(codeMap[expectedFileName],
-          contains('// This is a comment for the first value'));
-    });
+      test('then generated enum includes first value comment', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('// This is a comment for the first value'),
+        );
+      });
 
-    test('then generated enum includes second value', () {
-      expect(codeMap[expectedFileName],
-          contains('// This is a comment for the second value'));
-    });
-  });
+      test('then generated enum includes second value', () {
+        expect(
+          codeMap[expectedFileName],
+          contains('// This is a comment for the second value'),
+        );
+      });
+    },
+  );
 }

@@ -31,17 +31,21 @@ class ImageUploader {
       if (image.width > image.height) {
         var h = imageSize;
         var w = imageSize * image.width / image.height;
-        image = img.copyResize(image,
-            width: w.floor(),
-            height: h,
-            interpolation: img.Interpolation.average);
+        image = img.copyResize(
+          image,
+          width: w.floor(),
+          height: h,
+          interpolation: img.Interpolation.average,
+        );
       } else {
         var w = imageSize;
         var h = imageSize * image.height / image.width;
-        image = img.copyResize(image,
-            width: w,
-            height: h.floor(),
-            interpolation: img.Interpolation.average);
+        image = img.copyResize(
+          image,
+          width: w,
+          height: h.floor(),
+          interpolation: img.Interpolation.average,
+        );
       }
 
       image = img.copyResizeCropSquare(image, size: imageSize);
@@ -71,12 +75,13 @@ class ImageUploader {
         aspectRatio: const CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
         uiSettings: [
           AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: toolbarColor,
-              toolbarWidgetColor: toolbarWidgetColor,
-              initAspectRatio: CropAspectRatioPreset.original,
-              cropStyle: CropStyle.circle,
-              lockAspectRatio: false),
+            toolbarTitle: 'Cropper',
+            toolbarColor: toolbarColor,
+            toolbarWidgetColor: toolbarWidgetColor,
+            initAspectRatio: CropAspectRatioPreset.original,
+            cropStyle: CropStyle.circle,
+            lockAspectRatio: false,
+          ),
           IOSUiSettings(
             minimumAspectRatio: 1.0,
             cropStyle: CropStyle.circle,

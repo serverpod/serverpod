@@ -17,51 +17,62 @@ class _$ContentsSerializer implements StructuredSerializer<Contents> {
   final String wireName = 'Contents';
 
   @override
-  Iterable<Object?> serialize(Serializers serializers, Contents object,
-      {FullType specifiedType = FullType.unspecified}) {
+  Iterable<Object?> serialize(
+    Serializers serializers,
+    Contents object, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
     final result = <Object?>[];
     Object? value;
     value = object.key;
     if (value != null) {
       result
         ..add('Key')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.lastModified;
     if (value != null) {
       result
         ..add('LastModified')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.eTag;
     if (value != null) {
       result
         ..add('ETag')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.size;
     if (value != null) {
       result
         ..add('Size')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     value = object.storageClass;
     if (value != null) {
       result
         ..add('StorageClass')
-        ..add(serializers.serialize(value,
-            specifiedType: const FullType(String)));
+        ..add(
+          serializers.serialize(value, specifiedType: const FullType(String)),
+        );
     }
     return result;
   }
 
   @override
-  Contents deserialize(Serializers serializers, Iterable<Object?> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
+  Contents deserialize(
+    Serializers serializers,
+    Iterable<Object?> serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
     final result = ContentsBuilder();
 
     final iterator = serialized.iterator;
@@ -71,24 +82,44 @@ class _$ContentsSerializer implements StructuredSerializer<Contents> {
       final Object? value = iterator.current;
       switch (key) {
         case 'Key':
-          result.key = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.key =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'LastModified':
-          result.lastModified = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.lastModified =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'ETag':
-          result.eTag = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.eTag =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'Size':
-          result.size = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.size =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
         case 'StorageClass':
-          result.storageClass = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+          result.storageClass =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           break;
       }
     }
@@ -112,9 +143,13 @@ class _$Contents extends Contents {
   factory _$Contents([void Function(ContentsBuilder)? updates]) =>
       (ContentsBuilder()..update(updates)).build();
 
-  _$Contents._(
-      {this.key, this.lastModified, this.eTag, this.size, this.storageClass})
-      : super._();
+  _$Contents._({
+    this.key,
+    this.lastModified,
+    this.eTag,
+    this.size,
+    this.storageClass,
+  }) : super._();
 
   @override
   Contents rebuild(void Function(ContentsBuilder) updates) =>
@@ -136,12 +171,15 @@ class _$Contents extends Contents {
 
   @override
   int get hashCode {
-    return $jf($jc(
+    return $jf(
+      $jc(
         $jc(
-            $jc($jc($jc(0, key.hashCode), lastModified.hashCode),
-                eTag.hashCode),
-            size.hashCode),
-        storageClass.hashCode));
+          $jc($jc($jc(0, key.hashCode), lastModified.hashCode), eTag.hashCode),
+          size.hashCode,
+        ),
+        storageClass.hashCode,
+      ),
+    );
   }
 
   @override
@@ -207,13 +245,15 @@ class ContentsBuilder implements Builder<Contents, ContentsBuilder> {
 
   @override
   _$Contents build() {
-    final _$result = _$v ??
+    final _$result =
+        _$v ??
         _$Contents._(
-            key: key,
-            lastModified: lastModified,
-            eTag: eTag,
-            size: size,
-            storageClass: storageClass);
+          key: key,
+          lastModified: lastModified,
+          eTag: eTag,
+          size: size,
+          storageClass: storageClass,
+        );
     replace(_$result);
     return _$result;
   }

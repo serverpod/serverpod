@@ -18,9 +18,9 @@ abstract class BoolDefaultModel implements _i1.SerializableModel {
     bool? boolDefaultModelTrue,
     bool? boolDefaultModelFalse,
     bool? boolDefaultModelNullFalse,
-  })  : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
-        boolDefaultModelFalse = boolDefaultModelFalse ?? false,
-        boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false;
+  }) : boolDefaultModelTrue = boolDefaultModelTrue ?? true,
+       boolDefaultModelFalse = boolDefaultModelFalse ?? false,
+       boolDefaultModelNullFalse = boolDefaultModelNullFalse ?? false;
 
   factory BoolDefaultModel({
     int? id,
@@ -84,11 +84,11 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
     bool? boolDefaultModelFalse,
     bool? boolDefaultModelNullFalse,
   }) : super._(
-          id: id,
-          boolDefaultModelTrue: boolDefaultModelTrue,
-          boolDefaultModelFalse: boolDefaultModelFalse,
-          boolDefaultModelNullFalse: boolDefaultModelNullFalse,
-        );
+         id: id,
+         boolDefaultModelTrue: boolDefaultModelTrue,
+         boolDefaultModelFalse: boolDefaultModelFalse,
+         boolDefaultModelNullFalse: boolDefaultModelNullFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.

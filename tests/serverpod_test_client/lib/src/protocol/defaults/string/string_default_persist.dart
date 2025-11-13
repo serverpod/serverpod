@@ -40,26 +40,23 @@ abstract class StringDefaultPersist implements _i1.SerializableModel {
   }) = _StringDefaultPersistImpl;
 
   factory StringDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return StringDefaultPersist(
       id: jsonSerialization['id'] as int?,
       stringDefaultPersist:
           jsonSerialization['stringDefaultPersist'] as String?,
       stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
-          jsonSerialization[
-                  'stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote']
+          jsonSerialization['stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote']
               as String?,
       stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
-          jsonSerialization[
-                  'stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote']
+          jsonSerialization['stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote']
               as String?,
       stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
-          jsonSerialization[
-                  'stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote']
+          jsonSerialization['stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote']
               as String?,
       stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
-          jsonSerialization[
-                  'stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote']
+          jsonSerialization['stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote']
               as String?,
       stringDefaultPersistSingleQuoteWithOneDoubleQuote:
           jsonSerialization['stringDefaultPersistSingleQuoteWithOneDoubleQuote']
@@ -168,25 +165,25 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
     String? stringDefaultPersistDoubleQuoteWithOneSingleQuote,
     String? stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
   }) : super._(
-          id: id,
-          stringDefaultPersist: stringDefaultPersist,
-          stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
-              stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
-          stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
-              stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
-          stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
-              stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
-          stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
-              stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
-          stringDefaultPersistSingleQuoteWithOneDoubleQuote:
-              stringDefaultPersistSingleQuoteWithOneDoubleQuote,
-          stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
-              stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
-          stringDefaultPersistDoubleQuoteWithOneSingleQuote:
-              stringDefaultPersistDoubleQuoteWithOneSingleQuote,
-          stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
-              stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
-        );
+         id: id,
+         stringDefaultPersist: stringDefaultPersist,
+         stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
+             stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+         stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
+             stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+         stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
+             stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+         stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
+             stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+         stringDefaultPersistSingleQuoteWithOneDoubleQuote:
+             stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+         stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
+             stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+         stringDefaultPersistDoubleQuoteWithOneSingleQuote:
+             stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+         stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
+             stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+       );
 
   /// Returns a shallow copy of this [StringDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -215,36 +212,36 @@ class _StringDefaultPersistImpl extends StringDefaultPersist {
           : this.stringDefaultPersist,
       stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote:
           stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote is String?
-              ? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote
-              : this.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
+          ? stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote
+          : this.stringDefaultPersistSingleQuoteWithOneSingleEscapeQuote,
       stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote:
           stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote is String?
-              ? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote
-              : this.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
+          ? stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote
+          : this.stringDefaultPersistSingleQuoteWithTwoSingleEscapeQuote,
       stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote:
           stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote is String?
-              ? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote
-              : this.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
+          ? stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote
+          : this.stringDefaultPersistDoubleQuoteWithOneDoubleEscapeQuote,
       stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote:
           stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote is String?
-              ? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote
-              : this.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
+          ? stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote
+          : this.stringDefaultPersistDoubleQuoteWithTwoDoubleEscapeQuote,
       stringDefaultPersistSingleQuoteWithOneDoubleQuote:
           stringDefaultPersistSingleQuoteWithOneDoubleQuote is String?
-              ? stringDefaultPersistSingleQuoteWithOneDoubleQuote
-              : this.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
+          ? stringDefaultPersistSingleQuoteWithOneDoubleQuote
+          : this.stringDefaultPersistSingleQuoteWithOneDoubleQuote,
       stringDefaultPersistSingleQuoteWithTwoDoubleQuote:
           stringDefaultPersistSingleQuoteWithTwoDoubleQuote is String?
-              ? stringDefaultPersistSingleQuoteWithTwoDoubleQuote
-              : this.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
+          ? stringDefaultPersistSingleQuoteWithTwoDoubleQuote
+          : this.stringDefaultPersistSingleQuoteWithTwoDoubleQuote,
       stringDefaultPersistDoubleQuoteWithOneSingleQuote:
           stringDefaultPersistDoubleQuoteWithOneSingleQuote is String?
-              ? stringDefaultPersistDoubleQuoteWithOneSingleQuote
-              : this.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
+          ? stringDefaultPersistDoubleQuoteWithOneSingleQuote
+          : this.stringDefaultPersistDoubleQuoteWithOneSingleQuote,
       stringDefaultPersistDoubleQuoteWithTwoSingleQuote:
           stringDefaultPersistDoubleQuoteWithTwoSingleQuote is String?
-              ? stringDefaultPersistDoubleQuoteWithTwoSingleQuote
-              : this.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
+          ? stringDefaultPersistDoubleQuoteWithTwoSingleQuote
+          : this.stringDefaultPersistDoubleQuoteWithTwoSingleQuote,
     );
   }
 }

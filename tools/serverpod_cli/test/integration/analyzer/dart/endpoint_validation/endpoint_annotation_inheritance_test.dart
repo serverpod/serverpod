@@ -10,14 +10,16 @@ import 'package:test/test.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(path.joinAll([
-  'test',
-  'integration',
-  'analyzer',
-  'dart',
-  'endpoint_validation',
-  const Uuid().v4(),
-]));
+var testProjectDirectory = Directory(
+  path.joinAll([
+    'test',
+    'integration',
+    'analyzer',
+    'dart',
+    'endpoint_validation',
+    const Uuid().v4(),
+  ]),
+);
 
 void main() {
   setUpAll(() async {
@@ -29,19 +31,20 @@ void main() {
   });
 
   group(
-      'Given endpoint class with @unauthenticatedClientCall annotation and child class when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given endpoint class with @unauthenticatedClientCall annotation and child class when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
 
-    setUpAll(() async {
-      File(path.join(testDirectory.path, 'endpoint.dart'))
-        ..createSync(recursive: true)
-        ..writeAsStringSync('''
+      setUpAll(() async {
+        File(path.join(testDirectory.path, 'endpoint.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
@@ -56,34 +59,42 @@ abstract class BaseEndpoint extends Endpoint {
 class ChildEndpoint extends BaseEndpoint {}
 ''');
 
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
 
-    test('then child endpoint inherits unauthenticatedClientCall annotation.',
+      test(
+        'then child endpoint inherits unauthenticatedClientCall annotation.',
         () {
-      var childEndpoint =
-          endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
+          var childEndpoint = endpointDefinitions.firstWhere(
+            (e) => e.className == 'ChildEndpoint',
+          );
 
-      expect(childEndpoint.annotations, hasLength(1));
-      expect(childEndpoint.annotations.first.name, 'unauthenticatedClientCall');
-    });
-  });
+          expect(childEndpoint.annotations, hasLength(1));
+          expect(
+            childEndpoint.annotations.first.name,
+            'unauthenticatedClientCall',
+          );
+        },
+      );
+    },
+  );
 
   group(
-      'Given endpoint class with @doNotGenerate annotation and child class when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given endpoint class with @doNotGenerate annotation and child class when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
 
-    setUpAll(() async {
-      File(path.join(testDirectory.path, 'endpoint.dart'))
-        ..createSync(recursive: true)
-        ..writeAsStringSync('''
+      setUpAll(() async {
+        File(path.join(testDirectory.path, 'endpoint.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
@@ -98,32 +109,38 @@ abstract class BaseEndpoint extends Endpoint {
 class ChildEndpoint extends BaseEndpoint {}
 ''');
 
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
 
-    test('then child endpoint does not inherit doNotGenerate annotation.', () {
-      var childEndpoint =
-          endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
+      test(
+        'then child endpoint does not inherit doNotGenerate annotation.',
+        () {
+          var childEndpoint = endpointDefinitions.firstWhere(
+            (e) => e.className == 'ChildEndpoint',
+          );
 
-      expect(childEndpoint.annotations, hasLength(0));
-    });
-  });
+          expect(childEndpoint.annotations, hasLength(0));
+        },
+      );
+    },
+  );
 
   group(
-      'Given child class with additional annotation different from parent annotation when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    'Given child class with additional annotation different from parent annotation when analyzed',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
 
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
 
-    setUpAll(() async {
-      File(path.join(testDirectory.path, 'endpoint.dart'))
-        ..createSync(recursive: true)
-        ..writeAsStringSync('''
+      setUpAll(() async {
+        File(path.join(testDirectory.path, 'endpoint.dart'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('''
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/annotations.dart';
@@ -139,27 +156,33 @@ abstract class BaseEndpoint extends Endpoint {
 class ChildEndpoint extends BaseEndpoint {}
 ''');
 
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
 
-    test(
+      test(
         'then child class has the inherited annotation and its own annotation.',
         () {
-      var childEndpoint =
-          endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
+          var childEndpoint = endpointDefinitions.firstWhere(
+            (e) => e.className == 'ChildEndpoint',
+          );
 
-      expect(childEndpoint.annotations, hasLength(2));
-      expect(
-          childEndpoint.annotations.has('unauthenticatedClientCall'), isTrue);
-      expect(childEndpoint.annotations.has('deprecated'), isTrue);
-    });
-  });
+          expect(childEndpoint.annotations, hasLength(2));
+          expect(
+            childEndpoint.annotations.has('unauthenticatedClientCall'),
+            isTrue,
+          );
+          expect(childEndpoint.annotations.has('deprecated'), isTrue);
+        },
+      );
+    },
+  );
 
   group('Given multi-level inheritance with annotations when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+    var testDirectory = Directory(
+      path.join(testProjectDirectory.path, const Uuid().v4()),
+    );
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
@@ -189,8 +212,9 @@ class ChildEndpoint extends ParentEndpoint {}
     });
 
     test('then child endpoint inherits annotation from grandparent.', () {
-      var childEndpoint =
-          endpointDefinitions.firstWhere((e) => e.className == 'ChildEndpoint');
+      var childEndpoint = endpointDefinitions.firstWhere(
+        (e) => e.className == 'ChildEndpoint',
+      );
 
       expect(childEndpoint.annotations, hasLength(1));
       expect(childEndpoint.annotations.first.name, 'unauthenticatedClientCall');

@@ -41,7 +41,8 @@ abstract class TeamInt implements _i1.SerializableModel {
       arena: jsonSerialization['arena'] == null
           ? null
           : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
+              (jsonSerialization['arena'] as Map<String, dynamic>),
+            ),
       players: (jsonSerialization['players'] as List?)
           ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
           .toList(),
@@ -99,12 +100,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.

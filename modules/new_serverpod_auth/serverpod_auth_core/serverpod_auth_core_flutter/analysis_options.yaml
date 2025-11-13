@@ -4,3 +4,6 @@ linter:
   rules:
     unawaited_futures: true
     discarded_futures: true
+
+formatter:
+  trailing_commas: preserve

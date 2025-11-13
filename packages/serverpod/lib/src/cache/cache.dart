@@ -18,8 +18,12 @@ abstract class Cache {
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all models of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
-  Future<void> put(String key, SerializableModel object,
-      {Duration? lifetime, String? group});
+  Future<void> put(
+    String key,
+    SerializableModel object, {
+    Duration? lifetime,
+    String? group,
+  });
 
   /// Check if a valid cache for the specified key exists.
   Future<bool> containsKey(String key);

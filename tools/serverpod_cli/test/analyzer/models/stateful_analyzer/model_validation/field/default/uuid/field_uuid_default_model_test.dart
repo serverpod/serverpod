@@ -22,13 +22,15 @@ void main() {
           fields:
             uuidType: UuidValue, defaultModel=random
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -48,13 +50,15 @@ void main() {
           fields:
             uuidType: UuidValue, defaultModel=random_v7
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -74,13 +78,15 @@ void main() {
           fields:
             uuidType: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -104,13 +110,15 @@ void main() {
           fields:
             uuidType: UuidValue, defaultModel="550e8400-e29b-41d4-a716-446655440000"
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -134,12 +142,15 @@ void main() {
           fields:
             uuidType: UuidValue, defaultModel=
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -162,12 +173,15 @@ void main() {
         fields:
           uuidInvalid: UuidValue?, defaultModel=INVALID_UUID
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -190,12 +204,15 @@ void main() {
           fields:
             uuidMalformed: UuidValue?, defaultModel='550e8400-e29b-41d4-a716-INVALID'
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -218,12 +235,15 @@ void main() {
           fields:
             uuidMalformed: UuidValue?, defaultModel="550e8400-e29b-41d4-a716-INVALID"
           ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -246,12 +266,15 @@ void main() {
         fields:
           uuidInvalidChar: UuidValue?, defaultModel='550e8400-e29b-41d4-a716-44665544000G'
         ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -264,8 +287,7 @@ void main() {
     );
   });
 
-  group('Given a class with a declared id field with a "defaultModel" keyword',
-      () {
+  group('Given a class with a declared id field with a "defaultModel" keyword', () {
     group(
       'when the field is of type UUID and the defaultModel is set to "random"',
       () {
@@ -277,13 +299,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel=random
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        late final definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        late final definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         test('then no errors are collected.', () {
           expect(collector.errors, isEmpty);
@@ -311,13 +335,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel=random_v7
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        late final definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        late final definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         test('then no errors are collected.', () {
           expect(collector.errors, isEmpty);
@@ -328,10 +354,12 @@ void main() {
           expect(definition.fields.last.defaultModelValue, 'random_v7');
         });
 
-        test('then the field\'s default persist value is also "random_v7".',
-            () {
-          expect(definition.fields.last.defaultPersistValue, 'random_v7');
-        });
+        test(
+          'then the field\'s default persist value is also "random_v7".',
+          () {
+            expect(definition.fields.last.defaultPersistValue, 'random_v7');
+          },
+        );
       },
     );
 
@@ -346,12 +374,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel=
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -375,12 +406,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel='550e8400-e29b-41d4-a716-446655440000'
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -405,12 +439,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel=test
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -434,13 +471,15 @@ void main() {
             fields:
               id: UuidValue, defaultModel=random
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        late final definitions =
-            StatefulAnalyzer(config, models, onErrorsCollector(collector))
-                .validateAll();
+        late final definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         test('then no errors are collected.', () {
           expect(collector.errors, isEmpty);
@@ -464,12 +503,15 @@ void main() {
             fields:
               id: UuidValue?, defaultModel=random
             ''',
-          ).build()
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

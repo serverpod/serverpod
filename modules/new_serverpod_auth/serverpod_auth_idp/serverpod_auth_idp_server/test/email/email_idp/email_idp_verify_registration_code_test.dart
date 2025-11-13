@@ -50,138 +50,28 @@ void main() {
       });
 
       group(
-          'when verifyRegistrationCode is called with generated verification code',
-          () {
-        late Future<String> registrationToken;
+        'when verifyRegistrationCode is called with generated verification code',
+        () {
+          late Future<String> registrationToken;
 
-        setUp(() async {
-          registrationToken = fixture.emailIDP.verifyRegistrationCode(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-          );
-        });
-
-        test('then it succeeds and returns registration token', () async {
-          final result = await registrationToken;
-          expect(result, isA<String>());
-        });
-      });
-
-      test(
-          'when verifyRegistrationCode is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: '$verificationCode-invalid',
-        );
-
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
-            ),
-          ),
-        );
-      });
-
-      group(
-          'when verifyRegistrationCode is called multiple times in quick succession',
-          () {
-        late Future<List<String>> attempts;
-        const numberOfAttempts = registrationVerificationCodeAllowedAttempts;
-
-        setUp(() async {
-          attempts = List.generate(
-            numberOfAttempts,
-            (final _) => fixture.emailIDP.verifyRegistrationCode(
+          setUp(() async {
+            registrationToken = fixture.emailIDP.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
-            ),
-          ).wait;
-        });
+            );
+          });
 
-        test(
-            'then all attempts except one throw EmailAccountRequestException with reason "invalid"',
-            () async {
-          await expectLater(
-            attempts,
-            throwsA(
-              isA<ParallelWaitError>()
-                  .having(
-                    (final e) => (e.errors as List<AsyncError?>).nonNulls,
-                    'errors',
-                    hasLength(numberOfAttempts - 1),
-                  )
-                  .having(
-                    (final e) => (e.errors as List<AsyncError?>).nonNulls.map(
-                          (final e) => e.error,
-                        ),
-                    'errors',
-                    everyElement(
-                      isA<EmailAccountRequestException>().having(
-                        (final e) => e.reason,
-                        'reason',
-                        equals(EmailAccountRequestExceptionReason.invalid),
-                      ),
-                    ),
-                  ),
-            ),
-          );
-        });
-
-        test('then only one attempt succeeds', () async {
-          await expectLater(
-            attempts,
-            throwsA(
-              isA<ParallelWaitError>().having(
-                (final e) => (e.values as List<String?>).nonNulls,
-                'values',
-                hasLength(1),
-              ),
-            ),
-          );
-        });
-      });
+          test('then it succeeds and returns registration token', () async {
+            final result = await registrationToken;
+            expect(result, isA<String>());
+          });
+        },
+      );
 
       test(
-          'when verifyRegistrationCode is called with valid credentials after expiration then it throws EmailAccountRequestException with reason "expired"',
-          () async {
-        await withClock(
-            Clock.fixed(DateTime.now().add(
-              registrationVerificationCodeLifetime + const Duration(hours: 1),
-            )), () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-          );
-
-          await expectLater(
-            result,
-            throwsA(
-              isA<EmailAccountRequestException>().having(
-                (final e) => e.reason,
-                'reason',
-                EmailAccountRequestExceptionReason.expired,
-              ),
-            ),
-          );
-        });
-      });
-
-      test(
-          'when verifyRegistrationCode is called with invalid credentials after expiration then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
-          () async {
-        await withClock(
-            Clock.fixed(DateTime.now().add(
-              registrationVerificationCodeLifetime + const Duration(hours: 1),
-            )), () async {
+        'when verifyRegistrationCode is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
           final result = fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
@@ -198,8 +88,133 @@ void main() {
               ),
             ),
           );
-        });
-      });
+        },
+      );
+
+      group(
+        'when verifyRegistrationCode is called multiple times in quick succession',
+        () {
+          late Future<List<String>> attempts;
+          const numberOfAttempts = registrationVerificationCodeAllowedAttempts;
+
+          setUp(() async {
+            attempts = List.generate(
+              numberOfAttempts,
+              (final _) => fixture.emailIDP.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+              ),
+            ).wait;
+          });
+
+          test(
+            'then all attempts except one throw EmailAccountRequestException with reason "invalid"',
+            () async {
+              await expectLater(
+                attempts,
+                throwsA(
+                  isA<ParallelWaitError>()
+                      .having(
+                        (final e) => (e.errors as List<AsyncError?>).nonNulls,
+                        'errors',
+                        hasLength(numberOfAttempts - 1),
+                      )
+                      .having(
+                        (final e) =>
+                            (e.errors as List<AsyncError?>).nonNulls.map(
+                              (final e) => e.error,
+                            ),
+                        'errors',
+                        everyElement(
+                          isA<EmailAccountRequestException>().having(
+                            (final e) => e.reason,
+                            'reason',
+                            equals(EmailAccountRequestExceptionReason.invalid),
+                          ),
+                        ),
+                      ),
+                ),
+              );
+            },
+          );
+
+          test('then only one attempt succeeds', () async {
+            await expectLater(
+              attempts,
+              throwsA(
+                isA<ParallelWaitError>().having(
+                  (final e) => (e.values as List<String?>).nonNulls,
+                  'values',
+                  hasLength(1),
+                ),
+              ),
+            );
+          });
+        },
+      );
+
+      test(
+        'when verifyRegistrationCode is called with valid credentials after expiration then it throws EmailAccountRequestException with reason "expired"',
+        () async {
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                registrationVerificationCodeLifetime + const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = fixture.emailIDP.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+              );
+
+              await expectLater(
+                result,
+                throwsA(
+                  isA<EmailAccountRequestException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailAccountRequestExceptionReason.expired,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
+      test(
+        'when verifyRegistrationCode is called with invalid credentials after expiration then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
+        () async {
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                registrationVerificationCodeLifetime + const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = fixture.emailIDP.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: '$verificationCode-invalid',
+              );
+
+              await expectLater(
+                result,
+                throwsA(
+                  isA<EmailAccountRequestException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailAccountRequestExceptionReason.invalid,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
     },
   );
 
@@ -246,33 +261,8 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called again with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
-
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
-            ),
-          ),
-        );
-      });
-
-      test(
-          'when verifyRegistrationCode is called with expired request that has been verified then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
-          () async {
-        await withClock(
-            Clock.fixed(DateTime.now().add(
-              registrationVerificationCodeLifetime + const Duration(hours: 1),
-            )), () async {
+        'when verifyRegistrationCode is called again with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
           final result = fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
@@ -289,8 +279,39 @@ void main() {
               ),
             ),
           );
-        });
-      });
+        },
+      );
+
+      test(
+        'when verifyRegistrationCode is called with expired request that has been verified then it throws EmailAccountRequestException with reason "invalid" to not leak that the request exists',
+        () async {
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(
+                registrationVerificationCodeLifetime + const Duration(hours: 1),
+              ),
+            ),
+            () async {
+              final result = fixture.emailIDP.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+              );
+
+              await expectLater(
+                result,
+                throwsA(
+                  isA<EmailAccountRequestException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    EmailAccountRequestExceptionReason.invalid,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
     },
   );
 
@@ -338,16 +359,17 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called with valid verification code then it succeeds and returns registration token',
-          () async {
-        final result = await fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
+        'when verifyRegistrationCode is called with valid verification code then it succeeds and returns registration token',
+        () async {
+          final result = await fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
 
-        expect(result, isA<String>());
-      });
+          expect(result, isA<String>());
+        },
+      );
     },
   );
 
@@ -382,21 +404,23 @@ void main() {
 
         // Try to verify after expiration
         await withClock(
-            Clock.fixed(
-              DateTime.now().add(
-                registrationVerificationCodeLifetime + const Duration(hours: 1),
-              ),
-            ), () async {
-          try {
-            await fixture.emailIDP.verifyRegistrationCode(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-            );
-          } on EmailAccountRequestException {
-            // Expected - this should delete the request
-          }
-        });
+          Clock.fixed(
+            DateTime.now().add(
+              registrationVerificationCodeLifetime + const Duration(hours: 1),
+            ),
+          ),
+          () async {
+            try {
+              await fixture.emailIDP.verifyRegistrationCode(
+                session,
+                accountRequestId: accountRequestId,
+                verificationCode: verificationCode,
+              );
+            } on EmailAccountRequestException {
+              // Expected - this should delete the request
+            }
+          },
+        );
       });
 
       tearDown(() async {
@@ -404,25 +428,26 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
+        'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
+          final result = fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -471,25 +496,26 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "tooManyAttempts"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
+        'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -548,25 +574,26 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called with valid verification code then throws EmailAccountRequestException with reason "tooManyAttempts"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
+        'when verifyRegistrationCode is called with valid verification code then throws EmailAccountRequestException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -619,25 +646,26 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: verificationCode,
-        );
+        'when verifyRegistrationCode is called with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
+          final result = fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: accountRequestId,
+            verificationCode: verificationCode,
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -665,58 +693,60 @@ void main() {
       });
 
       test(
-          'when verifyRegistrationCode is called then it throws EmailAccountRequestException with reason "invalid"',
-          () async {
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: const Uuid().v4obj(),
-          verificationCode: 'some-code',
-        );
+        'when verifyRegistrationCode is called then it throws EmailAccountRequestException with reason "invalid"',
+        () async {
+          final result = fixture.emailIDP.verifyRegistrationCode(
+            session,
+            accountRequestId: const Uuid().v4obj(),
+            verificationCode: 'some-code',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.invalid,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.invalid,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
 
       test(
-          'when verifyRegistrationCode is called past the allowed attempts then it throws EmailAccountRequestException with reason "tooManyAttempts"',
-          () async {
-        final accountRequestId = const Uuid().v4obj();
-        // Make attempts up to the limit
-        try {
-          await fixture.emailIDP.verifyRegistrationCode(
+        'when verifyRegistrationCode is called past the allowed attempts then it throws EmailAccountRequestException with reason "tooManyAttempts"',
+        () async {
+          final accountRequestId = const Uuid().v4obj();
+          // Make attempts up to the limit
+          try {
+            await fixture.emailIDP.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: 'some-code',
+            );
+          } on EmailAccountRequestException {
+            // Expected
+          }
+
+          final result = fixture.emailIDP.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'some-code',
           );
-        } on EmailAccountRequestException {
-          // Expected
-        }
 
-        final result = fixture.emailIDP.verifyRegistrationCode(
-          session,
-          accountRequestId: accountRequestId,
-          verificationCode: 'some-code',
-        );
-
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountRequestException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountRequestExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountRequestException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountRequestExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 }

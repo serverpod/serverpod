@@ -19,7 +19,8 @@ abstract class MyModuleFeatureModel implements _i1.SerializableModel {
       _MyModuleFeatureModelImpl;
 
   factory MyModuleFeatureModel.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return MyModuleFeatureModel(name: jsonSerialization['name'] as String);
   }
 

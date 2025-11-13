@@ -64,8 +64,9 @@ abstract class TypesRecord
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
       (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord
-    })? aNestedContainers,
+      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+    })?
+    aNestedContainers,
   }) = _TypesRecordImpl;
 
   factory TypesRecord.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -73,94 +74,109 @@ abstract class TypesRecord
       anInt: jsonSerialization['anInt'] == null
           ? null
           : _i6.Protocol().deserialize<(int,)?>(
-              (jsonSerialization['anInt'] as Map<String, dynamic>)),
+              (jsonSerialization['anInt'] as Map<String, dynamic>),
+            ),
       aBool: jsonSerialization['aBool'] == null
           ? null
           : _i6.Protocol().deserialize<(bool,)?>(
-              (jsonSerialization['aBool'] as Map<String, dynamic>)),
+              (jsonSerialization['aBool'] as Map<String, dynamic>),
+            ),
       aDouble: jsonSerialization['aDouble'] == null
           ? null
           : _i6.Protocol().deserialize<(double,)?>(
-              (jsonSerialization['aDouble'] as Map<String, dynamic>)),
+              (jsonSerialization['aDouble'] as Map<String, dynamic>),
+            ),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
           : _i6.Protocol().deserialize<(DateTime,)?>(
-              (jsonSerialization['aDateTime'] as Map<String, dynamic>)),
+              (jsonSerialization['aDateTime'] as Map<String, dynamic>),
+            ),
       aString: jsonSerialization['aString'] == null
           ? null
           : _i6.Protocol().deserialize<(String,)?>(
-              (jsonSerialization['aString'] as Map<String, dynamic>)),
+              (jsonSerialization['aString'] as Map<String, dynamic>),
+            ),
       aByteData: jsonSerialization['aByteData'] == null
           ? null
           : _i6.Protocol().deserialize<(_i2.ByteData,)?>(
-              (jsonSerialization['aByteData'] as Map<String, dynamic>)),
+              (jsonSerialization['aByteData'] as Map<String, dynamic>),
+            ),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
           : _i6.Protocol().deserialize<(Duration,)?>(
-              (jsonSerialization['aDuration'] as Map<String, dynamic>)),
+              (jsonSerialization['aDuration'] as Map<String, dynamic>),
+            ),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
           : _i6.Protocol().deserialize<(_i1.UuidValue,)?>(
-              (jsonSerialization['aUuid'] as Map<String, dynamic>)),
+              (jsonSerialization['aUuid'] as Map<String, dynamic>),
+            ),
       aUri: jsonSerialization['aUri'] == null
           ? null
           : _i6.Protocol().deserialize<(Uri,)?>(
-              (jsonSerialization['aUri'] as Map<String, dynamic>)),
+              (jsonSerialization['aUri'] as Map<String, dynamic>),
+            ),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
           : _i6.Protocol().deserialize<(BigInt,)?>(
-              (jsonSerialization['aBigInt'] as Map<String, dynamic>)),
+              (jsonSerialization['aBigInt'] as Map<String, dynamic>),
+            ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
           : _i6.Protocol().deserialize<(_i3.TestEnum,)?>(
-              (jsonSerialization['anEnum'] as Map<String, dynamic>)),
+              (jsonSerialization['anEnum'] as Map<String, dynamic>),
+            ),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
           : _i6.Protocol().deserialize<(_i4.TestEnumStringified,)?>(
-              (jsonSerialization['aStringifiedEnum'] as Map<String, dynamic>)),
+              (jsonSerialization['aStringifiedEnum'] as Map<String, dynamic>),
+            ),
       aList: jsonSerialization['aList'] == null
           ? null
           : _i6.Protocol().deserialize<(List<int>,)?>(
-              (jsonSerialization['aList'] as Map<String, dynamic>)),
+              (jsonSerialization['aList'] as Map<String, dynamic>),
+            ),
       aMap: jsonSerialization['aMap'] == null
           ? null
           : _i6.Protocol().deserialize<(Map<int, int>,)?>(
-              (jsonSerialization['aMap'] as Map<String, dynamic>)),
+              (jsonSerialization['aMap'] as Map<String, dynamic>),
+            ),
       aSet: jsonSerialization['aSet'] == null
           ? null
           : _i6.Protocol().deserialize<(Set<int>,)?>(
-              (jsonSerialization['aSet'] as Map<String, dynamic>)),
+              (jsonSerialization['aSet'] as Map<String, dynamic>),
+            ),
       aSimpleData: jsonSerialization['aSimpleData'] == null
           ? null
           : _i6.Protocol().deserialize<(_i5.SimpleData,)?>(
-              (jsonSerialization['aSimpleData'] as Map<String, dynamic>)),
+              (jsonSerialization['aSimpleData'] as Map<String, dynamic>),
+            ),
       aNamedModel: jsonSerialization['aNamedModel'] == null
           ? null
           : _i6.Protocol().deserialize<({_i5.SimpleData namedModel})?>(
-              (jsonSerialization['aNamedModel'] as Map<String, dynamic>)),
+              (jsonSerialization['aNamedModel'] as Map<String, dynamic>),
+            ),
       aPositionalAndNamedModel:
           jsonSerialization['aPositionalAndNamedModel'] == null
-              ? null
-              : _i6.Protocol()
-                  .deserialize<(_i5.SimpleData, {_i5.SimpleData namedModel})?>(
-                      (jsonSerialization['aPositionalAndNamedModel']
-                          as Map<String, dynamic>)),
-      aNestedRecord: jsonSerialization['aNestedRecord'] == null
           ? null
           : _i6.Protocol()
-              .deserialize<((int, String), {(int, String) namedNestedRecord})?>(
-                  (jsonSerialization['aNestedRecord'] as Map<String, dynamic>)),
+                .deserialize<(_i5.SimpleData, {_i5.SimpleData namedModel})?>(
+                  (jsonSerialization['aPositionalAndNamedModel']
+                      as Map<String, dynamic>),
+                ),
+      aNestedRecord: jsonSerialization['aNestedRecord'] == null
+          ? null
+          : _i6.Protocol().deserialize<
+              ((int, String), {(int, String) namedNestedRecord})?
+            >((jsonSerialization['aNestedRecord'] as Map<String, dynamic>)),
       aNestedContainers: jsonSerialization['aNestedContainers'] == null
           ? null
           : _i6.Protocol().deserialize<
-                  (
-                    (List<(_i5.SimpleData,)>,), {
-                    (
-                      _i5.SimpleData,
-                      Map<String, _i5.SimpleData>
-                    ) namedNestedRecord
-                  })?>(
-              (jsonSerialization['aNestedContainers'] as Map<String, dynamic>)),
+              (
+                (List<(_i5.SimpleData,)>,), {
+                (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+              })?
+            >((jsonSerialization['aNestedContainers'] as Map<String, dynamic>)),
     );
   }
 
@@ -204,8 +220,9 @@ abstract class TypesRecord
 
   (
     (List<(_i5.SimpleData,)>,), {
-    (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord
-  })? aNestedContainers;
+    (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+  })?
+  aNestedContainers;
 
   /// Returns a shallow copy of this [TypesRecord]
   /// with some or all fields replaced by the given arguments.
@@ -232,8 +249,9 @@ abstract class TypesRecord
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
       (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord
-    })? aNestedContainers,
+      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+    })?
+    aNestedContainers,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -257,8 +275,9 @@ abstract class TypesRecord
       if (aSimpleData != null) 'aSimpleData': _i6.mapRecordToJson(aSimpleData),
       if (aNamedModel != null) 'aNamedModel': _i6.mapRecordToJson(aNamedModel),
       if (aPositionalAndNamedModel != null)
-        'aPositionalAndNamedModel':
-            _i6.mapRecordToJson(aPositionalAndNamedModel),
+        'aPositionalAndNamedModel': _i6.mapRecordToJson(
+          aPositionalAndNamedModel,
+        ),
       if (aNestedRecord != null)
         'aNestedRecord': _i6.mapRecordToJson(aNestedRecord),
       if (aNestedContainers != null)
@@ -288,8 +307,9 @@ abstract class TypesRecord
       if (aSimpleData != null) 'aSimpleData': _i6.mapRecordToJson(aSimpleData),
       if (aNamedModel != null) 'aNamedModel': _i6.mapRecordToJson(aNamedModel),
       if (aPositionalAndNamedModel != null)
-        'aPositionalAndNamedModel':
-            _i6.mapRecordToJson(aPositionalAndNamedModel),
+        'aPositionalAndNamedModel': _i6.mapRecordToJson(
+          aPositionalAndNamedModel,
+        ),
       if (aNestedRecord != null)
         'aNestedRecord': _i6.mapRecordToJson(aNestedRecord),
       if (aNestedContainers != null)
@@ -328,30 +348,31 @@ class _TypesRecordImpl extends TypesRecord {
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
       (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord
-    })? aNestedContainers,
+      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+    })?
+    aNestedContainers,
   }) : super._(
-          anInt: anInt,
-          aBool: aBool,
-          aDouble: aDouble,
-          aDateTime: aDateTime,
-          aString: aString,
-          aByteData: aByteData,
-          aDuration: aDuration,
-          aUuid: aUuid,
-          aUri: aUri,
-          aBigInt: aBigInt,
-          anEnum: anEnum,
-          aStringifiedEnum: aStringifiedEnum,
-          aList: aList,
-          aMap: aMap,
-          aSet: aSet,
-          aSimpleData: aSimpleData,
-          aNamedModel: aNamedModel,
-          aPositionalAndNamedModel: aPositionalAndNamedModel,
-          aNestedRecord: aNestedRecord,
-          aNestedContainers: aNestedContainers,
-        );
+         anInt: anInt,
+         aBool: aBool,
+         aDouble: aDouble,
+         aDateTime: aDateTime,
+         aString: aString,
+         aByteData: aByteData,
+         aDuration: aDuration,
+         aUuid: aUuid,
+         aUri: aUri,
+         aBigInt: aBigInt,
+         anEnum: anEnum,
+         aStringifiedEnum: aStringifiedEnum,
+         aList: aList,
+         aMap: aMap,
+         aSet: aSet,
+         aSimpleData: aSimpleData,
+         aNamedModel: aNamedModel,
+         aPositionalAndNamedModel: aPositionalAndNamedModel,
+         aNestedRecord: aNestedRecord,
+         aNestedContainers: aNestedContainers,
+       );
 
   /// Returns a shallow copy of this [TypesRecord]
   /// with some or all fields replaced by the given arguments.
@@ -383,152 +404,153 @@ class _TypesRecordImpl extends TypesRecord {
       anInt: anInt is (int,)?
           ? anInt
           : this.anInt == null
-              ? null
-              : (this.anInt!.$1,),
+          ? null
+          : (this.anInt!.$1,),
       aBool: aBool is (bool,)?
           ? aBool
           : this.aBool == null
-              ? null
-              : (this.aBool!.$1,),
+          ? null
+          : (this.aBool!.$1,),
       aDouble: aDouble is (double,)?
           ? aDouble
           : this.aDouble == null
-              ? null
-              : (this.aDouble!.$1,),
+          ? null
+          : (this.aDouble!.$1,),
       aDateTime: aDateTime is (DateTime,)?
           ? aDateTime
           : this.aDateTime == null
-              ? null
-              : (this.aDateTime!.$1,),
+          ? null
+          : (this.aDateTime!.$1,),
       aString: aString is (String,)?
           ? aString
           : this.aString == null
-              ? null
-              : (this.aString!.$1,),
+          ? null
+          : (this.aString!.$1,),
       aByteData: aByteData is (_i2.ByteData,)?
           ? aByteData
           : this.aByteData == null
-              ? null
-              : (this.aByteData!.$1.clone(),),
+          ? null
+          : (this.aByteData!.$1.clone(),),
       aDuration: aDuration is (Duration,)?
           ? aDuration
           : this.aDuration == null
-              ? null
-              : (this.aDuration!.$1,),
+          ? null
+          : (this.aDuration!.$1,),
       aUuid: aUuid is (_i1.UuidValue,)?
           ? aUuid
           : this.aUuid == null
-              ? null
-              : (this.aUuid!.$1,),
+          ? null
+          : (this.aUuid!.$1,),
       aUri: aUri is (Uri,)?
           ? aUri
           : this.aUri == null
-              ? null
-              : (this.aUri!.$1,),
+          ? null
+          : (this.aUri!.$1,),
       aBigInt: aBigInt is (BigInt,)?
           ? aBigInt
           : this.aBigInt == null
-              ? null
-              : (this.aBigInt!.$1,),
+          ? null
+          : (this.aBigInt!.$1,),
       anEnum: anEnum is (_i3.TestEnum,)?
           ? anEnum
           : this.anEnum == null
-              ? null
-              : (this.anEnum!.$1,),
+          ? null
+          : (this.anEnum!.$1,),
       aStringifiedEnum: aStringifiedEnum is (_i4.TestEnumStringified,)?
           ? aStringifiedEnum
           : this.aStringifiedEnum == null
-              ? null
-              : (this.aStringifiedEnum!.$1,),
+          ? null
+          : (this.aStringifiedEnum!.$1,),
       aList: aList is (List<int>,)?
           ? aList
           : this.aList == null
-              ? null
-              : (this.aList!.$1.map((e1) => e1).toList(),),
+          ? null
+          : (this.aList!.$1.map((e1) => e1).toList(),),
       aMap: aMap is (Map<int, int>,)?
           ? aMap
           : this.aMap == null
-              ? null
-              : (
-                  this.aMap!.$1.map((
-                        key1,
-                        value1,
-                      ) =>
-                          MapEntry(
-                            key1,
-                            value1,
-                          )),
+          ? null
+          : (
+              this.aMap!.$1.map(
+                (
+                  key1,
+                  value1,
+                ) => MapEntry(
+                  key1,
+                  value1,
                 ),
+              ),
+            ),
       aSet: aSet is (Set<int>,)?
           ? aSet
           : this.aSet == null
-              ? null
-              : (this.aSet!.$1.map((e1) => e1).toSet(),),
+          ? null
+          : (this.aSet!.$1.map((e1) => e1).toSet(),),
       aSimpleData: aSimpleData is (_i5.SimpleData,)?
           ? aSimpleData
           : this.aSimpleData == null
-              ? null
-              : (this.aSimpleData!.$1.copyWith(),),
+          ? null
+          : (this.aSimpleData!.$1.copyWith(),),
       aNamedModel: aNamedModel is ({_i5.SimpleData namedModel})?
           ? aNamedModel
           : this.aNamedModel == null
-              ? null
-              : (namedModel: this.aNamedModel!.namedModel.copyWith(),),
-      aPositionalAndNamedModel: aPositionalAndNamedModel is (
-        _i5.SimpleData, {
-        _i5.SimpleData namedModel
-      })?
+          ? null
+          : (
+              namedModel: this.aNamedModel!.namedModel.copyWith(),
+            ),
+      aPositionalAndNamedModel:
+          aPositionalAndNamedModel
+              is (_i5.SimpleData, {_i5.SimpleData namedModel})?
           ? aPositionalAndNamedModel
           : this.aPositionalAndNamedModel == null
-              ? null
-              : (
-                  this.aPositionalAndNamedModel!.$1.copyWith(),
-                  namedModel:
-                      this.aPositionalAndNamedModel!.namedModel.copyWith(),
-                ),
+          ? null
+          : (
+              this.aPositionalAndNamedModel!.$1.copyWith(),
+              namedModel: this.aPositionalAndNamedModel!.namedModel.copyWith(),
+            ),
       aNestedRecord:
           aNestedRecord is ((int, String), {(int, String) namedNestedRecord})?
-              ? aNestedRecord
-              : this.aNestedRecord == null
-                  ? null
-                  : (
-                      (
-                        this.aNestedRecord!.$1.$1,
-                        this.aNestedRecord!.$1.$2,
-                      ),
-                      namedNestedRecord: (
-                        this.aNestedRecord!.namedNestedRecord.$1,
-                        this.aNestedRecord!.namedNestedRecord.$2,
-                      ),
-                    ),
-      aNestedContainers: aNestedContainers is (
-        (List<(_i5.SimpleData,)>,), {
-        (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord
-      })?
+          ? aNestedRecord
+          : this.aNestedRecord == null
+          ? null
+          : (
+              (
+                this.aNestedRecord!.$1.$1,
+                this.aNestedRecord!.$1.$2,
+              ),
+              namedNestedRecord: (
+                this.aNestedRecord!.namedNestedRecord.$1,
+                this.aNestedRecord!.namedNestedRecord.$2,
+              ),
+            ),
+      aNestedContainers:
+          aNestedContainers
+              is (
+                (List<(_i5.SimpleData,)>,), {
+                (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+              })?
           ? aNestedContainers
           : this.aNestedContainers == null
-              ? null
-              : (
+          ? null
+          : (
+              (
+                this.aNestedContainers!.$1.$1
+                    .map((e2) => (e2.$1.copyWith(),))
+                    .toList(),
+              ),
+              namedNestedRecord: (
+                this.aNestedContainers!.namedNestedRecord.$1.copyWith(),
+                this.aNestedContainers!.namedNestedRecord.$2.map(
                   (
-                    this
-                        .aNestedContainers!
-                        .$1
-                        .$1
-                        .map((e2) => (e2.$1.copyWith(),))
-                        .toList(),
-                  ),
-                  namedNestedRecord: (
-                    this.aNestedContainers!.namedNestedRecord.$1.copyWith(),
-                    this.aNestedContainers!.namedNestedRecord.$2.map((
-                          key2,
-                          value2,
-                        ) =>
-                            MapEntry(
-                              key2,
-                              value2.copyWith(),
-                            )),
+                    key2,
+                    value2,
+                  ) => MapEntry(
+                    key2,
+                    value2.copyWith(),
                   ),
                 ),
+              ),
+            ),
     );
   }
 }

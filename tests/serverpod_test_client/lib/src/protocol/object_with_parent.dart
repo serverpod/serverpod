@@ -65,9 +65,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
     int? id,
     required int other,
   }) : super._(
-          id: id,
-          other: other,
-        );
+         id: id,
+         other: other,
+       );
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.

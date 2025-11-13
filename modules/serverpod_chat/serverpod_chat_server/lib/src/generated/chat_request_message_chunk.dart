@@ -26,7 +26,8 @@ abstract class ChatRequestMessageChunk
   }) = _ChatRequestMessageChunkImpl;
 
   factory ChatRequestMessageChunk.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ChatRequestMessageChunk(
       channel: jsonSerialization['channel'] as String,
       lastMessageId: jsonSerialization['lastMessageId'] as int,
@@ -73,9 +74,9 @@ class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
     required String channel,
     required int lastMessageId,
   }) : super._(
-          channel: channel,
-          lastMessageId: lastMessageId,
-        );
+         channel: channel,
+         lastMessageId: lastMessageId,
+       );
 
   /// Returns a shallow copy of this [ChatRequestMessageChunk]
   /// with some or all fields replaced by the given arguments.

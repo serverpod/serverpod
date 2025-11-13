@@ -43,116 +43,122 @@ void main() async {
     });
 
     test(
-        'when changing to a password that is in range within required password length then password change is accepted',
-        () async {
-      final user = await Users.findUserByEmail(session, email);
-      expect(user, isNotNull, reason: 'User should exist');
+      'when changing to a password that is in range within required password length then password change is accepted',
+      () async {
+        final user = await Users.findUserByEmail(session, email);
+        expect(user, isNotNull, reason: 'User should exist');
 
-      final success = await Emails.changePassword(
-        session,
-        user!.id!,
-        oldPassword,
-        Random().nextString(length: minPasswordLength),
-      );
+        final success = await Emails.changePassword(
+          session,
+          user!.id!,
+          oldPassword,
+          Random().nextString(length: minPasswordLength),
+        );
 
-      expect(success, isTrue);
-    });
-
-    test(
-        'when changing to a password that is shorter than minimum required password length then password change is rejected',
-        () async {
-      final user = await Users.findUserByEmail(session, email);
-      expect(user, isNotNull, reason: 'User should exist');
-
-      final success = await Emails.changePassword(
-        session,
-        user!.id!,
-        oldPassword,
-        Random().nextString(length: minPasswordLength - 1),
-      );
-
-      expect(success, isFalse);
-    });
+        expect(success, isTrue);
+      },
+    );
 
     test(
-        'when changing to a password that is above max required password length then password change is rejected',
-        () async {
-      final user = await Users.findUserByEmail(session, email);
-      expect(user, isNotNull, reason: 'User should exist');
+      'when changing to a password that is shorter than minimum required password length then password change is rejected',
+      () async {
+        final user = await Users.findUserByEmail(session, email);
+        expect(user, isNotNull, reason: 'User should exist');
 
-      final success = await Emails.changePassword(
-        session,
-        user!.id!,
-        oldPassword,
-        Random().nextString(length: maxPasswordLength + 1),
-      );
+        final success = await Emails.changePassword(
+          session,
+          user!.id!,
+          oldPassword,
+          Random().nextString(length: minPasswordLength - 1),
+        );
 
-      expect(success, isFalse);
-    });
-
-    test(
-        'when resetting a password that is in range within required password length then password change is accepted',
-        () async {
-      // Initiate a fresh reset to get a valid code
-      final initiated = await Emails.initiatePasswordReset(session, email);
-      expect(initiated, isTrue, reason: 'Password reset should be initiated');
-      expect(
-        latestResetCode.isCompleted,
-        isTrue,
-        reason: 'Reset code should be completed',
-      );
-
-      var resetCode = await latestResetCode.future;
-      final success = await Emails.resetPassword(
-        session,
-        resetCode,
-        Random().nextString(length: minPasswordLength),
-      );
-
-      expect(success, isTrue);
-    });
+        expect(success, isFalse);
+      },
+    );
 
     test(
-        'when resetting a password that is shorter than minimum required password length then password change is rejected',
-        () async {
-      final initiated = await Emails.initiatePasswordReset(session, email);
-      expect(initiated, isTrue, reason: 'Password reset should be initiated');
-      expect(
-        latestResetCode.isCompleted,
-        isTrue,
-        reason: 'Reset code should be captured',
-      );
+      'when changing to a password that is above max required password length then password change is rejected',
+      () async {
+        final user = await Users.findUserByEmail(session, email);
+        expect(user, isNotNull, reason: 'User should exist');
 
-      var resetCode = await latestResetCode.future;
-      final success = await Emails.resetPassword(
-        session,
-        resetCode,
-        Random().nextString(length: minPasswordLength - 1),
-      );
+        final success = await Emails.changePassword(
+          session,
+          user!.id!,
+          oldPassword,
+          Random().nextString(length: maxPasswordLength + 1),
+        );
 
-      expect(success, isFalse);
-    });
+        expect(success, isFalse);
+      },
+    );
 
     test(
-        'when resetting a password that is longer than max required password length then password change is rejected',
-        () async {
-      final initiated = await Emails.initiatePasswordReset(session, email);
-      expect(initiated, isTrue, reason: 'Password reset should be initiated');
-      expect(
-        latestResetCode.isCompleted,
-        isTrue,
-        reason: 'Reset code should be captured',
-      );
+      'when resetting a password that is in range within required password length then password change is accepted',
+      () async {
+        // Initiate a fresh reset to get a valid code
+        final initiated = await Emails.initiatePasswordReset(session, email);
+        expect(initiated, isTrue, reason: 'Password reset should be initiated');
+        expect(
+          latestResetCode.isCompleted,
+          isTrue,
+          reason: 'Reset code should be completed',
+        );
 
-      var resetCode = await latestResetCode.future;
-      final success = await Emails.resetPassword(
-        session,
-        resetCode,
-        Random().nextString(length: maxPasswordLength + 1),
-      );
+        var resetCode = await latestResetCode.future;
+        final success = await Emails.resetPassword(
+          session,
+          resetCode,
+          Random().nextString(length: minPasswordLength),
+        );
 
-      expect(success, isFalse);
-    });
+        expect(success, isTrue);
+      },
+    );
+
+    test(
+      'when resetting a password that is shorter than minimum required password length then password change is rejected',
+      () async {
+        final initiated = await Emails.initiatePasswordReset(session, email);
+        expect(initiated, isTrue, reason: 'Password reset should be initiated');
+        expect(
+          latestResetCode.isCompleted,
+          isTrue,
+          reason: 'Reset code should be captured',
+        );
+
+        var resetCode = await latestResetCode.future;
+        final success = await Emails.resetPassword(
+          session,
+          resetCode,
+          Random().nextString(length: minPasswordLength - 1),
+        );
+
+        expect(success, isFalse);
+      },
+    );
+
+    test(
+      'when resetting a password that is longer than max required password length then password change is rejected',
+      () async {
+        final initiated = await Emails.initiatePasswordReset(session, email);
+        expect(initiated, isTrue, reason: 'Password reset should be initiated');
+        expect(
+          latestResetCode.isCompleted,
+          isTrue,
+          reason: 'Reset code should be captured',
+        );
+
+        var resetCode = await latestResetCode.future;
+        final success = await Emails.resetPassword(
+          session,
+          resetCode,
+          Random().nextString(length: maxPasswordLength + 1),
+        );
+
+        expect(success, isFalse);
+      },
+    );
   });
 
   withServerpod('Given create account request ', (sessionBuilder, _) async {
@@ -161,53 +167,56 @@ void main() async {
     var email = 'test@serverpod.dev';
 
     test(
-        'when creating an account with a password that is in range within required password length then password change is accepted',
-        () async {
-      final response = await Emails.createAccountRequest(
-        session,
-        userName,
-        email,
-        Random().nextString(length: minPasswordLength),
-      );
+      'when creating an account with a password that is in range within required password length then password change is accepted',
+      () async {
+        final response = await Emails.createAccountRequest(
+          session,
+          userName,
+          email,
+          Random().nextString(length: minPasswordLength),
+        );
 
-      var createAccountRequest =
-          await EmailCreateAccountRequest.db.findFirstRow(
-        session,
-        where: (t) => t.userName.equals(userName) & t.email.equals(email),
-      );
+        var createAccountRequest = await EmailCreateAccountRequest.db
+            .findFirstRow(
+              session,
+              where: (t) => t.userName.equals(userName) & t.email.equals(email),
+            );
 
-      expect(response, isTrue);
-      expect(
-        createAccountRequest,
-        isNotNull,
-        reason: 'Failed to find create account request',
-      );
-    });
-
-    test(
-        'when creating an account with a password that is shorter than minimum required password length then password change is rejected',
-        () async {
-      final response = await Emails.createAccountRequest(
-        session,
-        userName,
-        email,
-        Random().nextString(length: minPasswordLength - 1),
-      );
-
-      expect(response, isFalse);
-    });
+        expect(response, isTrue);
+        expect(
+          createAccountRequest,
+          isNotNull,
+          reason: 'Failed to find create account request',
+        );
+      },
+    );
 
     test(
-        'when creating an account with a password that is longer than max required password length then password change is rejected',
-        () async {
-      final response = await Emails.createAccountRequest(
-        session,
-        userName,
-        email,
-        Random().nextString(length: maxPasswordLength + 1),
-      );
+      'when creating an account with a password that is shorter than minimum required password length then password change is rejected',
+      () async {
+        final response = await Emails.createAccountRequest(
+          session,
+          userName,
+          email,
+          Random().nextString(length: minPasswordLength - 1),
+        );
 
-      expect(response, isFalse);
-    });
+        expect(response, isFalse);
+      },
+    );
+
+    test(
+      'when creating an account with a password that is longer than max required password length then password change is rejected',
+      () async {
+        final response = await Emails.createAccountRequest(
+          session,
+          userName,
+          email,
+          Random().nextString(length: maxPasswordLength + 1),
+        );
+
+        expect(response, isFalse);
+      },
+    );
   });
 }

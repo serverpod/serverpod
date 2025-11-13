@@ -13,34 +13,37 @@ void main() async {
     });
 
     test(
-        'when counting models filtered on many relation count then result is as expected',
-        () async {
-      var member = await Member.db.insert(session, [
-        Member(name: 'Member1'),
-        Member(name: 'Member2'),
-        Member(name: 'Member3'),
-        Member(name: 'Member4'),
-      ]);
+      'when counting models filtered on many relation count then result is as expected',
+      () async {
+        var member = await Member.db.insert(session, [
+          Member(name: 'Member1'),
+          Member(name: 'Member2'),
+          Member(name: 'Member3'),
+          Member(name: 'Member4'),
+        ]);
 
-      await Blocking.db.insert(session, [
-        // Member1
-        Blocking(blockedById: member[0].id!, blockedId: member[1].id!),
-        Blocking(blockedById: member[0].id!, blockedId: member[2].id!),
-        Blocking(blockedById: member[0].id!, blockedId: member[3].id!),
+        await Blocking.db.insert(session, [
+          // Member1
+          Blocking(blockedById: member[0].id!, blockedId: member[1].id!),
+          Blocking(blockedById: member[0].id!, blockedId: member[2].id!),
+          Blocking(blockedById: member[0].id!, blockedId: member[3].id!),
 
-        // Member2
-        Blocking(blockedById: member[1].id!, blockedId: member[0].id!),
-        Blocking(blockedById: member[1].id!, blockedId: member[2].id!),
+          // Member2
+          Blocking(blockedById: member[1].id!, blockedId: member[0].id!),
+          Blocking(blockedById: member[1].id!, blockedId: member[2].id!),
 
-        // Member3
-        Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
-      ]);
+          // Member3
+          Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
+        ]);
 
-      var count =
-          await Member.db.count(session, where: (t) => t.blocking.count() > 1);
+        var count = await Member.db.count(
+          session,
+          where: (t) => t.blocking.count() > 1,
+        );
 
-      expect(count, 2);
-    });
+        expect(count, 2);
+      },
+    );
 
     test(
       'when counting models filtered on filtered many relation count then result is as expected',

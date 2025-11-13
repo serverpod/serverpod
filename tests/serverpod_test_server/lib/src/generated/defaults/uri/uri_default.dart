@@ -18,9 +18,9 @@ abstract class UriDefault
     this.id,
     Uri? uriDefault,
     Uri? uriDefaultNull,
-  })  : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
-        uriDefaultNull =
-            uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
+  }) : uriDefault = uriDefault ?? Uri.parse('https://serverpod.dev/default'),
+       uriDefaultNull =
+           uriDefaultNull ?? Uri.parse('https://serverpod.dev/default');
 
   factory UriDefault({
     int? id,
@@ -31,8 +31,9 @@ abstract class UriDefault
   factory UriDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefault(
       id: jsonSerialization['id'] as int?,
-      uriDefault:
-          _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefault']),
+      uriDefault: _i1.UriJsonExtension.fromJson(
+        jsonSerialization['uriDefault'],
+      ),
       uriDefaultNull: jsonSerialization['uriDefaultNull'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultNull']),
@@ -117,10 +118,10 @@ class _UriDefaultImpl extends UriDefault {
     Uri? uriDefault,
     Uri? uriDefaultNull,
   }) : super._(
-          id: id,
-          uriDefault: uriDefault,
-          uriDefaultNull: uriDefaultNull,
-        );
+         id: id,
+         uriDefault: uriDefault,
+         uriDefaultNull: uriDefaultNull,
+       );
 
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
@@ -134,8 +135,9 @@ class _UriDefaultImpl extends UriDefault {
     return UriDefault(
       id: id is int? ? id : this.id,
       uriDefault: uriDefault ?? this.uriDefault,
-      uriDefaultNull:
-          uriDefaultNull is Uri? ? uriDefaultNull : this.uriDefaultNull,
+      uriDefaultNull: uriDefaultNull is Uri?
+          ? uriDefaultNull
+          : this.uriDefaultNull,
     );
   }
 }
@@ -144,14 +146,14 @@ class UriDefaultUpdateTable extends _i1.UpdateTable<UriDefaultTable> {
   UriDefaultUpdateTable(super.table);
 
   _i1.ColumnValue<Uri, Uri> uriDefault(Uri value) => _i1.ColumnValue(
-        table.uriDefault,
-        value,
-      );
+    table.uriDefault,
+    value,
+  );
 
   _i1.ColumnValue<Uri, Uri> uriDefaultNull(Uri? value) => _i1.ColumnValue(
-        table.uriDefaultNull,
-        value,
-      );
+    table.uriDefaultNull,
+    value,
+  );
 }
 
 class UriDefaultTable extends _i1.Table<int?> {
@@ -177,10 +179,10 @@ class UriDefaultTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uriDefault,
-        uriDefaultNull,
-      ];
+    id,
+    uriDefault,
+    uriDefaultNull,
+  ];
 }
 
 class UriDefaultInclude extends _i1.IncludeObject {

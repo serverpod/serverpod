@@ -50,9 +50,9 @@ final class ClientMethodStreamManager {
     required Duration connectionTimeout,
     required Uri webSocketHost,
     required SerializationManager serializationManager,
-  })  : _webSocketHost = webSocketHost,
-        _connectionTimeout = connectionTimeout,
-        _serializationManager = serializationManager;
+  }) : _webSocketHost = webSocketHost,
+       _connectionTimeout = connectionTimeout,
+       _serializationManager = serializationManager;
 
   /// Closes all open connections and streams
   ///
@@ -141,12 +141,14 @@ final class ClientMethodStreamManager {
     }
 
     connectionDetails.outputController.onCancel = () async {
-      _addMessageToWebSocket(CloseMethodStreamCommand.buildMessage(
-        connectionId: connectionId,
-        endpoint: connectionDetails.endpoint,
-        method: connectionDetails.method,
-        reason: CloseReason.done,
-      ));
+      _addMessageToWebSocket(
+        CloseMethodStreamCommand.buildMessage(
+          connectionId: connectionId,
+          endpoint: connectionDetails.endpoint,
+          method: connectionDetails.method,
+          reason: CloseReason.done,
+        ),
+      );
 
       await _tryCloseInboundStream(
         endpoint: connectionDetails.endpoint,
@@ -189,8 +191,9 @@ final class ClientMethodStreamManager {
   /// If an exception is provided, it will be added to the inbound stream
   /// controller.
   Future<void> _closeAllStreams([Object? exception]) async {
-    var inputControllers =
-        _inboundStreams.values.map((c) => c.controller).toList();
+    var inputControllers = _inboundStreams.values
+        .map((c) => c.controller)
+        .toList();
     _inboundStreams.clear();
 
     // Remove onCancel callbacks to prevent controllers from
@@ -205,12 +208,14 @@ final class ClientMethodStreamManager {
       }
     }
 
-    var outboundStreamSubscriptions =
-        _outboundStreams.values.map((c) => c.subscription).toList();
+    var outboundStreamSubscriptions = _outboundStreams.values
+        .map((c) => c.subscription)
+        .toList();
     _outboundStreams.clear();
 
-    var closeSubscriptionsFutures =
-        outboundStreamSubscriptions.map((s) => s.cancel());
+    var closeSubscriptionsFutures = outboundStreamSubscriptions.map(
+      (s) => s.cancel(),
+    );
 
     await Future.wait([
       ...closeSubscriptionsFutures,
@@ -298,17 +303,20 @@ final class ClientMethodStreamManager {
     // Close all controllers that have listeners.
     // If close is called on a controller that has no listeners, it will
     // return a future that never complete.
-    var controllersToClose =
-        controllers.where((c) => c.hasListener && !c.isClosed);
+    var controllersToClose = controllers.where(
+      (c) => c.hasListener && !c.isClosed,
+    );
 
     for (var controller in controllersToClose) {
       // Paused streams will never process the close event and
       // will never complete. Therefore we need to add a timeout to complete
       // the future.
-      futures.add(controller.close().timeout(
-            const Duration(seconds: 6),
-            onTimeout: () async => await controller.onCancel?.call(),
-          ));
+      futures.add(
+        controller.close().timeout(
+          const Duration(seconds: 6),
+          onTimeout: () async => await controller.onCancel?.call(),
+        ),
+      );
     }
 
     await Future.wait(futures);
@@ -380,7 +388,7 @@ final class ClientMethodStreamManager {
     await Future.wait(
       [
         ...cancelSubscriptionFutures,
-        _closeControllers([inboundStreamContext.controller])
+        _closeControllers([inboundStreamContext.controller]),
       ],
     );
   }
@@ -504,7 +512,8 @@ final class ClientMethodStreamManager {
             break;
           case BadRequestMessage():
             throw Exception(
-                'Bad request message: $jsonData, closing connection');
+              'Bad request message: $jsonData, closing connection',
+            );
         }
       }
     } catch (e, s) {
@@ -542,8 +551,9 @@ final class ClientMethodStreamManager {
       _handshakeComplete = Completer();
       unawaited(_listenToWebSocketStream(webSocket));
 
-      await _handshakeComplete.future
-          .catchError((e, s) => throw ConnectionAttemptTimedOutException());
+      await _handshakeComplete.future.catchError(
+        (e, s) => throw ConnectionAttemptTimedOutException(),
+      );
       _webSocket = webSocket;
     });
   }

@@ -18,15 +18,18 @@ abstract class ImmutableObjectWithImmutableObject
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableObjectWithImmutableObject._({required this.immutableVariable});
 
-  const factory ImmutableObjectWithImmutableObject(
-          {required _i2.ImmutableObject immutableVariable}) =
-      _ImmutableObjectWithImmutableObjectImpl;
+  const factory ImmutableObjectWithImmutableObject({
+    required _i2.ImmutableObject immutableVariable,
+  }) = _ImmutableObjectWithImmutableObjectImpl;
 
   factory ImmutableObjectWithImmutableObject.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithImmutableObject(
-        immutableVariable: _i2.ImmutableObject.fromJson(
-            (jsonSerialization['immutableVariable'] as Map<String, dynamic>)));
+      immutableVariable: _i2.ImmutableObject.fromJson(
+        (jsonSerialization['immutableVariable'] as Map<String, dynamic>),
+      ),
+    );
   }
 
   final _i2.ImmutableObject immutableVariable;
@@ -34,8 +37,9 @@ abstract class ImmutableObjectWithImmutableObject
   /// Returns a shallow copy of this [ImmutableObjectWithImmutableObject]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ImmutableObjectWithImmutableObject copyWith(
-      {_i2.ImmutableObject? immutableVariable});
+  ImmutableObjectWithImmutableObject copyWith({
+    _i2.ImmutableObject? immutableVariable,
+  });
   @override
   bool operator ==(Object other) {
     return identical(
@@ -77,18 +81,19 @@ abstract class ImmutableObjectWithImmutableObject
 
 class _ImmutableObjectWithImmutableObjectImpl
     extends ImmutableObjectWithImmutableObject {
-  const _ImmutableObjectWithImmutableObjectImpl(
-      {required _i2.ImmutableObject immutableVariable})
-      : super._(immutableVariable: immutableVariable);
+  const _ImmutableObjectWithImmutableObjectImpl({
+    required _i2.ImmutableObject immutableVariable,
+  }) : super._(immutableVariable: immutableVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithImmutableObject]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ImmutableObjectWithImmutableObject copyWith(
-      {_i2.ImmutableObject? immutableVariable}) {
+  ImmutableObjectWithImmutableObject copyWith({
+    _i2.ImmutableObject? immutableVariable,
+  }) {
     return ImmutableObjectWithImmutableObject(
-        immutableVariable:
-            immutableVariable ?? this.immutableVariable.copyWith());
+      immutableVariable: immutableVariable ?? this.immutableVariable.copyWith(),
+    );
   }
 }

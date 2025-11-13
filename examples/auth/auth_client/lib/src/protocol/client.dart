@@ -42,18 +42,17 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
-        'appleIDP',
-        'login',
-        {
-          'identityToken': identityToken,
-          'authorizationCode': authorizationCode,
-          'isNativeApplePlatformSignIn': isNativeApplePlatformSignIn,
-          'firstName': firstName,
-          'lastName': lastName,
-        },
-      );
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'appleIDP',
+    'login',
+    {
+      'identityToken': identityToken,
+      'authorizationCode': authorizationCode,
+      'isNativeApplePlatformSignIn': isNativeApplePlatformSignIn,
+      'firstName': firstName,
+      'lastName': lastName,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -76,15 +75,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   _i3.Future<_i4.AuthSuccess> login({
     required String email,
     required String password,
-  }) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
-        'emailIDP',
-        'login',
-        {
-          'email': email,
-          'password': password,
-        },
-      );
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'emailIDP',
+    'login',
+    {
+      'email': email,
+      'password': password,
+    },
+  );
 
   /// Starts the registration for a new user account with an email-based login
   /// associated to it.
@@ -118,15 +116,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   _i3.Future<String> verifyRegistrationCode({
     required _i2.UuidValue accountRequestId,
     required String verificationCode,
-  }) =>
-      caller.callServerEndpoint<String>(
-        'emailIDP',
-        'verifyRegistrationCode',
-        {
-          'accountRequestId': accountRequestId,
-          'verificationCode': verificationCode,
-        },
-      );
+  }) => caller.callServerEndpoint<String>(
+    'emailIDP',
+    'verifyRegistrationCode',
+    {
+      'accountRequestId': accountRequestId,
+      'verificationCode': verificationCode,
+    },
+  );
 
   /// Completes a new account registration, creating a new auth user with a
   /// profile and attaching the given email account to it.
@@ -147,15 +144,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   _i3.Future<_i4.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
-        'emailIDP',
-        'finishRegistration',
-        {
-          'registrationToken': registrationToken,
-          'password': password,
-        },
-      );
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'emailIDP',
+    'finishRegistration',
+    {
+      'registrationToken': registrationToken,
+      'password': password,
+    },
+  );
 
   /// Requests a password reset for [email].
   ///
@@ -196,15 +192,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   _i3.Future<String> verifyPasswordResetCode({
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
-  }) =>
-      caller.callServerEndpoint<String>(
-        'emailIDP',
-        'verifyPasswordResetCode',
-        {
-          'passwordResetRequestId': passwordResetRequestId,
-          'verificationCode': verificationCode,
-        },
-      );
+  }) => caller.callServerEndpoint<String>(
+    'emailIDP',
+    'verifyPasswordResetCode',
+    {
+      'passwordResetRequestId': passwordResetRequestId,
+      'verificationCode': verificationCode,
+    },
+  );
 
   /// Completes a password reset request by setting a new password.
   ///
@@ -224,15 +219,14 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   _i3.Future<void> finishPasswordReset({
     required String finishPasswordResetToken,
     required String newPassword,
-  }) =>
-      caller.callServerEndpoint<void>(
-        'emailIDP',
-        'finishPasswordReset',
-        {
-          'finishPasswordResetToken': finishPasswordResetToken,
-          'newPassword': newPassword,
-        },
-      );
+  }) => caller.callServerEndpoint<void>(
+    'emailIDP',
+    'finishPasswordReset',
+    {
+      'finishPasswordResetToken': finishPasswordResetToken,
+      'newPassword': newPassword,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -250,15 +244,14 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
   _i3.Future<_i4.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
-        'googleIDP',
-        'login',
-        {
-          'idToken': idToken,
-          'accessToken': accessToken,
-        },
-      );
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'googleIDP',
+    'login',
+    {
+      'idToken': idToken,
+      'accessToken': accessToken,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -281,23 +274,23 @@ class EndpointPasskeyIDP extends _i1.EndpointPasskeyIDPBase {
   ///
   /// Throws if the user is not authenticated.
   @override
-  _i3.Future<void> register(
-          {required _i1.PasskeyRegistrationRequest registrationRequest}) =>
-      caller.callServerEndpoint<void>(
-        'passkeyIDP',
-        'register',
-        {'registrationRequest': registrationRequest},
-      );
+  _i3.Future<void> register({
+    required _i1.PasskeyRegistrationRequest registrationRequest,
+  }) => caller.callServerEndpoint<void>(
+    'passkeyIDP',
+    'register',
+    {'registrationRequest': registrationRequest},
+  );
 
   /// Authenticates the user related to the given Passkey.
   @override
-  _i3.Future<_i4.AuthSuccess> login(
-          {required _i1.PasskeyLoginRequest loginRequest}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
-        'passkeyIDP',
-        'login',
-        {'loginRequest': loginRequest},
-      );
+  _i3.Future<_i4.AuthSuccess> login({
+    required _i1.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'passkeyIDP',
+    'login',
+    {'loginRequest': loginRequest},
+  );
 }
 
 /// This is an example endpoint that returns a greeting message through
@@ -340,21 +333,22 @@ class Client extends _i2.ServerpodClientShared {
       _i2.MethodCallContext,
       Object,
       StackTrace,
-    )? onFailedCall,
+    )?
+    onFailedCall,
     Function(_i2.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
-          host,
-          _i7.Protocol(),
-          securityContext: securityContext,
-          authenticationKeyManager: authenticationKeyManager,
-          streamingConnectionTimeout: streamingConnectionTimeout,
-          connectionTimeout: connectionTimeout,
-          onFailedCall: onFailedCall,
-          onSucceededCall: onSucceededCall,
-          disconnectStreamsOnLostInternetConnection:
-              disconnectStreamsOnLostInternetConnection,
-        ) {
+         host,
+         _i7.Protocol(),
+         securityContext: securityContext,
+         authenticationKeyManager: authenticationKeyManager,
+         streamingConnectionTimeout: streamingConnectionTimeout,
+         connectionTimeout: connectionTimeout,
+         onFailedCall: onFailedCall,
+         onSucceededCall: onSucceededCall,
+         disconnectStreamsOnLostInternetConnection:
+             disconnectStreamsOnLostInternetConnection,
+       ) {
     appleIDP = EndpointAppleIDP(this);
     emailIDP = EndpointEmailIDP(this);
     googleIDP = EndpointGoogleIDP(this);
@@ -377,16 +371,16 @@ class Client extends _i2.ServerpodClientShared {
 
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
-        'appleIDP': appleIDP,
-        'emailIDP': emailIDP,
-        'googleIDP': googleIDP,
-        'passkeyIDP': passkeyIDP,
-        'greeting': greeting,
-      };
+    'appleIDP': appleIDP,
+    'emailIDP': emailIDP,
+    'googleIDP': googleIDP,
+    'passkeyIDP': passkeyIDP,
+    'greeting': greeting,
+  };
 
   @override
   Map<String, _i2.ModuleEndpointCaller> get moduleLookup => {
-        'serverpod_auth_idp': modules.serverpod_auth_idp,
-        'serverpod_auth_core': modules.serverpod_auth_core,
-      };
+    'serverpod_auth_idp': modules.serverpod_auth_idp,
+    'serverpod_auth_core': modules.serverpod_auth_core,
+  };
 }

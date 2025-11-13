@@ -77,10 +77,10 @@ class _CourseUuidImpl extends CourseUuid {
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.

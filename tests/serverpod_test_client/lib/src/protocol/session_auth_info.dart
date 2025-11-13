@@ -80,11 +80,11 @@ class _SessionAuthInfoImpl extends SessionAuthInfo {
     required List<String> scopes,
     String? authId,
   }) : super._(
-          isAuthenticated: isAuthenticated,
-          userId: userId,
-          scopes: scopes,
-          authId: authId,
-        );
+         isAuthenticated: isAuthenticated,
+         userId: userId,
+         scopes: scopes,
+         authId: authId,
+       );
 
   /// Returns a shallow copy of this [SessionAuthInfo]
   /// with some or all fields replaced by the given arguments.

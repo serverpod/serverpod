@@ -21,11 +21,11 @@ abstract class EnumDefault implements _i1.SerializableModel {
     _i2.ByNameEnum? byNameEnumDefaultNull,
     _i3.ByIndexEnum? byIndexEnumDefault,
     _i3.ByIndexEnum? byIndexEnumDefaultNull,
-  })  : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
-        byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
-        byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
-        byIndexEnumDefaultNull =
-            byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
+  }) : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
+       byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
+       byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
+       byIndexEnumDefaultNull =
+           byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
 
   factory EnumDefault({
     int? id,
@@ -39,18 +39,22 @@ abstract class EnumDefault implements _i1.SerializableModel {
     return EnumDefault(
       id: jsonSerialization['id'] as int?,
       byNameEnumDefault: _i2.ByNameEnum.fromJson(
-          (jsonSerialization['byNameEnumDefault'] as String)),
+        (jsonSerialization['byNameEnumDefault'] as String),
+      ),
       byNameEnumDefaultNull: jsonSerialization['byNameEnumDefaultNull'] == null
           ? null
           : _i2.ByNameEnum.fromJson(
-              (jsonSerialization['byNameEnumDefaultNull'] as String)),
+              (jsonSerialization['byNameEnumDefaultNull'] as String),
+            ),
       byIndexEnumDefault: _i3.ByIndexEnum.fromJson(
-          (jsonSerialization['byIndexEnumDefault'] as int)),
+        (jsonSerialization['byIndexEnumDefault'] as int),
+      ),
       byIndexEnumDefaultNull:
           jsonSerialization['byIndexEnumDefaultNull'] == null
-              ? null
-              : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultNull'] as int)),
+          ? null
+          : _i3.ByIndexEnum.fromJson(
+              (jsonSerialization['byIndexEnumDefaultNull'] as int),
+            ),
     );
   }
 
@@ -106,12 +110,12 @@ class _EnumDefaultImpl extends EnumDefault {
     _i3.ByIndexEnum? byIndexEnumDefault,
     _i3.ByIndexEnum? byIndexEnumDefaultNull,
   }) : super._(
-          id: id,
-          byNameEnumDefault: byNameEnumDefault,
-          byNameEnumDefaultNull: byNameEnumDefaultNull,
-          byIndexEnumDefault: byIndexEnumDefault,
-          byIndexEnumDefaultNull: byIndexEnumDefaultNull,
-        );
+         id: id,
+         byNameEnumDefault: byNameEnumDefault,
+         byNameEnumDefaultNull: byNameEnumDefaultNull,
+         byIndexEnumDefault: byIndexEnumDefault,
+         byIndexEnumDefaultNull: byIndexEnumDefaultNull,
+       );
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.

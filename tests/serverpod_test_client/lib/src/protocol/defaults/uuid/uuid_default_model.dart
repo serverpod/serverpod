@@ -20,15 +20,17 @@ abstract class UuidDefaultModel implements _i1.SerializableModel {
     _i1.UuidValue? uuidDefaultModelRandomNull,
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
-  })  : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i1.Uuid().v4obj(),
-        uuidDefaultModelRandomV7 =
-            uuidDefaultModelRandomV7 ?? _i1.Uuid().v7obj(),
-        uuidDefaultModelRandomNull =
-            uuidDefaultModelRandomNull ?? _i1.Uuid().v4obj(),
-        uuidDefaultModelStr = uuidDefaultModelStr ??
-            _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
-        uuidDefaultModelStrNull = uuidDefaultModelStrNull ??
-            _i1.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+  }) : uuidDefaultModelRandom = uuidDefaultModelRandom ?? _i1.Uuid().v4obj(),
+       uuidDefaultModelRandomV7 =
+           uuidDefaultModelRandomV7 ?? _i1.Uuid().v7obj(),
+       uuidDefaultModelRandomNull =
+           uuidDefaultModelRandomNull ?? _i1.Uuid().v4obj(),
+       uuidDefaultModelStr =
+           uuidDefaultModelStr ??
+           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+       uuidDefaultModelStrNull =
+           uuidDefaultModelStrNull ??
+           _i1.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
 
   factory UuidDefaultModel({
     int? id,
@@ -43,21 +45,26 @@ abstract class UuidDefaultModel implements _i1.SerializableModel {
     return UuidDefaultModel(
       id: jsonSerialization['id'] as int?,
       uuidDefaultModelRandom: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultModelRandom']),
+        jsonSerialization['uuidDefaultModelRandom'],
+      ),
       uuidDefaultModelRandomV7: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultModelRandomV7']),
+        jsonSerialization['uuidDefaultModelRandomV7'],
+      ),
       uuidDefaultModelRandomNull:
           jsonSerialization['uuidDefaultModelRandomNull'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultModelRandomNull']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultModelRandomNull'],
+            ),
       uuidDefaultModelStr: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['uuidDefaultModelStr']),
+        jsonSerialization['uuidDefaultModelStr'],
+      ),
       uuidDefaultModelStrNull:
           jsonSerialization['uuidDefaultModelStrNull'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultModelStrNull']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultModelStrNull'],
+            ),
     );
   }
 
@@ -118,13 +125,13 @@ class _UuidDefaultModelImpl extends UuidDefaultModel {
     _i1.UuidValue? uuidDefaultModelStr,
     _i1.UuidValue? uuidDefaultModelStrNull,
   }) : super._(
-          id: id,
-          uuidDefaultModelRandom: uuidDefaultModelRandom,
-          uuidDefaultModelRandomV7: uuidDefaultModelRandomV7,
-          uuidDefaultModelRandomNull: uuidDefaultModelRandomNull,
-          uuidDefaultModelStr: uuidDefaultModelStr,
-          uuidDefaultModelStrNull: uuidDefaultModelStrNull,
-        );
+         id: id,
+         uuidDefaultModelRandom: uuidDefaultModelRandom,
+         uuidDefaultModelRandomV7: uuidDefaultModelRandomV7,
+         uuidDefaultModelRandomNull: uuidDefaultModelRandomNull,
+         uuidDefaultModelStr: uuidDefaultModelStr,
+         uuidDefaultModelStrNull: uuidDefaultModelStrNull,
+       );
 
   /// Returns a shallow copy of this [UuidDefaultModel]
   /// with some or all fields replaced by the given arguments.

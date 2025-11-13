@@ -19,12 +19,12 @@ abstract class StringDefaultMix
     String? stringDefaultAndDefaultModel,
     String? stringDefaultAndDefaultPersist,
     String? stringDefaultModelAndDefaultPersist,
-  })  : stringDefaultAndDefaultModel =
-            stringDefaultAndDefaultModel ?? 'This is a default model value',
-        stringDefaultAndDefaultPersist =
-            stringDefaultAndDefaultPersist ?? 'This is a default value',
-        stringDefaultModelAndDefaultPersist =
-            stringDefaultModelAndDefaultPersist ?? 'This is a default value';
+  }) : stringDefaultAndDefaultModel =
+           stringDefaultAndDefaultModel ?? 'This is a default model value',
+       stringDefaultAndDefaultPersist =
+           stringDefaultAndDefaultPersist ?? 'This is a default value',
+       stringDefaultModelAndDefaultPersist =
+           stringDefaultModelAndDefaultPersist ?? 'This is a default value';
 
   factory StringDefaultMix({
     int? id,
@@ -131,12 +131,12 @@ class _StringDefaultMixImpl extends StringDefaultMix {
     String? stringDefaultAndDefaultPersist,
     String? stringDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          stringDefaultAndDefaultModel: stringDefaultAndDefaultModel,
-          stringDefaultAndDefaultPersist: stringDefaultAndDefaultPersist,
-          stringDefaultModelAndDefaultPersist:
-              stringDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         stringDefaultAndDefaultModel: stringDefaultAndDefaultModel,
+         stringDefaultAndDefaultPersist: stringDefaultAndDefaultPersist,
+         stringDefaultModelAndDefaultPersist:
+             stringDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [StringDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -156,7 +156,7 @@ class _StringDefaultMixImpl extends StringDefaultMix {
           stringDefaultAndDefaultPersist ?? this.stringDefaultAndDefaultPersist,
       stringDefaultModelAndDefaultPersist:
           stringDefaultModelAndDefaultPersist ??
-              this.stringDefaultModelAndDefaultPersist,
+          this.stringDefaultModelAndDefaultPersist,
     );
   }
 }
@@ -172,23 +172,23 @@ class StringDefaultMixUpdateTable
       );
 
   _i1.ColumnValue<String, String> stringDefaultAndDefaultPersist(
-          String value) =>
-      _i1.ColumnValue(
-        table.stringDefaultAndDefaultPersist,
-        value,
-      );
+    String value,
+  ) => _i1.ColumnValue(
+    table.stringDefaultAndDefaultPersist,
+    value,
+  );
 
   _i1.ColumnValue<String, String> stringDefaultModelAndDefaultPersist(
-          String value) =>
-      _i1.ColumnValue(
-        table.stringDefaultModelAndDefaultPersist,
-        value,
-      );
+    String value,
+  ) => _i1.ColumnValue(
+    table.stringDefaultModelAndDefaultPersist,
+    value,
+  );
 }
 
 class StringDefaultMixTable extends _i1.Table<int?> {
   StringDefaultMixTable({super.tableRelation})
-      : super(tableName: 'string_default_mix') {
+    : super(tableName: 'string_default_mix') {
     updateTable = StringDefaultMixUpdateTable(this);
     stringDefaultAndDefaultModel = _i1.ColumnString(
       'stringDefaultAndDefaultModel',
@@ -217,11 +217,11 @@ class StringDefaultMixTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        stringDefaultAndDefaultModel,
-        stringDefaultAndDefaultPersist,
-        stringDefaultModelAndDefaultPersist,
-      ];
+    id,
+    stringDefaultAndDefaultModel,
+    stringDefaultAndDefaultPersist,
+    stringDefaultModelAndDefaultPersist,
+  ];
 }
 
 class StringDefaultMixInclude extends _i1.IncludeObject {
@@ -419,7 +419,7 @@ class StringDefaultMixRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultMix>(
@@ -434,7 +434,7 @@ class StringDefaultMixRepository {
   Future<List<StringDefaultMix>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<StringDefaultMixUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<StringDefaultMixTable> where,
     int? limit,
     int? offset,

@@ -28,10 +28,15 @@ class ChatDispatch {
 
   /// Adds a listener to a specific chat channel. It's only allowed to add one
   /// listener per channel.
-  void addListener(String channel, ChatMessageListener listener,
-      {String? unauthenticatedUserName}) {
-    assert(_listeners[channel] == null,
-        'Only one listener per channel is allowed. channel: $channel');
+  void addListener(
+    String channel,
+    ChatMessageListener listener, {
+    String? unauthenticatedUserName,
+  }) {
+    assert(
+      _listeners[channel] == null,
+      'Only one listener per channel is allowed. channel: $channel',
+    );
     _listeners[channel] = listener;
     caller.chat.sendStreamMessage(
       ChatJoinChannel(
@@ -74,7 +79,8 @@ class ChatDispatch {
 
   /// Requests a new chunk of messages.
   Future<void> postRequestMessageChunk(
-      ChatRequestMessageChunk chunkRequest) async {
+    ChatRequestMessageChunk chunkRequest,
+  ) async {
     await caller.chat.sendStreamMessage(chunkRequest);
   }
 }

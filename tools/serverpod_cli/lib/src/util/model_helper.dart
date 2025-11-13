@@ -61,8 +61,9 @@ class ModelHelper {
     // This sort is needed to make sure all analyzed models are processed in
     // the same order. This affects the order of partial imports in sealed
     // classes.
-    modelSources
-        .sort((a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path));
+    modelSources.sort(
+      (a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path),
+    );
 
     return modelSources;
   }
@@ -85,15 +86,17 @@ class ModelHelper {
     for (var model in files) {
       var yaml = await model.readAsString();
 
-      sources.add(ModelSource(
-        moduleAlias,
-        yaml,
-        model.uri,
-        extractPathFromConfig(
-          loadConfig,
+      sources.add(
+        ModelSource(
+          moduleAlias,
+          yaml,
           model.uri,
+          extractPathFromConfig(
+            loadConfig,
+            model.uri,
+          ),
         ),
-      ));
+      );
     }
 
     return sources;
@@ -130,8 +133,9 @@ class ModelHelper {
     var path = joinAll(absolutePathParts);
 
     if (!isAbsolute(path)) {
-      path =
-          Platform.isWindows ? '$separator$separator$path' : '$separator$path';
+      path = Platform.isWindows
+          ? '$separator$separator$path'
+          : '$separator$path';
     }
 
     var modelSourceDir = Directory(path);
@@ -142,10 +146,12 @@ class ModelHelper {
       modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
     }
 
-    return modelSourceFileList.whereType<File>().where((file) => isModelFile(
-          file.path,
-          loadConfig: loadConfig,
-        ));
+    return modelSourceFileList.whereType<File>().where(
+      (file) => isModelFile(
+        file.path,
+        loadConfig: loadConfig,
+      ),
+    );
   }
 
   static List<String> extractPathFromConfig(

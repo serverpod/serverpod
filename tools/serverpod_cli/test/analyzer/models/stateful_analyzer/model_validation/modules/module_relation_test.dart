@@ -14,13 +14,14 @@ void main() {
           .withModuleAlias('auth')
           .withFileName('user_info')
           .withYaml(
-        '''
+            '''
         class: UserInfo
         table: serverpod_user_info
         fields:
           nickname: String
         ''',
-      ).build(),
+          )
+          .build(),
       ModelSourceBuilder().withFileName('profile').withYaml(
         '''
         class: Profile
@@ -29,7 +30,7 @@ void main() {
           name: String
           user: module:auth:UserInfo?, relation
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
@@ -46,8 +47,9 @@ void main() {
     });
 
     test('then a relation is created on the local module', () {
-      var classDefinition = entities.firstWhere((e) => e.className == 'Profile')
-          as ClassDefinition;
+      var classDefinition =
+          entities.firstWhere((e) => e.className == 'Profile')
+              as ClassDefinition;
 
       var relation = classDefinition.fields.last.relation;
 
@@ -56,47 +58,49 @@ void main() {
   });
 
   test(
-      'Given a class referencing a module class with a relation then an error is reported that direct list relations are not allowed.',
-      () {
-    var models = [
-      ModelSourceBuilder()
-          .withModuleAlias('auth')
-          .withFileName('user_info')
-          .withYaml(
-        '''
+    'Given a class referencing a module class with a relation then an error is reported that direct list relations are not allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder()
+            .withModuleAlias('auth')
+            .withFileName('user_info')
+            .withYaml(
+              '''
         class: UserInfo
         table: serverpod_user_info
         fields:
           nickname: String
         ''',
-      ).build(),
-      ModelSourceBuilder().withFileName('profile').withYaml(
-        '''
+            )
+            .build(),
+        ModelSourceBuilder().withFileName('profile').withYaml(
+          '''
         class: Profile
         table: profile
         fields:
           name: String
           user: List<module:auth:UserInfo>?, relation
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isNotEmpty);
+      expect(errors, isNotEmpty);
 
-    expect(
-      errors.first.message,
-      'A List relation is not allowed on module tables.',
-    );
-  });
+      expect(
+        errors.first.message,
+        'A List relation is not allowed on module tables.',
+      );
+    },
+  );
 
   group('Given a class referencing a module table with a parent relation.', () {
     var models = [
@@ -104,13 +108,14 @@ void main() {
           .withModuleAlias('auth')
           .withFileName('user_info')
           .withYaml(
-        '''
+            '''
         class: UserInfo
         table: serverpod_user_info
         fields:
           nickname: String
         ''',
-      ).build(),
+          )
+          .build(),
       ModelSourceBuilder().withFileName('profile').withYaml(
         '''
         class: Profile
@@ -119,7 +124,7 @@ void main() {
           name: String
           userId: int, relation(parent=serverpod_user_info)
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
@@ -136,8 +141,9 @@ void main() {
     });
 
     test('then a foreign relation is created to the module', () {
-      var classDefinition = entities.firstWhere((e) => e.className == 'Profile')
-          as ClassDefinition;
+      var classDefinition =
+          entities.firstWhere((e) => e.className == 'Profile')
+              as ClassDefinition;
 
       var relation = classDefinition.fields.last.relation;
 

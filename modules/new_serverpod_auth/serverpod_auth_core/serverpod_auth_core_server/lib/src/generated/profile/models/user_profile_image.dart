@@ -43,13 +43,16 @@ abstract class UserProfileImage
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       userProfileId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['userProfileId']),
+        jsonSerialization['userProfileId'],
+      ),
       userProfile: jsonSerialization['userProfile'] == null
           ? null
           : _i2.UserProfile.fromJson(
-              (jsonSerialization['userProfile'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+              (jsonSerialization['userProfile'] as Map<String, dynamic>),
+            ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
@@ -113,8 +116,9 @@ abstract class UserProfileImage
     return {};
   }
 
-  static UserProfileImageInclude include(
-      {_i2.UserProfileInclude? userProfile}) {
+  static UserProfileImageInclude include({
+    _i2.UserProfileInclude? userProfile,
+  }) {
     return UserProfileImageInclude._(userProfile: userProfile);
   }
 
@@ -156,14 +160,14 @@ class _UserProfileImageImpl extends UserProfileImage {
     required String path,
     required Uri url,
   }) : super._(
-          id: id,
-          userProfileId: userProfileId,
-          userProfile: userProfile,
-          createdAt: createdAt,
-          storageId: storageId,
-          path: path,
-          url: url,
-        );
+         id: id,
+         userProfileId: userProfileId,
+         userProfile: userProfile,
+         createdAt: createdAt,
+         storageId: storageId,
+         path: path,
+         url: url,
+       );
 
   /// Returns a shallow copy of this [UserProfileImage]
   /// with some or all fields replaced by the given arguments.
@@ -197,11 +201,11 @@ class UserProfileImageUpdateTable
   UserProfileImageUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> userProfileId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.userProfileId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.userProfileId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -210,24 +214,24 @@ class UserProfileImageUpdateTable
       );
 
   _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
-        table.storageId,
-        value,
-      );
+    table.storageId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
-        table.path,
-        value,
-      );
+    table.path,
+    value,
+  );
 
   _i1.ColumnValue<Uri, Uri> url(Uri value) => _i1.ColumnValue(
-        table.url,
-        value,
-      );
+    table.url,
+    value,
+  );
 }
 
 class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
   UserProfileImageTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_profile_image') {
+    : super(tableName: 'serverpod_auth_core_profile_image') {
     updateTable = UserProfileImageUpdateTable(this);
     userProfileId = _i1.ColumnUuid(
       'userProfileId',
@@ -286,13 +290,13 @@ class UserProfileImageTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userProfileId,
-        createdAt,
-        storageId,
-        path,
-        url,
-      ];
+    id,
+    userProfileId,
+    createdAt,
+    storageId,
+    path,
+    url,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -510,7 +514,7 @@ class UserProfileImageRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfileImage>(
@@ -525,7 +529,7 @@ class UserProfileImageRepository {
   Future<List<UserProfileImage>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     int? limit,
     int? offset,
@@ -618,8 +622,9 @@ class UserProfileImageAttachRowRepository {
       throw ArgumentError.notNull('userProfile.id');
     }
 
-    var $userProfileImage =
-        userProfileImage.copyWith(userProfileId: userProfile.id);
+    var $userProfileImage = userProfileImage.copyWith(
+      userProfileId: userProfile.id,
+    );
     await session.db.updateRow<UserProfileImage>(
       $userProfileImage,
       columns: [UserProfileImage.t.userProfileId],

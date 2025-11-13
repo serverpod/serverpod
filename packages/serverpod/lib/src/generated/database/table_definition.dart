@@ -51,11 +51,14 @@ abstract class TableDefinition
       tableSpace: jsonSerialization['tableSpace'] as String?,
       columns: (jsonSerialization['columns'] as List)
           .map(
-              (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)))
+            (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
       foreignKeys: (jsonSerialization['foreignKeys'] as List)
-          .map((e) =>
-              _i3.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
+          .map(
+            (e) =>
+                _i3.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)),
+          )
           .toList(),
       indexes: (jsonSerialization['indexes'] as List)
           .map((e) => _i4.IndexDefinition.fromJson((e as Map<String, dynamic>)))
@@ -131,8 +134,9 @@ abstract class TableDefinition
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
       'columns': columns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'foreignKeys':
-          foreignKeys.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'foreignKeys': foreignKeys.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
     };
@@ -158,16 +162,16 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
   }) : super._(
-          name: name,
-          dartName: dartName,
-          module: module,
-          schema: schema,
-          tableSpace: tableSpace,
-          columns: columns,
-          foreignKeys: foreignKeys,
-          indexes: indexes,
-          managed: managed,
-        );
+         name: name,
+         dartName: dartName,
+         module: module,
+         schema: schema,
+         tableSpace: tableSpace,
+         columns: columns,
+         foreignKeys: foreignKeys,
+         indexes: indexes,
+         managed: managed,
+       );
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.

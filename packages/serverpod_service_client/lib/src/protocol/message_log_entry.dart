@@ -150,18 +150,18 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     required bool slow,
     required int order,
   }) : super._(
-          id: id,
-          sessionLogId: sessionLogId,
-          serverId: serverId,
-          messageId: messageId,
-          endpoint: endpoint,
-          messageName: messageName,
-          duration: duration,
-          error: error,
-          stackTrace: stackTrace,
-          slow: slow,
-          order: order,
-        );
+         id: id,
+         sessionLogId: sessionLogId,
+         serverId: serverId,
+         messageId: messageId,
+         endpoint: endpoint,
+         messageName: messageName,
+         duration: duration,
+         error: error,
+         stackTrace: stackTrace,
+         slow: slow,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.

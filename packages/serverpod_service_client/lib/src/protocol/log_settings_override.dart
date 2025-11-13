@@ -36,7 +36,8 @@ abstract class LogSettingsOverride implements _i1.SerializableModel {
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
       logSettings: _i2.LogSettings.fromJson(
-          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
+        (jsonSerialization['logSettings'] as Map<String, dynamic>),
+      ),
     );
   }
 
@@ -86,11 +87,11 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
     String? method,
     required _i2.LogSettings logSettings,
   }) : super._(
-          module: module,
-          endpoint: endpoint,
-          method: method,
-          logSettings: logSettings,
-        );
+         module: module,
+         endpoint: endpoint,
+         method: method,
+         logSettings: logSettings,
+       );
 
   /// Returns a shallow copy of this [LogSettingsOverride]
   /// with some or all fields replaced by the given arguments.

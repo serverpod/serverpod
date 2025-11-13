@@ -41,8 +41,9 @@ abstract class ServerHealthMetric implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
       isHealthy: jsonSerialization['isHealthy'] as bool,
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
@@ -116,14 +117,14 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
     required double value,
     required int granularity,
   }) : super._(
-          id: id,
-          name: name,
-          serverId: serverId,
-          timestamp: timestamp,
-          isHealthy: isHealthy,
-          value: value,
-          granularity: granularity,
-        );
+         id: id,
+         name: name,
+         serverId: serverId,
+         timestamp: timestamp,
+         isHealthy: isHealthy,
+         value: value,
+         granularity: granularity,
+       );
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.

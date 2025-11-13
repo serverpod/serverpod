@@ -33,7 +33,8 @@ abstract class EmailCreateAccountRequest
   }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailCreateAccountRequest(
       id: jsonSerialization['id'] as int?,
       userName: jsonSerialization['userName'] as String,
@@ -137,12 +138,12 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
     required String hash,
     required String verificationCode,
   }) : super._(
-          id: id,
-          userName: userName,
-          email: email,
-          hash: hash,
-          verificationCode: verificationCode,
-        );
+         id: id,
+         userName: userName,
+         email: email,
+         hash: hash,
+         verificationCode: verificationCode,
+       );
 
   /// Returns a shallow copy of this [EmailCreateAccountRequest]
   /// with some or all fields replaced by the given arguments.
@@ -170,19 +171,19 @@ class EmailCreateAccountRequestUpdateTable
   EmailCreateAccountRequestUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> userName(String value) => _i1.ColumnValue(
-        table.userName,
-        value,
-      );
+    table.userName,
+    value,
+  );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 
   _i1.ColumnValue<String, String> verificationCode(String value) =>
       _i1.ColumnValue(
@@ -193,7 +194,7 @@ class EmailCreateAccountRequestUpdateTable
 
 class EmailCreateAccountRequestTable extends _i1.Table<int?> {
   EmailCreateAccountRequestTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_create_request') {
+    : super(tableName: 'serverpod_email_create_request') {
     updateTable = EmailCreateAccountRequestUpdateTable(this);
     userName = _i1.ColumnString(
       'userName',
@@ -229,12 +230,12 @@ class EmailCreateAccountRequestTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userName,
-        email,
-        hash,
-        verificationCode,
-      ];
+    id,
+    userName,
+    email,
+    hash,
+    verificationCode,
+  ];
 }
 
 class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
@@ -432,7 +433,7 @@ class EmailCreateAccountRequestRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailCreateAccountRequest>(
@@ -447,7 +448,7 @@ class EmailCreateAccountRequestRepository {
   Future<List<EmailCreateAccountRequest>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     int? limit,
     int? offset,

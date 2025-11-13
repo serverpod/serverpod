@@ -107,9 +107,9 @@ class _SimpleDataImpl extends SimpleData {
     int? id,
     required int num,
   }) : super._(
-          id: id,
-          num: num,
-        );
+         id: id,
+         num: num,
+       );
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
@@ -130,9 +130,9 @@ class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
   SimpleDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
-        table.num,
-        value,
-      );
+    table.num,
+    value,
+  );
 }
 
 class SimpleDataTable extends _i1.Table<int?> {
@@ -153,9 +153,9 @@ class SimpleDataTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        num,
-      ];
+    id,
+    num,
+  ];
 }
 
 class SimpleDataInclude extends _i1.IncludeObject {

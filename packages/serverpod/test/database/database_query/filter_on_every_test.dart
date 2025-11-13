@@ -14,20 +14,24 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when filtering on filtered every many relation', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1)))
-          .build();
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
       test('then a sub query is created for the filter.', () {
         expect(
-            query,
-            contains(
-                'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"'));
+          query,
+          contains(
+            'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"',
+          ),
+        );
       });
       test('then a sub query is joined with a not in where in main query.', () {
         expect(
-            query,
-            contains(
-                'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")'));
+          query,
+          contains(
+            'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")',
+          ),
+        );
       });
     });
 
@@ -37,72 +41,91 @@ void main() {
           .build();
       test('then a sub query is created for the filter.', () {
         expect(
-            query,
-            contains(
-                'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT ("citizen_company_company"."id" = 1 OR "citizen_company_company"."id" = 2) OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"'));
+          query,
+          contains(
+            'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT ("citizen_company_company"."id" = 1 OR "citizen_company_company"."id" = 2) OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"',
+          ),
+        );
       });
       test('then a sub query is joined with a not in where in main query.', () {
         expect(
-            query,
-            contains(
-                'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")'));
+          query,
+          contains(
+            'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")',
+          ),
+        );
       });
     });
 
     group('when filtering on multiple every many relation', () {
-      var where = manyRelation.every((t) => t.id.equals(1)) |
+      var where =
+          manyRelation.every((t) => t.id.equals(1)) |
           manyRelation.every((t) => t.id.equals(2));
-      var query =
-          SelectQueryBuilder(table: citizenTable).withWhere(where).build();
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withWhere(where).build();
 
-      test('then a sub query is created for the first many relation filter.',
-          () {
+      test('then a sub query is created for the first many relation filter.', () {
         expect(
-            query,
-            contains(
-                '"where_every_citizen_company_company_1" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")'));
+          query,
+          contains(
+            '"where_every_citizen_company_company_1" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")',
+          ),
+        );
       });
 
       test('then a sub query is joined with a where in main query.', () {
         expect(
-            query,
-            contains(
-                '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_1"."citizen.id" FROM "where_every_citizen_company_company_1")'));
+          query,
+          contains(
+            '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_1"."citizen.id" FROM "where_every_citizen_company_company_1")',
+          ),
+        );
       });
 
-      test('then a sub query is created for the second many relation filter.',
-          () {
-        expect(
+      test(
+        'then a sub query is created for the second many relation filter.',
+        () {
+          expect(
             query,
             contains(
-                '"where_every_citizen_company_company_2" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 2 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")'));
-      });
+              '"where_every_citizen_company_company_2" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 2 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")',
+            ),
+          );
+        },
+      );
 
       test('then a sub query is joined with a where in main query.', () {
         expect(
-            query,
-            contains(
-                '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_2"."citizen.id" FROM "where_every_citizen_company_company_2"'));
+          query,
+          contains(
+            '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_2"."citizen.id" FROM "where_every_citizen_company_company_2"',
+          ),
+        );
       });
     });
   });
 
   group('Given DeleteQueryBuilder', () {
     group('when filtering on filtered every many relation', () {
-      var query = DeleteQueryBuilder(table: citizenTable)
-          .withWhere(manyRelation.every((t) => t.id.equals(1)))
-          .build();
+      var query = DeleteQueryBuilder(
+        table: citizenTable,
+      ).withWhere(manyRelation.every((t) => t.id.equals(1))).build();
       test('then a sub query is created for the filter.', () {
         expect(
-            query,
-            contains(
-                'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"'));
+          query,
+          contains(
+            'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"',
+          ),
+        );
       });
       test('then a sub query is joined with a not in where in main query.', () {
         expect(
-            query,
-            contains(
-                'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")'));
+          query,
+          contains(
+            'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")',
+          ),
+        );
       });
     });
 
@@ -112,52 +135,67 @@ void main() {
           .build();
       test('then a sub query is created for the filter.', () {
         expect(
-            query,
-            contains(
-                'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT ("citizen_company_company"."id" = 1 OR "citizen_company_company"."id" = 2) OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"'));
+          query,
+          contains(
+            'WITH "where_every_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT ("citizen_company_company"."id" = 1 OR "citizen_company_company"."id" = 2) OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id"',
+          ),
+        );
       });
       test('then a sub query is joined with a not in where in main query.', () {
         expect(
-            query,
-            contains(
-                'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")'));
+          query,
+          contains(
+            'WHERE "citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_0"."citizen.id" FROM "where_every_citizen_company_company_0")',
+          ),
+        );
       });
     });
 
     group('when filtering on multiple every many relation', () {
-      var where = manyRelation.every((t) => t.id.equals(1)) |
+      var where =
+          manyRelation.every((t) => t.id.equals(1)) |
           manyRelation.every((t) => t.id.equals(2));
-      var query =
-          DeleteQueryBuilder(table: citizenTable).withWhere(where).build();
+      var query = DeleteQueryBuilder(
+        table: citizenTable,
+      ).withWhere(where).build();
 
-      test('then a sub query is created for the first many relation filter.',
-          () {
+      test('then a sub query is created for the first many relation filter.', () {
         expect(
-            query,
-            contains(
-                '"where_every_citizen_company_company_1" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")'));
+          query,
+          contains(
+            '"where_every_citizen_company_company_1" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 1 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")',
+          ),
+        );
       });
 
       test('then a sub query is joined with a where in main query.', () {
         expect(
-            query,
-            contains(
-                '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_1"."citizen.id" FROM "where_every_citizen_company_company_1")'));
+          query,
+          contains(
+            '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_1"."citizen.id" FROM "where_every_citizen_company_company_1")',
+          ),
+        );
       });
 
-      test('then a sub query is created for the second many relation filter.',
-          () {
-        expect(
+      test(
+        'then a sub query is created for the second many relation filter.',
+        () {
+          expect(
             query,
             contains(
-                '"where_every_citizen_company_company_2" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 2 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")'));
-      });
+              '"where_every_citizen_company_company_2" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" WHERE NOT "citizen_company_company"."id" = 2 OR "citizen_company_company"."id" IS NULL GROUP BY "citizen"."id")',
+            ),
+          );
+        },
+      );
 
       test('then a sub query is joined with a where in main query.', () {
         expect(
-            query,
-            contains(
-                '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_2"."citizen.id" FROM "where_every_citizen_company_company_2"'));
+          query,
+          contains(
+            '"citizen"."id" NOT IN (SELECT "where_every_citizen_company_company_2"."citizen.id" FROM "where_every_citizen_company_company_2"',
+          ),
+        );
       });
     });
   });

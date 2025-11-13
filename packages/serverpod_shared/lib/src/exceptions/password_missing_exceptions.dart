@@ -13,7 +13,8 @@ base class PasswordMissingException extends ExitException {
 
   /// The user-friendly message of the exception.
   @override
-  String get message => 'Missing password for "$passwordName". '
+  String get message =>
+      'Missing password for "$passwordName". '
       'Please check your config/passwords.yaml file or the '
       '$envVarName environment variable.\n'
       'See the documentation to troubleshoot: https://docs.serverpod.dev/troubleshoot/missing-passwords';

@@ -44,10 +44,8 @@ When working with pull requests in this repository, **ALWAYS**:
 **CRITICAL**: Install these exact versions to ensure compatibility:
 
 ### Required Tools
-1. **Dart SDK**: `>=3.5.0 <4.0.0` (required)
-2. **Flutter SDK**: `>=3.24.0` (required for Flutter components)
-   - **Tested versions**: 3.24.0, 3.32.1 (latest)
-   - **Project default**: 3.24.5 (from `.fvmrc`)
+1. **Dart SDK**: `^3.8.0` (required)
+2. **Flutter SDK**: `^3.32.0` (required for Flutter components)
 3. **Git**: Any recent version
 4. **Docker & Docker Compose**: Required for integration tests and local development
 5. **Melos**: For monorepo management (`dart pub global activate melos`)
@@ -55,14 +53,12 @@ When working with pull requests in this repository, **ALWAYS**:
 
 ### Installation Commands (Run these exactly)
 
-**NOTE**: The repository uses FVM and has `.fvmrc` configured for Flutter 3.24.5.
-
 ```bash
 # Install Flutter (choose one method)
 # Method 1: Using FVM (Recommended if you have Dart already)
 dart pub global activate fvm
-fvm install 3.24.5
-fvm use 3.24.5
+fvm install 3.32.0
+fvm use 3.32.0
 
 # Method 2: Manual Flutter installation
 cd /opt
@@ -76,8 +72,8 @@ sudo snap install flutter --classic
 dart pub global activate melos
 
 # Verify installations
-dart --version     # Should be >= 3.5.0
-flutter --version  # Should be >= 3.24.0
+dart --version     # Should be ^3.8.0
+flutter --version  # Should be ^3.32.0
 docker --version   # Should work
 git --version      # Should work
 ```

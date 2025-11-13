@@ -1,5 +1,4 @@
 @Timeout(Duration(minutes: 5))
-
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
@@ -16,95 +15,97 @@ void main() {
   );
 
   group(
-      'Given an existing table, when adding a non-nullable column with a default value,',
-      () {
-    setUpAll(() async {
-      var createTableProtocol = {
-        'existing_table': '''
+    'Given an existing table, when adding a non-nullable column with a default value,',
+    () {
+      setUpAll(() async {
+        var createTableProtocol = {
+          'existing_table': '''
         class: ExistingTable
         table: existing_table
         fields:
           number: int
-        '''
-      };
+        ''',
+        };
 
-      await MigrationTestUtils.createMigrationFromProtocols(
-        protocols: createTableProtocol,
-        tag: 'create-existing-table',
-      );
+        await MigrationTestUtils.createMigrationFromProtocols(
+          protocols: createTableProtocol,
+          tag: 'create-existing-table',
+        );
 
-      await MigrationTestUtils.runApplyMigrations();
-    });
+        await MigrationTestUtils.runApplyMigrations();
+      });
 
-    tearDown(() async {
-      await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS existing_table;',
-        serviceClient: serviceClient,
-      );
-    });
+      tearDown(() async {
+        await MigrationTestUtils.migrationTestCleanup(
+          resetSql: 'DROP TABLE IF EXISTS existing_table;',
+          serviceClient: serviceClient,
+        );
+      });
 
-    test(
+      test(
         'then the table contains the new non-nullable column with the correct default value.',
         () async {
-      var targetStateProtocols = {
-        'existing_table': '''
+          var targetStateProtocols = {
+            'existing_table': '''
         class: ExistingTable
         table: existing_table
         fields:
           number: int
           newColumn: DateTime, default=now
-        '''
-      };
+        ''',
+          };
 
-      var createMigrationExitCode =
-          await MigrationTestUtils.createMigrationFromProtocols(
-        protocols: targetStateProtocols,
-        tag: 'add-new-column',
+          var createMigrationExitCode =
+              await MigrationTestUtils.createMigrationFromProtocols(
+                protocols: targetStateProtocols,
+                tag: 'add-new-column',
+              );
+
+          expect(
+            createMigrationExitCode,
+            0,
+            reason: 'Failed to create migration, exit code was not 0.',
+          );
+
+          var applyMigrationExitCode =
+              await MigrationTestUtils.runApplyMigrations();
+
+          expect(
+            applyMigrationExitCode,
+            0,
+            reason: 'Failed to apply migration, exit code was not 0.',
+          );
+
+          var liveDefinition = await serviceClient.insights
+              .getLiveDatabaseDefinition();
+
+          var databaseTable = liveDefinition.tables.firstWhereOrNull(
+            (t) => t.name == 'existing_table',
+          );
+
+          expect(
+            databaseTable,
+            isNotNull,
+            reason: 'Could not find existing table in live table definitions.',
+          );
+
+          var columns = databaseTable!.columns;
+          expect(
+            columns.length,
+            3,
+            reason: 'Invalid Table Columns',
+          );
+
+          var newColumn = columns[2];
+          expect(
+            newColumn.columnDefault,
+            'CURRENT_TIMESTAMP',
+            reason: 'Could not find "columnDefault" for "newColumn"',
+          );
+        },
       );
-
-      expect(
-        createMigrationExitCode,
-        0,
-        reason: 'Failed to create migration, exit code was not 0.',
-      );
-
-      var applyMigrationExitCode =
-          await MigrationTestUtils.runApplyMigrations();
-
-      expect(
-        applyMigrationExitCode,
-        0,
-        reason: 'Failed to apply migration, exit code was not 0.',
-      );
-
-      var liveDefinition =
-          await serviceClient.insights.getLiveDatabaseDefinition();
-
-      var databaseTable = liveDefinition.tables.firstWhereOrNull(
-        (t) => t.name == 'existing_table',
-      );
-
-      expect(
-        databaseTable,
-        isNotNull,
-        reason: 'Could not find existing table in live table definitions.',
-      );
-
-      var columns = databaseTable!.columns;
-      expect(
-        columns.length,
-        3,
-        reason: 'Invalid Table Columns',
-      );
-
-      var newColumn = columns[2];
-      expect(
-        newColumn.columnDefault,
-        'CURRENT_TIMESTAMP',
-        reason: 'Could not find "columnDefault" for "newColumn"',
-      );
-    });
-  });
+    },
+  );
 
   group('Given an existing table with a nullable column,', () {
     setUpAll(() async {
@@ -115,7 +116,7 @@ void main() {
         fields:
           number: int
           existingColumn: DateTime?
-        '''
+        ''',
       };
 
       await MigrationTestUtils.createMigrationFromProtocols(
@@ -135,67 +136,68 @@ void main() {
 
     group('when modifying it to be non-nullable with a default value,', () {
       test(
-          'then the column is modified to be non-nullable with the correct default value.',
-          () async {
-        var targetStateProtocols = {
-          'existing_table': '''
+        'then the column is modified to be non-nullable with the correct default value.',
+        () async {
+          var targetStateProtocols = {
+            'existing_table': '''
         class: ExistingTable
         table: existing_table
         fields:
           number: int
           existingColumn: DateTime, default=now
-        '''
-        };
+        ''',
+          };
 
-        var createMigrationExitCode =
-            await MigrationTestUtils.createMigrationFromProtocols(
-          force: true,
-          protocols: targetStateProtocols,
-          tag: 'modify-existing-column',
-        );
+          var createMigrationExitCode =
+              await MigrationTestUtils.createMigrationFromProtocols(
+                force: true,
+                protocols: targetStateProtocols,
+                tag: 'modify-existing-column',
+              );
 
-        expect(
-          createMigrationExitCode,
-          0,
-          reason: 'Failed to create migration, exit code was not 0.',
-        );
+          expect(
+            createMigrationExitCode,
+            0,
+            reason: 'Failed to create migration, exit code was not 0.',
+          );
 
-        var applyMigrationExitCode =
-            await MigrationTestUtils.runApplyMigrations();
+          var applyMigrationExitCode =
+              await MigrationTestUtils.runApplyMigrations();
 
-        expect(
-          applyMigrationExitCode,
-          0,
-          reason: 'Failed to apply migration, exit code was not 0.',
-        );
+          expect(
+            applyMigrationExitCode,
+            0,
+            reason: 'Failed to apply migration, exit code was not 0.',
+          );
 
-        var liveDefinition =
-            await serviceClient.insights.getLiveDatabaseDefinition();
+          var liveDefinition = await serviceClient.insights
+              .getLiveDatabaseDefinition();
 
-        var databaseTable = liveDefinition.tables.firstWhereOrNull(
-          (t) => t.name == 'existing_table',
-        );
+          var databaseTable = liveDefinition.tables.firstWhereOrNull(
+            (t) => t.name == 'existing_table',
+          );
 
-        expect(
-          databaseTable,
-          isNotNull,
-          reason: 'Could not find existing table in live table definitions.',
-        );
+          expect(
+            databaseTable,
+            isNotNull,
+            reason: 'Could not find existing table in live table definitions.',
+          );
 
-        var columns = databaseTable!.columns;
-        expect(
-          columns.length,
-          3,
-          reason: 'Invalid Table Columns',
-        );
+          var columns = databaseTable!.columns;
+          expect(
+            columns.length,
+            3,
+            reason: 'Invalid Table Columns',
+          );
 
-        var existingColumn = columns[2];
-        expect(
-          existingColumn.columnDefault,
-          'CURRENT_TIMESTAMP',
-          reason: 'Could not find "columnDefault" for "existingColumn"',
-        );
-      });
+          var existingColumn = columns[2];
+          expect(
+            existingColumn.columnDefault,
+            'CURRENT_TIMESTAMP',
+            reason: 'Could not find "columnDefault" for "existingColumn"',
+          );
+        },
+      );
     });
   });
 }
