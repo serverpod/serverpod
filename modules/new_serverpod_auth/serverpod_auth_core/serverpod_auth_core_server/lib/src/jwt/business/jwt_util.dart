@@ -14,14 +14,15 @@ class JwtUtil {
     required final Duration accessTokenLifetime,
     required final String? issuer,
     required final AuthenticationTokenAlgorithm algorithm,
-    required final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm,
+    required final List<AuthenticationTokenAlgorithm>
+    fallbackVerificationAlgorithms,
   }) : _accessTokenLifetime = accessTokenLifetime,
        _issuer = issuer,
        _algorithm = algorithm,
-       _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
+       _fallbackVerificationAlgorithms = fallbackVerificationAlgorithms;
 
   final AuthenticationTokenAlgorithm _algorithm;
-  final AuthenticationTokenAlgorithm? _fallbackVerificationAlgorithm;
+  final List<AuthenticationTokenAlgorithm> _fallbackVerificationAlgorithms;
   final Duration _accessTokenLifetime;
   final String? _issuer;
 
@@ -163,8 +164,8 @@ class JwtUtil {
 
   /// Verifies the JWT's signature and returns its data.
   ///
-  /// If reading with the primary algorithm fails, the fallback (if configured) is tried.
-  /// In case neither of the keys work, and error is thrown.
+  /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
+  /// In case none of the keys work, an error is thrown.
   JWT _verifyJwt(final String accessToken) {
     try {
       return JWT.verify(
@@ -173,16 +174,18 @@ class JwtUtil {
         issuer: _issuer,
       );
     } catch (_) {
-      final fallbackAlgorithm = _fallbackVerificationAlgorithm;
-      if (fallbackAlgorithm == null) {
-        rethrow;
+      for (final fallbackAlgorithm in _fallbackVerificationAlgorithms) {
+        try {
+          return JWT.verify(
+            accessToken,
+            fallbackAlgorithm.verificationKey,
+            issuer: _issuer,
+          );
+        } catch (_) {
+          continue;
+        }
       }
-
-      return JWT.verify(
-        accessToken,
-        fallbackAlgorithm.verificationKey,
-        issuer: _issuer,
-      );
+      rethrow;
     }
   }
 
