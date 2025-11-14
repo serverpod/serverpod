@@ -16,6 +16,7 @@ import '../database/column_migration.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
 import '../database/foreign_key_definition.dart' as _i5;
 import '../database/database_migration_warning.dart' as _i6;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i7;
 
 abstract class TableMigration implements _i1.SerializableModel {
   TableMigration._({
@@ -54,39 +55,31 @@ abstract class TableMigration implements _i1.SerializableModel {
       dartName: jsonSerialization['dartName'] as String?,
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
-      addColumns: (jsonSerialization['addColumns'] as List)
-          .map(
-            (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      deleteColumns: (jsonSerialization['deleteColumns'] as List)
-          .map((e) => e as String)
-          .toList(),
-      modifyColumns: (jsonSerialization['modifyColumns'] as List)
-          .map((e) => _i3.ColumnMigration.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      addIndexes: (jsonSerialization['addIndexes'] as List)
-          .map((e) => _i4.IndexDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      deleteIndexes: (jsonSerialization['deleteIndexes'] as List)
-          .map((e) => e as String)
-          .toList(),
-      addForeignKeys: (jsonSerialization['addForeignKeys'] as List)
-          .map(
-            (e) =>
-                _i5.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      deleteForeignKeys: (jsonSerialization['deleteForeignKeys'] as List)
-          .map((e) => e as String)
-          .toList(),
-      warnings: (jsonSerialization['warnings'] as List)
-          .map(
-            (e) => _i6.DatabaseMigrationWarning.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
+      addColumns: _i7.Protocol().deserialize<List<_i2.ColumnDefinition>>(
+        jsonSerialization['addColumns'],
+      ),
+      deleteColumns: _i7.Protocol().deserialize<List<String>>(
+        jsonSerialization['deleteColumns'],
+      ),
+      modifyColumns: _i7.Protocol().deserialize<List<_i3.ColumnMigration>>(
+        jsonSerialization['modifyColumns'],
+      ),
+      addIndexes: _i7.Protocol().deserialize<List<_i4.IndexDefinition>>(
+        jsonSerialization['addIndexes'],
+      ),
+      deleteIndexes: _i7.Protocol().deserialize<List<String>>(
+        jsonSerialization['deleteIndexes'],
+      ),
+      addForeignKeys: _i7.Protocol()
+          .deserialize<List<_i5.ForeignKeyDefinition>>(
+            jsonSerialization['addForeignKeys'],
+          ),
+      deleteForeignKeys: _i7.Protocol().deserialize<List<String>>(
+        jsonSerialization['deleteForeignKeys'],
+      ),
+      warnings: _i7.Protocol().deserialize<List<_i6.DatabaseMigrationWarning>>(
+        jsonSerialization['warnings'],
+      ),
     );
   }
 
@@ -134,6 +127,7 @@ abstract class TableMigration implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.TableMigration',
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,

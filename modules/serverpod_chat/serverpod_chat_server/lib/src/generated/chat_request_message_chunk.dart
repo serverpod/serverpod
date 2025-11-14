@@ -50,6 +50,7 @@ abstract class ChatRequestMessageChunk
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatRequestMessageChunk',
       'channel': channel,
       'lastMessageId': lastMessageId,
     };
@@ -58,6 +59,7 @@ abstract class ChatRequestMessageChunk
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatRequestMessageChunk',
       'channel': channel,
       'lastMessageId': lastMessageId,
     };

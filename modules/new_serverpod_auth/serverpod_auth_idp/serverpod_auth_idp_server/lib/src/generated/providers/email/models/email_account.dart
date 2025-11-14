@@ -16,6 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
 /// A fully configured email account to be used for logins.
 abstract class EmailAccount
@@ -50,8 +51,8 @@ abstract class EmailAccount
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
@@ -112,6 +113,7 @@ abstract class EmailAccount
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.EmailAccount',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

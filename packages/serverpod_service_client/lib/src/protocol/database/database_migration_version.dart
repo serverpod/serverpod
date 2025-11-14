@@ -67,6 +67,7 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
       if (id != null) 'id': id,
       'module': module,
       'version': version,

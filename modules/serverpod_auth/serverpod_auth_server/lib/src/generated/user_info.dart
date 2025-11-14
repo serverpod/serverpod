@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
@@ -52,9 +53,9 @@ abstract class UserInfo
       email: jsonSerialization['email'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -111,6 +112,7 @@ abstract class UserInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserInfo',
       if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
       if (userName != null) 'userName': userName,
@@ -126,6 +128,7 @@ abstract class UserInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.UserInfo',
       if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
       if (userName != null) 'userName': userName,

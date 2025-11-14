@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/bulk_query_column_description.dart' as _i2;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 abstract class BulkQueryResult implements _i1.SerializableModel {
   BulkQueryResult._({
@@ -30,13 +31,9 @@ abstract class BulkQueryResult implements _i1.SerializableModel {
 
   factory BulkQueryResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkQueryResult(
-      headers: (jsonSerialization['headers'] as List)
-          .map(
-            (e) => _i2.BulkQueryColumnDescription.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
+      headers: _i3.Protocol().deserialize<List<_i2.BulkQueryColumnDescription>>(
+        jsonSerialization['headers'],
+      ),
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
       duration: _i1.DurationJsonExtension.fromJson(
@@ -65,6 +62,7 @@ abstract class BulkQueryResult implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.BulkQueryResult',
       'headers': headers.toJson(valueToJson: (v) => v.toJson()),
       'data': data,
       'numAffectedRows': numAffectedRows,

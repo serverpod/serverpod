@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/database_migration_warning_type.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 abstract class DatabaseMigrationWarning
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -40,9 +41,9 @@ abstract class DatabaseMigrationWarning
       ),
       message: jsonSerialization['message'] as String,
       table: jsonSerialization['table'] as String,
-      columns: (jsonSerialization['columns'] as List)
-          .map((e) => e as String)
-          .toList(),
+      columns: _i3.Protocol().deserialize<List<String>>(
+        jsonSerialization['columns'],
+      ),
       destrucive: jsonSerialization['destrucive'] as bool,
     );
   }
@@ -70,6 +71,7 @@ abstract class DatabaseMigrationWarning
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationWarning',
       'type': type.toJson(),
       'message': message,
       'table': table,
@@ -81,6 +83,7 @@ abstract class DatabaseMigrationWarning
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationWarning',
       'type': type.toJson(),
       'message': message,
       'table': table,

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/database_migration_action.dart' as _i2;
 import '../database/database_migration_warning.dart' as _i3;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 abstract class DatabaseMigration implements _i1.SerializableModel {
   DatabaseMigration._({
@@ -29,20 +30,12 @@ abstract class DatabaseMigration implements _i1.SerializableModel {
 
   factory DatabaseMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseMigration(
-      actions: (jsonSerialization['actions'] as List)
-          .map(
-            (e) => _i2.DatabaseMigrationAction.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
-      warnings: (jsonSerialization['warnings'] as List)
-          .map(
-            (e) => _i3.DatabaseMigrationWarning.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
+      actions: _i4.Protocol().deserialize<List<_i2.DatabaseMigrationAction>>(
+        jsonSerialization['actions'],
+      ),
+      warnings: _i4.Protocol().deserialize<List<_i3.DatabaseMigrationWarning>>(
+        jsonSerialization['warnings'],
+      ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
@@ -64,6 +57,7 @@ abstract class DatabaseMigration implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigration',
       'actions': actions.toJson(valueToJson: (v) => v.toJson()),
       'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,

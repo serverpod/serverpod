@@ -69,6 +69,7 @@ abstract class UserSettingsConfig
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserSettingsConfig',
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,
       'canEditUserName': canEditUserName,
@@ -80,6 +81,7 @@ abstract class UserSettingsConfig
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.UserSettingsConfig',
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,
       'canEditUserName': canEditUserName,

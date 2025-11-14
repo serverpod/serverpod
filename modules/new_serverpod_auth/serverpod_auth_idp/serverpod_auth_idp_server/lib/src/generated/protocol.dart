@@ -1068,12 +1068,29 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i3.Protocol.targetTableDefinitions,
   ];
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod_auth_idp.')) return className;
+    return className.substring(19);
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      return deserializeByClassName({
+        'className': dataClassName,
+        'data': data,
+      });
+    }
+
     if (t == _i4.SecretChallenge) {
       return _i4.SecretChallenge.fromJson(data) as T;
     }
@@ -1290,6 +1307,14 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst(
+        'serverpod_auth_idp.',
+        '',
+      );
+    }
+
     switch (data) {
       case _i4.SecretChallenge():
         return 'SecretChallenge';

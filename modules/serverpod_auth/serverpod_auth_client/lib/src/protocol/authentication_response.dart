@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'user_info.dart' as _i2;
 import 'authentication_fail_reason.dart' as _i3;
+import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i4;
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse implements _i1.SerializableModel {
@@ -41,8 +42,8 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
       keyId: jsonSerialization['keyId'] as int?,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['userInfo'],
             ),
       failReason: jsonSerialization['failReason'] == null
           ? null
@@ -82,6 +83,7 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AuthenticationResponse',
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,

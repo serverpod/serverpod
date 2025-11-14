@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'log_settings.dart' as _i2;
 import 'log_settings_override.dart' as _i3;
+import 'package:serverpod/src/generated/protocol.dart' as _i4;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
@@ -36,15 +37,13 @@ abstract class RuntimeSettings
   factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
-      logSettings: _i2.LogSettings.fromJson(
-        (jsonSerialization['logSettings'] as Map<String, dynamic>),
+      logSettings: _i4.Protocol().deserialize<_i2.LogSettings>(
+        jsonSerialization['logSettings'],
       ),
-      logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
-          .map(
-            (e) =>
-                _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
+      logSettingsOverrides: _i4.Protocol()
+          .deserialize<List<_i3.LogSettingsOverride>>(
+            jsonSerialization['logSettingsOverrides'],
+          ),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
     );
@@ -85,6 +84,7 @@ abstract class RuntimeSettings
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.RuntimeSettings',
       if (id != null) 'id': id,
       'logSettings': logSettings.toJson(),
       'logSettingsOverrides': logSettingsOverrides.toJson(
@@ -98,6 +98,7 @@ abstract class RuntimeSettings
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.RuntimeSettings',
       if (id != null) 'id': id,
       'logSettings': logSettings.toJsonForProtocol(),
       'logSettingsOverrides': logSettingsOverrides.toJson(

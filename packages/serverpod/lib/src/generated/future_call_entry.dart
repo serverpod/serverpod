@@ -83,6 +83,7 @@ abstract class FutureCallEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.FutureCallEntry',
       if (id != null) 'id': id,
       'name': name,
       'time': time.toJson(),
@@ -95,6 +96,7 @@ abstract class FutureCallEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.FutureCallEntry',
       if (id != null) 'id': id,
       'name': name,
       'time': time.toJson(),

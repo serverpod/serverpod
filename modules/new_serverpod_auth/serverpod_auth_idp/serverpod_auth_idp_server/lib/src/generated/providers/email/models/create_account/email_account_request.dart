@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../../common/models/secret_challenge.dart' as _i2;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
 
 /// Pending email account registration.
 ///
@@ -56,8 +57,8 @@ abstract class EmailAccountRequest
       ),
       challenge: jsonSerialization['challenge'] == null
           ? null
-          : _i2.SecretChallenge.fromJson(
-              (jsonSerialization['challenge'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
+              jsonSerialization['challenge'],
             ),
       createAccountChallengeId:
           jsonSerialization['createAccountChallengeId'] == null
@@ -68,9 +69,8 @@ abstract class EmailAccountRequest
       createAccountChallenge:
           jsonSerialization['createAccountChallenge'] == null
           ? null
-          : _i2.SecretChallenge.fromJson(
-              (jsonSerialization['createAccountChallenge']
-                  as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
+              jsonSerialization['createAccountChallenge'],
             ),
     );
   }
@@ -119,6 +119,7 @@ abstract class EmailAccountRequest
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.EmailAccountRequest',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'email': email,

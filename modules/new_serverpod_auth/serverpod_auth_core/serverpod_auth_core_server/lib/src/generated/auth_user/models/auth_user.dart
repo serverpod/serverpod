@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -37,10 +38,9 @@ abstract class AuthUser
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -76,6 +76,7 @@ abstract class AuthUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthUser',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),

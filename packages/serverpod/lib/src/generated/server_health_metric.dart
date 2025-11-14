@@ -95,6 +95,7 @@ abstract class ServerHealthMetric
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthMetric',
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
@@ -108,6 +109,7 @@ abstract class ServerHealthMetric
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ServerHealthMetric',
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,

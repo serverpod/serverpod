@@ -71,6 +71,7 @@ abstract class EmailReset
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailReset',
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -81,6 +82,7 @@ abstract class EmailReset
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailReset',
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,

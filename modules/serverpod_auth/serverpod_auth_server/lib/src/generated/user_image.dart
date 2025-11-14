@@ -69,6 +69,7 @@ abstract class UserImage
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserImage',
       if (id != null) 'id': id,
       'userId': userId,
       'version': version,
@@ -79,6 +80,7 @@ abstract class UserImage
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.UserImage',
       if (id != null) 'id': id,
       'userId': userId,
       'version': version,

@@ -81,6 +81,7 @@ abstract class ColumnDefinition implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ColumnDefinition',
       'name': name,
       'columnType': columnType.toJson(),
       'isNullable': isNullable,

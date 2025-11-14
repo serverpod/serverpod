@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
 
 /// A fully configured "Sign in with Apple"-based account to be used for logins.
 abstract class AppleAccount
@@ -70,8 +71,8 @@ abstract class AppleAccount
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
@@ -167,6 +168,7 @@ abstract class AppleAccount
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.AppleAccount',
       if (id != null) 'id': id?.toJson(),
       'userIdentifier': userIdentifier,
       'refreshToken': refreshToken,

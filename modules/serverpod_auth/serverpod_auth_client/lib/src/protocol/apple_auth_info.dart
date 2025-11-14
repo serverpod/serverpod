@@ -75,6 +75,7 @@ abstract class AppleAuthInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AppleAuthInfo',
       'userIdentifier': userIdentifier,
       if (email != null) 'email': email,
       'fullName': fullName,

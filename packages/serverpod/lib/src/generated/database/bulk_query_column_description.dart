@@ -35,12 +35,18 @@ abstract class BulkQueryColumnDescription
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
   }
 
   @override

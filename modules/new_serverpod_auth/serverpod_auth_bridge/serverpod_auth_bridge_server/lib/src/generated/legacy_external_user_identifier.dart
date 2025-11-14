@@ -15,6 +15,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
+import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
+    as _i3;
 
 abstract class LegacyExternalUserIdentifier
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -44,8 +46,8 @@ abstract class LegacyExternalUserIdentifier
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
     );
@@ -84,6 +86,7 @@ abstract class LegacyExternalUserIdentifier
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_bridge.LegacyExternalUserIdentifier',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

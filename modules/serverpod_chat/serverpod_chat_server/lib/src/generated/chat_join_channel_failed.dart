@@ -50,6 +50,7 @@ abstract class ChatJoinChannelFailed
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinChannelFailed',
       'channel': channel,
       'reason': reason,
     };
@@ -58,6 +59,7 @@ abstract class ChatJoinChannelFailed
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinChannelFailed',
       'channel': channel,
       'reason': reason,
     };

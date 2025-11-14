@@ -69,6 +69,7 @@ abstract class ChatReadMessage
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatReadMessage',
       if (id != null) 'id': id,
       'channel': channel,
       'userId': userId,
@@ -79,6 +80,7 @@ abstract class ChatReadMessage
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatReadMessage',
       if (id != null) 'id': id,
       'channel': channel,
       'userId': userId,

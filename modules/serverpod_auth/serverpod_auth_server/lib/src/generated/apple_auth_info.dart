@@ -76,6 +76,7 @@ abstract class AppleAuthInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AppleAuthInfo',
       'userIdentifier': userIdentifier,
       if (email != null) 'email': email,
       'fullName': fullName,
@@ -88,6 +89,7 @@ abstract class AppleAuthInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.AppleAuthInfo',
       'userIdentifier': userIdentifier,
       if (email != null) 'email': email,
       'fullName': fullName,

@@ -77,6 +77,7 @@ abstract class ChatMessageAttachment implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachment',
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
