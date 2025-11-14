@@ -459,6 +459,7 @@ testTools:
   - streamModuleClass:
   - echoRecord:
   - echoRecords:
+  - returnRecordWithSerializableObject:
   - recordEchoStream:
   - listOfRecordEchoStream:
   - nullableRecordEchoStream:

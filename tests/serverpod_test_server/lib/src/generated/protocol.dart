@@ -13047,7 +13047,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
-        record.$2,
+        record.$2.toJson(),
       ],
     };
   }
@@ -13055,7 +13055,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
-        record.$2,
+        record.$2.toJson(),
       ],
     };
   }
@@ -13085,14 +13085,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
     return {
       "p": [
         record.$1,
-        record.$2,
+        record.$2.toJson(),
       ],
     };
   }
   if (record is (Map<String, int>,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13183,7 +13183,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i193.SimpleData, double)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
         record.$2,
       ],
     };
@@ -13236,7 +13236,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (Map<String, int>, {bool flag, _i193.SimpleData simpleData})) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
       "n": {
         "flag": record.flag,
@@ -13255,7 +13255,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i4.ModuleClass,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13269,14 +13269,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i183.TestEnumStringified,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (_i141.Nullability,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13314,7 +13314,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i181.TestEnum,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13335,49 +13335,49 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (DateTime,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (_i191.ByteData,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (Duration,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (_i1.UuidValue,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (Uri,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (BigInt,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (List<int>,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13391,14 +13391,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (Set<int>,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
   if (record is (_i175.SimpleData,)) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
     };
   }
@@ -13412,7 +13412,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i175.SimpleData, {_i175.SimpleData namedModel})) {
     return {
       "p": [
-        record.$1,
+        record.$1.toJson(),
       ],
       "n": {
         "namedModel": record.namedModel,
@@ -13453,8 +13453,8 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record is (_i175.SimpleData, Map<String, _i175.SimpleData>)) {
     return {
       "p": [
-        record.$1,
-        record.$2,
+        record.$1.toJson(),
+        record.$2.toJson(),
       ],
     };
   }

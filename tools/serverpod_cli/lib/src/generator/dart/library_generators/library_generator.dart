@@ -1855,7 +1855,13 @@ extension on TypeDefinition {
               '$mapContainerToJsonFunctionName($name.\$${index + 1})',
             )
           else
-            Code('$name.\$${index + 1}'),
+            Code(
+              positionalField.isSerializedValue
+                  ? '$name.\$${index + 1}'
+                  : positionalField.nullable
+                  ? '$name.\$${index + 1}?.toJson()'
+                  : '$name.\$${index + 1}.toJson()',
+            ),
           const Code(','),
         ],
         const Code('],'),

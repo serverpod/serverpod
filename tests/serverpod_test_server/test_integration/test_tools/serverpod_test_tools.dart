@@ -13967,6 +13967,44 @@ class _TestToolsEndpoint {
     });
   }
 
+  _i3.Future<(int, _i10.SimpleData)> returnRecordWithSerializableObject(
+    _i1.TestSessionBuilder sessionBuilder,
+    int number,
+    _i10.SimpleData data,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'testTools',
+            method: 'returnRecordWithSerializableObject',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'testTools',
+          methodName: 'returnRecordWithSerializableObject',
+          parameters: _i1.testObjectToJson({
+            'number': number,
+            'data': data,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (record) =>
+                  _i17.Protocol().deserialize<(int, _i10.SimpleData)>(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Stream<
     (String, (Map<String, int>, {bool flag, _i10.SimpleData simpleData}))
   >

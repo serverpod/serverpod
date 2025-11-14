@@ -8315,6 +8315,32 @@ class Endpoints extends _i1.EndpointDispatch {
                   )
                   .then((container) => _i61.mapContainerToJson(container)),
         ),
+        'returnRecordWithSerializableObject': _i1.MethodConnector(
+          name: 'returnRecordWithSerializableObject',
+          params: {
+            'number': _i1.ParameterDescription(
+              name: 'number',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'data': _i1.ParameterDescription(
+              name: 'data',
+              type: _i1.getType<_i55.SimpleData>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['testTools'] as _i47.TestToolsEndpoint)
+                  .returnRecordWithSerializableObject(
+                    session,
+                    params['number'],
+                    params['data'],
+                  )
+                  .then((record) => _i61.mapRecordToJson(record)),
+        ),
         'logMessageWithSession': _i1.MethodConnector(
           name: 'logMessageWithSession',
           params: {},

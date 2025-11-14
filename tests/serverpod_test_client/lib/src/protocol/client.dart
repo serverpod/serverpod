@@ -3898,6 +3898,18 @@ class EndpointTestTools extends _i1.EndpointRef {
     {'records': _i17.mapContainerToJson(records)},
   );
 
+  _i2.Future<(int, _i9.SimpleData)> returnRecordWithSerializableObject(
+    int number,
+    _i9.SimpleData data,
+  ) => caller.callServerEndpoint<(int, _i9.SimpleData)>(
+    'testTools',
+    'returnRecordWithSerializableObject',
+    {
+      'number': number,
+      'data': data,
+    },
+  );
+
   _i2.Stream<
     (String, (Map<String, int>, {bool flag, _i9.SimpleData simpleData}))
   >
