@@ -321,6 +321,11 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+inheritancePolymorphismTest:
+  - polymorphicRoundtrip:
+  - polymorphicStreamingRoundtrip:
+  - polymorphicContainerRoundtrip:
+  - polymorphicModuleContainerRoundtrip:
 recordParameters:
   - returnRecordOfInt:
   - returnNullableRecordOfInt:
